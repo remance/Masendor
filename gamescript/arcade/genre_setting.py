@@ -24,12 +24,13 @@ unit_behaviour_wheel = {"Main": {"Skill": "Skill", "Shift Line": "Shift Line", "
                         "Formation Style": {"Infantry Inner": "Infantry Inner", "Cavalry Inner": "Cavalry Inner",
                                             "Infantry Flank": "Infantry Flank", "Cavalry Flank": "Cavalry Flank"},
                         "Formation List": {"Square": "Square", "Line": "Line", "Circle": "Circle",
-                                           "Wedge": "Wedge", "Bar": "Bar", "Original": "Original",
-                                           "Melee Front": "Melee Front", "Range Front": "Range Front"},
+                                           "Wedge": "Wedge", "Bar": "Bar"},
 
                         "Equipment": {"Equip Primary": "Equip Primary", "Equip Secondary": "Equip Secondary",
-                                      "Troop Primary": "Troop Primary", "Troop Secondary": "Troop Secondary",
-                                      "Troop Melee": "Troop Melee", "Troop Range": "Troop Range"},
+                                      "Troop Equip Primary": "Troop Equip Primary",
+                                      "Troop Equip Secondary": "Troop Equip Secondary",
+                                      "Troop Equip Melee": "Troop Equip Melee",
+                                      "Troop Equip Range": "Troop Equip Range"},
                         "Setting": {"Height Map": "Height Map", "UI Hide": "UI Hide", "UI Show": "UI Show"}}
 
 # Dict of variable that will get add into object in game, key use two items tuple for indication of adding

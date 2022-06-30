@@ -9,7 +9,7 @@ def morale_check_logic(self):
         self.state = 0  # become idle, not resume previous command
         self.retreat_start = False
         self.retreat_way = None
-        self.process_command(self.base_pos, False, False, other_command="Stop")
+        self.issue_order(self.base_pos, False, False, other_command="Stop")
 
     if self.retreat_start and self.state != 96:
         self.retreat()

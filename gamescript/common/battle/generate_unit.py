@@ -51,7 +51,6 @@ def generate_unit(self, which_team, setup_data, control, command, colour, coa, s
     new_subunit_list = np.array([[0] * len(this_unit.subunit_id_array[0])] * len(this_unit.subunit_id_array))
     for row_index, row in enumerate(this_unit.subunit_id_array):
         for col_index, col in enumerate(row):
-            this_unit.subunit_object_array[row_index][col_index] = None  # replace numpy None with python None
             if col != "0" and (self.troop_size_adjustable is False or unit_array[row_index][col_index] == 0):
                 this_subunit_number = col
                 size = 1

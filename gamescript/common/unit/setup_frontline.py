@@ -42,7 +42,7 @@ def setup_frontline(self):
 
         found_count = 0
         position_count = 0
-        self.subunit_object_array = np.empty(self.unit_size, dtype=object)
+        self.subunit_object_array = np.full(self.unit_size, None)
         for row in range(0, len(self.subunit_id_array)):
             for column in range(0, len(self.subunit_id_array[0])):
                 if found_count < len(self.subunit_list):

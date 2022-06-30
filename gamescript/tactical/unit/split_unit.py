@@ -145,7 +145,7 @@ def add_new_unit(self, who, add_unit_list=True):
     :return:
     """
     # generate subunit sprite array for inspect ui
-    who.subunit_object_array = np.empty((len(self.subunit_object_array[0]), len(self.subunit_object_array)), dtype=object)  # array of subunit object(not index)
+    who.subunit_object_array = np.full((len(self.subunit_object_array[0]), len(self.subunit_object_array)), None)  # array of subunit object(not index)
     found_count = 0  # for subunit_sprite index
     for row in range(0, len(who.subunit_id_array)):
         for column in range(0, len(who.subunit_id_array[0])):
@@ -154,8 +154,6 @@ def add_new_unit(self, who, add_unit_list=True):
                 who.subunit_list[found_count].unit_position = (who.subunit_position_list[row][column][0] / 10,
                                                                who.subunit_position_list[row][column][1] / 10)  # position in unit sprite
                 found_count += 1
-            else:
-                who.subunit_object_array[row][column] = None
     # ^ End generate subunit array
 
     for index, this_subunit in enumerate(who.subunit_list):  # reset leader subunit_pos

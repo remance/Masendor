@@ -13,7 +13,7 @@ def unit_ai(self):
         else:  # enemy dead stop chasing
             self.attack_target = None
             self.base_attack_pos = None
-            self.process_command(self.front_pos, other_command=1)
+            self.issue_order(self.front_pos, other_command=1)
 
     # Skirmishing logic where unit automatically move away from the closest enemy using its minimum attack range
     if self.hold == 1 and self.state not in (97, 98, 99):
@@ -34,4 +34,4 @@ def unit_ai(self):
             elif base_target[1] > 999:
                 base_target[1] = 999
 
-            self.process_command(base_target, True, True)  # set base_target position to run away
+            self.issue_order(base_target, True, True)  # set base_target position to run away

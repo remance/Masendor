@@ -56,9 +56,10 @@ for entry in os.scandir(script_dir + "/common/game/setup/"):  # load and replace
 
 version_name = "Dream Decision"  # Game version name that will appear as game name
 
-unit_state_text = {0: "Idle", 1: "Walking", 2: "Running", 3: "Walk (M)", 4: "Run (M)", 5: "Walk (R)", 6: "Run (R)",
-                   7: "Walk (F)", 8: "Run (F)", 10: "Fighting", 11: "shooting", 65: "Sleeping", 66: "Camping", 67: "Resting", 68: "Dancing",
-                   69: "Partying", 95: "Disobey", 96: "Retreating", 97: "Collapse", 98: "Retreating", 99: "Broken", 100: "Destroyed"}
+unit_state_text = {0: "Idle", 1: "Walk", 2: "Run", 3: "Walk (M)", 4: "Run (M)", 5: "Walk (R)", 6: "Run (R)",
+                   7: "Walk (F)", 8: "Run (F)", 10: "Melee", 11: "Shoot", 12: "Walk (S)", 13: "Run (S)",
+                   65: "Sleep", 66: "Camp", 67: "Rest", 68: "Dance", 69: "Party", 95: "Disobey", 96: "Retreat",
+                   97: "Collapse", 98: "Retreat", 99: "Broken", 100: "Destroyed"}
 
 subunit_state_text = {0: "Idle", 1: "Walk", 2: "Run", 3: "Walk (M)", 4: "Run (M)", 5: "Walk (R)", 6: "Run (R)", 10: "Melee", 11: "Shoot",
                       12: "Walk (S)", 13: "Run (S)", 95: "Disobey", 96: "Flee", 97: "Rest", 98: "Flee", 99: "Broken", 100: "Dead"}

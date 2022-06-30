@@ -42,10 +42,10 @@ class Unit(pygame.sprite.Sprite):
     change_pos_scale = empty_method
     check_split = empty_method
     destroyed = empty_method
+    issue_order = empty_method
     morale_check_logic = empty_method
     movement_logic = empty_method
     player_input = empty_method
-    process_command = empty_method
     retreat = empty_method
     reposition_leader = empty_method
     revert_move = empty_method
@@ -54,6 +54,7 @@ class Unit(pygame.sprite.Sprite):
     setup_stat = empty_method
     split_unit = empty_method
     state_reset_logic = empty_method
+    swap_weapon_command = empty_method
     switch_faction = empty_method
     transfer_leader = empty_method
     unit_ai = empty_method
@@ -80,7 +81,7 @@ class Unit(pygame.sprite.Sprite):
         self.team_commander = None  # commander leader
         self.start_where = []
         self.subunit_list = []
-        self.subunit_object_array = np.empty(self.unit_size, dtype=object)
+        self.subunit_object_array = np.full(self.unit_size, None)
         self.leader = []
         self.leader_subunit = None  # subunit that the main unit leader is in, get added in leader first update
         self.near_target = {}  # list dict of nearby enemy unit, sorted by distance
@@ -241,9 +242,9 @@ class Unit(pygame.sprite.Sprite):
         self.change_pos_scale()
 
         # create unit original formation positioning score
-        new_formation = np.where(self.subunit_object_array is None, 20,
+        new_formation = np.where(self.subunit_object_array == None, 99,  # Do not use is for where None, not work
                                  self.subunit_object_array)  # change empty to the least important
-        new_formation = np.where(self.subunit_object_array is not None, 1, new_formation)  # change all occupied to most important
+        new_formation = np.where(self.subunit_object_array != None, 1, new_formation)  # change all occupied to most important
         self.original_formation_score = {key: value * new_formation for key, value in self.battle.troop_data.unit_formation_list["Original"].items()}
 
         self.original_subunit_id_array = self.subunit_id_array.copy()
@@ -415,4 +416,4 @@ class Unit(pygame.sprite.Sprite):
             subunit.angle = self.angle
             subunit.rotate()
 
-        self.process_command(self.base_pos, double_mouse_right, self.revert, self.base_target, 1)
+        self.issue_order(self.base_pos, double_mouse_right, self.revert, self.base_target, 1)

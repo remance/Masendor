@@ -41,5 +41,5 @@ def rotate_logic(self, dt):
             self.set_subunit_target(target=self.base_target)
         else:
             self.state = 0  # idle state
-            self.process_command(self.base_target, other_command="Stop")
+            self.issue_order(self.base_target, other_command="Stop")
             self.rotate_only = False  # reset rotate only condition

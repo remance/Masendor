@@ -11,6 +11,6 @@ def movement_logic(self):
         if not_halt is False:
             self.retreat_start = False  # reset retreat
             self.revert = False  # reset revert order
-            self.process_command(self.base_target,
-                                 other_command="Stop")  # reset command base_target state will become 0 idle
+            self.issue_order(self.base_target,
+                             other_command="Stop")  # reset command base_target state will become 0 idle
 

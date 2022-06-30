@@ -31,6 +31,6 @@ def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, mouse_left_dow
                         self.forced_melee = True
                     if key_state[pygame.K_LALT] or key_state[pygame.K_RALT]:
                         self.attack_place = True
-                self.process_command(cursor_pos, double_mouse_right, self.revert, target)
+                self.issue_order(cursor_pos, double_mouse_right, self.revert, target)
         elif other_command != 0:
-            self.process_command(cursor_pos, double_mouse_right, self.revert, target, other_command)
+            self.issue_order(cursor_pos, double_mouse_right, self.revert, target, other_command)

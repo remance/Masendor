@@ -25,9 +25,9 @@ def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, mouse_left_dow
                 elif key_state[pygame.K_RIGHT]:
                     self.reposition_leader("right")
                 elif key_state[pygame.K_1]:  # Use troop weapon skill 1
-                    self.process_command(cursor_pos, other_command="Troop Weapon Skill 0")
+                    self.issue_order(cursor_pos, other_command="Troop Weapon Skill 0")
                 elif key_state[pygame.K_2]:  # Use troop weapon skill 2
-                    self.process_command(cursor_pos, other_command="Troop Weapon Skill 1")
+                    self.issue_order(cursor_pos, other_command="Troop Weapon Skill 1")
                 elif key_state[pygame.K_e]:  # Use leader weapon skill 1
                     self.leader_subunit.command_action = ("Leader Weapon Skill 0",)
                 elif key_state[pygame.K_r]:  # Use leader weapon skill 2
@@ -54,28 +54,28 @@ def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, mouse_left_dow
         if mouse_left_up:
             self.leader_subunit.command_action = ("Action 0", )
             if "Main" in self.leader_subunit.current_action and "Charge" in self.leader_subunit.current_action:
-                self.process_command(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
-                                     other_command="Action 0")
+                self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
+                                 other_command="Action 0")
 
         elif mouse_right_up:
             self.leader_subunit.command_action = ("Action 1", )
             if "Sub" in self.leader_subunit.current_action and "Charge" in self.leader_subunit.current_action:
-                self.process_command(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
-                                     other_command="Action 1")
+                self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
+                                 other_command="Action 1")
 
         elif new_pos != self.leader_subunit.base_pos:
             self.leader_subunit.command_target = new_pos
             self.leader_subunit.new_angle = self.leader_subunit.set_rotate(new_pos)
             if mouse_left_down and key_state[pygame.K_LSHIFT]:
-                self.process_command(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
-                                     other_command="Charge Skill 0")
+                self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
+                                 other_command="Charge Skill 0")
             elif mouse_right_down and key_state[pygame.K_LSHIFT]:
-                self.process_command(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
-                                     other_command="Charge Skill 1")
+                self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
+                                 other_command="Charge Skill 1")
             else:
-                self.process_command(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True)
+                self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True)
 
         elif self.rotate_only:
-            self.process_command(cursor_pos, run_command=key_state[pygame.K_LSHIFT])
+            self.issue_order(cursor_pos, run_command=key_state[pygame.K_LSHIFT])
         # else:  # no new movement register other command
 

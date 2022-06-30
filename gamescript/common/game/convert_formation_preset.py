@@ -33,9 +33,8 @@ def convert_formation_preset(self):
             outer_score[item[0]][item[1]] = outer_score[item[0]][item[1]] * (score + 2)
         for score, item in enumerate(inner_order_to_place):
             inner_score[item[0]][item[1]] = inner_score[item[0]][item[1]] * (score + 2)
-        self.troop_data.unit_formation_list[key] = {"front": front_score, "rear": rear_score,
-                                                    "flank": flank_score, "outer": outer_score, "inner": inner_score}
-        self.troop_data.unit_formation_list[key] = {"center-front": front_score, "center-rear": rear_score,
+        self.troop_data.unit_formation_list[key] = {"original": new_value,
+                                                    "center-front": front_score, "center-rear": rear_score,
                                                     "flank-front": flank_score + front_score,
                                                     "flank-rear": flank_score + rear_score,
                                                     "inner-front": inner_score + front_score,
@@ -64,12 +63,15 @@ def calculate_formation_priority(self):
         rear_order_to_place[1].append(center[1] + (occurrence + 1))
     rear_order_to_place = [(item1, item2) for item1 in rear_order_to_place[0] for item2 in rear_order_to_place[1]]
 
-    flank_order_to_place = [list(range(0, self.unit_size[0])), list(range(0, self.unit_size[1]))]
-    flank_order_to_place = min_max_order(flank_order_to_place, how="column")
+    flank_order_to_place = [list(range(0, self.unit_size[0])), [center[1]]]
+    for occurrence, _ in enumerate(range(center[1] + 1, self.unit_size[1])):
+        flank_order_to_place[1].append(center[1] - (occurrence + 1))
+        flank_order_to_place[1].append(center[1] + (occurrence + 1))
     flank_order_to_place = [(item1, item2) for item2 in flank_order_to_place[1] for item1 in flank_order_to_place[0]]
 
     outer_order_to_place = [list(range(0, self.unit_size[0])), list(range(0, self.unit_size[1]))]
-    outer_order_to_place = min_max_order(outer_order_to_place, how="both")
+    outer_order_to_place = min_max_order(outer_order_to_place, 0)
+    outer_order_to_place = min_max_order(outer_order_to_place, 1)
     outer_order_to_place = [(item1, item2) for item2 in outer_order_to_place[1] for item1 in outer_order_to_place[0]]
 
     inner_order_to_place = [[center[0]], [center[1]]]
@@ -79,8 +81,6 @@ def calculate_formation_priority(self):
     for occurrence, _ in enumerate(range(center[1] + 1, self.unit_size[1])):
         inner_order_to_place[1].append(center[1] - (occurrence + 1))
         inner_order_to_place[1].append(center[1] + (occurrence + 1))
-
-    # inner_order_to_place = [inner_order_to_place]
 
     inner_order_to_place = [pygame.Vector2(item1, item2) for item1 in inner_order_to_place[0] for item2 in inner_order_to_place[1]]
     order_to_place = {index: value.distance_to(pygame.Vector2(center)) for index, value in enumerate(inner_order_to_place)}  # calculate distance to center using pygame vector2 distance
@@ -92,16 +92,15 @@ def calculate_formation_priority(self):
 
 
 def min_max_order(order_list, how):
-    if how == "row" or how == "both":
-        run = 0
-        for index, item in enumerate(list(reversed(order_list[0]))):
-            order_list[0].insert(index + 1 + run, item)
-            run += 1
-        order_list[0] = order_list[0][:int(len(order_list[0]) / 2)]
-    if how == "column" or how == "both":
-        run = 0
-        for index, item in enumerate(list(reversed(order_list[1]))):
-            order_list[1].insert(index + 1 + run, item)
-            run += 1
-        order_list[1] = order_list[1][:int(len(order_list[1]) / 2)]
+    """
+
+    :param order_list: List to insert order number
+    :param how: 0 for row, 1 for column
+    :return:
+    """
+    run = 0
+    for index, item in enumerate(list(reversed(order_list[how]))):
+        order_list[how].insert(index + 1 + run, item)
+        run += 1
+    order_list[how] = order_list[how][:int(len(order_list[how]) / 2)]
     return order_list
