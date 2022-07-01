@@ -1221,8 +1221,8 @@ class Model:
                             self.animation_part_list[current_frame][part_index][4] = 0
 
                         elif "delete" in edit_type:
-                            self.bodypart_list[current_frame][part_index] = [0, 0, 0]
-                            self.part_name_list[current_frame][part_index] = ["", "", ""]
+                            self.bodypart_list[current_frame][part_index] = None
+                            self.part_name_list[current_frame][part_index] = None
                             self.animation_part_list[current_frame][part_index] = None
 
                         elif "layer_" in edit_type:
@@ -2177,9 +2177,10 @@ while True:
                                 for index, helper in enumerate(helper_list):
                                     if helper != helper_click:
                                         helper.select_part(None, False, True)
-                            if helper_click.part_selected:
-                                for part in helper_click.part_selected:
-                                    model.click_part(mouse_pos, True, False, part)
+                            for index, helper in enumerate(helper_list):
+                                if helper.part_selected:
+                                    for part in helper.part_selected:
+                                        model.click_part(mouse_pos, True, False, part)
 
                 if copy_press:
                     copy_part_frame = {key: (value[:].copy() if type(value) == list else value) for key, value in

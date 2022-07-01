@@ -21,7 +21,7 @@
 "Sling","1hand","Swing","cancelable,repeat,timing_2_1"
 "Blowgun","1hand","Shoot","cancelable"
 "Javelin","1pole","Throw","cancelable,hold,timing_2_2"
-"Throwing Axe","1hand","Throw","cancelable,hold,timing_2_2"
+"Throwing Axe","1hand","Throw","cancelable,hold,timing_2_2,bullet_rotate"
 "Longbow","2hand","Draw","cancelable,hold,timing_2_2"
 "Shortbow","2hand","Draw","cancelable,hold,timing_2_3"
 "Greatbow","2hand","Draw","cancelable,hold,timing_2_1"
@@ -29,7 +29,7 @@
 "Heavy Crossbow","2pole","Shoot","cancelable,hold"
 "Repeater Crossbow","2pole","Shoot","cancelable,hold"
 "Arbalest","2pole","Shoot","cancelable,hold"
-"Stone","1hand","Shoot","cancelable,hold,timing_2_2"
+"Stone","1hand","Throw","cancelable,hold,timing_2_2"
 "Composite Bow","1hand","Shoot","cancelable,hold,timing_2_3"
 "Matchlock Musket","2pole","Shoot","cancelable,hold"
 "Arquebus","2pole","Shoot","cancelable,hold"
@@ -52,3 +52,18 @@
 "Egyptian Shield","shield","Bash","hold,block"
 "Long Egyptian Shield","shield","Bash","hold,block"
 "Tribal Shield","shield","Bash","hold,block"
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+"Throwing Knife","1hand","Throw","cancelable,hold,timing_2_2,bullet_rotate"
