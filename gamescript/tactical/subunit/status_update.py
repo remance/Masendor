@@ -260,7 +260,7 @@ def status_update(self, weather=None):
     if self.state in (0, 99):
         self.rotate_speed = self.speed
 
-    # v cooldown, active and effect timer function
+    # Cooldown, active and effect timer function
     self.skill_cooldown = {key: val - self.timer for key, val in self.skill_cooldown.items()}  # cooldown decrease overtime
     self.skill_cooldown = {key: val for key, val in self.skill_cooldown.items() if val > 0}  # remove cooldown if time reach 0
     for a, b in self.skill_effect.items():  # Can't use dict comprehension here since value include all other skill stat
@@ -269,4 +269,7 @@ def status_update(self, weather=None):
                          val["Duration"] > 0 and (len(val["Restriction"]) > 0 and self.state in val["Restriction"])}  # remove effect if time reach 0 or restriction state is not met
     for a, b in self.status_effect.items():
         b["Duration"] -= self.timer
-    self.status_effect = {key: val for key, val in self.status_effect.items() if val["Duration"] > 0}
+
+    # Remove status that reach 0 duration or status with conflict to the other status
+    self.status_effect = {key: val for key, val in self.status_effect.items() if val["Duration"] > 0 or
+                          any(ext in self.status_effect for ext in val["Status Conflict"]) is False}

@@ -318,7 +318,7 @@
 317,"Swift Swimmer",,,,,,0,,,,,,,,,,,,,,,0,0,0,0,0,0,0,0,,,0,,,,,0,
 318,"Landlubber",,,,,,0,,,,,,,,,,,,,,,0,0,0,0,0,0,0,0,,,0,,,,,0,
 319,"Immortal",1,,,,,,,,,,,,"inf",,,,,,,,,,,,,,,,,,,,,,,,"These troops are immortal and cannot be killed by any means. Not even magic can harm them."
-320,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+320,"Gunpowder Weapon",1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,0,"These troops carry a weapon that requires gunpowder to operate. The wet or water-related status will reduce the weapon's performance."
 321,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 322,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 323,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

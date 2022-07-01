@@ -254,7 +254,7 @@ def status_update(self, weather=None):
     if self.state in (0, 99):
         self.rotate_speed = self.speed
 
-    # v cooldown, active and effect timer function
+    # Cooldown, active and effect timer function
     self.skill_cooldown = {key: val - self.timer for key, val in self.skill_cooldown.items()}  # cooldown decrease overtime
     self.skill_cooldown = {key: val for key, val in self.skill_cooldown.items() if val > 0}  # remove cooldown if time reach 0
     self.idle_action = ()
@@ -262,6 +262,7 @@ def status_update(self, weather=None):
         value["Duration"] -= self.timer
         if key != 0 and ("hold" in value["Action"] or "repeat" in value["Action"]):
             self.idle_action = self.command_action
+
     self.skill_effect = {key: val for key, val in self.skill_effect.items() if
                          val["Duration"] > 0 and len(val["Restriction"]) > 0 and self.state in val["Restriction"]}  # remove effect if time reach 0 or restriction state is not met
     for a, b in self.status_effect.items():

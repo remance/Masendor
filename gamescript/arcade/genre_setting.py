@@ -23,8 +23,6 @@ unit_behaviour_wheel = {"Main": {"Skill": "Skill", "Shift Line": "Shift Line", "
                                             },
                         "Formation Style": {"Infantry Inner": "Infantry Inner", "Cavalry Inner": "Cavalry Inner",
                                             "Infantry Flank": "Infantry Flank", "Cavalry Flank": "Cavalry Flank"},
-                        "Formation List": {"Square": "Square", "Line": "Line", "Circle": "Circle",
-                                           "Wedge": "Wedge", "Bar": "Bar"},
 
                         "Equipment": {"Equip Primary": "Equip Primary", "Equip Secondary": "Equip Secondary",
                                       "Troop Equip Primary": "Troop Equip Primary",

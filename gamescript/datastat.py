@@ -410,7 +410,7 @@ class LeaderData:
             header = rd[0]
             int_column = ("ID", "Race", "Melee Command", "Range Command", "Cavalry Command", "Combat", "Social Class",
                           "Forcedimageid", "Faction")  # value int only
-            list_column = ("Skill", "Trait")
+            list_column = ("Skill", "Trait", "Formation")
             tuple_column = ("Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon",
                             "Secondary Sub Weapon", "Armour", "Mount")
             int_column = [index for index, item in enumerate(header) if item in int_column]

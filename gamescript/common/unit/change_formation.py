@@ -22,9 +22,12 @@ def change_formation(self, formation=None, phase=None, style=None):
             self.formation_style = style
 
         if self.formation == "Original":  # original formation but change placement
-            new_formation = self.original_formation_score.copy()
+            new_formation = self.original_formation.copy()
         else:
             new_formation = self.unit_formation_list[self.formation].copy()
+            if self.formation == "Cluster":
+                new_formation = {key: value * np.random.randint(10, size=self.unit_size) for key, value in
+                                 new_formation.items()}  # make cluster formation
 
         self.subunit_id_array = np.zeros(self.unit_size, dtype=int)  # change all to empty
         first_placement = np.zeros(self.unit_size, dtype=int)  # for placement before consider style and phase

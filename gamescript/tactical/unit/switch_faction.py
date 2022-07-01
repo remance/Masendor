@@ -1,7 +1,7 @@
 def switch_faction(self, old_group, new_group, old_pos_list, enactment):
     """Change army group and game_id when change side"""
     self.colour = (144, 167, 255)  # team1 colour
-    self.control = True  # TODO need to change later when player can choose team
+    self.player_control = True  # TODO need to change later when player can choose team
 
     if self.team == 2:
         self.team = 1  # change to team 1
@@ -9,7 +9,7 @@ def switch_faction(self, old_group, new_group, old_pos_list, enactment):
         self.team = 2  # change to team 2
         self.colour = (255, 114, 114)  # team2 colour
         if enactment is False:
-            self.control = False
+            self.player_control = False
 
     old_group.remove(self)  # remove from old team group
     new_group.append(self)  # add to new team group

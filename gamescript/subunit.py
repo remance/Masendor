@@ -119,6 +119,7 @@ class Subunit(pygame.sprite.Sprite):
         self.melee_target = None  # current target of melee combat
         self.close_target = None  # closet target to move to in melee
         self.attacking = False  # for checking if unit in attacking state or not for using charge skill
+        self.control = True  # subunit will obey command input
 
         self.animation_pool = {}  # list of animation sprite this subunit can play with its action
         self.current_animation = {}  # list of animation frames playing
@@ -245,6 +246,8 @@ class Subunit(pygame.sprite.Sprite):
         self.primary_sub_weapon = stat["Primary Sub Weapon"]
         self.secondary_main_weapon = stat["Secondary Main Weapon"]
         self.secondary_sub_weapon = stat["Secondary Sub Weapon"]
+        self.melee_weapon_set = []
+        self.range_weapon_set = []
 
         self.weapon_name = ((self.weapon_data.weapon_list[self.primary_main_weapon[0]]["Name"],
                              self.weapon_data.weapon_list[self.primary_sub_weapon[0]]["Name"]),

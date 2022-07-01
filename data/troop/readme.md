@@ -60,6 +60,8 @@ troop_race: Not yet implemented
 
 
 troop_status: list of all sub-units' status effects. The data structure of status is as follows;
+- Special Effect list, see troop_special_status
+- Status Conflict list that will remove the status effect if there is also any status in the list active  
 
 
 troop_type: list of all sub-units' types. Does not really affect anything yet beside just clarification.
@@ -73,9 +75,9 @@ troop_weapon: list of all sub-units' weapons including artillery weapons. The da
 
 - Weight of the weapon that will affect speed of the sub-unit (0 to 100)
 
-- Skill list that will be applied to the sub-unit
+- Skill list that will be applied to the sub-unit, see troop_skill.csv
 
-- Trait list that will be applied to the sub-unit
+- Trait list that will be applied to the sub-unit, see troop_trait.csv
 
 - Speed is attack speed for melee weapon, how many times troop deal damage per attack. Reload time for range weapon, how long it take to reload in second at speed 1x
 

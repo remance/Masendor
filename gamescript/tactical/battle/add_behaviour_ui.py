@@ -1,6 +1,6 @@
 
 def add_behaviour_ui(self, who_input, else_check=False):
-    if who_input.control:
+    if who_input.player_control:
         # self.battle_ui.add(self.button_ui[7])  # add decimation button
         self.battle_ui_updater.add(*self.behaviour_switch_button[0:7])  # add unit behaviour change button
         self.behaviour_switch_button[0].event = who_input.skill_cond

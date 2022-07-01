@@ -93,10 +93,11 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                     make_animation = True
                                     animation_type = "normal"
                                     name_input = animation
-                                    if any(ext in animation for ext in weapon_common_type_list):
+                                    if any(ext in animation for ext in weapon_common_type_list) or "_Skill_" in animation:  # weapon or skill action animation
                                         animation_type = "weapon"
                                         name_input = animation + "/" + str(weapon_set_index)
-                                    if animation_type == "normal":
+
+                                    if animation_type == "normal":  # other animation that does not use weapon
                                         if name_input not in animation_sprite_pool[subunit_id]:
                                             animation_sprite_pool[subunit_id][name_input] = {}
                                         else:

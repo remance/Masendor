@@ -116,7 +116,7 @@ def split_unit(self, how):
     new_game_id = self.battle.all_team_unit["alive"][-1].game_id + 1
 
     new_unit = unit.Unit(start_pos=new_pos, gameid=new_game_id, squadlist=new_army_subunit, colour=self.colour,
-                         control=self.control, coa=self.coa_list, commander=False, startangle=self.angle, team=self.team)
+                         player_control=self.player_control, coa=self.coa_list, commander=False, startangle=self.angle, team=self.team)
 
     self.battle.all_team_unit[self.team].add(new_unit)
     new_unit.team_commander = team_commander

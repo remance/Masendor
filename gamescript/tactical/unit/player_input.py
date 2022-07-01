@@ -4,7 +4,7 @@ import pygame
 def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, mouse_left_down, mouse_right_down,
                  double_mouse_right, target, key_state, other_command=None, *args):
     """other_command is special type of command such as stop all action, raise flag, decimation, duel and so on"""
-    if self.control and self.state not in (95, 97, 98, 99, 100):
+    if self.player_control and self.state not in (95, 97, 98, 99, 100):
         self.revert = False
         self.retreat_start = False  # reset retreat
         self.rotate_only = False

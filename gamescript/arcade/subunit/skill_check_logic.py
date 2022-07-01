@@ -18,12 +18,13 @@ def skill_check_logic(self):
                             skill = self.troop_skill[skill]
                             action = self.skill[skill]["Action"].copy() + [skill]
                             if "Action" in action[0]:
-                                action[0] += " " + str(0)  # use main hand by default for Action type animation skill
+                                action[0] += " 0"  # use main hand by default for Action type animation skill
+
                         elif ("Leader" in command_action and self.unit_leader) and len(self.leader.skill) > skill:
                             skill = self.leader.leader_skill[skill]
                             action = self.leader.skill[skill]["Action"].copy() + [skill]
                             if "Action" in action[0]:
-                                action[0] += " " + str(0)  # use main hand by default for Action type animation skill
+                                action[0] += " 0"  # use main hand by default for Action type animation skill
 
                     if skill != 0 and skill in self.available_skill:
                         self.skill_effect = {}  # arcade mode allows only 1 skill active at a time

@@ -4,9 +4,9 @@ def swap_weapon(self):
     self.base_range_def = self.original_range_def
     self.trait = self.original_trait
     self.skill = self.original_skill
-    for weapon_index, weapon in enumerate(((self.primary_main_weapon, self.primary_sub_weapon),
-                                           (self.secondary_main_weapon, self.secondary_sub_weapon))[self.equipped_weapon]):
-        print(self.name, weapon)
+    current_set = ((self.primary_main_weapon, self.primary_sub_weapon),
+                   (self.secondary_main_weapon, self.secondary_sub_weapon))[self.equipped_weapon]
+    for weapon_index, weapon in enumerate(current_set):
         self.base_melee_def += self.weapon_data.weapon_list[weapon[0]]["Defense"]
         self.base_range_def += self.weapon_data.weapon_list[weapon[0]]["Defense"]
         self.skill += self.weapon_data.weapon_list[weapon[0]]["Skill"]

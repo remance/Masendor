@@ -28,6 +28,7 @@ class Leader(pygame.sprite.Sprite):
         self.cav_command = stat["Cavalry Command"]
         self.combat = stat["Combat"]
         self.social = leader_data.leader_class[stat["Social Class"]]
+        self.formation = ["Cluster"] + stat["Formation"]
         self.description = stat["Description"]
 
         self.subunit_pos = int(subunit_position)  # Squad position is the index of subunit in subunit sprite loop

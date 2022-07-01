@@ -13,8 +13,11 @@ from gamescript import menu
 
 def empty_method(self, *args):
     if hasattr(self, 'error_log'):
-        self.error_log.write("{0} -- {1}\n".format(datetime.now().strftime("%Y-%m-%d %H:%M"), "Empty method is called"),
-                             inspect.stack()[1][1], "At Line", inspect.stack()[1][2], ":", inspect.stack()[1][3])
+        error_text = "{0} -- {1}\n".format(datetime.now().strftime("%Y-%m-%d %H:%M"), "Empty method is called") + \
+                     str(inspect.stack()[1][1]) + "At Line" + str(inspect.stack()[1][2]) + ":" + \
+                     str(inspect.stack()[1][3])
+        # print(error_text)
+        self.error_log.write(error_text)
 
 
 def change_group(item, group, change):

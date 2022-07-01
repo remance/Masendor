@@ -72,7 +72,7 @@ class Unit(pygame.sprite.Sprite):
     # Variable from troop_data that got added during change_ruleset function
     unit_formation_list = {}
 
-    def __init__(self, game_id, start_pos, subunit_list, colour, control, coa, commander, start_angle,
+    def __init__(self, game_id, start_pos, subunit_list, colour, player_control, coa, commander, start_angle,
                  start_hp=100, start_stamina=100, team=0):
         """Unit object represent a group of subunits, each unit can contain a specific number of subunits
         depending on the genre setting"""
@@ -86,7 +86,7 @@ class Unit(pygame.sprite.Sprite):
         self.leader_subunit = None  # subunit that the main unit leader is in, get added in leader first update
         self.near_target = {}  # list dict of nearby enemy unit, sorted by distance
         self.game_id = game_id  # id of unit for reference in many function
-        self.control = control  # player control or not
+        self.player_control = player_control  # player control or not
         self.start_hp = start_hp  # starting hp percentage
         self.start_stamina = start_stamina  # starting stamina percentage
         self.subunit_id_array = subunit_list  # troop id array, will be converted to subunit game id array when creating subunit in generate_unit, must not contain empty row or column unlike subunit_object_array
@@ -245,7 +245,7 @@ class Unit(pygame.sprite.Sprite):
         new_formation = np.where(self.subunit_object_array == None, 99,  # Do not use is for where None, not work
                                  self.subunit_object_array)  # change empty to the least important
         new_formation = np.where(self.subunit_object_array != None, 1, new_formation)  # change all occupied to most important
-        self.original_formation_score = {key: value * new_formation for key, value in self.battle.troop_data.unit_formation_list["Original"].items()}
+        self.original_formation = {key: value * new_formation for key, value in self.battle.troop_data.unit_formation_list["Original"].items()}
 
         self.original_subunit_id_array = self.subunit_id_array.copy()
 

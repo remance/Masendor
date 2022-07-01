@@ -42,6 +42,7 @@ def convert_formation_preset(self):
                                                     "outer-front": outer_score + front_score,
                                                     "outer-rear": outer_score + rear_score}
 
+
 def calculate_formation_priority(self):
     """
     Calculate priority of front and rear formation priority score

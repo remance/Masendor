@@ -85,7 +85,7 @@ def battle_mouse_process(self, mouse_left_up, mouse_right_up, double_mouse_right
             if (mouse_left_up or mouse_right_up) and self.command_ui.rect.collidepoint(self.mouse_pos):
                 self.click_any = True
             # and ( or key_press is not None)
-            if self.current_selected.control and mouse_left_up:
+            if self.current_selected.player_control and mouse_left_up:
                 if self.behaviour_switch_button[0].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_g:
                     if mouse_left_up or key_press == pygame.K_g:  # rotate skill condition when clicked
                         self.current_selected.skill_cond += 1
