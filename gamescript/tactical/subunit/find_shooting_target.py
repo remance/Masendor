@@ -2,7 +2,7 @@ def find_shooting_target(self, unit_state):
     """Get nearby enemy target from near_target list if not targeting anything yet"""
     self.attack_target = list(self.unit.near_target.keys())[0]  # replace attack_target with enemy unit object
     self.attack_pos = self.attack_target.base_pos  # replace attack_pos with enemy unit pos
-    if self.shoot_range >= self.attack_pos.distance_to(self.base_pos):
+    if self.shoot_range[0] >= self.attack_pos.distance_to(self.base_pos):
         self.state = 11
         if unit_state in (1, 3, 5):  # Walk and shoot
             self.state = 12

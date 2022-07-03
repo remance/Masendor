@@ -26,7 +26,7 @@ def setup_stat(self, battle_start=False):
             self.morale += subunit.morale
             all_speed.append(subunit.speed)
             for key in (0, 1):
-                for magazine in subunit.magazine_left[key]:
+                for magazine in subunit.magazine_count[key]:
                     self.ammo += magazine
                 for shoot_range in subunit.shoot_range[key].values():
                     if shoot_range > 0:

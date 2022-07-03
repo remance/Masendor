@@ -10,8 +10,8 @@ make_sprite = make_sprite.make_sprite
 def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, who_todo, preview=False):
     # TODO maybe add body pos and size for check collide?
     animation_sprite_pool = {}  # TODO need to add for subunit creator
-    weapon_common_type_list = list(set(["_" + value["Common"] + "_" for value in self.generic_action_data.values()]))  # list of all common type animation set
-    weapon_attack_type_list = list(set(["_" + value["Attack"] + "_" for value in self.generic_action_data.values()]))  # list of all attack set
+    weapon_common_type_list = list(set(["_" + value["Common"] + "_" for key, value in self.generic_action_data.items() if key != ""]))  # list of all common type animation set
+    weapon_attack_type_list = list(set(["_" + value["Attack"] + "_" for key, value in self.generic_action_data.items() if key != ""]))  # list of all attack set
     for subunit_id, this_subunit in who_todo.items():
         try:
             if subunit_id not in animation_sprite_pool and subunit_id not in (0, "h1"):  # skip None troop

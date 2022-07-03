@@ -5,6 +5,7 @@ import pygame
 from gamescript import weather, battleui, lorebook, menu, uniteditor, datastat, popup, battlemap
 from gamescript.common import utility, animation
 
+stat_convert = utility.stat_convert
 load_image = utility.load_image
 load_images = utility.load_images
 csv_read = utility.csv_read
@@ -63,7 +64,21 @@ class BattleMapData:
         battlemap.BeautifulMap.load_texture_list = texture_folder
         battlemap.BeautifulMap.empty_texture = empty_image
 
-        self.weather_data = csv_read(main_dir, "weather.csv", ["data", "map", "weather"], header_key=True)
+        self.weather_data = {}
+        with open(os.path.join(main_dir, "data","map", "weather", "weather.csv"),
+                  encoding="utf-8", mode="r") as edit_file:
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+            rd = [row for row in rd]
+            header = rd[0]
+            int_column = ("ID", )  # value int only
+            tuple_column = ("Element", "Status", "Spell", "Ruleset")
+            int_column = [index for index, item in enumerate(header) if item in int_column]
+            tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
+            for row in rd[1:]:  # skip convert header row
+                for n, i in enumerate(row):
+                    row = stat_convert(row, n, i, tuple_column=tuple_column, int_column=int_column)
+                self.weather_data[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
+        edit_file.close()
         weather_list = [item["Name"] for item in self.weather_data.values()]
         strength_list = ["Light ", "Normal ", "Strong "]
         self.weather_list = []

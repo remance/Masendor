@@ -177,11 +177,11 @@ class TroopCard(pygame.sprite.Sprite):
         self.value = [who.name, "{:,}".format(int(who.troop_number)) + " (" + "{:,}".format(int(who.max_troop)) + ")",
                       str(who.stamina).split(".")[0] + ", " + str(self.subunit_state_text[who.state]), str(who.morale).split(".")[0],
                       str(who.discipline).split(".")[0], str(who.melee_attack).split(".")[0], str(who.melee_def).split(".")[0],
-                      str(who.range_def).split(".")[0], str(who.armour).split(".")[0], str(who.speed).split(".")[0],
-                      str(who.accuracy).split(".")[0], str(who.shoot_range).split(".")[0], str(who.magazine_left),
-                      str(who.reload_time).split(".")[0] + "/" + str(who.reload).split(".")[0] + ": " + str(who.ammo_now),
+                      str(who.range_def).split(".")[0], str(who.speed).split(".")[0], str(who.accuracy).split(".")[0],
+                      str(who.shoot_range[0]).split(".")[0], str(who.magazine_count[who.equipped_weapon][0]),
+                      str(who.weapon_cooldown[1]).split(".")[0] + "/" + str(who.reload).split(".")[0] + ": " + str(who.ammo_now[0]),
                       str(who.charge).split(".")[0], str(who.charge_def).split(".")[0], str(who.mental_text).split(".")[0],
-                      str(who.temp_count).split(".")[0]]
+                      str(who.temperature_count).split(".")[0]]
         self.value2 = [who.trait, who.skill, who.skill_cooldown, who.skill_effect, who.status_effect]
         self.description = who.description
         if type(self.description) == list:
@@ -231,14 +231,14 @@ class TroopCard(pygame.sprite.Sprite):
                         weapon_data.weapon_list[who.secondary_main_weapon[0]]["Name"]) + " / " +
                     self.quality_text[who.secondary_sub_weapon[1]] + " " + str(weapon_data.weapon_list[who.secondary_sub_weapon[0]]["Name"])]
 
-                text_value += ["Melee Damage: " + str(who.melee_dmg).split(".")[0] + ", Speed" + str(who.weapon_speed).split(".")[0] +
-                               ", Penetrate: " + str(who.melee_penetrate).split(".")[0]]
-                text_value += ["Range Damage: " + str(who.range_dmg).split(".")[0] + ", Speed" + str(who.reload).split(".")[0] +
-                               ", Penetrate: " + str(who.range_penetrate).split(".")[0]]
+                text_value += ["Melee Damage: " + str(who.weapon_dmg[0]["Physical"]).split(".")[0] + ", Speed" + str(who.original_weapon_speed[0][0]).split(".")[0] +
+                               ", Penetrate: " + str(who.weapon_penetrate[0][0]).split(".")[0]]
+                text_value += ["Range Damage: " + str(who.weapon_dmg[1]["Physical"]).split(".")[0] + ", Speed" + str(who.original_weapon_speed[0][1]).split(".")[0] +
+                               ", Penetrate: " + str(who.weapon_penetrate[0][1]).split(".")[0]]
 
-                text_value += [str(armour_data.armour_list[who.armour_gear[0]]["Name"]) + ": A: " + str(who.armour).split(".")[0] + ", W: " +
+                text_value += [str(armour_data.armour_list[who.armour_gear[0]]["Name"]) + ", W: " +
                                str(armour_data.armour_list[who.armour_gear[0]]["Weight"]), "Total Weight:" + str(who.weight), "Terrain:" + terrain,
-                               "Height:" + str(who.height), "Temperature:" + str(who.temp_count).split(".")[0]]
+                               "Height:" + str(who.height), "Temperature:" + str(who.temperature_count).split(".")[0]]
 
                 if "None" not in who.mount:  # if mount is not the None mount id 1
                     armour_text = "//" + who.mount_armour["Name"]

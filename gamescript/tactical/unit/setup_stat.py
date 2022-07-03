@@ -24,9 +24,9 @@ def setup_stat(self, battle_start=False):
             self.stamina += subunit.stamina
             self.morale += subunit.morale
             all_speed.append(subunit.speed)
-            self.ammo += subunit.magazine_left
-            if subunit.shoot_range > 0:
-                all_shoot_range.append(subunit.shoot_range)
+            if subunit.magazine_count[0][0] > 0:
+                self.ammo += subunit.magazine_count[0][0]
+                all_shoot_range.append(subunit.shoot_range[0])
             subunit.skill_cond = self.skill_cond
             how_many += 1
             if subunit.state != 99:  # check if unit completely broken

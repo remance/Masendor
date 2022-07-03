@@ -4,13 +4,17 @@ infinity = float("inf")
 
 
 def status_update(self, weather=None):
-    """calculate stat from stamina, morale state, skill, status, terrain"""
+    """Calculate stat from stamina, morale state, skill, status, terrain"""
 
     if self.red_border and self.unit.selected:  # have red border (taking melee_dmg) on inspect ui, reset image
         self.block.blit(self.block_original, self.corner_image_rect)
         self.red_border = False
 
-    # v reset stat to default and apply morale, stamina, command buff to stat
+    for effect in self.special_status:  # reset temporary special effect
+        self.special_status[effect][1] = True
+
+    self.fatigue()
+
     self.morale = self.base_morale
     self.authority = self.unit.authority  # unit total authority
     self.discipline = self.base_discipline
@@ -22,40 +26,34 @@ def status_update(self, weather=None):
     self.charge_def = self.base_charge_def
     self.speed = self.base_speed
     self.charge = self.base_charge
-    self.shoot_range = self.base_range
+    self.shoot_range = self.base_range[self.equipped_weapon].copy()
+    self.weapon_speed = self.original_weapon_speed[self.equipped_weapon].copy()
+    self.weapon_dmg = self.original_weapon_dmg[self.equipped_weapon].copy()
 
-    self.crit_effect = 1  # default critical effect
-    self.front_dmg_effect = 1  # default frontal melee_dmg
-    self.side_dmg_effect = 1  # default side melee_dmg
+    self.crit_effect = 1  # Default critical effect
 
-    self.corner_atk = False  # cannot melee_attack corner enemy by default
-    self.temp_full_def = False
+    self.corner_atk = False  # Cannot melee_attack corner enemy by default
 
     self.auth_penalty = self.base_auth_penalty
     self.hp_regen = self.base_hp_regen
     self.stamina_regen = self.base_stamina_regen
     self.inflict_status = self.base_inflict_status
-    self.elem_melee = self.base_elem_melee
-    self.elem_range = self.base_elem_range
-    # ^ End default stat
 
-    # v Apply status effect from trait
+    # Apply status effect from trait
     if len(self.trait) > 1:
         for trait in self.trait.values():
-            if 0 not in trait["Status"]:  # 0 value means no trait or not use
+            if 0 not in trait["Status"]:
                 for effect in trait["Status"]:  # apply status effect from trait
                     self.status_effect[effect] = self.status_list[effect].copy()
                     if trait["Buff Range"] > 1:  # status buff range to nearby friend
                         self.apply_status_to_friend(trait[1], effect, self.status_list[effect].copy())
-    # ^ End trait
 
-    # v apply effect from weather"""
+    # Apply effect from weather
     weather_temperature = 0
     if weather is not None:
         self.melee_attack += weather.melee_atk_buff
         self.melee_def += weather.melee_def_buff
         self.range_def += weather.range_def_buff
-        # self.armour += weather.armour_buff
         self.speed += weather.speed_buff
         self.accuracy += weather.accuracy_buff
         for shoot_range in self.shoot_range:
@@ -67,10 +65,9 @@ def status_update(self, weather=None):
         self.stamina_regen += weather.stamina_regen_buff
         self.morale += (weather.morale_buff * self.mental)
         self.discipline += weather.discipline_buff
-        if weather.elem[0] != 0:  # Weather can cause elemental effect such as wet
-            self.elem_count[weather.elem[0]] += (weather.elem[1] * (100 - self.elem_res[weather.elem[0]]) / 100)
+        for element in weather.element:  # Weather can cause elemental effect such as wet
+            self.element_status_check[element[0]] += (element[1] * (100 - self.element_resistance[element[0]]) / 100)
         weather_temperature = weather.temperature
-    # ^ End weather
 
     # v Map feature modifier to stat
     map_feature_mod = self.feature_map.feature_mod[self.feature]
@@ -95,95 +92,88 @@ def status_update(self, weather=None):
     self.apply_map_status(map_feature_mod)
     # self.hidden += self.unit.feature_map[self.unit.feature][6]
     temp_reach = map_feature_mod["Temperature"] + weather_temperature  # temperature the subunit will change to based on current terrain feature and weather
-    # ^ End map feature
 
-    # v Apply effect from skill
-    # For list of status and skill effect column index used in status_update see script_other.py load_game_data()
+    # Apply effect from skill
     if len(self.skill_effect) > 0:
-        for status in self.skill_effect:  # apply elemental effect to melee_dmg if skill has element
-            cal_status = self.skill_effect[status]
-            if cal_status["Type"] == 0 and cal_status["Element"] != 0:  # melee elemental effect
-                self.elem_melee = cal_status["Element"]
-            elif cal_status["Type"] == 1 and cal_status["Element"] != 0:  # range elemental effect
-                self.elem_range = cal_status["Element"]
-            self.melee_attack = self.melee_attack * cal_status["Melee Attack Effect"]
-            self.melee_def = self.melee_def * cal_status["Melee Defence Effect"]
-            self.range_def = self.range_def * cal_status["Ranged Defence Effect"]
-            self.speed = self.speed * cal_status["Speed Effect"]
-            self.accuracy = self.accuracy * cal_status["Accuracy Effect"]
+        for effect in self.skill_effect:  # apply elemental effect to melee_dmg if skill has element
+            cal_effect = self.skill_effect[effect]
+            self.melee_attack *= cal_effect["Melee Attack Effect"]
+            self.melee_def *= cal_effect["Melee Defence Effect"]
+            self.range_def *= cal_effect["Ranged Defence Effect"]
+            self.speed *= cal_effect["Speed Effect"]
+            self.accuracy *= cal_effect["Accuracy Effect"]
             for shoot_range in self.shoot_range:
-                shoot_range *= cal_status["Range Effect"]
-            self.reload = self.reload / cal_status[
+                shoot_range *= cal_effect["Range Effect"]
+            self.reload /= cal_effect[
                 "Reload Effect"]  # different from other modifier the higher mod reduce reload time (decrease stat)
-            self.charge = self.charge * cal_status["Charge Effect"]
-            self.charge_def = self.charge_def + cal_status["Charge Defence Bonus"]
-            self.hp_regen += cal_status["HP Regeneration Bonus"]
-            self.stamina_regen += cal_status["Stamina Regeneration Bonus"]
-            self.morale = self.morale + (cal_status["Morale Bonus"] * self.mental)
-            self.discipline = self.discipline + cal_status["Discipline Bonus"]
+            self.charge *= cal_effect["Charge Effect"]
+            self.charge_def += cal_effect["Charge Defence Bonus"]
+            self.hp_regen += cal_effect["HP Regeneration Bonus"]
+            self.stamina_regen += cal_effect["Stamina Regeneration Bonus"]
+            self.morale += (cal_effect["Morale Bonus"] * self.mental)
+            self.discipline += cal_effect["Discipline Bonus"]
+
+            for weapon in self.weapon_dmg:
+                for element in self.weapon_dmg[weapon]:
+                    if element != "Physical":
+                        extra_dmg = cal_effect[element + " Damage Extra"]
+                        if extra_dmg != 0:
+                            self.weapon_dmg[weapon][element][0] += extra_dmg * self.weapon_dmg[weapon]["Physical"]
+                            self.weapon_dmg[weapon][element][1] += extra_dmg * self.weapon_dmg[weapon]["Physical"]
+                    else:
+                        self.weapon_dmg[weapon][element][0] *= cal_effect["Physical Damage Effect"]
+                        self.weapon_dmg[weapon][element][1] *= cal_effect["Physical Damage Effect"]
+
             # self.sight += cal_status["Sight Bonus"]
             # self.hidden += cal_status["Hidden Bonus"]
-            self.crit_effect = self.crit_effect * cal_status["Critical Effect"]
-            self.front_dmg_effect = self.front_dmg_effect * cal_status["Damage Effect"]
-            if cal_status["Area of Effect"] in (2, 3) and cal_status["Damage Effect"] != 100:
-                self.side_dmg_effect = self.side_dmg_effect * cal_status["Damage Effect"]
-                if cal_status["Area of Effect"] == 3:
+            self.crit_effect *= cal_effect["Critical Effect"]
+            if cal_effect["Area of Effect"] in (2, 3):
+                self.special_status["All Side Full Attack"][1] = True
+                if cal_effect["Area of Effect"] == 3:
                     self.corner_atk = True  # if aoe 3 mean it can melee_attack enemy on all side
 
-            # v Apply status to friendly if there is one in skill effect
-            if 0 not in cal_status["Status"]:
-                for effect in cal_status["Status"]:
+            if 0 not in cal_effect["Status"]:  # apply status to friendly if there is one in skill effect
+                for effect in cal_effect["Status"]:
                     self.status_effect[effect] = self.status_list[effect].copy()
                     if self.status_effect[effect][2] > 1:
                         self.apply_status_to_friend(self.status_effect[effect][2], effect, self.status_list)
-            # ^ End apply status to
 
-            self.bonus_morale_dmg += cal_status["Morale Damage"]
-            self.bonus_stamina_dmg += cal_status["Stamina Damage"]
-            if 0 not in cal_status["Enemy Status"]:  # Apply status effect to enemy from skill to inflict list
-                for effect in cal_status["Enemy Status"]:
+            self.bonus_morale_dmg += cal_effect["Morale Damage Bonus"]
+            self.bonus_stamina_dmg += cal_effect["Stamina Damage Bonus"]
+            if 0 not in cal_effect["Enemy Status"]:  # apply status effect to enemy from skill to inflict list
+                for effect in cal_effect["Enemy Status"]:
                     if effect != 0:
-                        self.inflict_status[effect] = cal_status["Area of Effect"]
+                        self.inflict_status[effect] = cal_effect["Area of Effect"]
         if 0 in self.skill_effect:
-            self.auth_penalty += 0.5  # higher authority penalty when attacking (retreat while charging)
-    # ^ End skill effect
+            self.auth_penalty += 0.5  # higher authority penalty when attacking (retreat while attacking)
 
-    # v Apply effect and modifier from status effect
-    # """special status: 0 no control, 1 hostile to all, 2 no retreat, 3 no terrain effect, 4 no melee_attack, 5 no skill, 6 no spell, 7 no exp gain,
-    # 7 immune to bad mind, 8 immune to bad body, 9 immune to all effect, 10 immortal""" Not implemented yet
+    # Apply effect and modifier from status effect
     if len(self.status_effect) > 0:
-        for status in self.status_effect:
-            cal_status = self.status_list[status]
-            self.melee_attack = self.melee_attack * cal_status["Melee Attack Effect"]
-            self.melee_def = self.melee_def * cal_status["Melee Defence Effect"]
-            self.range_def = self.range_def * cal_status["Ranged Defence Effect"]
-            self.armour = self.armour * cal_status["Armour Effect"]
-            self.speed = self.speed * cal_status["Speed Effect"]
-            self.accuracy = self.accuracy * cal_status["Accuracy Effect"]
-            self.reload = self.reload / cal_status["Reload Effect"]
-            self.charge = self.charge * cal_status["Charge Effect"]
-            self.charge_def += cal_status["Charge Defence Bonus"]
-            self.hp_regen += cal_status["HP Regeneration Bonus"]
-            self.stamina_regen += cal_status["Stamina Regeneration Bonus"]
-            self.morale = self.morale + (cal_status["Morale Bonus"] * self.mental)
-            self.discipline += cal_status["Discipline Bonus"]
+        for effect in self.status_effect:
+            cal_effect = self.status_list[effect]
+            self.melee_attack = self.melee_attack * cal_effect["Melee Attack Effect"]
+            self.melee_def = self.melee_def * cal_effect["Melee Defence Effect"]
+            self.range_def = self.range_def * cal_effect["Ranged Defence Effect"]
+            self.speed = self.speed * cal_effect["Speed Effect"]
+            self.accuracy = self.accuracy * cal_effect["Accuracy Effect"]
+            self.reload = self.reload / cal_effect["Reload Effect"]
+            self.charge = self.charge * cal_effect["Charge Effect"]
+            self.charge_def += cal_effect["Charge Defence Bonus"]
+            self.hp_regen += cal_effect["HP Regeneration Bonus"]
+            self.stamina_regen += cal_effect["Stamina Regeneration Bonus"]
+            self.morale = self.morale + (cal_effect["Morale Bonus"] * self.mental)
+            self.discipline += cal_effect["Discipline Bonus"]
             # self.sight += cal_status["Sight Bonus"]
             # self.hidden += cal_status["Hidden Bonus"]
-            temp_reach += cal_status["Temperature Change"]
-            if status == 91:  # All round defence status
-                self.temp_full_def = True
-    # ^ End status effect
+            temp_reach += cal_effect["Temperature Change"]
+            for element in self.element_resistance:  # Weather can cause elemental effect such as wet
+                self.element_resistance[element] += cal_effect[element + " Resistance Bonus"]
+            for effect in cal_effect["Special Effect"]:
+                self.special_status[effect][1] = True
 
     self.temperature_cal(temp_reach)  # calculate temperature and its effect
 
-    # v Elemental effect, Apply effect if elem threshold reach 50 or 100
-    self.elem_count[0] = self.element_threshold_count(self.elem_count[0], 28, 92)
-    self.elem_count[1] = self.element_threshold_count(self.elem_count[1], 31, 93)
-    self.elem_count[2] = self.element_threshold_count(self.elem_count[2], 30, 94)
-    self.elem_count[3] = self.element_threshold_count(self.elem_count[3], 23, 35)
-    self.elem_count[4] = self.element_threshold_count(self.elem_count[4], 26, 27)
-    self.elem_count = {key: value - self.timer if value > 0 else value for key, value in self.elem_count.items()}
-    # ^ End elemental effect
+    self.element_effect_count()  # elemental effect
 
     self.morale_state = self.morale / self.max_morale  # for using as modifier to stat
     if self.morale_state > 3 or math.isnan(self.morale_state):  # morale state more than 3 give no more benefit
@@ -214,12 +204,11 @@ def status_update(self, weather=None):
     if full_merge_len > 1:  # reduce discipline if there are overlap subunit
         self.discipline = self.discipline / full_merge_len
 
-    # v Rounding up, add discipline to stat and forbid negative int stat
+    # Rounding up, add discipline to stat and forbid negative int stat
     discipline_cal = self.discipline / 200
     self.melee_attack = self.melee_attack + (self.melee_attack * discipline_cal)
     self.melee_def = self.melee_def + (self.melee_def * discipline_cal)
     self.range_def = self.range_def + (self.range_def * discipline_cal)
-    # self.armour = self.armour
     self.speed = self.speed + (self.speed * discipline_cal / 2)
     # self.accuracy = self.accuracy
     # self.reload = self.reload
@@ -232,8 +221,6 @@ def status_update(self, weather=None):
         self.melee_def = 0
     if self.range_def < 0:
         self.range_def = 0
-    if self.armour < 1:  # Armour cannot be lower than 1
-        self.armour = 1
     if self.speed < 1:
         self.speed = 1
         if 105 in self.status_effect:  # collapse state enforce 0 speed
@@ -248,7 +235,8 @@ def status_update(self, weather=None):
         self.charge_def = 0
     if self.discipline < 0:
         self.discipline = 0
-    # ^ End rounding up
+
+    self.weapon_speed[1] += ((50 - self.base_reload) * self.weapon_speed[1] / 100)  # final reload speed
 
     self.rotate_speed = self.unit.rotate_speed * 2  # rotate speed for subunit only use for self rotate not subunit rotate related
     if self.state in (0, 99):
@@ -267,4 +255,7 @@ def status_update(self, weather=None):
                          val["Duration"] > 0 and len(val["Restriction"]) > 0 and self.state in val["Restriction"]}  # remove effect if time reach 0 or restriction state is not met
     for a, b in self.status_effect.items():
         b["Duration"] -= self.timer
-    self.status_effect = {key: val for key, val in self.status_effect.items() if val["Duration"] > 0}
+
+    # Remove status that reach 0 duration or status with conflict to the other status
+    self.status_effect = {key: val for key, val in self.status_effect.items() if val["Duration"] > 0 or
+                          any(ext in self.status_effect for ext in val["Status Conflict"]) is False}

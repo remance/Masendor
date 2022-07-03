@@ -86,13 +86,14 @@ def combat_logic(self, dt, combat_timer, parent_state):
             elif self.attack_target is None:
                 self.attack_target = self.unit.attack_target
 
-            if self.ammo_now > 0 and ((self.attack_target is not None and self.attack_target.state != 100) or
+            if self.ammo_now[0] > 0 and ((self.attack_target is not None and self.attack_target.state != 100) or
                                       (self.attack_target is None and self.attack_pos != 0)) \
-                    and (self.arc_shot or (self.arc_shot is False and self.unit.shoot_mode != 1)):
+                    and (True in self.shooter.special_status["Arc Shot"] or
+                         (True in self.shooter.special_status["Arc Shot"] is False and self.unit.shoot_mode != 1)):
                 # can shoot if reload finish and base_target existed and not dead. Non arc_shot cannot shoot if forbid
                 # TODO add line of sight for range attack
-                rangeattack.RangeAttack(self, self.base_pos.distance_to(self.attack_pos), self.shoot_range, self.zoom)  # Shoot
-                self.ammo_now -= 1  # use 1 magazine_left in magazine
+                rangeattack.RangeAttack(self, self.weapon_dmg[0][1], self.base_pos.distance_to(self.attack_pos), self.shoot_range, self.zoom)  # Shoot
+                self.ammo_now[0] -= 1  # use 1 magazine_left in magazine
             elif self.attack_target is not None and self.attack_target.state == 100:  # if base_target destroyed when it about to shoot
                 self.unit.range_combat_check = False
                 self.unit.attack_target = 0  # reset range combat check and base_target

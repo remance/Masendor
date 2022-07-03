@@ -1,23 +1,20 @@
 def process_trait_skill(self):
     """
-    Process subunit traits and skills into dict with their stat
+    Process subunit traits and skills into dict with their stat, occur in swap_weapon
     :param self: Subunit object
     """
-    self.trait += self.armour_data.armour_list[self.armour_gear[0]]["Trait"]  # Apply armour trait to subunit
-    self.trait = list(set([trait for trait in self.trait if trait != 0]))  # remove empty and duplicate traits
+    self.trait["Original"] += self.armour_data.armour_list[self.armour_gear[0]]["Trait"]  # add armour trait to subunit
+
+    self.trait["Original"] = list(set([trait for trait in self.trait if trait != 0]))  # remove empty and duplicate traits
+    for trait in self.trait:  # permanent special status from troop and armour trait
+        if trait in self.troop_data.trait_list:
+            for effect in self.troop_data.trait_list[trait]["Special Effect"]:
+                self.special_status[effect][0] = True
+
     if len(self.trait) > 0:
         self.trait = {x: self.troop_data.trait_list[x] for x in self.trait if
-                      x in self.troop_data.trait_list}  # Any trait not available in ruleset will be ignored
+                      x in self.troop_data.trait_list}  # any trait not available in ruleset will be ignored
         self.add_trait()
-
-    for weapon_set in self.weapon_skill:
-        for weapon in self.weapon_skill[weapon_set]:
-            skill = self.weapon_skill[weapon_set][weapon]
-            if skill != 0 and (self.troop_data.skill_list[skill]["Troop Type"] != 0 and
-                               self.troop_data.skill_list[skill]["Troop Type"] != self.subunit_type + 1):
-                self.weapon_skill[weapon_set][weapon] = 0  # remove unmatch class skill
-            else:
-                self.skill.append(skill)
     self.skill = skill_convert(self, self.skill, add_charge_skill=True)
 
 

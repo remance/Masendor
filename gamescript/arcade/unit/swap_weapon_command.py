@@ -12,7 +12,7 @@ def swap_weapon_command(self, choice):
                 elif "Range" in choice:
                     if len(this_subunit.range_weapon_set) > 0:
                         for this_set in this_subunit.range_weapon_set:
-                            if this_subunit.magazine_left[this_set][0] > 0 or this_subunit.magazine_left[this_set][0] > 1:  # check if set has any ammo
+                            if this_subunit.magazine_count[this_set][0] > 0 or this_subunit.magazine_count[this_set][1] > 1:  # check if set has any ammo
                                 this_subunit.equipped_weapon = this_set
                                 this_subunit.swap_weapon()
                                 break

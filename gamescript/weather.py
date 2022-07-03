@@ -15,7 +15,6 @@ class Weather:
         self.melee_atk_buff = stat["Melee Attack Bonus"] * (self.level + 1)
         self.melee_def_buff = stat["Melee Defense Bonus"] * (self.level + 1)
         self.range_def_buff = stat["Range Defense Bonus"] * (self.level + 1)
-        # self.armour_buff = stat[""] * (self.level + 1)
         self.speed_buff = stat["Speed Bonus"] * (self.level + 1)
         self.accuracy_buff = stat["Accuracy Bonus"] * (self.level + 1)
         self.range_buff = stat["Range Bonus"] * (self.level + 1)
@@ -29,7 +28,7 @@ class Weather:
         # self.sight_buff = stat["Sight Bonus"] * (self.level+1)
         # self.hidden_buff = stat["Hide Bonus"] * (self.level+1)
         self.temperature = stat["Temperature"] * (self.level + 1)
-        self.elem = (stat["Elemental"], (self.level + 1))
+        self.element = tuple([(element, (self.level + 1)) for element in stat["Element"] if element != ""])
         self.status_effect = stat["Status"]
         self.spawn_rate = stat["Spawn Rate"] * (self.level + 1)
         self.spawn_angle = stat["Travel Angle"]

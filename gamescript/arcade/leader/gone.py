@@ -51,8 +51,6 @@ def gone(self, event_text={96: "retreating", 97: "captured", 98: "missing", 99: 
         self.leader_role_change(leader)
     # ^ End change position
 
-    self.unit.command_buff = [(self.unit.leader[0].melee_command - 5) * 0.1, (self.unit.leader[0].range_command - 5) * 0.1,
-                              (self.unit.leader[0].cav_command - 5) * 0.1]  # reset command buff to new leader
     self.authority = 0
     self.melee_command = 0
     self.range_command = 0

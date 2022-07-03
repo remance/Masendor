@@ -19,7 +19,7 @@ def apply_map_status(self, map_feature_mod):
             self.status_effect[54] = self.status_list[54].copy()
 
         if 3 in map_feature_mod["Status"]:  # Poison type terrain
-            self.elem_count[4] += ((100 - self.elem_res[4]) / 100)
+            self.element_status_check["Poison"] += ((100 - self.element_resistance["Poison"]) / 100)
 
         if 6 in map_feature_mod["Status"]:  # Mud terrain
             self.status_effect[106] = self.status_list[106].copy()
