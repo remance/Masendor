@@ -18,7 +18,7 @@
 "Glaive","2pole","Slash","hold,power"
 "Whip","1hand","Slash",
 "Quarterstaff","2pole","Smash","hold,power"
-"Sling","1hand","Swing","cancelable,repeat,timing_2_1"
+"Sling","1hand","Swing","cancelable"
 "Blowgun","1hand","Shoot","cancelable"
 "Javelin","1pole","Throw","cancelable,hold,timing_2_2"
 "Throwing Axe","1hand","Throw","cancelable,hold,timing_2_2,bullet_rotate"

@@ -1278,9 +1278,9 @@ class Model:
                 anim_to_pool(animation_name, current_pool, self, activate_list, new=True)
 
             # reset history when change frame or create new animation
-            part_name_history = part_name_history[-1:] + [self.part_name_list[current_frame]]
-            animation_history = animation_history[-1:] + [self.animation_part_list[current_frame]]
-            body_part_history = body_part_history[-1:] + [self.bodypart_list[current_frame]]
+            part_name_history = part_name_history[-1:] + [{key: value for key, value in self.part_name_list[current_frame].items()}]
+            animation_history = animation_history[-1:] + [{key: (value[:].copy() if value is not None else value) for key, value in self.animation_part_list[current_frame].items()}]
+            body_part_history = body_part_history[-1:] + [{key: value for key, value in self.bodypart_list[current_frame].items()}]
             current_history = 0
         elif edit_type != "undo" and edit_type != "redo":
             if current_history < len(animation_history) - 1:
@@ -1679,7 +1679,7 @@ while True:
                     mouse_scroll_up = True
                 else:  # Mouse scroll down
                     mouse_scroll_down = True
-                if popup_list_box in ui and popup_list_box.rect.collidepoint(mouse_pos):
+                if popup_list_box in ui and (popup_list_box.rect.collidepoint(mouse_pos) or popup_list_box.scroll.rect.collidepoint(mouse_pos)):
                     current_popup_row = list_scroll(mouse_scroll_up, mouse_scroll_down,
                                                     popup_list_box, current_popup_row, popup_list_box.namelist,
                                                     popup_namegroup, ui, screen_scale)
