@@ -48,7 +48,7 @@ def change_battle_state(self):
             del arrow
 
         for this_unit in self.battle.all_team_unit["alive"]:  # reset all unit state
-            this_unit.player_input(self.battle_mouse_pos, False, False, False, self.last_mouseover, None, other_command=2)
+            this_unit.player_input(self.battle_mouse_pos, other_command=2)
 
         self.troop_card_ui.rect = self.troop_card_ui.image.get_rect(bottomright=(self.screen_rect.width,
                                                                                  self.screen_rect.height))  # troop info card ui

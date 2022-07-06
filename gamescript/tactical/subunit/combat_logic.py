@@ -1,7 +1,7 @@
 import pygame
 
 
-def combat_logic(self, dt, combat_timer, parent_state):
+def combat_logic(self, dt, parent_state):
     from gamescript import rangeattack
 
     collide_list = []
@@ -86,13 +86,12 @@ def combat_logic(self, dt, combat_timer, parent_state):
             self.new_angle = self.unit.angle
             self.state = 0
 
-        if self.state != 10 and self.magazine_count[0][0] > 0 and self.unit.fire_at_will == 0 and \
-                (True in self.special_status["Arc Shot"] or self.frontline) and \
+        if self.state != 10 and self.magazine_count[self.equipped_weapon][0] > 0 and self.unit.fire_at_will == 0 and \
+                (self.special_effect_check("Arc Shot", weapon=0) or self.frontline) and \
                 self.charge_momentum == 1:  # Range attack when unit in melee state with arc_shot
             self.state = 11
             if self.unit.near_target != {} and (self.attack_target is None or self.attack_pos is None):
                 self.find_shooting_target(parent_state)
-    # ^ End melee check
 
     else:  # range attack
         self.melee_target = None
@@ -101,72 +100,85 @@ def combat_logic(self, dt, combat_timer, parent_state):
             self.battle.combat_path_queue.remove(self)
         self.attack_target = None
         self.combat_move_queue = []
+        if self.ammo_now:
+            # TODO fix can shoot when broken, also broken not retreat from map when reach border
+            if parent_state == 11:  # unit in range attack state
+                self.state = 0  # subunit default state at idle
+                if self.attack_pos is not None and self.shoot_range[0] >= self.attack_pos.distance_to(self.base_pos):
+                    self.state = 11  # can shoot if troop have magazine_left and in shoot range, enter range combat state
 
-        # v Range attack function  # TODO fix can shoot when broken, also broken not retreat from map when reach border
-        if parent_state == 11:  # Unit in range attack state
-            self.state = 0  # Default state at idle
-            if (self.magazine_count[0][0] > 0 or self.ammo_now[0] > 0) and self.attack_pos is not None and \
-                    self.shoot_range[0] >= self.attack_pos.distance_to(self.base_pos):
-                self.state = 11  # can shoot if troop have magazine_left and in shoot range, enter range combat state
+            elif self.unit.fire_at_will == 0 and (self.state == 0 or
+                                                  (self.state in (1, 2, 3, 4, 5, 6, 7) and
+                                                   self.special_effect_check("Shoot While Moving"))):  # Fire at will
+                if self.unit.near_target != {} and self.attack_target is None:
+                    self.find_shooting_target(parent_state)  # shoot the nearest target
 
-        elif self.magazine_count[0][0] > 0 and self.unit.fire_at_will == 0 and \
-                (self.state == 0 or (self.state not in (95, 96, 97, 98, 99) and
-                                     parent_state in (1, 2, 3, 4, 5, 6) and
-                                     True in self.special_status["Shoot While Moving"])):  # Fire at will
-            if self.unit.near_target != {} and self.attack_target is None:
-                self.find_shooting_target(parent_state)  # shoot the nearest target
+    for weapon in self.weapon_cooldown:
+        if self.weapon_cooldown[weapon] < self.weapon_speed[weapon]:
+            if self.state in (11, 12, 13) and self.equipped_weapon in self.ammo_now and \
+                    weapon in self.ammo_now[self.equipped_weapon] and  \
+                    self.ammo_now[self.equipped_weapon][weapon] == 0:  # reloading magazine
+                self.weapon_cooldown[weapon] += dt
+                if self.weapon_cooldown[weapon] >= self.weapon_speed[weapon]:  # finish reload, add ammo
+                    self.ammo_now[self.equipped_weapon][weapon] = self.magazine_size[self.equipped_weapon][weapon]
+                    self.magazine_count[self.equipped_weapon][weapon] -= 1
+                    self.weapon_cooldown[weapon] = 0
+                break  # reload only one weapon at a time in case both hands use range weapon
+            else:
+                self.weapon_cooldown[weapon] += dt
 
-    if self.state in (11, 12, 13) and self.magazine_count[0][0] > 0 and self.ammo_now[0] == 0:  # reloading magazine_left
-        self.weapon_cooldown[1] += dt  # tactical mode use sub (1) weapon cooldown as range attack
-        if self.weapon_cooldown[1] >= self.reload:
-            self.ammo_now = self.magazine_size[self.equipped_weapon].copy()
-            self.magazine_count[0][0] -= 1
-            self.weapon_cooldown[1] = 0
-        self.stamina = self.stamina - (dt * 2)  # use stamina while reloading
-    # ^ End range attack function
+    if self.state == 10:  # if melee combat (engaging anyone on any side)
+        for weapon in self.weapon_cooldown:
+            if self.weapon_cooldown[weapon] >= self.weapon_speed[weapon]:
+                collide_list = [subunit for subunit in self.enemy_front]
+                for subunit in collide_list:
+                    angle_check = abs(self.angle - subunit.angle)  # calculate which side arrow hit the subunit
+                    if angle_check >= 135:  # front
+                        hit_side = 0
+                    elif angle_check >= 45:  # side
+                        hit_side = 1
+                    else:  # rear
+                        hit_side = 2
+                    self.hit_register(weapon, subunit, 0, hit_side, self.battle.troop_data.status_list)
+                    self.stamina -= self.weapon_weight[self.equipped_weapon][weapon]
+                    self.weapon_cooldown[weapon] -= self.weapon_speed[weapon]
+                break
 
-    if combat_timer >= 0.5:  # combat is calculated every 0.5 second in self time
-        if self.state == 10:  # if melee combat (engaging anyone on any side)
-            collide_list = [subunit for subunit in self.enemy_front]
-            for subunit in collide_list:
-                angle_check = abs(self.angle - subunit.angle)  # calculate which side arrow hit the subunit
-                if angle_check >= 135:  # front
-                    hit_side = 0
-                elif angle_check >= 45:  # side
-                    hit_side = 1
-                else:  # rear
-                    hit_side = 2
-                self.hit_register(subunit, 0, hit_side, self.battle.troop_data.status_list)
-                self.stamina = self.stamina - 3
+    elif self.state in (11, 12, 13):  # range combat
+        if self.attack_target is not None:  # For fire at will
+            if self.attack_target.state == 100:  # enemy dead
+                self.attack_pos = None  # reset attack_pos to none
+                self.attack_target = None  # reset attack_target to none
 
-        elif self.state in (11, 12, 13):  # range combat
-            if self.attack_target is not None:  # For fire at will
-                if self.attack_target.state == 100:  # enemy dead
-                    self.attack_pos = None  # reset attack_pos to none
-                    self.attack_target = None  # reset attack_target to none
+                for target, pos in self.unit.near_target.items():  # find other nearby base_target to shoot
+                    self.attack_pos = pos
+                    self.attack_target = target
+                    break  # found new target, break loop
+        elif self.attack_target is None:
+            self.attack_target = self.unit.attack_target
+            if self.attack_target is not None:
+                self.attack_pos = self.attack_target.base_pos
 
-                    for target, pos in self.unit.near_target.items():  # find other nearby base_target to shoot
-                        self.attack_pos = pos
-                        self.attack_target = target
-                        break  # found new target, break loop
-            elif self.attack_target is None:
-                self.attack_target = self.unit.attack_target
-                if self.attack_target is not None:
-                    self.attack_pos = self.attack_target.base_pos
-
-            if self.ammo_now[0] > 0 and ((self.attack_target is not None and self.attack_target.state != 100) or
-                                      (self.attack_target is None and self.attack_pos is not None)) \
-                    and (True in self.special_status["Arc Shot"] or
-                         (True in self.special_status["Arc Shot"] is False and self.unit.shoot_mode != 1)):
+        if ((self.attack_target is not None and self.attack_target.state != 100) or
+            (self.attack_target is None and self.attack_pos is not None)):
+            for weapon in self.ammo_now[self.equipped_weapon]:  # TODO add line of sight for range attack
                 # can shoot if reload finish and base_target existed and not dead. Non arc_shot cannot shoot if forbid
-                # TODO add line of sight for range attack
-                rangeattack.RangeAttack(self, self.weapon_dmg[1], self.weapon_penetrate[0][1],
-                                        self.arrow_speed[self.equipped_weapon][0],
-                                        self.base_pos.distance_to(self.attack_pos), self.shoot_range[0], self.zoom)  # Shoot
-                self.ammo_now[0] -= 1  # use 1 magazine_left in magazine
-            elif self.attack_target is not None and self.attack_target.state == 100:  # if base_target destroyed when it about to shoot
-                self.unit.range_combat_check = False
-                self.unit.attack_target = None  # reset range combat check and base_target
+                if self.ammo_now[self.equipped_weapon][weapon] > 0 and \
+                        (self.special_effect_check("Arc Shot", weapon=weapon) or
+                         (self.special_effect_check("Arc Shot", weapon=weapon) is False and self.unit.shoot_mode != 1)):
+                    rangeattack.RangeAttack(self, weapon, self.weapon_dmg[weapon], self.weapon_penetrate[self.equipped_weapon][weapon],
+                                            self.arrow_speed[self.equipped_weapon][weapon],
+                                            self.base_pos.distance_to(self.attack_pos), self.shoot_range[weapon], self.zoom)  # Shoot
+                    self.command_action = ("Action " + str(weapon))
+                    self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
+                    if self.ammo_now[self.equipped_weapon][weapon] == 0 and self.magazine_count[self.equipped_weapon][weapon] == 0:
+                        self.ammo_now[self.equipped_weapon].pop(weapon)  # remove weapon with no ammo
+                        if len(self.ammo_now[self.equipped_weapon]) == 0:  # remove entire set if no ammo at all
+                            self.ammo_now.pop(self.equipped_weapon)
+                    self.stamina -= self.weapon_weight[self.equipped_weapon][weapon]
+
+        elif self.attack_target is not None and self.attack_target.state == 100:  # if base_target destroyed when it about to shoot
+            self.unit.attack_target = None  # reset range combat check and base_target
 
     if parent_state != 10:  # reset base_target every update to command base_target outside of combat
         if self.base_target != self.command_target:

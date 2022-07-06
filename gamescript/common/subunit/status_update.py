@@ -10,8 +10,8 @@ def status_update(self, weather=None):
         self.block.blit(self.block_original, self.corner_image_rect)
         self.red_border = False
 
-    for effect in self.special_status:  # reset temporary special effect
-        self.special_status[effect][1] = True
+    for effect in self.special_effect:  # reset temporary special effect
+        self.special_effect[effect][0][1] = False
 
     self.fatigue()
 
@@ -26,7 +26,7 @@ def status_update(self, weather=None):
     self.charge_def = self.base_charge_def
     self.speed = self.base_speed
     self.charge = self.base_charge
-    self.shoot_range = self.base_range[self.equipped_weapon].copy()
+    self.shoot_range = self.original_range[self.equipped_weapon].copy()
     self.weapon_speed = self.original_weapon_speed[self.equipped_weapon].copy()
     self.weapon_dmg = self.original_weapon_dmg[self.equipped_weapon].copy()
 
@@ -40,8 +40,10 @@ def status_update(self, weather=None):
     self.inflict_status = self.base_inflict_status
 
     # Apply status effect from trait
-    if len(self.trait) > 1:
-        for trait in self.trait.values():
+
+    trait_list = list(self.trait["Original"].values()) + list(self.trait["Weapon"][self.equipped_weapon][0].values()) + list(self.trait["Weapon"][self.equipped_weapon][1].values())
+    if len(trait_list) > 1:
+        for trait in trait_list:
             if 0 not in trait["Status"]:
                 for effect in trait["Status"]:  # apply status effect from trait
                     self.status_effect[effect] = self.status_list[effect].copy()
@@ -127,8 +129,8 @@ def status_update(self, weather=None):
             # self.sight += cal_status["Sight Bonus"]
             # self.hidden += cal_status["Hidden Bonus"]
             self.crit_effect *= cal_effect["Critical Effect"]
-            if cal_effect["Area of Effect"] in (2, 3):
-                self.special_status["All Side Full Attack"][1] = True
+            if cal_effect["Area of Effect"] in (2, 3):  # TODO maybe change skill system to have attack type
+                self.special_effect[0]["All Side Full Attack"][1] = True
                 if cal_effect["Area of Effect"] == 3:
                     self.corner_atk = True  # if aoe 3 mean it can melee_attack enemy on all side
 
@@ -169,7 +171,7 @@ def status_update(self, weather=None):
             for element in self.element_resistance:  # Weather can cause elemental effect such as wet
                 self.element_resistance[element] += cal_effect[element + " Resistance Bonus"]
             for effect in cal_effect["Special Effect"]:
-                self.special_status[effect][1] = True
+                self.special_effect[effect][0][1] = True
 
     self.temperature_cal(temp_reach)  # calculate temperature and its effect
 

@@ -102,6 +102,7 @@ def setup_frontline(self):
     for array_index, who_frontline in enumerate(list(frontline.values())):
         self.frontline_object[array_index] = self.frontline_object[array_index].tolist()
         for index, stuff in enumerate(who_frontline):
+            self.frontline_object[array_index][index] = None
             for subunit in self.subunit_list:
                 if subunit.game_id == stuff:
                     self.frontline_object[array_index][index] = subunit

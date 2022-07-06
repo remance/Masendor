@@ -14,21 +14,22 @@ class RangeAttack(pygame.sprite.Sprite):
 
     play_animation = animation.play_animation
 
-    def __init__(self, shooter, dmg, penetrate, speed, shoot_range, max_range, view_mode, hit_cal=True):
+    def __init__(self, shooter, weapon, dmg, penetrate, speed, shoot_range, max_range, view_mode, hit_cal=True):
         self._layer = 7
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = self.images[0]
         self.image_original = self.image.copy()
         self.shooter = shooter  # subunit that perform the attack
+        self.weapon = weapon  # weapon that use to perform the attack
         self.speed = speed  # travel speed
         self.arc_shot = False  # direct shot will no go pass collided unit
-        if True in self.shooter.special_status["Arc Shot"] and self.shooter.unit.shoot_mode != 2:
+        if shooter.special_effect_check("Arc Shot", weapon=0) and self.shooter.unit.shoot_mode != 2:
             self.arc_shot = True  # arc shot will go pass unit to land at final base_target
         self.height = self.shooter.height
         self.accuracy = self.shooter.accuracy
         self.dmg = {key: random.uniform(value[0], value[1]) for key, value in dmg.items()}
         self.penetrate = penetrate
-        if self.shooter.state in (12, 13) and True in self.shooter.special_status["Agile Aim"] is False:
+        if self.shooter.state in (12, 13) and True in self.shooter.special_effect["Agile Aim"] is False:
             self.accuracy -= 10  # accuracy penalty for shoot while moving
         self.pass_subunit = None  # check which subunit arrow passing through
         self.side = None  # side that arrow collided last
@@ -41,9 +42,9 @@ class RangeAttack(pygame.sprite.Sprite):
             hit_chance = self.accuracy * (100 - ((shoot_range * 100 / max_range) / 2)) / 100
             if hit_chance == 0:
                 hit_chance = 1
-            if True in self.shooter.special_status["No Range Penalty"]:
+            if True in self.shooter.special_effect["No Range Penalty"]:
                 hit_chance = self.accuracy
-            elif True in self.shooter.special_status["Long Range Accurate"]:
+            elif True in self.shooter.special_effect["Long Range Accurate"]:
                 hit_chance = self.accuracy * (100 - ((shoot_range * 100 / max_range) / 4)) / 100  # range penalty half
             how_long = shoot_range / self.speed  # shooting distance divide arrow speed to find travel time
             target_now = self.shooter.attack_pos
@@ -63,7 +64,7 @@ class RangeAttack(pygame.sprite.Sprite):
                                 move_speed = target_hit.unit.run_speed
                             target_now = target_hit.base_pos + (
                                     (target_move * (move_speed * how_long)) / 11)
-                            if True in self.shooter.special_status["Agile Aim"] is False:
+                            if True in self.shooter.special_effect["Agile Aim"] is False:
                                 hit_chance -= 15
                         else:  # movement too short, simply hit the current position
                             target_now = target_hit.base_pos
@@ -106,18 +107,18 @@ class RangeAttack(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.image, self.angle)
         # ^ End rotate
 
-        self.base_pos = pygame.Vector2(self.shooter.front_pos[0], self.shooter.front_pos[1])
+        self.base_pos = pygame.Vector2(self.shooter.base_pos[0], self.shooter.base_pos[1])
         self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0], self.base_pos[1] * self.screen_scale[1]) * view_mode
         self.rect = self.image.get_rect(midbottom=self.pos)
         self.target = self.base_target * view_mode
 
     def range_dmg_cal(self, attacker, target, target_side, side_percent=(1, 0.3, 0.3, 0)):
         """Calculate hit_chance and defence chance, side_percent is more punishing than melee melee_attack"""
-        attacker_luck = random.randint(-20, 20)  # luck of the attacker subunit
+        attacker_luck = random.randint(-40, 20)  # luck of the attacker subunit
         target_luck = random.randint(-20, 20)  # luck of the defender subunit
 
         target_percent = side_percent[target_side]  # side penalty
-        if True in target.special_status["All Side Full Defence"]:
+        if target.special_effect_check("All Side Full Defence"):
             target_percent = 1  # no side penalty for all round defend
         attacker_hit = float(self.accuracy) + attacker_luck  # calculate hit chance
         if attacker_hit < 0:
@@ -127,17 +128,15 @@ class RangeAttack(pygame.sprite.Sprite):
         if target_def < 0:
             target_def = 0  # defence cannot be negative
 
-        attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect = attacker.dmg_cal(target, attacker_hit, target_def, self)
+        attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect = attacker.dmg_cal(target, attacker_hit, target_def, self.weapon, self)
         target.subunit_health -= attacker_dmg
         target.base_morale -= attacker_morale_dmg
 
-        # v Add red corner to indicate melee_dmg
-        if target.red_border is False:
+        if target.red_border is False:  # add red corner to indicate melee_dmg
             target.block.blit(target.unit_ui_images["ui_squad_combat.png"], target.corner_image_rect)
             target.red_border = True
-        # ^ End red corner
 
-        for key, value in element_effect.items:
+        for key, value in element_effect.items():
             target.element_status_check[key] += round(attacker_dmg * value * (100 - target.element_resistance[key] / 100))
 
         if target.leader is not None and target.leader.health > 0 and random.randint(0, 10) > 5:  # dmg on leader

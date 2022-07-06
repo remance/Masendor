@@ -38,7 +38,9 @@ class Subunit(pygame.sprite.Sprite):
 
     # Import from common.subunit
     add_mount_stat = empty_method
-    add_trait = empty_method
+    add_original_trait = empty_method
+    add_weapon_trait = empty_method
+    add_weapon_stat = empty_method
     apply_map_status = empty_method
     apply_status_to_friend = empty_method
     combat_pathfind = empty_method
@@ -56,15 +58,16 @@ class Subunit(pygame.sprite.Sprite):
     make_sprite = empty_method
     process_trait_skill = empty_method
     rotate = empty_method
+    special_effect_check = empty_method
     start_set = empty_method
     status_update = empty_method
+    swap_weapon = empty_method
     temperature_cal = empty_method
     troop_loss = empty_method
     use_skill = empty_method
     zoom_scale = empty_method
 
     # Import from *genre*.subunit
-    add_weapon_stat = empty_method
     charge_logic = empty_method
     combat_logic = empty_method
     fatigue = empty_method
@@ -78,7 +81,6 @@ class Subunit(pygame.sprite.Sprite):
     rotate_logic = empty_method
     skill_check_logic = empty_method
     state_reset_logic = empty_method
-    swap_weapon = empty_method
 
     script_dir = os.path.split(os.path.abspath(__file__))[0]
     for entry in os.scandir(script_dir + "\\common\\subunit\\"):  # load and replace modules from common.unit
@@ -90,7 +92,6 @@ class Subunit(pygame.sprite.Sprite):
     # genre specific variables
     dmg_include_leader = True
     stat_use_troop_number = True
-    weapon_set_number = 1
 
     def __init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale, animation_pool=None):
         """
@@ -162,23 +163,24 @@ class Subunit(pygame.sprite.Sprite):
         element_dict = {"Physical": 0, "Fire": 0, "Water": 0, "Air": 0, "Earth": 0, "Poison": 0, "Magic": 0}
         self.element_status_check = element_dict.copy()  # element threshold count
         self.original_element_resistance = element_dict.copy()
+
         self.original_heat_resistance = 0  # resistance to heat temperature
         self.original_cold_resistance = 0  # Resistance to cold temperature
-        self.heat_resistance = 0  # resistance to heat temperature
-        self.cold_resistance = 0  # Resistance to cold temperature
         self.temperature_count = 0  # temperature threshold count
 
         # initiate equipment stat
         self.weight = 0
-        self.original_weapon_dmg = {index: {0: element_dict.copy(), 1: element_dict.copy()} for index in range(0, self.weapon_set_number)}
-        self.weapon_penetrate = {index: {0: 0, 1: 0} for index in range(0, self.weapon_set_number)}
-        self.range_dmg = {index: {0: element_dict.copy(), 1: element_dict.copy()} for index in range(0, self.weapon_set_number)}
-        self.base_range = {index: {0: 0, 1: 0} for index in range(0, self.weapon_set_number)}
-        self.original_weapon_speed = {index: {0: 0, 1: 0} for index in range(0, self.weapon_set_number)}
+        self.original_weapon_dmg = {index: {0: element_dict.copy(), 1: element_dict.copy()} for index in range(0, 2)}
+        self.weapon_penetrate = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
+        self.weapon_weight = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
+        self.range_dmg = {index: {0: element_dict.copy(), 1: element_dict.copy()} for index in range(0, 2)}
+        self.original_range = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
+        self.original_weapon_speed = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
 
-        self.magazine_size = {index: {0: 0, 1: 0} for index in range(0, self.weapon_set_number)}  # can shoot how many times before have to reload
-        self.arrow_speed = {index: {0: 0, 1: 0} for index in range(0, self.weapon_set_number)}
-        self.weapon_skill = {index: {0: [], 1: []} for index in range(0, self.weapon_set_number)}
+        self.magazine_size = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}  # can shoot how many times before have to reload
+        self.ammo_now = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}  # ammunition count in the current magazine
+        self.arrow_speed = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
+        self.weapon_skill = {0: {0: [], 1: []}, 1: {0: [], 1: []}}
         self.equipped_weapon = 0
 
         # Setup troop original stat before applying trait, gear and other stuffs
@@ -199,14 +201,14 @@ class Subunit(pygame.sprite.Sprite):
             self.original_accuracy = stat["Accuracy"] + grade_stat["Accuracy Bonus"]
             self.original_sight = stat["Sight"]  # sight range
             self.magazine_count = {index: {0: stat["Ammunition Modifier"], 1: stat["Ammunition Modifier"]}
-                                   for index in range(0, self.weapon_set_number)}  # Number of magazine, as mod number
+                                   for index in range(0, 2)}  # Number of magazine, as mod number
             self.original_reload = stat["Reload"] + grade_stat["Reload Bonus"]
             self.original_charge = stat["Charge"]
             self.original_charge_def = 50  # all infantry subunit has default 50 charge defence
             self.charge_skill = stat["Charge Skill"]  # for easier reference to check what charge skill this subunit has
             self.original_morale = stat["Morale"] + grade_stat["Morale Bonus"]  # morale with grade bonus
             self.original_discipline = stat["Discipline"] + grade_stat["Discipline Bonus"]  # discipline with grade bonus
-            self.mental = stat["Mental"] + grade_stat[
+            self.original_mental = stat["Mental"] + grade_stat[
                 "Mental Bonus"]  # mental resistance from morale melee_dmg and mental status effect
             if self.stat_use_troop_number:
                 self.troop_number = stat["Troop"] * unit_scale[
@@ -228,7 +230,7 @@ class Subunit(pygame.sprite.Sprite):
                 "Defence Bonus"]  # range defence with grade bonus
             self.original_accuracy = (stat["Range Command"] * stat["Combat"]) + grade_stat["Accuracy Bonus"]
             self.original_sight = (stat["Range Command"] * stat["Combat"])  # sight range
-            self.magazine_count = {index: {0: 2, 1: 2} for index in range(0, self.weapon_set_number)}  # leader gets double ammunition
+            self.magazine_count = {0: {0: 2, 1: 2}, 1: {0: 2, 1: 2}}  # leader gets double ammunition
             self.original_reload = (stat["Range Command"] * stat["Combat"]) + grade_stat["Reload Bonus"]
             self.original_charge = 100
             self.original_charge_def = 100
@@ -236,7 +238,7 @@ class Subunit(pygame.sprite.Sprite):
             self.original_morale = 100 + grade_stat["Morale Bonus"]  # morale with grade bonus
             self.original_discipline = 100 + grade_stat[
                 "Discipline Bonus"]  # discipline with grade bonus
-            self.mental = 50 + grade_stat[
+            self.original_mental = 50 + grade_stat[
                 "Mental Bonus"]  # mental resistance from morale melee_dmg and mental status effect
             self.stamina = 10000 * grade_stat["Stamina Effect"] * (
                         start_stamina / 100)  # starting stamina with grade
@@ -249,7 +251,7 @@ class Subunit(pygame.sprite.Sprite):
         self.race_name = self.troop_data.race_list[stat["Race"]]["Name"]
 
         self.trait = {"Original": stat["Trait"] + self.troop_data.race_list[stat["Race"]]["Trait"] + \
-                      self.troop_data.grade_list[self.grade]["Trait"]}  # trait from preset, race and grade
+                      self.troop_data.grade_list[self.grade]["Trait"], "Weapon": {0: {0: [], 1: []}, 1: {0: [], 1: []}}}  # trait from preset, race and grade
 
         self.skill_cooldown = {}
         self.grade_name = grade_stat["Name"]
@@ -285,6 +287,7 @@ class Subunit(pygame.sprite.Sprite):
         self.size = self.troop_data.race_list[stat["Race"]]["Size"]
 
         self.original_speed = self.troop_data.race_list[stat["Race"]]["Speed"]  # use speed of race
+        self.original_inflict_status = {}  # status that this subunit will inflict to enemy when melee_attack
         self.feature_mod = "Infantry"  # the terrain feature that will be used on this subunit
         self.authority = 100  # default start at 100
 
@@ -306,17 +309,21 @@ class Subunit(pygame.sprite.Sprite):
         self.base_inflict_status = {}  # status that this subunit will inflict to enemy when melee_attack
 
         # Set up special effect variable, first item is permanent or from trait, second item from status or skill
-        self.special_status = {status_name["Name"]: [False, False] for status_name in self.troop_data.special_status_list.values()}
+        self.special_effect = {status_name["Name"]: [[False, False], [False, False]]  # first item is for effect from troop/trait, second item is for weapon
+                               for status_name in self.troop_data.special_effect_list.values() if status_name["Name"] != "Name"}
 
-        self.full_def = False
-        self.temp_full_def = False
-        self.backstab = False
-        self.oblivious = False
-        self.flanker = False
-        self.unbreakable = False
-        self.temp_unbreakable = False
-        self.station_place = False
-        self.reflect = False
+        if stat["Mount"][0] != 1:  # have a mount, add mount stat with its grade to subunit stat
+            self.add_mount_stat()
+
+        self.trait["Original"] += self.armour_data.armour_list[self.armour_gear[0]][
+            "Trait"]  # add armour trait to subunit
+
+        self.trait["Original"] = list(
+            set([trait for trait in self.trait["Original"] if trait != 0]))  # remove empty and duplicate traits
+        self.trait["Original"] = {x: self.troop_data.trait_list[x] for x in self.trait["Original"] if
+                                  x in self.troop_data.trait_list}  # replace trait index with data
+
+        self.add_original_trait()
 
         # Stat after applying trait and gear
         self.base_melee_attack = self.original_melee_attack
@@ -324,8 +331,6 @@ class Subunit(pygame.sprite.Sprite):
         self.base_range_def = self.original_range_def
 
         self.base_element_resistance = self.original_element_resistance.copy()
-        for element in self.base_element_resistance:  # resistance from armour * quality
-            self.base_element_resistance[element] = self.armour_data.armour_list[self.armour_gear[0]][element + " Resistance"] * self.armour_data.quality[self.armour_gear[1]]
 
         self.base_speed = self.original_speed
         self.base_accuracy = self.original_accuracy
@@ -344,9 +349,9 @@ class Subunit(pygame.sprite.Sprite):
         self.base_hp_regen = self.original_hp_regen
         self.base_stamina_regen = self.original_stamina_regen
         self.base_morale_regen = self.original_morale_regen
-
-        if stat["Mount"][0] != 1:  # have a mount, add mount stat with its grade to subunit stat
-            self.add_mount_stat()
+        self.base_heat_resistance = self.original_heat_resistance
+        self.base_cold_resistance = self.original_cold_resistance
+        self.base_mental = self.original_mental
 
         self.add_weapon_stat()
         self.action_list = {}  # get added in change_equipment
@@ -396,11 +401,14 @@ class Subunit(pygame.sprite.Sprite):
         self.hp_regen = self.base_hp_regen
         self.stamina_regen = self.base_stamina_regen
         self.morale_regen = self.base_morale_regen
+        self.heat_resistance = self.base_heat_resistance
+        self.cold_resistance = self.base_cold_resistance
+        self.mental = self.base_mental
+
         self.inflict_status = self.base_inflict_status
         self.weapon_dmg = self.original_weapon_dmg[self.equipped_weapon].copy()
         self.weapon_speed = self.original_weapon_speed[self.equipped_weapon].copy()
-        self.shoot_range = self.base_range[self.equipped_weapon].copy()
-        self.ammo_now = self.magazine_size[self.equipped_weapon].copy()  # ammunition count in the current magazine
+        self.shoot_range = self.original_range[self.equipped_weapon].copy()
         # ^^ End stat for status effect
 
         self.morale_state = self.base_morale / self.max_morale  # turn into percentage
@@ -415,7 +423,6 @@ class Subunit(pygame.sprite.Sprite):
         self.mental = (200 - self.mental) / 100  # convert to percentage
 
         self.corner_atk = False  # cannot melee_attack corner enemy by default
-        self.temp_full_def = False
 
         # sprite for inspection or far view
         sprite_dict = self.create_inspect_sprite()
@@ -470,7 +477,7 @@ class Subunit(pygame.sprite.Sprite):
         except AttributeError:  # for subunit with dummy unit
             pass
 
-    def update(self, weather, dt, zoom, combat_timer, mouse_pos, mouse_left_up):
+    def update(self, weather, dt, zoom, mouse_pos, mouse_left_up):
         if self.subunit_health > 0:  # only run these when not dead
             self.player_interact(mouse_pos, mouse_left_up)
 
@@ -491,7 +498,7 @@ class Subunit(pygame.sprite.Sprite):
 
                 self.state_reset_logic(parent_state)
 
-                parent_state, collide_list = self.combat_logic(dt, combat_timer, parent_state)
+                parent_state, collide_list = self.combat_logic(dt, parent_state)
 
                 if self.angle != self.new_angle:  # Rotate Function
                     self.rotate_logic(dt)

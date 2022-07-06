@@ -1,14 +1,13 @@
 import pygame
 
 
-def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, mouse_left_down, mouse_right_down,
-                 double_mouse_right, target, key_state,  *args):
+def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mouse_left_down=False,
+                 mouse_right_down=False, double_mouse_right=False, target=None, key_state=None):
     """other_command is special type of command such as stop all action, raise flag, decimation, duel and so on"""
     if self.state not in (99, 100):
         self.rotate_only = False
         self.forced_melee = False
         self.attack_place = False
-        self.range_combat_check = False
 
         new_pos = pygame.Vector2(self.leader_subunit.base_pos)
         if not self.leader_subunit.current_action:

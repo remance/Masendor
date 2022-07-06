@@ -1,8 +1,9 @@
 import pygame
 
 
-def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, mouse_left_down, mouse_right_down,
-                 double_mouse_right, target, key_state, other_command=None, *args):
+def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mouse_left_down=False,
+                 mouse_right_down=False, double_mouse_right=False, target=None, key_state=None,
+                 other_command=None):
     """other_command is special type of command such as stop all action, raise flag, decimation, duel and so on"""
     if self.player_control and self.state not in (95, 97, 98, 99, 100):
         self.revert = False
@@ -12,7 +13,6 @@ def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, mouse_left_dow
         self.attack_target = None
         self.base_attack_pos = 0
         self.attack_place = False
-        self.range_combat_check = False
 
         # register user keyboard
         if mouse_right_up and 1 <= cursor_pos[0] < 998 and 1 <= cursor_pos[1] < 998:
@@ -32,5 +32,5 @@ def player_input(self, cursor_pos, mouse_left_up, mouse_right_up, mouse_left_dow
                     if key_state[pygame.K_LALT] or key_state[pygame.K_RALT]:
                         self.attack_place = True
                 self.issue_order(cursor_pos, double_mouse_right, self.revert, target)
-        elif other_command != 0:
+        elif other_command is not None:
             self.issue_order(cursor_pos, double_mouse_right, self.revert, target, other_command)

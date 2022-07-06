@@ -8,7 +8,7 @@ def gone_leader_process(self, event):
         check_state = [99, 100]
     if self.leader is not None and self.leader.state != 100:  # Find new subunit for leader if there is one in this subunit
         for this_subunit in self.nearby_subunit_list:
-            if this_subunit != 0 and this_subunit.state not in check_state and this_subunit.leader is None:
+            if this_subunit is not None and this_subunit.state not in check_state and this_subunit.leader is None:
                 this_subunit.leader = self.leader
                 self.leader.subunit = this_subunit
                 for index, subunit2 in enumerate(self.unit.subunit_list):  # loop to find new subunit pos based on new subunit_sprite list

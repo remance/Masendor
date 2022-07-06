@@ -565,7 +565,6 @@ class Battle:
         self.drama_timer = 0  # This is timer for combat related function, use self time (realtime * game_speed)
         self.dt = 0  # Realtime used for in self calculation
         self.ui_dt = 0  # Realtime used for ui timer
-        self.combat_timer = 0  # This is timer for combat related function, use self time (realtime * game_speed)
         self.weather_spawn_timer = 0
         self.last_mouseover = None  # Which subunit last mouse over
         self.speed_number.speed_update(self.game_speed)
@@ -853,7 +852,7 @@ class Battle:
                                              self.base_mouse_pos, mouse_left_up)
                     self.last_mouseover = None  # reset last unit mouse over
                     self.leader_updater.update()
-                    self.subunit_updater.update(self.current_weather, self.dt, self.camera_zoom, self.combat_timer,
+                    self.subunit_updater.update(self.current_weather, self.dt, self.camera_zoom,
                                                 self.base_mouse_pos, mouse_left_up)
 
                     # Run pathfinding for melee combat no more than limit number of subunit per update to prevent stutter
@@ -868,9 +867,6 @@ class Battle:
 
                     if self.ui_timer > 1:
                         self.battle_scale_ui.change_fight_scale(self.team_troop_number)  # change fight colour scale on time_ui bar
-
-                    if self.combat_timer >= 0.5:  # reset combat timer every 0.5 seconds
-                        self.combat_timer -= 0.5  # not reset to 0 because higher speed can cause inconsistency in update timing
 
                     self.effect_updater.update(self.subunit_updater, self.dt, self.camera_zoom)
                     self.weather_updater.update(self.dt, self.time_number.time_number)
@@ -889,9 +885,8 @@ class Battle:
 
                     self.dt = self.dt * self.game_speed  # apply dt with game_speed for calculation
                     if self.dt > 0.1:
-                        self.dt = 0.1  # make it so stutter does not cause sprite to clip other sprite especially when zoom change
+                        self.dt = 0.1  # make it so stutter and lag does not cause overtime issue
 
-                    self.combat_timer += self.dt  # update combat timer
                     self.time_number.timer_update(self.dt * self.time_speed_scale)  # update battle time with genre speed
 
                     if self.mode == "battle" and len([key for key, value in self.all_team_unit.items() if key != "alive" and len(value) > 0]) <= 1:

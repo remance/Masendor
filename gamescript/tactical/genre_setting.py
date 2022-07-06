@@ -21,7 +21,6 @@ object_variable = {("self", "object"): {"char_select": False,  # not include cha
                                        },
                    ("subunit", "class"): {"dmg_include_leader": True,  # include leader in damage calculation
                                           "stat_use_troop_number": True,  # calculate troop number in damage calculation
-                                          "weapon_set_number": 1  # number of weapon set subunit can have
                                           }
                    }
 

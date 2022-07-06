@@ -50,7 +50,6 @@ object_variable = {("self", "object"): {"char_select": True,  # include characte
                                        },
                    ("subunit", "class"): {"dmg_include_leader": False,  # not include leader in damage calculation, leader is subunit
                                           "stat_use_troop_number": False,  # arcade mode count one subunit as one troop
-                                          "weapon_set_number": 2  # number of weapon set subunit can have
                                           }
                    }
 

@@ -7,7 +7,6 @@ def issue_order(self, target_pos, run_command=False, revert_move=False, enemy=No
             if run_command:
                 self.state += 1  # run state
 
-            self.range_combat_check = False
             self.command_target = self.base_target
             if revert_move:  # revert subunit without rotate, cannot run in this state
                 self.set_target(target_pos)

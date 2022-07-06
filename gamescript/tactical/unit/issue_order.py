@@ -26,7 +26,6 @@ def issue_order(self, target_pos, run_command=False, revert_move=False, enemy=No
 
         self.command_state = self.state
 
-        self.range_combat_check = False
         self.command_target = self.base_target
         self.new_angle = self.set_rotate()
 
@@ -43,10 +42,9 @@ def issue_order(self, target_pos, run_command=False, revert_move=False, enemy=No
         # if self.charging:
         #     self.leader[0].authority -= self.auth_penalty  # decrease authority of the first leader for stop charge
         #     self.auth_recal()  # recal authority
-
+        # TODO check why pause make unit move when not moving
         self.state = 0  # go into idle state
         self.command_state = self.state  # reset command state
-        self.set_target(self.front_pos)  # set base_target at self
+        self.set_target(self.front_pos)  # set base_target at front of unit
         self.command_target = self.base_target  # reset command base_target
-        self.range_combat_check = False  # reset range combat check
         self.new_angle = self.set_rotate()  # set rotation base_target

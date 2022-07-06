@@ -182,8 +182,8 @@ class TroopData:
         edit_file.close()
 
         # Troop special status effect dict
-        self.special_status_list = {}
-        with open(os.path.join(main_dir, "data", "troop", "troop_special_status.csv"), encoding="utf-8", mode="r") as edit_file:
+        self.special_effect_list = {}
+        with open(os.path.join(main_dir, "data", "troop", "troop_special_effect.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
@@ -195,7 +195,7 @@ class TroopData:
                 for n, i in enumerate(row):
                     if index != 0:  # Skip first row header
                         row = stat_convert(row, n, i, tuple_column=tuple_column, int_column=int_column, true_empty=True)
-                self.special_status_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                self.special_effect_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
 
         # Race dict
@@ -233,7 +233,7 @@ class TroopData:
             int_column = ("ID",)  # value int only
             list_column = ("Trait",)  # value in list only
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect",
-                          "Speed Effect", "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect")
+                          "Speed Effect", "Accuracy Effect", "Reload Effect", "Charge Effect")
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]

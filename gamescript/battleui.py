@@ -161,9 +161,10 @@ class TroopCard(pygame.sprite.Sprite):
         self.font_head = pygame.font.SysFont("curlz", font_size + 4)
         self.font_head.set_italic(True)
         self.font_long = pygame.font.SysFont("helvetica", font_size - 2)
-        self.front_text = ["", "Troop: ", "Stamina: ", "Morale: ", "Discipline: ", "Melee Attack: ",
-                           "Melee Defense: ", "Range Defense: ", "Armour: ", "Speed: ", "Accuracy: ",
-                           "Range: ", "Ammunition: ", "Reload: ", "Charge Power: ", "Charge Defense: ", "Mental: "]  # stat name
+        self.value = {"": "", "Troop: ": 0, "Stamina: ": 0, "Morale: ": 0 , "Discipline: ": 0, "Melee Attack: ": 0,
+                      "Melee Defense: ": 0, "Range Defense: ": 0, "Speed: ": 0, "Accuracy: ": 0,
+                      "Range: ": 0, "Reload: ": 0, "Ammunition: ": 0, "Weapon CD: ": 0, "Charge Power: ": 0,
+                      "Charge Defense: ": 0, "Mental: ": 0}  # stat
 
     def change_pos(self, pos):
         """change position of ui to new one"""
@@ -174,14 +175,26 @@ class TroopCard(pygame.sprite.Sprite):
         make_long_text = utility.make_long_text
         position = 15  # starting row
         position_x = 45  # starting point of text
-        self.value = [who.name, "{:,}".format(int(who.troop_number)) + " (" + "{:,}".format(int(who.max_troop)) + ")",
-                      str(who.stamina).split(".")[0] + ", " + str(self.subunit_state_text[who.state]), str(who.morale).split(".")[0],
-                      str(who.discipline).split(".")[0], str(who.melee_attack).split(".")[0], str(who.melee_def).split(".")[0],
-                      str(who.range_def).split(".")[0], str(who.speed).split(".")[0], str(who.accuracy).split(".")[0],
-                      str(who.shoot_range[0]).split(".")[0], str(who.magazine_count[who.equipped_weapon][0]),
-                      str(who.weapon_cooldown[1]).split(".")[0] + "/" + str(who.reload).split(".")[0] + ": " + str(who.ammo_now[0]),
-                      str(who.charge).split(".")[0], str(who.charge_def).split(".")[0], str(who.mental_text).split(".")[0],
-                      str(who.temperature_count).split(".")[0]]
+        self.value[""] = who.name
+        self.value["Troop: "] = str(who.troop_number) + " (" + str(int(who.max_troop)) + ")"
+        self.value["Stamina: "] = str(int(who.stamina)) + ", " + str(self.subunit_state_text[who.state])
+        self.value["Morale: "] = str(int(who.morale))
+        self.value["Discipline: "] = str(int(who.discipline))
+        self.value["Melee Attack: "] = str(int(who.melee_attack))
+        self.value["Melee Defense: "] = str(int(who.melee_def))
+        self.value["Range Defense: "] = str(int(who.range_def))
+        self.value["Speed: "] = str(int(who.speed))
+        self.value["Accuracy: "] = str(int(who.accuracy))
+        self.value["Range: "] = str(int(who.shoot_range[0]))
+        self.value["Reload: "] = str(int(who.reload))
+        self.value["Weapon CD: "] = str(int(who.weapon_cooldown[0])) + ", " + str(int(who.weapon_cooldown[1]))
+        self.value["Ammunition: "] = str([str(key + key2) + " : " + str(int(value2)) + "/" +
+                                          str(int(who.magazine_count[key][key2])) for key, value in who.ammo_now.items()
+                                          for key2, value2 in value.items()]).replace("'", "").replace("[", "").replace("]", "")
+        self.value["Charge Power: "] = str(int(who.charge))
+        self.value["Charge Defense: "] = str(int(who.charge_def))
+        self.value["Mental: "] = str(int(who.mental_text))
+
         self.value2 = [who.trait, who.skill, who.skill_cooldown, who.skill_effect, who.status_effect]
         self.description = who.description
         if type(self.description) == list:
@@ -189,13 +202,12 @@ class TroopCard(pygame.sprite.Sprite):
         if self.value != self.last_value or change_option == 1 or who.game_id != self.last_who:
             self.image = self.image_original.copy()
             row = 0
-            self.name = self.value[0]
             leader_text = ""
             if who.leader is not None and who.leader.name != "None":
                 leader_text = "/" + str(who.leader.name)
                 if who.leader.state in self.leader_state_text:
                     leader_text += " " + "(" + self.leader_state_text[who.leader.state] + ")"
-            text_surface = self.font_head.render(self.name + leader_text, True,
+            text_surface = self.font_head.render(self.value[""] + leader_text, True,
                                                  (0, 0, 0))  # subunit and leader name at the top
             text_rect = text_surface.get_rect(
                 midleft=(self.image.get_rect()[0] + position_x, self.image.get_rect()[1] + position))
@@ -203,17 +215,17 @@ class TroopCard(pygame.sprite.Sprite):
             row += 1
             position += 20
             if self.option == 1:  # stat card
-                new_value, text = self.value[0:-1], self.front_text[1:]
-                for n, value in enumerate(new_value[1:]):
-                    value = value.replace("inf", "\u221e")  # use infinity sign
-                    text_surface = self.font.render(text[n] + value, True, (0, 0, 0))
-                    text_rect = text_surface.get_rect(
-                        midleft=(self.image.get_rect()[0] + position_x, self.image.get_rect()[1] + position))
-                    self.image.blit(text_surface, text_rect)
-                    position += 20
-                    row += 1
-                    if row == 9:
-                        position_x, position = 200, 35
+                for key, value in self.value.items():
+                    if key != "" and value != "":
+                        value = value.replace("inf", "\u221e")  # use infinity sign
+                        text_surface = self.font.render(key + value, True, (0, 0, 0))
+                        text_rect = text_surface.get_rect(
+                            midleft=(self.image.get_rect()[0] + position_x, self.image.get_rect()[1] + position))
+                        self.image.blit(text_surface, text_rect)
+                        position += 20
+                        row += 1
+                        if row == 9:
+                            position_x, position = 200, 35
             elif self.option == 0:  # description card
                 make_long_text(self.image, self.description, (42, 25), self.font_long)  # blit long description
             elif self.option == 3:  # equipment and terrain
@@ -224,25 +236,22 @@ class TroopCard(pygame.sprite.Sprite):
                 # ^ End terrain text
 
                 # v Equipment text
-                text_value = [
+                text_value = ["Weapon 1: " +
                     self.quality_text[who.primary_main_weapon[1]] + " " + str(weapon_data.weapon_list[who.primary_main_weapon[0]]["Name"]) + " / " +
                     self.quality_text[who.primary_sub_weapon[1]] + " " + str(weapon_data.weapon_list[who.primary_sub_weapon[0]]["Name"]),
-                    self.quality_text[who.secondary_main_weapon[1]] + " " + str(
+                    "Weapon 2: " + self.quality_text[who.secondary_main_weapon[1]] + " " + str(
                         weapon_data.weapon_list[who.secondary_main_weapon[0]]["Name"]) + " / " +
                     self.quality_text[who.secondary_sub_weapon[1]] + " " + str(weapon_data.weapon_list[who.secondary_sub_weapon[0]]["Name"])]
 
-                text_value += ["Melee Damage: " + str(who.weapon_dmg[0]["Physical"]).split(".")[0] + ", Speed" + str(who.original_weapon_speed[0][0]).split(".")[0] +
-                               ", Penetrate: " + str(who.weapon_penetrate[0][0]).split(".")[0]]
-                text_value += ["Range Damage: " + str(who.weapon_dmg[1]["Physical"]).split(".")[0] + ", Speed" + str(who.original_weapon_speed[0][1]).split(".")[0] +
-                               ", Penetrate: " + str(who.weapon_penetrate[0][1]).split(".")[0]]
 
-                text_value += [str(armour_data.armour_list[who.armour_gear[0]]["Name"]) + ", W: " +
+                text_value += ["Armour : " + str(armour_data.armour_list[who.armour_gear[0]]["Name"]) + ", W: " +
                                str(armour_data.armour_list[who.armour_gear[0]]["Weight"]), "Total Weight:" + str(who.weight), "Terrain:" + terrain,
                                "Height:" + str(who.height), "Temperature:" + str(who.temperature_count).split(".")[0]]
 
-                if "None" not in who.mount:  # if mount is not the None mount id 1
+                if who.mount["Name"] != "None":  # if mount is not the None mount id 1
+                    print(who.mount_armour)
                     armour_text = "//" + who.mount_armour["Name"]
-                    if "None" in who.mount_armour["Name"]:
+                    if who.mount_armour["Name"] != "None":
                         armour_text = ""
                     text_value.insert(3, "Mount:" + who.mount_grade["Name"] + " " + who.mount["Name"] + armour_text)
                 # ^ End equipment text

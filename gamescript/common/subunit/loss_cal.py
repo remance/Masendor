@@ -27,7 +27,7 @@ def loss_cal(self, target, final_dmg, final_morale_dmg, leader_dmg, element_effe
         target.block.blit(target.unit_ui_images["ui_squad_combat.png"], target.corner_image_rect)
         target.red_border = True
 
-    for key, value in element_effect.items:
+    for key, value in element_effect.items():
         target.element_status_check[key] += round(final_dmg * value * (100 - target.element_resistance[key] / 100))
 
     self.base_morale += round((final_morale_dmg / 5))  # recover some morale when deal morale dmg to enemy

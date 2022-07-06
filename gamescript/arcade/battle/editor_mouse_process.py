@@ -477,8 +477,7 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                 this_leader.start_set()
 
                             for this_unit in self.battle.all_team_unit["alive"]:
-                                this_unit.player_input(self.command_mouse_pos, False, False, False, self.last_mouseover, None,
-                                                       other_command=1)
+                                this_unit.player_input(self.command_mouse_pos, other_command=1)
                         else:
                             self.warning_msg.warning(warning_list)
                             self.battle_ui_updater.add(self.warning_msg)

@@ -54,8 +54,8 @@ def gone(self, event_text={96: "retreating", 97: "captured", 98: "missing", 99: 
     self.unit.command_buff = ((self.unit.leader[0].melee_command - 5) * 0.1,
                               (self.unit.leader[0].range_command - 5) * 0.1,
                               (self.unit.leader[0].cav_command - 5) * 0.1)  # reset command buff to new leader
-    for this_subunit in self.subunit_list:
-        this_subunit.command_buff = self.command_buff[this_subunit.subunit_type] * 100  # buff according to subunit type
+    for this_subunit in self.unit.subunit_list:
+        this_subunit.command_buff = self.unit.command_buff[this_subunit.subunit_type] * 100  # buff according to subunit type
     self.authority = 0
     self.melee_command = 0
     self.range_command = 0

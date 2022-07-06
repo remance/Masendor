@@ -1,15 +1,25 @@
 def unit_ai(self):
     # Chase unit in base_target and rotate accordingly
-    if self.state in (3, 4, 5, 6, 10) and self.command_state in (3, 4, 5, 6) and self.attack_target is not None and self.hold == 0:
+    if self.state in (3, 4, 5, 6, 10, 11) and self.command_state in (3, 4, 5, 6) and self.attack_target is not None and self.hold == 0:
         if self.attack_target.state != 100:
             if self.collide is False:
-                self.state = self.command_state  # resume melee_attack command
-                if self.base_pos.distance_to(self.attack_target.base_pos) < 10:
-                    self.set_target(self.attack_target.leader_subunit.base_pos)  # set base_target to cloest enemy's side
+                shoot_range = self.max_range
+                if self.use_min_range == 0:  # use minimum range to shoot
+                    shoot_range = self.min_range
+                if self.state in (5, 6) and self.move_rotate is False and (
+                        (self.attack_target is not None and self.base_pos.distance_to(
+                            self.attack_target.base_pos) <= shoot_range)
+                        or self.base_pos.distance_to(self.base_attack_pos) <= shoot_range):  # stop to shoot if target in range
+                    self.set_target(self.front_pos)
+                    self.state = 11
                 else:
-                    self.set_target(self.attack_target.base_pos)
-                self.base_attack_pos = self.base_target
-                self.new_angle = self.set_rotate()  # keep rotating while chasing
+                    self.state = self.command_state  # resume melee_attack command
+                    if self.base_pos.distance_to(self.attack_target.base_pos) < 10:
+                        self.set_target(self.attack_target.leader_subunit.base_pos)  # set base_target to cloest enemy's side
+                    else:
+                        self.set_target(self.attack_target.base_pos)
+                    self.base_attack_pos = self.base_target
+                    self.new_angle = self.set_rotate()  # keep rotating while chasing
         else:  # enemy dead stop chasing
             self.attack_target = None
             self.base_attack_pos = None
