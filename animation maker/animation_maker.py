@@ -2198,6 +2198,11 @@ while True:
                                                                     copy_animation_frame.items()}
                         model.part_name_list[current_frame] = {key: (value[:].copy() if value is not None else value) for key, value in
                                                                copy_name_frame.items()}
+                        for index, selector in enumerate([eye_selector, mouth_selector]):
+                            this_text = "Any"
+                            if face[index] not in (0, 1):
+                                this_text = face[index]
+                            selector.change_name(head_text[index] + str(this_text))
                         model.edit_part(mouse_pos, "change")
 
                 elif part_copy_press:
