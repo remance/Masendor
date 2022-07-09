@@ -1045,7 +1045,7 @@ class Model:
             self.bodypart_list[current_frame] = body_part_history[current_history]
 
         elif "armour" in edit_type:
-            if any(ext in edit_type for ext in p_list) in edit_type:
+            if any(ext in edit_type for ext in p_list):
                 self.armour[edit_type[0:2] + "_armour"] = edit_type.split(edit_type[0:2] + "_armour_")[1]
             main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
             for part in self.sprite_image:
