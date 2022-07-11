@@ -498,7 +498,7 @@ class Subunit(pygame.sprite.Sprite):
 
                 self.state_reset_logic(parent_state)
 
-                parent_state, collide_list = self.combat_logic(dt, parent_state)
+                parent_state, collide_list = self.combat_logic(parent_state)
 
                 if self.angle != self.new_angle:  # Rotate Function
                     self.rotate_logic(dt)

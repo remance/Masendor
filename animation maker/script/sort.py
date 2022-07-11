@@ -48,6 +48,8 @@ def sort_animation(pool, pool_name, header, sort_by):
             hand = value[2]
         elif "Preview" in key:
             action_type = "P"
+        elif "_Skill_" in key:
+            action_type = "S"
         elif "Default" in key:
             action_type = "A"
             hand = "0hand"

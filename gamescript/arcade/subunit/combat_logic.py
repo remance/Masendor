@@ -1,4 +1,4 @@
-def combat_logic(self, dt, combat_timer, parent_state):
+def combat_logic(self, parent_state):
     from gamescript import rangeattack
 
     collide_list = []

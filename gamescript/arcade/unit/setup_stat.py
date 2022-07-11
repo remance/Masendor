@@ -28,7 +28,7 @@ def setup_stat(self, battle_start=False):
             for key in (0, 1):
                 for magazine in subunit.magazine_count[key]:
                     self.ammo += magazine
-                for shoot_range in subunit.shoot_range[key].values():
+                for shoot_range in subunit.shoot_range.values():
                     if shoot_range > 0:
                         all_shoot_range.append(shoot_range)
             subunit.skill_cond = self.skill_cond

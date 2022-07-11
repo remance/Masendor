@@ -550,6 +550,7 @@ class BodyHelper(pygame.sprite.Sprite):
                 text_surface2 = self.font.render(stat2, True, text_colour)
                 shift_x = 50 * screen_scale[0]
                 if any(ext in part for ext in ("effect", "special")):
+                    shift_x = 30 * screen_scale[0]
                     text_rect1 = text_surface1.get_rect(midleft=(self.part_pos[part][0] + shift_x, self.part_pos[part][1] - 10))
                     text_rect2 = text_surface2.get_rect(midleft=(self.part_pos[part][0] + shift_x, self.part_pos[part][1] - 10 + self.font_size + 2))
                 elif "body" in part:
