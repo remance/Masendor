@@ -1,6 +1,4 @@
-def combat_logic(self, parent_state):
-    from gamescript import rangeattack
-
+def combat_logic(self, dt, parent_state):
     collide_list = []
     self.melee_target = None
     if self.enemy_front != [] or self.enemy_side != []:  # Check if in combat or not with collision
@@ -27,7 +25,7 @@ def combat_logic(self, parent_state):
     # if self.state != 10 and self.magazine_left > 0 and self.unit.fire_at_will == 0 and (self.arc_shot or self.frontline) and \
     #         self.charge_momentum == 1:  # Range attack when unit in melee state with arc_shot
     #     self.state = 11
-    #     if self.unit.near_target != {} and (self.attack_target is None or self.attack_pos == 0):
+    #     if self.unit.nearby_enemy != {} and (self.attack_target is None or self.attack_pos == 0):
     #         self.find_shooting_target(parent_state)
     # ^ End melee check
 
@@ -47,7 +45,7 @@ def combat_logic(self, parent_state):
     #     elif self.magazine_left > 0 and self.unit.fire_at_will == 0 and \
     #             (self.state == 0 or (self.state not in (95, 96, 97, 98, 99) and
     #                                  parent_state in (1, 2, 3, 4, 5, 6) and self.shoot_move)):  # Fire at will
-    #         if self.unit.near_target != {} and self.attack_target is None:
+    #         if self.unit.nearby_enemy != {} and self.attack_target is None:
     #             self.find_shooting_target(parent_state)  # shoot the nearest target
     #
     # if self.state in (11, 12, 13) and self.magazine_left > 0 and self.ammo_now == 0:  # reloading magazine_left
@@ -79,7 +77,7 @@ def combat_logic(self, parent_state):
     #                 self.attack_pos = 0  # reset attack_pos to 0
     #                 self.attack_target = None  # reset attack_target to 0
     #
-    #                 for target, pos in self.unit.near_target.items():  # find other nearby base_target to shoot
+    #                 for target, pos in self.unit.nearby_enemy.items():  # find other nearby base_target to shoot
     #                     self.attack_pos = pos
     #                     self.attack_target = target
     #                     break  # found new target, break loop

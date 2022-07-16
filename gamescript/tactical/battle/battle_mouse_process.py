@@ -66,9 +66,7 @@ def battle_mouse_process(self, mouse_left_up, mouse_right_up, double_mouse_right
 
                     self.inspect_selected_border.pop(self.subunit_selected.pos)
                     self.battle_ui_updater.add(self.inspect_selected_border)
-                    self.troop_card_ui.value_input(who=self.subunit_selected.who, weapon_data=self.weapon_data,
-                                                   armour_data=self.armour_data,
-                                                   split=self.split_happen)
+                    self.troop_card_ui.value_input(who=self.subunit_selected.who, split=self.split_happen)
 
                     if self.troop_card_ui.option == 2:  # blit skill icon is previous mode is skill
                         self.trait_skill_icon_blit()
@@ -217,8 +215,7 @@ def battle_mouse_process(self, mouse_left_up, mouse_right_up, double_mouse_right
                                         self.subunit_selected.who.name) + " in " +
                                      self.subunit_selected.who.unit.leader[0].name + "'s unit is selected"], [3])
                                 self.battle_ui_updater.add(self.inspect_selected_border)
-                                self.troop_card_ui.value_input(who=self.subunit_selected.who, weapon_data=self.weapon_data,
-                                                               armour_data=self.armour_data, split=self.split_happen)
+                                self.troop_card_ui.value_input(who=self.subunit_selected.who, split=self.split_happen)
 
                                 if self.troop_card_ui.option == 2:
                                     self.trait_skill_icon_blit()
@@ -251,10 +248,10 @@ def battle_mouse_process(self, mouse_left_up, mouse_right_up, double_mouse_right
                                                mouse_right_down,  double_mouse_right, self.last_mouseover, key_state)
 
     if mouse_right_up and self.current_selected is None and self.click_any is False:  # draw terrain popup ui when right click at map with no selected unit
-        if 0 <= self.battle_mouse_pos[0] <= 999 and \
-                0 <= self.battle_mouse_pos[1] <= 999:  # not draw if pos is off the map
-            terrain_pop, feature_pop = self.battle_map_feature.get_feature(self.battle_mouse_pos, self.battle_map_base)
+        if 1 <= self.command_mouse_pos[0] <= 999 and \
+                1 <= self.command_mouse_pos[1] <= 999:  # not draw if pos is off the map
+            terrain_pop, feature_pop = self.battle_map_feature.get_feature(self.command_mouse_pos, self.battle_map_base)
             feature_pop = self.battle_map_feature.feature_mod[feature_pop]
-            height_pop = self.battle_map_height.get_height(self.battle_mouse_pos)
+            height_pop = self.battle_map_height.get_height(self.command_mouse_pos)
             self.terrain_check.pop(self.mouse_pos, feature_pop, height_pop)
             self.battle_ui_updater.add(self.terrain_check)

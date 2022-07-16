@@ -230,6 +230,7 @@ class Battle:
         self.time_button = main.time_button
         self.command_ui = main.command_ui
         self.troop_card_ui = main.troop_card_ui
+
         self.troop_card_button = main.troop_card_button
         self.inspect_ui = main.inspect_ui
         self.inspect_button = main.inspect_button
@@ -352,6 +353,8 @@ class Battle:
 
         self.weapon_data = self.main.weapon_data
         self.armour_data = self.main.armour_data
+        self.troop_card_ui.weapon_data = self.weapon_data
+        self.troop_card_ui.armour_data = self.armour_data
 
         self.generic_animation_pool = self.main.generic_animation_pool
         self.gen_body_sprite_pool = self.main.gen_body_sprite_pool

@@ -12,12 +12,15 @@ def unit_ai(self):
                         or self.base_pos.distance_to(self.base_attack_pos) <= shoot_range):  # stop to shoot if target in range
                     self.set_target(self.front_pos)
                     self.state = 11
-                else:
-                    self.state = self.command_state  # resume melee_attack command
+                elif self.state == 11 and self.attack_target is not None and \
+                        self.base_pos.distance_to(self.attack_target.base_pos) > shoot_range and self.hold == 0 and self.collide is False:
+                    # chase base_target if it goes out of range and hold condition not hold
+                    self.state = self.command_state  # resume attack command
                     if self.base_pos.distance_to(self.attack_target.base_pos) < 10:
-                        self.set_target(self.attack_target.leader_subunit.base_pos)  # set base_target to cloest enemy's side
+                        self.set_target(self.attack_target.leader_subunit.base_pos)  # set base_target to the closest enemy's side
                     else:
                         self.set_target(self.attack_target.base_pos)
+                    self.state = 0
                     self.base_attack_pos = self.base_target
                     self.new_angle = self.set_rotate()  # keep rotating while chasing
         else:  # enemy dead stop chasing
@@ -30,10 +33,10 @@ def unit_ai(self):
         min_range = self.min_range  # run away from enemy that reach minimum range
         if min_range < 50:
             min_range = 50  # for in case min_range is 0 (melee troop only)
-        target_list = list(self.near_target.values())
+        target_list = list(self.nearby_enemy.values())
         if len(target_list) > 0 and target_list[0].distance_to(self.base_pos) <= min_range:  # if there is any enemy in minimum range
             self.state = 96  # retreating
-            base_target = self.base_pos - ((list(self.near_target.values())[0] - self.base_pos) / 5)  # generate base_target to run away
+            base_target = self.base_pos - ((list(self.nearby_enemy.values())[0] - self.base_pos) / 5)  # generate base_target to run away
 
             if base_target[0] < 1:  # can't run away when reach corner of map same for below if elif
                 base_target[0] = 1

@@ -140,6 +140,9 @@ class TopBar(pygame.sprite.Sprite):
 
 
 class TroopCard(pygame.sprite.Sprite):
+    weapon_data = None
+    armour_data = None
+
     def __init__(self, image, font_size=16):
         from gamescript import game
 
@@ -171,7 +174,7 @@ class TroopCard(pygame.sprite.Sprite):
         self.pos = pos
         self.rect = self.image.get_rect(center=self.pos)
 
-    def value_input(self, who, weapon_data="", armour_data="", button="", change_option=0, split=False):
+    def value_input(self, who, button="", change_option=0, split=False):
         make_long_text = utility.make_long_text
         position = 15  # starting row
         position_x = 45  # starting point of text
@@ -185,11 +188,11 @@ class TroopCard(pygame.sprite.Sprite):
         self.value["Range Defense: "] = str(int(who.range_def))
         self.value["Speed: "] = str(int(who.speed))
         self.value["Accuracy: "] = str(int(who.accuracy))
-        self.value["Range: "] = str(int(who.shoot_range[0]))
+        self.value["Range: "] = str(who.shoot_range).replace("{", "").replace("}", "")
         self.value["Reload: "] = str(int(who.reload))
         self.value["Weapon CD: "] = str(int(who.weapon_cooldown[0])) + ", " + str(int(who.weapon_cooldown[1]))
         self.value["Ammunition: "] = str([str(key + key2) + " : " + str(int(value2)) + "/" +
-                                          str(int(who.magazine_count[key][key2])) for key, value in who.ammo_now.items()
+                                          str(int(who.magazine_size[key][key2])) for key, value in who.magazine_count.items()
                                           for key2, value2 in value.items()]).replace("'", "").replace("[", "").replace("]", "")
         self.value["Charge Power: "] = str(int(who.charge))
         self.value["Charge Defense: "] = str(int(who.charge_def))
@@ -199,7 +202,7 @@ class TroopCard(pygame.sprite.Sprite):
         self.description = who.description
         if type(self.description) == list:
             self.description = self.description[0]
-        if self.value != self.last_value or change_option == 1 or who.game_id != self.last_who:
+        if self.value.values() != self.last_value or change_option == 1 or who.game_id != self.last_who:
             self.image = self.image_original.copy()
             row = 0
             leader_text = ""
@@ -237,19 +240,18 @@ class TroopCard(pygame.sprite.Sprite):
 
                 # v Equipment text
                 text_value = ["Weapon 1: " +
-                    self.quality_text[who.primary_main_weapon[1]] + " " + str(weapon_data.weapon_list[who.primary_main_weapon[0]]["Name"]) + " / " +
-                    self.quality_text[who.primary_sub_weapon[1]] + " " + str(weapon_data.weapon_list[who.primary_sub_weapon[0]]["Name"]),
+                    self.quality_text[who.primary_main_weapon[1]] + " " + str(self.weapon_data.weapon_list[who.primary_main_weapon[0]]["Name"]) + " / " +
+                    self.quality_text[who.primary_sub_weapon[1]] + " " + str(self.weapon_data.weapon_list[who.primary_sub_weapon[0]]["Name"]),
                     "Weapon 2: " + self.quality_text[who.secondary_main_weapon[1]] + " " + str(
-                        weapon_data.weapon_list[who.secondary_main_weapon[0]]["Name"]) + " / " +
-                    self.quality_text[who.secondary_sub_weapon[1]] + " " + str(weapon_data.weapon_list[who.secondary_sub_weapon[0]]["Name"])]
+                        self.weapon_data.weapon_list[who.secondary_main_weapon[0]]["Name"]) + " / " +
+                    self.quality_text[who.secondary_sub_weapon[1]] + " " + str(self.weapon_data.weapon_list[who.secondary_sub_weapon[0]]["Name"])]
 
 
-                text_value += ["Armour : " + str(armour_data.armour_list[who.armour_gear[0]]["Name"]) + ", W: " +
-                               str(armour_data.armour_list[who.armour_gear[0]]["Weight"]), "Total Weight:" + str(who.weight), "Terrain:" + terrain,
+                text_value += ["Armour : " + str(self.armour_data.armour_list[who.armour_gear[0]]["Name"]) + ", W: " +
+                               str(self.armour_data.armour_list[who.armour_gear[0]]["Weight"]), "Total Weight:" + str(who.weight), "Terrain:" + terrain,
                                "Height:" + str(who.height), "Temperature:" + str(who.temperature_count).split(".")[0]]
 
                 if who.mount["Name"] != "None":  # if mount is not the None mount id 1
-                    print(who.mount_armour)
                     armour_text = "//" + who.mount_armour["Name"]
                     if who.mount_armour["Name"] != "None":
                         armour_text = ""
@@ -263,7 +265,7 @@ class TroopCard(pygame.sprite.Sprite):
                     self.image.blit(text_surface, text_rect)
                     position += 20
 
-        self.last_value = self.value
+        self.last_value = self.value.values()
         self.last_who = who.game_id
 
 
@@ -305,7 +307,6 @@ class CommandBar(pygame.sprite.Sprite):
                            (self.inspect_pos[3][0], self.inspect_pos[3][1]))
 
         self.image_original = self.image.copy()
-
 
     def change_pos(self, pos):
         """change position of ui to new one"""

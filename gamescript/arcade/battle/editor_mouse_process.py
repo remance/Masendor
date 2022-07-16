@@ -30,8 +30,7 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                     self.leader_now[self.selected_leader].change_subunit(self.subunit_in_card)
                     self.subunit_in_card.leader = self.leader_now[self.selected_leader]
                     self.preview_authority(self.leader_now)
-                    self.troop_card_ui.value_input(who=self.subunit_in_card, weapon_data=self.weapon_data,
-                                                   armour_data=self.armour_data, change_option=1)
+                    self.troop_card_ui.value_input(who=self.subunit_in_card, change_option=1)
                     unit_dict = self.convert_unit_slot_to_dict("test")
                     if unit_dict is not None:
                         warn_list = []
@@ -95,8 +94,7 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                     self.battle_ui_updater.add(*self.leader_now)  # add leader portrait to draw
                     self.subunit_in_card = slot
                     self.command_ui.value_input(who=self.subunit_in_card)
-                    self.troop_card_ui.value_input(who=self.subunit_in_card, weapon_data=self.weapon_data,
-                                                   armour_data=self.armour_data)  # update subunit card on selected subunit
+                    self.troop_card_ui.value_input(who=self.subunit_in_card)  # update subunit card on selected subunit
                     if self.troop_card_ui.option == 2:
                         self.trait_skill_icon_blit()
                         self.effect_icon_blit()
@@ -182,9 +180,7 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
 
                             if self.subunit_in_card is not None:  # reset subunit card as well
                                 self.command_ui.value_input(who=self.subunit_in_card)
-                                self.troop_card_ui.value_input(who=self.subunit_in_card, weapon_data=self.weapon_data,
-                                                               armour_data=self.armour_data,
-                                                               change_option=1)
+                                self.troop_card_ui.value_input(who=self.subunit_in_card, change_option=1)
                                 if self.troop_card_ui.option == 2:
                                     self.trait_skill_icon_blit()
                                     self.effect_icon_blit()
@@ -301,8 +297,7 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                             self.battle_ui_updater.add(*self.leader_now)  # add leader portrait to draw
                             self.subunit_in_card = slot
                             self.command_ui.value_input(who=self.subunit_in_card)
-                            self.troop_card_ui.value_input(who=self.subunit_in_card, weapon_data=self.weapon_data,
-                                                           armour_data=self.armour_data)  # update subunit card on selected subunit
+                            self.troop_card_ui.value_input(who=self.subunit_in_card)  # update subunit card on selected subunit
                             if self.troop_card_ui.option == 2:
                                 self.trait_skill_icon_blit()
                                 self.effect_icon_blit()
@@ -374,9 +369,7 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                             self.battle_ui_updater.add(*self.leader_now)  # add leader portrait to draw
                                             self.subunit_in_card = slot
                                             self.preview_authority(self.leader_now)
-                                            self.troop_card_ui.value_input(who=self.subunit_in_card,
-                                                                           weapon_data=self.weapon_data,
-                                                                           armour_data=self.armour_data)  # update subunit card on selected subunit
+                                            self.troop_card_ui.value_input(who=self.subunit_in_card)  # update subunit card on selected subunit
                                             if self.troop_card_ui.option == 2:
                                                 self.trait_skill_icon_blit()
                                                 self.effect_icon_blit()

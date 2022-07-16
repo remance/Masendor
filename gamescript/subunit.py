@@ -462,7 +462,7 @@ class Subunit(pygame.sprite.Sprite):
             self.sprite_direction = rotation_dict[min(rotation_list,
                                                       key=lambda x: abs(
                                                           x - self.angle))]  # find closest in list of rotation for sprite direction
-            self.attack_pos = self.unit.base_attack_pos
+            self.attack_pos = None
 
             self.base_target = self.base_pos  # base_target to move
             self.command_target = self.base_pos  # actual base_target outside of combat
@@ -498,7 +498,7 @@ class Subunit(pygame.sprite.Sprite):
 
                 self.state_reset_logic(parent_state)
 
-                parent_state, collide_list = self.combat_logic(parent_state)
+                parent_state, collide_list = self.combat_logic(dt, parent_state)
 
                 if self.angle != self.new_angle:  # Rotate Function
                     self.rotate_logic(dt)

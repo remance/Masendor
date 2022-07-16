@@ -4,9 +4,7 @@ def troop_card_button_click(self, who):
             self.click_any = True
             if self.troop_card_ui.option != button.event:
                 self.troop_card_ui.option = button.event
-                self.troop_card_ui.value_input(who=who, weapon_data=self.weapon_data,
-                                               armour_data=self.armour_data,
-                                               change_option=1, split=self.split_happen)
+                self.troop_card_ui.value_input(who=who, change_option=1, split=self.split_happen)
 
                 if self.troop_card_ui.option == 2:
                     self.trait_skill_icon_blit()

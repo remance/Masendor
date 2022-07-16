@@ -84,7 +84,7 @@ class Unit(pygame.sprite.Sprite):
         self.subunit_object_array = np.full(self.unit_size, None)
         self.leader = []
         self.leader_subunit = None  # subunit that the main unit leader is in, get added in leader first update
-        self.near_target = {}  # list dict of nearby enemy unit, sorted by distance
+        self.nearby_enemy = {}  # list dict of nearby enemy unit, sorted by distance
         self.game_id = game_id  # id of unit for reference in many function
         self.player_control = player_control  # player control or not
         self.start_hp = start_hp  # starting hp percentage
@@ -101,7 +101,7 @@ class Unit(pygame.sprite.Sprite):
 
         self.base_pos = pygame.Vector2(start_pos)  # base_pos is for true pos that is used for battle calculation
         self.last_base_pos = self.base_pos
-        self.base_attack_pos = None  # position of melee_attack base_target
+        self.base_attack_pos = None  # position of attack base_target
         self.angle = start_angle  # start at this angle
         if self.angle == 360:  # 360 is 0 angle at the start, not doing this cause angle glitch when self start
             self.angle = 0
@@ -135,13 +135,12 @@ class Unit(pygame.sprite.Sprite):
         self.direction_arrow = False
         self.rotate_only = False  # Order unit to rotate to base_target direction
         self.charging = False  # For subunit charge skill activation
-        self.forced_melee = False  # Force unit to melee melee_attack
-        self.attack_place = False  # melee_attack position instead of enemy
+        self.forced_melee = False  # Force unit to melee attack
+        self.attack_place = False  # attack position instead of enemy
         self.retreat_start = False
         self.retreat_way = None
         self.collide = False  # for checking if subunit collide, if yes then stop moving
-        self.range_combat_check = False
-        self.attack_target = None  # melee_attack base_target, can be either int or unit object
+        self.attack_target = None  # attack base_target, can be either int or unit object
         self.got_killed = False  # for checking if destroyed() was performed when subunit destroyed yet
         self.forced_march = False
         self.change_faction = False  # For initiating change faction function
@@ -149,7 +148,7 @@ class Unit(pygame.sprite.Sprite):
 
         self.run_toggle = 0  # 0 = double right click to run, 1 = only one right click will make unit run
         self.shoot_mode = 0  # 0 = both arc and non-arc shot, 1 = arc shot only, 2 = forbid arc shot
-        self.attack_mode = 0  # frontline melee_attack, 1 = formation melee_attack, 2 = free for all melee_attack,
+        self.attack_mode = 0  # frontline attack, 1 = formation attack, 2 = free for all attack,
         self.hold = 0  # 0 = not hold, 1 = skirmish/scout/avoid, 2 = hold
         self.fire_at_will = 0  # 0 = fire at will, 1 = no fire
         # ^ End behaviour check
@@ -300,14 +299,14 @@ class Unit(pygame.sprite.Sprite):
                     self.setup_stat()
 
                     # v Find near enemy base_target
-                    self.near_target = {}  # Near base_target is enemy that is nearest
+                    self.nearby_enemy = {}  # Near base_target is enemy that is nearest
                     for team in self.enemy_pos_list.values():
                         for n, enemy_pos in team.items():
-                            self.near_target[n] = pygame.Vector2(enemy_pos).distance_to(self.base_pos)
-                    self.near_target = {k: v for k, v in sorted(self.near_target.items(),
-                                                                key=lambda item: item[1])}  # sort to the closest one
+                            self.nearby_enemy[n] = pygame.Vector2(enemy_pos).distance_to(self.base_pos)
+                    self.nearby_enemy = {k: v for k, v in sorted(self.nearby_enemy.items(),
+                                                                 key=lambda item: item[1])}  # sort to the closest one
                     for n in self.enemy_pos_list:
-                        self.near_target[n] = self.enemy_pos_list[
+                        self.nearby_enemy[n] = self.enemy_pos_list[
                             n]  # change back near base_target list value to vector with sorted order
                     # ^ End find near base_target
 
@@ -324,9 +323,6 @@ class Unit(pygame.sprite.Sprite):
                     self.leader_change = False
                 # ^ End recal stat when leader destroyed
 
-                if self.range_combat_check:
-                    self.state = 11  # can only shoot if range_combat_check is true
-
                 self.unit_ai()
                 # v Morale/authority state function
                 if self.authority <= 0:  # disobey
@@ -340,26 +336,6 @@ class Unit(pygame.sprite.Sprite):
                 self.rotate_logic(dt)  # Rotate Function
 
                 self.movement_logic()
-
-                # v Perform range melee_attack, can only enter range melee_attack state after finishing rotate
-                shoot_range = self.max_range
-                if self.use_min_range == 0:  # use minimum range to shoot
-                    shoot_range = self.min_range
-
-                if self.state in (5, 6) and self.move_rotate is False and (
-                        (self.attack_target is not None and self.base_pos.distance_to(
-                            self.attack_target.base_pos) <= shoot_range)
-                        or self.base_pos.distance_to(self.base_attack_pos) <= shoot_range):  # in shoot range
-                    self.set_target(self.front_pos)
-                    self.range_combat_check = True  # set range combat check to start shooting
-                elif self.state == 11 and self.attack_target is not None and self.base_pos.distance_to(
-                        self.attack_target.base_pos) > shoot_range \
-                        and self.hold == 0 and self.collide is False:  # chase base_target if it goes out of range and hold condition not hold
-                    self.state = self.command_state  # set state to melee_attack command state
-                    self.range_combat_check = False  # stop range combat check
-                    self.set_target(self.attack_target.base_pos)  # move to new base_target
-                    self.new_angle = self.set_rotate()  # also keep rotate to base_target
-                # ^ End range melee_attack state
 
         else:  # destroyed unit
             if self.got_killed is False:

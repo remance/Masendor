@@ -27,8 +27,7 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
 
                     self.inspect_selected_border.pop(self.subunit_selected.pos)
                     self.battle_ui_updater.add(self.inspect_selected_border)
-                    self.troop_card_ui.value_input(who=self.subunit_selected.who, weapon_data=self.weapon_data,
-                                                   armour_data=self.armour_data)
+                    self.troop_card_ui.value_input(who=self.subunit_selected.who)
                 self.battle_ui_updater.remove(*self.leader_now)
 
                 self.add_behaviour_ui(self.current_selected, else_check=True)
@@ -67,8 +66,7 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
     # Update value of the clicked subunit every 1.1 second
     if self.game_state == "battle" and self.inspect and ((self.ui_timer >= 1.1 and self.troop_card_ui.option != 0) or
                                                          self.before_selected != self.current_selected):
-        self.troop_card_ui.value_input(who=self.subunit_selected.who, weapon_data=self.weapon_data,
-                                       armour_data=self.armour_data)
+        self.troop_card_ui.value_input(who=self.subunit_selected.who)
         if self.troop_card_ui.option == 2:  # skill and status effect card
             self.countdown_skill_icon()
             self.effect_icon_blit()

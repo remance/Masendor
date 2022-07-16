@@ -38,11 +38,10 @@ def issue_order(self, target_pos, run_command=False, revert_move=False, enemy=No
             self.leader[0].authority -= self.auth_penalty
             self.authority_recalculation()
 
-    elif other_command == "Stop" and self.state != 10:  # Pause all action command except combat
+    elif other_command == "Stop" and self.state not in (0, 10):  # Pause all action command except combat
         # if self.charging:
         #     self.leader[0].authority -= self.auth_penalty  # decrease authority of the first leader for stop charge
         #     self.auth_recal()  # recal authority
-        # TODO check why pause make unit move when not moving
         self.state = 0  # go into idle state
         self.command_state = self.state  # reset command state
         self.set_target(self.front_pos)  # set base_target at front of unit

@@ -27,8 +27,11 @@ def check_pool():
             for frame_index, frame in enumerate(value):
                 stat_list[animation][direction]["frame properties"][frame_index] = frame["frame_property"]
     for key, value in stat_list.items():
+        race = value[0]
+        action = value[-1]
         frames = {}
         props = {}
+
         for direction, anim_value in value.items():
             frames[direction] = anim_value["frames"]
             props[direction] = anim_value["frame properties"]
