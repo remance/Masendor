@@ -7,16 +7,16 @@ rotation_xy = utility.rotation_xy
 infinity = float("inf")
 
 
-def move_logic(self, dt, parent_state, collide_list):
+def move_logic(self, dt, unit_state, collide_list):
     revert_move = True  # revert move check for in case subunit still need to rotate before moving
-    if parent_state == 0 or self.unit.revert or (self.angle != self.unit.angle and self.unit.move_rotate is False):
+    if unit_state == 0 or self.unit.revert or (self.angle != self.unit.angle and self.unit.move_rotate is False):
         revert_move = False
 
     if (self.base_pos != self.base_target or self.charge_momentum > 1) and \
             (revert_move or self.angle == self.new_angle):  # cannot move if unit still need to rotate
         no_collide_check = False  # can move if front of unit not collided
-        if (((self.unit.collide is False or self.frontline is False) or parent_state == 99)
-                or (parent_state == 10 and ((self.frontline or self.unit.attack_mode == 2) and self.unit.attack_mode != 1)
+        if (((self.unit.collide is False or self.frontline is False) or unit_state == 99)
+                or (unit_state == 10 and ((self.frontline or self.unit.attack_mode == 2) and self.unit.attack_mode != 1)
                     or self.charge_momentum > 1)):
             no_collide_check = True
 
@@ -31,7 +31,7 @@ def move_logic(self, dt, parent_state, collide_list):
 
         if self.stamina > 0 and no_collide_check and enemy_collide_check is False and \
                 (len(self.same_front) == 0 and len(self.friend_front) == 0 or self.state in (96, 98, 99)):
-            if 0 in self.skill_effect and self.base_pos == self.base_target and parent_state == 10:
+            if 0 in self.skill_effect and self.base_pos == self.base_target and unit_state == 10:
                 new_target = self.front_pos - self.base_pos  # keep charging pass original target until momentum run out
                 self.base_target = self.base_target + new_target
                 self.command_target = self.base_target
@@ -42,10 +42,10 @@ def move_logic(self, dt, parent_state, collide_list):
             if move_length > 0:  # movement length longer than 0.1, not reach base_target yet
                 move.normalize_ip()
 
-                if parent_state in (1, 3, 5, 7):  # walking
+                if unit_state in (1, 3, 5, 7):  # walking
                     speed = self.unit.walk_speed / 10  # use walk speed
                     self.walk = True
-                elif parent_state in (10, 99):  # run with its own speed instead of uniformed run
+                elif unit_state in (10, 99):  # run with its own speed instead of uniformed run
                     speed = self.speed / 15  # use its own speed when broken
                     self.run = True
                 else:  # self.state in (2, 4, 6, 10, 96, 98, 99), running

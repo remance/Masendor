@@ -7,12 +7,12 @@ rotation_xy = utility.rotation_xy
 infinity = float("inf")
 
 
-def move_logic(self, dt, parent_state, collide_list):
+def move_logic(self, dt, unit_state, collide_list):
     self.base_target = self.command_target  # always attempt to catch up to command target
     if self.base_pos != self.base_target and (not self.current_action or "movable" in self.current_action):
         no_collide_check = False  # can move if front of unit not collided
-        if (((self.unit.collide is False or self.frontline is False) or parent_state == 99)
-                or (parent_state == 10 and ((self.frontline or self.unit.attack_mode == 2) and self.unit.attack_mode != 1)
+        if (((self.unit.collide is False or self.frontline is False) or unit_state == 99)
+                or (unit_state == 10 and ((self.frontline or self.unit.attack_mode == 2) and self.unit.attack_mode != 1)
                     or self.charge_momentum > 1)):
             no_collide_check = True
 
@@ -27,7 +27,7 @@ def move_logic(self, dt, parent_state, collide_list):
 
         if no_collide_check and enemy_collide_check is False and \
                 (len(self.same_front) == 0 and len(self.friend_front) == 0 or self.state in (96, 98, 99)):
-            if 0 in self.skill_effect and self.base_pos == self.base_target and parent_state == 10:
+            if 0 in self.skill_effect and self.base_pos == self.base_target and unit_state == 10:
                 new_target = self.front_pos - self.base_pos  # keep charging pass original target until momentum run out
                 self.base_target = self.base_target + new_target
                 self.command_target = self.base_target
@@ -36,19 +36,19 @@ def move_logic(self, dt, parent_state, collide_list):
             move_length = move.length()  # convert length
             if move_length > 0:  # movement length longer than 0.1, not reach base_target yet
                 move.normalize_ip()
-                self.state = parent_state
-                if move_length > 5 or parent_state == 99:  # use its own speed when catch up or broken
-                    if parent_state != 99:
+                self.state = unit_state
+                if move_length > 5 or unit_state == 99:  # use its own speed when catch up or broken
+                    if unit_state != 99:
                         self.state = 2
                     speed = self.speed / 2
                     self.run = True
-                elif parent_state in (1, 3, 5, 7):  # walking
+                elif unit_state in (1, 3, 5, 7):  # walking
                     speed = self.unit.walk_speed  # use walk speed
                     self.walk = True
                 else:  # self.state in (2, 4, 6, 10, 96, 98, 99), running
                     speed = self.unit.run_speed  # use run speed
                     self.run = True
-                    if parent_state == 0:
+                    if unit_state == 0:
                         self.state = 2
                 if 0 in self.skill_effect:  # speed gradually decrease with momentum during charge
                     self.state = 4

@@ -4,6 +4,8 @@ import random
 
 import pygame
 import pygame.freetype
+
+from gamescript import rangeattack
 from gamescript.common import utility, animation
 
 rotation_list = (90, 120, 45, 0, -90, -45, -120, 180, -180)
@@ -49,13 +51,15 @@ class Subunit(pygame.sprite.Sprite):
     dmg_cal = empty_method
     element_effect_count = empty_method
     element_threshold_count = empty_method
-    find_close_target = empty_method
+    find_melee_target = empty_method
     find_nearby_subunit = empty_method
+    find_shooting_target = empty_method
     hit_register = empty_method
     loss_cal = empty_method
     make_front_pos = empty_method
     make_pos_range = empty_method
     make_sprite = empty_method
+    pick_animation = empty_method
     process_trait_skill = empty_method
     rotate = empty_method
     special_effect_check = empty_method
@@ -71,12 +75,10 @@ class Subunit(pygame.sprite.Sprite):
     charge_logic = empty_method
     combat_logic = empty_method
     fatigue = empty_method
-    find_shooting_target = empty_method
     gone_leader_process = empty_method
     health_stamina_logic = empty_method
     morale_logic = empty_method
     move_logic = empty_method
-    pick_animation = empty_method
     player_interact = empty_method
     rotate_logic = empty_method
     skill_check_logic = empty_method
@@ -274,7 +276,6 @@ class Subunit(pygame.sprite.Sprite):
         self.secondary_sub_weapon = stat["Secondary Sub Weapon"]
         self.melee_weapon_set = []
         self.range_weapon_set = []
-
         self.weapon_name = ((self.weapon_data.weapon_list[self.primary_main_weapon[0]]["Name"],
                              self.weapon_data.weapon_list[self.primary_sub_weapon[0]]["Name"]),
                             (self.weapon_data.weapon_list[self.secondary_main_weapon[0]]["Name"],
@@ -487,33 +488,33 @@ class Subunit(pygame.sprite.Sprite):
                 self.walk = False  # reset walk
                 self.run = False  # reset run
 
-                parent_state = self.unit.state
+                unit_state = self.unit.state
 
                 if self.timer > 1:  # Update status and skill use around every 1 second
                     self.status_update(weather=weather)
 
-                    self.charge_logic(parent_state)
+                    self.charge_logic(unit_state)
 
                     self.timer -= 1
 
-                self.state_reset_logic(parent_state)
+                self.state_reset_logic(unit_state)
 
-                parent_state, collide_list = self.combat_logic(dt, parent_state)
+                unit_state, collide_list = self.combat_logic(dt, unit_state)
 
                 if self.angle != self.new_angle:  # Rotate Function
                     self.rotate_logic(dt)
 
-                self.move_logic(dt, parent_state, collide_list)  # Move function
+                self.move_logic(dt, unit_state, collide_list)  # Move function
 
                 self.available_skill = []
                 self.skill_check_logic()
 
-                self.morale_logic(dt, parent_state)
+                self.morale_logic(dt, unit_state)
 
                 self.health_stamina_logic(dt)
 
-                if self.state in (98, 99) and (self.base_pos[0] <= 0 or self.base_pos[0] >= 1000 or
-                                               self.base_pos[1] <= 0 or self.base_pos[1] >= 1000):  # remove when unit move pass map border
+                if self.state in (98, 99) and (self.base_pos[0] <= 1 or self.base_pos[0] >= 999 or
+                                               self.base_pos[1] <= 1 or self.base_pos[1] >= 999):  # remove when unit move pass map border
                     self.state = 100  # enter dead state
                     self.battle.flee_troop_number[self.team] += self.troop_number  # add number of troop retreat from battle
                     self.troop_loss(self.troop_number)
@@ -549,6 +550,23 @@ class Subunit(pygame.sprite.Sprite):
                  (done and "repeat" not in self.current_action) or
                  (len(self.current_action) > 1 and type(self.current_action[-1]) == int and self.current_action[-1] not in self.skill_effect) or
                  (self.idle_action and self.idle_action != self.command_action)):
+            if done:  # finish animation, perform something
+                if self.state == 11:
+                    if self.current_action and "Action" in self.current_action[0]:  # shoot arrow
+                        weapon = int(self.current_action[0][-1])
+                        rangeattack.RangeAttack(self, weapon, self.weapon_dmg[weapon],
+                                                self.weapon_penetrate[self.equipped_weapon][weapon],
+                                                self.arrow_speed[self.equipped_weapon][weapon],
+                                                self.base_pos.distance_to(self.attack_pos), self.shoot_range[weapon],
+                                                self.zoom)  # Shoot
+                        self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
+                        if self.ammo_now[self.equipped_weapon][weapon] == 0 and \
+                                self.magazine_count[self.equipped_weapon][weapon] == 0:
+                            self.ammo_now[self.equipped_weapon].pop(weapon)  # remove weapon with no ammo
+                            if len(self.ammo_now[self.equipped_weapon]) == 0:  # remove entire set if no ammo at all
+                                self.ammo_now.pop(self.equipped_weapon)
+                        self.stamina -= self.weapon_weight[self.equipped_weapon][weapon]
+
             self.reset_animation()
             self.interrupt_animation = False
             self.current_action = self.command_action  # continue next action when animation finish

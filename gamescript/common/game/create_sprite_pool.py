@@ -28,6 +28,12 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                 secondary_sub_weapon = this_subunit["Secondary Sub Weapon"][0]
                 armour = (self.armour_data.armour_list[this_subunit["Armour"][0]]["Name"],
                           self.troop_data.mount_armour_list[this_subunit["Mount"][2]]["Name"])
+
+                skill_list = this_subunit["Skill"] + self.weapon_data.weapon_list[primary_main_weapon]["Skill"] + \
+                             self.weapon_data.weapon_list[primary_sub_weapon]["Skill"] + \
+                             self.weapon_data.weapon_list[secondary_main_weapon]["Skill"] + \
+                             self.weapon_data.weapon_list[secondary_sub_weapon]["Skill"]
+
                 subunit_weapon_list = [(self.weapon_data.weapon_list[primary_main_weapon]["Name"],
                                         self.weapon_data.weapon_list[primary_sub_weapon]["Name"])]
 
@@ -43,7 +49,7 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                                                       self.generic_action_data[subunit_weapon_list[1][1]]["Common"])]
                     weapon_attack_action = [weapon_attack_action[0], (self.generic_action_data[subunit_weapon_list[1][0]]["Attack"],
                                                                        self.generic_action_data[subunit_weapon_list[1][1]]["Attack"])]
-                if preview:  # only create random right side sprite
+                if preview:  # only create random right side sprite for preview in lorebook
                     animation = [this_animation for this_animation in self.generic_animation_pool[0] if race in this_animation and "&" not in this_animation]  # TODO remove last condition when has mount
                     animation = [this_animation for this_animation in animation
                                  if (any(ext in this_animation for ext in weapon_common_type_list) is False or
@@ -53,7 +59,7 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                  and "Default" not in this_animation]  # get animation with weapon
                     if len(animation) > 0:
                         animation = random.choice(animation)  # random animation
-                    else:
+                    else:  # no animation found, use race default
                         animation = race+"_Default"
 
                     frame_data = random.choice(self.generic_animation_pool[1][animation])  # random frame
@@ -91,27 +97,24 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                 for weapon_index, weapon in enumerate(weapon_set):
                                     # first check if animation is common weapon type specific and match with weapon, then check if it is attack specific
                                     make_animation = True
-                                    animation_type = "normal"
-                                    name_input = animation
-                                    if any(ext in animation for ext in weapon_common_type_list) or "_Skill_" in animation:  # weapon or skill action animation
-                                        animation_type = "weapon"
-                                        name_input = animation + "/" + str(weapon_set_index)
-
-                                    if animation_type == "normal":  # other animation that does not use weapon
+                                    name_input = animation + "/" + str(weapon_set_index)
+                                    if (any(ext in animation for ext in weapon_common_type_list) is False or
+                                        weapon_common_action[weapon_set_index][weapon_index] in animation) and \
+                                            (any(ext in animation for ext in weapon_attack_type_list) is False or (
+                                                    weapon_attack_action[weapon_set_index][weapon_index] in animation and
+                                                    ("Main", "Sub")[weapon_index] in animation)):
                                         if name_input not in animation_sprite_pool[subunit_id]:
                                             animation_sprite_pool[subunit_id][name_input] = {}
-                                        else:
-                                            make_animation = False
-                                    elif animation_type == "weapon":
-                                        if (any(ext in animation for ext in weapon_common_type_list) is False or
-                                            weapon_common_action[weapon_set_index][weapon_index] in animation) and \
-                                                (any(ext in animation for ext in weapon_attack_type_list) is False or (
-                                                        weapon_attack_action[weapon_set_index][weapon_index] in animation and
-                                                        ("Main", "Sub")[weapon_index] in animation)):
-                                            if name_input not in animation_sprite_pool[subunit_id]:
-                                                animation_sprite_pool[subunit_id][name_input] = {}
-                                        else:
-                                            make_animation = False
+                                    else:  # duplicate two set of weapon, no need to make animation for second set
+                                        make_animation = False
+
+                                    if "_Skill_" in animation:  # skill animation
+                                        make_animation = False  # not make animation for troop with no related skill animation
+                                        for skill in skill_list:
+                                            if self.troop_data.skill_list[skill]["Action"][0] in animation:
+                                                make_animation = True
+                                                break
+
                                     if make_animation:
                                         for index, direction in enumerate(direction_list):
                                             new_direction = direction

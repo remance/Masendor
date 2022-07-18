@@ -1,7 +1,7 @@
 import random
 
 
-def find_close_target(self, subunit_list):
+def find_melee_target(self, subunit_list):
     """Find close enemy subunit to move to fight"""
     close_list = {subunit: subunit.base_pos.distance_to(self.base_pos) for subunit in subunit_list}
     close_list = dict(sorted(close_list.items(), key=lambda item: item[1]))

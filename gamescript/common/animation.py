@@ -58,6 +58,7 @@ def reset_animation(self):
     self.animation_timer = 0
     self.interrupt_animation = True
 
+
 def apply_colour(surface, colour=None, colour_list=None):
     """Colorise body part sprite"""
     if colour is not None and colour != "none":

@@ -54,7 +54,6 @@ class WeaponData:
         edit_file.close()
         self.quality = (0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75)  # Quality modifier to weapon stat
 
-
 class ArmourData:
     def __init__(self, main_dir, images, ruleset):
         """
