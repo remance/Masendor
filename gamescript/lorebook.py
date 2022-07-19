@@ -9,28 +9,15 @@ class Lorebook(pygame.sprite.Sprite):
     concept_lore = None
     history_stat = None
     history_lore = None
-    faction_lore = None
-    troop_list = None
-    troop_lore = None
-    armour_list = None
-    weapon_list = None
-    mount_list = None
-    mount_armour_list = None
-    status_list = None
-    skill_list = None
-    trait_list = None
+
+    faction_data = None
+    troop_data = None
+    armour_data = None
+    weapon_data = None
     leader_data = None
-    leader_lore = None
-    feature_mod = None
-    landmark_data = None
-    weather_data = None
-    troop_grade_list = None
-    troop_class_list = None
-    leader_class_list = None
-    mount_grade_list = None
-    race_list = None
-    unit_state_text = None
+    battle_map_data = None
     preview_sprite_pool = None
+    unit_state_text = None
 
     concept_section = 0
     history_section = 1
@@ -70,8 +57,11 @@ class Lorebook(pygame.sprite.Sprite):
         self.portrait = None
         self.preview_sprite = None
 
+        # some section get stat from multiple list, need to keep track of last item index
         self.equipment_stat = {}
         self.equipment_last_index = []
+        self.skill_stat = {}
+        self.skill_last_index = []
         self.section_list = ()
 
         self.current_subsection_row = 0
@@ -82,26 +72,36 @@ class Lorebook(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(self.screen_rect.width / 1.9, self.screen_rect.height / 1.9))
 
     def change_ruleset(self):
-        # v Make new equipment list that contain all type weapon, armour, mount
+        # Make new equipment list that contain all type weapon, armour, mount
         self.equipment_stat = {}
         run = 1
         self.equipment_last_index = []
-        for stat_list in (self.weapon_list, self.armour_list, self.mount_list, self.mount_armour_list):
+        for stat_list in (self.weapon_data.weapon_list, self.armour_data.armour_list, self.troop_data.mount_list,
+                          self.troop_data.mount_armour_list):
             for index in stat_list:
                 if index != "ID":
                     self.equipment_stat[run] = stat_list[index]
                     run += 1
-                else:
-                    self.equipment_stat[index + str(run)] = stat_list[index]
             self.equipment_last_index.append(run)
-        # ^ End new equipment list
+
+        # Make new skill list that contain all troop and leader skills
+        self.skill_stat = {}
+        run = 1
+        self.skill_last_index = []
+        for stat_list in (self.troop_data.skill_list, self.leader_data.skill_list):
+            for index in stat_list:
+                if index != "ID":
+                    self.skill_stat[run] = stat_list[index]
+                    run += 1
+            self.skill_last_index.append(run)
+
 
         self.section_list = (
-            (self.concept_stat, self.concept_lore), (self.history_stat, self.history_lore), (self.faction_lore, None),
-            (self.troop_list, self.troop_lore),
-            (self.equipment_stat, None), (self.status_list, None), (self.skill_list, None),
-            (self.trait_list, None), (self.leader_data.leader_list, self.leader_lore), (self.feature_mod, None),
-            (self.weather_data, None))
+            (self.concept_stat, self.concept_lore), (self.history_stat, self.history_lore),
+            (self.faction_data.faction_list, None), (self.troop_data.troop_list, self.troop_data.troop_lore),
+            (self.equipment_stat, None), (self.troop_data.status_list, None), (self.skill_stat, None),
+            (self.troop_data.trait_list, None), (self.leader_data.leader_list, self.leader_data.leader_lore),
+            (self.battle_map_data.feature_mod, None), (self.battle_map_data.weather_data, None))
 
     def change_page(self, page, page_button, main_ui, portrait=None):
         """Change page of the current subsection, either next or previous page"""
@@ -196,7 +196,7 @@ class Lorebook(pygame.sprite.Sprite):
                 stuff.kill()
                 del stuff
 
-        loop_list = [item for item in list(self.stat_data.keys()) if type(item) != str]
+        loop_list = [item for item in self.stat_data.keys() if type(item) != str]
         for index, item in enumerate(self.subsection_list):
             if index >= self.current_subsection_row:
                 list_group.add(
@@ -267,116 +267,147 @@ class Lorebook(pygame.sprite.Sprite):
             # more complex section
             elif self.section in (self.troop_section, self.equipment_section, self.status_section, self.skill_section, self.trait_section,
                                   self.leader_section, self.terrain_section, self.weather_section):
-                front_text = {key: value for key, value in stat.items() if key not in ("Name", "Description", "ImageID")}
+                front_text = {key: value for key, value in stat.items() if key not in ("Name", "Description", "Forcedimageid")}
                 for key, value in front_text.items():
                     if value != "":
                         if self.section != self.equipment_section:  # equipment section need to be processed differently
                             create_text = key + ": " + str(value)
-                            if self.section == self.troop_section:
-                                if key == "Role":  # Replace imageid to subunit role in troop section
-                                    role_list = {0: "None", 1: "Offensive", 2: "Defensive", 3: "Skirmisher", 4: "Shock",
-                                                 5: "Support", 6: "Magic",
-                                                 7: "Ambusher",
-                                                 8: "Sniper", 9: "Recon"}
-                                    role = [role_list[item] for item in
-                                            value]  # role is not type, it represents subunit classification from base stat to tell what it excels
-                                    create_text = "Specilaised Role: "
-                                    if len(role) == 0:
-                                        create_text += "None, "
-                                    for this_role in role:
-                                        create_text += this_role + ", "
-                                    create_text = create_text[0:-2]
-                                elif key == "Type":
-                                    create_text = ""
-                                    pass
-                            elif key == "Properties":  # troop properties list
-                                trait_list = ""
-                                if value != [0]:
-                                    for this_text in value:
-                                        if this_text in self.trait_list:  # in case user put in trait not existed in ruleset
-                                            trait_list += self.trait_list[this_text][0] + ", "
-                                    trait_list = trait_list[0:-2]
-                                    create_text = key + ": " + trait_list
-                                else:
-                                    create_text = ""
-                                    pass
-
-                            elif key == "Status" or key == "Enemy Status":  # status list
-                                status_list = ""
-                                if value != [0]:
-                                    for this_text in value:
-                                        if this_text in self.status_list:  # in case user put in trait not existed in ruleset
-                                            status_list += self.status_list[this_text]["Name"] + ", "
-                                    status_list = status_list[0:-2]
-                                    create_text = key + ": " + status_list
-                                else:
-                                    create_text = ""
-                                    pass
-
-                            if self.section == self.troop_section:  # troop section
-                                if key == "Grade":  # grade text instead of number
-                                    create_text = key + ": " + self.troop_grade_list[value]["Name"]
-
-                                elif "Weapon" in key:  # weapon text with quality
+                            if key == "Ruleset":
+                                create_text = ""
+                            if self.section == self.troop_section or self.section == self.leader_section:  # troop section
+                                if "Weapon" in key:  # weapon text with quality
                                     quality_text = (
                                         "Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
-                                    create_text = key + ": " + quality_text[value[1]] + " " +  self.weapon_list[value[0]]["Name"]
+                                    create_text = key + ": " + quality_text[value[1]] + " " + \
+                                                  self.weapon_data.weapon_list[value[0]]["Name"]
 
                                 elif key == "Armour":  # armour text with quality
                                     quality_text = (
                                         "Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
-                                    create_text = key + ": " + quality_text[value[1]] + " " + self.armour_list[value[0]]["Name"] \
+                                    create_text = key + ": " + quality_text[value[1]] + " " + \
+                                                  self.armour_data.armour_list[value[0]]["Name"] \
                                         # + ", Base Armour: " + str( self.armour_list[text[0]][1])
 
-                                elif key == "Unit Type":
-                                    create_text = key + ": " + self.troop_class_list[value]["Name"]
-
                                 elif key == "Race":
-                                    create_text = key + ": " + self.race_list[value]["Name"]
+                                    create_text = key + ": " + self.troop_data.race_list[value]["Name"]
 
                                 elif key == "Mount":  # mount text with grade
-                                    create_text = key + ": " + self.mount_grade_list[value[1]]["Name"] + " " + \
-                                                  self.mount_list[value[0]]["Name"] + "//" + self.mount_armour_list[value[2]]["Name"]
-                                    if self.mount_list[value[0]]["Name"] == "None":
+                                    create_text = key + ": " + self.troop_data.mount_grade_list[value[1]][
+                                        "Name"] + " " + \
+                                                  self.troop_data.mount_list[value[0]]["Name"] + "//" + \
+                                                  self.troop_data.mount_armour_list[value[2]]["Name"]
+                                    if self.troop_data.mount_list[value[0]]["Name"] == "None":
                                         create_text = ""
                                         pass
 
-                                elif key == "Abilities" or key == "Charge Skill":  # skill text instead of number
-                                    skill_list = ""
-                                    if key == "Charge Skill":
-                                        if value in self.skill_list:  # only include skill if exist in ruleset
-                                            skill_list += self.skill_list[value]["Name"]
-                                        create_text = key + ": " + skill_list
-                                        # + ", Base Speed: " + str(speed)  # add subunit speed after
-                                    elif value != [0]:
+                                elif key == "Trait":  # troop properties list
+                                    trait_list = ""
+                                    if 0 not in value:
                                         for this_text in value:
-                                            if this_text in self.skill_list:  # only include skill in ruleset
-                                                skill_list += self.skill_list[this_text]["Name"] + ", "
-                                        skill_list = skill_list[0:-2]
-                                        create_text = key + ": " + skill_list
+                                            if this_text in self.troop_data.trait_list:  # in case user put in trait not existed in ruleset
+                                                trait_list += self.troop_data.trait_list[this_text]["Name"] + ", "
+                                        trait_list = trait_list[0:-2]
+                                        create_text = key + ": " + trait_list
+
+                                    else:
+                                            create_text = ""
+                                            pass
+
+                                if self.section == self.troop_section:  # troop section
+                                    if key == "Grade":  # grade text instead of number
+                                        create_text = key + ": " + self.troop_data.grade_list[value]["Name"]
+
+                                    elif key == "Troop Type":
+                                        create_text = key + ": " + self.troop_data.troop_class_list[value]["Name"]
+
+                                    elif "Skill" in key:  # skill text instead of number
+                                        skill_list = ""
+                                        if key == "Charge Skill":
+                                            if value in self.troop_data.skill_list:  # only include skill if exist in ruleset
+                                                skill_list += self.troop_data.skill_list[value]["Name"]
+                                            create_text = key + ": " + skill_list
+                                            # + ", Base Speed: " + str(speed)  # add subunit speed after
+                                        elif 0 not in value:
+                                            for this_text in value:
+                                                if this_text in self.troop_data.skill_list:  # only include skill in ruleset
+                                                    skill_list += self.troop_data.skill_list[this_text]["Name"] + ", "
+                                            skill_list = skill_list[0:-2]
+                                            create_text = key + ": " + skill_list
+                                        else:
+                                            create_text = ""
+                                            pass
+
+                                    elif key == "Role":  # Replace imageid to subunit role in troop section
+                                        role_list = {0: "None", 1: "Offensive", 2: "Defensive", 3: "Skirmisher", 4: "Shock",
+                                                     5: "Support", 6: "Magic",
+                                                     7: "Ambusher",
+                                                     8: "Sniper", 9: "Recon"}
+                                        role = [role_list[item] for item in
+                                                value]  # role is not type, it represents subunit classification from base stat to tell what it excels
+                                        create_text = "Specilaised Role: "
+                                        if len(role) == 0:
+                                            create_text += "None, "
+                                        for this_role in role:
+                                            create_text += this_role + ", "
+                                        create_text = create_text[0:-2]
+
+                                    elif key == "Type":
+                                        create_text = ""
+                                        pass
+
+                                else:  # leader section
+                                    if key in ("Melee Command", "Range Command", "Cavalry Command", "Combat"):
+                                        create_text = key + ": " + self.leader_text[value]
+
+                                    elif key == "Social Class":
+                                        create_text = key + ": " + self.leader_data.leader_class[value][
+                                            "Leader Social Class"]
+
+                                    elif key == "Skill":  # skill text instead of number
+                                        skill_list = ""
+                                        if 0 not in value:
+                                            for this_text in value:
+                                                if this_text in self.leader_data.skill_list:  # only include skill in ruleset
+                                                    skill_list += self.leader_data.skill_list[this_text]["Name"] + ", "
+                                            skill_list = skill_list[0:-2]
+                                            create_text = key + ": " + skill_list
+                                        else:
+                                            create_text = ""
+                                            pass
+
+                                    elif key == "Formation":
+                                        create_text = key + ": " + str(value).replace("[", "").replace("]", "").\
+                                            replace("'", "")
+
+                            elif self.section in (self.skill_section, self.trait_section, self.status_section):
+                                if key == "Status" or key == "Enemy Status":  # status list
+                                    status_list = ""
+                                    if 0 not in value:
+                                        for this_text in value:
+                                            if this_text in self.troop_data.status_list:  # in case user put in trait not existed in ruleset
+                                                status_list += self.troop_data.status_list[this_text]["Name"] + ", "
+                                        status_list = status_list[0:-2]
+                                        create_text = key + ": " + status_list
                                     else:
                                         create_text = ""
                                         pass
+                                if self.section == self.skill_section:
+                                    if key == "Restriction" or key == "Condition":  # skill restriction and condition
+                                        state_list = ""
+                                        if value != "":
+                                            for this_text in value:
+                                                state_list += self.unit_state_text[this_text] + ", "
+                                            state_list = state_list[0:-2]  # remove the last ", "
+                                            create_text = key + ": " + state_list
+                                        else:
+                                            create_text = ""
+                                            pass
 
-                            elif self.section == self.skill_section and (key == "Restriction" or
-                                                                         key == "Condition"):  # skill restriction and condition in skill section
-                                state_list = ""
-                                if value != "":
-                                    for this_text in value:
-                                        state_list += self.unit_state_text[this_text] + ", "
-                                    state_list = state_list[0:-2]  # remove the last ", "
-                                    create_text = key + ": " + state_list
-                                else:
+                                    elif key == "Troop Type":
+                                        create_text = key + ": " + ("Any", "Infantry", "Cavalry")[value]
+
+                                if value in (0, 1):
                                     create_text = ""
-                                    pass
-
-                            elif self.section == self.leader_section:  # leader section
-                                if key in (
-                                        "Melee Command", "Range Command", "Cavalry Command", "Combat"):
-                                    create_text = key + ": " + self.leader_text[value]
-
-                                elif key == "Social Class":
-                                    create_text = key + ": " + self.leader_class_list[value]["Leader Social Class"]
 
                         else:  # equipment section, header depends on equipment type
                             create_text = key + ": " + str(value)
@@ -387,10 +418,10 @@ class Lorebook(pygame.sprite.Sprite):
 
                             elif key == "Properties":
                                 trait_list = ""
-                                if value != [0]:
+                                if 0 not in value:
                                     for this_text in value:
-                                        if this_text in self.trait_list:  # in case user put in trait not existed in ruleset
-                                            trait_list += self.trait_list[this_text][0] + ", "
+                                        if this_text in self.troop_data.trait_list:  # in case user put in trait not existed in ruleset
+                                            trait_list += self.troop_data.trait_list[this_text][0] + ", "
                                     trait_list = trait_list[0:-2]
                                     create_text = key + ": " + trait_list
                                 else:

@@ -505,7 +505,6 @@ class LeaderData:
                     self.commander_skill_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
-
         # Lore of the leader dict
         self.leader_lore = {}
         with open(os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader", "leader_lore.csv"), encoding="utf-8", mode="r") as edit_file:
