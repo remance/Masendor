@@ -712,26 +712,12 @@ class Game:
                                                            who_todo, preview=True)
 
         # Encyclopedia
-        lorebook.Lorebook.faction_lore = self.faction_data.faction_list
-        lorebook.Lorebook.troop_list = self.troop_data.troop_list
-        lorebook.Lorebook.troop_lore = self.troop_data.troop_lore
-        lorebook.Lorebook.armour_list = self.armour_data.armour_list
-        lorebook.Lorebook.weapon_list = self.weapon_data.weapon_list
-        lorebook.Lorebook.mount_list = self.troop_data.mount_list
-        lorebook.Lorebook.mount_armour_list = self.troop_data.mount_armour_list
-        lorebook.Lorebook.status_list = self.troop_data.status_list
-        lorebook.Lorebook.skill_list = self.troop_data.skill_list
-        lorebook.Lorebook.trait_list = self.troop_data.trait_list
+        lorebook.Lorebook.faction_data = self.faction_data
+        lorebook.Lorebook.troop_data = self.troop_data
+        lorebook.Lorebook.armour_data = self.armour_data
+        lorebook.Lorebook.weapon_data = self.weapon_data
         lorebook.Lorebook.leader_data = self.leader_data
-        lorebook.Lorebook.leader_lore = self.leader_data.leader_lore
-        lorebook.Lorebook.feature_mod = self.battle_map_data.feature_mod
-        lorebook.Lorebook.weather_data = self.battle_map_data.weather_data
-        lorebook.Lorebook.landmark_data = None
-        lorebook.Lorebook.troop_grade_list = self.troop_data.grade_list
-        lorebook.Lorebook.troop_class_list = self.troop_data.role
-        lorebook.Lorebook.leader_class_list = self.leader_data.leader_class
-        lorebook.Lorebook.mount_grade_list = self.troop_data.mount_grade_list
-        lorebook.Lorebook.race_list = self.troop_data.race_list
+        lorebook.Lorebook.battle_map_data = self.battle_map_data
         lorebook.Lorebook.screen_rect = self.screen_rect
         lorebook.Lorebook.unit_state_text = self.unit_state_text
         lorebook.Lorebook.preview_sprite_pool = self.preview_sprite_pool
