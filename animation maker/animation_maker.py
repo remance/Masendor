@@ -828,20 +828,21 @@ class Model:
     def create_joint(self, pose_layer_list):
         for index, layer in enumerate(pose_layer_list):
             part = self.animation_part_list[current_frame][layer]
-            name_check = layer
-            if any(ext in name_check for ext in p_list):
-                name_check = name_check[3:]  # remove p*number*_
-            if self.part_name_list[current_frame][layer] is not None and \
-                    name_check in skel_joint_list[direction_list.index(self.part_name_list[current_frame][layer][1])]:
-                for index2, item in enumerate(
-                        skel_joint_list[direction_list.index(self.part_name_list[current_frame][layer][1])][name_check]):
-                    joint_type = 0  # main
-                    if index2 > 0:
-                        joint_type = 1
-                    joint_pos = list(item.values())[0]
-                    pos = (part[2][0] + (joint_pos[0] - (part[0].get_width() / 2)),
-                           part[2][1] + (joint_pos[1] - (part[0].get_height() / 2)))
-                    Joint(joint_type, layer, name_check, (pos[0] / self.size, pos[1] / self.size), part[3])
+            if part[0] is not None:
+                name_check = layer
+                if any(ext in name_check for ext in p_list):
+                    name_check = name_check[3:]  # remove p*number*_
+                if self.part_name_list[current_frame][layer] is not None and \
+                        name_check in skel_joint_list[direction_list.index(self.part_name_list[current_frame][layer][1])]:
+                    for index2, item in enumerate(
+                            skel_joint_list[direction_list.index(self.part_name_list[current_frame][layer][1])][name_check]):
+                        joint_type = 0  # main
+                        if index2 > 0:
+                            joint_type = 1
+                        joint_pos = list(item.values())[0]
+                        pos = (part[2][0] + (joint_pos[0] - (part[0].get_width() / 2)),
+                               part[2][1] + (joint_pos[1] - (part[0].get_height() / 2)))
+                        Joint(joint_type, layer, name_check, (pos[0] / self.size, pos[1] / self.size), part[3])
 
     def grab_face_part(self, race, side, part, part_check, part_default=None):
         """For creating body part like eye or mouth in animation that accept any part (1) so use default instead"""
@@ -928,8 +929,11 @@ class Model:
                             new_part_name = part_name
                         if "r_" in part_name[0:2] or "l_" in part_name[0:2]:
                             new_part_name = part_name[2:]  # remove side
-                        self.sprite_image[stuff] = gen_body_sprite_pool[bodypart_list[stuff][0]][bodypart_list[stuff][1]][new_part_name][
-                            bodypart_list[stuff][2]].copy()
+                        try:
+                            self.sprite_image[stuff] = gen_body_sprite_pool[bodypart_list[stuff][0]][bodypart_list[stuff][1]][new_part_name][
+                                bodypart_list[stuff][2]].copy()
+                        except KeyError:  # no part name known for current race or direction, skip getting image
+                            pass
                         if any(ext in stuff for ext in p_list) and self.armour[stuff[0:2] + "_armour"] != "None":
                             try:
                                 armour = self.armour[stuff[0:2] + "_armour"].split("/")
@@ -1038,7 +1042,9 @@ class Model:
                     except TypeError:  # None type
                         pass
                     except KeyError:  # change side and not found part with same name
-                        self.part_name_list[current_frame][part_index][2] = ""
+                        self.bodypart_list[current_frame][part_index][2] = None
+                        self.part_name_list[current_frame][part_index][2] = None
+                        self.animation_part_list[current_frame][part_index][0] = None
 
         elif edit_type == "undo" or edit_type == "redo":
             self.part_name_list[current_frame] = part_name_history[current_history]

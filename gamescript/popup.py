@@ -14,8 +14,8 @@ class TerrainPopup(pygame.sprite.Sprite):
                     1366 * 768))  # For adjusting the image and text according to screen size
         self.image = pygame.transform.scale(self.images[0], (int(self.images[0].get_width() * self.scale_adjust),
                                                              int(self.images[0].get_height() * self.scale_adjust)))
-        self.font = pygame.font.SysFont("helvetica", int(16 * self.scale_adjust))
-        self.height_font = pygame.font.SysFont("helvetica", int(12 * self.scale_adjust))
+        self.font = pygame.font.SysFont("helvetica", int(24 * self.scale_adjust))
+        self.height_font = pygame.font.SysFont("helvetica", int(18 * self.scale_adjust))
         self.img_pos = ((24 * self.scale_adjust, 34 * self.scale_adjust), (24 * self.scale_adjust, 53 * self.scale_adjust),  # inf speed, inf atk
                         (24 * self.scale_adjust, 70 * self.scale_adjust), (58 * self.scale_adjust, 34 * self.scale_adjust),  # inf def, cav speed
                         (58 * self.scale_adjust, 53 * self.scale_adjust), (58 * self.scale_adjust, 70 * self.scale_adjust),  # cav atk, cav def
@@ -31,7 +31,7 @@ class TerrainPopup(pygame.sprite.Sprite):
         self.pos = pos  # position to draw the image on screen
 
         # v Terrain feature name
-        text_surface = self.font.render(feature[0], True, (0, 0, 0))
+        text_surface = self.font.render(feature["Name"], True, (0, 0, 0))
         text_rect = text_surface.get_rect(topleft=(5, 5))
         self.image.blit(text_surface, text_rect)
         # ^ End terrain feature
@@ -43,35 +43,35 @@ class TerrainPopup(pygame.sprite.Sprite):
         # End height
 
         for index, img_pos in enumerate(self.img_pos[0:6]):  # text for each stat modifier
-            if feature[index + 1] == 1:  # draw circle if modifier is 1 (no effect to stat)
+            if tuple(feature.values())[index + 1] == 1:  # draw circle if modifier is 1 (no effect to stat)
                 image_rect = self.images[7].get_rect(center=img_pos)  # images[7] is circle icon image
                 self.image.blit(self.images[7], image_rect)
             else:  # upper or lower (^v) arrow icon to indicate modifier level
                 for mod_index, mod in enumerate(self.mod_list):  # loop to find ^v arrow icon for the modifier
-                    if feature[index + 1] >= mod:  # draw appropriate icon if modifier is higher than the number of list item
+                    if tuple(feature.values())[index + 1] >= mod:  # draw appropriate icon if modifier is higher than the number of list item
                         image_rect = self.images[mod_index + 1].get_rect(center=img_pos)
                         self.image.blit(self.images[mod_index + 1], image_rect)
                         break  # found arrow image to blit end loop
 
         # v range def modifier for both infantry and cavalry
-        if feature[7] == 0:  # no bonus, draw circle
+        if feature["Range Defense Bonus"] == 0:  # no bonus, draw circle
             image_rect = self.images[7].get_rect(center=self.img_pos[6])
             self.image.blit(self.images[7], image_rect)
         else:
             for mod_index, mod in enumerate(self.bonus_list):
-                if feature[7] >= mod:
+                if feature["Range Defense Bonus"] >= mod:
                     image_rect = self.images[mod_index + 1].get_rect(center=self.img_pos[6])
                     self.image.blit(self.images[mod_index + 1], image_rect)
                     break
         # ^ End range def modifier
 
         # v discipline modifier for both infantry and cavalry
-        if feature[9] == 0:
+        if feature["Discipline Bonus"] == 0:
             image_rect = self.images[7].get_rect(center=self.img_pos[7])
             self.image.blit(self.images[7], image_rect)
         else:
             for mod_index, mod in enumerate(self.bonus_list):
-                if feature[9] >= mod:
+                if feature["Discipline Bonus"] >= mod:
                     image_rect = self.images[mod_index + 1].get_rect(center=self.img_pos[7])
                     self.image.blit(self.images[mod_index + 1], image_rect)
                     break
