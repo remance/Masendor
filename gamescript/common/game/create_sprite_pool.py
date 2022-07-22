@@ -26,16 +26,16 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                 primary_sub_weapon = this_subunit["Primary Sub Weapon"][0]
                 secondary_main_weapon = this_subunit["Secondary Main Weapon"][0]
                 secondary_sub_weapon = this_subunit["Secondary Sub Weapon"][0]
-                armour = (self.armour_data.armour_list[this_subunit["Armour"][0]]["Name"],
+                armour = (self.troop_data.armour_list[this_subunit["Armour"][0]]["Name"],
                           self.troop_data.mount_armour_list[this_subunit["Mount"][2]]["Name"])
 
-                skill_list = this_subunit["Skill"] + self.weapon_data.weapon_list[primary_main_weapon]["Skill"] + \
-                             self.weapon_data.weapon_list[primary_sub_weapon]["Skill"] + \
-                             self.weapon_data.weapon_list[secondary_main_weapon]["Skill"] + \
-                             self.weapon_data.weapon_list[secondary_sub_weapon]["Skill"]
+                skill_list = this_subunit["Skill"] + self.troop_data.weapon_list[primary_main_weapon]["Skill"] + \
+                             self.troop_data.weapon_list[primary_sub_weapon]["Skill"] + \
+                             self.troop_data.weapon_list[secondary_main_weapon]["Skill"] + \
+                             self.troop_data.weapon_list[secondary_sub_weapon]["Skill"]
 
-                subunit_weapon_list = [(self.weapon_data.weapon_list[primary_main_weapon]["Name"],
-                                        self.weapon_data.weapon_list[primary_sub_weapon]["Name"])]
+                subunit_weapon_list = [(self.troop_data.weapon_list[primary_main_weapon]["Name"],
+                                        self.troop_data.weapon_list[primary_sub_weapon]["Name"])]
 
                 weapon_common_action = [(self.generic_action_data[subunit_weapon_list[0][0]]["Common"],
                                          self.generic_action_data[subunit_weapon_list[0][1]]["Common"])]
@@ -43,8 +43,8 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                          self.generic_action_data[subunit_weapon_list[0][1]]["Attack"])]
                 if (primary_main_weapon, primary_sub_weapon) != (secondary_main_weapon, secondary_sub_weapon):
                     subunit_weapon_list = [subunit_weapon_list[0],
-                                           (self.weapon_data.weapon_list[secondary_main_weapon]["Name"],
-                                            self.weapon_data.weapon_list[secondary_sub_weapon]["Name"])]
+                                           (self.troop_data.weapon_list[secondary_main_weapon]["Name"],
+                                            self.troop_data.weapon_list[secondary_sub_weapon]["Name"])]
                     weapon_common_action = [weapon_common_action[0], (self.generic_action_data[subunit_weapon_list[1][0]]["Common"],
                                                                       self.generic_action_data[subunit_weapon_list[1][1]]["Common"])]
                     weapon_attack_action = [weapon_attack_action[0], (self.generic_action_data[subunit_weapon_list[1][0]]["Attack"],

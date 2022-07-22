@@ -3,7 +3,7 @@ from gamescript.common import utility
 clean_group_object = utility.clean_group_object
 
 
-def char_select_menu_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
+def menu_char_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
     if self.char_back_button.event or esc_press or self.start_button.event:  # go back to team/source selection screen
         self.current_source_row = 0
         self.menu_state = "team_select"
@@ -40,7 +40,7 @@ def char_select_menu_process(self, mouse_left_up, mouse_left_down, mouse_scroll_
                         other_icon.selection()
                         self.main_ui_updater.remove(other_icon.unit.subunit_list)
                 icon.selection()
-                self.char_stat["char"].add_leader_stat(icon.unit.leader[0])
+                self.char_stat["char"].add_leader_stat(icon.unit.leader[0], self.leader_data, self.troop_data)
                 self.map_show.change_mode(1, team_pos_list=self.team_pos, selected=icon.unit.base_pos)
 
                 self.main_ui_updater.add(icon.unit.subunit_list)

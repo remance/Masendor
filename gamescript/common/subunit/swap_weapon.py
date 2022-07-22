@@ -31,10 +31,10 @@ def swap_weapon(self):
     for set_index, weapon_set in enumerate(((self.primary_main_weapon, self.primary_sub_weapon),
                                             (self.secondary_main_weapon, self.secondary_sub_weapon))):
         for weapon_index, weapon in enumerate(weapon_set):
-            weapon_stat = self.weapon_data.weapon_list[weapon[0]]
+            weapon_stat = self.troop_data.weapon_list[weapon[0]]
             if set_index == self.equipped_weapon:
-                self.base_melee_def += weapon_stat["Defense"] * self.weapon_data.quality[weapon[1]]
-                self.base_range_def += weapon_stat["Defense"] * self.weapon_data.quality[weapon[1]]
+                self.base_melee_def += weapon_stat["Defense"] * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]
+                self.base_range_def += weapon_stat["Defense"] * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]
                 skill = self.weapon_skill[set_index][weapon_index]
                 if skill != 0 and (self.troop_data.skill_list[skill]["Troop Type"] != 0 and
                                    self.troop_data.skill_list[skill]["Troop Type"] != self.subunit_type + 1):

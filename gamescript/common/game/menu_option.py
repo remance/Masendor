@@ -5,7 +5,7 @@ from gamescript.common import utility
 edit_config = utility.edit_config
 
 
-def option_menu_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
+def menu_option(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
     if self.back_button.event or esc_press:  # back to start_set menu
         self.back_button.event = False
 

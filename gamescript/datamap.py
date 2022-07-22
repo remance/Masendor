@@ -109,7 +109,7 @@ class BattleMapData:
         new_weather_icon = []
         for weather_icon in weather_list:
             for strength in range(0, 3):
-                new_name = weather_icon + "_" + str(strength) + ".png"
+                new_name = weather_icon + "_" + str(strength)
                 for item in weather_icon_list:
                     if new_name == item:
                         new_weather_icon.append(weather_icon_list[item])

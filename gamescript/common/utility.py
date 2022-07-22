@@ -10,6 +10,8 @@ import pygame
 import pygame.freetype
 from gamescript import menu
 
+accept_image_types = ("png", "jpg", "jpeg", "svg", "gif", "bmp")
+
 
 def empty_method(self, *args):
     if hasattr(self, 'error_log'):
@@ -58,7 +60,11 @@ def load_images(main_dir, screen_scale, subfolder=None, load_order=True, return_
         except TypeError:  # has character in file name
             pass
     for file in load_order_file:
-        images[file] = load_image(main_dir, screen_scale, file, dir_path)
+        file_name = file
+        if "." in file_name:  # remove extension from name
+            file_name = file.split(".")[:-1]  
+            file_name = "".join(file_name)
+        images[file_name] = load_image(main_dir, screen_scale, file, dir_path)
 
     if return_order is False:
         return images

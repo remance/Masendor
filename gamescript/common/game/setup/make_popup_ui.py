@@ -9,13 +9,13 @@ def make_popup_ui(main_dir, screen_rect, screen_scale, battle_ui_image):
     popup.TerrainPopup.images = list(load_images(main_dir, screen_scale, ["ui", "popup_ui", "terrain_check"], load_order=False).values())
     popup.TerrainPopup.screen_rect = screen_rect
 
-    troop_card_ui = battleui.TroopCard(battle_ui_image["troop_card.png"])
+    troop_card_ui = battleui.TroopCard(battle_ui_image["troop_card"])
 
     # Button related to subunit card and command
-    troop_card_button = [battleui.UIButton(battle_ui_image["troopcard_button1.png"], 0),  # subunit card description button
-                         battleui.UIButton(battle_ui_image["troopcard_button2.png"], 1),  # subunit card stat button
-                         battleui.UIButton(battle_ui_image["troopcard_button3.png"], 2),  # subunit card skill button
-                         battleui.UIButton(battle_ui_image["troopcard_button4.png"], 3)]  # subunit card equipment button
+    troop_card_button = [battleui.UIButton(battle_ui_image["troopcard_button1"], 0),  # subunit card description button
+                         battleui.UIButton(battle_ui_image["troopcard_button2"], 1),  # subunit card stat button
+                         battleui.UIButton(battle_ui_image["troopcard_button3"], 2),  # subunit card skill button
+                         battleui.UIButton(battle_ui_image["troopcard_button4"], 3)]  # subunit card equipment button
 
     terrain_check = popup.TerrainPopup()  # popup box that show terrain information when right click on map
     button_name_popup = popup.TextPopup(screen_scale)  # popup box that show name when mouse over

@@ -49,10 +49,10 @@ class Leader(pygame.sprite.Sprite):
         self.image_position = self.leader_pos[self.role]  # image position based on role in command ui
 
         try:  # Put leader image into leader slot
-            image_name = str(leader_id) + ".png"
+            image_name = str(leader_id)
             self.full_image = leader_data.images[image_name].copy()
         except KeyError:  # Use Unknown leader image if there is none in list
-            self.full_image = leader_data.images["9999999.png"].copy()
+            self.full_image = leader_data.images["9999999"].copy()
             font = pygame.font.SysFont("timesnewroman", 50)
             text_image = font.render(str(self.leader_id), True, pygame.Color("white"))
             text_rect = text_image.get_rect(center=(self.full_image.get_width() / 2, self.full_image.get_height() / 1.3))
@@ -73,7 +73,7 @@ class Leader(pygame.sprite.Sprite):
             if self.unit.commander:
                 self.commander = True
                 self.original_commander = True
-                for key, value in self.skill:  # replace leader skill with commander skill version
+                for key, value in self.skill.items():  # replace leader skill with commander skill version
                     for key2, value2 in leader_data.commander_skill_list.items():
                         if key in value2["Replace"]:
                             self.skill[key] = key2
@@ -82,7 +82,7 @@ class Leader(pygame.sprite.Sprite):
         self.subunit = self.unit.subunit_list[self.subunit_pos]  # setup subunit that leader belong
         self.subunit.leader = self  # put in leader to subunit with the set pos
         if self.role == 0:  # unit leader
-            self.unit.leader_subunit = self.subunit  # TODO add this to when change leader or leader move ot other subunit
+            self.unit.leader_subunit = self.subunit
             # self.unit.leader_subunit - self.unit.base_pos
             self.subunit.unit_leader = True
 

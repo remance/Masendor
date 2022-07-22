@@ -26,10 +26,10 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
 
     # Volume change scroll bar
     esc_menu_images = load_images(main_dir, screen_scale, ["ui", "battlemenu_ui", "slider"], load_order=False)
-    volume_slider = menu.SliderMenu([esc_menu_images["scroller_box.png"], esc_menu_images["scroller.png"]],
-                                    [esc_menu_images["scroll_button_normal.png"], esc_menu_images["scroll_button_click.png"]],
+    volume_slider = menu.SliderMenu([esc_menu_images["scroller_box"], esc_menu_images["scroller"]],
+                                    [esc_menu_images["scroll_button_normal"], esc_menu_images["scroll_button_click"]],
                                     (screen_rect.width / 2, screen_rect.height / 3), mixer_volume)
-    value_box = [menu.ValueBox(esc_menu_images["value.png"], (volume_slider.rect.topright[0] * 1.1, volume_slider.rect.topright[1]),
+    value_box = [menu.ValueBox(esc_menu_images["value"], (volume_slider.rect.topright[0] * 1.1, volume_slider.rect.topright[1]),
                       mixer_volume)]
 
     image = load_image(main_dir, screen_scale, "volume_icon.png", "ui\\mainmenu_ui")

@@ -13,93 +13,17 @@ stat_convert = utility.stat_convert
 load_images = utility.load_images
 
 
-class WeaponData:
-    def __init__(self, main_dir, images, ruleset):
-        """
-        For keeping all data related to troop weapon including its icon image but not sprite.
-        Weapon has melee_dmg, penetration and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect
-        :param main_dir: Game folder direction
-        :param images: Weapon icon images, not sprite
-        :param ruleset: Current ruleset of the game
-        """
-        self.images = list(images.values())
-        self.weapon_list = {}
-        with open(os.path.join(main_dir, "data", "troop", "troop_weapon.csv"), encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
-            header = rd[0]
-            int_column = ("ID", "Physical Damage", "Fire Damage", "Water Damage", "Air Damage",
-                          "Earth Damage", "Poison Damage", "Magic Damage", "Armour Penetration", "Defense", "Weight",
-                          "Speed", "Ammunition", "Magazine", "Range", "Travel Speed","Learning Difficulty",
-                          "Mastery Difficulty", "Learning Difficulty", "Cost", "ImageID", "Speed", "Hand")  # value int only
-            list_column = ("Skill", "Trait")  # value in list only
-            tuple_column = ("Bullet", "Ruleset")  # value in tuple only
-            mod_column = ("Damage Balance",)
-            int_column = [index for index, item in enumerate(header) if item in int_column]
-            list_column = [index for index, item in enumerate(header) if item in list_column]
-            tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
-            mod_column = [index for index, item in enumerate(header) if item in mod_column]
-            for row_index, row in enumerate(rd):
-                if "," in row[-2]:  # make str with , into list
-                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
-                else:
-                    this_ruleset = [row[-2]]
-                if any(rule in ("0", str(ruleset), "Ruleset") for rule in
-                       this_ruleset):  # only grab effect that existed in the ruleset and first row
-                    if row_index > 0:
-                        for n, i in enumerate(row):
-                            row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
-                                               tuple_column=tuple_column, int_column=int_column, true_empty=True)
-                    self.weapon_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
-        edit_file.close()
-        self.quality = (0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75)  # Quality modifier to weapon stat
-
-class ArmourData:
-    def __init__(self, main_dir, images, ruleset):
-        """
-        For keeping all data related to troop armour including its icon image but not sprite.
-        Armour has base defence and quality 0 = Broken, 1 = Very Poor, 2 = Poor, 3 = Standard, 4 = Good, 5 = Superb, 6 = Perfect
-        :param main_dir: Game folder direction
-        :param images: Armour icon images, not sprite
-        :param ruleset: Current ruleset of the game
-        """
-        self.images = images
-        self.armour_list = {}
-        with open(os.path.join(main_dir, "data", "troop", "troop_armour.csv"), encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
-            header = rd[0]
-            int_column = ("ID", "Cost")  # value int only
-            list_column = ("Trait",)  # value in list only
-            tuple_column = ("Ruleset",)  # value in tuple only
-            int_column = [index for index, item in enumerate(header) if item in int_column]
-            list_column = [index for index, item in enumerate(header) if item in list_column]
-            tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
-            for row_index, row in enumerate(rd):
-                if "," in row[-2]:  # make str with , into list
-                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
-                else:
-                    this_ruleset = [row[-2]]
-                if any(rule in ("0", str(ruleset), "Ruleset") for rule in
-                       this_ruleset):  # only grab effect that existed in the ruleset and first row
-                    if row_index > 0:
-                        for n, i in enumerate(row):
-                            row = stat_convert(row, n, i, list_column=list_column, tuple_column=tuple_column,
-                                               int_column=int_column, true_empty=True)
-                    self.armour_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
-        edit_file.close()
-        self.quality = (0.25, 0.50, 0.75, 1, 1.25, 1.50, 1.75)  # Quality modifier to armour stat
-
-
 class TroopData:
-    def __init__(self, main_dir, ruleset, ruleset_folder):
+    def __init__(self, main_dir, weapon_icon_images, ruleset, ruleset_folder):
         """
         For keeping all data related to troop.
         :param main_dir: Game folder direction
         :param ruleset: Current ruleset of the game
         :param ruleset_folder: Folder name of the ruleset
         """
-        # v Troop stat dict
+        self.weapon_icon = tuple(weapon_icon_images.values())
+
+        # Troop stat dict
         self.troop_list = {}
         with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "troop_preset.csv"),
                   encoding="utf-8", mode="r") as edit_file:
@@ -313,7 +237,80 @@ class TroopData:
                 self.role[row[0]] = row[1:]
         edit_file.close()
 
-        # Troop mount dict
+        # Equipment grade dict
+        self.equipment_grade_list = {}
+        with open(os.path.join(main_dir, "data", "troop", "equipment_grade.csv"), encoding="utf-8", mode="r") as edit_file:
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+            rd = [row for row in rd]
+            header = rd[0]
+            int_column = ("ID",)  # value int only
+            int_column = [index for index, item in enumerate(header) if item in int_column]
+            for index, row in enumerate(rd):
+                for n, i in enumerate(row):
+                    if index != 0:
+                        row = stat_convert(row, n, i, int_column=int_column)
+                self.equipment_grade_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+        edit_file.close()
+
+        # Weapon dict
+        self.weapon_list = {}
+        with open(os.path.join(main_dir, "data", "troop", "troop_weapon.csv"), encoding="utf-8", mode="r") as edit_file:
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+            rd = [row for row in rd]
+            header = rd[0]
+            int_column = ("ID", "Physical Damage", "Fire Damage", "Water Damage", "Air Damage",
+                          "Earth Damage", "Poison Damage", "Magic Damage", "Armour Penetration", "Defense", "Weight",
+                          "Speed", "Ammunition", "Magazine", "Range", "Travel Speed", "Learning Difficulty",
+                          "Mastery Difficulty", "Learning Difficulty", "Cost", "ImageID", "Speed",
+                          "Hand")  # value int only
+            list_column = ("Skill", "Trait")  # value in list only
+            tuple_column = ("Bullet", "Ruleset")  # value in tuple only
+            mod_column = ("Damage Balance",)
+            int_column = [index for index, item in enumerate(header) if item in int_column]
+            list_column = [index for index, item in enumerate(header) if item in list_column]
+            tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
+            mod_column = [index for index, item in enumerate(header) if item in mod_column]
+            for row_index, row in enumerate(rd):
+                if "," in row[-2]:  # make str with , into list
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                else:
+                    this_ruleset = [row[-2]]
+                if any(rule in ("0", str(ruleset), "Ruleset") for rule in
+                       this_ruleset):  # only grab effect that existed in the ruleset and first row
+                    if row_index > 0:
+                        for n, i in enumerate(row):
+                            row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
+                                               tuple_column=tuple_column, int_column=int_column, true_empty=True)
+                    self.weapon_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
+        edit_file.close()
+
+        # Armour dict
+        self.armour_list = {}
+        with open(os.path.join(main_dir, "data", "troop", "troop_armour.csv"), encoding="utf-8", mode="r") as edit_file:
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+            rd = [row for row in rd]
+            header = rd[0]
+            int_column = ("ID", "Cost")  # value int only
+            list_column = ("Trait",)  # value in list only
+            tuple_column = ("Ruleset",)  # value in tuple only
+            int_column = [index for index, item in enumerate(header) if item in int_column]
+            list_column = [index for index, item in enumerate(header) if item in list_column]
+            tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
+            for row_index, row in enumerate(rd):
+                if "," in row[-2]:  # make str with , into list
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                else:
+                    this_ruleset = [row[-2]]
+                if any(rule in ("0", str(ruleset), "Ruleset") for rule in
+                       this_ruleset):  # only grab effect that existed in the ruleset and first row
+                    if row_index > 0:
+                        for n, i in enumerate(row):
+                            row = stat_convert(row, n, i, list_column=list_column, tuple_column=tuple_column,
+                                               int_column=int_column, true_empty=True)
+                    self.armour_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+        edit_file.close()
+
+        # Mount dict
         self.mount_list = {}
         with open(os.path.join(main_dir, "data", "troop", "mount_preset.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)

@@ -15,17 +15,20 @@ feature_colour = battlemap.feature_colour
 
 class Cursor(pygame.sprite.Sprite):
     def __init__(self, images):
+        """Game cursor"""
+        self._layer = 100  # as high as possible, always blit last
+        pygame.sprite.Sprite.__init__(self)
         self.images = images
-        self.pos = (0, 0)
-        self.image = images[0]
-        self.rect = self.image.get_rect(topleft=self.pos)
+        self.image = images["normal"]
+        self.rect = self.image.get_rect(topleft=(0, 0))
 
-    def player_input(self, pos):
-        self.pos = pos
-        self.rect = self.image.get_rect(topleft=self.pos)
+    def update(self, mouse_pos):
+        """Update cursor position based on mouse position"""
+        self.rect = self.image.get_rect(topleft=mouse_pos)
 
-    def change_image(self, image):
-        self.image = self.images[image]
+    def change_image(self, image_name):
+        """Change cursor image to whatever input name"""
+        self.image = self.images[image_name]
 
 
 class EscBox(pygame.sprite.Sprite):
@@ -37,14 +40,14 @@ class EscBox(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.pos = (self.screen_rect.width / 2, self.screen_rect.height / 2)
         self.mode = "menu"  # Current menu mode
-        self.image = self.images[self.mode + ".png"]
+        self.image = self.images[self.mode]
         self.rect = self.image.get_rect(center=self.pos)
 
     def change_mode(self, mode):
         """Change between 0 menu, 1 option, 2 encyclopedia mode"""
         self.mode = mode
         if self.mode != "encyclopedia":
-            self.image = self.images[mode + ".png"]
+            self.image = self.images[mode]
             self.rect = self.image.get_rect(center=self.pos)
 
 
@@ -448,7 +451,8 @@ class ArmyStat(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
 
     def add_army_stat(self, troop_number, leader_name):
-        """troop_number need to be in list format as follows:[total,melee infantry, range infantry, cavalry, range cavalry]"""
+        """troop_number need to be in list format as follows:[total,melee infantry, range infantry,
+        cavalry, range cavalry]"""
         self.image = self.image_original.copy()
 
         text_surface = self.font.render(str(leader_name), True, (0, 0, 0))
@@ -460,17 +464,46 @@ class ArmyStat(pygame.sprite.Sprite):
             text_rect = text_surface.get_rect(midleft=self.type_number_pos[index])
             self.image.blit(text_surface, text_rect)
 
-    def add_leader_stat(self, leader):
+    def add_leader_stat(self, leader, leader_data, troop_data):
         """For character select screen"""
         self.image = self.image_original.copy()
+        stat = leader_data.leader_list[leader.leader_id]
+
         leader_name = leader.name
         leader_image = leader.full_image
+        leader_skill = ""
+        for skill in leader.skill:
+            leader_skill += leader_data.skill_list[skill]["Name"] + ", "
+        leader_skill = leader_skill[:-2]
+        self.primary_main_weapon = stat["Primary Main Weapon"]
+        self.primary_sub_weapon = stat["Primary Sub Weapon"]
+        self.secondary_main_weapon = stat["Secondary Main Weapon"]
+        self.secondary_sub_weapon = stat["Secondary Sub Weapon"]
+        leader_primary_weapon = troop_data.equipment_grade_list[stat["Primary Main Weapon"][1]]["Name"] + " " + \
+                                troop_data.weapon_list[stat["Primary Main Weapon"][0]]["Name"] + ", " + \
+                                troop_data.equipment_grade_list[stat["Primary Sub Weapon"][1]]["Name"] + " " + \
+                                troop_data.weapon_list[stat["Primary Sub Weapon"][0]]["Name"]
+        leader_secondary_weapon = troop_data.equipment_grade_list[stat["Secondary Main Weapon"][1]]["Name"] + " " + \
+                                  troop_data.weapon_list[stat["Secondary Main Weapon"][0]]["Name"] + ", " + \
+                                  troop_data.equipment_grade_list[stat["Secondary Sub Weapon"][1]]["Name"] + " " + \
+                                  troop_data.weapon_list[stat["Secondary Sub Weapon"][0]]["Name"]
+        leader_armour = troop_data.equipment_grade_list[stat["Armour"][1]]["Name"] + " " + \
+                        troop_data.armour_list[stat["Armour"][0]]["Name"]
+        leader_mount = troop_data.mount_grade_list[stat["Mount"][1]]["Name"] + ", " + \
+                       troop_data.mount_list[stat["Mount"][0]]["Name"] + ", " + \
+                       troop_data.mount_armour_list[stat["Mount"][2]]["Name"]
+
         leader_stat = {"Health: ": leader.health, "Authority: ": leader.authority,
                        "Melee Command: ": self.leader_text[leader.melee_command],
                        "Range Command: ": self.leader_text[leader.range_command],
                        "Cavalry Command: ": self.leader_text[leader.cav_command],
                        "Combat Skill: ": self.leader_text[leader.combat],
-                       "Social Class: ": leader.social["Leader Social Class"]}
+                       "Social Class: ": leader.social["Leader Social Class"],
+                       "Skill: ": leader_skill,
+                       "Primary Weapon: ": leader_primary_weapon,
+                       "Secondary Weapon: ": leader_secondary_weapon,
+                       "Armour: ": leader_armour,
+                       "Mount: ": leader_mount}
         text_surface = self.font.render(str(leader_name), True, (0, 0, 0))
         text_rect = text_surface.get_rect(topleft=(self.font_size, self.font_size))
         self.image.blit(text_surface, text_rect)

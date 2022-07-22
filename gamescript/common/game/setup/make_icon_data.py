@@ -11,11 +11,11 @@ def make_icon_data(main_dir, screen_scale):
     trait_images = load_images(main_dir, screen_scale, ["ui", "trait_icon"], load_order=False)
     skill_images = load_images(main_dir, screen_scale, ["ui", "skill_icon"], load_order=False)
 
-    cooldown = pygame.Surface((skill_images["0.png"].get_width(), skill_images["0.png"].get_height()), pygame.SRCALPHA)
+    cooldown = pygame.Surface((skill_images["0"].get_width(), skill_images["0"].get_height()), pygame.SRCALPHA)
     cooldown.fill((230, 70, 80, 200))  # red colour filter for skill cooldown timer
     battleui.SkillCardIcon.cooldown = cooldown
 
-    active_skill = pygame.Surface((skill_images["0.png"].get_width(), skill_images["0.png"].get_height()), pygame.SRCALPHA)
+    active_skill = pygame.Surface((skill_images["0"].get_width(), skill_images["0"].get_height()), pygame.SRCALPHA)
     active_skill.fill((170, 220, 77, 200))  # green colour filter for skill active timer
     battleui.SkillCardIcon.active_skill = active_skill
 

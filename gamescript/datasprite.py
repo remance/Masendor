@@ -100,28 +100,32 @@ class TroopAnimationData:
                 self.generic_animation_pool.append(animation_pool)
             edit_file.close()
 
-        self.skel_joint_list = []
-        for race in ["Human", "Horse"]:  # TODO change later when has more race
-            for direction in direction_list:
-                with open(os.path.join(main_dir, "data", "sprite", "generic", race, direction, "skeleton_link.csv"), encoding="utf-8",
-                          mode="r") as edit_file:
-                    rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-                    rd = [row for row in rd]
-                    header = rd[0]
-                    list_column = ("Position", )  # value in list only
-                    list_column = [index for index, item in enumerate(header) if item in list_column]
-                    joint_list = {}
-                    for row_index, row in enumerate(rd):
-                        if row_index > 0:
-                            for n, i in enumerate(row):
-                                row = stat_convert(row, n, i, list_column=list_column)
-                                key = row[0].split("/")[0]
-                            if key in joint_list:
-                                joint_list[key].append({row[1:][0]: pygame.Vector2(row[1:][1])})
-                            else:
-                                joint_list[key] = [{row[1:][0]: pygame.Vector2(row[1:][1])}]
-                    self.skel_joint_list.append(joint_list)
-                edit_file.close()
+        # self.skel_joint_list = []
+        # print(race_list)
+        # for race in race_list:
+        #     try:
+        #         for direction in direction_list:
+        #             with open(os.path.join(main_dir, "data", "sprite", "generic", race, direction, "skeleton_link.csv"), encoding="utf-8",
+        #                       mode="r") as edit_file:
+        #                 rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+        #                 rd = [row for row in rd]
+        #                 header = rd[0]
+        #                 list_column = ("Position", )  # value in list only
+        #                 list_column = [index for index, item in enumerate(header) if item in list_column]
+        #                 joint_list = {}
+        #                 for row_index, row in enumerate(rd):
+        #                     if row_index > 0:
+        #                         for n, i in enumerate(row):
+        #                             row = stat_convert(row, n, i, list_column=list_column)
+        #                             key = row[0].split("/")[0]
+        #                         if key in joint_list:
+        #                             joint_list[key].append({row[1:][0]: pygame.Vector2(row[1:][1])})
+        #                         else:
+        #                             joint_list[key] = [{row[1:][0]: pygame.Vector2(row[1:][1])}]
+        #                 self.skel_joint_list.append(joint_list)
+        #             edit_file.close()
+        #     except FileNotFoundError:  # file not exist
+        #         pass
 
         self.weapon_joint_list = {}
         for direction_index, direction in enumerate(direction_list):

@@ -23,8 +23,8 @@ class Subunit(pygame.sprite.Sprite):
     base_map = None  # base map
     feature_map = None  # feature map
     height_map = None  # height map
-    weapon_data = None
-    armour_data = None
+    troop_data = None
+    troop_data = None
     troop_data = None
     leader_data = None
     status_list = None
@@ -276,10 +276,10 @@ class Subunit(pygame.sprite.Sprite):
         self.secondary_sub_weapon = stat["Secondary Sub Weapon"]
         self.melee_weapon_set = []
         self.range_weapon_set = []
-        self.weapon_name = ((self.weapon_data.weapon_list[self.primary_main_weapon[0]]["Name"],
-                             self.weapon_data.weapon_list[self.primary_sub_weapon[0]]["Name"]),
-                            (self.weapon_data.weapon_list[self.secondary_main_weapon[0]]["Name"],
-                             self.weapon_data.weapon_list[self.secondary_sub_weapon[0]]["Name"]))
+        self.weapon_name = ((self.troop_data.weapon_list[self.primary_main_weapon[0]]["Name"],
+                             self.troop_data.weapon_list[self.primary_sub_weapon[0]]["Name"]),
+                            (self.troop_data.weapon_list[self.secondary_main_weapon[0]]["Name"],
+                             self.troop_data.weapon_list[self.secondary_sub_weapon[0]]["Name"]))
 
         self.mount = self.troop_data.mount_list[stat["Mount"][0]]  # mount this subunit use
         self.mount_grade = self.troop_data.mount_grade_list[stat["Mount"][1]]
@@ -316,7 +316,7 @@ class Subunit(pygame.sprite.Sprite):
         if stat["Mount"][0] != 1:  # have a mount, add mount stat with its grade to subunit stat
             self.add_mount_stat()
 
-        self.trait["Original"] += self.armour_data.armour_list[self.armour_gear[0]][
+        self.trait["Original"] += self.troop_data.armour_list[self.armour_gear[0]][
             "Trait"]  # add armour trait to subunit
 
         self.trait["Original"] = list(
@@ -376,7 +376,7 @@ class Subunit(pygame.sprite.Sprite):
         self.max_troop = self.troop_number  # max number of troop at the start
 
         # v Weight calculation
-        self.weight += self.armour_data.armour_list[self.armour_gear[0]]["Weight"] + self.mount_armour["Weight"]  # Weight from both melee and range weapon and armour
+        self.weight += self.troop_data.armour_list[self.armour_gear[0]]["Weight"] + self.mount_armour["Weight"]  # Weight from both melee and range weapon and armour
         if self.subunit_type == 2:  # cavalry has half weight penalty
             self.weight = self.weight / 2
         # ^ End weight cal

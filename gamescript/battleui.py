@@ -288,17 +288,17 @@ class CommandBar(pygame.sprite.Sprite):
                             (self.image.get_width() / 1.5, self.image.get_height() / 1.6),  # right sub general
                             (self.image.get_width() / 2.1, self.image.get_height() / 1.2))  # advisor
 
-        icon_rect = self.icon["authority.png"].get_rect(
+        icon_rect = self.icon["authority"].get_rect(
             center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.1, self.image.get_rect()[1] + 40))
-        self.image.blit(self.icon["authority.png"], icon_rect)
+        self.image.blit(self.icon["authority"], icon_rect)
         try:
-            self.white = [self.icon["white_king.png"], self.icon["white_queen.png"], self.icon["white_rook.png"], self.icon["white_knight_left.png"],
-                          self.icon["white_knight_right.png"], self.icon["white_bishop.png"]]  # team 1 white chess head
-            self.black = [self.icon["red_king.png"], self.icon["red_queen.png"], self.icon["red_rook.png"], self.icon["red_knight_left.png"],
-                          self.icon["red_knight_right.png"], self.icon["red_bishop.png"]]  # team 2 black chess head
+            self.white = [self.icon["white_king"], self.icon["white_queen"], self.icon["white_rook"], self.icon["white_knight_left"],
+                          self.icon["white_knight_right"], self.icon["white_bishop"]]  # team 1 white chess head
+            self.black = [self.icon["red_king"], self.icon["red_queen"], self.icon["red_rook"], self.icon["red_knight_left"],
+                          self.icon["red_knight_right"], self.icon["red_bishop"]]  # team 2 black chess head
         except KeyError:
-            self.white = [self.icon["king.png"], self.icon["queen.png"], self.icon["rook.png"],
-                          self.icon["knight.png"], self.icon["knight.png"], self.icon["bishop.png"]]  # team 1 white chess head
+            self.white = [self.icon["king"], self.icon["queen"], self.icon["rook"],
+                          self.icon["knight"], self.icon["knight"], self.icon["bishop"]]  # team 1 white chess head
             self.black = self.white  # no colour change
 
         self.leader_pos = ((self.inspect_pos[0][0], self.inspect_pos[0][1]),

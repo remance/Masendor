@@ -107,6 +107,8 @@ class Battle:
         self.weather_updater = main.weather_updater
         self.effect_updater = main.effect_updater
 
+        self.cursor = main.cursor
+
         self.battle_map_base = main.battle_base_map
         self.battle_map_feature = main.battle_feature_map
         self.battle_map_height = main.battle_height_map
@@ -115,11 +117,6 @@ class Battle:
         self.range_attacks = main.range_attacks
         self.direction_arrows = main.direction_arrows
         self.troop_number_sprite = main.troop_number_sprite
-
-        self.battle_map_base = main.battle_base_map
-        self.battle_map_feature = main.battle_feature_map
-        self.battle_map_height = main.battle_height_map
-        self.show_map = main.show_map
 
         self.mini_map = main.mini_map
         self.event_log = main.event_log
@@ -258,9 +255,6 @@ class Battle:
         self.troop_data = None
         self.leader_data = None
 
-        self.weapon_data = None
-        self.armour_data = None
-
         self.generic_animation_pool = None
         self.gen_body_sprite_pool = None
         self.gen_weapon_sprite_pool = None
@@ -351,10 +345,7 @@ class Battle:
         self.troop_data = self.main.troop_data
         self.leader_data = self.main.leader_data
 
-        self.weapon_data = self.main.weapon_data
-        self.armour_data = self.main.armour_data
-        self.troop_card_ui.weapon_data = self.weapon_data
-        self.troop_card_ui.armour_data = self.armour_data
+        self.troop_card_ui.troop_data = self.troop_data
 
         self.generic_animation_pool = self.main.generic_animation_pool
         self.gen_body_sprite_pool = self.main.gen_body_sprite_pool
@@ -432,9 +423,9 @@ class Battle:
 
         if map_selected is not None:  # Create battle map
             images = load_images(self.main_dir, (1, 1), ["ruleset", self.ruleset_folder, "map", self.map_selected], load_order=False)
-            self.battle_map_base.draw_image(images["base.png"])
-            self.battle_map_feature.draw_image(images["feature.png"])
-            self.battle_map_height.draw_image(images["height.png"])
+            self.battle_map_base.draw_image(images["base"])
+            self.battle_map_feature.draw_image(images["feature"])
+            self.battle_map_height.draw_image(images["height"])
 
             try:  # place_name map layer is optional, if not existed in folder then assign None
                 place_name_map = images[3]
@@ -597,7 +588,6 @@ class Battle:
         while True:  # self running
             self.fps_count.fps_show(self.clock)
             key_press = None
-            self.mouse_pos = pygame.mouse.get_pos()  # current mouse pos based on screen
             mouse_left_up = False  # left click
             mouse_left_down = False  # hold left click
             mouse_right_up = False  # right click
@@ -608,6 +598,9 @@ class Battle:
             key_state = pygame.key.get_pressed()
             esc_press = False
             self.click_any = False
+
+            self.mouse_pos = pygame.mouse.get_pos()  # current mouse pos based on screen
+            self.cursor.update(self.mouse_pos)
 
             self.battle_ui_updater.clear(self.screen, self.background)  # Clear sprite before update new one
 

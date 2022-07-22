@@ -5,7 +5,7 @@ setup_list = utility.setup_list
 list_scroll = utility.list_scroll
 
 
-def map_select_menu_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
+def menu_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
     if mouse_left_up or mouse_left_down:
         if mouse_left_up:
             for index, name in enumerate(self.map_namegroup):  # user click on map name, change map

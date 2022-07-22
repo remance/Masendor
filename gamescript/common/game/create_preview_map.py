@@ -13,7 +13,7 @@ def create_preview_map(self, map_folder_list, map_list):
         map_images = load_images(self.main_dir, self.screen_scale, ["ruleset", self.ruleset_folder, "map/custom",
                                                                     map_folder_list[self.current_map_select]],
                                  load_order=False)
-    self.map_show.change_map(map_images["base.png"], map_images["feature.png"])
+    self.map_show.change_map(map_images["base"], map_images["feature"])
     self.main_ui_updater.add(self.map_show)
     # ^ End map preview
 

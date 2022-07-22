@@ -9,6 +9,7 @@ def swap_weapon_command(self, choice):
                     if len(this_subunit.melee_weapon_set) > 0:
                         this_subunit.equipped_weapon = this_subunit.melee_weapon_set[0]
                         this_subunit.swap_weapon()
+                        print(this_subunit.name, this_subunit.melee_weapon_set)
                 elif "Range" in choice:
                     if len(this_subunit.range_weapon_set) > 0:
                         for this_set in this_subunit.range_weapon_set:

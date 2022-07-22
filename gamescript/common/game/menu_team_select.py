@@ -6,7 +6,7 @@ list_scroll = utility.list_scroll
 load_image = utility.load_image
 
 
-def team_select_menu_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
+def menu_team_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
     if mouse_left_up or mouse_left_down:
         if mouse_left_up:
             change_team_coa(self)
@@ -110,7 +110,7 @@ def team_select_menu_process(self, mouse_left_up, mouse_left_down, mouse_scroll_
         for index, icon in enumerate(self.unit_icon):  # select first char
             self.char_selected = icon.unit.game_id
             icon.selection()
-            self.char_stat["char"].add_leader_stat(icon.unit.leader[0])
+            self.char_stat["char"].add_leader_stat(icon.unit.leader[0], self.leader_data, self.troop_data)
             self.map_show.change_mode(1, team_pos_list=self.team_pos, selected=icon.unit.base_pos)
             break
 

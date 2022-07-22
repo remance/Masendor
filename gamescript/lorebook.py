@@ -12,8 +12,6 @@ class Lorebook(pygame.sprite.Sprite):
 
     faction_data = None
     troop_data = None
-    armour_data = None
-    weapon_data = None
     leader_data = None
     battle_map_data = None
     preview_sprite_pool = None
@@ -30,7 +28,6 @@ class Lorebook(pygame.sprite.Sprite):
     leader_section = 8
     terrain_section = 9
     weather_section = 10
-    quality_text = ("Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")  # text for item quality
     leader_text = ("Detrimental", "Incompetent", "Inferior", "Unskilled", "Dull", "Average", "Decent", "Skilled",
                    "Master", "Genius", "Unmatched")
 
@@ -76,7 +73,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.equipment_stat = {}
         run = 1
         self.equipment_last_index = []
-        for stat_list in (self.weapon_data.weapon_list, self.armour_data.armour_list, self.troop_data.mount_list,
+        for stat_list in (self.troop_data.weapon_list, self.troop_data.armour_list, self.troop_data.mount_list,
                           self.troop_data.mount_armour_list):
             for index in stat_list:
                 if index != "ID":
@@ -167,7 +164,7 @@ class Lorebook(pygame.sprite.Sprite):
                 image_name = str(self.subsection) + ".png"
                 self.portrait = self.leader_data.images[image_name].copy()  # get leader portrait based on subsection number
             except KeyError:
-                self.portrait = self.leader_data.images["9999999.png"].copy()  # Use Unknown leader image if there is none in list
+                self.portrait = self.leader_data.images["9999999"].copy()  # Use Unknown leader image if there is none in list
                 font = pygame.font.SysFont("timesnewroman", int(100 * self.screen_scale[1]))
                 text_image = font.render(str(self.subsection), True, pygame.Color("white"))
                 text_rect = text_image.get_rect(
@@ -276,17 +273,12 @@ class Lorebook(pygame.sprite.Sprite):
                                 create_text = ""
                             if self.section == self.troop_section or self.section == self.leader_section:  # troop section
                                 if "Weapon" in key:  # weapon text with quality
-                                    quality_text = (
-                                        "Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
-                                    create_text = key + ": " + quality_text[value[1]] + " " + \
-                                                  self.weapon_data.weapon_list[value[0]]["Name"]
+                                    create_text = key + ": " + self.troop_data.equipment_grade_list[value[1]]["Name"] \
+                                                  + " " + self.troop_data.weapon_list[value[0]]["Name"]
 
                                 elif key == "Armour":  # armour text with quality
-                                    quality_text = (
-                                        "Broken", "Very Poor", "Poor", "Standard", "Good", "Superb", "Perfect")
-                                    create_text = key + ": " + quality_text[value[1]] + " " + \
-                                                  self.armour_data.armour_list[value[0]]["Name"] \
-                                        # + ", Base Armour: " + str( self.armour_list[text[0]][1])
+                                    create_text = key + ": " + self.troop_data.equipment_grade_list[value[1]]["Name"] \
+                                                  + " " + self.troop_data.armour_list[value[0]]["Name"]
 
                                 elif key == "Race":
                                     create_text = key + ": " + self.troop_data.race_list[value]["Name"]

@@ -1,7 +1,7 @@
 import pygame
 
 
-def game_editor_menu_process(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
+def menu_game_editor(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
     if self.editor_back_button.event or esc_press:
         self.editor_back_button.event = False
         self.back_mainmenu()
