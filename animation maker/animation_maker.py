@@ -1467,8 +1467,8 @@ images = load_images(current_dir, screen_scale, ["animation_maker_ui", "helper_p
 body_helper_size = (450 * screen_scale[0], 270 * screen_scale[1])
 effect_helper_size = (450 * screen_scale[0], 270 * screen_scale[1])
 effect_helper = BodyHelper(effect_helper_size, (screen_size[0] / 1.25, screen_size[1] - (body_helper_size[1] / 2)),
-                           "effect", [images["smallbox_helper.png"]])
-del images["smallbox_helper.png"]
+                           "effect", [images["smallbox_helper"]])
+del images["smallbox_helper"]
 p_body_helper = BodyHelper(body_helper_size, (body_helper_size[0] / 2,
                                               screen_size[1] - (body_helper_size[1] / 2)), "p1", list(images.values()))
 helper_list = [p_body_helper, effect_helper]
@@ -1974,6 +1974,8 @@ while True:
                             model.read_animation(animation_name, old=True)
                             reload_animation(anim, model)
 
+                            model.edit_part(mouse_pos, "change")
+
                     elif frame_copy_button.rect.collidepoint(mouse_pos):
                         copy_press = True
 
@@ -2102,14 +2104,21 @@ while True:
                                         armour_selector.rect.topleft, part_list, "bottom", screen_scale)
 
                     elif eye_selector.rect.collidepoint(mouse_pos):
-                        part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][
-                                                       model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"][1]]["eye"].keys())
+                        part_list = ["Any"]
+                        if "eye" in gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][
+                                                       model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"][1]]:
+                            part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][
+                                                           model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"][1]]["eye"].keys())
                         popup_list_open(popup_list_box, popup_namegroup, ui, p_body_helper.ui_type + "_eye_select",
                                         eye_selector.rect.topleft, part_list, "bottom", screen_scale)
 
                     elif mouth_selector.rect.collidepoint(mouse_pos):
                         ui_type = p_body_helper.ui_type
-                        part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[ui_type]][model.bodypart_list[current_frame][ui_type + "_head"][1]]["mouth"].keys())
+                        part_list = ["Any"]
+                        if "mouth" in gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][
+                                                       model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"][1]]:
+                            part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][
+                                                           model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"][1]]["mouth"].keys())
                         popup_list_open(popup_list_box, popup_namegroup, ui, ui_type + "_mouth_select",
                                         mouth_selector.rect.topleft, part_list, "bottom", screen_scale)
 
@@ -2205,11 +2214,6 @@ while True:
                                                                     copy_animation_frame.items()}
                         model.part_name_list[current_frame] = {key: (value[:].copy() if value is not None else value) for key, value in
                                                                copy_name_frame.items()}
-                        for index, selector in enumerate([eye_selector, mouth_selector]):
-                            this_text = "Any"
-                            if face[index] not in (0, 1):
-                                this_text = face[index]
-                            selector.change_name(head_text[index] + str(this_text))
                         model.edit_part(mouse_pos, "change")
 
                 elif part_copy_press:
