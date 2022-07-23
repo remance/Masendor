@@ -26,50 +26,53 @@ script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
 
 
 class Battle:
+    empty_method = utility.empty_method
     popout_lorebook = utility.popout_lorebook
     popup_list_new_open = utility.popup_list_open
 
     # Import from common.battle
-    def camera_fix(self, *args): pass
-    def camera_process(self, *args): pass
-    def generate_unit(self, *args): pass
-    def remove_unit_ui(self, *args): pass
-    def setup_battle_unit(self, *args): pass
+    camera_fix = empty_method
+    camera_process = empty_method
+    camera_zoom_change = empty_method
+    generate_unit = empty_method
+    remove_unit_ui = empty_method
+    setup_battle_unit = empty_method
 
     # Import common.ui
-    def change_inspect_subunit(self, *args): pass
-    def countdown_skill_icon(self, *args): pass
-    def effect_icon_blit(self, *args): pass
-    def effect_icon_mouse_over(self, *args): pass
-    def escmenu_process(self, *args): pass
-    def kill_effect_icon(self, *args): pass
-    def leader_command_ui_mouse_over(self, *args): pass
-    def trait_skill_icon_blit(self, *args): pass
-    def troop_card_button_click(self, *args): pass
-    def ui_mouse_click(self, *args): pass
-    def ui_icon_mouse_over(self, *args): pass
+    change_inspect_subunit = empty_method
+    countdown_skill_icon = empty_method
+    effect_icon_blit = empty_method
+    effect_icon_mouse_over = empty_method
+    escmenu_process = empty_method
+    kill_effect_icon = empty_method
+    leader_command_ui_mouse_over = empty_method
+    trait_skill_icon_blit = empty_method
+    troop_card_button_click = empty_method
+    ui_mouse_click = empty_method
+    ui_icon_mouse_over = empty_method
 
     # import from common.battle.uniteditor
-    def convert_unit_slot_to_dict(self, *args): pass
-    def editor_map_change(self, *args): pass
-    def filter_troop_list(self, *args): pass
-    def preview_authority(self, *args): pass
-    def save_custom_unit_preset(self, *args): pass
+    convert_unit_slot_to_dict = empty_method
+    editor_map_change = empty_method
+    filter_troop_list = empty_method
+    preview_authority = empty_method
+    save_custom_unit_preset = empty_method
 
     # import from *genre*.battle.uniteditor
-    def unit_editor_convert(self, *args): pass
+    unit_editor_convert = empty_method
 
     # import from *genre*.battle
-    def add_behaviour_ui(self, *args): pass
-    def battle_keyboard_process(self, *args): pass
-    def battle_mouse_process(self, *args): pass
-    def change_battle_state(self, *args): pass
-    def editor_mouse_process(self, *args): pass
-    def mouse_process(self, *args): pass
-    def mouse_scrolling_process(self, *args): pass
-    def remove_unit_ui_check(self, *args): pass
-    def selected_unit_process(self, *args): pass
-    def setup_battle_ui(self, *args): pass
+    add_behaviour_ui = empty_method
+    battle_keyboard_process = empty_method
+    battle_mouse_process = empty_method
+    change_battle_state = empty_method
+    editor_mouse_process = empty_method
+    manual_aim = empty_method
+    mouse_process = empty_method
+    mouse_scrolling_process = empty_method
+    remove_unit_ui_check = empty_method
+    selected_unit_process = empty_method
+    setup_battle_ui = empty_method
 
     for folder in ("battle", "ui"):
         for entry in os.scandir(script_dir + "/common/" + folder + "/"):  # load and replace modules from common
@@ -282,7 +285,7 @@ class Battle:
         self.filter_troop = [True, True, True, True]  # filter in this order: melee infantry, range inf, melee cavalry, range cav
         self.current_selected = None
         self.before_selected = None
-        self.player_input_ui = None
+        self.player_input_state = None  # specific player command input and ui
 
         self.all_team_unit = {"alive": pygame.sprite.Group()}  # all unit in each team and alive
         self.team_pos_list = {}  # all alive team unit position
@@ -571,7 +574,7 @@ class Battle:
         self.before_selected = None  # Which unit is selected before
         self.split_happen = False  # Check if unit get split in that loop
         self.show_troop_number = True  # for toggle troop number on/off
-        self.player_input_ui = None
+        self.player_input_state = None
 
         self.base_mouse_pos = [0, 0]  # mouse position list in battle map not screen without zoom
         self.battle_mouse_pos = [0, 0]  # with camera zoom adjust
@@ -654,7 +657,7 @@ class Battle:
                         esc_press = False  # reset esc press, so it not stops esc menu when open
 
                 if self.game_state in ("battle", "editor"):  # game in battle state
-                    if self.player_input_ui is None:  # register user input during gameplay
+                    if self.player_input_state is None:  # register user input during gameplay
                         if mouse_scroll_up or mouse_scroll_down:  # Mouse scroll
                             self.mouse_scrolling_process(mouse_scroll_up, mouse_scroll_down)
 
@@ -689,13 +692,16 @@ class Battle:
                         self.selected_unit_process(mouse_left_up, mouse_right_up, double_mouse_right,
                                                    mouse_left_down, mouse_right_down, key_state, key_press)
                     else:  # register and process ui that require player input and block everything else
-                        choice = self.player_input_ui.selection(self.mouse_pos)
-                        if self.player_input_ui in self.wheel_ui:  # wheel ui process
-                            if mouse_left_up:
-                                self.wheel_ui_process(choice)
-                            elif key_press == pygame.K_q:  # Close unit command wheel ui
-                                self.battle_ui_updater.remove(self.wheel_ui)
-                                self.player_input_ui = None
+                        if type(self.player_input_state) != str:  # ui input state
+                            choice = self.player_input_state.selection(self.mouse_pos)
+                            if self.player_input_state in self.wheel_ui:  # wheel ui process
+                                if mouse_left_up:
+                                    self.wheel_ui_process(choice)
+                                elif key_press == pygame.K_q:  # Close unit command wheel ui
+                                    self.battle_ui_updater.remove(self.wheel_ui)
+                                    self.player_input_state = None
+                        elif "aim" in self.player_input_state:
+                            self.manual_aim(key_press, self.command_mouse_pos, mouse_left_up, mouse_right_up)
 
                     # Drama text function
                     if self.drama_timer == 0 and len(self.drama_text.queue) != 0:  # Start timer and add to main_ui If there is event queue
