@@ -4,7 +4,7 @@ import pygame
 def battle_keyboard_process(self, key_press):
     if key_press == pygame.K_q:  # Open unit command wheel ui
         self.battle_ui_updater.add(self.eight_wheel_ui)
-        self.player_input_ui = self.eight_wheel_ui
+        self.player_input_state = self.eight_wheel_ui
         self.eight_wheel_ui.change_text_icon(self.unit_behaviour_wheel["Main"])
 
     # elif key_press == pygame.K_p:  # Speed Pause/unpause Button

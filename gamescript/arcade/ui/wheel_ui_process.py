@@ -4,7 +4,7 @@ def wheel_ui_process(self, choice):
     elif choice is not None:  # click choice with game effect
         if choice in self.unit_behaviour_wheel["Skill"]:
             if "Troop" in choice:
-                self.player_char.unit.issue_order(None, other_command="Troop Skill " + str(int(choice[-1]) - 1))
+                self.current_selected.issue_order(None, other_command="Troop Skill " + str(int(choice[-1]) - 1))
             elif "Leader" in choice:
                 self.player_char.command_action = ("Leader Skill " + str(int(choice[-1]) - 1),)
 
@@ -17,33 +17,52 @@ def wheel_ui_process(self, choice):
                 self.show_map.change_scale(self.camera_zoom)
 
         elif choice in self.unit_behaviour_wheel["Shift Line"]:
-            self.player_char.unit.shift_line(choice)
+            self.current_selected.shift_line(choice)
 
         elif choice in self.unit_behaviour_wheel["Formation"]:
             if choice == "Original":
-                self.player_char.unit.change_formation(formation="true original")
+                self.current_selected.change_formation(formation="true original")
             elif choice == "Formation List":  # get formation from leader
                 self.unit_behaviour_wheel[choice] = {value: value for value in self.player_char.leader.formation}  # TODO change when has icon
                 renew_wheel(self, choice)
 
         elif choice in self.unit_behaviour_wheel["Formation Style"]:
-            self.player_char.unit.change_formation(self.player_char.unit.formation, style=choice)
+            self.current_selected.change_formation(self.current_selected.formation, style=choice)
         elif choice in self.unit_behaviour_wheel["Formation Phase"]:
-            self.player_char.unit.change_formation(self.player_char.unit.formation, phase=choice)
+            self.current_selected.change_formation(self.current_selected.formation, phase=choice)
         elif "Formation List" in self.unit_behaviour_wheel and choice in self.unit_behaviour_wheel["Formation List"]:
-            self.player_char.unit.change_formation(formation=choice)
+            self.current_selected.change_formation(formation=choice)
         elif choice in self.unit_behaviour_wheel["Equipment"]:
-            self.player_char.unit.swap_weapon_command(choice)
+            self.current_selected.swap_weapon_command(choice)
+
+        elif choice in self.unit_behaviour_wheel["Range Attack"]:
+            if choice == "Fire At Will":
+                self.current_selected.fire_at_will = 0
+            elif choice == "Volley At Will":
+                self.current_selected.fire_at_will = 1
+            elif choice == "Manual Only":
+                self.current_selected.fire_at_will = 1
+            elif "Aim" in choice:
+                self.battle_ui_updater.remove(self.wheel_ui)
+                self.camera_zoom = 4
+                self.camera_zoom_change()
+                self.cursor.change_image("aim")
+                if choice == "Leader Aim":
+                    self.player_input_state = "leader aim"
+                elif choice == "Volley Aim":
+                    self.player_input_state = "volley aim"
+                elif choice == "Troop Aim":
+                    self.player_input_state = "troop aim"
 
 
 def renew_wheel(self, choice):
     self.battle_ui_updater.remove(self.wheel_ui)  # remove current wheel first
-    self.player_input_ui = None
+    self.player_input_state = None
     if len(self.unit_behaviour_wheel[choice]) > 4:
-        self.player_input_ui = self.eight_wheel_ui
+        self.player_input_state = self.eight_wheel_ui
         self.eight_wheel_ui.change_text_icon(self.unit_behaviour_wheel[choice])
         self.battle_ui_updater.add(self.eight_wheel_ui)
     elif len(self.unit_behaviour_wheel[choice]) <= 4:
-        self.player_input_ui = self.four_wheel_ui
+        self.player_input_state = self.four_wheel_ui
         self.four_wheel_ui.change_text_icon(self.unit_behaviour_wheel[choice])
         self.battle_ui_updater.add(self.four_wheel_ui)
