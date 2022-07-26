@@ -684,10 +684,10 @@ class Model:
     def get_face(self):
         for p in range(1, max_person + 1):
             this_p = "p" + str(p)
-            self.p_eyebrow = self.p_eyebrow | {this_p: "normal_eyebrow"}
-            self.p_any_eye = self.p_any_eye | {this_p: "normal_eye"}
-            self.p_any_mouth = self.p_any_mouth | {this_p: "mouth"}
-            self.p_beard = self.p_beard | {this_p: "no_beard"}
+            self.p_eyebrow = self.p_eyebrow | {this_p: "normal"}
+            self.p_any_eye = self.p_any_eye | {this_p: "normal"}
+            self.p_any_mouth = self.p_any_mouth | {this_p: "normal"}
+            self.p_beard = self.p_beard | {this_p: "none"}
 
     def make_layer_list(self, sprite_part):
         pose_layer_list = {k: v[5] for k, v in sprite_part.items() if v is not None and v != []}

@@ -22,6 +22,7 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
     surface = pygame.Surface((default_sprite_size[0] * size, default_sprite_size[1] * size), pygame.SRCALPHA)  # default size will scale down later
 
     except_list = ["eye", "mouth", "size", "property"]
+
     pose_layer_list = {k: v[7] for k, v in animation_part_list.items() if v != [0] and v != "" and v != [""] and
                        any(ext in k for ext in except_list) is False and "weapon" not in k}  # layer list
     pose_layer_list.update({k: v[6] for k, v in animation_part_list.items() if v != [0] and v != "" and v != [""]
@@ -30,10 +31,10 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
     for index, layer in enumerate(pose_layer_list):
         part = animation_part_list[layer]
         new_part = part.copy()
-        if "p1_" in layer:
-            this_armour = armour[0]
-        elif "p2_" in layer:
-            this_armour = armour[1]
+        this_armour = None
+        for p_index, p in enumerate(("p1_", "p2_", "p3_", "p4_")):
+            if p in layer:
+                this_armour = armour[p_index]
         if "head" in layer:
             image_part = generate_head(layer[:2], animation_part_list, part[0:3], troop_sprite_list, body_sprite_pool, armour_sprite_pool,
                                        this_armour, hair_colour_list, skin_colour_list)
@@ -160,33 +161,41 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
     return {"sprite": surface, "animation_property": tuple(animation_property), "frame_property": tuple(frame_property)}
 
 
-def grab_face_part(pool, race, side, part, part_check, part_default):
+def grab_face_part(pool, race, side, part, part_check, part_default=None):
     """For creating body part like eye or mouth in animation that accept any part (1) so use default instead"""
-    if part_check == 1:  # any part
-        surface = pool[race][side][part][part_default].copy()
-    else:
-        surface = pool[race][side][part][part_check].copy()
+    surface = None
+    if part_check != "":
+        if part_check == 1:  # any part
+            if part_default is not None:
+                default = part_default
+                if type(part_default) != str:
+                    default = part_default[0]
+                surface = pool[race][side][part][default].copy()
+        else:
+            check = part_check
+            if type(part_check) != str:
+                check = part_check[0]
+            surface = pool[race][side][part][check].copy()
     return surface
 
 
-def generate_head(p, animation_part_list, body_part_list, sprite_list, pool, armour_pool, armour, hair_colour_list, skin_colour_list):
+def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool, armour_pool, armour, hair_colour_list, skin_colour_list):
     apply_colour = animation.apply_colour
 
     head_sprite_surface = None
     try:
         head_race = body_part_list[0]
         head_side = body_part_list[1]
-        head = pool[head_race][head_side]["head"][body_part_list[2]].copy()
+        head = body_pool[head_race][head_side]["head"][body_part_list[2]].copy()
         head_sprite_surface = pygame.Surface((head.get_width(), head.get_height()), pygame.SRCALPHA)
         head_rect = head.get_rect(midtop=(head_sprite_surface.get_width() / 2, 0))
         head_sprite_surface.blit(head, head_rect)
-        face = [pool[head_race][head_side]["eyebrow"][sprite_list[p + "_eyebrow"][0]].copy(),
-                grab_face_part(pool, head_race, head_side, "eye", animation_part_list[p + "_eye"], sprite_list[p + "_eye"][0]),
-                pool[head_race][head_side]["beard"][sprite_list[p + "_beard"][0]].copy(),
-                grab_face_part(pool, head_race, head_side, "mouth", animation_part_list[p + "_mouth"], sprite_list[p + "_mouth"])]
-
-    # if skin != "white":
-    #     face[0] = self.apply_colour(face[0], skin_colour)
+        face = [grab_face_part(body_pool, head_race, head_side, "eyebrow", sprite_list[p + "_eyebrow"]),
+                grab_face_part(body_pool, head_race, head_side, "eye", animation_part_list[p + "_eye"], sprite_list[p + "_eye"]),
+                grab_face_part(body_pool, head_race, head_side, "beard", sprite_list[p + "_beard"]),
+                grab_face_part(body_pool, head_race, head_side, "mouth", animation_part_list[p + "_mouth"], sprite_list[p + "_mouth"])]
+        # if skin != "white":
+        #     face[0] = self.apply_colour(face[0], skin_colour)
 
         face[0] = apply_colour(face[0], sprite_list[p + "_hair"][1], hair_colour_list)
         face[1] = apply_colour(face[1], sprite_list[p + "_eye"][1], hair_colour_list)
@@ -238,11 +247,10 @@ def generate_body(part, body_part_list, troop_sprite_list, sprite_pool, armour_s
                 part_name = part[3:]  # remove p1_ or p2_ to get part name
                 new_part_name = part_name
             if "special" in part:
-                part_name = "special"
+                new_part_name = "special"
             if "r_" in part_name[0:2] or "l_" in part_name[0:2]:
                 new_part_name = part_name[2:]  # remove side
             sprite_image = sprite_pool[body_part_list[0]][body_part_list[1]][new_part_name][body_part_list[2]].copy()
-
         if colour is not None:  # apply skin colour, maybe add for armour colour later
             sprite_image = apply_colour(sprite_image, colour, colour_list)
 

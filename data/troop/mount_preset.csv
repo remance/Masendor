@@ -1,5 +1,5 @@
 "ID","Name","Speed","Health Bonus","Charge Bonus","Stamina Bonus","Cost","Trait","Race","Ruleset","Description"
-1,"None",0,0,0,0,0,0,"Any",0,
+1,"None",0,0,0,0,0,0,"None",0,
 2,"Friesian Horse",70,500,80,50,,0,"Horse",0,
 3,"Mongolian Horse",55,300,40,100,,0,"Horse",0,
 4,"Andalusian Horse",,,,,,,"Horse",0,

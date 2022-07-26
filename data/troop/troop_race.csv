@@ -1,5 +1,5 @@
 "ID","Name","Size","Physical Resistance","Fire Resistance","Water Resistance","Air Resistance","Earth Resistance","Poison Resistance","Magic Resistance","Speed","Trait","Acronym","Ruleset","Description"
-0,"Any",1,0,,,,,,,0,,"A",0,"For condition check purpose."
+0,"None",1,0,,,,,,,0,,"NULL",0,
 1,"Human",10,0,,,,,,,50,,"H",0,
 2,"Horse",14,0,,,,,,,80,,"HS",0,
 3,"Camel",14,0,,,,,,,65,,"CM",0,

@@ -281,9 +281,15 @@ class Subunit(pygame.sprite.Sprite):
                             (self.troop_data.weapon_list[self.secondary_main_weapon[0]]["Name"],
                              self.troop_data.weapon_list[self.secondary_sub_weapon[0]]["Name"]))
 
-        self.mount = self.troop_data.mount_list[stat["Mount"][0]]  # mount this subunit use
-        self.mount_grade = self.troop_data.mount_grade_list[stat["Mount"][1]]
-        self.mount_armour = self.troop_data.mount_armour_list[stat["Mount"][2]]
+        self.mount_gear = stat["Mount"]
+        self.mount = self.troop_data.mount_list[self.mount_gear[0]]  # mount this subunit use
+        self.mount_race_name = self.mount["Race"]
+        self.mount_grade = self.troop_data.mount_grade_list[self.mount_gear[1]]
+        self.mount_armour = self.troop_data.mount_armour_list[self.mount_gear[2]]
+
+        self.animation_race_name = self.race_name
+        if self.mount_race_name != "None":
+            self.animation_race_name += "&" + self.mount_race_name
 
         self.size = self.troop_data.race_list[stat["Race"]]["Size"]
 
@@ -313,7 +319,7 @@ class Subunit(pygame.sprite.Sprite):
         self.special_effect = {status_name["Name"]: [[False, False], [False, False]]  # first item is for effect from troop/trait, second item is for weapon
                                for status_name in self.troop_data.special_effect_list.values() if status_name["Name"] != "Name"}
 
-        if stat["Mount"][0] != 1:  # have a mount, add mount stat with its grade to subunit stat
+        if self.mount_gear[0] != 1:  # have a mount, add mount stat with its grade to subunit stat
             self.add_mount_stat()
 
         self.trait["Original"] += self.troop_data.armour_list[self.armour_gear[0]][
@@ -475,7 +481,9 @@ class Subunit(pygame.sprite.Sprite):
             self.front_pos = self.make_front_pos()
 
             self.rect = self.image.get_rect(center=self.pos)
-        except AttributeError:  # for subunit with dummy unit
+
+            self.sprite_id = str(stat["Sprite ID"])
+        except AttributeError:  # for subunit with dummy unit, use in editor
             pass
 
     def update(self, weather, dt, zoom, mouse_pos, mouse_left_up):

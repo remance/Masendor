@@ -30,7 +30,7 @@ class TroopData:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
-            int_column = ("ID", "Grade", "Race", "Cost", "Upkeep", "Troop", "Troop Class")  # value int only
+            int_column = ("ID", "Grade", "Race", "Cost", "Upkeep", "Troop", "Troop Class", "Sprite ID")  # value int only
             list_column = ("Trait", "Skill",)  # value in list only
             tuple_column = ("Armour", "Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon",
                             "Secondary Sub Weapon", "Mount", "Role", "Ruleset")  # value in tuple only
@@ -410,7 +410,7 @@ class LeaderData:
             rd = [row for row in rd]
             header = rd[0]
             int_column = ("ID", "Race", "Melee Command", "Range Command", "Cavalry Command", "Combat", "Social Class",
-                          "Forcedimageid", "Faction")  # value int only
+                          "Faction", "Sprite ID")  # value int only
             list_column = ("Skill", "Trait", "Formation")
             tuple_column = ("Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon",
                             "Secondary Sub Weapon", "Armour", "Mount")

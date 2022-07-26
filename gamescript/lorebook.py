@@ -161,7 +161,7 @@ class Lorebook(pygame.sprite.Sprite):
 
         if self.section == self.leader_section:  # leader section exclusive for now (will merge with other section when add portrait for others)
             try:
-                image_name = str(self.subsection) + ".png"
+                image_name = str(self.subsection)
                 self.portrait = self.leader_data.images[image_name].copy()  # get leader portrait based on subsection number
             except KeyError:
                 self.portrait = self.leader_data.images["9999999"].copy()  # Use Unknown leader image if there is none in list
@@ -215,7 +215,7 @@ class Lorebook(pygame.sprite.Sprite):
 
         if self.portrait is not None:
             portrait_rect = self.portrait.get_rect(
-                topleft=(int(25 * self.screen_scale[0]), int(90 * self.screen_scale[1])))
+                center=(int(100 * self.screen_scale[0]), int(150 * self.screen_scale[1])))
             self.image.blit(self.portrait, portrait_rect)
 
         description_surface = pygame.Surface((int(410 * self.screen_scale[0]), int(370 * self.screen_scale[1])), pygame.SRCALPHA)

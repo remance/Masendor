@@ -26,6 +26,19 @@ def start_set(self, zoom, animation_pool):
     self.battle.start_troop_number[self.team] += self.troop_number
 
     # Grab only animation sprite that the subunit can use
-    self.animation_pool = animation_pool[self.troop_id]
+    self.animation_pool = animation_pool[self.sprite_id][self.race_name][self.mount["Race"]][self.armour_gear[0]][self.mount_gear[2]]
+    self.animation_pool = self.animation_pool[str(self.primary_main_weapon[0]) + "," + str(self.primary_sub_weapon[0])] | \
+                          self.animation_pool[str(self.secondary_main_weapon[0]) + "," + str(self.secondary_sub_weapon[0])]
+
+    # skill_list = this_subunit["Skill"] + self.troop_data.weapon_list[primary_main_weapon]["Skill"] + \
+    #              self.troop_data.weapon_list[primary_sub_weapon]["Skill"] + \
+    #              self.troop_data.weapon_list[secondary_main_weapon]["Skill"] + \
+    #              self.troop_data.weapon_list[secondary_sub_weapon]["Skill"]
+    # if "_Skill_" in animation:  # skill animation
+    #     make_animation = False  # not make animation for troop with no related skill animation
+    #     for skill in skill_list:
+    #         if self.troop_data.skill_list[skill]["Action"][0] in animation:
+    #             make_animation = True
+    #             break
 
     self.pick_animation()
