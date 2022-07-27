@@ -133,7 +133,7 @@ class RangeAttack(pygame.sprite.Sprite):
         target.base_morale -= attacker_morale_dmg
 
         if target.red_border is False:  # add red corner to indicate melee_dmg
-            target.block.blit(target.unit_ui_images["ui_squad_combat.png"], target.corner_image_rect)
+            target.block.blit(target.unit_ui_images["ui_squad_combat"], target.corner_image_rect)
             target.red_border = True
 
         for key, value in element_effect.items():
