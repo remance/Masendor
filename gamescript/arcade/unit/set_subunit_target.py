@@ -31,7 +31,7 @@ def set_subunit_target(self, target="rotate", leader_move=False, *args):
         unit_topleft = pygame.Vector2(unit_target[0] - self.base_width_box,
                                       unit_target[1])
 
-    for subunit in self.subunit_list:  # generate position of each subunit
+    for subunit in self.alive_subunit_list:  # generate position of each subunit
         if subunit.unit_leader is False or leader_move:
             new_target = unit_topleft + subunit.unit_position
             subunit.command_target = pygame.Vector2(

@@ -49,9 +49,8 @@ class RangeAttack(pygame.sprite.Sprite):
             how_long = shoot_range / self.speed  # shooting distance divide arrow speed to find travel time
             target_now = self.shooter.attack_pos
             if self.shooter.attack_target is not None:
-                hit_list = self.shooter.attack_target.subunit_list
-                if len(hit_list) > 0:
-                    target_hit = self.shooter.find_melee_target(hit_list)
+                if len(self.shooter.attack_target.alive_subunit_list) > 0:
+                    target_hit = self.shooter.find_melee_target(self.shooter.attack_target.alive_subunit_list)
                     target_now = target_hit.base_pos  # base_target is at the enemy position
 
                     # Base_target walking, predicatively find position the enemy will be at based on movement speed and arrow travel time

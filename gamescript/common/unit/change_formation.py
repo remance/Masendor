@@ -37,8 +37,8 @@ def change_formation(self, formation=None, phase=None, style=None):
             placement_position = np.where(new_formation["original"] == placement_value)
             placement_order += [(placement_position[0][index], placement_position[1][index]) for index, _ in enumerate(placement_position[0])]
 
-        for this_subunit in self.subunit_list:
-            if this_subunit is not None and this_subunit.state != 100:
+        for this_subunit in self.alive_subunit_list:
+            if this_subunit is not None:
                 for position in placement_order:
                     if first_placement[position[0]][position[1]] == 0:  # replace empty position
                         first_placement[position[0]][position[1]] = 1
@@ -49,34 +49,33 @@ def change_formation(self, formation=None, phase=None, style=None):
         priority_subunit_place = {"center-front": [], "center-rear": [], "flank-front": [],
                                   "flank-rear": [], "inner-front": [], "inner-rear": [],
                                   "outer-front": [], "outer-rear": []}  # dict to keep placement priority score of subunit
-        for this_subunit in self.subunit_list:
-            if this_subunit is not None and this_subunit.state != 100:
-                if "Melee" in self.formation_phase:  # melee front
-                    if this_subunit.subunit_type in (0, 2):  # melee
-                        formation_style_check(self, this_subunit, priority_subunit_place, "front")
-                    else:  # range
-                        formation_style_check(self, this_subunit, priority_subunit_place, "rear")
-                elif "Skirmish" in self.formation_phase:  # range front
-                    if this_subunit.subunit_type in (1, 3):  # range
-                        formation_style_check(self, this_subunit, priority_subunit_place, "front")
-                    elif this_subunit.subunit_type == 4:  # artillery
-                        formation_style_check(self, this_subunit, priority_subunit_place, "front")
-                    else:  # melee
-                        formation_style_check(self, this_subunit, priority_subunit_place, "rear")
-                elif "Bombard" in self.formation_phase:
-                    if this_subunit.subunit_type == 4:  # artillery
-                        formation_style_check(self, this_subunit, priority_subunit_place, "front")
-                    elif this_subunit.subunit_type in (1, 3):  # range
-                        formation_style_check(self, this_subunit, priority_subunit_place, "front")
-                    else:  # melee
-                        formation_style_check(self, this_subunit, priority_subunit_place, "rear")
-                elif "Heroic" in self.formation_phase:
-                    if this_subunit.leader is not None:  # leader
-                        formation_style_check(self, this_subunit, priority_subunit_place, "front")
-                    elif this_subunit.subunit_type in (0, 2):  # melee
-                        formation_style_check(self, this_subunit, priority_subunit_place, "front")
-                    else:  # range
-                        formation_style_check(self, this_subunit, priority_subunit_place, "rear")
+        for this_subunit in self.alive_subunit_list:
+            if "Melee" in self.formation_phase:  # melee front
+                if this_subunit.subunit_type in (0, 2):  # melee
+                    formation_style_check(self, this_subunit, priority_subunit_place, "front")
+                else:  # range
+                    formation_style_check(self, this_subunit, priority_subunit_place, "rear")
+            elif "Skirmish" in self.formation_phase:  # range front
+                if this_subunit.subunit_type in (1, 3):  # range
+                    formation_style_check(self, this_subunit, priority_subunit_place, "front")
+                elif this_subunit.subunit_type == 4:  # artillery
+                    formation_style_check(self, this_subunit, priority_subunit_place, "front")
+                else:  # melee
+                    formation_style_check(self, this_subunit, priority_subunit_place, "rear")
+            elif "Bombard" in self.formation_phase:
+                if this_subunit.subunit_type == 4:  # artillery
+                    formation_style_check(self, this_subunit, priority_subunit_place, "front")
+                elif this_subunit.subunit_type in (1, 3):  # range
+                    formation_style_check(self, this_subunit, priority_subunit_place, "front")
+                else:  # melee
+                    formation_style_check(self, this_subunit, priority_subunit_place, "rear")
+            elif "Heroic" in self.formation_phase:
+                if this_subunit.leader is not None:  # leader
+                    formation_style_check(self, this_subunit, priority_subunit_place, "front")
+                elif this_subunit.subunit_type in (0, 2):  # melee
+                    formation_style_check(self, this_subunit, priority_subunit_place, "front")
+                else:  # range
+                    formation_style_check(self, this_subunit, priority_subunit_place, "rear")
 
         priority_subunit_place = {key: value for key, value in priority_subunit_place.items() if len(value) > 0}
         for key, value in priority_subunit_place.items():  # there should be no excess number of subunit

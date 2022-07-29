@@ -35,27 +35,17 @@ def setup_frontline(self):
 
                 stop_loop = False
 
-    if len(self.subunit_id_array) > 0:  # still has row left
+    if len(self.subunit_id_array) > 0:  # still has row left, i.e., not completely destroyed
         old_width_box, old_height_box = self.base_width_box, self.base_height_box
         self.base_width_box, self.base_height_box = len(self.subunit_id_array[0]) * (self.image_size[0] + 10) / 20, \
                                                     len(self.subunit_id_array) * (self.image_size[1] + 2) / 20
 
-        found_count = 0
-        position_count = 0
         self.subunit_object_array = np.full(self.unit_size, None)
-        for row in range(0, len(self.subunit_id_array)):
-            for column in range(0, len(self.subunit_id_array[0])):
-                if found_count < len(self.subunit_list):
-                    if self.subunit_id_array[row][column] != 0:
-                        for subunit in self.subunit_list:
-                            if self.subunit_id_array[row][column] == subunit.game_id:
-                                self.subunit_object_array[row][column] = subunit
-                                subunit.unit_position = (self.subunit_position_list[row][column][0] / 10,
-                                                         self.subunit_position_list[row][column][
-                                                             1] / 10)  # position in unit sprite
-                                break
-                        found_count += 1
-                position_count += 1
+        for subunit in self.alive_subunit_list:
+            position = np.where((self.subunit_id_array == subunit.game_id))
+            self.subunit_object_array[position[0][0]][position[1][0]] = subunit
+            subunit.unit_position = (self.subunit_position_list[position[0][0]][position[1][0]][0] / 10,
+                                     self.subunit_position_list[position[0][0]][position[1][0]][1] / 10)  # new sprite position
 
         number_pos = (self.base_pos[0] - self.base_width_box,
                       (self.base_pos[1] + self.base_height_box))  # find position for number text
@@ -80,7 +70,7 @@ def setup_frontline(self):
 
     # Setup frontline
     got_another = True  # keep finding another subunit while true
-    frontline = {0: [], 1: [], 2: [], 3: []}
+    self.frontline_object = {0: [], 1: [], 2: [], 3: []}
     for index, who_frontline in enumerate(subunit_array):
         new_frontline = who_frontline.copy()
         dead = np.where((new_frontline == 0))  # replace the dead in frontline with other subunit in the same column
@@ -96,19 +86,18 @@ def setup_frontline(self):
                         new_frontline[dead_subunit] = 0
                         got_another = False
             got_another = True  # reset for another loop
-        frontline[index] = new_frontline.copy()
+        self.frontline_object[index] = new_frontline.copy()
 
-    self.frontline_object = frontline.copy()  # frontline array as object instead of index
-    for array_index, who_frontline in enumerate(list(frontline.values())):
+    for array_index, who_frontline in enumerate(list(self.frontline_object.values())):  # replace id with object
         self.frontline_object[array_index] = self.frontline_object[array_index].tolist()
         for index, stuff in enumerate(who_frontline):
             self.frontline_object[array_index][index] = None
-            for subunit in self.subunit_list:
+            for subunit in self.alive_subunit_list:
                 if subunit.game_id == stuff:
                     self.frontline_object[array_index][index] = subunit
                     break
 
-    for subunit in self.subunit_list:  # assign frontline variable to subunit for only front side
+    for subunit in self.alive_subunit_list:  # assign frontline variable to subunit for only front side
         subunit.frontline = False
         self.subunit_type_count[subunit.subunit_type] += 1
         subunit.find_nearby_subunit()  # reset nearby subunit in the same unit
@@ -116,6 +105,5 @@ def setup_frontline(self):
             subunit.frontline = True
 
     self.auth_penalty = 0
-    for subunit in self.subunit_list:
-        if subunit.state != 100:
-            self.auth_penalty += subunit.auth_penalty  # add authority penalty of all alive subunit
+    for subunit in self.alive_subunit_list:
+        self.auth_penalty += subunit.auth_penalty  # add authority penalty of all alive subunit

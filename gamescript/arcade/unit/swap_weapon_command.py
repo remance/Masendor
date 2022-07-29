@@ -3,7 +3,7 @@ equip_header = ("Primary", "Secondary")
 
 def swap_weapon_command(self, choice):
     if "Troop" in choice:
-        for this_subunit in self.subunit_list:
+        for this_subunit in self.alive_subunit_list:
             if this_subunit.leader is None and this_subunit.state < 90:  # skip leader
                 if "Melee" in choice:
                     if len(this_subunit.melee_weapon_set) > 0:

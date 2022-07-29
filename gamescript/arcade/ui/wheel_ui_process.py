@@ -47,6 +47,8 @@ def wheel_ui_process(self, choice):
                 self.camera_zoom = 4
                 self.camera_zoom_change()
                 self.cursor.change_image("aim")
+                self.single_text_popup.pop(self.cursor.rect.bottomright, "")
+                self.battle_ui_updater.add(self.single_text_popup)
                 if choice == "Leader Aim":
                     self.player_input_state = "leader aim"
                 elif choice == "Volley Aim":

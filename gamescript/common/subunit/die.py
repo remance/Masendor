@@ -17,17 +17,15 @@ def die(self):
     if self in self.battle.battle_camera:
         self.battle.battle_camera.change_layer(sprite=self, new_layer=1)
     self.battle.alive_subunit_list.remove(self)
-    self.unit.subunit_list.remove(self)
+    self.unit.alive_subunit_list.remove(self)
 
     self.command_action = ("Die", "uninterruptible")
     self.reset_animation()
     self.current_action = self.command_action  # replace any current action
     self.pick_animation()
 
-    for subunit in self.unit.subunit_object_array.flat:  # remove from index array
-        if subunit == self.game_id:
-            self.unit.subunit_id_array = np.where(self.unit.subunit_id_array == self.game_id, 0, self.unit.subunit_id_array)
-            break
+    self.unit.subunit_id_array = np.where(self.unit.subunit_id_array == self.game_id, 0, self.unit.subunit_id_array)
+    # No need to change subunit_object_array since it got changed in unit setup_frontline later
 
     self.gone_leader_process("Destroyed")
 

@@ -48,14 +48,15 @@ def combat_logic(self, dt, parent_state):
     #         if self.unit.nearby_enemy != {} and self.attack_target is None:
     #             self.find_shooting_target(parent_state)  # shoot the nearest target
     #
-    # if self.state in (11, 12, 13) and self.magazine_left > 0 and self.ammo_now == 0:  # reloading magazine_left
-    #     self.reload_time += dt
-    #     if self.reload_time >= self.reload:
-    #         self.ammo_now = self.magazine_size
-    #         self.magazine_left -= 1
-    #         self.reload_time = 0
-    #     self.stamina = self.stamina - (dt * 2)  # use stamina while reloading
-    # ^ End range attack function
+    for weapon in self.weapon_cooldown:
+        if self.weapon_cooldown[weapon] < self.weapon_speed[weapon]:
+            self.weapon_cooldown[weapon] += dt
+            if self.equipped_weapon in self.ammo_now and weapon in self.ammo_now[self.equipped_weapon] and \
+                    self.ammo_now[self.equipped_weapon][weapon] == 0:  # reloading magazine
+                if self.weapon_cooldown[weapon] >= self.weapon_speed[weapon]:  # finish reload, add ammo
+                    self.ammo_now[self.equipped_weapon][weapon] = self.magazine_size[self.equipped_weapon][weapon]
+                    self.magazine_count[self.equipped_weapon][weapon] -= 1
+                    self.weapon_cooldown[weapon] = 0
 
     # if combat_timer >= 0.5:  # combat is calculated every 0.5 second in real time
     #     if self.state == 10:  # if melee combat (engaging anyone on any side)

@@ -131,7 +131,7 @@ class Battle:
         self.fps_count = main.fps_count
 
         self.terrain_check = main.terrain_check
-        self.button_name_popup = main.button_name_popup
+        self.single_text_popup = main.single_text_popup
         self.leader_popup = main.leader_popup
         self.effect_popup = main.effect_popup
         self.drama_text = main.drama_text

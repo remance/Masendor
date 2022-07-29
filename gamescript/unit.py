@@ -82,6 +82,7 @@ class Unit(pygame.sprite.Sprite):
         self.start_where = []
         self.subunit_list = []
         self.subunit_object_array = np.full(self.unit_size, None)
+        self.subunit_id_array = subunit_list  # troop id array, will be converted to subunit game id array when creating subunit in generate_unit, must not contain empty row or column unlike subunit_object_array
         self.leader = []
         self.leader_subunit = None  # subunit that the main unit leader is in, get added in leader first update
         self.nearby_enemy = {}  # list dict of nearby enemy unit, sorted by distance
@@ -89,7 +90,6 @@ class Unit(pygame.sprite.Sprite):
         self.player_control = player_control  # player control or not
         self.start_hp = start_hp  # starting hp percentage
         self.start_stamina = start_stamina  # starting stamina percentage
-        self.subunit_id_array = subunit_list  # troop id array, will be converted to subunit game id array when creating subunit in generate_unit, must not contain empty row or column unlike subunit_object_array
         self.colour = colour  # box colour according to team
         self.commander = commander  # True if commander unit
 
@@ -204,17 +204,16 @@ class Unit(pygame.sprite.Sprite):
 
     def start_set(self):
         """Setup various variables at the start of battle or when new unit spawn/split"""
+        self.alive_subunit_list = [item for item in self.subunit_list]
         self.setup_stat(battle_start=True)
         self.setup_frontline()
         self.old_troop_health, self.old_troop_stamina = self.troop_number, self.stamina
         self.leader_social = self.leader[0].social
         self.authority = self.leader[0].authority  # will be recalculated again later
 
-        # v Assign team leader commander to every unit in team if this is commander unit
-        if self.commander:
+        if self.commander:  # assign team leader commander to every unit in team if this is commander unit
             for this_unit in self.battle.all_team_unit[self.team]:
                 this_unit.team_commander = self.leader[0]
-        # ^ End assign commander
 
         self.battle.all_team_unit["alive"].add(self)
         self.ally_pos_list = self.battle.team_pos_list[self.team]
@@ -254,10 +253,9 @@ class Unit(pygame.sprite.Sprite):
             self.zoom_change = True
             self.zoom = 11 - zoom  # save scale
             self.change_pos_scale()  # update unit sprite according to new scale
-            for subunit in self.subunit_list:
+            for subunit in self.alive_subunit_list:
                 if self.zoom == 1:  # revert to default layer at other zoom
-                    if subunit.state != 100:
-                        self.battle_camera.change_layer(subunit, 4)
+                    self.battle_camera.change_layer(subunit, 4)
             self.last_zoom = zoom
 
         # v Setup frontline again when any subunit destroyed
@@ -266,7 +264,7 @@ class Unit(pygame.sprite.Sprite):
                     len(self.subunit_id_array) > 1 or any(subunit != 0 for subunit in self.subunit_id_array[0])):
                 self.setup_frontline()
 
-                for subunit in self.subunit_list:
+                for subunit in self.alive_subunit_list:
                     subunit.base_morale -= (30 * subunit.mental)
                 self.dead_change = False
 
@@ -342,9 +340,6 @@ class Unit(pygame.sprite.Sprite):
                 self.destroyed(self.battle)
                 self.battle.event_log.add_log([0, str(self.leader[0].name) + "'s unit is destroyed"],
                                               [0, 1])  # put destroyed event in troop and army log
-                self.kill()
-                for subunit in self.subunit_list:
-                    subunit.kill()
 
     def process_retreat(self, pos):
         self.state = 96  # controlled retreat state (not same as 98)
