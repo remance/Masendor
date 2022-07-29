@@ -1017,8 +1017,8 @@ class Model:
                 self.animation_part_list[current_frame][part] = []
             self.part_selected = []
 
-        elif edit_type == "change":  # change strip
-            self.part_selected = []
+        # elif edit_type == "change":  # change strip
+        #     self.part_selected = []
 
         elif edit_type == "paste":  # paste copy part
             for part in copy_part.keys():
@@ -2171,8 +2171,7 @@ while True:
                                 setup_list(menu.NameList, current_frame_row, frame_prop_list_box.namelist[current_frame], frame_prop_namegroup,
                                            frame_prop_list_box, ui, screen_scale, layer=9,
                                            old_list=frame_property_select[current_frame])  # change frame property list
-                                for index, helper in enumerate(helper_list):
-                                    helper.select_part(None, False, False)
+
                                 if strip.activate:
                                     activate_button.change_option(0)
                                 else:
