@@ -283,7 +283,7 @@ class Subunit(pygame.sprite.Sprite):
 
         self.mount_gear = stat["Mount"]
         self.mount = self.troop_data.mount_list[self.mount_gear[0]]  # mount this subunit use
-        self.mount_race_name = self.mount["Race"]
+        self.mount_race_name = self.troop_data.race_list[self.mount["Race"]]["Name"]
         self.mount_grade = self.troop_data.mount_grade_list[self.mount_gear[1]]
         self.mount_armour = self.troop_data.mount_armour_list[self.mount_gear[2]]
 
@@ -559,21 +559,23 @@ class Subunit(pygame.sprite.Sprite):
                  (len(self.current_action) > 1 and type(self.current_action[-1]) == int and self.current_action[-1] not in self.skill_effect) or
                  (self.idle_action and self.idle_action != self.command_action)):
             if done:  # finish animation, perform something
-                if self.state == 11:
-                    if self.current_action and "Action" in self.current_action[0]:  # shoot arrow
-                        weapon = int(self.current_action[0][-1])
-                        rangeattack.RangeAttack(self, weapon, self.weapon_dmg[weapon],
-                                                self.weapon_penetrate[self.equipped_weapon][weapon],
-                                                self.arrow_speed[self.equipped_weapon][weapon],
-                                                self.base_pos.distance_to(self.attack_pos), self.shoot_range[weapon],
-                                                self.zoom)  # Shoot
-                        self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
-                        if self.ammo_now[self.equipped_weapon][weapon] == 0 and \
-                                self.magazine_count[self.equipped_weapon][weapon] == 0:
-                            self.ammo_now[self.equipped_weapon].pop(weapon)  # remove weapon with no ammo
-                            if len(self.ammo_now[self.equipped_weapon]) == 0:  # remove entire set if no ammo at all
-                                self.ammo_now.pop(self.equipped_weapon)
-                        self.stamina -= self.weapon_weight[self.equipped_weapon][weapon]
+                if self.current_action and "Action" in self.current_action[0] and "Range Attack" in self.current_action:  # shoot arrow
+                    if len(self.current_action) > 2:  # second item as attack position
+                        self.attack_pos = self.current_action[2]
+                        print(self.attack_pos)
+                    weapon = int(self.current_action[0][-1])
+                    rangeattack.RangeAttack(self, weapon, self.weapon_dmg[weapon],
+                                            self.weapon_penetrate[self.equipped_weapon][weapon],
+                                            self.arrow_speed[self.equipped_weapon][weapon],
+                                            self.base_pos.distance_to(self.attack_pos), self.shoot_range[weapon],
+                                            self.zoom)  # Shoot
+                    self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
+                    if self.ammo_now[self.equipped_weapon][weapon] == 0 and \
+                            self.magazine_count[self.equipped_weapon][weapon] == 0:
+                        self.ammo_now[self.equipped_weapon].pop(weapon)  # remove weapon with no ammo
+                        if len(self.ammo_now[self.equipped_weapon]) == 0:  # remove entire set if no ammo at all
+                            self.ammo_now.pop(self.equipped_weapon)
+                    self.stamina -= self.weapon_weight[self.equipped_weapon][weapon]
 
             self.reset_animation()
             self.interrupt_animation = False

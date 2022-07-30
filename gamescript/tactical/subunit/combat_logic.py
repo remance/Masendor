@@ -142,7 +142,7 @@ def combat_logic(self, dt, unit_state):
                     else:  # rear
                         hit_side = 2
                     self.hit_register(weapon, subunit, 0, hit_side, self.battle.troop_data.status_list)
-                    self.command_action = ("Action " + str(weapon),)
+                    self.command_action = ("Action " + str(weapon), "Range Attack")
                     self.stamina -= self.weapon_weight[self.equipped_weapon][weapon]
                     self.weapon_cooldown[weapon] -= self.weapon_speed[weapon]
                 break

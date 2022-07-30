@@ -31,7 +31,7 @@ class RangeAttack(pygame.sprite.Sprite):
         self.penetrate = penetrate
         if self.shooter.state in (12, 13) and True in self.shooter.special_effect["Agile Aim"] is False:
             self.accuracy -= 10  # accuracy penalty for shoot while moving
-        self.pass_subunit = None  # check which subunit arrow passing through
+        self.pass_subunit = None  # subunit arrow passing through, receive damage if movement stop
         self.side = None  # side that arrow collided last
         if hit_cal:
             random_pos1 = random.randint(0, 1)  # for left or right random
@@ -158,8 +158,9 @@ class RangeAttack(pygame.sprite.Sprite):
         move = self.base_target - self.base_pos
         move_length = move.length()
 
-        # v Sprite move
-        if move_length > 0:
+        if move_length > 0:  # sprite move
+            self.pass_subunit = None  # reset every movement update
+
             move.normalize_ip()
             move = move * self.speed * dt
             if move.length() <= move_length:

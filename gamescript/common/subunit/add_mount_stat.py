@@ -1,7 +1,6 @@
 def add_mount_stat(self):
     """Combine mount stat"""
-    race_id = [key for key, value in self.troop_data.race_list.items() if self.mount["Race"] in value["Name"]][0]
-    mount_size = self.troop_data.race_list[race_id]["Size"]
+    mount_size = self.troop_data.race_list[self.mount["Race"]]["Size"]
     # self.race_name += "&" + self.troop_data.race_list[race_id]["Name"]
     if mount_size > self.size:  # replace size if mount is larger
         self.size = mount_size

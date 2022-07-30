@@ -19,6 +19,9 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
     animation_property = animation_property.copy()
     check_prop = frame_property + animation_property
 
+    size = int(size)
+    if size > 5:
+        size = 5
     surface = pygame.Surface((default_sprite_size[0] * size, default_sprite_size[1] * size), pygame.SRCALPHA)  # default size will scale down later
 
     except_list = ["eye", "mouth", "size", "property"]

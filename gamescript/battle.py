@@ -603,7 +603,16 @@ class Battle:
             self.click_any = False
 
             self.mouse_pos = pygame.mouse.get_pos()  # current mouse pos based on screen
+
             self.cursor.update(self.mouse_pos)
+
+            self.base_mouse_pos = pygame.Vector2((self.mouse_pos[0] - self.center_screen[0] + self.camera_pos[0]),
+                                                 (self.mouse_pos[1] - self.center_screen[1] + self.camera_pos[
+                                                     1]))  # mouse pos on the map based on camera position
+            self.battle_mouse_pos = self.base_mouse_pos / self.camera_zoom  # mouse pos on the map at current camera zoom scale
+            self.command_mouse_pos = pygame.Vector2(self.battle_mouse_pos[0] / self.screen_scale[0],
+                                                    self.battle_mouse_pos[1] / self.screen_scale[
+                                                        1])  # with screen scale
 
             self.battle_ui_updater.clear(self.screen, self.background)  # Clear sprite before update new one
 
@@ -671,12 +680,6 @@ class Battle:
                             self.mouse_timer += self.ui_dt  # increase timer for mouse click using real time
                             if self.mouse_timer >= 0.3:  # time pass 0.3 second no longer count as double click
                                 self.mouse_timer = 0
-
-                        self.base_mouse_pos = pygame.Vector2((self.mouse_pos[0] - self.center_screen[0] + self.camera_pos[0]),
-                                                             (self.mouse_pos[1] - self.center_screen[1] + self.camera_pos[1]))  # mouse pos on the map based on camera position
-                        self.battle_mouse_pos = self.base_mouse_pos / self.camera_zoom  # mouse pos on the map at current camera zoom scale
-                        self.command_mouse_pos = pygame.Vector2(self.battle_mouse_pos[0] / self.screen_scale[0],
-                                                                  self.battle_mouse_pos[1] / self.screen_scale[1])  # with screen scale
 
                         if mouse_left_up or mouse_right_up or mouse_left_down or mouse_right_down or key_state:
                             self.mouse_process(mouse_left_up, mouse_right_up, mouse_left_down,
