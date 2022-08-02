@@ -7,6 +7,8 @@ def wheel_ui_process(self, choice):
                 self.current_selected.issue_order(None, other_command="Troop Skill " + str(int(choice[-1]) - 1))
             elif "Leader" in choice:
                 self.player_char.command_action = ("Leader Skill " + str(int(choice[-1]) - 1),)
+            self.battle_ui_updater.remove(self.wheel_ui)
+            self.player_input_state = None
 
         elif choice in self.unit_behaviour_wheel["Setting"]:
             if choice == "Height Map":
@@ -15,6 +17,8 @@ def wheel_ui_process(self, choice):
                     self.map_mode = 0
                 self.show_map.change_mode(self.map_mode)
                 self.show_map.change_scale(self.camera_zoom)
+            self.battle_ui_updater.remove(self.wheel_ui)
+            self.player_input_state = None
 
         elif choice in self.unit_behaviour_wheel["Shift Line"]:
             self.current_selected.shift_line(choice)
@@ -34,6 +38,8 @@ def wheel_ui_process(self, choice):
             self.current_selected.change_formation(formation=choice)
         elif choice in self.unit_behaviour_wheel["Equipment"]:
             self.current_selected.swap_weapon_command(choice)
+            self.battle_ui_updater.remove(self.wheel_ui)
+            self.player_input_state = None
 
         elif choice in self.unit_behaviour_wheel["Range Attack"]:
             if choice == "Fire At Will":
@@ -44,6 +50,7 @@ def wheel_ui_process(self, choice):
                 self.current_selected.fire_at_will = 1
             elif "Aim" in choice:
                 self.battle_ui_updater.remove(self.wheel_ui)
+                self.player_input_state = None
                 self.camera_zoom = 4
                 self.camera_zoom_change()
                 self.cursor.change_image("aim")

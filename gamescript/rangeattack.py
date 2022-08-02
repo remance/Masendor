@@ -8,20 +8,29 @@ from pygame.transform import scale
 
 
 class RangeAttack(pygame.sprite.Sprite):
-    images = []
+    bullet_sprite_pool = None
+    bullet_weapon_sprite_pool = None
     screen_scale = (1, 1)
     height_map = None
 
     play_animation = animation.play_animation
 
-    def __init__(self, shooter, weapon, dmg, penetrate, speed, shoot_range, max_range, view_mode, hit_cal=True):
+    def __init__(self, shooter, weapon, dmg, penetrate, weapon_stat, shoot_range, max_range, view_mode, hit_cal=True):
         self._layer = 7
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = self.images[0]
-        self.image_original = self.image.copy()
+        if weapon_stat["Bullet"][0] != "self":
+            self.image = self.bullet_sprite_pool[weapon_stat["Bullet"][0]]["side"]["base"]  # use side and base sprite by default for now
+        else:  # use weapon image itself as bullet image
+            direction = shooter.sprite_direction
+            if "r_" in direction or "l_" in direction:
+                direction = shooter.sprite_direction[2:]
+            self.image = self.bullet_weapon_sprite_pool[weapon_stat["Name"]][shooter.weapon_version[shooter.equipped_weapon][weapon]][direction]["base"]
+            # if "l_" == shooter.sprite_direction[:2]:  # by default sprite should be in right side, so flip for left side
+            #     self.image = pygame.transform.flip(self.image, True)
+        self.current_frame = 0
         self.shooter = shooter  # subunit that perform the attack
         self.weapon = weapon  # weapon that use to perform the attack
-        self.speed = speed  # travel speed
+        self.speed = weapon_stat["Travel Speed"]  # travel speed
         self.arc_shot = False  # direct shot will no go pass collided unit
         if shooter.special_effect_check("Arc Shot", weapon=0) and self.shooter.unit.shoot_mode != 2:
             self.arc_shot = True  # arc shot will go pass unit to land at final base_target
@@ -91,6 +100,17 @@ class RangeAttack(pygame.sprite.Sprite):
                              self.base_target[0] - self.shooter.unit.base_pos[0])
         self.angle = math.degrees(radians)
 
+        # # """upper left and upper right"""
+        # if -180 <= self.angle < 0:
+        #     self.angle = -self.angle - 90
+        #
+        # # """lower right -"""
+        # elif 0 <= self.angle <= 90:
+        #     self.angle = -(self.angle + 90)
+        #
+        # # """lower left +"""
+        # elif 90 < self.angle <= 180:
+        #     self.angle = 270 - self.angle
         # """upper left and upper right"""
         if -180 <= self.angle < 0:
             self.angle = -self.angle - 90

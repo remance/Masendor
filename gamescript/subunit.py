@@ -24,9 +24,10 @@ class Subunit(pygame.sprite.Sprite):
     feature_map = None  # feature map
     height_map = None  # height map
     troop_data = None
-    troop_data = None
-    troop_data = None
     leader_data = None
+    troop_sprite_list = None
+    leader_sprite_list = None
+    common_leader_sprite_list = None
     status_list = None
     animation_sprite_pool = None
     max_zoom = 10  # max zoom allow
@@ -181,7 +182,6 @@ class Subunit(pygame.sprite.Sprite):
 
         self.magazine_size = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}  # can shoot how many times before have to reload
         self.ammo_now = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}  # ammunition count in the current magazine
-        self.arrow_speed = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
         self.weapon_skill = {0: {0: [], 1: []}, 1: {0: [], 1: []}}
         self.equipped_weapon = 0
 
@@ -190,6 +190,7 @@ class Subunit(pygame.sprite.Sprite):
         self.troop_number = 1  # number of troops inside the subunit
         if type(troop_id) == int or "h" not in troop_id:
             self.troop_id = int(troop_id)  # ID of preset used for this subunit
+            sprite_list = self.troop_sprite_list
             stat = self.troop_data.troop_list[self.troop_id].copy()
             self.grade = stat["Grade"]  # training level/class grade
             grade_stat = self.troop_data.grade_list[self.grade]
@@ -221,6 +222,9 @@ class Subunit(pygame.sprite.Sprite):
 
         else:  # leader character, for game mode that replace subunit with leader
             self.troop_id = troop_id
+            sprite_list = self.leader_sprite_list
+            if int(troop_id.replace("h", "")) >= 10000:
+                sprite_list = self.common_leader_sprite_list
             stat = self.leader_data.leader_list[int(troop_id.replace("h", ""))].copy()
             self.grade = 12  # leader grade by default
             grade_stat = self.troop_data.grade_list[self.grade]
@@ -276,6 +280,8 @@ class Subunit(pygame.sprite.Sprite):
         self.secondary_sub_weapon = stat["Secondary Sub Weapon"]
         self.melee_weapon_set = []
         self.range_weapon_set = []
+        self.weapon_id = ((self.primary_main_weapon[0], self.primary_sub_weapon[0]),
+                            (self.secondary_main_weapon[0], self.secondary_sub_weapon[0]))
         self.weapon_name = ((self.troop_data.weapon_list[self.primary_main_weapon[0]]["Name"],
                              self.troop_data.weapon_list[self.primary_sub_weapon[0]]["Name"]),
                             (self.troop_data.weapon_list[self.secondary_main_weapon[0]]["Name"],
@@ -483,6 +489,10 @@ class Subunit(pygame.sprite.Sprite):
             self.rect = self.image.get_rect(center=self.pos)
 
             self.sprite_id = str(stat["Sprite ID"])
+            self.weapon_version = ((sprite_list[self.sprite_id]["p1_primary_main_weapon"],
+                                   sprite_list[self.sprite_id]["p1_primary_sub_weapon"]),
+                                   (sprite_list[self.sprite_id]["p1_secondary_main_weapon"],
+                                   sprite_list[self.sprite_id]["p1_secondary_sub_weapon"]))  # keep only main p1 weapon
         except AttributeError:  # for subunit with dummy unit, use in editor
             pass
 
@@ -559,16 +569,15 @@ class Subunit(pygame.sprite.Sprite):
                  (len(self.current_action) > 1 and type(self.current_action[-1]) == int and self.current_action[-1] not in self.skill_effect) or
                  (self.idle_action and self.idle_action != self.command_action)):
             if done:  # finish animation, perform something
-                if self.current_action and "Action" in self.current_action[0] and "Range Attack" in self.current_action:  # shoot arrow
+                if self.current_action and "Action" in self.current_action[0] and "Range Attack" in self.current_action:  # shoot bullet
                     if len(self.current_action) > 2:  # second item as attack position
                         self.attack_pos = self.current_action[2]
-                        print(self.attack_pos)
                     weapon = int(self.current_action[0][-1])
                     rangeattack.RangeAttack(self, weapon, self.weapon_dmg[weapon],
                                             self.weapon_penetrate[self.equipped_weapon][weapon],
-                                            self.arrow_speed[self.equipped_weapon][weapon],
+                                            self.troop_data.weapon_list[self.weapon_id[self.equipped_weapon][weapon]],
                                             self.base_pos.distance_to(self.attack_pos), self.shoot_range[weapon],
-                                            self.zoom)  # Shoot
+                                            self.zoom)  # Shoot bullet
                     self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
                     if self.ammo_now[self.equipped_weapon][weapon] == 0 and \
                             self.magazine_count[self.equipped_weapon][weapon] == 0:

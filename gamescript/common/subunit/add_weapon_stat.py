@@ -22,7 +22,6 @@ def add_weapon_stat(self):
                 self.magazine_size[set_index][weapon_index] = weapon_stat[
                     "Magazine"]  # can shoot how many times before have to reload
                 self.original_range[set_index][weapon_index] = weapon_stat["Range"] * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]
-                self.arrow_speed[set_index][weapon_index] = weapon_stat["Travel Speed"]  # travel speed of range melee_attack
 
                 self.range_weapon_set[set_index] += dmg_sum  # add weapon damage for sort
 

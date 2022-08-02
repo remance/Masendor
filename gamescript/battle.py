@@ -354,7 +354,7 @@ class Battle:
         self.gen_body_sprite_pool = self.main.gen_body_sprite_pool
         self.gen_weapon_sprite_pool = self.main.gen_weapon_sprite_pool
         self.gen_armour_sprite_pool = self.main.gen_armour_sprite_pool
-        self.effect_sprite_pool = self.main.effect_sprite_pool
+        self.effect_sprite_data = self.main.effect_sprite_data
         self.weapon_joint_list = self.main.weapon_joint_list
 
         self.hair_colour_list = self.main.hair_colour_list
@@ -658,6 +658,11 @@ class Battle:
             elif pygame.mouse.get_pressed()[2]:  # Hold left click
                 mouse_right_down = True
 
+            if self.map_scale_delay > 0:  # time delay before player can scroll map zoom
+                self.map_scale_delay += self.ui_dt
+                if self.map_scale_delay >= 0.1:  # delay for 1 second until user can change scale again
+                    self.map_scale_delay = 0
+
             if self.input_popup == (None, None):
                 if esc_press:  # open/close menu
                     if self.game_state in ("battle", "editor"):  # in battle or editor mode
@@ -704,7 +709,7 @@ class Battle:
                                     self.battle_ui_updater.remove(self.wheel_ui)
                                     self.player_input_state = None
                         elif "aim" in self.player_input_state:
-                            self.manual_aim(key_press, self.command_mouse_pos, mouse_left_up, mouse_right_up)
+                            self.manual_aim(key_press, mouse_left_up, mouse_right_up, mouse_scroll_up, mouse_scroll_down)
 
                     # Drama text function
                     if self.drama_timer == 0 and len(self.drama_text.queue) != 0:  # Start timer and add to main_ui If there is event queue
@@ -1002,7 +1007,7 @@ class Battle:
         for value in self.all_team_unit.values():  # empty all group in dict
             value.empty()
         clean_group_object((self.subunit_updater, self.leader_updater, self.unit_updater, self.unit_icon,
-                            self.troop_number_sprite, self.range_attacks))
+                            self.troop_number_sprite, self.range_attacks, self.weather_matter))
 
         self.subunit_animation_pool = None
         self.generic_action_data = None

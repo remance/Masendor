@@ -529,8 +529,6 @@ class Game:
         self.battle_ui_updater.add(self.mini_map)
 
         # Game sprite Effect
-        effect_images = load_images(self.main_dir, self.screen_scale, ["sprite", "effect"], load_order=False)
-        rangeattack.RangeAttack.images = [effect_images["arrow"]]
         rangeattack.RangeAttack.screen_scale = self.screen_scale
 
         # Battle ui
@@ -688,6 +686,9 @@ class Game:
         subunit.Subunit.screen_scale = self.screen_scale
         subunit.Subunit.troop_data = self.troop_data
         subunit.Subunit.leader_data = self.leader_data
+        subunit.Subunit.troop_sprite_list = self.troop_data.troop_sprite_list
+        subunit.Subunit.leader_sprite_list = self.leader_data.leader_sprite_list
+        subunit.Subunit.common_leader_sprite_list = self.leader_data.common_leader_sprite_list
         subunit.Subunit.status_list = self.troop_data.status_list
         subunit.Subunit.subunit_state = self.subunit_state
 
@@ -709,7 +710,32 @@ class Game:
 
         subunit.Subunit.generic_action_data = self.generic_action_data
 
-        self.effect_sprite_pool = datasprite.EffectSpriteData(self.main_dir)
+        self.effect_sprite_data = datasprite.EffectSpriteData(self.main_dir)
+
+        # flip (covert for ingame angle) and reduce bullet sprite size by half
+        bullet_sprite_pool = {}
+        for key, value in self.effect_sprite_data.effect_sprite_pool.items():
+            bullet_sprite_pool[key] = {}
+            for key2, value2 in value.items():
+                bullet_sprite_pool[key][key2] = {}
+                for key3, value3 in value2.items():
+                    image = pygame.transform.flip(value3, False, True)
+                    image = pygame.transform.scale(image, (int(image.get_width() / 2), int(image.get_height() / 2)))
+                    bullet_sprite_pool[key][key2][key3] = image
+        bullet_weapon_sprite_pool = {}
+        for key, value in self.gen_weapon_sprite_pool.items():
+            bullet_weapon_sprite_pool[key] = {}
+            for key2, value2 in value.items():
+                bullet_weapon_sprite_pool[key][key2] = {}
+                for key3, value3 in value2.items():
+                    bullet_weapon_sprite_pool[key][key2][key3] = {}
+                    for key4, value4 in value3.items():
+                        image = pygame.transform.flip(value4, False, True)
+                        image = pygame.transform.scale(image, (int(image.get_width() / 2), int(image.get_height() / 2)))
+                        bullet_weapon_sprite_pool[key][key2][key3][key4] = image
+
+        rangeattack.RangeAttack.bullet_sprite_pool = bullet_sprite_pool
+        rangeattack.RangeAttack.bullet_weapon_sprite_pool = bullet_weapon_sprite_pool
 
         who_todo = {key: value for key, value in self.troop_data.troop_list.items()}
         self.preview_sprite_pool = self.create_sprite_pool(direction_list, self.troop_sprite_size, self.screen_scale,
