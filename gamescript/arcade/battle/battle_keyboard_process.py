@@ -33,9 +33,9 @@ def battle_keyboard_process(self, key_press):
     elif key_press == pygame.K_F2:
         self.drama_text.queue.append("Showcase: Update to arcade mode so far")
     elif key_press == pygame.K_F3:
-        self.drama_text.queue.append("More animations and charge command")
+        self.drama_text.queue.append("Formation system")
     elif key_press == pygame.K_F4:
-        self.drama_text.queue.append("Wheel ui sample")
+        self.drama_text.queue.append("Range attack aim control")
     elif key_press == pygame.K_F5:
         self.drama_text.queue.append("Unit line shifting")
     # elif key_press == pygame.K_F6:

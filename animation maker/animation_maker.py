@@ -150,8 +150,6 @@ def property_to_pool_data(which):
 
 def change_animation(new_name):
     global animation_name, current_frame, current_anim_row, current_frame_row, anim_property_select, frame_property_select
-    current_frame = 0
-    anim.show_frame = current_frame
     anim_prop_list_box.namelist = anim_property_list + ["Custom"]  # reset property list
     anim_property_select = []
     frame_prop_list_box.namelist = [frame_property_list + ["Custom"] for _ in range(10)]
@@ -159,6 +157,9 @@ def change_animation(new_name):
     current_anim_row = 0
     current_frame_row = 0
     model.read_animation(new_name)
+    if activate_list[current_frame] is False:
+        current_frame = 0
+    anim.show_frame = current_frame
     animation_name = new_name
     animation_selector.change_name(new_name)
     reload_animation(anim, model)

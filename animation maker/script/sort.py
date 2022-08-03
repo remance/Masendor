@@ -84,4 +84,4 @@ def sort_animation(pool, pool_name, header, sort_by):
         edit_file.close()
 
 
-sort_animation(pool, "generic", part_name_header, ["Race", "Type", "Hand", "index"])
+sort_animation(pool, "generic", part_name_header, ["Race", "Action", "index"])
