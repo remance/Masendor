@@ -711,21 +711,23 @@ class UnitSelector(pygame.sprite.Sprite):
         self.icon_scale = icon_scale
         self.current_row = 0
         self.max_row_show = 2
-        self.max_column_show = 6
         self.row_size = 0
         self.scroll = None  # got add after create scroll object
 
     def setup_unit_icon(self, unit_icon_group, unit_list):
         """Setup unit selection list in unit selector ui top left of screen"""
-        current_index = int(self.current_row * self.max_column_show)  # the first index of current row
-        self.row_size = len(unit_list) / self.max_column_show
+        for this_unit in unit_list:
+            max_column_show = int(self.image.get_width() / ((this_unit.leader[0].full_image.get_width() * self.icon_scale * 1.5)))
+            break
+        current_index = int(self.current_row * max_column_show)  # the first index of current row
+        self.row_size = len(unit_list) / max_column_show
 
         if self.row_size.is_integer() is False:
             self.row_size = int(self.row_size) + 1
 
         if self.current_row > self.row_size - 1:
             self.current_row = self.row_size - 1
-            current_index = int(self.current_row * self.max_column_show)
+            current_index = int(self.current_row * max_column_show)
             self.scroll.change_image(new_row=self.current_row)
 
         if len(unit_icon_group) > 0:  # remove all old icon first before making new list
@@ -734,20 +736,20 @@ class UnitSelector(pygame.sprite.Sprite):
                 del icon
 
         if len(unit_list) > 0:
-            for index, unit in enumerate(unit_list):  # add unit icon for drawing according to appropriated current row
+            for index, this_unit in enumerate(unit_list):  # add unit icon for drawing according to appropriated current row
                 if index == 0:
-                    start_column = self.rect.topleft[0] + (unit.leader[0].image.get_width() / 1.5)
+                    start_column = self.rect.topleft[0] + (this_unit.leader[0].image.get_width() / 1.5)
                     column = start_column
-                    row = self.rect.topleft[1] + (unit.leader[0].image.get_height() / 1.5)
+                    row = self.rect.topleft[1] + (this_unit.leader[0].image.get_height() / 1.5)
                 if index >= current_index:
-                    new_icon = UnitIcon((column, row), unit, (int(unit.leader[0].image.get_width() * self.icon_scale),
-                                                              int(unit.leader[0].image.get_height() * self.icon_scale)))
+                    new_icon = UnitIcon((column, row), this_unit, (int(this_unit.leader[0].full_image.get_width() * self.icon_scale),
+                                                              int(this_unit.leader[0].full_image.get_height() * self.icon_scale)))
                     unit_icon_group.add(new_icon)
                     column += new_icon.image.get_width() * 1.2
-                    if column > self.rect.topright[0] - new_icon.image.get_width():
+                    if column > self.rect.topright[0] - ((new_icon.image.get_width() * self.icon_scale) * 3):
                         row += new_icon.image.get_height() * 1.5
                         column = start_column
-                    if row > self.rect.bottomright[1] - (new_icon.image.get_height() / 2):
+                    if row > self.rect.bottomright[1] - ((new_icon.image.get_height() / 2) * self.icon_scale):
                         break  # do not draw for row that exceed the box
         self.scroll.change_image(row_size=self.row_size)
 

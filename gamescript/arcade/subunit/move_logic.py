@@ -37,7 +37,7 @@ def move_logic(self, dt, unit_state, collide_list):
             if move_length > 0:  # movement length longer than 0.1, not reach base_target yet
                 move.normalize_ip()
                 self.state = unit_state
-                if move_length > 5 or unit_state == 99:  # use its own speed when catch up or broken
+                if move_length > 10 or unit_state == 99:  # use its own speed when catch up or broken
                     if unit_state != 99:
                         self.state = 2
                     speed = self.speed / 2

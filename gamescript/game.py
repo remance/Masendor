@@ -392,7 +392,7 @@ class Game:
                                                       (self.screen_rect.width / 2, self.screen_rect.height / 1.3), text_size=24)
 
         self.char_selector = battleui.UnitSelector((self.screen_rect.width / 5, self.screen_rect.height / 1.5),
-                                                   battle_select_image["char_select"])
+                                                   battle_select_image["char_select"], icon_scale=0.4)
         battleui.UIScroll(self.char_selector, self.char_selector.rect.topright)  # scroll bar for char pick
 
         bottom_height = self.screen_rect.height - image_list[0].get_height()

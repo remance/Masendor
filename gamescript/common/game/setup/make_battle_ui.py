@@ -18,7 +18,7 @@ def make_battle_ui(battle_ui_image, battle_icon_image, team_colour, screen_size)
                    battleui.UIButton(battle_ui_image["timeinc"], "increase")]  # time increase button
 
     # Army select list ui
-    unit_selector = battleui.UnitSelector((0, 0), battle_ui_image["unit_select_box"], icon_scale=0.6)
+    unit_selector = battleui.UnitSelector((0, 0), battle_ui_image["unit_select_box"], icon_scale=0.25)
     battleui.UIScroll(unit_selector, unit_selector.rect.topright)  # scroll for unit select ui
 
     # Right top bar ui that show rough information of selected battalions

@@ -66,7 +66,7 @@ class Leader(pygame.sprite.Sprite):
         self.commander = False  # army commander
         self.original_commander = False  # the first army commander at the start of battle
 
-        self.leader_skill = self.skill.copy()
+        self.leader_skill = self.skill.copy()  # save list of leader skill
         self.skill = {value: leader_data.skill_list[value] for value in self.skill if value in leader_data.skill_list}
         if self.role == 0:
             self.bad_morale = (30, 50)  # general morale lost when destroyed
@@ -76,7 +76,7 @@ class Leader(pygame.sprite.Sprite):
                 for key, value in self.skill.items():  # replace leader skill with commander skill version
                     for key2, value2 in leader_data.commander_skill_list.items():
                         if key in value2["Replace"]:
-                            self.skill[key] = key2
+                            self.skill[key] = value2
 
     def start_set(self):
         self.subunit = self.unit.subunit_list[self.subunit_pos]  # setup subunit that leader belong

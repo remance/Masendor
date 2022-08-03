@@ -93,7 +93,7 @@ def combat_logic(self, dt, unit_state):
             if self.unit.nearby_enemy != {} and (self.attack_target is None or self.attack_pos is None):
                 self.find_shooting_target(unit_state)
 
-    else:  # range attack
+    elif self.state < 90:  # range attack
         self.melee_target = None
         self.close_target = None
         if self in self.battle.combat_path_queue:
@@ -103,7 +103,7 @@ def combat_logic(self, dt, unit_state):
         if unit_state == 11:
             self.state = 0  # reset all subunit to idle first if unit in shooting state
         if self.ammo_now:
-            # TODO fix can shoot when broken, also broken not retreat from map when reach border
+            # TODO Fix broken not retreat from map when reach border
             if unit_state == 11:  # unit in range attack state
                 if any(weapon_range >= self.attack_pos.distance_to(self.base_pos) for weapon_range in
                        self.shoot_range.values()):
