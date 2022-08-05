@@ -470,7 +470,7 @@ class BodyHelper(pygame.sprite.Sprite):
             pos = self.part_pos[this_key]
             new_image = image.copy()
             if this_key in self.part_selected:  # highlight selected part
-                new_image = apply_colour(new_image, (34, 177, 76))
+                new_image = apply_colour(new_image, (34, 177, 76), white_colour=False)
 
             rect = new_image.get_rect(center=pos)
             self.image.blit(new_image, rect)

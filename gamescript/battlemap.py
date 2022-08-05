@@ -203,7 +203,7 @@ class BeautifulMap(pygame.sprite.Sprite):
                         row[n] = ast.literal_eval(i)
                 self.new_colour_list[row[0]] = row[1:]
 
-    def draw_image(self, base_map, feature_map, height_map, place_name, gamebattle, editor_map):
+    def draw_image(self, base_map, feature_map, height_map, place_name, battle, editor_map):
         self.image = pygame.Surface((default_map_width, default_map_height))
         self.rect = self.image.get_rect(topleft=(0, 0))
 
@@ -213,7 +213,7 @@ class BeautifulMap(pygame.sprite.Sprite):
             self.image.fill(new_colour)
             map_feature_mod = feature_map.feature_mod[feature]
             speed_mod = int(map_feature_mod["Infantry Speed/Charge Effect"] * 100)
-            gamebattle.map_move_array = [[speed_mod] * default_map_width] * default_map_height
+            battle.map_move_array = [[speed_mod] * default_map_width] * default_map_height
         else:
             for row_pos in range(0, default_map_width):  # recolour the map
                 speed_array = []
@@ -228,9 +228,9 @@ class BeautifulMap(pygame.sprite.Sprite):
                     # infcombatmod = int(map_feature_mod[3] * 100)
                     # cavcombatmod = int(map_feature_mod[6] * 100)
                     speed_array.append(speed_mod)
-                gamebattle.map_move_array.append(speed_array)
+                battle.map_move_array.append(speed_array)
 
-        # v Comment out this part and import PIL above if not want to use blur filtering
+        # Comment out this part and import PIL above if not want to use blur filtering
         data = pygame.image.tostring(self.image, "RGB")  # convert image to string data for filtering effect
         img = Image.frombytes("RGB", (default_map_width, default_map_height), data)  # use PIL to get image data
         img = img.filter(ImageFilter.GaussianBlur(radius=2))  # blur Image (or apply other filter in future)
@@ -240,10 +240,9 @@ class BeautifulMap(pygame.sprite.Sprite):
             (default_map_width, default_map_height))  # for unknown reason using the above surface cause a lot of fps drop so make a new one and blit the above here
         rect = self.image.get_rect(topleft=(0, 0))
         self.image.blit(img, rect)
-        # ^ PIL module code
+        # End PIL module code
 
-        # v Put in terrain feature texture
-        if editor_map is False:
+        if editor_map is False:  # put in terrain feature texture
             for row_pos in range(0, 1000):
                 for col_pos in range(0, 1000):
                     if row_pos % 20 == 0 and col_pos % 20 == 0:
@@ -258,7 +257,6 @@ class BeautifulMap(pygame.sprite.Sprite):
                             this_texture = feature[choose]
                         rect = this_texture.get_rect(center=random_pos)
                         self.image.blit(this_texture, rect)
-        # ^ End terrain feature
 
         self.image = pygame.transform.scale(self.image, (self.image.get_width() * self.screen_scale[0],
                                                          self.image.get_height() * self.screen_scale[1]))

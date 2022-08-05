@@ -24,6 +24,8 @@ def check_pool():
                 warning_list[animation] = {}
                 stat_list[animation] = {this_direction: {"frames": 0, "frame properties": {}, } for this_direction in direction_list}
             stat_list[animation][direction]["frames"] = len(value)
+            action = animation.split("_")[-1]
+            race = animation.split("_")[0]
             for frame_index, frame in enumerate(value):
                 stat_list[animation][direction]["frame properties"][frame_index] = frame["frame_property"]
     for key, value in stat_list.items():

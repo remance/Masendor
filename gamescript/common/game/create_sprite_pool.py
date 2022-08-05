@@ -65,7 +65,7 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                     if len(animation) > 0:
                         animation = random.choice(animation)  # random animation
                     else:  # no animation found, use race default
-                        animation = race +"_Default"
+                        animation = race + "_Default"
 
                     frame_data = random.choice(self.generic_animation_pool[1][animation])  # random frame
                     animation_property = self.generic_animation_pool[0][animation][0]["animation_property"].copy()
@@ -82,8 +82,8 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                               genre_sprite_size, screen_scale)
 
                     animation_sprite_pool[subunit_id] = {"sprite": sprite_dict["sprite"],
-                         "animation_property": sprite_dict["animation_property"],
-                         "frame_property": sprite_dict["frame_property"]}  # preview pool use subunit_id only
+                                                         "animation_property": sprite_dict["animation_property"],
+                                                         "frame_property": sprite_dict["frame_property"]}  # preview pool use subunit_id only
                 else:
                     if sprite_id not in animation_sprite_pool:  # troop can share sprite preset id but different gear
                         animation_sprite_pool[sprite_id] = {}
@@ -130,19 +130,19 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                     else:
                                         make_animation = False
 
-                                    if "_Skill_" in animation:  # skill animation
-                                        make_animation = False  # not make animation for troop with no related skill animation
-                                        for skill in skill_list:
-                                            if type(skill) == int:
-                                                if skill in self.troop_data.skill_list:  # skip skill not in ruleset
-                                                    if self.troop_data.skill_list[skill]["Action"][0] in animation:
-                                                        make_animation = True
-                                                        break
-                                            else:  # leader skill
-                                                if skill in self.leader_data.skill_list:  # skip skill not in ruleset
-                                                    if self.leader_data.skill_list[skill]["Action"][0] in animation:
-                                                        make_animation = True
-                                                        break
+                                    # if "_Skill_" in animation:  # skill animation
+                                    #     make_animation = False  # not make animation for troop with no related skill animation
+                                    #     for skill in skill_list:
+                                    #         if type(skill) == int:
+                                    #             if skill in self.troop_data.skill_list:  # skip skill not in ruleset
+                                    #                 if self.troop_data.skill_list[skill]["Action"][0] in animation:
+                                    #                     make_animation = True
+                                    #                     break
+                                    #         else:  # leader skill
+                                    #             if skill in self.leader_data.skill_list:  # skip skill not in ruleset
+                                    #                 if self.leader_data.skill_list[skill]["Action"][0] in animation:
+                                    #                     make_animation = True
+                                    #                     break
 
                                     if make_animation:
                                         for index, direction in enumerate(direction_list):
