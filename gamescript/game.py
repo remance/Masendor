@@ -162,17 +162,18 @@ class Game:
             config["DEFAULT"] = {"screen_width": screen_width, "screen_height": screen_height, "fullscreen": "0",
                                  "player_Name": "Noname", "master_volume": "100.0", "music_volume": "0.0",
                                  "voice_volume": "0.0", "max_fps": "60", "ruleset": "1", "genre": genre_folder[-1]}
+            config["USER"] = {key: value for key, value in config["DEFAULT"].items()}
             with open("configuration.ini", "w") as cf:
                 config.write(cf)
             config.read_file(open("configuration.ini"))
 
         self.config = config
-        self.screen_width = int(self.config["DEFAULT"]["screen_width"])
-        self.screen_height = int(self.config["DEFAULT"]["screen_height"])
-        self.full_screen = int(self.config["DEFAULT"]["fullscreen"])
-        self.master_volume = float(self.config["DEFAULT"]["master_volume"])
-        self.profile_name = str(self.config["DEFAULT"]["player_Name"])
-        self.genre = str(self.config["DEFAULT"]["genre"])
+        self.screen_width = int(self.config["USER"]["screen_width"])
+        self.screen_height = int(self.config["USER"]["screen_height"])
+        self.full_screen = int(self.config["USER"]["fullscreen"])
+        self.master_volume = float(self.config["USER"]["master_volume"])
+        self.profile_name = str(self.config["USER"]["player_Name"])
+        self.genre = str(self.config["USER"]["genre"])
         self.ruleset = 1  # for now default historical ruleset only
 
         # Set the display mode
@@ -303,7 +304,7 @@ class Game:
         self.effect_icon = pygame.sprite.Group()  # status effect icon objects
 
         self.battle_menu_button = pygame.sprite.Group()  # buttons for esc menu object group
-        self.escoption_menu_button = pygame.sprite.Group()  # buttons for esc menu option object group
+        self.esc_option_menu_button = pygame.sprite.Group()  # buttons for esc menu option object group
         self.slider_menu = pygame.sprite.Group()  # volume slider in esc option menu
 
         self.unit_icon = pygame.sprite.Group()  # unit icon object group in unit selector ui
@@ -341,7 +342,7 @@ class Game:
 
         rangeattack.RangeAttack.containers = self.range_attacks, self.effect_updater, self.battle_camera
 
-        menu.EscButton.containers = self.battle_menu_button, self.escoption_menu_button
+        menu.EscButton.containers = self.battle_menu_button, self.esc_option_menu_button
 
         weather.MatterSprite.containers = self.weather_matter, self.battle_ui_updater, self.weather_updater
         weather.SpecialEffect.containers = self.weather_effect, self.battle_ui_updater, self.weather_updater
@@ -455,6 +456,7 @@ class Game:
         option_menu_dict = make_option_menu(self.main_dir, self.screen_scale, self.screen_rect, self.screen_width, self.screen_height,
                                             image_list, self.master_volume, self.main_ui_updater)
         self.back_button = option_menu_dict["back_button"]
+        self.default_button = option_menu_dict["default_button"]
         self.resolution_drop = option_menu_dict["resolution_drop"]
         self.resolution_bar = option_menu_dict["resolution_bar"]
         self.resolution_icon = option_menu_dict["resolution_icon"]
@@ -463,7 +465,7 @@ class Game:
         self.volume_icon = option_menu_dict["volume_icon"]
 
         self.option_icon_list = (self.resolution_icon, self.volume_icon)
-        self.option_menu_button = (self.back_button, self.resolution_drop)
+        self.option_menu_button = (self.back_button, self.default_button, self.resolution_drop)
         self.option_menu_slider = self.volume_slider
 
         # Genre related stuff
@@ -848,7 +850,7 @@ class Game:
             self.team_select_button = (self.start_button, self.map_back_button)
 
         self.genre_change_box.change_text(self.genre.capitalize())
-        edit_config("DEFAULT", "genre", self.genre, "configuration.ini", self.config)
+        edit_config("USER", "genre", self.genre, "configuration.ini", self.config)
 
         genre_battle_ui_image = load_images(self.main_dir, self.screen_scale, [self.genre, "ui", "battle_ui"],
                                             load_order=False)
@@ -979,7 +981,7 @@ class Game:
                         self.profile_name = self.input_box.text
                         self.profile_box.change_text(self.profile_name)
 
-                        edit_config("DEFAULT", "playername", self.profile_name, "configuration.ini", self.config)
+                        edit_config("USER", "player_name", self.profile_name, "configuration.ini", self.config)
 
                     elif self.input_popup[1] == "quit":
                         pygame.time.wait(1000)

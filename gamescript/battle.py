@@ -18,7 +18,7 @@ load_image = utility.load_image
 load_images = utility.load_images
 csv_read = utility.csv_read
 load_sound = utility.load_sound
-editconfig = utility.edit_config
+edit_config = utility.edit_config
 setup_list = utility.setup_list
 clean_group_object = utility.clean_group_object
 

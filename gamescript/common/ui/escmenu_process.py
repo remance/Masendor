@@ -2,7 +2,7 @@ import pygame
 from gamescript import lorebook
 from gamescript.common import utility
 
-editconfig = utility.edit_config
+edit_config = utility.edit_config
 
 lorebook_process = lorebook.lorebook_process
 
@@ -80,8 +80,8 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                     if button.text == "Confirm":  # confirm button, save the setting and close option menu
                         self.old_setting = self.master_volume  # save mixer volume
                         pygame.mixer.music.set_volume(self.master_volume)  # set new music player volume
-                        editconfig("DEFAULT", "master_volume", str(self.esc_slider_menu[0].value), "configuration.ini",
-                                   self.config)  # save to config file
+                        edit_config("USER", "master_volume", self.esc_slider_menu[0].value, "configuration.ini",
+                                    self.config)  # save to config file
                         self.battle_menu.change_mode("menu")  # go back to start_set esc menu
                         self.battle_ui_updater.remove(*self.esc_option_menu_button, *self.esc_slider_menu,
                                                       *self.esc_value_box)  # remove option menu sprite
@@ -90,8 +90,8 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                     elif button.text == "Apply":  # apply button, save the setting
                         self.old_setting = self.master_volume  # save mixer volume
                         pygame.mixer.music.set_volume(self.master_volume)  # set new music player volume
-                        editconfig("DEFAULT", "master_volume", str(self.esc_slider_menu[0].value), "configuration.ini",
-                                   self.config)  # save to config file
+                        edit_config("USER", "master_volume", self.esc_slider_menu[0].value, "configuration.ini",
+                                    self.config)  # save to config file
 
                     elif button.text == "Cancel":  # cancel button, revert the setting to the last saved one
                         self.master_volume = self.old_setting  # revert to old setting

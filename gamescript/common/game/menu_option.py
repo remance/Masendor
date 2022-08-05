@@ -1,4 +1,5 @@
 import pygame
+import sys
 
 from gamescript.common import utility
 
@@ -13,6 +14,18 @@ def menu_option(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scr
 
         self.back_mainmenu()
 
+    elif self.default_button.event:  # back to start_set menu
+        self.back_button.event = False
+
+        self.master_volume = float(self.config["DEFAULT"]["master_volume"])
+        edit_config("USER", "master_volume", self.volume_slider.value, "configuration.ini",
+                    self.config)
+        pygame.mixer.music.set_volume(self.master_volume)
+
+        if int(self.config["DEFAULT"]["screen_width"]) != self.screen_width or int(self.config["DEFAULT"]["screen_height"]) != self.screen_height:
+            change_resolution(self, (int(self.config["DEFAULT"]["screen_width"]), "",
+                                     int(self.config["DEFAULT"]["screen_height"])))
+
     if mouse_left_up or mouse_left_down:
         if self.volume_slider.rect.collidepoint(self.mouse_pos) and (
                 mouse_left_down or mouse_left_up):  # mouse click on slider bar
@@ -20,7 +33,7 @@ def menu_option(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scr
                                             self.value_box[0])  # update slider button based on mouse value
             self.master_volume = float(
                 self.volume_slider.value / 100)  # for now only music volume slider exist
-            edit_config("DEFAULT", "master_volume", str(self.volume_slider.value), "configuration.ini",
+            edit_config("USER", "master_volume", self.volume_slider.value, "configuration.ini",
                         self.config)
             pygame.mixer.music.set_volume(self.master_volume)
 
@@ -39,14 +52,24 @@ def menu_option(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scr
                         bar.event = False
                         self.resolution_drop.change_state(bar.text)  # change button value based on new selected value
                         resolution_change = bar.text.split()
-                        self.new_screen_width = resolution_change[0]
-                        self.new_screen_height = resolution_change[2]
-
-                        edit_config("DEFAULT", "screen_width", self.new_screen_width, "configuration.ini",
-                                    self.config)
-                        edit_config("DEFAULT", "screen_height", self.new_screen_height, "configuration.ini",
-                                    self.config)
-                        self.screen = pygame.display.set_mode(self.screen_rect.size,
-                                                              self.window_style | pygame.RESIZABLE, self.best_depth)
+                        change_resolution(self, resolution_change)
                         break
                 self.main_ui_updater.remove(self.resolution_bar)
+
+
+def change_resolution(self, resolution_change):
+    from gamescript import game
+    self.screen_width = resolution_change[0]
+    self.screen_height = resolution_change[2]
+
+    edit_config("USER", "screen_width", self.screen_width, "configuration.ini",
+                self.config)
+    edit_config("USER", "screen_height", self.screen_height, "configuration.ini",
+                self.config)
+
+    pygame.time.wait(1000)
+    if pygame.mixer:
+        pygame.mixer.music.stop()
+        pygame.mixer.music.unload()
+    pygame.quit()
+    runmenu = game.Game(self.main_dir, self.error_log)  # restart game when change resolution

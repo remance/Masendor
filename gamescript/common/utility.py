@@ -140,7 +140,7 @@ def load_sound(main_dir, file):
 
 
 def edit_config(section, option, value, filename, config):
-    config.set(section, option, value)
+    config.set(section, option, str(value))
     with open(filename, "w") as configfile:
         config.write(configfile)
 
