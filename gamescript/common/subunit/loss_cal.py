@@ -5,16 +5,20 @@ infinity = float("inf")
 
 def loss_cal(self, target, final_dmg, final_morale_dmg, leader_dmg, element_effect):
     """
-    :param self: Attacker object
-    :param target: Damage receiver object
+    :param self: Attacker Subunit object
+    :param target: Damage receiver Subunit object
     :param final_dmg: Damage value to health
     :param final_morale_dmg: Damage value to morale
     :param leader_dmg: Damage value to leader inside target subunit
-    :param dmg_effect: Damage multiplier effect
-    :return:
     """
     if final_dmg > target.subunit_health:  # dmg cannot be higher than remaining health
         final_dmg = target.subunit_health
+
+    if final_dmg > target.max_health5:  # play damaged animation
+        target.interrupt_animation = True
+        target.command_action = ("Damaged", "uninterruptible")
+        if final_dmg > target.max_health10:
+            target.command_action = ("HeavyDamaged", "uninterruptible")
 
     target.subunit_health -= final_dmg
     health_check = 0.1

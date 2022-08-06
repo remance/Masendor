@@ -5,7 +5,7 @@ import random
 import pygame
 import pygame.freetype
 
-from gamescript import rangeattack
+from gamescript import damagesprite
 from gamescript.common import utility, animation
 
 rotation_list = (90, 120, 45, 0, -90, -45, -120, 180, -180)
@@ -382,6 +382,8 @@ class Subunit(pygame.sprite.Sprite):
         self.subunit_health = self.troop_health * self.troop_number  # Total health of subunit from all troop
         self.old_subunit_health = self.subunit_health
         self.max_health = self.subunit_health  # health percentage
+        self.max_health5 = self.max_health * 0.05
+        self.max_health10 = self.max_health * 0.1
         self.health_list = (self.subunit_health * 0.75, self.subunit_health * 0.5, self.subunit_health * 0.25, 0)
 
         self.old_last_health, self.old_last_stamina = self.subunit_health, self.stamina  # save previous health and stamina in previous update
@@ -573,11 +575,11 @@ class Subunit(pygame.sprite.Sprite):
                     if len(self.current_action) > 2:  # second item as attack position
                         self.attack_pos = self.current_action[2]
                     weapon = int(self.current_action[0][-1])
-                    rangeattack.RangeAttack(self, weapon, self.weapon_dmg[weapon],
-                                            self.weapon_penetrate[self.equipped_weapon][weapon],
-                                            self.troop_data.weapon_list[self.weapon_id[self.equipped_weapon][weapon]],
-                                            self.base_pos.distance_to(self.attack_pos), self.shoot_range[weapon],
-                                            self.zoom)  # Shoot bullet
+                    damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
+                                             self.weapon_penetrate[self.equipped_weapon][weapon],
+                                             self.troop_data.weapon_list[self.weapon_id[self.equipped_weapon][weapon]],
+                                             self.base_pos.distance_to(self.attack_pos), self.shoot_range[weapon],
+                                             self.zoom, attack_type="range")  # Shoot bullet
                     self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
                     if self.ammo_now[self.equipped_weapon][weapon] == 0 and \
                             self.magazine_count[self.equipped_weapon][weapon] == 0:

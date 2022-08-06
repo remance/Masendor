@@ -37,7 +37,7 @@ def dmg_cal(self, target, hit, defence, weapon, dmg_object, hit_side=None):
         hit_chance = 200
 
     combat_score = round(hit_chance / 100, 1)
-    if combat_score == 0 and random.randint(0, 10) > 9:  # Final chance to not miss
+    if combat_score == 0 and random.randint(0, 10) > 5:  # chance to scrape instead of miss
         combat_score = 0.1
 
     troop_dmg = 0

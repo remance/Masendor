@@ -11,7 +11,7 @@ import pygame
 import pygame.freetype
 from pygame.locals import *
 
-from gamescript import battlemap, weather, lorebook, drama, battleui, popup, menu, rangeattack, uniteditor, \
+from gamescript import battlemap, weather, lorebook, drama, battleui, popup, menu, damagesprite, uniteditor, \
     battle, leader, unit, subunit, datasprite, datamap
 from gamescript.common import utility
 from gamescript.common.battle import setup_battle_unit, generate_unit
@@ -288,7 +288,7 @@ class Game:
 
         self.leader_group = pygame.sprite.Group()  # all leaders group
 
-        self.range_attacks = pygame.sprite.Group()  # all range_attacks group and maybe other range effect stuff later
+        self.damage_sprites = pygame.sprite.Group()  # all damage sprite group and maybe other range effect stuff later
         self.direction_arrows = pygame.sprite.Group()
         self.troop_number_sprite = pygame.sprite.Group()  # troop text number that appear next to unit sprite
 
@@ -340,7 +340,7 @@ class Game:
         popup.TextPopup.containers = self.buttonname_popup, self.leader_popup
         popup.EffectIconPopup.containers = self.effect_popup
 
-        rangeattack.RangeAttack.containers = self.range_attacks, self.effect_updater, self.battle_camera
+        damagesprite.DamageSprite.containers = self.damage_sprites, self.effect_updater, self.battle_camera
 
         menu.EscButton.containers = self.battle_menu_button, self.esc_option_menu_button
 
@@ -520,7 +520,7 @@ class Game:
         self.show_map = battlemap.BeautifulMap(self.screen_scale)
         self.battle_camera.add(self.show_map)
 
-        rangeattack.RangeAttack.height_map = self.battle_height_map
+        damagesprite.DamageSprite.height_map = self.battle_height_map
         subunit.Subunit.base_map = self.battle_base_map  # add battle map to subunit class
         subunit.Subunit.feature_map = self.battle_feature_map
         subunit.Subunit.height_map = self.battle_height_map
@@ -531,7 +531,7 @@ class Game:
         self.battle_ui_updater.add(self.mini_map)
 
         # Game sprite Effect
-        rangeattack.RangeAttack.screen_scale = self.screen_scale
+        damagesprite.DamageSprite.screen_scale = self.screen_scale
 
         # Battle ui
         battle_icon_image = load_images(self.main_dir, self.screen_scale, ["ui", "battle_ui", "topbar_icon"],
@@ -736,8 +736,8 @@ class Game:
                         image = pygame.transform.scale(image, (int(image.get_width() / 2), int(image.get_height() / 2)))
                         bullet_weapon_sprite_pool[key][key2][key3][key4] = image
 
-        rangeattack.RangeAttack.bullet_sprite_pool = bullet_sprite_pool
-        rangeattack.RangeAttack.bullet_weapon_sprite_pool = bullet_weapon_sprite_pool
+        damagesprite.DamageSprite.bullet_sprite_pool = bullet_sprite_pool
+        damagesprite.DamageSprite.bullet_weapon_sprite_pool = bullet_weapon_sprite_pool
 
         who_todo = {key: value for key, value in self.troop_data.troop_list.items()}
         self.preview_sprite_pool = self.create_sprite_pool(direction_list, self.troop_sprite_size, self.screen_scale,

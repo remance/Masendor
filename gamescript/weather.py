@@ -30,7 +30,7 @@ class Weather:
         self.temperature = stat["Temperature"] * (self.level + 1)
         self.element = tuple([(element, (self.level + 1)) for element in stat["Element"] if element != ""])
         self.status_effect = stat["Status"]
-        self.spawn_rate = stat["Spawn Rate"] * (self.level + 1)
+        self.spawn_rate = stat["Spawn Rate"] / (self.level + 1)  # divide to make spawn increase with strength
         self.spawn_angle = stat["Travel Angle"]
         self.speed = stat["Travel Speed"] * (self.level + 1)
         image = self.icons[(self.weather_type * 3) + self.level]

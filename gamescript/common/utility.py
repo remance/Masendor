@@ -1,6 +1,6 @@
 import ast
 import csv
-from datetime import datetime
+import datetime
 import math
 import os
 import re
@@ -15,7 +15,7 @@ accept_image_types = ("png", "jpg", "jpeg", "svg", "gif", "bmp")
 
 def empty_method(self, *args):
     if hasattr(self, 'error_log'):
-        error_text = "{0} -- {1}\n".format(datetime.now().strftime("%Y-%m-%d %H:%M"), "Empty method is called") + \
+        error_text = "{0} -- {1}\n".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), "Empty method is called") + \
                      str(inspect.stack()[1][1]) + "At Line" + str(inspect.stack()[1][2]) + ":" + \
                      str(inspect.stack()[1][3])
         # print(error_text)
@@ -92,11 +92,12 @@ def load_textures(main_dir, subfolder=None, scale=(1, 1)):
 
 
 def convert_str_time(event):
+    """Convert text string of time to datetime"""
     for index, item in enumerate(event):
         new_time = datetime.datetime.strptime(item[1], "%H:%M:%S").time()
         new_time = datetime.timedelta(hours=new_time.hour, minutes=new_time.minute, seconds=new_time.second)
         event[index] = [item[0], new_time]
-        if len(item) == 3:
+        if len(item) == 3:  # weather strength
             event[index].append(item[2])
 
 

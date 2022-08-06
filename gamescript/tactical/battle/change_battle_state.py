@@ -45,7 +45,7 @@ def change_battle_state(self):
         self.camera_mode = "Free"
         self.inspect = False  # reset inspect ui
         self.mini_map.draw_image(self.show_map.true_image, self.camera)  # reset mini_map
-        for arrow in self.range_attacks:  # remove all range melee_attack
+        for arrow in self.damage_sprites:  # remove all range melee_attack
             arrow.kill()
             del arrow
 

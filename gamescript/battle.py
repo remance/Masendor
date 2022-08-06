@@ -117,7 +117,7 @@ class Battle:
         self.battle_map_height = main.battle_height_map
         self.show_map = main.show_map
 
-        self.range_attacks = main.range_attacks
+        self.range_attacks = main.damage_sprites
         self.direction_arrows = main.direction_arrows
         self.troop_number_sprite = main.troop_number_sprite
 
@@ -362,20 +362,19 @@ class Battle:
 
         self.generic_action_data = self.main.generic_action_data
 
-        # v Load weather schedule
+        # Load weather schedule
         try:
             self.weather_event = csv_read(self.main_dir, "weather.csv",
                                           ["data", "ruleset", self.ruleset_folder, "map", self.map_selected, self.map_source], 1)
             self.weather_event = self.weather_event[1:]
             utility.convert_str_time(self.weather_event)
-        except Exception:  # If no weather found use default light sunny weather start at 9.00
+        except FileNotFoundError:  # If no weather found use default light sunny weather start at 9.00
             new_time = datetime.datetime.strptime("09:00:00", "%H:%M:%S").time()
             new_time = datetime.timedelta(hours=new_time.hour, minutes=new_time.minute, seconds=new_time.second)
             self.weather_event = [[4, new_time, 0]]  # default weather light sunny all day
         self.weather_playing = self.weather_event[0][1]  # weather_current here is used as the reference for map starting time
-        # ^ End weather schedule
 
-        # v Random music played from list
+        # Random music played from list
         if pygame.mixer:
             self.SONG_END = pygame.USEREVENT + 1
             self.musiclist = glob.glob(os.path.join(self.main_dir, "data", "sound", "music", "*.ogg"))
@@ -400,7 +399,6 @@ class Battle:
             except:  # any reading error will play random custom music instead
                 self.music_schedule = [self.weather_playing]
                 self.music_event = [[5]]  # TODO change later when has custom playlist
-        # ^ End music play
 
         try:  # get new map event for event log
             map_event = csv_read(self.main_dir, "eventlog.csv",
