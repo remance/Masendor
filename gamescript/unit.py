@@ -19,6 +19,7 @@ class Unit(pygame.sprite.Sprite):
     empty_method = utility.empty_method
 
     max_zoom = 10  # max zoom allow
+    screen_scale = (1, 1)
     battle = None
     form_change_timer = 10
     image_size = None
@@ -115,7 +116,7 @@ class Unit(pygame.sprite.Sprite):
         self.command_target = self.front_pos
         number_pos = (self.base_pos[0] - self.base_width_box,
                       (self.base_pos[1] + self.base_height_box))  # find position for number text
-        self.number_pos = rotation_xy(self.base_pos, number_pos, self.radians_angle)
+        self.base_number_pos = rotation_xy(self.base_pos, number_pos, self.radians_angle)
         self.change_pos_scale()
 
         # v Setup default behaviour check # TODO add volley, divide behaviour ui into 3 types: combat, shoot, other (move)
@@ -248,18 +249,16 @@ class Unit(pygame.sprite.Sprite):
         self.original_subunit_id_array = self.subunit_id_array.copy()
 
     def update(self, weather, squad_group, dt, zoom, mouse_pos, mouse_up):
-        # Camera zoom change
-        if self.last_zoom != zoom:  # camera zoom is changed
+        if self.last_zoom != zoom:  # camera zoom change
             self.zoom_change = True
             self.zoom = 11 - zoom  # save scale
-            self.change_pos_scale()  # update unit sprite according to new scale
-            for subunit in self.alive_subunit_list:
-                if self.zoom == 1:  # revert to default layer at other zoom
+            self.change_pos_scale()  # update position according to new scale
+            if self.last_zoom == 1:  # revert to default layer at further zoom
+                for subunit in self.alive_subunit_list:
                     self.battle_camera.change_layer(subunit, 4)
             self.last_zoom = zoom
 
-        # v Setup frontline again when any subunit destroyed
-        if self.dead_change:
+        if self.dead_change:  # setup frontline again when any subunit destroyed
             if len(self.subunit_id_array) > 0 and (
                     len(self.subunit_id_array) > 1 or any(subunit != 0 for subunit in self.subunit_id_array[0])):
                 self.setup_frontline()
@@ -279,7 +278,6 @@ class Unit(pygame.sprite.Sprite):
                         leader.gone()
 
                 self.state = 100
-        # ^ End setup frontline when subunit destroyed
 
         if self.state != 100:
             self.ally_pos_list[self] = self.base_pos  # update current position to team position list
@@ -369,7 +367,7 @@ class Unit(pygame.sprite.Sprite):
         self.front_pos = rotation_xy(self.base_pos, front_pos, self.radians_angle)
         number_pos = (self.base_pos[0] - self.base_width_box,
                       (self.base_pos[1] + self.base_height_box))  # find position for number text
-        self.number_pos = rotation_xy(self.base_pos, number_pos, self.radians_angle)
+        self.base_number_pos = rotation_xy(self.base_pos, number_pos, self.radians_angle)
         self.change_pos_scale()
 
         self.base_target = self.base_pos

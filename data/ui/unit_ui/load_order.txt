@@ -1,1 +1,0 @@
-['ui_squad_player.png','ui_health_circle_100.png','ui_health_circle_75.png','ui_health_circle_50.png','ui_health_circle_25.png','ui_health_circle_0.png','ui_stamina_circle_100.png','ui_stamina_circle_75.png', 'ui_stamina_circle_50.png', 'ui_stamina_circle_25.png', 'ui_stamina_circle_0.png', 'ui_squad_combat.png', 'ui_squad_ally.png', 'ui_squad_enemy.png']

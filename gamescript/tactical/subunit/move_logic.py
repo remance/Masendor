@@ -66,6 +66,7 @@ def move_logic(self, dt, unit_state, collide_list):
                         self.base_pos = new_pos
                         self.pos = self.base_pos * self.zoom
                         self.rect.center = list(int(v) for v in self.pos)  # list rect so the sprite gradually move to position
+                        self.dmg_rect.center = self.rect.center
                         if self.stamina != infinity:
                             if self.walk:
                                 self.stamina = self.stamina - (dt * 2)
@@ -98,9 +99,8 @@ def move_logic(self, dt, unit_state, collide_list):
 
                         number_pos = (self.unit.base_pos[0] - self.unit.base_width_box,
                                       (self.unit.base_pos[1] + self.unit.base_height_box))
-                        self.unit.number_pos = rotation_xy(self.unit.base_pos, number_pos, self.unit.radians_angle)
-                        self.unit.true_number_pos = self.unit.number_pos * (
-                                11 - self.unit.zoom)  # find new position for troop number text
+                        self.unit.base_number_pos = rotation_xy(self.unit.base_pos, number_pos, self.unit.radians_angle)
+                        self.unit.change_pos_scale()
 
             else:  # Stopping subunit when reach base_target
                 self.state = 0  # idle

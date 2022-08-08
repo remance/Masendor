@@ -121,7 +121,7 @@ class Game:
             exec(f"from gamescript.common.game import " + file_name)
             exec(f"" + file_name + " = " + file_name + "." + file_name)
 
-    # Will be changed in genre_change function depending on selected genre
+    # Will be changed in change_game_genre function depending on selected genre
     char_select = False
     leader_sprite = False
     troop_sprite_size = (200, 200)
@@ -179,6 +179,10 @@ class Game:
         # Set the display mode
         self.screen_rect = Rect(0, 0, self.screen_width, self.screen_height)
         self.screen_scale = (self.screen_rect.width / 1920, self.screen_rect.height / 1080)
+        unit.Unit.screen_scale = self.screen_scale
+        subunit.Subunit.screen_scale = self.screen_scale
+        damagesprite.DamageSprite.screen_scale = self.screen_scale
+
         self.window_style = 0
         if self.full_screen == 1:  # fullscreen = 1
             self.window_style = pygame.FULLSCREEN
@@ -499,10 +503,10 @@ class Game:
         # ^ End Main menu
 
         # v Battle related stuffs
-        unit_ui_images = load_images(self.main_dir, self.screen_scale, ["ui", "unit_ui"])
-        subunit.Subunit.unit_ui_images = unit_ui_images
+        subunit_ui_images = load_images(self.main_dir, self.screen_scale, ["ui", "subunit_ui"], load_order=False)
+        subunit.Subunit.subunit_ui_images = subunit_ui_images
 
-        subunit_icon_image = unit_ui_images["ui_squad_player"]
+        subunit_icon_image = subunit_ui_images["subunit_player"]
         self.icon_sprite_width = subunit_icon_image.get_width()
         self.icon_sprite_height = subunit_icon_image.get_height()
 
@@ -529,9 +533,6 @@ class Game:
 
         self.mini_map = battleui.MiniMap((self.screen_rect.width, self.screen_rect.height), self.screen_scale)
         self.battle_ui_updater.add(self.mini_map)
-
-        # Game sprite Effect
-        damagesprite.DamageSprite.screen_scale = self.screen_scale
 
         # Battle ui
         battle_icon_image = load_images(self.main_dir, self.screen_scale, ["ui", "battle_ui", "topbar_icon"],
@@ -656,6 +657,8 @@ class Game:
         self.battle_map_data = datamap.BattleMapData(self.main_dir, self.screen_scale)
 
         self.battle_game = battle.Battle(self, self.window_style)
+        self.battle_game.generate_unit = self.generate_unit
+
         self.change_game_genre(self.genre)
 
         self.troop_card_ui.feature_list = self.battle_map_data.feature_list  # add terrain feature list name to subunit card
@@ -685,7 +688,6 @@ class Game:
 
     def change_ruleset(self):
         self.troop_data, self.leader_data, self.faction_data = make_faction_troop_leader_data(self.main_dir, self.screen_scale, self.ruleset, self.ruleset_folder)
-        subunit.Subunit.screen_scale = self.screen_scale
         subunit.Subunit.troop_data = self.troop_data
         subunit.Subunit.leader_data = self.leader_data
         subunit.Subunit.troop_sprite_list = self.troop_data.troop_sprite_list
@@ -818,14 +820,11 @@ class Game:
         import_genre_module(self.script_dir, self.genre, new_genre, "Game", ("game",))
 
         genre_setting = importlib.import_module("gamescript." + new_genre + ".genre_setting")
-
         # Change genre for other objects
         import_genre_module(self.script_dir, self.genre, new_genre, "Subunit", ("subunit",))
         import_genre_module(self.script_dir, self.genre, new_genre, "Unit", ("unit",))
         import_genre_module(self.script_dir, self.genre, new_genre, "Battle", ("battle", "battle/uniteditor", "ui"))
         import_genre_module(self.script_dir, self.genre, new_genre, "Leader", ("leader",))
-
-        self.battle_game.generate_unit = self.generate_unit
 
         for object_key in genre_setting.object_variable:  # add genre-specific variables to appropriate object
             for key, value in genre_setting.object_variable[object_key].items():

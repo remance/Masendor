@@ -2,7 +2,7 @@ import math
 
 
 def rotate_logic(self, dt):
-    if self.angle != self.new_angle and self.charging is False and self.state != 10 and self.stamina > 0 and self.collide is False:
+    if self.angle != self.new_angle and self.state != 10 and self.stamina > 0 and self.collide is False:
         self.rotate_cal = abs(self.new_angle - self.angle)  # amount of angle left to rotate
         self.rotate_check = 360 - self.rotate_cal  # rotate distance used for preventing angle calculation bug (pygame rotate related)
         self.move_rotate = True

@@ -49,7 +49,7 @@ def setup_frontline(self):
 
         number_pos = (self.base_pos[0] - self.base_width_box,
                       (self.base_pos[1] + self.base_height_box))  # find position for number text
-        self.number_pos = rotation_xy(self.base_pos, number_pos, self.radians_angle)
+        self.base_number_pos = rotation_xy(self.base_pos, number_pos, self.radians_angle)
         self.change_pos_scale()
 
         old_width_box = old_width_box - self.base_width_box

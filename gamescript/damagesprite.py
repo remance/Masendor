@@ -162,8 +162,8 @@ class DamageSprite(pygame.sprite.Sprite):
         move_length = move.length()
 
         self.pass_subunit = None  # reset every movement update
-        for subunit in pygame.sprite.spritecollide(self, unit_list, 0):  # TODO SOlve issue with collide different on zoom
-            if subunit != self.attacker:
+        for subunit in pygame.sprite.spritecollide(self, unit_list, 0):
+            if subunit != self.attacker and subunit.dmg_rect.colliderect(self.rect):
                 if self.attack_type == "range":
                     if self.arc_shot is False:  # direct shot
                         self.hit_register(subunit)

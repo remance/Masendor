@@ -28,7 +28,7 @@ def loss_cal(self, target, final_dmg, final_morale_dmg, leader_dmg, element_effe
     target.stamina -= self.bonus_stamina_dmg
 
     if target.red_border is False:  # add red corner to indicate combat
-        target.block.blit(target.unit_ui_images["ui_squad_combat"], target.corner_image_rect)
+        target.block.blit(target.subunit_ui_images["subunit_combat"], target.corner_image_rect)
         target.red_border = True
 
     for key, value in element_effect.items():

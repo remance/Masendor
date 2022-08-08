@@ -8,10 +8,10 @@ def create_inspect_sprite(self):
     :param self: Subunit object
     :return: Dict with sprites
     """
-    # v Subunit image sprite in inspect ui and far zoom
-    ui_image = self.unit_ui_images["ui_squad_player"].copy()  # Subunit block blue colour for team1 for shown in inspect ui
+    # Subunit image sprite in inspect ui and far zoom
+    ui_image = self.subunit_ui_images["subunit_player"].copy()  # Subunit block blue colour for team1 for shown in inspect ui
     if self.team == 2:
-        ui_image = self.unit_ui_images["ui_squad_enemy"].copy()  # red colour
+        ui_image = self.subunit_ui_images["subunit_enemy"].copy()  # red colour
 
     image = pygame.Surface((ui_image.get_width() + 10, ui_image.get_height() + 10), pygame.SRCALPHA)  # subunit sprite image
     pygame.draw.circle(image, self.unit.colour, (image.get_width() / 2, image.get_height() / 2), ui_image.get_width() / 2)
@@ -45,30 +45,28 @@ def create_inspect_sprite(self):
     far_selected_image = pygame.transform.scale(far_selected_image, (int(dim[0]), int(dim[1])))
 
     block = ui_image.copy()  # image shown in inspect ui as square instead of circle
-    # ^ End subunit base sprite
 
-    # v health and stamina related
-    health_image_list = [self.unit_ui_images["ui_health_circle_100"], self.unit_ui_images["ui_health_circle_75"],
-                         self.unit_ui_images["ui_health_circle_50"], self.unit_ui_images["ui_health_circle_25"],
-                         self.unit_ui_images["ui_health_circle_0"]]
-    stamina_image_list = [self.unit_ui_images["ui_stamina_circle_100"], self.unit_ui_images["ui_stamina_circle_75"],
-                          self.unit_ui_images["ui_stamina_circle_50"], self.unit_ui_images["ui_stamina_circle_25"],
-                          self.unit_ui_images["ui_stamina_circle_0"]]
+    # Health and stamina related
+    health_image_list = [self.subunit_ui_images["health_circle_100"], self.subunit_ui_images["health_circle_75"],
+                         self.subunit_ui_images["health_circle_50"], self.subunit_ui_images["health_circle_25"],
+                         self.subunit_ui_images["health_circle_0"]]
+    stamina_image_list = [self.subunit_ui_images["stamina_circle_100"], self.subunit_ui_images["stamina_circle_75"],
+                          self.subunit_ui_images["stamina_circle_50"], self.subunit_ui_images["stamina_circle_25"],
+                          self.subunit_ui_images["stamina_circle_0"]]
 
-    health_image = self.unit_ui_images["ui_health_circle_100"]
+    health_image = self.subunit_ui_images["health_circle_100"]
     health_image_rect = health_image.get_rect(center=image.get_rect().center)  # for battle sprite
     health_block_rect = health_image.get_rect(center=block.get_rect().center)  # for ui sprite
     image.blit(health_image, health_image_rect)
     block.blit(health_image, health_block_rect)
 
-    stamina_image = self.unit_ui_images["ui_stamina_circle_100"]
+    stamina_image = self.subunit_ui_images["stamina_circle_100"]
     stamina_image_rect = stamina_image.get_rect(center=image.get_rect().center)  # for battle sprite
     stamina_block_rect = stamina_image.get_rect(center=block.get_rect().center)  # for ui sprite
     image.blit(stamina_image, stamina_image_rect)
     block.blit(stamina_image, stamina_block_rect)
-    # ^ End health and stamina
 
-    # v weapon class icon in middle circle or leader
+    # Weapon class icon in middle circle or leader
     image1 = self.troop_data.weapon_icon[self.troop_data.weapon_list[self.primary_main_weapon[0]]["ImageID"]]  # image on subunit sprite
     if type(self.troop_id) != int and "h" in self.troop_id:
         try:
@@ -83,9 +81,8 @@ def create_inspect_sprite(self):
     block.blit(image1, image_rect)
     block_original = block.copy()
 
-    corner_image_rect = self.unit_ui_images["ui_squad_combat"].get_rect(
+    corner_image_rect = self.subunit_ui_images["subunit_combat"].get_rect(
         center=block.get_rect().center)  # red corner when take melee_dmg shown in image block
-    # ^ End weapon icon
 
     inspect_image_original = image.copy()  # original for rotate
     inspect_image_original2 = image.copy()  # original2 for saving original not clicked

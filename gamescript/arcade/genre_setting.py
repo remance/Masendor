@@ -35,7 +35,8 @@ unit_behaviour_wheel = {"Main": {"Skill": "Skill", "Shift Line": "Shift Line", "
 # Dict of variable that will get add into object in game, key use two items tuple for indication of adding
 # object is as implied will add variable to object with the name of first item, self-object will add to object in self,
 # class will add variable to class in module file of the same name
-object_variable = {("self", "object"): {"char_select": True,  # include character specific screen,
+object_variable = {("self", "object"): {"add_troop_number_sprite": False,  # troop number sprite not use in arcade mode
+                                        "char_select": True,  # include character specific screen,
                                         "leader_sprite": True,  # leader has its own animation sprite
                                         "troop_sprite_size": (250, 250),  # troop animation sprite size
                                         "unit_size": unit_size  # maximum array size unit can contain subunits
@@ -44,7 +45,6 @@ object_variable = {("self", "object"): {"char_select": True,  # include characte
                                                     "start_zoom": 10,  # start with the closest zoom
                                                     "troop_size_adjustable": True,  # troop can be different size and affect sprite size
                                                     "time_speed_scale": 30,  # how fast time fly in battle
-                                                    "add_troop_number_sprite": False,  # troop number sprite not use in arcade mode
                                                     "unit_behaviour_wheel": unit_behaviour_wheel  # player unit behaviour control via wheel ui
                                                     },
                    ("unit", "class"): {"unit_size": unit_size,  # maximum array size unit can contain subunits

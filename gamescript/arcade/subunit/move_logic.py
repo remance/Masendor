@@ -66,6 +66,7 @@ def move_logic(self, dt, unit_state, collide_list):
                         self.base_pos = new_pos
                         self.pos = self.base_pos * self.zoom
                         self.rect.center = list(int(v) for v in self.pos)  # list rect so the sprite gradually move to position
+                        self.dmg_rect.center = self.rect.center
                         self.new_angle = self.set_rotate(self.base_target)
                         if self.walk:
                             if self.stamina != infinity:

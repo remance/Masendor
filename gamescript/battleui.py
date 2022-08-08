@@ -1176,8 +1176,8 @@ class TroopNumber(pygame.sprite.Sprite):
         self.text_colour = pygame.Color("blue")
         if self.who.team == 2:
             self.text_colour = pygame.Color("red")
-        self.last_true_number_pos = self.who.true_number_pos
-        self.pos = (self.who.true_number_pos[0] * self.screen_scale[0], self.who.true_number_pos[1] * self.screen_scale[1])
+        self.last_number_pos = self.who.number_pos
+        self.pos = (self.who.number_pos[0], self.who.number_pos[1])
         self.number = self.who.troop_number
         self.zoom = 0
 
@@ -1187,10 +1187,10 @@ class TroopNumber(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=self.pos)
 
     def update(self, *args, **kwargs) -> None:
-        if self.last_true_number_pos != self.who.true_number_pos:  # new position
-            self.pos = (self.who.true_number_pos[0] * self.screen_scale[0], self.who.true_number_pos[1] * self.screen_scale[1])
+        if self.last_number_pos != self.who.number_pos:  # new position
+            self.pos = (self.who.number_pos[0], self.who.number_pos[1])
             self.rect = self.image.get_rect(topleft=self.pos)
-            self.last_true_number_pos = self.who.true_number_pos
+            self.last_number_pos = self.who.number_pos
 
         if self.zoom != args[2]:  # zoom argument
             self.zoom = int(args[2])
@@ -1211,7 +1211,8 @@ class TroopNumber(pygame.sprite.Sprite):
             self.who = None
             self.kill()
 
-    def circle_points(self, r):
+    @staticmethod
+    def circle_points(r):
         """Calculate text point to add background"""
         circle_cache = {}
         r = int(round(r))
