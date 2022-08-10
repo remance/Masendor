@@ -365,7 +365,8 @@ class Button(pygame.sprite.Sprite):
 
     def update(self, *args):
         if "ON" in help_button.text:  # enable help description
-            if self.rect.collidepoint(mouse_pos):
+            if self.rect.collidepoint(mouse_pos) and self.description is not None and mouse_left_up is False:
+                print(mouse_pos, self.rect)
                 text_popup.pop(mouse_pos, self.description)
                 ui.add(text_popup)
 
@@ -401,7 +402,7 @@ class SwitchButton(pygame.sprite.Sprite):
 
     def update(self, *args):
         if "ON" in help_button.text:  # enable help description
-            if self.rect.collidepoint(mouse_pos) and self.description is not None:
+            if self.rect.collidepoint(mouse_pos) and self.description is not None and mouse_left_up is False:
                 text_popup.pop(mouse_pos, self.description)
                 ui.add(text_popup)
 
@@ -622,6 +623,12 @@ class NameBox(pygame.sprite.Sprite):
             text_surface = self.font.render(self.text, True, (0, 0, 0))
             text_rect = text_surface.get_rect(center=(int(self.image.get_width() / 2), int(self.image.get_height() / 2)))
             self.image.blit(text_surface, text_rect)
+
+    def update(self, *args):
+        if "ON" in help_button.text:  # enable help description
+            if self.rect.collidepoint(mouse_pos) and self.description is not None and mouse_left_up is False:
+                text_popup.pop(mouse_pos, self.description)
+                ui.add(text_popup)
 
 
 class ColourWheel(pygame.sprite.Sprite):
@@ -1617,8 +1624,7 @@ direction_part_button = Button("", image, (race_part_button.pos[0] + race_part_b
                                description=("Select part direction",))
 p_selector = NameBox((250, image.get_height()), (reset_button.image.get_width() * 1.8,
                                                  p_body_helper.rect.midtop[1] - (image.get_height() * 5.2)),
-                     description=("Select person", "Select person to display in edit helper. "
-                                                   "Parts from different person can still be selected via editor preview"))
+                     description=("Select person to display in edit helper", "Parts from different person can still be selected in editor preview."))
 armour_selector = NameBox((250, image.get_height()), (reset_button.image.get_width() * 1.8,
                                                       p_body_helper.rect.midtop[1] - (image.get_height() * 4.2)),
                           description=("Select preview armour", "Only for preview and not saved in animation file."))
