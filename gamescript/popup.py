@@ -81,11 +81,12 @@ class TerrainPopup(pygame.sprite.Sprite):
 
 
 class TextPopup(pygame.sprite.Sprite):
-    def __init__(self, screen_scale):
+    def __init__(self, screen_scale, screen_size):
         self._layer = 15
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font_size = int(24 * screen_scale[1])
         self.font = pygame.font.SysFont("helvetica", self.font_size)
+        self.screen_size = screen_size
         self.pos = (0, 0)
         self.text_input = ""
 
@@ -119,7 +120,15 @@ class TextPopup(pygame.sprite.Sprite):
                 text_rect = surface.get_rect(topleft=(4, height))
                 image.blit(surface, text_rect)
                 self.image.blit(surface, text_rect)  # blit text
-            self.rect = self.image.get_rect(bottomleft=self.pos)
+                height += self.font_size + int(self.font_size / 10)
+            if self.pos[0] + self.image.get_width() > self.screen_size[0]:  # exceed screen width
+                self.rect = self.image.get_rect(topright=self.pos)
+                if self.pos[1] + self.image.get_height() > self.screen_size[1]:  # also exceed height screen
+                    self.rect = self.image.get_rect(bottomright=self.pos)
+            elif self.pos[1] - self.image.get_height() < 0:  # exceed top screen
+                self.rect = self.image.get_rect(topleft=self.pos)
+            else:
+                self.rect = self.image.get_rect(bottomleft=self.pos)
 
 
 class EffectIconPopup(pygame.sprite.Sprite):
