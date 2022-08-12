@@ -366,7 +366,6 @@ class Button(pygame.sprite.Sprite):
     def update(self, *args):
         if "ON" in help_button.text:  # enable help description
             if self.rect.collidepoint(mouse_pos) and self.description is not None and mouse_left_up is False:
-                print(mouse_pos, self.rect)
                 text_popup.pop(mouse_pos, self.description)
                 ui.add(text_popup)
 
