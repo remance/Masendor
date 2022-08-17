@@ -9,9 +9,6 @@ import pyperclip
 from gamescript import battlemap
 from gamescript.common import utility
 
-terrain_colour = battlemap.terrain_colour
-feature_colour = battlemap.feature_colour
-
 
 class Cursor(pygame.sprite.Sprite):
     def __init__(self, images):
@@ -642,12 +639,15 @@ class MapPreview(pygame.sprite.Sprite):
     selected_colour = {0: (200, 200, 200), 1: (150, 150, 255), 2: (255, 150, 150)}
     team_dot = {team: {True: None, False: None} for team in colour.keys()}
 
-    def __init__(self, main_dir, screen_scale, pos):
+    def __init__(self, main_dir, screen_scale, pos, terrain_colour, feature_colour, battle_map_colour):
         self.main_dir = main_dir
         pygame.sprite.Sprite.__init__(self)
 
         self.screen_scale = screen_scale
         self.pos = pos
+        self.terrain_colour = terrain_colour
+        self.feature_colour = feature_colour
+        self.battle_map_colour = battle_map_colour
         self.image = pygame.Surface((450 * self.screen_scale[0], 450 * self.screen_scale[1]))
         self.image.fill((0, 0, 0))  # draw black colour for black corner
 
@@ -671,17 +671,6 @@ class MapPreview(pygame.sprite.Sprite):
             add_dot.blit(new_dot, rect)
             self.team_dot[team][True] = add_dot
 
-        self.new_colour_list = {}  # terrain and feature map colour
-        with open(os.path.join(self.main_dir, "data", "map", "colourchange.csv"), encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            for row in rd:
-                for n, i in enumerate(row):
-                    if i.isdigit():
-                        row[n] = int(i)
-                    elif "," in i:
-                        row[n] = ast.literal_eval(i)
-                self.new_colour_list[row[0]] = row[1:]
-
         self.rect = self.image.get_rect(center=self.pos)
 
     def change_map(self, base_map, feature_map):
@@ -692,14 +681,14 @@ class MapPreview(pygame.sprite.Sprite):
         for row_pos in range(0, 300):  # recolour the map
             for col_pos in range(0, 300):
                 terrain = new_base_map.get_at((row_pos, col_pos))  # get colour at pos to obtain the terrain type
-                terrain_index = terrain_colour.index(terrain)
+                terrain_index = self.terrain_colour.index(terrain)
 
                 feature = new_feature_map.get_at((row_pos, col_pos))  # get colour at pos to obtain the terrain type
                 feature_index = None
-                if feature in feature_colour:
-                    feature_index = feature_colour.index(feature)
+                if feature in self.feature_colour:
+                    feature_index = self.feature_colour.index(feature)
                     feature_index = feature_index + (terrain_index * 12)
-                new_colour = self.new_colour_list[feature_index][1]
+                new_colour = self.battle_map_colour[feature_index][1]
                 rect = pygame.Rect(row_pos, col_pos, 1, 1)
                 map_image.fill(new_colour, rect)
 

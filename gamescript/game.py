@@ -139,8 +139,6 @@ class Game:
         self.error_log = error_log
 
         lorebook.Lorebook.main_dir = self.main_dir
-        battlemap.FeatureMap.main_dir = self.main_dir
-        battlemap.BeautifulMap.main_dir = self.main_dir
         uniteditor.PreviewBox.main_dir = self.main_dir
 
         # Read config file
@@ -275,8 +273,6 @@ class Game:
         # battle object group
         self.battle_camera = pygame.sprite.LayeredUpdates()  # layer drawer self camera, all image pos should be based on the map not screen
         unit.Unit.battle_camera = self.battle_camera
-        # the camera layer is as followed 0 = terrain map, 1 = dead unit, 2 = map special feature, 3 = , 4 = subunit, 5 = sub-subunit,
-        # 6 = flying subunit, 7 = arrow/range, 8 = weather, 9 = weather matter, 10 = ui/button, 11 = subunit inspect, 12 pop up
         self.battle_ui_updater = pygame.sprite.LayeredUpdates()  # this is layer drawer for ui, all image pos should be based on the screen
 
         self.unit_updater = pygame.sprite.Group()  # updater for unit objects, only for in battle not editor or preview
@@ -385,6 +381,18 @@ class Game:
         self.mainmenu_button = (self.preset_map_button, self.custom_map_button, self.game_edit_button,
                                 self.lore_button, self.option_button, self.quit_button)
 
+        # Battle map
+        self.battle_base_map = battlemap.BaseMap(self.main_dir)  # create base terrain map
+        self.battle_feature_map = battlemap.FeatureMap(self.main_dir)  # create terrain feature map
+        self.battle_height_map = battlemap.HeightMap()  # create height map
+        self.battle_map = battlemap.BeautifulMap(self.main_dir, self.screen_scale)
+        self.battle_camera.add(self.battle_map)
+
+        damagesprite.DamageSprite.height_map = self.battle_height_map
+        subunit.Subunit.base_map = self.battle_base_map  # add battle map to subunit class
+        subunit.Subunit.feature_map = self.battle_feature_map
+        subunit.Subunit.height_map = self.battle_height_map
+
         # Battle map select menu button
         battle_select_image = load_images(self.main_dir, self.screen_scale, ["ui", "mapselect_ui"], load_order=False)
 
@@ -392,7 +400,10 @@ class Game:
 
         self.map_description = menu.DescriptionBox(battle_select_image["map_description"], self.screen_scale,
                                                    (self.screen_rect.width / 2, self.screen_rect.height / 1.3))
-        self.map_show = menu.MapPreview(self.main_dir, self.screen_scale, (self.screen_rect.width / 2, self.screen_rect.height / 3))
+        self.map_show = menu.MapPreview(self.main_dir, self.screen_scale,
+                                        (self.screen_rect.width / 2, self.screen_rect.height / 3),
+                                        self.battle_base_map.terrain_colour, self.battle_feature_map.feature_colour,
+                                        self.battle_map.battle_map_colour)
         self.source_description = menu.DescriptionBox(battle_select_image["source_description"], self.screen_scale,
                                                       (self.screen_rect.width / 2, self.screen_rect.height / 1.3), text_size=24)
 
@@ -517,24 +528,13 @@ class Game:
         battleui.SelectedSquad.image = battle_ui_image[
             "ui_subunit_clicked"]  # subunit border image always the last one
 
-        # Battle map
-        self.battle_base_map = battlemap.BaseMap()  # create base terrain map
-        self.battle_feature_map = battlemap.FeatureMap()  # create terrain feature map
-        self.battle_height_map = battlemap.HeightMap()  # create height map
-        self.show_map = battlemap.BeautifulMap(self.screen_scale)
-        self.battle_camera.add(self.show_map)
-
-        damagesprite.DamageSprite.height_map = self.battle_height_map
-        subunit.Subunit.base_map = self.battle_base_map  # add battle map to subunit class
-        subunit.Subunit.feature_map = self.battle_feature_map
-        subunit.Subunit.height_map = self.battle_height_map
-
-        self.status_images, self.role_images, self.trait_images, self.skill_images = make_icon_data(self.main_dir, self.screen_scale)
+        # Battle ui
+        self.status_images, self.role_images, self.trait_images, self.skill_images = make_icon_data(self.main_dir,
+                                                                                                    self.screen_scale)
 
         self.mini_map = battleui.MiniMap((self.screen_rect.width, self.screen_rect.height), self.screen_scale)
         self.battle_ui_updater.add(self.mini_map)
 
-        # Battle ui
         battle_icon_image = load_images(self.main_dir, self.screen_scale, ["ui", "battle_ui", "topbar_icon"],
                                         load_order=False)
         battle_ui_dict = make_battle_ui(battle_ui_image, battle_icon_image, team_colour, self.screen_rect.size)

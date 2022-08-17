@@ -10,9 +10,9 @@ def editor_map_change(self, base_colour, feature_colour):
     self.battle_map_base.draw_image(map_images[0])
     self.battle_map_feature.draw_image(map_images[1])
     self.battle_map_height.draw_image(map_images[2])
-    self.show_map.draw_image(self.battle_map_base, self.battle_map_feature, self.battle_map_height, None, self, True)
-    self.mini_map.draw_image(self.show_map.true_image, self.camera)
-    self.show_map.change_scale(self.camera_zoom)
+    self.battle_map.draw_image(self.battle_map_base, self.battle_map_feature, self.battle_map_height, None, self, True)
+    self.mini_map.draw_image(self.battle_map.true_image, self.camera)
+    self.battle_map.change_scale(self.camera_zoom)
 
     for subunit in self.subunit_build:
         subunit.terrain, subunit.feature = subunit.get_feature((500, 500), self.battle_map_base)

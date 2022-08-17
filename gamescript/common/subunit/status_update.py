@@ -93,7 +93,9 @@ def status_update(self, weather=None):
 
     self.apply_map_status(map_feature_mod)
     # self.hidden += self.unit.feature_map[self.unit.feature][6]
-    temp_reach = map_feature_mod["Temperature"] + weather_temperature  # temperature the subunit will change to based on current terrain feature and weather
+
+    # Temperature of the subunit change to based on current terrain feature (at time of the day) and weather
+    temp_reach = map_feature_mod[self.battle.day_time + " Temperature"] + weather_temperature
 
     # Apply effect from skill
     if len(self.skill_effect) > 0:

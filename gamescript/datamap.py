@@ -32,30 +32,30 @@ class BattleMapData:
         self.feature_mod = {}
         with open(os.path.join(main_dir, "data", "map", "terrain_effect.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            run = 0  # for skipping the first row
             rd = [row for row in rd]
             header = rd[0]
-            for row in rd:
+            mod_column = ("Infantry Speed/Charge Effect", "Infantry Combat Effect", "Infantry Defense Effect",
+                          "Cavalry Speed/Charge Effect", "Cavalry Combat Effect", "Cavalry Defense Effect")
+            int_column = ("ID", "Range Defense Bonus", "Hide Bonus", "Discipline Bonus",
+                          "Day Temperature", "Night Temperature", "Dust")  # value int only
+            tuple_column = ("Status",)
+            mod_column = [index for index, item in enumerate(header) if item in mod_column]
+            int_column = [index for index, item in enumerate(header) if item in int_column]
+            tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
+            for row in rd[1:]:  # skip convert header row
                 for n, i in enumerate(row):
-                    if run != 0:
-                        if header[n] == "Status":  # effect list is at column 12
-                            if "," in i:
-                                row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
-                            elif i.isdigit():
-                                row[n] = [int(i)]
-
-                        elif "Effect" in header[n]:  # other modifier column
-                            if i != "":
-                                row[n] = float(i) / 100
-                            else:  # empty row assign default 1.0
-                                row[n] = 1.0
-
-                        elif i.isdigit() or "-" in i:  # modifier bonus (including negative) in other column
-                            row[n] = int(i)
-
-                run += 1
+                    row = stat_convert(row, n, i, mod_column=mod_column, tuple_column=tuple_column,
+                                       int_column=int_column)
                 self.feature_mod[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+
+                # Add twilight temperature
+                self.feature_mod[row[0]]["Twilight Temperature"] = \
+                    int((self.feature_mod[row[0]]["Day Temperature"] +
+                         self.feature_mod[row[0]]["Night Temperature"]) / 2)
+
         edit_file.close()
+
+        self.day_effect_images = load_images(main_dir, screen_scale, ["map", "day"], load_order=False)
 
         # set up default
         battlemap.FeatureMap.feature_mod = self.feature_mod

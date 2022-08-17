@@ -2,7 +2,6 @@ import datetime
 
 import pygame
 import pygame.freetype
-from gamescript import battlemap
 from gamescript.common import utility, animation
 
 
@@ -149,7 +148,7 @@ class TroopCard(pygame.sprite.Sprite):
         self.subunit_state_text = game.subunit_state_text
         self.quality_text = game.quality_text
         self.leader_state_text = game.leader_state_text
-        self.terrain_list = battlemap.terrain_list
+        # self.terrain_list = terrain_list
 
         self._layer = 10
         pygame.sprite.Sprite.__init__(self)
@@ -232,13 +231,12 @@ class TroopCard(pygame.sprite.Sprite):
             elif self.option == 0:  # description card
                 make_long_text(self.image, self.description, (42, 25), self.font_long)  # blit long description
             elif self.option == 3:  # equipment and terrain
-                # v Terrain text
+                # Terrain text
                 terrain = self.terrain_list[who.terrain]
                 if who.feature is not None:
                     terrain += "/" + self.feature_list[who.feature]
-                # ^ End terrain text
 
-                # v Equipment text
+                # Equipment text
                 text_value = ["Weapon 1: " +
                     self.quality_text[who.primary_main_weapon[1]] + " " + str(self.weapon_data.weapon_list[who.primary_main_weapon[0]]["Name"]) + " / " +
                     self.quality_text[who.primary_sub_weapon[1]] + " " + str(self.weapon_data.weapon_list[who.primary_sub_weapon[0]]["Name"]),
@@ -256,8 +254,8 @@ class TroopCard(pygame.sprite.Sprite):
                     if who.mount_armour["Name"] != "None":
                         armour_text = ""
                     text_value.insert(3, "Mount:" + who.mount_grade["Name"] + " " + who.mount["Name"] + armour_text)
-                # ^ End equipment text
 
+                # Add text
                 for text in text_value:
                     text_surface = self.font.render(str(text), 1, (0, 0, 0))
                     text_rect = text_surface.get_rect(

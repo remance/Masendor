@@ -4,7 +4,7 @@ def change_battle_state(self):
     self.unit_selector.scroll.change_image(new_row=self.unit_selector.current_row)
     if self.game_state == "battle":  # change to battle state
         self.camera_mode = self.start_zoom_mode
-        self.mini_map.draw_image(self.show_map.true_image, self.camera)
+        self.mini_map.draw_image(self.battle_map.true_image, self.camera)
 
         if self.current_selected is not None:  # any unit is selected
             self.current_selected = None  # reset last_selected
@@ -44,7 +44,7 @@ def change_battle_state(self):
     elif self.game_state == "editor":  # change to editor state
         self.camera_mode = "Free"
         self.inspect = False  # reset inspect ui
-        self.mini_map.draw_image(self.show_map.true_image, self.camera)  # reset mini_map
+        self.mini_map.draw_image(self.battle_map.true_image, self.camera)  # reset mini_map
         for arrow in self.damage_sprites:  # remove all range melee_attack
             arrow.kill()
             del arrow

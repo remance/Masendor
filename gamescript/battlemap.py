@@ -8,35 +8,6 @@ import pygame.freetype
 from PIL import Image, ImageFilter, ImageOps
 
 # Terrain base colour, change these when add new terrain
-Temperate = (166, 255, 107, 255)
-Tropical = (255, 199, 13, 255)
-Volcanic = (255, 127, 39, 255)
-Desert = (240, 229, 176, 255)
-Arctic = (211, 211, 211, 255)
-Blight = (163, 73, 164, 255)
-Void = (255, 255, 255, 255)
-Demonic = (237, 28, 36, 255)
-Death = (127, 127, 127, 255)
-ShallowWater = (153, 217, 235, 255)
-DeepWater = (100, 110, 214, 255)
-terrain_colour = (Temperate, Tropical, Volcanic, Desert, Arctic, Blight, Void, Demonic, Death, ShallowWater, DeepWater)
-terrain_list = ("Temperate", "Tropical", "Volcanic", "Desert", "Arctic", "Blight", "Void", "Demonic", "Death", "ShallowWater", "DeepWater")
-
-# Terrain Feature colour, change these when add new feature
-Plain = (181, 230, 29, 255)
-Barren = (255, 127, 39, 255)
-PlantField = (167, 186, 139, 255)
-Forest = (16, 84, 36, 255)
-InlandWater = (133, 254, 239, 255)
-Road = (130, 82, 55, 255)
-UrbanBuilding = (147, 140, 136, 255)
-Farm = (255, 242, 0, 255)
-Pandemonium = (102, 92, 118, 255)
-Mana = (101, 109, 214, 255)
-Rot = (200, 191, 231, 255)
-Wetground = (186, 184, 109, 255)
-feature_colour = (Plain, Barren, PlantField, Forest, InlandWater, Road, UrbanBuilding, Farm, Pandemonium, Mana, Rot, Wetground)
-feaure_list = ("Plain", "Barren", "PlantField", "Forest", "InlandWater", "Road", "UrbanBuilding", "Farm", "Pandemonium", "Mana", "Rot", "Wetground")
 
 default_map_width = 1000  # map default size is 1000 x 1000
 default_map_height = 1000
@@ -45,12 +16,26 @@ default_map_height = 1000
 class BaseMap(pygame.sprite.Sprite):
     max_zoom = 10
 
-    def __init__(self):
+    def __init__(self, main_dir):
         """image file of map should be at size 1000x1000 then it will be scaled in self"""
         self._layer = 0
         pygame.sprite.Sprite.__init__(self)
-        self.terrain_colour = terrain_colour
-        self.terrain_list = terrain_list
+        self.main_dir = main_dir
+
+        self.terrain_colour = {}
+        with open(os.path.join(self.main_dir, "data", "map", "terrain.csv"), encoding="utf-8",
+                  mode="r") as edit_file:
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+            for row_index, row in enumerate(rd):
+                if row_index > 0:
+                    for n, i in enumerate(row):
+                        if i.isdigit():
+                            row[n] = int(i)
+                        elif "," in i:
+                            row[n] = ast.literal_eval(i)
+                    self.terrain_colour[row[0]] = row[1:]
+        self.terrain_list = tuple(self.terrain_colour.keys())
+        self.terrain_colour = tuple([value[0] for value in self.terrain_colour.values()])
 
     def draw_image(self, image):
         self.image = image.copy()
@@ -81,11 +66,26 @@ class FeatureMap(pygame.sprite.Sprite):
     main_dir = None
     feature_mod = None
 
-    def __init__(self):
+    def __init__(self, main_dir):
         self._layer = 0
         pygame.sprite.Sprite.__init__(self)
-        self.feature_colour = feature_colour
-        self.feature_list = feaure_list
+        self.main_dir = main_dir
+
+        self.feature_colour = {}
+        with open(os.path.join(self.main_dir, "data", "map", "feature.csv"), encoding="utf-8",
+                  mode="r") as edit_file:
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+            for row_index, row in enumerate(rd):
+                if row_index > 0:
+                    for n, i in enumerate(row):
+                        if i.isdigit():
+                            row[n] = int(i)
+                        elif "," in i:
+                            row[n] = ast.literal_eval(i)
+                    self.feature_colour[row[0]] = row[1:]
+
+        self.feature_list = tuple(self.feature_colour.keys())
+        self.feature_colour = tuple([value[0] for value in self.feature_colour.values()])
 
     def draw_image(self, image):
         self.image = image.copy()
@@ -108,7 +108,7 @@ class FeatureMap(pygame.sprite.Sprite):
         feature_index = None
         if feature in self.feature_colour:
             feature_index = self.feature_colour.index(feature)
-            feature_index = (terrain_index * len(self.feature_list)) + feature_index
+            feature_index = (terrain_index * len(self.feature_colour)) + feature_index
         return terrain_index, feature_index
 
     def clear_image(self):
@@ -184,24 +184,25 @@ class BeautifulMap(pygame.sprite.Sprite):
     load_texture_list = None
     main_dir = None
 
-    def __init__(self, screen_scale):
+    def __init__(self, main_dir, screen_scale):
         self._layer = 0
         pygame.sprite.Sprite.__init__(self)
-        # self.image = pygame.surface((0,0))
+        self.main_dir = main_dir
         self.screen_scale = screen_scale
         self.scale = 1
         self.mode = 0
-        self.new_colour_list = {}
+        self.battle_map_colour = {}
         with open(os.path.join(self.main_dir, "data", "map", "colourchange.csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            for row in rd:
-                for n, i in enumerate(row):
-                    if i.isdigit():
-                        row[n] = int(i)
-                    elif "," in i:
-                        row[n] = ast.literal_eval(i)
-                self.new_colour_list[row[0]] = row[1:]
+            for row_index, row in enumerate(rd):
+                if row_index > 0:
+                    for n, i in enumerate(row):
+                        if i.isdigit():
+                            row[n] = int(i)
+                        elif "," in i:
+                            row[n] = ast.literal_eval(i)
+                    self.battle_map_colour[row[0]] = row[1:]
 
     def draw_image(self, base_map, feature_map, height_map, place_name, battle, editor_map):
         self.image = pygame.Surface((default_map_width, default_map_height))
@@ -209,7 +210,7 @@ class BeautifulMap(pygame.sprite.Sprite):
 
         if editor_map:
             terrain, feature = feature_map.get_feature((1, 1), base_map)
-            new_colour = self.new_colour_list[feature][1]
+            new_colour = self.battle_map_colour[feature][1]
             self.image.fill(new_colour)
             map_feature_mod = feature_map.feature_mod[feature]
             speed_mod = int(map_feature_mod["Infantry Speed/Charge Effect"] * 100)
@@ -219,7 +220,7 @@ class BeautifulMap(pygame.sprite.Sprite):
                 speed_array = []
                 for col_pos in range(0, default_map_height):
                     terrain, feature = feature_map.get_feature((row_pos, col_pos), base_map)
-                    new_colour = self.new_colour_list[feature][1]
+                    new_colour = self.battle_map_colour[feature][1]
                     rect = pygame.Rect(row_pos, col_pos, 1, 1)
                     self.image.fill(new_colour, rect)
 
@@ -248,7 +249,7 @@ class BeautifulMap(pygame.sprite.Sprite):
                     if row_pos % 20 == 0 and col_pos % 20 == 0:
                         random_pos = (row_pos + random.randint(0, 19), col_pos + random.randint(0, 19))
                         terrain, this_feature = feature_map.get_feature(random_pos, base_map)
-                        feature = self.texture_images[self.load_texture_list.index(self.new_colour_list[this_feature][0])]
+                        feature = self.texture_images[self.load_texture_list.index(self.battle_map_colour[this_feature][0])]
                         choose = random.randint(0, len(feature) - 1)
                         if this_feature - (terrain * 12) in (0, 1, 4, 5, 7) and \
                                 random.randint(0, 100) < 60:  # reduce special texture in empty terrain like glassland
@@ -262,16 +263,21 @@ class BeautifulMap(pygame.sprite.Sprite):
                                                          self.image.get_height() * self.screen_scale[1]))
         self.true_image = self.image.copy()  # image before adding effect and place name
 
-        self.place_name = place_name  # save place name image as variable
+        # Save place name image as variable
+        self.place_name = pygame.transform.scale(place_name, (place_name.get_width() * self.screen_scale[0],
+                                                              place_name.get_height() * self.screen_scale[1]))
 
         self.add_effect(height_map)
 
-    def add_effect(self, height_map, effect_image=None):
+    def add_effect(self, height_map, effect_image=None, time_image=None):
         rect = self.image.get_rect(topleft=(0, 0))
         self.image = self.true_image.copy()
 
         if effect_image is not None:
-            self.image.blit(effect_image, rect)  # add special filter effect that make it look like old map
+            self.image.blit(effect_image, rect)  # add weather filter effect
+
+        if time_image is not None:
+            self.image.blit(time_image, rect)  # add day time effect
 
         if self.place_name is not None:
             self.image.blit(self.place_name, rect)  # add place_name layer to map

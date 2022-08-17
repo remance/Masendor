@@ -6,8 +6,8 @@ def battle_keyboard_process(self, key_press):
         self.map_mode += 1  # change height map mode
         if self.map_mode > 2:
             self.map_mode = 0
-        self.show_map.change_mode(self.map_mode)
-        self.show_map.change_scale(self.camera_zoom)
+        self.battle_map.change_mode(self.map_mode)
+        self.battle_map.change_scale(self.camera_zoom)
 
     elif key_press == pygame.K_o:  # Toggle unit number
         if self.show_troop_number:

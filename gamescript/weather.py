@@ -112,4 +112,4 @@ class SuperEffect(pygame.sprite.Sprite):
 
     def __init__(self, pos, image):
         self._layer = 12
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)

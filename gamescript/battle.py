@@ -37,6 +37,7 @@ class Battle:
     generate_unit = empty_method
     remove_unit_ui = empty_method
     setup_battle_unit = empty_method
+    time_update = empty_method
 
     # Import common.ui
     change_inspect_subunit = empty_method
@@ -115,7 +116,7 @@ class Battle:
         self.battle_map_base = main.battle_base_map
         self.battle_map_feature = main.battle_feature_map
         self.battle_map_height = main.battle_height_map
-        self.show_map = main.show_map
+        self.battle_map = main.battle_map
 
         self.range_attacks = main.damage_sprites
         self.direction_arrows = main.direction_arrows
@@ -200,6 +201,7 @@ class Battle:
         self.weather_data = main.battle_map_data.weather_data
         self.weather_matter_images = main.battle_map_data.weather_matter_images
         self.weather_effect_images = main.battle_map_data.weather_effect_images
+        self.day_effect_images = main.battle_map_data.day_effect_images
         self.weather_list = main.battle_map_data.weather_list
 
         self.feature_mod = main.battle_map_data.feature_mod
@@ -273,6 +275,8 @@ class Battle:
 
         self.game_speed = 0
         self.game_speed_list = (0, 0.5, 1, 2, 4, 6)  # available game speed
+        self.day_time = "Day"
+        self.old_day_time = self.day_time
         self.leader_now = []
         self.team_troop_number = []  # list of troop number in each team, minimum at one because percentage can't divide by 0
         self.last_team_troop_number = []
@@ -429,12 +433,13 @@ class Battle:
             self.battle_map_height.draw_image(images["height"])
 
             try:  # place_name map layer is optional, if not existed in folder then assign None
-                place_name_map = images[3]
+                place_name_map = images["placename"]
             except Exception:
                 place_name_map = None
-            self.show_map.draw_image(self.battle_map_base, self.battle_map_feature, self.battle_map_height, place_name_map, self, False)
-        else:  # for unit editor mode, create empty temperate glass map
-            self.editor_map_change((166, 255, 107), (181, 230, 29))
+            self.battle_map.draw_image(self.battle_map_base, self.battle_map_feature, self.battle_map_height, place_name_map, self, False)
+        else:
+            self.editor_map_change(self.battle_map_base.terria_colour["Temperate"],
+                                   self.battle_map_feature.feature_colour["Plain"])
 
         self.alive_subunit_list = []
 
@@ -578,7 +583,8 @@ class Battle:
         self.battle_mouse_pos = [0, 0]  # with camera zoom adjust
         self.command_mouse_pos = [0, 0]  # with zoom but no revert screen scale for unit command
         self.unit_selector.current_row = 0
-        # ^ End start value
+
+        self.time_update()
 
         self.effect_updater.update(self.all_team_unit["alive"], self.dt, self.camera_zoom)
 
@@ -723,7 +729,7 @@ class Battle:
 
                     if self.dt > 0:  # Part that run when game not pause only
 
-                        # Event log timer
+                        # Event log
                         if self.event_schedule is not None and self.event_list != [] and self.time_number.time_number >= self.event_schedule:
                             self.event_log.add_log(None, None, event_id=self.event_id)
                             for event in self.event_log.map_event:
@@ -744,9 +750,10 @@ class Battle:
                                 self.current_weather = weather.Weather(self.time_ui, random.randint(0, 11), random.randint(0, 2),
                                                                        self.weather_data)
                             self.weather_event.pop(0)
-                            self.show_map.add_effect(self.battle_map_height,
-                                                     self.weather_effect_images[self.current_weather.weather_type][self.current_weather.level])
-                            self.show_map.change_scale(self.camera_zoom)
+                            self.battle_map.add_effect(self.battle_map_height,
+                                                       effect_image=self.weather_effect_images[self.current_weather.weather_type][self.current_weather.level],
+                                                       time_image=self.day_effect_images[self.day_time])
+                            self.battle_map.change_scale(self.camera_zoom)
 
                             if len(self.weather_event) > 0:  # Get end time of next event which is now index 0
                                 self.weather_playing = self.weather_event[0][1]
@@ -774,7 +781,7 @@ class Battle:
 
                                 elif self.current_weather.spawn_angle == 270:  # right to left movement
                                     true_pos = (self.screen_rect.width, random.randint(0, self.screen_rect.height))
-                                    target = (0, true_pos[1])
+                                    target = (true_pos[1] - (self.screen_rect.width / 1.5), true_pos[1])
 
                                 random_pic = random.randint(0, len(self.weather_matter_images[self.current_weather.weather_type]) - 1)
                                 self.weather_matter.add(weather.MatterSprite(true_pos, target,
@@ -792,8 +799,7 @@ class Battle:
                             self.music_schedule = self.music_schedule[1:]
                             self.music_event = self.music_event[1:]
 
-
-                        # Collide check
+                        # Subunit collide check
                         for this_unit in self.all_team_unit["alive"]:  # reset collide
                             this_unit.collide = False
 
@@ -896,6 +902,7 @@ class Battle:
                         self.dt = 0.1  # make it so stutter and lag does not cause overtime issue
 
                     self.time_number.timer_update(self.dt * self.time_speed_scale)  # update battle time with genre speed
+                    self.time_update()
 
                     if self.mode == "battle" and len([key for key, value in self.all_team_unit.items() if key != "alive" and len(value) > 0]) <= 1:
                         if self.battle_done_box not in self.battle_ui_updater:
@@ -1030,7 +1037,7 @@ class Battle:
         self.battle_map_base.clear_image()
         self.battle_map_feature.clear_image()
         self.battle_map_height.clear_image()
-        self.show_map.clear_image()
+        self.battle_map.clear_image()
 
         if self.mode == "unit_editor":
             self.subunit_in_card = None
