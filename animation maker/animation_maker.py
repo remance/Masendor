@@ -443,6 +443,7 @@ class BodyHelper(pygame.sprite.Sprite):
                 new_box.blit(text_surface, text_rect)
                 self.part_images_original.append(new_box)
         self.part_images = [image.copy() for image in self.part_images_original]
+        self.selected_part_images = [apply_colour(image, (34, 177, 76), white_colour=False) for image in self.part_images_original]
         self.part_selected = []
         self.stat1 = {}
         self.stat2 = {}
@@ -487,9 +488,9 @@ class BodyHelper(pygame.sprite.Sprite):
         for index, image in enumerate(self.part_images):
             this_key = list(self.part_pos.keys())[index]
             pos = self.part_pos[this_key]
-            new_image = image.copy()
+            new_image = image
             if this_key in self.part_selected:  # highlight selected part
-                new_image = apply_colour(new_image, (34, 177, 76), white_colour=False)
+                new_image = self.selected_part_images[index]
 
             rect = new_image.get_rect(center=pos)
             self.image.blit(new_image, rect)
@@ -1061,6 +1062,14 @@ class Model:
                     self.animation_part_list[current_frame][part] = copy_animation[part].copy()
                     self.part_name_list[current_frame][part] = copy_name[part].copy()
 
+        elif edit_type == "all frame paste":  # paste copy all frame part
+            for index, frame in enumerate(all_copy_part):
+                for part in frame:
+                    if all_copy_part[index][part] is not None:
+                        self.bodypart_list[index][part] = all_copy_part[index][part].copy()
+                        self.animation_part_list[index][part] = all_copy_animation[index][part].copy()
+                        self.part_name_list[index][part] = all_copy_name[index][part].copy()
+
         elif "direction" in edit_type:
             if self.part_selected:
                 for part in self.part_selected:
@@ -1462,6 +1471,9 @@ copy_animation_frame = None
 copy_part = None
 copy_name_frame = None
 copy_stat = None
+all_copy_part = None
+all_copy_animation = None
+all_copy_name = None
 current_popup_row = 0
 keypress_delay = 0
 point_edit = 0
@@ -1550,6 +1562,14 @@ delete_button = Button("Delete", image, (screen_size[0] - (image.get_width() / 2
 play_animation_button = SwitchButton(["Play", "Stop"], image,
                                      (screen_size[1] / 2, filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 0.5)),
                                      description=("Play/Stop animation", "Preview the current animation with auto filmstrip selection."))
+
+all_frame_part_copy_button = Button("Copy PA", image, (screen_size[1] / 2 - play_animation_button.image.get_width() * 2,
+                                                       filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 0.5)),
+                                    description=("Copy selected parts in all frame",))
+all_frame_part_paste_button = Button("Paste PA", image, (screen_size[1] / 2 - play_animation_button.image.get_width(),
+                                                         filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 0.5)),
+                                     description=("Paste parts in all frame", "Only copied from all frame part copy."))
+
 joint_button = SwitchButton(["Joint:OFF", "Joint:ON"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 5,
                                                                filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)),
                             description=("Show part joints", "Display or hide part's joint icon."))
@@ -1614,8 +1634,8 @@ part_paste_button = Button("Paste P", image, (reset_button.pos[0] + reset_button
 p_all_button = Button("P All", image, (reset_button.pos[0] + reset_button.image.get_width() * 7,
                                        p_body_helper.rect.midtop[1] - (image.get_height() * 2)),
                       description=("Select all current person parts",))
-all_button = Button("All", image, (reset_button.pos[0] + reset_button.image.get_width() * 7,
-                                   p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)),
+all_button = Button("All", image, (reset_button.pos[0] + reset_button.image.get_width() * 6,
+                                   p_body_helper.rect.midtop[1] - (image.get_height() * 2)),
                     description=("Select all parts",))
 race_part_button = Button("", image, (reset_button.image.get_width() / 2,
                                       p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)),
@@ -2074,6 +2094,33 @@ while True:
 
                             model.edit_part(mouse_pos, "change")
 
+                    elif all_frame_part_copy_button.rect.collidepoint(mouse_pos):
+                        all_copy_part = []
+                        all_copy_animation = []
+                        all_copy_name = []
+                        if model.part_selected:
+                            for frame, _ in enumerate(model.bodypart_list):
+                                temp_all_copy_part = {key: (value[:].copy() if type(value) == list else value) for key, value in
+                                                      model.bodypart_list[frame].items()}
+                                temp_all_copy_animation = {key: (value[:].copy() if value is not None else value) for key, value in
+                                                            model.animation_part_list[frame].items() for frame in model.animation_part_list}
+                                temp_all_copy_name = {key: (value[:].copy() if value is not None else value) for key, value in
+                                                       model.part_name_list[frame].items()}
+
+                                temp_all_copy_part = {item: temp_all_copy_part[item] for item in temp_all_copy_part if item in model.mask_part_list and
+                                                      list(model.mask_part_list.keys()).index(item) in model.part_selected}
+                                temp_all_copy_animation = {item: temp_all_copy_animation[item] for index, item in enumerate(temp_all_copy_animation.keys()) if
+                                                  index in model.part_selected}
+                                temp_all_copy_name = {item: temp_all_copy_name[item] for index, item in enumerate(temp_all_copy_name.keys()) if index in model.part_selected}
+
+                                all_copy_part.append(temp_all_copy_part)
+                                all_copy_animation.append(temp_all_copy_animation)
+                                all_copy_name.append(temp_all_copy_name)
+
+                    elif all_frame_part_paste_button.rect.collidepoint(mouse_pos):
+                        if all_copy_part is not None:
+                            model.edit_part(mouse_pos, "all frame paste")
+
                     elif frame_copy_button.rect.collidepoint(mouse_pos):
                         copy_press = True
 
@@ -2330,8 +2377,6 @@ while True:
                         copy_animation = {item: copy_animation[item] for index, item in enumerate(copy_animation.keys()) if
                                           index in model.part_selected}
                         copy_name = {item: copy_name[item] for index, item in enumerate(copy_name.keys()) if index in model.part_selected}
-
-                        model.add_history()
 
                 elif part_paste_press:
                     if copy_part is not None:
