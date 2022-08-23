@@ -1062,14 +1062,6 @@ class Model:
                     self.animation_part_list[current_frame][part] = copy_animation[part].copy()
                     self.part_name_list[current_frame][part] = copy_name[part].copy()
 
-        elif edit_type == "all frame paste":  # paste copy all frame part
-            for index, frame in enumerate(all_copy_part):
-                for part in frame:
-                    if all_copy_part[index][part] is not None:
-                        self.bodypart_list[index][part] = all_copy_part[index][part].copy()
-                        self.animation_part_list[index][part] = all_copy_animation[index][part].copy()
-                        self.part_name_list[index][part] = all_copy_name[index][part].copy()
-
         elif "direction" in edit_type:
             if self.part_selected:
                 for part in self.part_selected:
@@ -1471,9 +1463,6 @@ copy_animation_frame = None
 copy_part = None
 copy_name_frame = None
 copy_stat = None
-all_copy_part = None
-all_copy_animation = None
-all_copy_name = None
 current_popup_row = 0
 keypress_delay = 0
 point_edit = 0
@@ -1726,6 +1715,7 @@ anim = Animation(500, True)
 model = Model()
 model.animation_list = []
 copy_list = []  # list of copied animation frames
+all_copy_list = []
 direction = 1
 activate_list = [False] * max_frame
 direction_button.change_text(direction_list[direction])
@@ -2095,31 +2085,32 @@ while True:
                             model.edit_part(mouse_pos, "change")
 
                     elif all_frame_part_copy_button.rect.collidepoint(mouse_pos):
-                        all_copy_part = []
-                        all_copy_animation = []
-                        all_copy_name = []
                         if model.part_selected:
-                            for frame, _ in enumerate(model.bodypart_list):
-                                temp_all_copy_part = {key: (value[:].copy() if type(value) == list else value) for key, value in
-                                                      model.bodypart_list[frame].items()}
-                                temp_all_copy_animation = {key: (value[:].copy() if value is not None else value) for key, value in
-                                                            model.animation_part_list[frame].items() for frame in model.animation_part_list}
-                                temp_all_copy_name = {key: (value[:].copy() if value is not None else value) for key, value in
-                                                       model.part_name_list[frame].items()}
-
-                                temp_all_copy_part = {item: temp_all_copy_part[item] for item in temp_all_copy_part if item in model.mask_part_list and
-                                                      list(model.mask_part_list.keys()).index(item) in model.part_selected}
-                                temp_all_copy_animation = {item: temp_all_copy_animation[item] for index, item in enumerate(temp_all_copy_animation.keys()) if
-                                                  index in model.part_selected}
-                                temp_all_copy_name = {item: temp_all_copy_name[item] for index, item in enumerate(temp_all_copy_name.keys()) if index in model.part_selected}
-
-                                all_copy_part.append(temp_all_copy_part)
-                                all_copy_animation.append(temp_all_copy_animation)
-                                all_copy_name.append(temp_all_copy_name)
+                            all_copy_list = []
+                            for frame in model.frame_list:
+                                frame_item = {}
+                                for part in model.part_selected:
+                                    if list(model.mask_part_list.keys())[part] in frame:
+                                        add_part = frame[list(model.mask_part_list.keys())[part]]
+                                        if type(add_part) != list:
+                                            frame_item[list(model.mask_part_list.keys())[part]] = add_part
+                                        else:
+                                            frame_item[list(model.mask_part_list.keys())[part]] = add_part.copy()
+                                all_copy_list.append(frame_item)
 
                     elif all_frame_part_paste_button.rect.collidepoint(mouse_pos):
-                        if all_copy_part is not None:
-                            model.edit_part(mouse_pos, "all frame paste")
+                        if all_copy_list is not None:
+                            for frame_index, frame in enumerate(all_copy_list):
+                                for key, value in frame.items():
+                                    if value != {}:
+                                        if type(value) == list:
+                                            model.frame_list[frame_index][key] = value.copy()
+                                        else:
+                                            model.frame_list[frame_index][key] = value
+                            model.read_animation(animation_name, old=True)
+                            reload_animation(anim, model)
+
+                            model.edit_part(mouse_pos, "change")
 
                     elif frame_copy_button.rect.collidepoint(mouse_pos):
                         copy_press = True
@@ -2135,7 +2126,7 @@ while True:
 
                     elif p_all_button.rect.collidepoint(mouse_pos):
                         part_change = p_body_helper.ui_type + "_"
-                        for part in list(model.mask_part_list.keys()):
+                        for part in model.mask_part_list:
                             if part_change in part:
                                 if ctrl_press is False:  # add parts
                                     model.click_part(mouse_pos, True, ctrl_press, part)
@@ -2150,7 +2141,7 @@ while True:
                                     helper.select_part(mouse_pos, True, False, list(model.mask_part_list.keys())[part])
 
                     elif all_button.rect.collidepoint(mouse_pos):
-                        for part in list(model.mask_part_list.keys()):
+                        for part in model.mask_part_list:
                             if ctrl_press is False:  # add all parts
                                 model.click_part(mouse_pos, True, ctrl_press, part)
                             else:
