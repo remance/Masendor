@@ -54,7 +54,6 @@ def dmg_cal(self, target, hit, defence, weapon, dmg_object, hit_side=None):
             dmg = {key: random.uniform(value[0], value[1]) * self.weapon_penetrate[self.equipped_weapon][dmg_object] /
                         target.element_resistance[key] if target.element_resistance[key] > 0 else random.uniform(value[0], value[1]) for key, value in
                    self.weapon_dmg[dmg_object].items()}
-
             dmg_sum = sum(dmg.values())
             if 0 in self.skill_effect:  # Include charge in dmg if charging
                 if self.special_effect_check("Ignore Charge Defence", weapon=weapon) is False:  # ignore charge defence if have trait

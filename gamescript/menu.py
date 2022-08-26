@@ -496,7 +496,7 @@ class ArmyStat(pygame.sprite.Sprite):
                        "Melee Command: ": self.leader_text[leader.melee_command],
                        "Range Command: ": self.leader_text[leader.range_command],
                        "Cavalry Command: ": self.leader_text[leader.cav_command],
-                       "Combat Skill: ": self.leader_text[leader.combat],
+                       "Combat Power: ": leader.combat,
                        "Social Class: ": leader.social["Leader Social Class"],
                        "Skill: ": leader_skill,
                        "Primary Weapon: ": leader_primary_weapon,

@@ -1,14 +1,14 @@
-ID,Name,Melee Attack Bonus,Defence Bonus,Speed Bonus,Accuracy Bonus,Reload Bonus,Charge Bonus,Health Effect,Stamina Effect,Morale Bonus,Discipline Bonus,Mental Bonus,Trait
-0,Novice,-10,-5,-10,-10,-10,-20,100,90,-10,-10,-20,"3,5"
-1,Militant,0,10,0,0,0,0,105,100,-5,-5,-10,3
-2,Professional,5,20,10,5,10,5,110,110,5,0,0,0
-3,Veteran,5,30,15,10,15,10,110,120,15,10,5,1
-4,Elite,10,40,20,20,20,15,115,130,20,15,10,1
-5,Champion,15,60,25,35,25,20,120,150,30,25,20,1
-6,Hero,35,90,30,55,30,40,130,200,50,40,30,2
-7,Religious Militant,5,5,0,0,0,10,105,105,20,10,15,1
-8,Religious Warrior,5,15,5,5,5,20,110,110,30,25,30,4
-9,Religious Elite Warrior,10,35,15,15,10,30,115,115,50,35,50,4
-10,Mercenary,5,15,10,5,10,5,105,105,10,5,5,3
-11,Noble,10,35,0,10,5,5,110,110,30,-10,0,1149
-12,Leader,30,70,30,30,30,20,1000,100,50,20,10,0
+"ID","Name","Training Score","Speed Bonus","Health Effect","Stamina Effect","Morale Bonus","Discipline Bonus","Mental Bonus","Trait"
+0,"Novice",100,-10,100,90,-10,-10,-20,"3,5"
+1,"Militant",130,0,105,100,-5,-5,-10,"3"
+2,"Professional",200,10,110,110,5,0,0,"0"
+3,"Veteran",250,15,110,120,15,10,5,"1"
+4,"Elite",350,20,115,130,20,15,10,"1"
+5,"Champion",500,25,130,150,30,25,20,"1"
+6,"Hero",800,30,150,200,50,40,30,"2"
+7,"Religious Militant",115,0,105,105,20,10,15,"1"
+8,"Religious Warrior",150,5,110,110,30,25,30,"4"
+9,"Religious Elite Warrior",300,15,115,115,50,35,50,"4"
+10,"Mercenary",170,10,105,105,10,5,5,"3"
+11,"Noble",300,0,110,110,30,-10,0,"1,149"
+12,"Leader",600,30,200,100,50,20,10,"0"

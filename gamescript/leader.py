@@ -21,12 +21,20 @@ class Leader(pygame.sprite.Sprite):
         stat = leader_data.leader_list[leader_id]
         self.leader_id = leader_id  # leader_id is only used as reference to the data
         self.name = stat["Name"]
-        self.health = stat["Health"]
-        self.authority = stat["Authority"]
-        self.melee_command = stat["Melee Command"]
-        self.range_command = stat["Range Command"]
-        self.cav_command = stat["Cavalry Command"]
-        self.combat = stat["Combat"]
+
+        self.strength = stat["Strength"]
+        self.dexterity = stat["Dexterity"]
+        self.agility = stat["Agility"]
+        self.constitution = stat["Constitution"]
+        self.intelligence = stat["Intelligence"]
+        self.wisdom = stat["Wisdom"]
+        self.authority = stat["Charisma"]
+        self.melee_command = stat["Melee Speciality"]
+        self.range_command = stat["Range Speciality"]
+        self.cav_command = stat["Cavalry Speciality"]
+        self.health = ((self.strength * 0.2) + (self.constitution * 0.8)) * 10
+        self.combat = ((self.strength * 0.5) + (self.dexterity * 0.5) + (self.agility * 0.5) +
+                       (self.wisdom * 0.5))
         self.social = leader_data.leader_class[stat["Social Class"]]
         self.formation = ["Cluster"] + stat["Formation"]
         self.description = stat["Description"]

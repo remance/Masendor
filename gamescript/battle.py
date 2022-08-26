@@ -295,6 +295,7 @@ class Battle:
         self.team_pos_list = {}  # all alive team unit position
 
         self.alive_subunit_list = []  # list of all subunit alive in self, need to be in list for collision check
+        self.visible_subunit_list = {}  # list of subunit visible to the team
 
         self.unit_setup_stuff = (self.subunit_build, self.unit_edit_border, self.command_ui, self.troop_card_ui,
                                  self.team_coa, self.troop_card_button, self.editor_troop_list_box,
@@ -442,6 +443,7 @@ class Battle:
                                    self.battle_map_feature.feature_colour["Plain"])
 
         self.alive_subunit_list = []
+        self.visible_subunit_list = {}
 
         # initialise starting subunit sprites
         self.mode = mode
@@ -461,6 +463,7 @@ class Battle:
             self.flee_troop_number = [0 for _ in self.all_team_unit]
             self.capture_troop_number = [0 for _ in self.all_team_unit]
             self.team_pos_list = {key: {} for key in self.all_team_unit.keys()}
+            self.visible_subunit_list = {key: {} for key in self.all_team_unit.keys() if key != "alive"}
 
             subunit_to_make = list(set([this_subunit.troop_id for this_subunit in self.subunit_updater]))
             who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key in subunit_to_make}

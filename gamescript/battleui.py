@@ -1134,7 +1134,7 @@ class BattleDone(pygame.sprite.Sprite):
 class DirectionArrow(pygame.sprite.Sprite):  # TODO make it work so it can be implemented again
     def __init__(self, who):
         """Layer must be called before sprite_init"""
-        self._layer = 4
+        self._layer = 40
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.who = who
         self.pos = self.who.pos
@@ -1166,7 +1166,7 @@ class DirectionArrow(pygame.sprite.Sprite):  # TODO make it work so it can be im
 
 class TroopNumber(pygame.sprite.Sprite):
     def __init__(self, screen_scale, who):
-        self._layer = 6
+        self._layer = 35
         pygame.sprite.Sprite.__init__(self, self.containers)
 
         self.screen_scale = screen_scale

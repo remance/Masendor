@@ -17,7 +17,7 @@ class DamageSprite(pygame.sprite.Sprite):
 
     def __init__(self, attacker, weapon, dmg, penetrate, weapon_stat, attack_range, max_range, view_mode,
                  attack_type):
-        self._layer = 7
+        self._layer = 50
         pygame.sprite.Sprite.__init__(self, self.containers)
 
         self.attacker = attacker  # subunit that perform the attack
@@ -55,7 +55,10 @@ class DamageSprite(pygame.sprite.Sprite):
 
             # Calculate hit_chance and final base_target where damage sprite will land
             # The further hit_chance from 0 the further damage sprite will land from base_target
-            hit_chance = self.accuracy * (100 - ((attack_range * 100 / max_range) / 2)) / 100
+            sight_penalty = 1
+            if attack_range > self.attacker.sight:  # penalty for range attack if shoot beyond troop can see
+                sight_penalty = self.attacker.sight / attack_range
+            hit_chance = self.accuracy * sight_penalty * (100 - ((attack_range * 100 / max_range) / 2)) / 100
             if hit_chance == 0:
                 hit_chance = 1
             if True in self.attacker.special_effect["No Range Penalty"]:

@@ -1,5 +1,4 @@
 def range_weapon_selection(self, allow_swap):
-    #TODO Maybe discard magazine count and ammo now item from dict when no more ammo left in weapon
     prefer_weapon = 0
     for key, value in self.magazine_count[self.equipped_weapon]:
         if value > 0 or self.ammo_now[self.equipped_weapon][key] > 0:

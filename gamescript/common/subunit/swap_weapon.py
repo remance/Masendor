@@ -7,12 +7,10 @@ def swap_weapon(self):
     self.base_melee_attack = self.original_melee_attack
     self.base_melee_def = self.original_melee_def
     self.base_range_def = self.original_range_def
-
-    self.base_element_resistance = self.original_element_resistance.copy()
-
     self.base_speed = self.original_speed
     self.base_accuracy = self.original_accuracy
     self.base_sight = self.original_sight
+    self.base_hidden = self.original_hidden
     self.base_reload = self.original_reload
     self.base_charge = self.original_charge
     self.base_charge_def = self.original_charge_def
@@ -25,6 +23,7 @@ def swap_weapon(self):
     self.base_morale_regen = self.original_morale_regen
     self.base_heat_resistance = self.original_heat_resistance
     self.base_cold_resistance = self.original_cold_resistance
+    self.base_element_resistance = self.original_element_resistance.copy()
     self.base_mental = self.original_mental
     self.skill = self.original_skill
 
@@ -33,8 +32,8 @@ def swap_weapon(self):
         for weapon_index, weapon in enumerate(weapon_set):
             weapon_stat = self.troop_data.weapon_list[weapon[0]]
             if set_index == self.equipped_weapon:
-                self.base_melee_def += weapon_stat["Defense"] * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]
-                self.base_range_def += weapon_stat["Defense"] * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]
+                self.base_melee_def += weapon_stat["Defence"] * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]
+                self.base_range_def += weapon_stat["Defence"] * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]
                 skill = self.weapon_skill[set_index][weapon_index]
                 if skill != 0 and (self.troop_data.skill_list[skill]["Troop Type"] != 0 and
                                    self.troop_data.skill_list[skill]["Troop Type"] != self.subunit_type + 1):

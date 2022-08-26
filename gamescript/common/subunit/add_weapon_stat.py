@@ -7,10 +7,15 @@ def add_weapon_stat(self):
         for weapon_index, weapon in enumerate(weapon_set):
             weapon_stat = self.troop_data.weapon_list[weapon[0]]
             dmg_sum = 0
+            dmg_scaling = (weapon_stat["Strength Bonus Scale"], weapon_stat["Dexterity Bonus Scale"])
+            dmg_scaling = [item / sum(dmg_scaling) for item in dmg_scaling]
             for damage in self.original_weapon_dmg[set_index][weapon_index]:
+                damage_with_attribute = weapon_stat[damage + " Damage"] + \
+                                        (weapon_stat[damage + " Damage"] * (self.strength * dmg_scaling[0] / 100) +
+                                         (weapon_stat[damage + " Damage"] * (self.dexterity * dmg_scaling[1] / 100)))
                 self.original_weapon_dmg[set_index][weapon_index][damage] = [
-                weapon_stat[damage + " Damage"] * weapon_stat["Damage Balance"] * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"],
-                weapon_stat[damage + " Damage"] * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]]
+                damage_with_attribute * weapon_stat["Damage Balance"] * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"],
+                damage_with_attribute * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]]
                 dmg_sum += self.original_weapon_dmg[set_index][weapon_index][damage][0]
             self.weapon_penetrate[set_index][weapon_index] = weapon_stat["Armour Penetration"] * \
                                                       self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]

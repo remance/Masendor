@@ -10,6 +10,7 @@ def loss_cal(self, target, final_dmg, final_morale_dmg, leader_dmg, element_effe
     :param final_dmg: Damage value to health
     :param final_morale_dmg: Damage value to morale
     :param leader_dmg: Damage value to leader inside target subunit
+    :param element_effect: Dict of element effect inflict to target
     """
     if final_dmg > target.subunit_health:  # dmg cannot be higher than remaining health
         final_dmg = target.subunit_health
@@ -24,8 +25,8 @@ def loss_cal(self, target, final_dmg, final_morale_dmg, leader_dmg, element_effe
     health_check = 0.1
     if target.max_health != infinity:
         health_check = 1 - (target.subunit_health / target.max_health)
-    target.base_morale -= (final_morale_dmg + self.bonus_morale_dmg) * target.mental * health_check
-    target.stamina -= self.bonus_stamina_dmg
+    target.base_morale -= (final_morale_dmg + self.morale_dmg_bonus) * target.mental * health_check
+    target.stamina -= self.stamina_dmg_bonus
 
     if target.red_border is False:  # add red corner to indicate combat
         target.block.blit(target.subunit_ui_images["subunit_combat"], target.corner_image_rect)

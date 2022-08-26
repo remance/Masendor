@@ -322,14 +322,15 @@ def popup_list_open(self, new_rect, new_list, ui_type):
     self.popup_list_box.type = ui_type
 
 
-def stat_convert(row, n, i, mod_column=(), list_column=(), tuple_column=(), int_column=(), float_column=(),
-                 boolean_column=(), true_empty=False):
+def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tuple_column=(), int_column=(),
+                 float_column=(), boolean_column=(), true_empty=False):
     """
     Convert string value to another type
     :param row: row that contains value
     :param n: index of value
     :param i: value
-    :param mod_column: list of value header that should be in percentage as decimal value
+    :param percent_column: list of value header that should be in percentage as decimal value
+    :param mod_column: list of value header that should be in percentage as decimal value and use as additive later
     :param list_column: list of value header that should be in list type, in case it needs to be modified later
     :param tuple_column: list of value header that should be in tuple type, for value that is static
     :param int_column: list of value header that should be in int number type
@@ -337,11 +338,17 @@ def stat_convert(row, n, i, mod_column=(), list_column=(), tuple_column=(), int_
     :param boolean_column: list of value header that should be in boolean value
     :return: converted row
     """
-    if n in mod_column:
+    if n in percent_column:
         if i == "":
-            row[n] = 1.0
+            row[n] = 1
         else:
-            row[n] = float(i) / 100  # Need to be float for percentage cal
+            row[n] = float(i) / 100
+
+    elif n in mod_column:
+        if i == "":
+            row[n] = 0
+        else:  # Keep only the number higher or lower than 1 (base), as the game will stack modifier before calculate them once
+            row[n] = (float(i) - 100) / 100
 
     elif n in list_column:
         if "," in i:
@@ -382,16 +389,19 @@ def stat_convert(row, n, i, mod_column=(), list_column=(), tuple_column=(), int_
             row[n] = int(i)
         elif i == "":
             row[n] = 0
+
     elif n in float_column:
         if i != "" and re.search("[a-zA-Z]", i) is None:
             row[n] = float(i)
         elif i == "":
             row[n] = 0
+
     elif n in boolean_column:
         if i.lower() == "true":
             row[n] = True
         elif i.lower() == "false":
             row[n] = False
+
     else:
         if i == "":
             row[n] = 0

@@ -34,15 +34,15 @@ class TroopData:
             list_column = ("Trait", "Skill",)  # value in list only
             tuple_column = ("Armour", "Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon",
                             "Secondary Sub Weapon", "Mount", "Role", "Ruleset")  # value in tuple only
-            mod_column = ("Ammunition Modifier",)
+            percent_column = ("Ammunition Modifier",)
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
-            mod_column = [index for index, item in enumerate(header) if item in mod_column]
+            percent_column = [index for index, item in enumerate(header) if item in percent_column]
             for row_index, row in enumerate(rd):
                 if row_index > 0:  # skip convert header row
                     for n, i in enumerate(row):
-                        row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
+                        row = stat_convert(row, n, i, percent_column=percent_column, list_column=list_column,
                                            tuple_column=tuple_column, int_column=int_column)
                     self.troop_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
@@ -127,7 +127,9 @@ class TroopData:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
-            int_column = ("Size", "Armour", "Speed")  # value int only
+            int_column = ("Strength", "Dexterity", "Agility", "Constitution", "Intelligence", "Wisdom",
+                          "Physical Resistance", "Fire Resistance", "Water Resistance", " Air Resistance",
+                          "Earth Resistance", "Poison Resistance", "Magic Resistance", "Size")  # value int only
             list_column = ("Trait",)  # value in list only
             tuple_column = ("Ruleset",)  # value in tuple only
             int_column = [index for index, item in enumerate(header) if item in int_column]
@@ -206,11 +208,13 @@ class TroopData:
             header = rd[0]
             int_column = ("ID", "Buff Range", "Race", "Cost", "Element")  # value int only
             tuple_column = ("Status", "Special Effect", "Enemy Status", "Ruleset")  # value in tuple only
-            mod_column = ("Buff Modifier", "Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect",
+            percent_column = ("Buff Modifier", )
+            mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect",
                           "Speed Effect", "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect",
                           "Siege Effect", "Supply Effect", "Upkeep Effect")
             int_column = [index for index, item in enumerate(header) if item in int_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
+            percent_column = [index for index, item in enumerate(header) if item in percent_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]
             for index, row in enumerate(rd):
                 if "," in row[-2]:  # make str with , into list
@@ -221,8 +225,8 @@ class TroopData:
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in this_ruleset):
                     for n, i in enumerate(row):
                         if index != 0:
-                            row = stat_convert(row, n, i, mod_column=mod_column, tuple_column=tuple_column,
-                                               int_column=int_column, true_empty=True)
+                            row = stat_convert(row, n, i, percent_column=percent_column, mod_column=mod_column,
+                                               tuple_column=tuple_column, int_column=int_column, true_empty=True)
                     self.trait_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
@@ -258,18 +262,18 @@ class TroopData:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
-            int_column = ("ID", "Physical Damage", "Fire Damage", "Water Damage", "Air Damage",
-                          "Earth Damage", "Poison Damage", "Magic Damage", "Armour Penetration", "Defense", "Weight",
-                          "Speed", "Ammunition", "Magazine", "Range", "Travel Speed", "Learning Difficulty",
-                          "Mastery Difficulty", "Learning Difficulty", "Cost", "ImageID", "Speed",
-                          "Hand")  # value int only
+            int_column = ("ID", "Strength Bonus Scale", "Dexterity Bonus Scale", "Physical Damage",
+                          "Fire Damage", "Water Damage", "Air Damage", "Earth Damage", "Poison Damage", "Magic Damage",
+                          "Armour Penetration", "Defence", "Weight", "Speed", "Ammunition", "Magazine", "Range",
+                          "Travel Speed", "Learning Difficulty", "Mastery Difficulty", "Learning Difficulty", "Cost",
+                          "ImageID", "Speed", "Hand")  # value int only
             list_column = ("Skill", "Trait")  # value in list only
             tuple_column = ("Bullet", "Ruleset")  # value in tuple only
-            mod_column = ("Damage Balance",)
+            percent_column = ("Damage Balance",)
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
-            mod_column = [index for index, item in enumerate(header) if item in mod_column]
+            percent_column = [index for index, item in enumerate(header) if item in percent_column]
             for row_index, row in enumerate(rd):
                 if "," in row[-2]:  # make str with , into list
                     this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
@@ -279,7 +283,7 @@ class TroopData:
                        this_ruleset):  # only grab effect that existed in the ruleset and first row
                     if row_index > 0:
                         for n, i in enumerate(row):
-                            row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
+                            row = stat_convert(row, n, i, percent_column=percent_column, list_column=list_column,
                                                tuple_column=tuple_column, int_column=int_column, true_empty=True)
                     self.weapon_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
@@ -409,8 +413,9 @@ class LeaderData:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
-            int_column = ("ID", "Race", "Melee Command", "Range Command", "Cavalry Command", "Combat", "Social Class",
-                          "Faction", "Sprite ID")  # value int only
+            int_column = ("ID", "Race", "Strength", "Dexterity", "Agility", "Constitution", "Intelligence",
+                          "Wisdom", "Charisma", "Melee Speciality", "Range Speciality", "Cavalry Speciality",
+                          "Social Class", "Faction", "Sprite ID")  # value int only
             list_column = ("Skill", "Trait", "Formation")
             tuple_column = ("Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon",
                             "Secondary Sub Weapon", "Armour", "Mount")
@@ -424,19 +429,11 @@ class LeaderData:
                 self.leader_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
-        # Add common leader to the leader list with game_id + 10000
+        # Add common leader to the leader list with game_id 10000+
         with open(os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader", "common_leader.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
-            int_column = ("ID", "Race", "Melee Command", "Range Command", "Cavalry Command", "Combat", "Social Class",
-                          "Forcedimageid", "Faction")  # value int only
-            list_column = ("Skill", "Trait", "Formation")
-            tuple_column = ("Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon",
-                            "Secondary Sub Weapon", "Armour", "Mount")
-            int_column = [index for index, item in enumerate(header) if item in int_column]
-            list_column = [index for index, item in enumerate(header) if item in list_column]
-            tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
             for row in rd[1:]:  # skip convert header row
                 for n, i in enumerate(row):
                     row = stat_convert(row, n, i, list_column=list_column, tuple_column=tuple_column,
