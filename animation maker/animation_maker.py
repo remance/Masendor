@@ -1616,10 +1616,10 @@ flip_vert_button = Button("Flip V", image, (reset_button.pos[0] + (reset_button.
                           description=("Vertical Flip part", "Flip the selected part vertically."))
 part_copy_button = Button("Copy P", image, (reset_button.pos[0] + reset_button.image.get_width() * 3,
                                             p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)),
-                          description=("Copy part (CTRL + ALT + C)", "Copy the selected part."))
+                          description=("Copy part (ALT + C)", "Copy the selected part."))
 part_paste_button = Button("Paste P", image, (reset_button.pos[0] + reset_button.image.get_width() * 4,
                                               p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)),
-                           description=("Paste part (CTRL + ALT + V)", "Pasted the copied part."))
+                           description=("Paste part (ALT + V)", "Pasted the copied part."))
 p_all_button = Button("P All", image, (reset_button.pos[0] + reset_button.image.get_width() * 7,
                                        p_body_helper.rect.midtop[1] - (image.get_height() * 2)),
                       description=("Select all current person parts",))
