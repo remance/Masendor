@@ -65,12 +65,24 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
         elif new_pos != self.leader_subunit.base_pos:
             self.leader_subunit.command_target = new_pos
             self.leader_subunit.new_angle = self.leader_subunit.set_rotate(new_pos)
-            if mouse_left_down and key_state[pygame.K_LSHIFT]:
-                self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
-                                 other_command="Charge Skill 0")
-            elif mouse_right_down and key_state[pygame.K_LSHIFT]:
-                self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
-                                 other_command="Charge Skill 1")
+            if mouse_left_down:
+                if self.leader_subunit.equipped_weapon in self.leader_subunit.ammo_now and \
+                        0 in self.leader_subunit.ammo_now[self.equipped_weapon] and \
+                        self.leader_subunit.special_effect_check("Shoot While Moving"):  # range weapon
+                    self.leader_subunit.command_action = ("Action 0",)
+                    self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True)
+                elif key_state[pygame.K_LSHIFT]:  # melee weapon charge
+                    self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
+                                     other_command="Charge Skill 0")
+            elif mouse_right_down:
+                if self.leader_subunit.equipped_weapon in self.leader_subunit.ammo_now and \
+                        1 in self.leader_subunit.ammo_now[self.equipped_weapon] and \
+                        self.leader_subunit.special_effect_check("Shoot While Moving"):  # range weapon
+                    self.leader_subunit.command_action = ("Action 1",)
+                    self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True)
+                elif key_state[pygame.K_LSHIFT]:  # melee weapon charge
+                    self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
+                                     other_command="Charge Skill 1")
             else:
                 self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True)
 

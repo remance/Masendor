@@ -46,15 +46,16 @@ def menu_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse
         self.back_mainmenu()
 
     elif self.select_button.event:  # select this map, go to team/source selection screen
-        self.current_source_row = 0
-        self.menu_state = "team_select"
-        self.select_button.event = False
+        if self.menu_state == "preset_map":
+            self.current_source_row = 0
+            self.menu_state = "team_select"
+            self.select_button.event = False
 
-        self.main_ui_updater.remove(*self.map_select_button, self.map_list_box, self.map_list_box.scroll, self.map_description)
-        self.menu_button.remove(*self.map_select_button)
+            self.main_ui_updater.remove(*self.map_select_button, self.map_list_box, self.map_list_box.scroll, self.map_description)
+            self.menu_button.remove(*self.map_select_button)
 
-        for stuff in self.map_namegroup:  # remove map name item
-            stuff.kill()
-            del stuff
+            for stuff in self.map_namegroup:  # remove map name item
+                stuff.kill()
+                del stuff
 
-        self.change_to_source_selection_menu()
+            self.change_to_source_selection_menu()

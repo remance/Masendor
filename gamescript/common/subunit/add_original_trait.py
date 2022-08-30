@@ -59,7 +59,7 @@ def add_original_trait(self):
         self.original_reload *= (random.randint(70, 120) / 100)
         self.original_charge *= (random.randint(70, 120) / 100)
         self.original_charge_def *= (random.randint(70, 120) / 100)
-        self.original_morale += random.randint(-15, 10)
+        self.original_morale += random.randint(-20, 10)
         self.original_discipline += random.randint(-20, 0)
         self.original_mental += random.randint(-20, 10)
 

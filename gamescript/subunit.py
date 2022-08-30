@@ -184,6 +184,8 @@ class Subunit(pygame.sprite.Sprite):
         self.ammo_now = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}  # ammunition count in the current magazine
         self.weapon_skill = {0: {0: [], 1: []}, 1: {0: [], 1: []}}
         self.equipped_weapon = 0
+        self.player_equipped_weapon = self.equipped_weapon
+        self.swap_weapon_list = (1, 0)  # for swapping to other set
 
         # Setup troop original stat before applying trait, gear and other stuffs
         skill = []  # keep only troop and weapon skills in here, leader skills are kept in Leader object
@@ -307,6 +309,7 @@ class Subunit(pygame.sprite.Sprite):
         self.secondary_sub_weapon = stat["Secondary Sub Weapon"]
         self.melee_weapon_set = {}
         self.range_weapon_set = {}
+        self.weapon_type = {}
         self.weapon_id = ((self.primary_main_weapon[0], self.primary_sub_weapon[0]),
                             (self.secondary_main_weapon[0], self.secondary_sub_weapon[0]))
         self.weapon_name = ((self.troop_data.weapon_list[self.primary_main_weapon[0]]["Name"],
@@ -627,6 +630,9 @@ class Subunit(pygame.sprite.Sprite):
             self.command_action = self.idle_action
         if recreate_rect:
             self.rect = self.image.get_rect(center=self.pos)
+        if self.player_equipped_weapon != self.equipped_weapon and self.state == 0:  # reset equipped weapon to player chose
+            self.equipped_weapon = self.player_equipped_weapon
+            self.swap_weapon()
 
 
 class EditorSubunit(Subunit):

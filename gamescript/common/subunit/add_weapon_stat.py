@@ -2,6 +2,7 @@
 def add_weapon_stat(self):
     self.melee_weapon_set = {0: 0, 1: 0}
     self.range_weapon_set = {0: 0, 1: 0}
+    self.weapon_type = {0: ["melee", "melee"], 1: ["melee", "melee"]}
     for set_index, weapon_set in enumerate(((self.primary_main_weapon, self.primary_sub_weapon),
                                             (self.secondary_main_weapon, self.secondary_sub_weapon))):
         for weapon_index, weapon in enumerate(weapon_set):
@@ -23,6 +24,7 @@ def add_weapon_stat(self):
                 self.melee_weapon_set[set_index] += dmg_sum  # add weapon damage for sort
                 self.magazine_count[set_index][weapon_index] = 0  # remove modifier
             else:
+                self.weapon_type[set_index][weapon_index] = "ranged"
                 self.magazine_count[set_index][weapon_index] *= weapon_stat["Ammunition"]
                 self.magazine_size[set_index][weapon_index] = weapon_stat[
                     "Magazine"]  # can shoot how many times before have to reload
@@ -46,7 +48,8 @@ def add_weapon_stat(self):
                                                  x in self.troop_data.trait_list}  # replace trait index with data
 
     # Remove weapon set with no magazine
-    self.ammo_now = {key: {key2: 0} for key, value in self.magazine_count.items() for key2, value2 in self.magazine_count[key].items() if value2 > 0}
+    self.ammo_now = {key: {key2: 0} for key, value in self.magazine_count.items() for
+                     key2, value2 in self.magazine_count[key].items() if value2 > 0}
     for key in self.ammo_now:  # remove weapon with no magazine
         for key2 in self.ammo_now[key]:
             if self.magazine_count[key][key2] == 0:

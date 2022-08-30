@@ -27,7 +27,7 @@ def main_menu_process(self, mouse_left_up):
         self.main_ui_updater.add(*self.map_select_button, self.map_list_box, self.map_title, self.map_list_box.scroll)
 
     elif self.custom_map_button.event:  # custom map list menu
-        self.menu_state = "custom"
+        self.menu_state = "custom_map"
         self.last_select = self.menu_state
 
         self.current_map_select = 0
@@ -41,7 +41,7 @@ def main_menu_process(self, mouse_left_up):
         setup_list(self.screen_scale, menu.NameList, self.current_map_row, self.custom_map_list, self.map_namegroup,
                    self.map_list_box,
                    self.main_ui_updater)
-        self.create_preview_map(self.custom_map_folder, self.custom_map_list)
+        self.create_preview_map(self.custom_map_folder, self.custom_map_list, custom_map=True)
 
         self.menu_button.add(*self.map_select_button)
         self.main_ui_updater.add(*self.map_select_button, self.map_list_box, self.map_title, self.map_list_box.scroll)

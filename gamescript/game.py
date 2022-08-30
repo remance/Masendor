@@ -94,6 +94,7 @@ class Game:
     create_sprite_pool = empty_method
     create_team_coa = empty_method
     create_unit_slot = empty_method
+    loading_screen = empty_method
     menu_game_editor = empty_method
     main_menu_process = empty_method
     menu_char_select = empty_method
@@ -134,6 +135,8 @@ class Game:
 
     def __init__(self, main_dir, error_log):
         pygame.init()  # Initialize pygame
+
+        pygame.mouse.set_visible(False)  # set mouse as not visible
 
         self.main_dir = main_dir
         self.error_log = error_log
@@ -191,7 +194,6 @@ class Game:
 
         self.loading = load_image(self.main_dir, self.screen_scale, "loading.png", "ui\\mainmenu_ui")
         self.loading = pygame.transform.scale(self.loading, self.screen_rect.size)
-        self.game_intro(self.screen, self.clock, False)  # run intro
 
         self.ruleset_list = csv_read(self.main_dir, "ruleset_list.csv", ["data", "ruleset"])  # get ruleset list
         self.ruleset_folder = str(self.ruleset_list[self.ruleset][1]).strip("/").strip("\\")
@@ -357,6 +359,8 @@ class Game:
         self.cursor = menu.Cursor(cursor_images)
         self.main_ui_updater.add(self.cursor)
         self.battle_ui_updater.add(self.cursor)
+
+        self.game_intro(self.screen, self.clock, False)  # run intro
 
         # Main menu related stuff
         image_list = load_base_button(self.main_dir, self.screen_scale)
@@ -682,7 +686,7 @@ class Game:
         self.input_popup = (None, None)  # popup for text input state
         self.choosing_faction = True  # swap list between faction and subunit, always start with choose faction first as true
 
-        pygame.mouse.set_visible(False)  # set mouse as not visible
+        self.loading_screen("end")
 
         self.run()
 
@@ -917,8 +921,7 @@ class Game:
             if timer == 1000:
                 intro = False
 
-        self.screen.blit(self.loading, (0, 0))  # blit loading screen after intro
-        pygame.display.update()
+        self.loading_screen("start")
 
         pygame.display.set_caption(version_name + " " + self.genre.capitalize())  # set the self name on program border/tab
 
