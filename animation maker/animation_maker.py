@@ -1062,6 +1062,14 @@ class Model:
                     self.animation_part_list[current_frame][part] = copy_animation[part].copy()
                     self.part_name_list[current_frame][part] = copy_name[part].copy()
 
+        elif edit_type == "paste part stat":  # paste copy stat
+            for part in copy_part_stat:
+                new_part = p_body_helper.ui_type + part[2:]
+                if copy_part_stat[part] is not None:
+                    self.bodypart_list[current_frame][new_part] = copy_part_stat[part].copy()
+                    self.animation_part_list[current_frame][new_part] = copy_animation_stat[part].copy()
+                    self.part_name_list[current_frame][new_part] = copy_name_stat[part].copy()
+
         elif "direction" in edit_type:
             if self.part_selected:
                 for part in self.part_selected:
@@ -1326,11 +1334,15 @@ class Model:
             self.clear_history()
 
         elif edit_type not in ("undo", "redo", "change", "new"):
-            if self.current_history < len(self.animation_history) - 1:
-                self.part_name_history = self.part_name_history[:self.current_history + 1]  # remove all future redo history
-                self.animation_history = self.animation_history[:self.current_history + 1]
-                self.body_part_history = self.body_part_history[:self.current_history + 1]
-            self.add_history()
+            accept_history = True
+            if edit_type == "place" and mouse_right_down:  # save only when release mouse for mouse input
+                accept_history = False
+            if accept_history:
+                if self.current_history < len(self.animation_history) - 1:
+                    self.part_name_history = self.part_name_history[:self.current_history + 1]  # remove all future redo history
+                    self.animation_history = self.animation_history[:self.current_history + 1]
+                    self.body_part_history = self.body_part_history[:self.current_history + 1]
+                self.add_history()
 
         if len(self.animation_history) > 2:  # save only last 1000 activity
             new_first = len(self.animation_history) - 2
@@ -1463,6 +1475,7 @@ copy_animation_frame = None
 copy_part = None
 copy_name_frame = None
 copy_stat = None
+copy_animation_stat = None
 current_popup_row = 0
 keypress_delay = 0
 point_edit = 0
@@ -1616,10 +1629,16 @@ flip_vert_button = Button("Flip V", image, (reset_button.pos[0] + (reset_button.
                           description=("Vertical Flip part", "Flip the selected part vertically."))
 part_copy_button = Button("Copy P", image, (reset_button.pos[0] + reset_button.image.get_width() * 3,
                                             p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)),
-                          description=("Copy part (ALT + C)", "Copy the selected part."))
+                          description=("Copy parts (ALT + C)", "Copy the selected part only from this frame."))
 part_paste_button = Button("Paste P", image, (reset_button.pos[0] + reset_button.image.get_width() * 4,
                                               p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)),
-                           description=("Paste part (ALT + V)", "Pasted the copied part."))
+                           description=("Paste parts (ALT + V)", "Pasted the copied part only for this frame."))
+part_stat_copy_button = Button("Copy PS", image, (reset_button.pos[0] + reset_button.image.get_width() * 5,
+                                            p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)),
+                          description=("Copy parts 'stat", "Copy the stat of selected part."))
+part_stat_paste_button = Button("Paste PS", image, (reset_button.pos[0] + reset_button.image.get_width() * 6,
+                                              p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)),
+                           description=("Paste parts' stat", "Pasted the copied stats on same type of parts."))
 p_all_button = Button("P All", image, (reset_button.pos[0] + reset_button.image.get_width() * 7,
                                        p_body_helper.rect.midtop[1] - (image.get_height() * 2)),
                       description=("Select all current person parts",))
@@ -2124,6 +2143,26 @@ while True:
                     elif part_paste_button.rect.collidepoint(mouse_pos):
                         part_paste_press = True
 
+                    elif part_stat_copy_button.rect.collidepoint(mouse_pos):
+                        if model.part_selected:
+                            copy_part_stat = {key: (value[:].copy() if type(value) == list else value) for key, value in
+                                         model.bodypart_list[current_frame].items()}
+                            copy_animation_stat = {key: (value[:].copy() if value is not None else value) for key, value in
+                                              model.animation_part_list[current_frame].items()}
+                            copy_name_stat = {key: (value[:].copy() if value is not None else value) for key, value in
+                                         model.part_name_list[current_frame].items()}
+
+                            # keep only selected one
+                            copy_part_stat = {item: copy_part_stat[item] for item in copy_part_stat if
+                                         item in model.mask_part_list and list(model.mask_part_list.keys()).index(item) in model.part_selected}
+                            copy_animation_stat = {item: copy_animation_stat[item] for index, item in enumerate(copy_animation_stat.keys()) if
+                                              index in model.part_selected}
+                            copy_name_stat = {item: copy_name_stat[item] for index, item in enumerate(copy_name_stat.keys()) if index in model.part_selected}
+
+                    elif part_stat_paste_button.rect.collidepoint(mouse_pos):
+                        if copy_animation_stat is not None:
+                            model.edit_part(mouse_pos, "paste part stat")
+
                     elif p_all_button.rect.collidepoint(mouse_pos):
                         part_change = p_body_helper.ui_type + "_"
                         for part in model.mask_part_list:
@@ -2397,9 +2436,12 @@ while True:
                     if mouse_wheel_up or mouse_wheel_down:
                         model.edit_part(new_mouse_pos, "rotate")
                     elif mouse_right_up or mouse_right_down:
-                        if keypress_delay == 0:
+                        if mouse_right_down:
+                            if keypress_delay == 0:
+                                model.edit_part(new_mouse_pos, "place")
+                                keypress_delay = 0.1
+                        else:
                             model.edit_part(new_mouse_pos, "place")
-                            keypress_delay = 0.1
 
             if model.part_selected:
                 part = model.part_selected[-1]
