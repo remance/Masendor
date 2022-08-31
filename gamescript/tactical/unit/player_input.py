@@ -11,7 +11,7 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
         self.rotate_only = False
         self.forced_melee = False
         self.attack_target = None
-        self.base_attack_pos = 0
+        self.base_attack_pos = None
         self.attack_place = False
 
         # register user keyboard

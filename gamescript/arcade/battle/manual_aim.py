@@ -47,6 +47,9 @@ def manual_aim(self, key_press, mouse_left_up, mouse_right_up, mouse_scroll_up, 
         self.cursor.change_image("normal")
         self.battle_ui_updater.remove(self.single_text_popup)
         self.player_input_state = None
+        for this_subunit in self.player_char.unit.subunit_list:
+            if this_subunit.equipped_weapon != this_subunit.player_equipped_weapon:
+                this_subunit.player_weapon_selection()
     if mouse_left_up and shoot_ready[0] > 0:
         for this_subunit in shoot_ready_list[0]:
             this_subunit.command_action = ("Action " + str(0), "Range Attack", self.command_mouse_pos)

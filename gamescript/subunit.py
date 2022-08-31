@@ -61,7 +61,9 @@ class Subunit(pygame.sprite.Sprite):
     make_pos_range = empty_method
     make_sprite = empty_method
     pick_animation = empty_method
+    player_weapon_selection = empty_method
     process_trait_skill = empty_method
+    range_weapon_selection = empty_method
     rotate = empty_method
     special_effect_check = empty_method
     start_set = empty_method
@@ -604,15 +606,19 @@ class Subunit(pygame.sprite.Sprite):
                  (len(self.current_action) > 1 and type(self.current_action[-1]) == int and self.current_action[-1] not in self.skill_effect) or
                  (self.idle_action and self.idle_action != self.command_action)):
             if done:  # finish animation, perform something
-                if self.current_action and "Action" in self.current_action[0] and "Range Attack" in self.current_action:  # shoot bullet
+                if self.current_action and "Action" in self.current_action[0] and \
+                        "Range Attack" in self.current_action and self.attack_pos is not None:  # shoot bullet
                     if len(self.current_action) > 2:  # second item as attack position
                         self.attack_pos = self.current_action[2]
                     weapon = int(self.current_action[0][-1])
+                    attack_pos = None
+                    if len(self.current_action) == 3:  # manual aim
+                        attack_pos = self.current_action[2]
                     damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
-                                             self.weapon_penetrate[self.equipped_weapon][weapon],
-                                             self.troop_data.weapon_list[self.weapon_id[self.equipped_weapon][weapon]],
-                                             self.base_pos.distance_to(self.attack_pos), self.shoot_range[weapon],
-                                             self.zoom, attack_type="range")  # Shoot bullet
+                                              self.weapon_penetrate[self.equipped_weapon][weapon],
+                                              self.troop_data.weapon_list[self.weapon_id[self.equipped_weapon][weapon]],
+                                              self.shoot_range[weapon], self.zoom, "range",
+                                              specific_attack_pos=attack_pos)  # Shoot bullet
                     self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
                     if self.ammo_now[self.equipped_weapon][weapon] == 0 and \
                             self.magazine_count[self.equipped_weapon][weapon] == 0:
@@ -631,8 +637,7 @@ class Subunit(pygame.sprite.Sprite):
         if recreate_rect:
             self.rect = self.image.get_rect(center=self.pos)
         if self.player_equipped_weapon != self.equipped_weapon and self.state == 0:  # reset equipped weapon to player chose
-            self.equipped_weapon = self.player_equipped_weapon
-            self.swap_weapon()
+            self.player_weapon_selection
 
 
 class EditorSubunit(Subunit):

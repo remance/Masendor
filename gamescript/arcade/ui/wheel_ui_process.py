@@ -56,6 +56,8 @@ def wheel_ui_process(self, choice):
                 self.cursor.change_image("aim")
                 self.single_text_popup.pop(self.cursor.rect.bottomright, "")
                 self.battle_ui_updater.add(self.single_text_popup)
+                for this_subunit in self.player_char.unit.subunit_list:
+                    this_subunit.range_weapon_selection()
                 if choice == "Leader Aim":
                     self.player_input_state = "leader aim"
                 elif choice == "Volley Aim":

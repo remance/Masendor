@@ -15,8 +15,8 @@ class DamageSprite(pygame.sprite.Sprite):
 
     play_animation = animation.play_animation
 
-    def __init__(self, attacker, weapon, dmg, penetrate, weapon_stat, attack_range, max_range, view_mode,
-                 attack_type):
+    def __init__(self, attacker, weapon, dmg, penetrate, weapon_stat, max_range, view_mode,
+                 attack_type, specific_attack_pos=None):
         self._layer = 50
         pygame.sprite.Sprite.__init__(self, self.containers)
 
@@ -44,7 +44,10 @@ class DamageSprite(pygame.sprite.Sprite):
                 direction = attacker.sprite_direction
                 if "r_" in direction or "l_" in direction:
                     direction = attacker.sprite_direction[2:]
-                self.image = self.bullet_weapon_sprite_pool[weapon_stat["Name"]][attacker.weapon_version[attacker.equipped_weapon][weapon]][direction]["base"]
+                image_name = "base_main"
+                if weapon == 1:
+                    image_name = "base_sub"
+                self.image = self.bullet_weapon_sprite_pool[weapon_stat["Name"]][attacker.weapon_version[attacker.equipped_weapon][weapon]][direction][image_name]
             if attacker.special_effect_check("Arc Shot", weapon=0) and self.attacker.unit.shoot_mode != 2:
                 self.arc_shot = True  # arc shot will go pass unit to land at final base_target
             if (self.attacker.walk or self.attacker.run) and True in self.attacker.special_effect["Agile Aim"] is False:
@@ -56,22 +59,28 @@ class DamageSprite(pygame.sprite.Sprite):
             # Calculate hit_chance and final base_target where damage sprite will land
             # The further hit_chance from 0 the further damage sprite will land from base_target
             sight_penalty = 1
-            if attack_range > self.attacker.sight:  # penalty for range attack if shoot beyond troop can see
-                sight_penalty = self.attacker.sight / attack_range
-            hit_chance = self.accuracy * sight_penalty * (100 - ((attack_range * 100 / max_range) / 2)) / 100
-            if hit_chance == 0:
-                hit_chance = 1
+
+            if specific_attack_pos is not None:
+                target_now = specific_attack_pos
+            else:
+                target_now = self.attacker.attack_pos
+
+            attack_range = self.attacker.base_pos.distance_to(target_now)
             if True in self.attacker.special_effect["No Range Penalty"]:
                 hit_chance = self.accuracy
             elif True in self.attacker.special_effect["Long Range Accurate"]:
                 hit_chance = self.accuracy * (
                             100 - ((attack_range * 100 / max_range) / 4)) / 100  # range penalty half
-            how_long = attack_range / self.speed  # shooting distance divide damage sprite speed to find travel time
-            target_now = self.attacker.attack_pos
-            if self.attacker.attack_target is not None:
+            else:
+                if attack_range > self.attacker.sight:  # penalty for range attack if shoot beyond troop can see
+                    sight_penalty = self.attacker.sight / attack_range
+                hit_chance = self.accuracy * sight_penalty * (100 - ((attack_range * 100 / max_range) / 2)) / 100
+
+            if specific_attack_pos is None and self.attacker.attack_target is not None:
                 if len(self.attacker.attack_target.alive_subunit_list) > 0:
-                    target_hit = self.attacker.find_melee_target(self.attacker.attack_target.alive_subunit_list)
+                    target_hit = self.attacker.find_melee_target(self.attacker.attack_target.alive_subunit_list)  # find closest subunit in enemy unit
                     target_now = target_hit.base_pos  # base_target is at the enemy position
+                    how_long = attack_range / self.speed  # shooting distance divide damage sprite speed to find travel time
 
                     # Predicatively find position the enemy will be at based on movement speed and sprite travel time
                     if (target_hit.walk or target_hit.run) and how_long > 0.5:  # target walking
@@ -87,7 +96,8 @@ class DamageSprite(pygame.sprite.Sprite):
                             if True in self.attacker.special_effect["Agile Aim"] is False:
                                 hit_chance -= 15
 
-            hit_chance = random.randint(int(hit_chance), 100)  # random hit chance
+            if hit_chance < 100:
+                hit_chance = random.randint(int(hit_chance), 100)  # random hit chance
             if random.randint(0, 100) > hit_chance:  # miss, not land exactly at base_target
                 if random_pos1 == 0:  # hit_chance convert to percentage from base_target
                     hit_chance1 = 100 + (hit_chance / 50)

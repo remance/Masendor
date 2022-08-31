@@ -71,7 +71,6 @@ def combat_logic(self, dt, unit_state):
 
                         self.attack_target = None
                         self.base_target = self.command_target
-                        self.new_angle = self.set_rotate()
                         self.new_angle = self.unit.angle
                         self.state = 0
 
@@ -160,15 +159,17 @@ def combat_logic(self, dt, unit_state):
             self.attack_target = self.unit.attack_target
             if self.attack_target is not None:
                 self.attack_pos = self.attack_target.base_pos
-        if (self.attack_target is not None or self.attack_pos is not None) and not self.command_action and not self.current_action:
+        if self.attack_pos is not None and not self.command_action and not self.current_action:
             for weapon in self.ammo_now[self.equipped_weapon]:  # TODO add line of sight for range attack
                 # can shoot if reload finish and base_target existed and not dead. Non arc_shot cannot shoot if forbid
                 if self.ammo_now[self.equipped_weapon][weapon] > 0 and \
                         (self.special_effect_check("Arc Shot", weapon=weapon) or self.unit.shoot_mode != 1):
+                    if self.state != 11:
+                        print(self.state)
                     self.command_action = ("Action " + str(weapon), "Range Attack")
                     break
 
-    if unit_state != 10:  # reset base_target every update to command base_target outside of combat
+    else:  # reset base_target every update to command base_target outside of combat
         if self.base_target != self.command_target:
             self.base_target = self.command_target
             if unit_state == 0:
