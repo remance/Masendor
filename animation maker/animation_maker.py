@@ -858,8 +858,7 @@ class Model:
             for index, layer in enumerate(pose_layer_list):
                 part = self.animation_part_list[frame][layer]
                 if part is not None and part[0] is not None:
-                    image = self.part_to_sprite(image, part[0], list(self.animation_part_list[frame].keys()).index(layer),
-                                                part[1], part[2], part[3], part[4], part[6], save_mask=save_mask)
+                    image = self.part_to_sprite(image, part[0], layer, part[2], part[3], part[4], part[6], save_mask=save_mask)
         return image
 
     def create_joint(self, pose_layer_list):
@@ -1064,7 +1063,9 @@ class Model:
 
         elif edit_type == "paste part stat":  # paste copy stat
             for part in copy_part_stat:
-                new_part = p_body_helper.ui_type + part[2:]
+                new_part = part
+                if any(ext in part for ext in ("effect", "special")) is False:
+                    new_part = p_body_helper.ui_type + part[2:]
                 if copy_part_stat[part] is not None:
                     self.bodypart_list[current_frame][new_part] = copy_part_stat[part].copy()
                     self.animation_part_list[current_frame][new_part] = copy_animation_stat[part].copy()
@@ -1289,7 +1290,7 @@ class Model:
         for joint in joints:  # remove all joint first
             joint.kill()
 
-        # recreate frame image
+        # recreate current frame image
         pose_layer_list = self.make_layer_list(self.animation_part_list[current_frame])
         self.create_joint(pose_layer_list)
         for frame_num, _ in enumerate(self.animation_list):
@@ -1351,7 +1352,7 @@ class Model:
             self.body_part_history = self.body_part_history[new_first:]
             self.current_history -= new_first
 
-    def part_to_sprite(self, surface, part, part_index, main_joint_pos, target, angle, flip, scale, save_mask=False):
+    def part_to_sprite(self, surface, part, part_name, target, angle, flip, scale, save_mask=False):
         """Find body part's new center point from main_joint_pos with new angle, then create rotated part and blit to sprite"""
         part_rotated = part.copy()
         if scale != 1:
@@ -1378,7 +1379,7 @@ class Model:
         rect = part_rotated.get_rect(center=target)
         if save_mask:
             mask = pygame.mask.from_surface(part_rotated)
-            self.mask_part_list[list(self.mask_part_list.keys())[part_index]] = (rect, mask)
+            self.mask_part_list[part_name] = (rect, mask)
 
         surface.blit(part_rotated, rect)
 
