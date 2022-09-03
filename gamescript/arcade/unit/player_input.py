@@ -51,13 +51,13 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                 new_pos[0] += speed
 
         if mouse_left_up:
-            self.leader_subunit.command_action = ("Action 0", )
+            self.leader_subunit.command_action = ("Action 0",)
             if "Main" in self.leader_subunit.current_action and "Charge" in self.leader_subunit.current_action:
                 self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
                                  other_command="Action 0")
 
         elif mouse_right_up:
-            self.leader_subunit.command_action = ("Action 1", )
+            self.leader_subunit.command_action = ("Action 1",)
             if "Sub" in self.leader_subunit.current_action and "Charge" in self.leader_subunit.current_action:
                 self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
                                  other_command="Action 1")
@@ -89,4 +89,3 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
         elif self.rotate_only:
             self.issue_order(cursor_pos, run_command=key_state[pygame.K_LSHIFT])
         # else:  # no new movement register other command
-

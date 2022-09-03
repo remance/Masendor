@@ -13,4 +13,3 @@ def movement_logic(self):
             self.revert = False  # reset revert order
             self.issue_order(self.base_target,
                              other_command="Stop")  # reset command base_target state will become 0 idle
-

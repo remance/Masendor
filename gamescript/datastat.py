@@ -4,9 +4,9 @@ and save them into dict for ingame use """
 import csv
 import os
 import re
-import numpy as np
 from pathlib import Path
 
+import numpy as np
 from gamescript.common import utility
 
 stat_convert = utility.stat_convert
@@ -30,7 +30,8 @@ class TroopData:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
-            int_column = ("ID", "Grade", "Race", "Cost", "Upkeep", "Troop", "Troop Class", "Sprite ID")  # value int only
+            int_column = (
+            "ID", "Grade", "Race", "Cost", "Upkeep", "Troop", "Troop Class", "Sprite ID")  # value int only
             list_column = ("Trait", "Skill",)  # value in list only
             tuple_column = ("Armour", "Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon",
                             "Secondary Sub Weapon", "Mount", "Role", "Ruleset")  # value in tuple only
@@ -44,7 +45,7 @@ class TroopData:
                     for n, i in enumerate(row):
                         row = stat_convert(row, n, i, percent_column=percent_column, list_column=list_column,
                                            tuple_column=tuple_column, int_column=int_column)
-                    self.troop_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                    self.troop_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
 
         # Lore of the troop
@@ -70,7 +71,7 @@ class TroopData:
                 for n, i in enumerate(row):
                     if "," in i:
                         row[n] = i.split(",")
-                self.troop_sprite_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                self.troop_sprite_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
 
         # Troop status effect dict
@@ -101,12 +102,13 @@ class TroopData:
                         if index != 0:  # Skip first row header
                             row = stat_convert(row, n, i, mod_column=mod_column, tuple_column=tuple_column,
                                                int_column=int_column, true_empty=True)
-                    self.status_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                    self.status_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
         # Troop special status effect dict
         self.special_effect_list = {}
-        with open(os.path.join(main_dir, "data", "troop", "troop_special_effect.csv"), encoding="utf-8", mode="r") as edit_file:
+        with open(os.path.join(main_dir, "data", "troop", "troop_special_effect.csv"), encoding="utf-8",
+                  mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
@@ -146,7 +148,7 @@ class TroopData:
                         if index != 0:  # Skip first row header
                             row = stat_convert(row, n, i, list_column=list_column, tuple_column=tuple_column,
                                                int_column=int_column, true_empty=True)
-                    self.race_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                    self.race_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
         # Troop grade dict
@@ -167,7 +169,7 @@ class TroopData:
                     if index != 0:
                         row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
                                            int_column=int_column, true_empty=True)
-                self.grade_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                self.grade_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
         # Troop skill dict
@@ -197,7 +199,7 @@ class TroopData:
                         if index != 0:  # Skip first row header
                             row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
                                                tuple_column=tuple_column, int_column=int_column, true_empty=True)
-                    self.skill_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                    self.skill_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
         # Troop trait dict
@@ -208,7 +210,7 @@ class TroopData:
             header = rd[0]
             int_column = ("ID", "Buff Range", "Race", "Cost", "Element")  # value int only
             tuple_column = ("Status", "Special Effect", "Enemy Status", "Ruleset")  # value in tuple only
-            percent_column = ("Buff Modifier", )
+            percent_column = ("Buff Modifier",)
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect",
                           "Speed Effect", "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect",
                           "Siege Effect", "Supply Effect", "Upkeep Effect")
@@ -227,7 +229,7 @@ class TroopData:
                         if index != 0:
                             row = stat_convert(row, n, i, percent_column=percent_column, mod_column=mod_column,
                                                tuple_column=tuple_column, int_column=int_column, true_empty=True)
-                    self.trait_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                    self.trait_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
         # Troop role dict
@@ -243,7 +245,8 @@ class TroopData:
 
         # Equipment grade dict
         self.equipment_grade_list = {}
-        with open(os.path.join(main_dir, "data", "troop", "equipment_grade.csv"), encoding="utf-8", mode="r") as edit_file:
+        with open(os.path.join(main_dir, "data", "troop", "equipment_grade.csv"), encoding="utf-8",
+                  mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
@@ -253,7 +256,7 @@ class TroopData:
                 for n, i in enumerate(row):
                     if index != 0:
                         row = stat_convert(row, n, i, int_column=int_column)
-                self.equipment_grade_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                self.equipment_grade_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
         # Weapon dict
@@ -311,7 +314,7 @@ class TroopData:
                         for n, i in enumerate(row):
                             row = stat_convert(row, n, i, list_column=list_column, tuple_column=tuple_column,
                                                int_column=int_column, true_empty=True)
-                    self.armour_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                    self.armour_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
         # Mount dict
@@ -336,7 +339,7 @@ class TroopData:
                     for n, i in enumerate(row):
                         row = stat_convert(row, n, i, tuple_column=tuple_column, list_column=list_column,
                                            int_column=int_column, true_empty=True)
-                    self.mount_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                    self.mount_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
         # Mount grade dict
@@ -353,7 +356,7 @@ class TroopData:
                 for n, i in enumerate(row):
                     if index != 0:
                         row = stat_convert(row, n, i, list_column=list_column, int_column=int_column, true_empty=True)
-                self.mount_grade_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                self.mount_grade_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
         # Mount armour dict
@@ -376,8 +379,10 @@ class TroopData:
                        this_ruleset):  # only grab effect that existed in the ruleset and first row
                     if row_index > 0:
                         for n, i in enumerate(row):
-                            row = stat_convert(row, n, i, tuple_column=tuple_column, int_column=int_column, true_empty=True)
-                        self.mount_armour_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                            row = stat_convert(row, n, i, tuple_column=tuple_column, int_column=int_column,
+                                               true_empty=True)
+                        self.mount_armour_list[row[0]] = {header[index + 1]: stuff for index, stuff in
+                                                          enumerate(row[1:])}
         edit_file.close()
 
         # Unit formation dict
@@ -387,14 +392,18 @@ class TroopData:
         for folder in subdirectories:
             formation_name = folder[-1].replace(".csv", "")
             self.default_unit_formation_list[formation_name] = []
-            with open(os.path.join(main_dir, "data", "troop", "formation", folder[-1]), encoding="utf-8", mode="r") as edit_file:
+            with open(os.path.join(main_dir, "data", "troop", "formation", folder[-1]), encoding="utf-8",
+                      mode="r") as edit_file:
                 rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
                 rd = [row for row in rd]
                 for index, row in enumerate(rd):
-                    if any(re.search("[a-zA-Z]", i) is not None for i in row) is False:  # row does not contain any text, not header
-                        row = [int(item) if item != "" else 100 for item in row]  # replace empty item with high number for low priority
+                    if any(re.search("[a-zA-Z]", i) is not None for i in
+                           row) is False:  # row does not contain any text, not header
+                        row = [int(item) if item != "" else 100 for item in
+                               row]  # replace empty item with high number for low priority
                         self.default_unit_formation_list[formation_name].append(row)
-            self.default_unit_formation_list[formation_name] = np.array(self.default_unit_formation_list[formation_name])
+            self.default_unit_formation_list[formation_name] = np.array(
+                self.default_unit_formation_list[formation_name])
         edit_file.close()
         self.unit_formation_list = {}  # list of unit formation after change size, get added later when change genre and ruleset
 
@@ -409,7 +418,8 @@ class LeaderData:
         """
         self.images = images
         self.leader_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader", "leader.csv"), encoding="utf-8", mode="r") as edit_file:
+        with open(os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader", "leader.csv"),
+                  encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
@@ -426,11 +436,12 @@ class LeaderData:
                 for n, i in enumerate(row):
                     row = stat_convert(row, n, i, list_column=list_column, tuple_column=tuple_column,
                                        int_column=int_column, true_empty=True)
-                self.leader_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                self.leader_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
         # Add common leader to the leader list with game_id 10000+
-        with open(os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader", "common_leader.csv"), encoding="utf-8", mode="r") as edit_file:
+        with open(os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader", "common_leader.csv"),
+                  encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
@@ -438,16 +449,17 @@ class LeaderData:
                 for n, i in enumerate(row):
                     row = stat_convert(row, n, i, list_column=list_column, tuple_column=tuple_column,
                                        int_column=int_column, true_empty=True)
-                self.leader_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                self.leader_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
         self.skill_list = {}
-        with open(os.path.join(main_dir, "data", "leader", "leader_skill.csv"), encoding="utf-8", mode="r") as edit_file:
+        with open(os.path.join(main_dir, "data", "leader", "leader_skill.csv"), encoding="utf-8",
+                  mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
             int_column = ("Troop Type", "Type", "Range", "Area of Effect", "Element", "Cost")  # value int only
-            list_column = ("Action", )
+            list_column = ("Action",)
             tuple_column = ("Status", "Restriction", "Condition", "Enemy Status", "Ruleset")  # value in tuple only
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
                           "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect",
@@ -467,11 +479,12 @@ class LeaderData:
                         if index != 0:  # Skip first row header
                             row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
                                                tuple_column=tuple_column, int_column=int_column, true_empty=True)
-                    self.skill_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                    self.skill_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
         self.commander_skill_list = {}
-        with open(os.path.join(main_dir, "data", "leader", "commander_skill.csv"), encoding="utf-8", mode="r") as edit_file:
+        with open(os.path.join(main_dir, "data", "leader", "commander_skill.csv"), encoding="utf-8",
+                  mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
@@ -496,12 +509,14 @@ class LeaderData:
                         if index != 0:  # Skip first row header
                             row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
                                                tuple_column=tuple_column, int_column=int_column, true_empty=True)
-                    self.commander_skill_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                    self.commander_skill_list[row[0]] = {header[index + 1]: stuff for index, stuff in
+                                                         enumerate(row[1:])}
         edit_file.close()
 
         # Lore of the leader dict
         self.leader_lore = {}
-        with open(os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader", "leader_lore.csv"), encoding="utf-8", mode="r") as edit_file:
+        with open(os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader", "leader_lore.csv"),
+                  encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -521,7 +536,7 @@ class LeaderData:
                 for n, i in enumerate(row):
                     if "," in i:
                         row[n] = i.split(",")
-                self.leader_sprite_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                self.leader_sprite_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
 
         self.common_leader_sprite_list = {}
@@ -534,12 +549,14 @@ class LeaderData:
                 for n, i in enumerate(row):
                     if "," in i:
                         row[n] = i.split(",")
-                self.common_leader_sprite_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                self.common_leader_sprite_list[row[0]] = {header[index + 1]: stuff for index, stuff in
+                                                          enumerate(row[1:])}
             edit_file.close()
 
         # Leader class dict
         self.leader_class = {}
-        with open(os.path.join(main_dir, "data", "leader", "leader_class.csv"), encoding="utf-8", mode="r") as edit_file:
+        with open(os.path.join(main_dir, "data", "leader", "leader_class.csv"), encoding="utf-8",
+                  mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
@@ -547,7 +564,7 @@ class LeaderData:
                 for n, i in enumerate(row):
                     if i.isdigit() or ("-" in i and re.search("[a-zA-Z]", i) is None) or i == "inf":
                         row[n] = int(i)
-                self.leader_class[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                self.leader_class[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
 
@@ -576,7 +593,7 @@ class FactionData:
                             row[n] = [int(item) if item.isdigit() else item for item in row[n].split(",")]
                         elif i.isdigit():
                             row[n] = [int(i)]
-                self.faction_list[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                self.faction_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
         images_old = load_images(main_dir, screen_scale, ["ruleset", ruleset_folder, "faction", "coa"],
                                  load_order=False)  # coa_list images list

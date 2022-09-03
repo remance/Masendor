@@ -83,7 +83,8 @@ def combat_logic(self, dt, unit_state):
             self.attack_target = self.unit.attack_target
             if self.attack_target is not None:
                 self.attack_pos = self.attack_target.base_pos
-        if (self.attack_target is not None or self.attack_pos is not None) and not self.command_action and not self.current_action:
+        if (
+                self.attack_target is not None or self.attack_pos is not None) and not self.command_action and not self.current_action:
             for weapon in self.ammo_now[self.equipped_weapon]:  # TODO add line of sight for range attack
                 # can shoot if reload finish and base_target existed and not dead. Non arc_shot cannot shoot if forbid
                 if self.ammo_now[self.equipped_weapon][weapon] > 0 and \

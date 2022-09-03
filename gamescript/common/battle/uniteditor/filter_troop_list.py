@@ -13,25 +13,29 @@ def filter_troop_list(self):
     for this_unit in self.troop_index_list[::-1]:
         if this_unit != 0:
             if self.filter_troop[0] is False:  # filter out melee infantry
-                if self.troop_data.troop_list[this_unit]["Melee Attack"] > self.troop_data.troop_list[this_unit]["Accuracy"] and \
+                if self.troop_data.troop_list[this_unit]["Melee Attack"] > self.troop_data.troop_list[this_unit][
+                    "Accuracy"] and \
                         self.troop_data.troop_list[this_unit]["Mount"] == [1, 0, 1]:
                     self.troop_list.pop(self.troop_index_list.index(this_unit))
                     self.troop_index_list.remove(this_unit)
 
             if self.filter_troop[1] is False:  # filter out range infantry
-                if self.troop_data.troop_list[this_unit]["Melee Attack"] < self.troop_data.troop_list[this_unit]["Accuracy"] and \
+                if self.troop_data.troop_list[this_unit]["Melee Attack"] < self.troop_data.troop_list[this_unit][
+                    "Accuracy"] and \
                         self.troop_data.troop_list[this_unit]["Mount"] == [1, 0, 1]:
                     self.troop_list.pop(self.troop_index_list.index(this_unit))
                     self.troop_index_list.remove(this_unit)
 
             if self.filter_troop[2] is False:  # filter out melee cav
-                if self.troop_data.troop_list[this_unit]["Melee Attack"] > self.troop_data.troop_list[this_unit]["Accuracy"] and \
+                if self.troop_data.troop_list[this_unit]["Melee Attack"] > self.troop_data.troop_list[this_unit][
+                    "Accuracy"] and \
                         self.troop_data.troop_list[this_unit]["Mount"] != [1, 0, 1]:
                     self.troop_list.pop(self.troop_index_list.index(this_unit))
                     self.troop_index_list.remove(this_unit)
 
             if self.filter_troop[3] is False:  # filter out range cav
-                if self.troop_data.troop_list[this_unit]["Melee Attack"] < self.troop_data.troop_list[this_unit]["Accuracy"] and \
+                if self.troop_data.troop_list[this_unit]["Melee Attack"] < self.troop_data.troop_list[this_unit][
+                    "Accuracy"] and \
                         self.troop_data.troop_list[this_unit]["Mount"] != [1, 0, 1]:
                     self.troop_list.pop(self.troop_index_list.index(this_unit))
                     self.troop_index_list.remove(this_unit)

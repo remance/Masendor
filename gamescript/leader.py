@@ -63,10 +63,12 @@ class Leader(pygame.sprite.Sprite):
             self.full_image = leader_data.images["9999999"].copy()
             font = pygame.font.SysFont("timesnewroman", 50)
             text_image = font.render(str(self.leader_id), True, pygame.Color("white"))
-            text_rect = text_image.get_rect(center=(self.full_image.get_width() / 2, self.full_image.get_height() / 1.3))
+            text_rect = text_image.get_rect(
+                center=(self.full_image.get_width() / 2, self.full_image.get_height() / 1.3))
             self.full_image.blit(text_image, text_rect)
 
-        self.image = pygame.transform.scale(self.full_image.copy(), (75 * self.battle.screen_scale[0], 75 * self.battle.screen_scale[1]))
+        self.image = pygame.transform.scale(self.full_image.copy(),
+                                            (75 * self.battle.screen_scale[0], 75 * self.battle.screen_scale[1]))
         self.rect = self.image.get_rect(midbottom=self.image_position)
         self.image_original = self.image.copy()
 
@@ -95,7 +97,8 @@ class Leader(pygame.sprite.Sprite):
             self.subunit.unit_leader = True
 
             squad_penal = int(
-                (self.subunit_pos / len(self.unit.subunit_id_array[0])) * 10)  # Authority get reduced the further leader stay in the back line
+                (self.subunit_pos / len(self.unit.subunit_id_array[
+                                            0])) * 10)  # Authority get reduced the further leader stay in the back line
             self.authority = self.authority - ((self.authority * squad_penal / 100) / 2)
 
     def update(self):
@@ -105,4 +108,3 @@ class Leader(pygame.sprite.Sprite):
                 self.state = 100
                 # if random.randint(0,1) == 1: self.state = 99 ## chance to become wound instead when hp reach 0
                 self.gone()
-

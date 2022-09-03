@@ -79,4 +79,3 @@ def add_original_trait(self):
     self.original_mental += mental_bonus
     self.original_sight += sight_bonus
     self.original_hidden += hidden_bonus
-

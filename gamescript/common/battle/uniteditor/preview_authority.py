@@ -16,4 +16,3 @@ def preview_authority(self, leader_list):
 
     if self.subunit_in_card is not None:
         self.command_ui.value_input(who=self.unit_build_slot)
-

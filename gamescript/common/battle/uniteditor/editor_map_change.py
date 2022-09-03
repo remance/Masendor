@@ -2,7 +2,8 @@ import pygame
 
 
 def editor_map_change(self, base_colour, feature_colour):
-    map_images = (pygame.Surface((1000, 1000)), pygame.Surface((1000, 1000)), pygame.Surface((1000, 1000), pygame.SRCALPHA), None)
+    map_images = (
+    pygame.Surface((1000, 1000)), pygame.Surface((1000, 1000)), pygame.Surface((1000, 1000), pygame.SRCALPHA), None)
     map_images[0].fill(base_colour)  # start with temperate terrain
     map_images[1].fill(feature_colour)  # start with plain feature
     map_images[2].fill((255, 100, 100, 125))  # start with height 100 plain
@@ -17,4 +18,3 @@ def editor_map_change(self, base_colour, feature_colour):
     for subunit in self.subunit_build:
         subunit.terrain, subunit.feature = subunit.get_feature((500, 500), self.battle_map_base)
         subunit.height = self.battle_map_height.get_height((500, 500))
-

@@ -39,7 +39,8 @@ class DamageSprite(pygame.sprite.Sprite):
         if self.attack_type == "range":
             self.speed = weapon_stat["Travel Speed"]  # bullet travel speed
             if weapon_stat["Bullet"][0] != "self":
-                self.image = self.bullet_sprite_pool[weapon_stat["Bullet"][0]]["side"]["base"]  # use side and base sprite by default for now
+                self.image = self.bullet_sprite_pool[weapon_stat["Bullet"][0]]["side"][
+                    "base"]  # use side and base sprite by default for now
             else:  # use weapon image itself as bullet image
                 direction = attacker.sprite_direction
                 if "r_" in direction or "l_" in direction:
@@ -47,7 +48,8 @@ class DamageSprite(pygame.sprite.Sprite):
                 image_name = "base_main"
                 if weapon == 1:
                     image_name = "base_sub"
-                self.image = self.bullet_weapon_sprite_pool[weapon_stat["Name"]][attacker.weapon_version[attacker.equipped_weapon][weapon]][direction][image_name]
+                self.image = self.bullet_weapon_sprite_pool[weapon_stat["Name"]][
+                    attacker.weapon_version[attacker.equipped_weapon][weapon]][direction][image_name]
             if attacker.special_effect_check("Arc Shot", weapon=0) and self.attacker.unit.shoot_mode != 2:
                 self.arc_shot = True  # arc shot will go pass unit to land at final base_target
             if (self.attacker.walk or self.attacker.run) and True in self.attacker.special_effect["Agile Aim"] is False:
@@ -70,7 +72,7 @@ class DamageSprite(pygame.sprite.Sprite):
                 hit_chance = self.accuracy
             elif True in self.attacker.special_effect["Long Range Accurate"]:
                 hit_chance = self.accuracy * (
-                            100 - ((attack_range * 100 / max_range) / 4)) / 100  # range penalty half
+                        100 - ((attack_range * 100 / max_range) / 4)) / 100  # range penalty half
             else:
                 if attack_range > self.attacker.sight:  # penalty for range attack if shoot beyond troop can see
                     sight_penalty = self.attacker.sight / attack_range
@@ -78,7 +80,8 @@ class DamageSprite(pygame.sprite.Sprite):
 
             if specific_attack_pos is None and self.attacker.attack_target is not None:
                 if len(self.attacker.attack_target.alive_subunit_list) > 0:
-                    target_hit = self.attacker.find_melee_target(self.attacker.attack_target.alive_subunit_list)  # find closest subunit in enemy unit
+                    target_hit = self.attacker.find_melee_target(
+                        self.attacker.attack_target.alive_subunit_list)  # find closest subunit in enemy unit
                     target_now = target_hit.base_pos  # base_target is at the enemy position
                     how_long = attack_range / self.speed  # shooting distance divide damage sprite speed to find travel time
 
@@ -132,7 +135,8 @@ class DamageSprite(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.image, self.angle)
 
         self.base_pos = pygame.Vector2(self.attacker.base_pos[0], self.attacker.base_pos[1])
-        self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0], self.base_pos[1] * self.screen_scale[1]) * view_mode
+        self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
+                                  self.base_pos[1] * self.screen_scale[1]) * view_mode
         self.rect = self.image.get_rect(midbottom=self.pos)
 
     def range_dmg_cal(self, attacker, target, target_side, side_percent=(1, 0.3, 0.3, 0)):
@@ -151,7 +155,9 @@ class DamageSprite(pygame.sprite.Sprite):
         if target_def < 0:
             target_def = 0  # defence cannot be negative
 
-        attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect = attacker.dmg_cal(target, attacker_hit, target_def, self.weapon, self)
+        attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect = attacker.dmg_cal(target, attacker_hit,
+                                                                                                  target_def,
+                                                                                                  self.weapon, self)
         self.attacker.loss_cal(target, attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect)
 
     def hit_register(self, subunit=None):
@@ -168,7 +174,8 @@ class DamageSprite(pygame.sprite.Sprite):
             if self.attack_type == "range":
                 self.range_dmg_cal(self.attacker, subunit, hit_side)
             elif self.attack_type == "melee":  # use attacker hit register instead
-                self.attacker.hit_register(self.weapon, subunit, 0, hit_side, self.attacker.battle.troop_data.status_list)
+                self.attacker.hit_register(self.weapon, subunit, 0, hit_side,
+                                           self.attacker.battle.troop_data.status_list)
 
     def update(self, unit_list, dt, view_mode):
         move = self.base_target - self.base_pos
@@ -198,11 +205,13 @@ class DamageSprite(pygame.sprite.Sprite):
                 if self.arc_shot is False:  # direct shot will not be able to shoot pass higher height terrain midway
                     if self.height_map.get_height(self.base_pos) > self.target_height + 20:
                         self.kill()
-                self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0], self.base_pos[1] * self.screen_scale[1]) * view_mode
+                self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
+                                          self.base_pos[1] * self.screen_scale[1]) * view_mode
                 self.rect.center = list(int(v) for v in self.pos)
             else:
                 self.base_pos = self.base_target
-                self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0], self.base_pos[1] * self.screen_scale[1]) * view_mode
+                self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
+                                          self.base_pos[1] * self.screen_scale[1]) * view_mode
                 self.rect.center = self.pos
 
             for element in self.dmg:

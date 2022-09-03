@@ -1,9 +1,8 @@
 import csv
 import os
 
-import pygame
-from gamescript import weather, battleui, lorebook, menu, uniteditor, datastat, popup, battlemap
-from gamescript.common import utility, animation
+from gamescript import weather, battlemap
+from gamescript.common import utility
 
 stat_convert = utility.stat_convert
 load_image = utility.load_image
@@ -23,7 +22,8 @@ class BattleMapData:
 
         empty_image = load_image(main_dir, (1, 1), "empty.png", "map/texture")  # empty texture image
         map_texture = []
-        texture_folder = [item for item in self.feature_list if item != ""]  # For now remove terrain with no planned name/folder yet
+        texture_folder = [item for item in self.feature_list if
+                          item != ""]  # For now remove terrain with no planned name/folder yet
         for index, folder in enumerate(texture_folder):
             images = load_images(main_dir, (1, 1), ["map", "texture", folder], load_order=False)
             map_texture.append(list(images.values()))
@@ -46,7 +46,7 @@ class BattleMapData:
                 for n, i in enumerate(row):
                     row = stat_convert(row, n, i, mod_column=mod_column, tuple_column=tuple_column,
                                        int_column=int_column)
-                self.feature_mod[row[0]] = {header[index+1]: stuff for index, stuff in enumerate(row[1:])}
+                self.feature_mod[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
 
                 # Add twilight temperature
                 self.feature_mod[row[0]]["Twilight Temperature"] = \
@@ -65,12 +65,12 @@ class BattleMapData:
         battlemap.BeautifulMap.empty_texture = empty_image
 
         self.weather_data = {}
-        with open(os.path.join(main_dir, "data","map", "weather", "weather.csv"),
+        with open(os.path.join(main_dir, "data", "map", "weather", "weather.csv"),
                   encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             header = rd[0]
-            int_column = ("ID", )  # value int only
+            int_column = ("ID",)  # value int only
             tuple_column = ("Element", "Status", "Spell", "Ruleset")
             int_column = [index for index, item in enumerate(header) if item in int_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]

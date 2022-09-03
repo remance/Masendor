@@ -1,7 +1,6 @@
 import math
-import random
 import os
-import sys
+import random
 
 import numpy as np
 import pygame
@@ -243,8 +242,10 @@ class Unit(pygame.sprite.Sprite):
         # create unit original formation positioning score
         new_formation = np.where(self.subunit_object_array == None, 99,  # Do not use is for where None, not work
                                  self.subunit_object_array)  # change empty to the least important
-        new_formation = np.where(self.subunit_object_array != None, 1, new_formation)  # change all occupied to most important
-        self.original_formation = {key: value * new_formation for key, value in self.battle.troop_data.unit_formation_list["Original"].items()}
+        new_formation = np.where(self.subunit_object_array != None, 1,
+                                 new_formation)  # change all occupied to most important
+        self.original_formation = {key: value * new_formation for key, value in
+                                   self.battle.troop_data.unit_formation_list["Original"].items()}
 
         self.original_subunit_id_array = self.subunit_id_array.copy()
 

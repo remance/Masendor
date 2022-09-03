@@ -19,15 +19,16 @@ def manual_aim(self, key_press, mouse_left_up, mouse_right_up, mouse_scroll_up, 
                     if shoot_range >= shoot_distance:
                         shoot_ready_list[weapon].append(self.player_char)
                 shoot_text += str(self.player_char.ammo_now[self.player_char.equipped_weapon][weapon]) + " " + \
-                             str(int(self.player_char.weapon_cooldown[weapon])) + "/" + \
-                             str(int(self.player_char.weapon_speed[weapon])) + ", " + " Range " + \
-                             str(int(shoot_distance)) + "/" + str(int(shoot_range))
+                              str(int(self.player_char.weapon_cooldown[weapon])) + "/" + \
+                              str(int(self.player_char.weapon_speed[weapon])) + ", " + " Range " + \
+                              str(int(shoot_distance)) + "/" + str(int(shoot_range))
             shoot_text = shoot_text[:-2]
 
     elif self.player_input_state == "volley aim" or self.player_input_state == "troop aim":
         for weapon in (0, 1):
             for this_subunit in self.player_char.unit.alive_subunit_list:
-                if self.player_input_state == "volley aim" or (self.player_input_state == "troop aim" and this_subunit.leader is None):
+                if self.player_input_state == "volley aim" or (
+                        self.player_input_state == "troop aim" and this_subunit.leader is None):
                     if this_subunit.equipped_weapon in this_subunit.ammo_now:
                         if weapon in this_subunit.ammo_now[this_subunit.equipped_weapon]:
                             can_shoot[weapon] += 1

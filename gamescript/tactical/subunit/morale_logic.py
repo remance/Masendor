@@ -1,5 +1,7 @@
 import random
+
 import pygame
+
 infinity = float("inf")
 
 
@@ -18,10 +20,13 @@ def morale_logic(self, dt, parent_state):
                         self.state = 99  # Broken state
                         self.gone_leader_process("Broken")
 
-                        corner_list = [[0, self.base_pos[1]], [1000, self.base_pos[1]], [self.base_pos[0], 0], [self.base_pos[0], 1000]]
-                        which_corner = [self.base_pos.distance_to(corner_list[0]), self.base_pos.distance_to(corner_list[1]),
+                        corner_list = [[0, self.base_pos[1]], [1000, self.base_pos[1]], [self.base_pos[0], 0],
+                                       [self.base_pos[0], 1000]]
+                        which_corner = [self.base_pos.distance_to(corner_list[0]),
+                                        self.base_pos.distance_to(corner_list[1]),
                                         self.base_pos.distance_to(corner_list[2]),
-                                        self.base_pos.distance_to(corner_list[3])]  # find the closest map corner to run to
+                                        self.base_pos.distance_to(
+                                            corner_list[3])]  # find the closest map corner to run to
                         found_corner = which_corner.index(min(which_corner))
                         self.base_target = pygame.Vector2(corner_list[found_corner])
                         self.command_target = self.base_target
@@ -33,8 +38,10 @@ def morale_logic(self, dt, parent_state):
                 if self.morale < 0:
                     self.morale = 0  # morale cannot be lower than 0
 
-            if self.state not in (95, 99) and parent_state not in (10, 99):  # If not missing start_set leader can replenish morale
-                self.base_morale += (dt * self.stamina_state_cal * self.morale_regen)  # Morale replenish based on stamina
+            if self.state not in (95, 99) and parent_state not in (
+            10, 99):  # If not missing start_set leader can replenish morale
+                self.base_morale += (
+                            dt * self.stamina_state_cal * self.morale_regen)  # Morale replenish based on stamina
 
             if self.base_morale < 0:  # morale cannot be negative
                 self.base_morale = 0
@@ -47,6 +54,7 @@ def morale_logic(self, dt, parent_state):
 
         elif self.state == 98:
             if parent_state not in (98, 99):
-                self.subunit_health -= (dt * 100)  # Unit begin to desert (die) if retreating but unit not retreat/broken
+                self.subunit_health -= (
+                            dt * 100)  # Unit begin to desert (die) if retreating but unit not retreat/broken
                 if self.morale_state > 0.2:
                     self.state = 0  # Reset state to 0 when exit retreat state

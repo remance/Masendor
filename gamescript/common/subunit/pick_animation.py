@@ -9,7 +9,8 @@ def pick_animation(self):
             if "Action " in self.current_action[0]:
                 equip = int(self.current_action[0][-1])
                 weapon = self.weapon_name[self.equipped_weapon][equip]
-                animation_name = self.animation_race_name + "_" + equip_set[equip] + "_" + self.action_list[weapon]["Common"] + "_" + self.action_list[weapon]["Attack"]
+                animation_name = self.animation_race_name + "_" + equip_set[equip] + "_" + self.action_list[weapon][
+                    "Common"] + "_" + self.action_list[weapon]["Attack"]
             elif "Charge" in self.current_action[0]:
                 animation_name = self.animation_race_name + "_" + self.current_action[0]
             else:
@@ -36,4 +37,3 @@ def pick_animation(self):
     #     print(self.animation_pool)
     #     print(self.current_animation)
     #     asdf
-

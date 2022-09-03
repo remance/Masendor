@@ -1,4 +1,4 @@
-from gamescript import menu, battleui
+from gamescript import menu
 from gamescript.common import utility
 
 setup_list = utility.setup_list
@@ -44,11 +44,10 @@ def change_to_source_selection_menu(self):
                               load_image(self.main_dir, self.screen_scale, "stat.png",
                                          "ui\\mapselect_ui")))  # right army stat
 
-    team_army, team_leader = self.read_battle_source([self.source_scale_text[self.map_source], self.source_text[self.map_source]])
+    team_army, team_leader = self.read_battle_source(
+        [self.source_scale_text[self.map_source], self.source_text[self.map_source]])
     self.change_battle_source(self.source_scale[self.map_source], team_army, team_leader)
 
     self.menu_button.add(*self.team_select_button)
     self.main_ui_updater.add(*self.team_select_button, self.map_option_box, self.enactment_tick_box,
                              self.source_list_box, self.source_list_box.scroll, self.army_stat)
-
-

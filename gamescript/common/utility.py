@@ -1,10 +1,10 @@
 import ast
 import csv
 import datetime
+import inspect
 import math
 import os
 import re
-import inspect
 
 import pygame
 import pygame.freetype
@@ -15,7 +15,8 @@ accept_image_types = ("png", "jpg", "jpeg", "svg", "gif", "bmp")
 
 def empty_method(self, *args):
     if hasattr(self, 'error_log'):
-        error_text = "{0} -- {1}\n".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), "Empty method is called") + \
+        error_text = "{0} -- {1}\n".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+                                           "Empty method is called") + \
                      str(inspect.stack()[1][1]) + "At Line" + str(inspect.stack()[1][2]) + ":" + \
                      str(inspect.stack()[1][3])
         # print(error_text)
@@ -38,7 +39,8 @@ def load_image(main_dir, screen_scale, file, subfolder=""):
             new_subfolder = os.path.join(new_subfolder, folder)
     this_file = os.path.join(main_dir, "data", new_subfolder, file)
     surface = pygame.image.load(this_file).convert_alpha()
-    surface = pygame.transform.scale(surface, (surface.get_width() * screen_scale[0], surface.get_height() * screen_scale[1]))
+    surface = pygame.transform.scale(surface,
+                                     (surface.get_width() * screen_scale[0], surface.get_height() * screen_scale[1]))
     return surface
 
 
@@ -56,13 +58,14 @@ def load_images(main_dir, screen_scale, subfolder=None, load_order=True, return_
     else:  # load every file
         load_order_file = [f for f in os.listdir(dir_path) if f.endswith("." + "png")]  # read all file
         try:  # sort file name if all in number only
-            load_order_file.sort(key=lambda var: [int(x) if x.isdigit() else x for x in re.findall(r"[^0-9]|[0-9]+", var)])
+            load_order_file.sort(
+                key=lambda var: [int(x) if x.isdigit() else x for x in re.findall(r"[^0-9]|[0-9]+", var)])
         except TypeError:  # has character in file name
             pass
     for file in load_order_file:
         file_name = file
         if "." in file_name:  # remove extension from name
-            file_name = file.split(".")[:-1]  
+            file_name = file.split(".")[:-1]
             file_name = "".join(file_name)
         images[file_name] = load_image(main_dir, screen_scale, file, dir_path)
 
@@ -84,7 +87,8 @@ def load_textures(main_dir, subfolder=None, scale=(1, 1)):
         load_order_file = [f for f in os.listdir(dir_path) if f.endswith("." + "png")]  # read all file
         load_order_file.sort(key=lambda var: [int(x) if x.isdigit() else x for x in re.findall(r"[^0-9]|[0-9]+", var)])
         for file in load_order_file:
-            imgs[file.split(".")[0]] = load_image(main_dir, scale, file, dir_path)  # no need to scale at this point, will scale when in complete sprite
+            imgs[file.split(".")[0]] = load_image(main_dir, scale, file,
+                                                  dir_path)  # no need to scale at this point, will scale when in complete sprite
     except FileNotFoundError:
         pass
 
@@ -257,7 +261,7 @@ def setup_list(screen_scale, item_class, current_row, show_list, item_group, box
     for index, item in enumerate(show_list):
         if index >= current_row:
             new_item = item_class(screen_scale, box, (pos[0] + column, pos[1] + row), item,
-                                      layer=layer)
+                                  layer=layer)
             item_group.add(new_item)  # add new subsection sprite to group
             row += (new_item.font.get_height() * 1.4 * screen_scale[1])  # next row
             if len(item_group) > box.max_row_show:
@@ -266,7 +270,8 @@ def setup_list(screen_scale, item_class, current_row, show_list, item_group, box
         ui_class.add(*item_group)
 
 
-def list_scroll(screen_scale, mouse_scroll_up, mouse_scroll_down, scroll, box, current_row, name_list, group, ui_class, layer=15):
+def list_scroll(screen_scale, mouse_scroll_up, mouse_scroll_down, scroll, box, current_row, name_list, group, ui_class,
+                layer=15):
     if mouse_scroll_up:
         current_row -= 1
         if current_row < 0:
@@ -292,7 +297,8 @@ def popout_lorebook(self, section, game_id):
     self.battle_menu.mode = "encyclopedia"
     self.battle_ui_updater.add(self.encyclopedia, self.lore_name_list, self.lore_name_list.scroll, *self.lore_button_ui)
 
-    self.encyclopedia.change_section(section, self.lore_name_list, self.subsection_name, self.lore_name_list.scroll, self.page_button,
+    self.encyclopedia.change_section(section, self.lore_name_list, self.subsection_name, self.lore_name_list.scroll,
+                                     self.page_button,
                                      self.battle_ui_updater)
     self.encyclopedia.change_subsection(game_id, self.page_button, self.battle_ui_updater)
     self.lore_name_list.scroll.change_image(new_row=self.encyclopedia.current_subsection_row)
@@ -317,7 +323,8 @@ def popup_list_open(self, new_rect, new_list, ui_type):
     if ui_type == "genre":
         self.main_ui_updater.add(self.popup_list_box, *self.popup_namegroup, self.popup_list_box.scroll)
     else:
-        self.battle_ui_updater.add(self.popup_list_box, *self.popup_namegroup, self.popup_list_box.scroll)  # add the option list to screen
+        self.battle_ui_updater.add(self.popup_list_box, *self.popup_namegroup,
+                                   self.popup_list_box.scroll)  # add the option list to screen
 
     self.popup_list_box.type = ui_type
 
@@ -370,7 +377,8 @@ def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tu
     elif n in tuple_column:
         if "," in i:
             if "." in i:
-                row[n] = tuple([float(item) if re.search("[a-zA-Z]", item) is None else str(item) for item in i.split(",")])
+                row[n] = tuple(
+                    [float(item) if re.search("[a-zA-Z]", item) is None else str(item) for item in i.split(",")])
             else:
                 row[n] = tuple([int(item) if item.isdigit() else item for item in i.split(",")])
         elif i.isdigit():

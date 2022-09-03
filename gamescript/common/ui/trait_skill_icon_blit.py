@@ -1,4 +1,4 @@
-from gamescript import battleui, popup
+from gamescript import battleui
 
 
 def trait_skill_icon_blit(self):

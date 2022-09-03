@@ -38,4 +38,5 @@ def setup_stat(self, battle_start=False):
         self.can_split_row = False  # can not split unit
         self.can_split_col = False
 
-    self.cal_unit_stat(how_many, all_speed, all_shoot_range, battle_start)  # calculate stat for unit related calculation
+    self.cal_unit_stat(how_many, all_speed, all_shoot_range,
+                       battle_start)  # calculate stat for unit related calculation

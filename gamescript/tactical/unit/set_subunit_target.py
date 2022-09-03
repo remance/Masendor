@@ -12,7 +12,8 @@ def set_subunit_target(self, target="rotate", reset_path=False, *args):
     :param reset_path: True will reset subunit command queue
     """
     if target == "rotate":  # rotate unit before moving
-        unit_topleft = pygame.Vector2(self.base_pos[0] - self.base_width_box,  # get the top left corner of sprite to generate subunit position
+        unit_topleft = pygame.Vector2(self.base_pos[0] - self.base_width_box,
+                                      # get the top left corner of sprite to generate subunit position
                                       self.base_pos[1] - self.base_height_box)
 
         for subunit in self.subunit_list:  # generate position of each subunit
@@ -23,7 +24,8 @@ def set_subunit_target(self, target="rotate", reset_path=False, *args):
                         rotation_xy(self.base_pos, new_target, self.radians_angle)))
                 else:
                     subunit.command_target = pygame.Vector2(
-                        rotation_xy(self.base_pos, new_target, self.radians_angle))  # rotate according to sprite current rotation
+                        rotation_xy(self.base_pos, new_target,
+                                    self.radians_angle))  # rotate according to sprite current rotation
                     subunit.new_angle = self.new_angle
 
     else:  # moving unit to specific target position
@@ -39,4 +41,5 @@ def set_subunit_target(self, target="rotate", reset_path=False, *args):
                         rotation_xy(target, new_target, self.radians_angle)))
                 else:
                     subunit.command_target = pygame.Vector2(
-                        rotation_xy(target, new_target, self.radians_angle))  # rotate according to sprite current rotation
+                        rotation_xy(target, new_target,
+                                    self.radians_angle))  # rotate according to sprite current rotation

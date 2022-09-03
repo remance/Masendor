@@ -42,6 +42,7 @@ def rotate_logic(self, dt):
     if self.zoom != 10:
         self.rotate()  # rotate sprite to new angle
     self.sprite_direction = rotation_dict[min(rotation_list,
-                   key=lambda x: abs(x - self.angle))]  # find closest in list of rotation for sprite direction
+                                              key=lambda x: abs(
+                                                  x - self.angle))]  # find closest in list of rotation for sprite direction
     self.make_front_pos()  # generate new pos related to side
     self.front_height = self.height_map.get_height(self.front_pos)

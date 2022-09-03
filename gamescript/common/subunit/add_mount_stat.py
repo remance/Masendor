@@ -10,11 +10,10 @@ def add_mount_stat(self):
     self.troop_health += (self.mount["Health Bonus"] * self.mount_grade["Health Effect"]) + \
                          self.mount_armour["Health"]  # Add mount health to the troop health
     self.original_charge += (self.mount["Charge Bonus"] +
-                         self.mount_grade["Charge Bonus"])  # Add charge power of mount to troop
+                             self.mount_grade["Charge Bonus"])  # Add charge power of mount to troop
     self.original_morale += self.mount_grade["Morale Bonus"]
     self.original_discipline += self.mount_grade["Discipline Bonus"]
     self.stamina += self.mount["Stamina Bonus"]
     self.trait["Original"] += self.mount["Trait"]  # Apply mount trait to subunit
     self.subunit_type = 2  # If subunit has a mount, count as cav for command buff
     self.feature_mod = "Cavalry"  # Use cavalry type for terrain bonus
-

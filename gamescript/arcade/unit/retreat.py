@@ -1,16 +1,17 @@
-import numpy as np
-import pygame
-
-
 def retreat(self):
     if self.retreat_way is None:  # not yet start retreat or previous retreat way got blocked  # TODO change to AI related and not auto
         retreat_side = (
-            sum(subunit.enemy_front != [] or subunit.enemy_side != [] for subunit in self.frontline_object[0] if subunit != 0) + 2,
-            sum(subunit.enemy_front != [] or subunit.enemy_side != [] for subunit in self.frontline_object[1] if subunit != 0) + 1,
-            sum(subunit.enemy_front != [] or subunit.enemy_side != [] for subunit in self.frontline_object[2] if subunit != 0) + 1,
-            sum(subunit.enemy_front != [] or subunit.enemy_side != [] for subunit in self.frontline_object[3] if subunit != 0))
+            sum(subunit.enemy_front != [] or subunit.enemy_side != [] for subunit in self.frontline_object[0] if
+                subunit != 0) + 2,
+            sum(subunit.enemy_front != [] or subunit.enemy_side != [] for subunit in self.frontline_object[1] if
+                subunit != 0) + 1,
+            sum(subunit.enemy_front != [] or subunit.enemy_side != [] for subunit in self.frontline_object[2] if
+                subunit != 0) + 1,
+            sum(subunit.enemy_front != [] or subunit.enemy_side != [] for subunit in self.frontline_object[3] if
+                subunit != 0))
 
-        this_index = retreat_side.index(min(retreat_side))  # find side with least subunit fighting to retreat, rear always prioritised
+        this_index = retreat_side.index(
+            min(retreat_side))  # find side with least subunit fighting to retreat, rear always prioritised
         if this_index == 0:  # front
             self.retreat_way = (self.base_pos[0], (self.base_pos[1] - self.base_height_box))  # find position to retreat
         elif this_index == 1:  # left
@@ -18,7 +19,8 @@ def retreat(self):
         elif this_index == 2:  # right
             self.retreat_way = (self.base_pos[0] + self.base_width_box, self.base_pos[1])  # find position to retreat
         else:  # rear
-            self.retreat_way = (self.base_pos[0], (self.base_pos[1] + self.base_height_box))  # find rear position to retreat
+            self.retreat_way = (
+            self.base_pos[0], (self.base_pos[1] + self.base_height_box))  # find rear position to retreat
         self.retreat_way = [rotationxy(self.base_pos, self.retreat_way, self.radians_angle), this_index]
         base_target = self.base_pos + ((self.retreat_way[0] - self.base_pos) * 1000)
 

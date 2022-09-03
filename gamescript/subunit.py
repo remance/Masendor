@@ -4,7 +4,6 @@ import random
 
 import pygame
 import pygame.freetype
-
 from gamescript import damagesprite
 from gamescript.common import utility, animation
 
@@ -207,7 +206,8 @@ class Subunit(pygame.sprite.Sprite):
                                    for index in range(0, 2)}  # Number of magazine, as mod number
             self.charge_skill = stat["Charge Skill"]  # for easier reference to check what charge skill this subunit has
             self.original_morale = stat["Morale"] + grade_stat["Morale Bonus"]  # morale with grade bonus
-            self.original_discipline = stat["Discipline"] + grade_stat["Discipline Bonus"]  # discipline with grade bonus
+            self.original_discipline = stat["Discipline"] + grade_stat[
+                "Discipline Bonus"]  # discipline with grade bonus
             self.original_mental = stat["Mental"] + grade_stat[
                 "Mental Bonus"]  # mental resistance from morale melee_dmg and mental status effect
             if self.stat_use_troop_number:
@@ -253,7 +253,8 @@ class Subunit(pygame.sprite.Sprite):
 
         max_scale = sum(training_scale)
         if max_scale != 0:
-            training_scale = [item / max_scale for item in training_scale]  # convert to proportion of whatever max number
+            training_scale = [item / max_scale for item in
+                              training_scale]  # convert to proportion of whatever max number
         else:
             training_scale = [0.333333 for _ in training_scale]
 
@@ -286,7 +287,8 @@ class Subunit(pygame.sprite.Sprite):
         self.original_crit_effect = 1  # critical extra modifier
 
         self.trait = {"Original": stat["Trait"] + race_stat["Trait"] + \
-                      self.troop_data.grade_list[self.grade]["Trait"], "Weapon": {0: {0: [], 1: []}, 1: {0: [], 1: []}}}  # trait from preset, race and grade
+                                  self.troop_data.grade_list[self.grade]["Trait"],
+                      "Weapon": {0: {0: [], 1: []}, 1: {0: [], 1: []}}}  # trait from preset, race and grade
 
         self.skill_cooldown = {}
         self.armour_gear = stat["Armour"]  # armour equipment
@@ -297,7 +299,8 @@ class Subunit(pygame.sprite.Sprite):
         if "" in self.original_skill:
             self.original_skill.remove("")
 
-        self.troop_health = ((self.strength * 0.2) + (self.constitution * 0.8)) * 10 * grade_stat["Health Effect"]  # Health of each troop
+        self.troop_health = ((self.strength * 0.2) + (self.constitution * 0.8)) * 10 * grade_stat[
+            "Health Effect"]  # Health of each troop
         self.stamina = ((self.strength * 0.2) + (self.constitution * 0.8)) * grade_stat["Stamina Effect"] * (
                 start_stamina / 100)  # starting stamina with grade
         self.original_mana = 0
@@ -313,7 +316,7 @@ class Subunit(pygame.sprite.Sprite):
         self.range_weapon_set = {}
         self.weapon_type = {}
         self.weapon_id = ((self.primary_main_weapon[0], self.primary_sub_weapon[0]),
-                            (self.secondary_main_weapon[0], self.secondary_sub_weapon[0]))
+                          (self.secondary_main_weapon[0], self.secondary_sub_weapon[0]))
         self.weapon_name = ((self.troop_data.weapon_list[self.primary_main_weapon[0]]["Name"],
                              self.troop_data.weapon_list[self.primary_sub_weapon[0]]["Name"]),
                             (self.troop_data.weapon_list[self.secondary_main_weapon[0]]["Name"],
@@ -352,8 +355,10 @@ class Subunit(pygame.sprite.Sprite):
         self.base_inflict_status = {}  # status that this subunit will inflict to enemy when melee_attack
 
         # Set up special effect variable, first item is permanent or from trait, second item from status or skill
-        self.special_effect = {status_name["Name"]: [[False, False], [False, False]]  # first item is for effect from troop/trait, second item is for weapon
-                               for status_name in self.troop_data.special_effect_list.values() if status_name["Name"] != "Name"}
+        self.special_effect = {status_name["Name"]: [[False, False], [False, False]]
+                               # first item is for effect from troop/trait, second item is for weapon
+                               for status_name in self.troop_data.special_effect_list.values() if
+                               status_name["Name"] != "Name"}
 
         if self.mount_gear[0] != 1:  # have a mount, add mount stat with its grade to subunit stat
             self.add_mount_stat()
@@ -388,7 +393,8 @@ class Subunit(pygame.sprite.Sprite):
         self.troop_skill = self.original_skill.copy()
         self.troop_skill = [skill for skill in self.troop_skill if skill != 0 and
                             (type(skill) == str or (self.troop_data.skill_list[skill]["Troop Type"] == 0 or
-                             self.troop_data.skill_list[skill]["Troop Type"] == self.subunit_type + 1))]  # keep matched
+                                                    self.troop_data.skill_list[skill][
+                                                        "Troop Type"] == self.subunit_type + 1))]  # keep matched
         self.base_mana = self.original_mana
         self.base_morale = self.original_morale
         self.base_discipline = self.original_discipline
@@ -424,12 +430,14 @@ class Subunit(pygame.sprite.Sprite):
         self.max_troop = self.troop_number  # max number of troop at the start
 
         # v Weight calculation
-        self.weight += self.troop_data.armour_list[self.armour_gear[0]]["Weight"] + self.mount_armour["Weight"]  # Weight from both melee and range weapon and armour
+        self.weight += self.troop_data.armour_list[self.armour_gear[0]]["Weight"] + self.mount_armour[
+            "Weight"]  # Weight from both melee and range weapon and armour
         if self.subunit_type == 2:  # cavalry has half weight penalty
             self.weight = self.weight / 2
         # ^ End weight cal
 
-        self.base_speed = (self.base_speed * ((100 - self.weight) / 100)) + grade_stat["Speed Bonus"]  # finalise base speed with weight and grade bonus
+        self.base_speed = (self.base_speed * ((100 - self.weight) / 100)) + grade_stat[
+            "Speed Bonus"]  # finalise base speed with weight and grade bonus
         self.description = stat["Description"]  # subunit description for inspect ui
 
         # Reset stat variable for receiving modifier effect from various sources, used for activity and effect calculation
@@ -527,9 +535,9 @@ class Subunit(pygame.sprite.Sprite):
 
             self.sprite_id = str(stat["Sprite ID"])
             self.weapon_version = ((sprite_list[self.sprite_id]["p1_primary_main_weapon"],
-                                   sprite_list[self.sprite_id]["p1_primary_sub_weapon"]),
+                                    sprite_list[self.sprite_id]["p1_primary_sub_weapon"]),
                                    (sprite_list[self.sprite_id]["p1_secondary_main_weapon"],
-                                   sprite_list[self.sprite_id]["p1_secondary_sub_weapon"]))  # keep only main p1 weapon
+                                    sprite_list[self.sprite_id]["p1_secondary_sub_weapon"]))  # keep only main p1 weapon
         except AttributeError:  # for subunit with dummy unit, use in editor
             pass
 
@@ -569,9 +577,11 @@ class Subunit(pygame.sprite.Sprite):
                 self.health_stamina_logic(dt)
 
                 if self.state in (98, 99) and (self.base_pos[0] <= 1 or self.base_pos[0] >= 999 or
-                                               self.base_pos[1] <= 1 or self.base_pos[1] >= 999):  # remove when unit move pass map border
+                                               self.base_pos[1] <= 1 or self.base_pos[
+                                                   1] >= 999):  # remove when unit move pass map border
                     self.state = 100  # enter dead state
-                    self.battle.flee_troop_number[self.team] += self.troop_number  # add number of troop retreat from battle
+                    self.battle.flee_troop_number[
+                        self.team] += self.troop_number  # add number of troop retreat from battle
                     self.troop_loss(self.troop_number)
                     self.battle.battle_camera.remove(self)
 
@@ -603,7 +613,8 @@ class Subunit(pygame.sprite.Sprite):
                 ((self.interrupt_animation and "uninterruptible" not in self.current_action) or
                  (not self.current_action and self.command_action) or
                  (done and "repeat" not in self.current_action) or
-                 (len(self.current_action) > 1 and type(self.current_action[-1]) == int and self.current_action[-1] not in self.skill_effect) or
+                 (len(self.current_action) > 1 and type(self.current_action[-1]) == int and self.current_action[
+                     -1] not in self.skill_effect) or
                  (self.idle_action and self.idle_action != self.command_action)):
             if done:  # finish animation, perform something
                 if self.current_action and "Action" in self.current_action[0] and \

@@ -25,4 +25,3 @@ def zoom_scale(self):
     elif self.zoom == self.max_zoom:  # TODO add weapon specific action condition
         self.use_animation_sprite = True
     self.change_pos_scale()
-

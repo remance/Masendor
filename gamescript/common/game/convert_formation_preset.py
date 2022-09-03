@@ -12,7 +12,8 @@ def convert_formation_preset(self):
     """
     self.troop_data.unit_formation_list = {}
 
-    front_order_to_place, rear_order_to_place, flank_order_to_place, outer_order_to_place, inner_order_to_place = calculate_formation_priority(self)
+    front_order_to_place, rear_order_to_place, flank_order_to_place, outer_order_to_place, inner_order_to_place = calculate_formation_priority(
+        self)
 
     for key, value in self.troop_data.default_unit_formation_list.items():
         image = Image.fromarray(value)
@@ -58,7 +59,8 @@ def calculate_formation_priority(self):
     front_order_to_place = [(item1, item2) for item1 in front_order_to_place[0] for item2 in front_order_to_place[1]]
 
     rear_order_to_place = [list(range(0, self.unit_size[0])), [center[1]]]
-    rear_order_to_place[0] = rear_order_to_place[0][int(len(rear_order_to_place[0]) / 2) + 1:] + list(reversed(rear_order_to_place[0][:int(len(rear_order_to_place[0]) / 2) + 1]))
+    rear_order_to_place[0] = rear_order_to_place[0][int(len(rear_order_to_place[0]) / 2) + 1:] + list(
+        reversed(rear_order_to_place[0][:int(len(rear_order_to_place[0]) / 2) + 1]))
     for occurrence, _ in enumerate(range(center[1] + 1, self.unit_size[1])):
         rear_order_to_place[1].append(center[1] - (occurrence + 1))
         rear_order_to_place[1].append(center[1] + (occurrence + 1))
@@ -83,8 +85,10 @@ def calculate_formation_priority(self):
         inner_order_to_place[1].append(center[1] - (occurrence + 1))
         inner_order_to_place[1].append(center[1] + (occurrence + 1))
 
-    inner_order_to_place = [pygame.Vector2(item1, item2) for item1 in inner_order_to_place[0] for item2 in inner_order_to_place[1]]
-    order_to_place = {index: value.distance_to(pygame.Vector2(center)) for index, value in enumerate(inner_order_to_place)}  # calculate distance to center using pygame vector2 distance
+    inner_order_to_place = [pygame.Vector2(item1, item2) for item1 in inner_order_to_place[0] for item2 in
+                            inner_order_to_place[1]]
+    order_to_place = {index: value.distance_to(pygame.Vector2(center)) for index, value in
+                      enumerate(inner_order_to_place)}  # calculate distance to center using pygame vector2 distance
     order_to_place = [key[0] for key in sorted(order_to_place.items(), key=lambda x: x[1])]  # get list index sorted
     inner_order_to_place[:] = [inner_order_to_place[i] for i in order_to_place]  # sort list based on order_to_place
     inner_order_to_place = [(int(item[0]), int(item[1])) for item in inner_order_to_place]

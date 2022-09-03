@@ -69,7 +69,6 @@ class PreviewLeader(pygame.sprite.Sprite):
         self.army_position = army_position  # position in the unit (e.g. general or sub-general)
         self.image = pygame.Surface((50, 50), pygame.SRCALPHA)
 
-
     def change_preview_leader(self, leader_id, leader_data):
         self.leader_id = leader_id  # leader_id is only used as reference to the leader data
 

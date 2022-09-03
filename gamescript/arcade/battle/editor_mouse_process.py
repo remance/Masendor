@@ -10,7 +10,6 @@ team_colour = unit.team_colour
 
 
 def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, mouse_right_down, key_state, key_press):
-    self.battle_ui_updater.remove(self.leader_popup)
     if self.popup_list_box in self.battle_ui_updater \
             and self.popup_list_box.type == "leader" \
             and self.popup_list_box.rect.collidepoint(self.mouse_pos):  # need to be first to prioritise popup click
@@ -24,7 +23,8 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                         self.leader_now[self.subunit_in_card.leader.role].change_subunit(None)
 
                     true_index = [index for index, value in
-                                  enumerate(list(self.leader_data.leader_list.values())) if value["Name"] == name.name][0]
+                                  enumerate(list(self.leader_data.leader_list.values())) if value["Name"] == name.name][
+                        0]
                     true_index = list(self.leader_data.leader_list.keys())[true_index]
                     self.leader_now[self.selected_leader].change_preview_leader(true_index, self.leader_data)
                     self.leader_now[self.selected_leader].change_subunit(self.subunit_in_card)
@@ -48,7 +48,8 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                 elif mouse_right_up:
                     self.popout_lorebook(8, self.current_pop_up_row + index + 1)
 
-    elif self.unit_preset_list_box.rect.collidepoint(self.mouse_pos) and self.unit_preset_list_box in self.battle_ui_updater:
+    elif self.unit_preset_list_box.rect.collidepoint(
+            self.mouse_pos) and self.unit_preset_list_box in self.battle_ui_updater:
         self.click_any = True
         for index, name in enumerate(self.unitpreset_namegroup):
             if name.rect.collidepoint(self.mouse_pos) and mouse_left_up:
@@ -65,7 +66,8 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                     leader_pos_list = [int(item) if item.isdigit() else item
                                        for item in arraylist[9].split(",")]
 
-                    for slot_index, slot in enumerate(self.subunit_build):  # change all slot to whatever save in the selected preset
+                    for slot_index, slot in enumerate(
+                            self.subunit_build):  # change all slot to whatever save in the selected preset
                         slot.kill()
                         slot.__init__(unit_list[slot_index], slot.game_id, self.unit_build_slot, slot.pos,
                                       100, 100, [1, 1], self.genre, "edit")  # TODO init cause issue
@@ -104,7 +106,8 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                     self.unit_preset_name = ""
                     for slot in self.subunit_build:  # reset all sub-subunit slot
                         slot.kill()
-                        slot.__init__(0, slot.game_id, self.unit_build_slot, slot.pos, 100, 100, [1, 1], self.genre, "edit")
+                        slot.__init__(0, slot.game_id, self.unit_build_slot, slot.pos, 100, 100, [1, 1], self.genre,
+                                      "edit")
                         slot.kill()
                         self.subunit_build.add(slot)
                         self.battle_ui_updater.add(slot)
@@ -125,9 +128,9 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
             if this_leader.rect.collidepoint(self.mouse_pos):
                 army_position = self.leader_level[this_leader.role + 4]
 
-                self.leader_popup.pop(self.mouse_pos,
+                self.single_text_popup.pop(self.mouse_pos,
                                       army_position + ": " + this_leader.name)  # popup leader name when mouse over
-                self.battle_ui_updater.add(self.leader_popup)
+                self.battle_ui_updater.add(self.single_text_popup)
 
                 if mouse_left_up:  # open list of leader to change leader in that slot
                     self.selected_leader = leader_index
@@ -215,7 +218,8 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                    self.popup_list_box, self.battle_ui_updater, layer=19)
 
                 else:
-                    self.battle_ui_updater.remove(self.popup_list_box, self.popup_list_box.scroll, *self.popup_namegroup)
+                    self.battle_ui_updater.remove(self.popup_list_box, self.popup_list_box.scroll,
+                                                  *self.popup_namegroup)
 
             elif self.editor_troop_list_box.scroll.rect.collidepoint(self.mouse_pos):  # click on subsection list scroll
                 self.click_any = True
@@ -226,7 +230,8 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                self.troop_namegroup,
                                self.editor_troop_list_box, self.battle_ui_updater)
                 elif self.current_list_show == "faction":
-                    setup_list(self.screen_scale, menu.NameList, self.current_troop_row, self.faction_data.faction_name_list,
+                    setup_list(self.screen_scale, menu.NameList, self.current_troop_row,
+                               self.faction_data.faction_name_list,
                                self.troop_namegroup,
                                self.editor_troop_list_box, self.battle_ui_updater)
 
@@ -234,8 +239,10 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                 self.click_any = True
                 self.current_unit_row = self.unit_preset_list_box.scroll.player_input(
                     self.mouse_pos)  # update the scroll and get new current subsection
-                setup_list(self.screen_scale, menu.NameList, self.current_unit_row, list(self.custom_unit_preset_list.keys()),
-                           self.unitpreset_namegroup, self.unit_preset_list_box, self.battle_ui_updater)  # setup preset army list
+                setup_list(self.screen_scale, menu.NameList, self.current_unit_row,
+                           list(self.custom_unit_preset_list.keys()),
+                           self.unitpreset_namegroup, self.unit_preset_list_box,
+                           self.battle_ui_updater)  # setup preset army list
 
             elif self.subunit_build in self.battle_ui_updater:
                 clicked_slot = None
@@ -246,7 +253,8 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                         break
 
                 if clicked_slot is not None:
-                    if key_state[pygame.K_LSHIFT] or key_state[pygame.K_RSHIFT]:  # add all sub-subunit from the first selected
+                    if key_state[pygame.K_LSHIFT] or key_state[
+                        pygame.K_RSHIFT]:  # add all sub-subunit from the first selected
                         first_one = None
                         for new_slot in self.subunit_build:
                             if new_slot.game_id <= clicked_slot.game_id:
@@ -297,14 +305,16 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                             self.battle_ui_updater.add(*self.leader_now)  # add leader portrait to draw
                             self.subunit_in_card = slot
                             self.command_ui.value_input(who=self.subunit_in_card)
-                            self.troop_card_ui.value_input(who=self.subunit_in_card)  # update subunit card on selected subunit
+                            self.troop_card_ui.value_input(
+                                who=self.subunit_in_card)  # update subunit card on selected subunit
                             if self.troop_card_ui.option == 2:
                                 self.trait_skill_icon_blit()
                                 self.effect_icon_blit()
                                 self.countdown_skill_icon()
 
         if mouse_left_up or mouse_right_up:
-            if self.subunit_build in self.battle_ui_updater and self.editor_troop_list_box.rect.collidepoint(self.mouse_pos):
+            if self.subunit_build in self.battle_ui_updater and self.editor_troop_list_box.rect.collidepoint(
+                    self.mouse_pos):
                 self.click_any = True
                 for index, name in enumerate(self.troop_namegroup):
                     if name.rect.collidepoint(self.mouse_pos):
@@ -315,10 +325,14 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                 self.faction_pick = index
                                 self.filter_troop_list()
                                 if index != 0:  # pick faction
-                                    self.leader_list = [item[1]["Name"] for this_index, item in enumerate(self.leader_data.leader_list.items())
+                                    self.leader_list = [item[1]["Name"] for this_index, item in
+                                                        enumerate(self.leader_data.leader_list.items())
                                                         if this_index > 0 and (item[1]["Name"] == "None" or
-                                                                               (item[0] >= 10000 and item[1]["Faction"] in (0, index)) or
-                                                                               item[0] in self.faction_data.faction_list[index]["Leader"])]
+                                                                               (item[0] >= 10000 and item[1][
+                                                                                   "Faction"] in (0, index)) or
+                                                                               item[0] in
+                                                                               self.faction_data.faction_list[index][
+                                                                                   "Leader"])]
 
                                 else:  # pick all faction
                                     self.leader_list = self.leader_list = [item[0] for item in
@@ -328,13 +342,15 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                            self.troop_namegroup,
                                            self.editor_troop_list_box, self.battle_ui_updater)  # setup troop name list
                                 self.editor_troop_list_box.scroll.change_image(new_row=self.current_troop_row,
-                                                                               row_size=len(self.troop_list))  # change troop scroll image
+                                                                               row_size=len(
+                                                                                   self.troop_list))  # change troop scroll image
 
                                 self.main.create_team_coa([index], ui_class=self.battle_ui_updater, one_team=True,
                                                           team1_set_pos=(
                                                               self.editor_troop_list_box.rect.midleft[0] - int(
-                                                                (200 * self.screen_scale[0]) / 2),
-                                                              self.editor_troop_list_box.rect.midleft[1]))  # change team coa_list
+                                                                  (200 * self.screen_scale[0]) / 2),
+                                                              self.editor_troop_list_box.rect.midleft[
+                                                                  1]))  # change team coa_list
 
                                 self.current_list_show = "troop"
 
@@ -369,7 +385,8 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                             self.battle_ui_updater.add(*self.leader_now)  # add leader portrait to draw
                                             self.subunit_in_card = slot
                                             self.preview_authority(self.leader_now)
-                                            self.troop_card_ui.value_input(who=self.subunit_in_card)  # update subunit card on selected subunit
+                                            self.troop_card_ui.value_input(
+                                                who=self.subunit_in_card)  # update subunit card on selected subunit
                                             if self.troop_card_ui.option == 2:
                                                 self.trait_skill_icon_blit()
                                                 self.effect_icon_blit()
@@ -424,7 +441,8 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                             self.slot_display_button.event = 0
                             self.battle_ui_updater.add(self.unit_setup_stuff, self.leader_now)
 
-                    elif self.deploy_button.rect.collidepoint(self.mouse_pos) and self.subunit_build in self.battle_ui_updater:
+                    elif self.deploy_button.rect.collidepoint(
+                            self.mouse_pos) and self.subunit_build in self.battle_ui_updater:
                         can_deploy = True
                         subunit_count = 0
                         warning_list = []
@@ -443,8 +461,11 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                             if len(self.all_team_unit["alive"]) > 0:
                                 unit_game_id = self.all_team_unit["alive"][-1].game_id + 1
                             current_preset = self.convert_unit_slot_to_dict(self.unit_preset_name,
-                                                                            [str(int(self.base_camera_pos[0] / self.screen_scale[0])),
-                                                                     str(int(self.base_camera_pos[1] / self.screen_scale[1]))], unit_game_id)
+                                                                            [str(int(self.base_camera_pos[0] /
+                                                                                     self.screen_scale[0])),
+                                                                             str(int(self.base_camera_pos[1] /
+                                                                                     self.screen_scale[1]))],
+                                                                            unit_game_id)
                             subunit_game_id = 0
                             if len(self.subunit) > 0:
                                 for this_subunit in self.subunit:
@@ -455,8 +476,9 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                 self.unit_editor_convert(self.all_team_unit[slot.team],
                                                          current_preset[self.unit_preset_name], team_colour[slot.team],
                                                          pygame.transform.scale(
-                                                           self.coa_list[int(current_preset[self.unit_preset_name][-1])],
-                                                           (60, 60)), subunit_game_id)
+                                                             self.coa_list[
+                                                                 int(current_preset[self.unit_preset_name][-1])],
+                                                             (60, 60)), subunit_game_id)
                                 break
                             self.slot_display_button.event = 1
                             self.kill_effect_icon()
@@ -492,18 +514,25 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                 if self.current_list_show == "troop":
                                     self.current_troop_row = 0
                                     self.filter_troop_list()
-                                    setup_list(self.screen_scale, menu.NameList, self.current_troop_row, self.troop_list,
+                                    setup_list(self.screen_scale, menu.NameList, self.current_troop_row,
+                                               self.troop_list,
                                                self.troop_namegroup,
-                                               self.editor_troop_list_box, self.battle_ui_updater)  # setup troop name list
-            elif self.terrain_change_button.rect.collidepoint(self.mouse_pos) and mouse_left_up:  # change map terrain button
+                                               self.editor_troop_list_box,
+                                               self.battle_ui_updater)  # setup troop name list
+            elif self.terrain_change_button.rect.collidepoint(
+                    self.mouse_pos) and mouse_left_up:  # change map terrain button
                 self.click_any = True
-                self.popup_list_new_open(self.terrain_change_button.rect.midtop, self.battle_map_base.terrain_list, "terrain")
+                self.popup_list_new_open(self.terrain_change_button.rect.midtop, self.battle_map_base.terrain_list,
+                                         "terrain")
 
-            elif self.feature_change_button.rect.collidepoint(self.mouse_pos) and mouse_left_up:  # change map feature button
+            elif self.feature_change_button.rect.collidepoint(
+                    self.mouse_pos) and mouse_left_up:  # change map feature button
                 self.click_any = True
-                self.popup_list_new_open(self.feature_change_button.rect.midtop, self.battle_map_feature.feature_list, "feature")
+                self.popup_list_new_open(self.feature_change_button.rect.midtop, self.battle_map_feature.feature_list,
+                                         "feature")
 
-            elif self.weather_change_button.rect.collidepoint(self.mouse_pos) and mouse_left_up:  # change map weather button
+            elif self.weather_change_button.rect.collidepoint(
+                    self.mouse_pos) and mouse_left_up:  # change map weather button
                 self.click_any = True
                 self.popup_list_new_open(self.weather_change_button.rect.midtop, self.weather_list, "weather")
 
@@ -539,9 +568,11 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                         self.click_any = True
                         if self.current_list_show == "troop":
                             self.current_troop_row = 0
-                            setup_list(self.screen_scale, menu.NameList, self.current_troop_row, self.faction_data.faction_name_list,
+                            setup_list(self.screen_scale, menu.NameList, self.current_troop_row,
+                                       self.faction_data.faction_name_list,
                                        self.troop_namegroup,
                                        self.editor_troop_list_box, self.battle_ui_updater)
                             self.editor_troop_list_box.scroll.change_image(new_row=self.current_troop_row,
-                                                                           row_size=len(self.faction_data.faction_name_list))  # change troop scroll image
+                                                                           row_size=len(
+                                                                               self.faction_data.faction_name_list))  # change troop scroll image
                             self.current_list_show = "faction"

@@ -35,9 +35,13 @@ def hit_register(self, weapon, target, attacker_side, hit_side, status_list):
             (self.special_effect_check("Flank Attack Bonus") and attacker_side in (1, 3)):  # apply only for attacker
         target_defence = 0
 
-    attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect = self.dmg_cal(target, attacker_hit, target_defence, weapon, weapon, hit_side)  # get dmg by attacker
+    attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect = self.dmg_cal(target, attacker_hit,
+                                                                                          target_defence, weapon,
+                                                                                          weapon,
+                                                                                          hit_side)  # get dmg by attacker
 
-    self.loss_cal(target, attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect)  # inflict dmg to defender
+    self.loss_cal(target, attacker_dmg, attacker_morale_dmg, attacker_leader_dmg,
+                  element_effect)  # inflict dmg to defender
 
     if self.inflict_status != {}:  # inflict status based on aoe 1 = front only 2 = all 4 side, 3 corner enemy subunit, 4 entire unit
         apply_status_to_enemy(status_list, self.inflict_status, target, attacker_side, hit_side)
@@ -52,14 +56,18 @@ def hit_register(self, weapon, target, attacker_side, hit_side, status_list):
 
     # Attack corner (side) of self with aoe attack
     if self.corner_atk:
-        loop_list = [target.nearby_subunit_list[2], target.nearby_subunit_list[5]]  # Side attack get (2) front and (5) rear nearby subunit
+        loop_list = [target.nearby_subunit_list[2],
+                     target.nearby_subunit_list[5]]  # Side attack get (2) front and (5) rear nearby subunit
         if hit_side in (0, 2):
             loop_list = target.nearby_subunit_list[0:2]  # Front/rear attack get (0) left and (1) right nearby subunit
         for this_subunit in loop_list:
             if this_subunit != 0 and this_subunit.state != 100:
                 target_hit, target_defence = float(self.melee_attack * hit_side_mod) + target_luck, float(
                     this_subunit.melee_def * hit_side_mod) + target_luck
-                attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect = self.dmg_cal(this_subunit, attacker_hit, target_defence, weapon, "melee")
+                attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect = self.dmg_cal(this_subunit,
+                                                                                                      attacker_hit,
+                                                                                                      target_defence,
+                                                                                                      weapon, "melee")
                 self.loss_cal(this_subunit, attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect)
                 if self.inflict_status != {}:
                     apply_status_to_enemy(status_list, self.inflict_status, this_subunit, attacker_side, hit_side)
@@ -74,7 +82,8 @@ def apply_status_to_enemy(status_list, inflict_status, target, attacker_side, re
             target.status_effect[status[0]] = status_list[status[0]].copy()
             if status[1] == 3:  # apply to corner enemy subunit (left and right of self front enemy subunit)
                 corner_enemy_apply = target.nearby_subunit_list[0:2]
-                if receiver_side in (1, 2):  # attack on left/right side means corner enemy would be from front and rear side of the enemy
+                if receiver_side in (
+                1, 2):  # attack on left/right side means corner enemy would be from front and rear side of the enemy
                     corner_enemy_apply = [target.nearby_subunit_list[2], target.nearby_subunit_list[5]]
                 for this_subunit in corner_enemy_apply:
                     if this_subunit != 0:
@@ -83,4 +92,3 @@ def apply_status_to_enemy(status_list, inflict_status, target, attacker_side, re
             for this_subunit in target.unit.alive_subunit_list:
                 if this_subunit.state != 100:
                     this_subunit.status_effect[status[0]] = status_list[status[0]].copy()
-

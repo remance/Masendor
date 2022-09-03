@@ -19,4 +19,3 @@ def gone_leader_process(self, *args):
             subunit.new_angle = subunit.set_rotate()
     if self.unit.player_control:
         self.battle.camera_mode = "Free"  # camera become free when player char die so can look over the battle
-

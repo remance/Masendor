@@ -72,7 +72,9 @@ def status_update(self, weather=None):
     crit_effect_modifier = 1
 
     # Apply status effect from trait
-    trait_list = list(self.trait["Original"].values()) + list(self.trait["Weapon"][self.equipped_weapon][0].values()) + list(self.trait["Weapon"][self.equipped_weapon][1].values())
+    trait_list = list(self.trait["Original"].values()) + list(
+        self.trait["Weapon"][self.equipped_weapon][0].values()) + list(
+        self.trait["Weapon"][self.equipped_weapon][1].values())
     if len(trait_list) > 1:
         for trait in trait_list:
             if 0 not in trait["Status"]:
@@ -104,19 +106,23 @@ def status_update(self, weather=None):
     # v Map feature modifier to stat
     map_feature_mod = self.feature_map.feature_mod[self.feature]
     if map_feature_mod[self.feature_mod + " Speed/Charge Effect"] != 1:  # speed/charge
-        speed_modifier += map_feature_mod[self.feature_mod + " Speed/Charge Effect"]  # get the speed mod appropriate to subunit type
+        speed_modifier += map_feature_mod[
+            self.feature_mod + " Speed/Charge Effect"]  # get the speed mod appropriate to subunit type
         charge_modifier += map_feature_mod[self.feature_mod + " Speed/Charge Effect"]
 
     if map_feature_mod[self.feature_mod + " Combat Effect"] != 1:  # melee melee_attack
         # combat_mod = self.unit.feature_map.feature_mod[self.unit.feature][self.feature_mod + 1]
-        melee_attack_modifier += map_feature_mod[self.feature_mod + " Combat Effect"]  # get the melee_attack mod appropriate to subunit type
+        melee_attack_modifier += map_feature_mod[
+            self.feature_mod + " Combat Effect"]  # get the melee_attack mod appropriate to subunit type
 
     if map_feature_mod[self.feature_mod + " Defense Effect"] != 1:  # melee/charge defence
-        melee_def_modifier += map_feature_mod[self.feature_mod + " Defense Effect"]  # get the defence mod appropriate to subunit type
+        melee_def_modifier += map_feature_mod[
+            self.feature_mod + " Defense Effect"]  # get the defence mod appropriate to subunit type
         charge_def_modifier += map_feature_mod[self.feature_mod + " Defense Effect"]
 
     range_def_bonus += map_feature_mod["Range Defense Bonus"]  # range defence bonus from terrain bonus
-    accuracy_bonus -= (map_feature_mod["Range Defense Bonus"] / 2)  # range def bonus block subunit sight as well so less accuracy
+    accuracy_bonus -= (map_feature_mod[
+                           "Range Defense Bonus"] / 2)  # range def bonus block subunit sight as well so less accuracy
     discipline_bonus += map_feature_mod["Discipline Bonus"]  # discipline defence bonus from terrain bonus
 
     self.apply_map_status(map_feature_mod)
@@ -234,7 +240,8 @@ def status_update(self, weather=None):
     self.reload = self.reload * (2 - self.stamina_state_cal)  # the less stamina, the higher reload time
     self.charge_def = (self.charge_def * (
             self.morale_state + 0.1)) * self.stamina_state_cal + self.command_buff  # use morale, stamina and command buff
-    height_diff = (self.height / self.front_height) ** 2  # walking down hill increase speed while walking up hill reduce speed
+    height_diff = (
+                              self.height / self.front_height) ** 2  # walking down hill increase speed while walking up hill reduce speed
     self.speed = self.speed * self.stamina_state_cal * height_diff
     self.charge = (self.charge + self.speed) * (self.morale_state + 0.1) * self.stamina_state_cal + self.command_buff
 
@@ -251,7 +258,8 @@ def status_update(self, weather=None):
     self.morale = (self.morale + morale_bonus) * morale_modifier
     self.discipline = self.discipline + discipline_bonus
     self.melee_attack = (self.melee_attack + melee_attack_bonus) * melee_attack_modifier
-    self.shoot_range = {key: (shoot_range + shoot_range_bonus) * shoot_range_modifier for key, shoot_range in self.shoot_range.items()}
+    self.shoot_range = {key: (shoot_range + shoot_range_bonus) * shoot_range_modifier for key, shoot_range in
+                        self.shoot_range.items()}
     self.melee_def = (self.melee_def + melee_def_bonus) * melee_def_modifier
     self.range_def = (self.range_def + range_def_bonus) * range_def_modifier
     self.accuracy = (self.accuracy + accuracy_bonus) * accuracy_modifier
@@ -296,8 +304,10 @@ def status_update(self, weather=None):
         self.rotate_speed = self.speed
 
     # Cooldown, active and effect timer function
-    self.skill_cooldown = {key: val - self.timer for key, val in self.skill_cooldown.items()}  # cooldown decrease overtime
-    self.skill_cooldown = {key: val for key, val in self.skill_cooldown.items() if val > 0}  # remove cooldown if time reach 0
+    self.skill_cooldown = {key: val - self.timer for key, val in
+                           self.skill_cooldown.items()}  # cooldown decrease overtime
+    self.skill_cooldown = {key: val for key, val in self.skill_cooldown.items() if
+                           val > 0}  # remove cooldown if time reach 0
     self.idle_action = ()
     for key, value in self.skill_effect.items():  # Can't use dict comprehension here since value include all other skill stat
         value["Duration"] -= self.timer
@@ -305,7 +315,8 @@ def status_update(self, weather=None):
             self.idle_action = self.command_action
 
     self.skill_effect = {key: val for key, val in self.skill_effect.items() if
-                         val["Duration"] > 0 and len(val["Restriction"]) > 0 and self.state in val["Restriction"]}  # remove effect if time reach 0 or restriction state is not met
+                         val["Duration"] > 0 and len(val["Restriction"]) > 0 and self.state in val[
+                             "Restriction"]}  # remove effect if time reach 0 or restriction state is not met
     for a, b in self.status_effect.items():
         b["Duration"] -= self.timer
 

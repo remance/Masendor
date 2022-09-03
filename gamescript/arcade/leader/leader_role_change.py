@@ -1,6 +1,3 @@
-import pygame
-
-
 def leader_role_change(self, leader):
     """Change stat that related to army role such as in leader dead event"""
     leader.bad_morale = (20, 30)  # sub general morale lost for bad event
@@ -19,4 +16,3 @@ def leader_role_change(self, leader):
             for this_unit in self.battle.all_team_unit[self.team]:
                 this_unit.team_commander = self.leader[0]
                 this_unit.authority_recalculation()
-

@@ -1,9 +1,8 @@
-import os
 import csv
+import os
 from pathlib import Path
 
 import pygame
-
 from gamescript.common import utility
 
 load_textures = utility.load_textures
@@ -52,12 +51,13 @@ class TroopAnimationData:
         edit_file.close()
 
         self.generic_action_data = {}
-        with open(os.path.join(main_dir, "data", "animation", "action", "generic.csv"), encoding="utf-8", mode="r") as edit_file:
+        with open(os.path.join(main_dir, "data", "animation", "action", "generic.csv"), encoding="utf-8",
+                  mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             part_name_header = rd[0]
             header = rd[0]
-            tuple_column = ("Properties", )
+            tuple_column = ("Properties",)
             tuple_column = [index for index, item in enumerate(part_name_header) if item in tuple_column]
             part_name_header = part_name_header[1:]
             for row_index, row in enumerate(rd):
@@ -66,12 +66,14 @@ class TroopAnimationData:
                     for n, i in enumerate(row):
                         row = stat_convert(row, n, i, tuple_column=tuple_column)
                     row = row[1:]
-                    self.generic_action_data[key] = {part_name_header[item_index]: item for item_index, item in enumerate(row)}
+                    self.generic_action_data[key] = {part_name_header[item_index]: item for item_index, item in
+                                                     enumerate(row)}
         edit_file.close()
 
         self.generic_animation_pool = []
         for direction in direction_list:
-            with open(os.path.join(main_dir, "data", "animation", "generic", direction + ".csv"), encoding="utf-8", mode="r") as edit_file:
+            with open(os.path.join(main_dir, "data", "animation", "generic", direction + ".csv"), encoding="utf-8",
+                      mode="r") as edit_file:
                 rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
                 rd = [row for row in rd]
                 part_name_header = rd[0]
@@ -94,9 +96,11 @@ class TroopAnimationData:
                             row = stat_convert(row, n, i, list_column=list_column)
                         row = row[1:]
                         if key in animation_pool:
-                            animation_pool[key].append({part_name_header[item_index]: item for item_index, item in enumerate(row)})
+                            animation_pool[key].append(
+                                {part_name_header[item_index]: item for item_index, item in enumerate(row)})
                         else:
-                            animation_pool[key] = [{part_name_header[item_index]: item for item_index, item in enumerate(row)}]
+                            animation_pool[key] = [
+                                {part_name_header[item_index]: item for item_index, item in enumerate(row)}]
                 self.generic_animation_pool.append(animation_pool)
             edit_file.close()
 
@@ -157,7 +161,8 @@ class TroopAnimationData:
             for direction in direction_list:
                 part_folder = Path(os.path.join(main_dir, "data", "sprite", "generic", race, direction))
                 try:
-                    subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
+                    subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if
+                                      x.is_dir()]
                     self.gen_body_sprite_pool[race][direction] = {}
                     for folder in subdirectories:
                         imgs = load_textures(main_dir, folder)
@@ -170,12 +175,16 @@ class TroopAnimationData:
             self.gen_armour_sprite_pool[race] = {}
             for direction in direction_list:
                 try:
-                    part_subfolder = Path(os.path.join(main_dir, "data", "sprite", "generic", race, direction, "armour"))
-                    subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_subfolder.iterdir() if x.is_dir()]
+                    part_subfolder = Path(
+                        os.path.join(main_dir, "data", "sprite", "generic", race, direction, "armour"))
+                    subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_subfolder.iterdir() if
+                                      x.is_dir()]
                     for subfolder in subdirectories:
                         part_subsubfolder = Path(
-                            os.path.join(main_dir, "data", "sprite", "generic", race, direction, "armour", subfolder[-1]))
-                        subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in part_subsubfolder.iterdir() if
+                            os.path.join(main_dir, "data", "sprite", "generic", race, direction, "armour",
+                                         subfolder[-1]))
+                        subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in part_subsubfolder.iterdir()
+                                             if
                                              x.is_dir()]
                         if subfolder[-1] not in self.gen_armour_sprite_pool[race]:
                             self.gen_armour_sprite_pool[race][subfolder[-1]] = {}
@@ -186,7 +195,8 @@ class TroopAnimationData:
                             body_subsubfolder = Path(
                                 os.path.join(main_dir, "data", "sprite", "generic", race, direction, "armour",
                                              subfolder[-1], subsubfolder[-1]))
-                            body_directories = [str(x).split("data\\")[1].split("\\") for x in body_subsubfolder.iterdir()
+                            body_directories = [str(x).split("data\\")[1].split("\\") for x in
+                                                body_subsubfolder.iterdir()
                                                 if x.is_dir()]
                             for body_folder in body_directories:
                                 imgs = load_textures(main_dir,
@@ -207,7 +217,8 @@ class TroopAnimationData:
             for subfolder in subsubdirectories:
                 self.gen_weapon_sprite_pool[folder[-1]][subfolder[-1]] = {}
                 for direction in direction_list:
-                    imgs = load_textures(main_dir, ["sprite", "generic", "weapon", folder[-1], subfolder[-1], direction])
+                    imgs = load_textures(main_dir,
+                                         ["sprite", "generic", "weapon", folder[-1], subfolder[-1], direction])
                     if direction not in self.gen_weapon_sprite_pool[folder[-1]]:
                         self.gen_weapon_sprite_pool[folder[-1]][subfolder[-1]][direction] = imgs
                     else:

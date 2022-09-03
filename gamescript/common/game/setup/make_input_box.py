@@ -8,7 +8,7 @@ def make_input_box(main_dir, screen_scale, screen_rect, image_list):
     """Input box popup"""
     input_ui_image = load_image(main_dir, screen_scale, "input_ui.png", "ui\\mainmenu_ui")
     input_ui = menu.InputUI(screen_scale, input_ui_image,
-                                 (screen_rect.width / 2, screen_rect.height / 2))  # user text input ui box popup
+                            (screen_rect.width / 2, screen_rect.height / 2))  # user text input ui box popup
     input_ok_button = menu.MenuButton(screen_scale, image_list,
                                       (input_ui.rect.midleft[0] + (image_list[0].get_width() / 1.2),
                                        input_ui.rect.midleft[1] + (image_list[0].get_height() / 1.3)),
@@ -21,7 +21,7 @@ def make_input_box(main_dir, screen_scale, screen_rect, image_list):
     input_box = menu.InputBox(screen_scale, input_ui.rect.center, input_ui.image.get_width())  # user text input box
 
     confirm_ui = menu.InputUI(screen_scale, input_ui_image,
-                                   (screen_rect.width / 2, screen_rect.height / 2))  # user confirm input ui box popup
+                              (screen_rect.width / 2, screen_rect.height / 2))  # user confirm input ui box popup
 
     return {"input_ui": input_ui, "input_ok_button": input_ok_button, "input_cancel_button": input_cancel_button,
             "input_box": input_box, "confirm_ui": confirm_ui}

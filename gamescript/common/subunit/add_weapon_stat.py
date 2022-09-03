@@ -1,4 +1,3 @@
-
 def add_weapon_stat(self):
     self.melee_weapon_set = {0: 0, 1: 0}
     self.range_weapon_set = {0: 0, 1: 0}
@@ -15,11 +14,12 @@ def add_weapon_stat(self):
                                         (weapon_stat[damage + " Damage"] * (self.strength * dmg_scaling[0] / 100) +
                                          (weapon_stat[damage + " Damage"] * (self.dexterity * dmg_scaling[1] / 100)))
                 self.original_weapon_dmg[set_index][weapon_index][damage] = [
-                damage_with_attribute * weapon_stat["Damage Balance"] * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"],
-                damage_with_attribute * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]]
+                    damage_with_attribute * weapon_stat["Damage Balance"] *
+                    self.troop_data.equipment_grade_list[weapon[1]]["Modifier"],
+                    damage_with_attribute * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]]
                 dmg_sum += self.original_weapon_dmg[set_index][weapon_index][damage][0]
             self.weapon_penetrate[set_index][weapon_index] = weapon_stat["Armour Penetration"] * \
-                                                      self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]
+                                                             self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]
             if weapon_stat["Magazine"] == 0:  # weapon is melee weapon with no magazine to load ammo
                 self.melee_weapon_set[set_index] += dmg_sum  # add weapon damage for sort
                 self.magazine_count[set_index][weapon_index] = 0  # remove modifier
@@ -28,7 +28,9 @@ def add_weapon_stat(self):
                 self.magazine_count[set_index][weapon_index] *= weapon_stat["Ammunition"]
                 self.magazine_size[set_index][weapon_index] = weapon_stat[
                     "Magazine"]  # can shoot how many times before have to reload
-                self.original_range[set_index][weapon_index] = weapon_stat["Range"] * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]
+                self.original_range[set_index][weapon_index] = weapon_stat["Range"] * \
+                                                               self.troop_data.equipment_grade_list[weapon[1]][
+                                                                   "Modifier"]
 
                 self.range_weapon_set[set_index] += dmg_sum  # add weapon damage for sort
 

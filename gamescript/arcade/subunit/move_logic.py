@@ -1,6 +1,6 @@
 import random
-import pygame
 
+import pygame
 from gamescript.common import utility
 
 rotation_xy = utility.rotation_xy
@@ -22,7 +22,8 @@ def move_logic(self, dt, unit_state, collide_list):
             if self.state in (96, 98, 99):  # retreat
                 enemy_collide_check = False
                 no_collide_check = True  # bypass collide
-            elif 0 in self.skill_effect and random.randint(0, 1) == 0:  # chance to charge through TODO add charge power vs def
+            elif 0 in self.skill_effect and random.randint(0,
+                                                           1) == 0:  # chance to charge through TODO add charge power vs def
                 enemy_collide_check = False
 
         if no_collide_check and enemy_collide_check is False and \
@@ -65,7 +66,8 @@ def move_logic(self, dt, unit_state, collide_list):
                     if new_move_length <= move_length:  # move normally according to move speed
                         self.base_pos = new_pos
                         self.pos = self.base_pos * self.zoom
-                        self.rect.center = list(int(v) for v in self.pos)  # list rect so the sprite gradually move to position
+                        self.rect.center = list(
+                            int(v) for v in self.pos)  # list rect so the sprite gradually move to position
                         self.dmg_rect.center = self.rect.center
                         self.new_angle = self.set_rotate(self.base_target)
                         if self.walk:
@@ -79,7 +81,8 @@ def move_logic(self, dt, unit_state, collide_list):
                         self.base_pos += move  # adjust base position according to movement
 
                     if len(self.combat_move_queue) > 0 and self.base_pos.distance_to(
-                            pygame.Vector2(self.combat_move_queue[0])) < 0.1:  # reach the current queue point, remove from queue
+                            pygame.Vector2(
+                                self.combat_move_queue[0])) < 0.1:  # reach the current queue point, remove from queue
                         self.combat_move_queue = self.combat_move_queue[1:]
 
                     self.change_pos_scale()
@@ -103,4 +106,3 @@ def move_logic(self, dt, unit_state, collide_list):
                         self.unit.number_pos = rotation_xy(self.unit.base_pos, number_pos, self.unit.radians_angle)
                         self.unit.true_number_pos = self.unit.number_pos * (
                                 11 - self.unit.zoom)  # find new position for troop number text
-

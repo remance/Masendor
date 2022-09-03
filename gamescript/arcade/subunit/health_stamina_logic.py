@@ -67,6 +67,3 @@ def health_stamina_logic(self, dt):
                     break
 
             self.old_last_stamina = self.stamina
-
-
-

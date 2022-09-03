@@ -37,7 +37,8 @@ def loss_cal(self, target, final_dmg, final_morale_dmg, leader_dmg, element_effe
 
     self.base_morale += round((final_morale_dmg / 5))  # recover some morale when deal morale dmg to enemy
 
-    if target.leader is not None and target.leader.health > 0 and random.randint(0, 10) > 9:  # dmg on subunit leader, only 10% chance
+    if target.leader is not None and target.leader.health > 0 and random.randint(0,
+                                                                                 10) > 9:  # dmg on subunit leader, only 10% chance
         final_leader_dmg = round(leader_dmg - (leader_dmg * target.leader.combat / 101))
         if final_leader_dmg > target.leader.health:
             final_leader_dmg = target.leader.health

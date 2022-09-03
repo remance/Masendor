@@ -10,7 +10,8 @@ def unit_icon_mouse_over(self, mouse_up, mouse_right):
     :return:
     """
     self.click_any = True
-    if self.game_state == "battle" or (self.game_state == "editor" and self.subunit_build not in self.battle_ui_updater):
+    if self.game_state == "battle" or (
+            self.game_state == "editor" and self.subunit_build not in self.battle_ui_updater):
         for icon in self.unit_icon:
             if icon.rect.collidepoint(self.mouse_pos):
                 if mouse_up:
@@ -30,5 +31,3 @@ def unit_icon_mouse_over(self, mouse_up, mouse_right):
                     self.camera_pos = self.base_camera_pos * self.camera_zoom
                 break
     return self.click_any
-
-

@@ -17,18 +17,22 @@ def change_battle_state(self):
 
         self.troop_card_button[0].rect = self.troop_card_button[0].image.get_rect(
             center=(self.troop_card_ui.rect.topleft[0] + (self.troop_card_button[0].image.get_width() / 2),
-                    self.troop_card_ui.rect.topleft[1] + (self.troop_card_button[2].image.get_width() * 3)))  # description button
+                    self.troop_card_ui.rect.topleft[1] + (
+                                self.troop_card_button[2].image.get_width() * 3)))  # description button
         self.troop_card_button[1].rect = self.troop_card_button[1].image.get_rect(
             center=(self.troop_card_ui.rect.topleft[0] + (self.troop_card_button[1].image.get_width() / 2),
                     self.troop_card_ui.rect.topleft[1] + (self.troop_card_button[2].image.get_width())))  # stat button
         self.troop_card_button[2].rect = self.troop_card_button[2].image.get_rect(
             center=(self.troop_card_ui.rect.topleft[0] + (self.troop_card_button[2].image.get_width() / 2),
-                    self.troop_card_ui.rect.topleft[1] + (self.troop_card_button[2].image.get_width()) * 2))  # skill button
+                    self.troop_card_ui.rect.topleft[1] + (
+                        self.troop_card_button[2].image.get_width()) * 2))  # skill button
         self.troop_card_button[3].rect = self.troop_card_button[3].image.get_rect(
             center=(self.troop_card_ui.rect.topleft[0] + (self.troop_card_button[3].image.get_width() / 2),
-                    self.troop_card_ui.rect.topleft[1] + (self.troop_card_button[2].image.get_width() * 4)))  # equipment button
+                    self.troop_card_ui.rect.topleft[1] + (
+                                self.troop_card_button[2].image.get_width() * 4)))  # equipment button
 
-        self.battle_ui_updater.remove(self.filter_stuff, self.unit_setup_stuff, self.leader_now, self.button_ui, self.warning_msg)
+        self.battle_ui_updater.remove(self.filter_stuff, self.unit_setup_stuff, self.leader_now, self.button_ui,
+                                      self.warning_msg)
         self.battle_ui_updater.add(self.event_log, self.event_log.scroll, self.event_log_button, self.time_button)
 
         self.game_speed = 1
@@ -50,29 +54,36 @@ def change_battle_state(self):
             del arrow
 
         for this_unit in self.all_team_unit["alive"]:  # reset all unit state
-            this_unit.player_input(self.battle_mouse_pos, False, False, False, self.last_mouseover, None, other_command=2)
+            this_unit.player_input(self.battle_mouse_pos, False, False, False, self.last_mouseover, None,
+                                   other_command=2)
 
         self.troop_card_ui.rect = self.troop_card_ui.image.get_rect(bottomright=(self.screen_rect.width,
                                                                                  self.screen_rect.height))  # troop info card ui
         self.troop_card_button[0].rect = self.troop_card_button[0].image.get_rect(
             center=(self.troop_card_ui.rect.topleft[0] + (self.troop_card_button[0].image.get_width() / 2),
-                    self.troop_card_ui.rect.topleft[1] + (self.troop_card_button[2].image.get_width() * 3)))  # description button
+                    self.troop_card_ui.rect.topleft[1] + (
+                                self.troop_card_button[2].image.get_width() * 3)))  # description button
         self.troop_card_button[1].rect = self.troop_card_button[1].image.get_rect(
             center=(self.troop_card_ui.rect.topleft[0] + (self.troop_card_button[1].image.get_width() / 2),
                     self.troop_card_ui.rect.topleft[1] + (self.troop_card_button[2].image.get_width())))  # stat button
         self.troop_card_button[2].rect = self.troop_card_button[2].image.get_rect(
             center=(self.troop_card_ui.rect.topleft[0] + (self.troop_card_button[2].image.get_width() / 2),
-                    self.troop_card_ui.rect.topleft[1] + (self.troop_card_button[2].image.get_width()) * 2))  # skill button
+                    self.troop_card_ui.rect.topleft[1] + (
+                        self.troop_card_button[2].image.get_width()) * 2))  # skill button
         self.troop_card_button[3].rect = self.troop_card_button[3].image.get_rect(
             center=(self.troop_card_ui.rect.topleft[0] + (self.troop_card_button[3].image.get_width() / 2),
-                    self.troop_card_ui.rect.topleft[1] + (self.troop_card_button[2].image.get_width() * 4)))  # equipment button
+                    self.troop_card_ui.rect.topleft[1] + (
+                                self.troop_card_button[2].image.get_width() * 4)))  # equipment button
 
-        self.battle_ui_updater.remove(self.event_log, self.event_log.scroll, self.troop_card_button, self.col_split_button, self.row_split_button,
-                                      self.event_log_button, self.time_button, self.unitstat_ui, self.inspect_ui, self.leader_now, self.inspect_subunit,
+        self.battle_ui_updater.remove(self.event_log, self.event_log.scroll, self.troop_card_button,
+                                      self.col_split_button, self.row_split_button,
+                                      self.event_log_button, self.time_button, self.unitstat_ui, self.inspect_ui,
+                                      self.leader_now, self.inspect_subunit,
                                       self.inspect_selected_border, self.inspect_button, self.behaviour_switch_button)
 
         self.leader_now = [this_leader for this_leader in self.preview_leader]  # reset leader in command ui
-        self.battle_ui_updater.add(self.filter_stuff, self.unit_setup_stuff, self.test_button, self.command_ui, self.troop_card_ui, self.leader_now,
+        self.battle_ui_updater.add(self.filter_stuff, self.unit_setup_stuff, self.test_button, self.command_ui,
+                                   self.troop_card_ui, self.leader_now,
                                    self.time_button)
         self.slot_display_button.event = 0  # reset display editor ui button to show
         self.game_speed = 0  # pause battle

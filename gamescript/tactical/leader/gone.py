@@ -16,16 +16,20 @@ def gone(self, event_text={96: "retreating", 97: "captured", 98: "missing", 99: 
         this_bad_morale = self.bad_morale[1]
 
     for subunit in self.unit.subunit_list:
-        subunit.base_morale -= (this_bad_morale * subunit.mental)  # decrease all subunit morale when leader destroyed depending on position
+        subunit.base_morale -= (
+                    this_bad_morale * subunit.mental)  # decrease all subunit morale when leader destroyed depending on position
         subunit.morale_regen -= (0.3 * subunit.mental)  # all subunit morale regen slower per leader dead
 
     if self.commander:  # reduce morale to whole army if commander destroyed from the melee_dmg (leader destroyed cal is in leader.py)
         self.battle.drama_text.queue.append(str(self.name) + " is " + event_text[self.state])
-        event_map_id = "ld" + str(self.unit.team - 1)  # read ld event log for special log when team commander destroyed, not used for other leader
+        event_map_id = "ld" + str(
+            self.unit.team - 1)  # read ld event log for special log when team commander destroyed, not used for other leader
         if self.original_commander and self.state == 100:
-            self.battle.event_log.add_log([0, "Commander " + str(self.name) + " is " + event_text[self.state]], [0, 1, 2], event_map_id)
+            self.battle.event_log.add_log([0, "Commander " + str(self.name) + " is " + event_text[self.state]],
+                                          [0, 1, 2], event_map_id)
         else:
-            self.battle.event_log.add_log([0, "Commander " + str(self.name) + " is " + event_text[self.state]], [0, 1, 2])
+            self.battle.event_log.add_log([0, "Commander " + str(self.name) + " is " + event_text[self.state]],
+                                          [0, 1, 2])
 
         for unit in self.battle.all_team_unit[self.unit.team]:
             for subunit in unit.subunit_list:
@@ -55,7 +59,8 @@ def gone(self, event_text={96: "retreating", 97: "captured", 98: "missing", 99: 
                               (self.unit.leader[0].range_command - 5) * 0.1,
                               (self.unit.leader[0].cav_command - 5) * 0.1)  # reset command buff to new leader
     for this_subunit in self.unit.subunit_list:
-        this_subunit.command_buff = self.unit.command_buff[this_subunit.subunit_type] * 100  # buff according to subunit type
+        this_subunit.command_buff = self.unit.command_buff[
+                                        this_subunit.subunit_type] * 100  # buff according to subunit type
     self.authority = 0
     self.melee_command = 0
     self.range_command = 0

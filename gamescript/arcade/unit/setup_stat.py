@@ -1,4 +1,3 @@
-
 def setup_stat(self, battle_start=False):
     """Grab stat from all subunit in the unit"""
     self.troop_number = 0
@@ -35,4 +34,5 @@ def setup_stat(self, battle_start=False):
 
     self.troop_number = int(self.troop_number)  # convert to int to prevent float decimal
 
-    self.cal_unit_stat(how_many, all_speed, all_shoot_range, battle_start)  # calculate stat for unit related calculation
+    self.cal_unit_stat(how_many, all_speed, all_shoot_range,
+                       battle_start)  # calculate stat for unit related calculation

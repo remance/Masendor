@@ -72,4 +72,3 @@ def convert_unit_slot_to_dict(self, name, pos=None, add_id=None):
         current_preset = None
 
     return current_preset
-

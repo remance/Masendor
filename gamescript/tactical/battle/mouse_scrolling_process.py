@@ -41,12 +41,14 @@ def mouse_scrolling_process(self, mouse_scroll_up, mouse_scroll_down):
 
     elif self.popup_list_box in self.battle_ui_updater:  # mouse scroll on popup list
         if self.popup_list_box.type == "terrain":
-            self.current_pop_up_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down, self.popup_list_box.scroll,
+            self.current_pop_up_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down,
+                                                  self.popup_list_box.scroll,
                                                   self.popup_list_box,
                                                   self.current_pop_up_row, self.battle_map_base.terrain_list,
                                                   self.popup_namegroup, self.battle_ui_updater)
         elif self.popup_list_box.type == "feature":
-            self.current_pop_up_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down, self.popup_list_box.scroll,
+            self.current_pop_up_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down,
+                                                  self.popup_list_box.scroll,
                                                   self.popup_list_box,
                                                   self.current_pop_up_row, self.battle_map_feature.feature_list,
                                                   self.popup_namegroup, self.battle_ui_updater)
@@ -55,23 +57,30 @@ def mouse_scrolling_process(self, mouse_scroll_up, mouse_scroll_down):
                                        self.popup_list_box, self.current_pop_up_row, self.weather_list,
                                        self.popup_namegroup, self.battle_ui_updater)
         elif self.popup_list_box.type == "leader":
-            self.current_pop_up_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down, self.popup_list_box.scroll,
+            self.current_pop_up_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down,
+                                                  self.popup_list_box.scroll,
                                                   self.popup_list_box, self.current_pop_up_row, self.leader_list,
                                                   self.popup_namegroup, self.battle_ui_updater, layer=19)
 
-    elif self.unit_preset_list_box in self.battle_ui_updater and self.unit_preset_list_box.rect.collidepoint(self.mouse_pos):  # mouse scroll on unit preset list
-        self.current_unit_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down, self.unit_preset_list_box.scroll,
+    elif self.unit_preset_list_box in self.battle_ui_updater and self.unit_preset_list_box.rect.collidepoint(
+            self.mouse_pos):  # mouse scroll on unit preset list
+        self.current_unit_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down,
+                                            self.unit_preset_list_box.scroll,
                                             self.unit_preset_list_box,
                                             self.current_unit_row, list(self.custom_unit_preset_list.keys()),
                                             self.unitpreset_namegroup, self.battle_ui_updater)
-    elif self.editor_troop_list_box in self.battle_ui_updater and self.editor_troop_list_box.rect.collidepoint(self.mouse_pos):
+    elif self.editor_troop_list_box in self.battle_ui_updater and self.editor_troop_list_box.rect.collidepoint(
+            self.mouse_pos):
         if self.current_list_show == "troop":  # mouse scroll on troop list
-            self.current_troop_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down, self.editor_troop_list_box.scroll,
+            self.current_troop_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down,
+                                                 self.editor_troop_list_box.scroll,
                                                  self.editor_troop_list_box, self.current_troop_row, self.troop_list,
                                                  self.troop_namegroup, self.battle_ui_updater)
         elif self.current_list_show == "faction":  # mouse scroll on faction list
-            self.current_troop_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down, self.editor_troop_list_box.scroll,
-                                                 self.editor_troop_list_box, self.current_troop_row, self.faction_data.faction_name_list,
+            self.current_troop_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down,
+                                                 self.editor_troop_list_box.scroll,
+                                                 self.editor_troop_list_box, self.current_troop_row,
+                                                 self.faction_data.faction_name_list,
                                                  self.troop_namegroup, self.battle_ui_updater)
 
     elif self.map_scale_delay == 0:  # Scrolling in self map to zoom

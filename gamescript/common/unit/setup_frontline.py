@@ -23,7 +23,8 @@ def setup_frontline(self):
                               np.fliplr([subunit_array])[0]]  # rotate the array based on the side
         subunit_array = [subunit_array[0], full_subunit_array[1][0], full_subunit_array[2][0], full_subunit_array[3][0]]
         for index, who_frontline in enumerate(subunit_array):
-            if any(subunit != 0 for subunit in who_frontline) is False:  # has completely empty outer row or column, remove them
+            if any(subunit != 0 for subunit in
+                   who_frontline) is False:  # has completely empty outer row or column, remove them
                 if index == 0:  # front side
                     self.subunit_id_array = self.subunit_id_array[1:]
                 elif index == 1:  # left side
@@ -45,7 +46,8 @@ def setup_frontline(self):
             position = np.where((self.subunit_id_array == subunit.game_id))
             self.subunit_object_array[position[0][0]][position[1][0]] = subunit
             subunit.unit_position = (self.subunit_position_list[position[0][0]][position[1][0]][0] / 10,
-                                     self.subunit_position_list[position[0][0]][position[1][0]][1] / 10)  # new sprite position
+                                     self.subunit_position_list[position[0][0]][position[1][0]][
+                                         1] / 10)  # new sprite position
 
         number_pos = (self.base_pos[0] - self.base_width_box,
                       (self.base_pos[1] + self.base_height_box))  # find position for number text

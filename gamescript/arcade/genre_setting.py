@@ -43,13 +43,16 @@ object_variable = {("self", "object"): {"add_troop_number_sprite": False,  # tro
                                         },
                    ("battle_game", "self-object"): {"start_zoom_mode": "Follow",  # one character control camera
                                                     "start_zoom": 10,  # start with the closest zoom
-                                                    "troop_size_adjustable": True,  # troop can be different size and affect sprite size
+                                                    "troop_size_adjustable": True,
+                                                    # troop can be different size and affect sprite size
                                                     "time_speed_scale": 30,  # how fast time fly in battle
-                                                    "unit_behaviour_wheel": unit_behaviour_wheel  # player unit behaviour control via wheel ui
+                                                    "unit_behaviour_wheel": unit_behaviour_wheel
+                                                    # player unit behaviour control via wheel ui
                                                     },
                    ("unit", "class"): {"unit_size": unit_size,  # maximum array size unit can contain subunits
                                        },
-                   ("subunit", "class"): {"dmg_include_leader": False,  # not include leader in damage calculation, leader is subunit
+                   ("subunit", "class"): {"dmg_include_leader": False,
+                                          # not include leader in damage calculation, leader is subunit
                                           "stat_use_troop_number": False,  # arcade mode count one subunit as one troop
                                           }
                    }

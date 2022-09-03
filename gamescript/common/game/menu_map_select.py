@@ -51,7 +51,8 @@ def menu_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse
             self.menu_state = "team_select"
             self.select_button.event = False
 
-            self.main_ui_updater.remove(*self.map_select_button, self.map_list_box, self.map_list_box.scroll, self.map_description)
+            self.main_ui_updater.remove(*self.map_select_button, self.map_list_box, self.map_list_box.scroll,
+                                        self.map_description)
             self.menu_button.remove(*self.map_select_button)
 
             for stuff in self.map_namegroup:  # remove map name item

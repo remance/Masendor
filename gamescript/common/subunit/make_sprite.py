@@ -1,8 +1,7 @@
 import math
+
 import pygame
-
-from PIL import Image, ImageOps, ImageFilter, ImageEnhance
-
+from PIL import Image, ImageFilter, ImageEnhance
 from gamescript.common import utility, animation
 
 rotation_xy = utility.rotation_xy
@@ -10,8 +9,10 @@ rotation_xy = utility.rotation_xy
 default_sprite_size = (200, 200)
 
 
-def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, body_sprite_pool, weapon_sprite_pool, armour_sprite_pool,
-                effect_sprite_pool, animation_property, weapon_joint_list, weapon, armour, hair_colour_list, skin_colour_list, genre_sprite_size,
+def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, body_sprite_pool, weapon_sprite_pool,
+                armour_sprite_pool,
+                effect_sprite_pool, animation_property, weapon_joint_list, weapon, armour, hair_colour_list,
+                skin_colour_list, genre_sprite_size,
                 screen_scale):
     apply_colour = animation.apply_colour
 
@@ -22,7 +23,8 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
     size = int(size)
     if size > 5:
         size = 5
-    surface = pygame.Surface((default_sprite_size[0] * size, default_sprite_size[1] * size), pygame.SRCALPHA)  # default size will scale down later
+    surface = pygame.Surface((default_sprite_size[0] * size, default_sprite_size[1] * size),
+                             pygame.SRCALPHA)  # default size will scale down later
 
     except_list = ["eye", "mouth", "size", "property"]
 
@@ -39,7 +41,8 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
             if p in layer:
                 this_armour = armour[p_index]
         if "head" in layer:
-            image_part = generate_head(layer[:2], animation_part_list, part[0:3], troop_sprite_list, body_sprite_pool, armour_sprite_pool,
+            image_part = generate_head(layer[:2], animation_part_list, part[0:3], troop_sprite_list, body_sprite_pool,
+                                       armour_sprite_pool,
                                        this_armour, hair_colour_list, skin_colour_list)
         elif "weapon" in layer:
             new_part.insert(2, "Dummy")  # insert dummy value for weapon list so can use indexing similar as other part
@@ -47,7 +50,8 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
         elif "effect" in layer and "dmg" not in layer:
             image_part = generate_body(layer, part[0:3], troop_sprite_list, effect_sprite_pool)
         else:  # other body part
-            image_part = generate_body(layer, part[0:3], troop_sprite_list, body_sprite_pool, armour_sprite_pool=armour_sprite_pool,
+            image_part = generate_body(layer, part[0:3], troop_sprite_list, body_sprite_pool,
+                                       armour_sprite_pool=armour_sprite_pool,
                                        colour_list=skin_colour_list, armour=this_armour)
         if image_part is not None:  # skip for empty image
             target = (new_part[3], new_part[4])
@@ -78,14 +82,15 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
                 center = pygame.Vector2(image_part.get_width() / 2, image_part.get_height() / 2)
                 use_center = False
                 if ("p1_main" in layer and "p1_fix_main_weapon" not in check_prop) or \
-                   ("p2_main" in layer and "p2_fix_main_weapon" not in check_prop) or \
-                   ("p1_sub" in layer and "p1_fix_sub_weapon" not in check_prop) or \
-                   ("p2_sub" in layer and "p2_fix_sub_weapon" not in check_prop):
+                        ("p2_main" in layer and "p2_fix_main_weapon" not in check_prop) or \
+                        ("p1_sub" in layer and "p1_fix_sub_weapon" not in check_prop) or \
+                        ("p2_sub" in layer and "p2_fix_sub_weapon" not in check_prop):
 
                     target = (animation_part_list["p1_r_hand"][3], animation_part_list["p1_r_hand"][4])
                     if "p2_main" in layer:  # change p2 main weapon pos to p2 right hand
                         target = (animation_part_list["p2_r_hand"][3], animation_part_list["p2_r_hand"][4])
-                    elif "sub" in layer and ("2hand" in animation_name or "2pole" in animation_name):  # has sub weapon but main is 2 hands weapon
+                    elif "sub" in layer and (
+                            "2hand" in animation_name or "2pole" in animation_name):  # has sub weapon but main is 2 hands weapon
                         use_center = True  # use pos according to data instead of hand, usually attach to the back of body part. and use center not joint
                     else:
                         if "p1_sub" in layer:
@@ -94,8 +99,10 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
                             target = (animation_part_list["p2_l_hand"][3], animation_part_list["p2_l_hand"][4])
                     new_target = target
 
-                if weapon_joint_list[new_part[0]][part_name] != "center" and use_center is False:  # use weapon joint pos and hand pos for weapon position blit
-                    main_joint_pos = [weapon_joint_list[new_part[0]][part_name][0], weapon_joint_list[new_part[0]][part_name][1]]
+                if weapon_joint_list[new_part[0]][
+                    part_name] != "center" and use_center is False:  # use weapon joint pos and hand pos for weapon position blit
+                    main_joint_pos = [weapon_joint_list[new_part[0]][part_name][0],
+                                      weapon_joint_list[new_part[0]][part_name][1]]
 
                     # change pos from flip
                     if flip in (1, 3):  # horizontal flip
@@ -111,7 +118,8 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
                         radians_angle = math.radians(360 - angle)
                         if angle < 0:
                             radians_angle = math.radians(-angle)
-                        new_target = rotation_xy(target, new_target, radians_angle)  # find new center point with rotation
+                        new_target = rotation_xy(target, new_target,
+                                                 radians_angle)  # find new center point with rotation
 
             rect = part_rotated.get_rect(center=new_target)
             surface.blit(part_rotated, rect)
@@ -131,7 +139,8 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
             alpha = surface.split()[-1]  # save alpha
             if "blur" in prop:
                 surface = surface.filter(
-                    ImageFilter.GaussianBlur(radius=float(prop[prop.rfind("_") + 1:])))  # blur Image (or apply other filter in future)
+                    ImageFilter.GaussianBlur(
+                        radius=float(prop[prop.rfind("_") + 1:])))  # blur Image (or apply other filter in future)
             if "contrast" in prop:
                 enhancer = ImageEnhance.Contrast(surface)
                 surface = enhancer.enhance(float(prop[prop.rfind("_") + 1:]))
@@ -159,7 +168,8 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
                 animation_property.remove(prop)
 
     # change to whatever genre's specific size
-    surface = pygame.transform.scale(surface, (genre_sprite_size[0] * size * screen_scale[0], genre_sprite_size[1] * size * screen_scale[1]))
+    surface = pygame.transform.scale(surface, (
+    genre_sprite_size[0] * size * screen_scale[0], genre_sprite_size[1] * size * screen_scale[1]))
 
     return {"sprite": surface, "animation_property": tuple(animation_property), "frame_property": tuple(frame_property)}
 
@@ -182,7 +192,8 @@ def grab_face_part(pool, race, side, part, part_check, part_default=None):
     return surface
 
 
-def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool, armour_pool, armour, hair_colour_list, skin_colour_list):
+def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool, armour_pool, armour, hair_colour_list,
+                  skin_colour_list):
     apply_colour = animation.apply_colour
 
     head_sprite_surface = None
@@ -194,9 +205,11 @@ def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool
         head_rect = head.get_rect(midtop=(head_sprite_surface.get_width() / 2, 0))
         head_sprite_surface.blit(head, head_rect)
         face = [grab_face_part(body_pool, head_race, head_side, "eyebrow", sprite_list[p + "_eyebrow"]),
-                grab_face_part(body_pool, head_race, head_side, "eye", animation_part_list[p + "_eye"], sprite_list[p + "_eye"]),
+                grab_face_part(body_pool, head_race, head_side, "eye", animation_part_list[p + "_eye"],
+                               sprite_list[p + "_eye"]),
                 grab_face_part(body_pool, head_race, head_side, "beard", sprite_list[p + "_beard"]),
-                grab_face_part(body_pool, head_race, head_side, "mouth", animation_part_list[p + "_mouth"], sprite_list[p + "_mouth"])]
+                grab_face_part(body_pool, head_race, head_side, "mouth", animation_part_list[p + "_mouth"],
+                               sprite_list[p + "_mouth"])]
         # if skin != "white":
         #     face[0] = self.apply_colour(face[0], skin_colour)
 
@@ -218,8 +231,10 @@ def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool
 
     if sprite_list[p + "_head"] != "none":
         try:
-            gear_image = armour_pool[head_race][armour][sprite_list[p + "_head"]][head_side]["helmet"][body_part_list[2]]
-            rect = gear_image.get_rect(center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
+            gear_image = armour_pool[head_race][armour][sprite_list[p + "_head"]][head_side]["helmet"][
+                body_part_list[2]]
+            rect = gear_image.get_rect(
+                center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
             head_sprite_surface.blit(gear_image, rect)
         except KeyError:  # helmet folder not existed
             pass
@@ -242,7 +257,8 @@ def generate_body(part, body_part_list, troop_sprite_list, sprite_pool, armour_s
             if "sub" in part:
                 part_name = weapon[1][1]  # sub weapon
             if part_name is not None and part_name != "Unarmed":
-                sprite_image = sprite_pool[part_name][troop_sprite_list[weapon_part]][body_part_list[0]][body_part_list[1]].copy()
+                sprite_image = sprite_pool[part_name][troop_sprite_list[weapon_part]][body_part_list[0]][
+                    body_part_list[1]].copy()
         else:
             new_part_name = part
             part_name = part
@@ -262,8 +278,11 @@ def generate_body(part, body_part_list, troop_sprite_list, sprite_pool, armour_s
             part_name = part
             if "p1_" in part or "p2_" in part:
                 part_name = part[3:]  # remove p1_ or p2_ to get part name
-            gear_image = armour_sprite_pool[body_part_list[0]][armour][troop_sprite_list[part]][body_part_list[1]][part_name][body_part_list[2]]
-            new_sprite_image = pygame.Surface(gear_image.get_size(), pygame.SRCALPHA)  # create sprite based on armour size since it can be larger than body part
+            gear_image = \
+            armour_sprite_pool[body_part_list[0]][armour][troop_sprite_list[part]][body_part_list[1]][part_name][
+                body_part_list[2]]
+            new_sprite_image = pygame.Surface(gear_image.get_size(),
+                                              pygame.SRCALPHA)  # create sprite based on armour size since it can be larger than body part
             rect = sprite_image.get_rect(center=(new_sprite_image.get_width() / 2, new_sprite_image.get_height() / 2))
             new_sprite_image.blit(sprite_image, rect)
             rect = gear_image.get_rect(center=(new_sprite_image.get_width() / 2, new_sprite_image.get_height() / 2))
@@ -273,4 +292,3 @@ def generate_body(part, body_part_list, troop_sprite_list, sprite_pool, armour_s
         pass
 
     return sprite_image
-

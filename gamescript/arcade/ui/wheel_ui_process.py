@@ -27,7 +27,8 @@ def wheel_ui_process(self, choice):
             if choice == "Original":
                 self.current_selected.change_formation(formation="true original")
             elif choice == "Formation List":  # get formation from leader
-                self.unit_behaviour_wheel[choice] = {value: value for value in self.player_char.leader.formation}  # TODO change when has icon
+                self.unit_behaviour_wheel[choice] = {value: value for value in
+                                                     self.player_char.leader.formation}  # TODO change when has icon
                 renew_wheel(self, choice)
 
         elif choice in self.unit_behaviour_wheel["Formation Style"]:

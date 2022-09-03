@@ -27,6 +27,6 @@ def time_update(self):
             weather_effect_image = None
             if self.current_weather is not None:
                 weather_effect_image = self.weather_effect_images[self.current_weather.weather_type][
-                                           self.current_weather.level]
+                    self.current_weather.level]
             self.battle_map.add_effect(self.battle_map_height, effect_image=weather_effect_image,
                                        time_image=self.day_effect_images[self.day_time])

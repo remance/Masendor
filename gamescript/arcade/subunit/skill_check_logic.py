@@ -7,7 +7,8 @@ def skill_check_logic(self):
         if self.command_action:  # no current action and has skill command waiting
             command_action = self.command_action[0]
             if "Skill" in command_action:  # use skill and convert command action into skill action name
-                if ("Troop" in command_action and self.unit_leader is False) or ("Leader" in command_action and self.unit_leader):
+                if ("Troop" in command_action and self.unit_leader is False) or (
+                        "Leader" in command_action and self.unit_leader):
                     skill = int(self.command_action[0][-1])
                     if "Weapon" in command_action:  # weapon skill
                         skill = self.weapon_skill[self.equipped_weapon][skill]
@@ -37,7 +38,8 @@ def skill_check_logic(self):
                 elif "Charge" in command_action:
                     action = self.skill[0]["Action"].copy()
                     weapon = self.weapon_name[self.equipped_weapon][int(command_action[-1])]
-                    action[0] = ("Main_", "Sub_")[int(command_action[-1])] + self.action_list[weapon]["Common"] + "_" + action[0]
+                    action[0] = ("Main_", "Sub_")[int(command_action[-1])] + self.action_list[weapon]["Common"] + "_" + \
+                                action[0]
                     self.command_action = tuple(action)
                 else:
                     self.command_action = ()

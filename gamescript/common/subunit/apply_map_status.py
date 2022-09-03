@@ -1,5 +1,6 @@
 def apply_map_status(self, map_feature_mod):
-    if 0 not in map_feature_mod["Status"]:  # Some terrain feature can also cause status effect such as swimming in water
+    if 0 not in map_feature_mod[
+        "Status"]:  # Some terrain feature can also cause status effect such as swimming in water
         if 1 in map_feature_mod["Status"]:  # Shallow water type terrain
             self.status_effect[31] = self.status_list[31].copy()  # wet
         if 4 in map_feature_mod["Status"] or 5 in map_feature_mod["Status"]:  # Deep water type terrain

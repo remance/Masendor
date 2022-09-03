@@ -6,7 +6,8 @@ unit_behaviour_wheel = {}  # player unit behaviour control via wheel ui, not use
 
 # dict of variable that will get add into object in game
 object_variable = {("self", "object"): {"add_troop_number_sprite": True,  # troop number sprite
-                                        "char_select": False,  # not include character screen, player control multiple units
+                                        "char_select": False,
+                                        # not include character screen, player control multiple units
                                         "leader_sprite": False,  # leader has its own animation sprite
                                         "troop_sprite_size": (200, 200),  # troop animation sprite size
                                         "unit_size": unit_size,  # maximum array size unit can contain subunits
@@ -15,7 +16,8 @@ object_variable = {("self", "object"): {"add_troop_number_sprite": True,  # troo
                                                     "start_zoom": 1,  # start with the furthest zoom
                                                     "troop_size_adjustable": False,  # troop always at size 1
                                                     "time_speed_scale": 10,  # how fast time fly in battle
-                                                    "unit_behaviour_wheel": unit_behaviour_wheel  # player unit behaviour control via wheel ui
+                                                    "unit_behaviour_wheel": unit_behaviour_wheel
+                                                    # player unit behaviour control via wheel ui
                                                     },
                    ("unit", "class"): {"unit_size": unit_size,  # maximum array size unit can contain subunits
                                        },

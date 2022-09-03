@@ -1,6 +1,3 @@
-import csv
-import os
-
 import pygame.freetype
 
 

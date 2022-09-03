@@ -1,12 +1,7 @@
-import ast
-import csv
-import os
-
 import pygame
 import pygame.freetype
 import pygame.freetype
 import pyperclip
-from gamescript import battlemap
 from gamescript.common import utility
 
 
@@ -94,7 +89,8 @@ class SliderMenu(pygame.sprite.Sprite):
         self.min_value = self.pos[0] - (self.slider_size / self.value_scale)  # min value position of the scroll bar
         self.max_value = self.pos[0] + (self.slider_size / self.value_scale)  # max value position
         self.value = value
-        self.mouse_value = (self.slider_size * value / 100) + self.difference  # mouse position on the scroll bar convert to value
+        self.mouse_value = (
+                                       self.slider_size * value / 100) + self.difference  # mouse position on the scroll bar convert to value
         self.image_original = self.image.copy()
         button_rect = self.button_image_list[1].get_rect(center=(self.mouse_value, self.image.get_height() / 2))
         self.image.blit(self.button_image, button_rect)
@@ -376,7 +372,9 @@ class DescriptionBox(pygame.sprite.Sprite):
     def change_text(self, text):
         make_long_text = utility.make_long_text
         self.image = self.image_original.copy()  # reset self.image to new one from the loaded image
-        make_long_text(self.image, text, (int(self.text_size * self.screen_scale[0]), int(self.text_size * self.screen_scale[1])), self.font)
+        make_long_text(self.image, text,
+                       (int(self.text_size * self.screen_scale[0]), int(self.text_size * self.screen_scale[1])),
+                       self.font)
 
 
 class TeamCoa(pygame.sprite.Sprite):
@@ -390,13 +388,15 @@ class TeamCoa(pygame.sprite.Sprite):
 
         white_body = pygame.Surface((int(285 * screen_scale[0]), int(285 * screen_scale[1])))
         white_body.fill((255, 255, 255))
-        white_rect = white_body.get_rect(center=(self.selected_image.get_width() / 2, self.selected_image.get_height() / 2))
+        white_rect = white_body.get_rect(
+            center=(self.selected_image.get_width() / 2, self.selected_image.get_height() / 2))
         self.not_selected_image.blit(white_body, white_rect)
         self.selected_image.blit(white_body, white_rect)
 
         # v Coat of arm image to image
         coa_image = pygame.transform.scale(image, (int(200 * screen_scale[0]), int(200 * screen_scale[1])))
-        coa_rect = coa_image.get_rect(center=(self.selected_image.get_width() / 2, self.selected_image.get_height() / 2))
+        coa_rect = coa_image.get_rect(
+            center=(self.selected_image.get_width() / 2, self.selected_image.get_height() / 2))
         self.not_selected_image.blit(coa_image, coa_rect)
         self.selected_image.blit(coa_image, coa_rect)
         # ^ End Coat of arm
@@ -406,7 +406,8 @@ class TeamCoa(pygame.sprite.Sprite):
         font_size = 32
         self.font = pygame.font.SysFont("oldenglishtext", int(font_size * screen_scale[1]))
         text_surface = self.font.render(str(self.name), True, (0, 0, 0))
-        text_rect = text_surface.get_rect(center=(int(self.selected_image.get_width() / 2), self.selected_image.get_height() - (font_size / 1.5)))
+        text_rect = text_surface.get_rect(
+            center=(int(self.selected_image.get_width() / 2), self.selected_image.get_height() - (font_size / 1.5)))
         self.not_selected_image.blit(text_surface, text_rect)
         self.selected_image.blit(text_surface, text_rect)
         # ^ End faction name
@@ -547,7 +548,8 @@ class NameList(pygame.sprite.Sprite):
         self.selected = False
 
         # v White body square
-        small_image = pygame.Surface((box.image.get_width() - int(16 * screen_scale[0]), int((text_size + 2) * screen_scale[1])))
+        small_image = pygame.Surface(
+            (box.image.get_width() - int(16 * screen_scale[0]), int((text_size + 2) * screen_scale[1])))
         small_image.fill((255, 255, 255))
         small_rect = small_image.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
         self.image.blit(small_image, small_rect)

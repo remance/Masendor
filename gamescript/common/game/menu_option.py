@@ -1,5 +1,4 @@
 import pygame
-import sys
 
 from gamescript.common import utility
 
@@ -22,7 +21,8 @@ def menu_option(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scr
                     self.config)
         pygame.mixer.music.set_volume(self.master_volume)
 
-        if int(self.config["DEFAULT"]["screen_width"]) != self.screen_width or int(self.config["DEFAULT"]["screen_height"]) != self.screen_height:
+        if int(self.config["DEFAULT"]["screen_width"]) != self.screen_width or int(
+                self.config["DEFAULT"]["screen_height"]) != self.screen_height:
             change_resolution(self, (int(self.config["DEFAULT"]["screen_width"]), "",
                                      int(self.config["DEFAULT"]["screen_height"])))
 

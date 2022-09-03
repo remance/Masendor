@@ -107,7 +107,8 @@ class TopBar(pygame.sprite.Sprite):
 
     def value_input(self, who, weapon_list="", armour_list="", button="", change_option=0, split=False):
         position = 65
-        self.value = ["{:,}".format(who.troop_number) + " (" + "{:,}".format(who.max_health) + ")", who.stamina_state, who.morale_state, who.state]
+        self.value = ["{:,}".format(who.troop_number) + " (" + "{:,}".format(who.max_health) + ")", who.stamina_state,
+                      who.morale_state, who.state]
         if self.value[3] in self.unit_state_text:  # Check subunit state and blit name
             self.value[3] = self.unit_state_text[self.value[3]]
         # if type(self.value[2]) != str:
@@ -163,7 +164,7 @@ class TroopCard(pygame.sprite.Sprite):
         self.font_head = pygame.font.SysFont("curlz", font_size + 4)
         self.font_head.set_italic(True)
         self.font_long = pygame.font.SysFont("helvetica", font_size - 2)
-        self.value = {"": "", "Troop: ": 0, "Stamina: ": 0, "Morale: ": 0 , "Discipline: ": 0, "Melee Attack: ": 0,
+        self.value = {"": "", "Troop: ": 0, "Stamina: ": 0, "Morale: ": 0, "Discipline: ": 0, "Melee Attack: ": 0,
                       "Melee Defense: ": 0, "Range Defense: ": 0, "Speed: ": 0, "Accuracy: ": 0,
                       "Range: ": 0, "Reload: ": 0, "Ammunition: ": 0, "Weapon CD: ": 0, "Charge Power: ": 0,
                       "Charge Defense: ": 0, "Mental: ": 0}  # stat
@@ -191,8 +192,10 @@ class TroopCard(pygame.sprite.Sprite):
         self.value["Reload: "] = str(int(who.reload))
         self.value["Weapon CD: "] = str(int(who.weapon_cooldown[0])) + ", " + str(int(who.weapon_cooldown[1]))
         self.value["Ammunition: "] = str([str(key + key2) + " : " + str(int(value2)) + "/" +
-                                          str(int(who.magazine_size[key][key2])) for key, value in who.magazine_count.items()
-                                          for key2, value2 in value.items()]).replace("'", "").replace("[", "").replace("]", "")
+                                          str(int(who.magazine_size[key][key2])) for key, value in
+                                          who.magazine_count.items()
+                                          for key2, value2 in value.items()]).replace("'", "").replace("[", "").replace(
+            "]", "")
         self.value["Charge Power: "] = str(int(who.charge))
         self.value["Charge Defense: "] = str(int(who.charge_def))
         self.value["Mental: "] = str(int(who.mental_text))
@@ -238,15 +241,18 @@ class TroopCard(pygame.sprite.Sprite):
 
                 # Equipment text
                 text_value = ["Weapon 1: " +
-                    self.quality_text[who.primary_main_weapon[1]] + " " + str(self.weapon_data.weapon_list[who.primary_main_weapon[0]]["Name"]) + " / " +
-                    self.quality_text[who.primary_sub_weapon[1]] + " " + str(self.weapon_data.weapon_list[who.primary_sub_weapon[0]]["Name"]),
-                    "Weapon 2: " + self.quality_text[who.secondary_main_weapon[1]] + " " + str(
-                        self.weapon_data.weapon_list[who.secondary_main_weapon[0]]["Name"]) + " / " +
-                    self.quality_text[who.secondary_sub_weapon[1]] + " " + str(self.weapon_data.weapon_list[who.secondary_sub_weapon[0]]["Name"])]
-
+                              self.quality_text[who.primary_main_weapon[1]] + " " + str(
+                    self.weapon_data.weapon_list[who.primary_main_weapon[0]]["Name"]) + " / " +
+                              self.quality_text[who.primary_sub_weapon[1]] + " " + str(
+                    self.weapon_data.weapon_list[who.primary_sub_weapon[0]]["Name"]),
+                              "Weapon 2: " + self.quality_text[who.secondary_main_weapon[1]] + " " + str(
+                                  self.weapon_data.weapon_list[who.secondary_main_weapon[0]]["Name"]) + " / " +
+                              self.quality_text[who.secondary_sub_weapon[1]] + " " + str(
+                                  self.weapon_data.weapon_list[who.secondary_sub_weapon[0]]["Name"])]
 
                 text_value += ["Armour : " + str(self.armour_data.armour_list[who.armour_gear[0]]["Name"]) + ", W: " +
-                               str(self.armour_data.armour_list[who.armour_gear[0]]["Weight"]), "Total Weight:" + str(who.weight), "Terrain:" + terrain,
+                               str(self.armour_data.armour_list[who.armour_gear[0]]["Weight"]),
+                               "Total Weight:" + str(who.weight), "Terrain:" + terrain,
                                "Height:" + str(who.height), "Temperature:" + str(who.temperature_count).split(".")[0]]
 
                 if who.mount["Name"] != "None":  # if mount is not the None mount id 1
@@ -290,9 +296,11 @@ class CommandBar(pygame.sprite.Sprite):
             center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.1, self.image.get_rect()[1] + 40))
         self.image.blit(self.icon["authority"], icon_rect)
         try:
-            self.white = [self.icon["white_king"], self.icon["white_queen"], self.icon["white_rook"], self.icon["white_knight_left"],
+            self.white = [self.icon["white_king"], self.icon["white_queen"], self.icon["white_rook"],
+                          self.icon["white_knight_left"],
                           self.icon["white_knight_right"], self.icon["white_bishop"]]  # team 1 white chess head
-            self.black = [self.icon["red_king"], self.icon["red_queen"], self.icon["red_rook"], self.icon["red_knight_left"],
+            self.black = [self.icon["red_king"], self.icon["red_queen"], self.icon["red_rook"],
+                          self.icon["red_knight_left"],
                           self.icon["red_knight_right"], self.icon["red_bishop"]]  # team 2 black chess head
         except KeyError:
             self.white = [self.icon["king"], self.icon["queen"], self.icon["rook"],
@@ -311,10 +319,11 @@ class CommandBar(pygame.sprite.Sprite):
         self.pos = pos
         self.rect = self.image.get_rect(center=self.pos)
 
-        self.leader_pos = ((self.inspect_pos[0][0] + self.rect.topleft[0], self.inspect_pos[0][1] + self.rect.topleft[1]),
-                           (self.inspect_pos[1][0] + self.rect.topleft[0], self.inspect_pos[1][1] + self.rect.topleft[1]),
-                           (self.inspect_pos[2][0] + self.rect.topleft[0], self.inspect_pos[2][1] + self.rect.topleft[1]),
-                           (self.inspect_pos[3][0] + self.rect.topleft[0], self.inspect_pos[3][1] + self.rect.topleft[1]))
+        self.leader_pos = (
+        (self.inspect_pos[0][0] + self.rect.topleft[0], self.inspect_pos[0][1] + self.rect.topleft[1]),
+        (self.inspect_pos[1][0] + self.rect.topleft[0], self.inspect_pos[1][1] + self.rect.topleft[1]),
+        (self.inspect_pos[2][0] + self.rect.topleft[0], self.inspect_pos[2][1] + self.rect.topleft[1]),
+        (self.inspect_pos[3][0] + self.rect.topleft[0], self.inspect_pos[3][1] + self.rect.topleft[1]))
 
     def value_input(self, who, weapon_list="", armour_list="", button="", change_option=0, split=False):
         for this_button in button:
@@ -492,10 +501,11 @@ class MiniMap(pygame.sprite.Sprite):
             scaled_pos = (pos[0] / self.map_scale_width, pos[1] / self.map_scale_height)
             rect = self.dot_images[unit.team].get_rect(center=scaled_pos)
             self.image.blit(self.dot_images[unit.team], rect)
-        pygame.draw.rect(self.image, (0, 0, 0), ((camera_pos[1][0] / self.screen_scale[0] / (self.map_scale_width)) / view_mode,
-                                                 (camera_pos[1][1] / self.screen_scale[1] / (self.map_scale_height)) / view_mode,
-                                                 (self.camera_border[0] / self.screen_scale[0] / view_mode) / self.map_scale_width,
-                                                 (self.camera_border[1] / self.screen_scale[1] / view_mode) / self.map_scale_height), 2)
+        pygame.draw.rect(self.image, (0, 0, 0),
+                         ((camera_pos[1][0] / self.screen_scale[0] / (self.map_scale_width)) / view_mode,
+                          (camera_pos[1][1] / self.screen_scale[1] / (self.map_scale_height)) / view_mode,
+                          (self.camera_border[0] / self.screen_scale[0] / view_mode) / self.map_scale_width,
+                          (self.camera_border[1] / self.screen_scale[1] / view_mode) / self.map_scale_height), 2)
 
 
 class EventLog(pygame.sprite.Sprite):
@@ -535,8 +545,10 @@ class EventLog(pygame.sprite.Sprite):
             for event in self.map_event:
                 if type(self.map_event[event][2]) == int:
                     self.map_event[event][2] = [self.map_event[event][2]]
-                elif "," in self.map_event[event][2]:  # Change mode list to list here since csvread don't have that function
-                    self.map_event[event][2] = [int(item) if item.isdigit() else item for item in self.map_event[event][2].split(",")]
+                elif "," in self.map_event[event][
+                    2]:  # Change mode list to list here since csvread don't have that function
+                    self.map_event[event][2] = [int(item) if item.isdigit() else item for item in
+                                                self.map_event[event][2].split(",")]
                 if self.map_event[event][3] != "":  # change time string to time delta same reason as above
                     new_time = datetime.datetime.strptime(self.map_event[event][3], "%H:%M:%S").time()
                     new_time = datetime.timedelta(hours=new_time.hour, minutes=new_time.minute, seconds=new_time.second)
@@ -671,7 +683,8 @@ class UIScroll(pygame.sprite.Sprite):
             max_row = (self.current_row + self.max_row_show) * 100 / self.row_size
         max_row = max_row - percent_row
         pygame.draw.rect(self.image, self.button_colour,
-                         (0, int(self.height_ui * percent_row / 100), self.image.get_width(), int(self.height_ui * max_row / 100)))
+                         (0, int(self.height_ui * percent_row / 100), self.image.get_width(),
+                          int(self.height_ui * max_row / 100)))
 
     def change_image(self, new_row=None, row_size=None):
         """New row is input of scrolling by user to new row, row_size is changing based on adding more log or clear"""
@@ -715,7 +728,8 @@ class UnitSelector(pygame.sprite.Sprite):
     def setup_unit_icon(self, unit_icon_group, unit_list):
         """Setup unit selection list in unit selector ui top left of screen"""
         for this_unit in unit_list:
-            max_column_show = int(self.image.get_width() / ((this_unit.leader[0].full_image.get_width() * self.icon_scale * 1.5)))
+            max_column_show = int(
+                self.image.get_width() / ((this_unit.leader[0].full_image.get_width() * self.icon_scale * 1.5)))
             break
         current_index = int(self.current_row * max_column_show)  # the first index of current row
         self.row_size = len(unit_list) / max_column_show
@@ -734,14 +748,16 @@ class UnitSelector(pygame.sprite.Sprite):
                 del icon
 
         if len(unit_list) > 0:
-            for index, this_unit in enumerate(unit_list):  # add unit icon for drawing according to appropriated current row
+            for index, this_unit in enumerate(
+                    unit_list):  # add unit icon for drawing according to appropriated current row
                 if index == 0:
                     start_column = self.rect.topleft[0] + (this_unit.leader[0].image.get_width() / 1.5)
                     column = start_column
                     row = self.rect.topleft[1] + (this_unit.leader[0].image.get_height() / 1.5)
                 if index >= current_index:
-                    new_icon = UnitIcon((column, row), this_unit, (int(this_unit.leader[0].full_image.get_width() * self.icon_scale),
-                                                              int(this_unit.leader[0].full_image.get_height() * self.icon_scale)))
+                    new_icon = UnitIcon((column, row), this_unit,
+                                        (int(this_unit.leader[0].full_image.get_width() * self.icon_scale),
+                                         int(this_unit.leader[0].full_image.get_height() * self.icon_scale)))
                     unit_icon_group.add(new_icon)
                     column += new_icon.image.get_width() * 1.2
                     if column > self.rect.topright[0] - ((new_icon.image.get_width() * self.icon_scale) * 3):
@@ -764,19 +780,21 @@ class UnitIcon(pygame.sprite.Sprite):
         self.leader_image = self.unit.leader[0].image.copy()  # get leader image
         self.leader_image = pygame.transform.scale(self.leader_image, size)  # scale leader image to fit the icon
         self.not_selected_image = pygame.Surface((self.leader_image.get_width() + (self.leader_image.get_width() / 7),
-                                                  self.leader_image.get_height() + (self.leader_image.get_height() / 7)))  # create image black corner block
+                                                  self.leader_image.get_height() + (
+                                                              self.leader_image.get_height() / 7)))  # create image black corner block
         self.selected_image = self.not_selected_image.copy()
         self.selected_image.fill((200, 200, 0))  # fill gold corner
         self.not_selected_image.fill((0, 0, 0))  # fill black corner
 
         for image in (self.not_selected_image, self.selected_image):  # add team colour and leader image
             center_image = pygame.Surface((self.leader_image.get_width() + (self.leader_image.get_width() / 14),
-                                           self.leader_image.get_height() + (self.leader_image.get_height() / 14)))  # create image block
+                                           self.leader_image.get_height() + (
+                                                       self.leader_image.get_height() / 14)))  # create image block
             center_image.fill((144, 167, 255))  # fill colour according to team, blue for team 1
             if self.unit.team == 2:
                 center_image.fill((255, 114, 114))  # red colour for team 2
             image_rect = center_image.get_rect(center=((image.get_width() / 2),
-                                                        (image.get_height() / 2)))
+                                                       (image.get_height() / 2)))
             image.blit(center_image, image_rect)  # blit colour block into border image
             self.leader_image_rect = self.leader_image.get_rect(center=(image.get_width() / 2,
                                                                         image.get_height() / 2))
@@ -940,18 +958,20 @@ class WheelUI(pygame.sprite.Sprite):
                                               pygame.transform.flip(selected_images[1], True, True)  # bottom right
                                               )
 
-            self.wheel_inactive_image_list = [image.copy() for image in self.wheel_image_list]  # wheel choice that not active
+            self.wheel_inactive_image_list = [image.copy() for image in
+                                              self.wheel_image_list]  # wheel choice that not active
             for image in self.wheel_inactive_image_list:
                 image.fill((50, 50, 50, 150))
-            self.wheel_rect = (images[0].get_rect(center=(image_center[0] * 0.7, image_center[1] * 0.36)),  # top upper left
-                               images[0].get_rect(center=(image_center[0] * 0.45, image_center[1] * 0.65)),  # top left
-                               images[0].get_rect(center=(image_center[0] * 0.7, image_center[1] * 1.64)),  # bottom lower left
-                               images[0].get_rect(center=(image_center[0] * 0.45, image_center[1] * 1.3)), # bottom left
-                               images[0].get_rect(center=(image_center[0] * 1.3, image_center[1] * 0.36)), # top upper right
-                               images[0].get_rect(center=(image_center[0] * 1.6, image_center[1] * 0.65)),  # top right
-                               images[0].get_rect(center=(image_center[0] * 1.3, image_center[1] * 1.64)), # bottom lower right
-                               images[0].get_rect(center=(image_center[0] * 1.6, image_center[1] * 1.3))  # bottom right
-                               )
+            self.wheel_rect = (
+            images[0].get_rect(center=(image_center[0] * 0.7, image_center[1] * 0.36)),  # top upper left
+            images[0].get_rect(center=(image_center[0] * 0.45, image_center[1] * 0.65)),  # top left
+            images[0].get_rect(center=(image_center[0] * 0.7, image_center[1] * 1.64)),  # bottom lower left
+            images[0].get_rect(center=(image_center[0] * 0.45, image_center[1] * 1.3)),  # bottom left
+            images[0].get_rect(center=(image_center[0] * 1.3, image_center[1] * 0.36)),  # top upper right
+            images[0].get_rect(center=(image_center[0] * 1.6, image_center[1] * 0.65)),  # top right
+            images[0].get_rect(center=(image_center[0] * 1.3, image_center[1] * 1.64)),  # bottom lower right
+            images[0].get_rect(center=(image_center[0] * 1.6, image_center[1] * 1.3))  # bottom right
+            )
 
         elif len(images) == 1:  # create 4 direction wheel ui
             self.wheel_image_list = (images[0].copy(),  # top left
@@ -1126,7 +1146,8 @@ class BattleDone(pygame.sprite.Sprite):
                 else:
                     text_surface = self.font.render(text_header[stat_index] + str(this_stat[team]), True, (0, 0, 0))
                 text_rect = text_surface.get_rect(center=(team_coa_rect[index].midbottom[0],
-                                                          team_coa_rect[index].midbottom[1] + (int(self.height_adjust * 25) * row_number)))
+                                                          team_coa_rect[index].midbottom[1] + (
+                                                                      int(self.height_adjust * 25) * row_number)))
                 self.image.blit(text_surface, text_rect)
                 row_number += 1
 
@@ -1251,4 +1272,3 @@ class TroopNumber(pygame.sprite.Sprite):
         surface.blit(text_surface, (opx, opx))
 
         return surface
-

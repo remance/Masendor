@@ -1,5 +1,3 @@
-import numpy as np
-
 from gamescript.common import utility
 
 rotation_xy = utility.rotation_xy

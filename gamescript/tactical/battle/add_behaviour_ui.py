@@ -1,4 +1,3 @@
-
 def add_behaviour_ui(self, who_input, else_check=False):
     if who_input.player_control:
         # self.battle_ui.add(self.button_ui[7])  # add decimation button

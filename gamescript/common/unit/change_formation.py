@@ -35,7 +35,8 @@ def change_formation(self, formation=None, phase=None, style=None):
         placement_order = []  # list of formation position placement order
         for placement_value in tuple(set(new_formation["original"].flat)):
             placement_position = np.where(new_formation["original"] == placement_value)
-            placement_order += [(placement_position[0][index], placement_position[1][index]) for index, _ in enumerate(placement_position[0])]
+            placement_order += [(placement_position[0][index], placement_position[1][index]) for index, _ in
+                                enumerate(placement_position[0])]
 
         for this_subunit in self.alive_subunit_list:
             if this_subunit is not None:
@@ -48,7 +49,8 @@ def change_formation(self, formation=None, phase=None, style=None):
 
         priority_subunit_place = {"center-front": [], "center-rear": [], "flank-front": [],
                                   "flank-rear": [], "inner-front": [], "inner-rear": [],
-                                  "outer-front": [], "outer-rear": []}  # dict to keep placement priority score of subunit
+                                  "outer-front": [],
+                                  "outer-rear": []}  # dict to keep placement priority score of subunit
         for this_subunit in self.alive_subunit_list:
             if "Melee" in self.formation_phase:  # melee front
                 if this_subunit.subunit_type in (0, 2):  # melee

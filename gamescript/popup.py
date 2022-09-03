@@ -11,17 +11,24 @@ class TerrainPopup(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.scale_adjust = (
                 self.screen_rect.width * self.screen_rect.height / (
-                    1366 * 768))  # For adjusting the image and text according to screen size
+                1366 * 768))  # For adjusting the image and text according to screen size
         self.image = pygame.transform.scale(self.images[0], (int(self.images[0].get_width() * self.scale_adjust),
                                                              int(self.images[0].get_height() * self.scale_adjust)))
         self.font = pygame.font.SysFont("helvetica", int(24 * self.scale_adjust))
         self.height_font = pygame.font.SysFont("helvetica", int(18 * self.scale_adjust))
-        self.img_pos = ((24 * self.scale_adjust, 34 * self.scale_adjust), (24 * self.scale_adjust, 53 * self.scale_adjust),  # inf speed, inf atk
-                        (24 * self.scale_adjust, 70 * self.scale_adjust), (58 * self.scale_adjust, 34 * self.scale_adjust),  # inf def, cav speed
-                        (58 * self.scale_adjust, 53 * self.scale_adjust), (58 * self.scale_adjust, 70 * self.scale_adjust),  # cav atk, cav def
-                        (90 * self.scale_adjust, 34 * self.scale_adjust), (90 * self.scale_adjust, 53 * self.scale_adjust))  # range def, discipline
-        self.mod_list = (1.5, 1.2, 1, 0.7, 0.5, 0)  # Stat effect level from terrain, used for select what mod image to use
-        self.bonus_list = (40, 20, 10, -20, -50, -2000)  # Stat bonus level from terrain, used for select what mod image to use
+        self.img_pos = (
+        (24 * self.scale_adjust, 34 * self.scale_adjust), (24 * self.scale_adjust, 53 * self.scale_adjust),
+        # inf speed, inf atk
+        (24 * self.scale_adjust, 70 * self.scale_adjust), (58 * self.scale_adjust, 34 * self.scale_adjust),
+        # inf def, cav speed
+        (58 * self.scale_adjust, 53 * self.scale_adjust), (58 * self.scale_adjust, 70 * self.scale_adjust),
+        # cav atk, cav def
+        (90 * self.scale_adjust, 34 * self.scale_adjust),
+        (90 * self.scale_adjust, 53 * self.scale_adjust))  # range def, discipline
+        self.mod_list = (
+        1.5, 1.2, 1, 0.7, 0.5, 0)  # Stat effect level from terrain, used for select what mod image to use
+        self.bonus_list = (
+        40, 20, 10, -20, -50, -2000)  # Stat bonus level from terrain, used for select what mod image to use
 
         self.image_original = self.image.copy()
 
@@ -48,7 +55,8 @@ class TerrainPopup(pygame.sprite.Sprite):
                 self.image.blit(self.images[7], image_rect)
             else:  # upper or lower (^v) arrow icon to indicate modifier level
                 for mod_index, mod in enumerate(self.mod_list):  # loop to find ^v arrow icon for the modifier
-                    if tuple(feature.values())[index + 1] >= mod:  # draw appropriate icon if modifier is higher than the number of list item
+                    if tuple(feature.values())[
+                        index + 1] >= mod:  # draw appropriate icon if modifier is higher than the number of list item
                         image_rect = self.images[mod_index + 1].get_rect(center=img_pos)
                         self.image.blit(self.images[mod_index + 1], image_rect)
                         break  # found arrow image to blit end loop
@@ -83,7 +91,7 @@ class TerrainPopup(pygame.sprite.Sprite):
 class TextPopup(pygame.sprite.Sprite):
     def __init__(self, screen_scale, screen_size):
         self._layer = 15
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.font_size = int(24 * screen_scale[1])
         self.font = pygame.font.SysFont("helvetica", self.font_size)
         self.screen_size = screen_size

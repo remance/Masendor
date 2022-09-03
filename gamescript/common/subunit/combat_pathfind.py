@@ -17,8 +17,9 @@ def combat_pathfind(self):
         for x in self.pos_range[1]:
             move_array[x][y] = 100  # reset path for subunit sprite position
 
-    start_point = (min([max(0, int_base_pos[0] - 5), max(0, int_base_target[0] - 5)]),  # start point of new smaller array
-                   min([max(0, int_base_pos[1] - 5), max(0, int_base_target[1] - 5)]))
+    start_point = (
+    min([max(0, int_base_pos[0] - 5), max(0, int_base_target[0] - 5)]),  # start point of new smaller array
+    min([max(0, int_base_pos[1] - 5), max(0, int_base_target[1] - 5)]))
     end_point = (max([min(999, int_base_pos[0] + 5), min(999, int_base_target[0] + 5)]),  # end point of new array
                  max([min(999, int_base_pos[1] + 5), min(999, int_base_target[1] + 5)]))
 
@@ -34,7 +35,8 @@ def combat_pathfind(self):
 
     finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
     path, runs = finder.find_path(start, end, grid)
-    path = [(this_path[0] + start_point[0], this_path[1] + start_point[1]) for this_path in path]  # remake pos into actual map pos
+    path = [(this_path[0] + start_point[0], this_path[1] + start_point[1]) for this_path in
+            path]  # remake pos into actual map pos
 
     path = path[4:]  # remove some starting path that may clip with friendly subunit sprite
 

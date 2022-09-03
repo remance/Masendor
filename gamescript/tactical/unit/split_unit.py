@@ -26,16 +26,19 @@ def split_unit(self, how):
         new_pos = pygame.Vector2(self.base_pos[0], self.base_pos[1] + (self.base_height_box / 2))
         new_pos = rotation_xy(self.base_pos, new_pos, self.radians_angle)  # new unit pos (back)
         base_pos = pygame.Vector2(self.base_pos[0], self.base_pos[1] - (self.base_height_box / 2))
-        self.base_pos = rotation_xy(self.base_pos, base_pos, self.radians_angle)  # new position for original unit (front)
+        self.base_pos = rotation_xy(self.base_pos, base_pos,
+                                    self.radians_angle)  # new position for original unit (front)
         self.base_height_box /= 2
 
     else:  # split by column
         new_army_subunit = np.array_split(self.subunit_id_array, 2, axis=1)[1]
         self.subunit_id_array = np.array_split(self.subunit_id_array, 2, axis=1)[0]
-        new_pos = pygame.Vector2(self.base_pos[0] + (self.base_width_box / 3.3), self.base_pos[1])  # 3.3 because 2 make new unit position overlap
+        new_pos = pygame.Vector2(self.base_pos[0] + (self.base_width_box / 3.3),
+                                 self.base_pos[1])  # 3.3 because 2 make new unit position overlap
         new_pos = rotation_xy(self.base_pos, new_pos, self.radians_angle)  # new unit pos (right)
         base_pos = pygame.Vector2(self.base_pos[0] - (self.base_width_box / 2), self.base_pos[1])
-        self.base_pos = rotation_xy(self.base_pos, base_pos, self.radians_angle)  # new position for original unit (left)
+        self.base_pos = rotation_xy(self.base_pos, base_pos,
+                                    self.radians_angle)  # new position for original unit (left)
         self.base_width_box /= 2
         frontpos = (self.base_pos[0], (self.base_pos[1] - self.base_height_box))  # find new front position of unit
         self.front_pos = rotation_xy(self.base_pos, frontpos, self.radians_angle)
@@ -43,19 +46,24 @@ def split_unit(self, how):
 
     if self.leader[
         1].subunit.game_id not in new_army_subunit.flat:  # move the left sub-general leader subunit if it not in new one
-        self.subunit_id_array, new_army_subunit, new_position = move_leader_subunit(self.leader[1], self.subunit_id_array, new_army_subunit)
+        self.subunit_id_array, new_army_subunit, new_position = move_leader_subunit(self.leader[1],
+                                                                                    self.subunit_id_array,
+                                                                                    new_army_subunit)
         self.leader[1].subunit_pos = new_position[0] * new_position[1]
     self.leader[1].subunit.unit_leader = True  # make the sub-unit of this leader a start_set leader sub-unit
 
     already_pick = []
-    for this_leader in (self.leader[0], self.leader[2], self.leader[3]):  # move other leader subunit to original one if they are in new one
+    for this_leader in (
+    self.leader[0], self.leader[2], self.leader[3]):  # move other leader subunit to original one if they are in new one
         if this_leader.subunit.game_id not in self.subunit_id_array:
             new_army_subunit, self.subunit_id_array, new_position = move_leader_subunit(this_leader, new_army_subunit,
-                                                                                        self.subunit_id_array, already_pick)
+                                                                                        self.subunit_id_array,
+                                                                                        already_pick)
             this_leader.subunit_pos = new_position[0] * new_position[1]
             already_pick.append(new_position)
 
-    new_leader = [self.leader[1], leader.Leader(1, 0, 1, self, self.battle.leader_data), leader.Leader(1, 0, 2, self, self.battle.leader_data),
+    new_leader = [self.leader[1], leader.Leader(1, 0, 1, self, self.battle.leader_data),
+                  leader.Leader(1, 0, 2, self, self.battle.leader_data),
                   leader.Leader(1, 0, 3, self, self.battle.leader_data)]  # create new leader list for new unit
 
     self.subunit_position_list = []
@@ -100,7 +108,8 @@ def split_unit(self, how):
     # ^ End reset position
 
     # v Change the original unit stat and sprite
-    original_leader = [self.leader[0], self.leader[2], self.leader[3], leader.Leader(1, 0, 3, self, self.battle.leader_data)]
+    original_leader = [self.leader[0], self.leader[2], self.leader[3],
+                       leader.Leader(1, 0, 3, self, self.battle.leader_data)]
     for index, this_leader in enumerate(original_leader):  # Also change army position of all leader in that unit
         this_leader.role = index  # Change army position to new one
         this_leader.image_position = this_leader.base_image_position[this_leader.role]
@@ -115,7 +124,8 @@ def split_unit(self, how):
     new_game_id = self.battle.all_team_unit["alive"][-1].game_id + 1
 
     new_unit = unit.Unit(start_pos=new_pos, gameid=new_game_id, squadlist=new_army_subunit, colour=self.colour,
-                         player_control=self.player_control, coa=self.coa_list, commander=False, startangle=self.angle, team=self.team)
+                         player_control=self.player_control, coa=self.coa_list, commander=False, startangle=self.angle,
+                         team=self.team)
 
     self.battle.all_team_unit[self.team].add(new_unit)
     new_unit.team_commander = team_commander
@@ -149,7 +159,8 @@ def add_new_unit(self, add_unit_list=True):
             if self.subunit_id_array[row][column] != 0:
                 self.subunit_object_array[row][column] = self.subunit_list[found_count]
                 self.subunit_list[found_count].unit_position = (self.subunit_position_list[row][column][0] / 10,
-                                                                self.subunit_position_list[row][column][1] / 10)  # position in unit sprite
+                                                                self.subunit_position_list[row][column][
+                                                                    1] / 10)  # position in unit sprite
                 found_count += 1
     # ^ End generate subunit array
 
@@ -176,4 +187,3 @@ def add_new_unit(self, add_unit_list=True):
 
     number_spite = battleui.TroopNumber(self.battle.screen_scale, self)
     self.battle.troop_number_sprite.add(number_spite)
-

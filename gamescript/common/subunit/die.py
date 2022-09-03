@@ -31,4 +31,5 @@ def die(self):
 
     self.battle.event_log.add_log([0, str(self.board_pos) + " " + str(self.name)
                                    + " in " + self.unit.leader[0].name
-                                   + "'s unit is destroyed"], [3])  # add log to say this subunit is destroyed in subunit tab
+                                   + "'s unit is destroyed"],
+                                  [3])  # add log to say this subunit is destroyed in subunit tab

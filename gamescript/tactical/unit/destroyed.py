@@ -23,4 +23,5 @@ def destroyed(self, morale_hit=True):
     self.got_killed = True
 
     self.battle.unit_selector.setup_unit_icon(self.battle.unit_icon,
-                                              self.battle.all_team_unit[self.battle.team_selected])  # reset unit icon (remove dead one)
+                                              self.battle.all_team_unit[
+                                                  self.battle.team_selected])  # reset unit icon (remove dead one)

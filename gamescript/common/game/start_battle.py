@@ -1,4 +1,5 @@
 import gc
+
 import pygame
 
 
@@ -24,8 +25,8 @@ def start_battle(self, char_selected=None):
     #         # if type(item) == unit.Unit or type(item) == subunit.Subunit or type(item) == leader.Leader:
     #     if type(item) == dict:
     #         print(item, type(item))
-            # print(item.current_animation)
-                # print(vars(item))
+    # print(item.current_animation)
+    # print(vars(item))
     #         # asdasd
     #     # except NameError:
     #     #     asdasdasd

@@ -70,7 +70,8 @@ def menu_team_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
                        self.main_ui_updater)
 
         self.menu_button.add(*self.map_select_button)
-        self.main_ui_updater.add(*self.map_select_button, self.map_list_box, self.map_list_box.scroll, self.map_description)
+        self.main_ui_updater.add(*self.map_select_button, self.map_list_box, self.map_list_box.scroll,
+                                 self.map_description)
 
     elif self.start_button.event:  # start battle button
         self.start_button.event = False
@@ -82,7 +83,8 @@ def menu_team_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
         self.char_select_row = 0
 
         self.main_ui_updater.remove(*self.map_select_button, self.map_option_box, self.enactment_tick_box,
-                                    self.source_list_box, self.source_list_box.scroll, self.source_description, self.army_stat)
+                                    self.source_list_box, self.source_list_box.scroll, self.source_description,
+                                    self.army_stat)
         self.menu_button.remove(*self.map_select_button)
 
         for group in (self.map_namegroup, self.team_coa):  # remove no longer related sprites in group
@@ -118,8 +120,10 @@ def menu_team_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
             if index == 0:  # get for adding subunit to preview
                 get_unit = unit
             for subunit in unit.subunit_list:  # change subunit pos to preview box
-                subunit.pos = (self.char_stat["troop"].rect.topleft[0] + (subunit.unit_position[0] * subunit.image.get_width() / 5),
-                               self.char_stat["troop"].rect.topleft[1] + ((subunit.unit_position[1] + 4) * subunit.image.get_height() / 5))
+                subunit.pos = (
+                self.char_stat["troop"].rect.topleft[0] + (subunit.unit_position[0] * subunit.image.get_width() / 5),
+                self.char_stat["troop"].rect.topleft[1] + (
+                            (subunit.unit_position[1] + 4) * subunit.image.get_height() / 5))
                 subunit.rect = subunit.image.get_rect(center=subunit.pos)
 
         self.main_ui_updater.add(self.char_selector, self.char_selector.scroll,

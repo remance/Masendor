@@ -25,7 +25,8 @@ def make_battle_ui(battle_ui_image, battle_icon_image, team_colour, screen_size)
     unitstat_ui = battleui.TopBar(battle_ui_image["topbar"], battle_icon_image)
 
     eight_wheel_ui = battleui.WheelUI((battle_ui_image["8_wheel_top"], battle_ui_image["8_wheel_side"]),
-                                      (battle_ui_image["8_wheel_top_selected"], battle_ui_image["8_wheel_side_selected"]),
+                                      (battle_ui_image["8_wheel_top_selected"],
+                                       battle_ui_image["8_wheel_side_selected"]),
                                       (screen_size[0] / 2, screen_size[1] / 2), screen_size)
     four_wheel_ui = battleui.WheelUI((battle_ui_image["4_wheel"],), (battle_ui_image["4_wheel_selected"],),
                                      (screen_size[0] / 2, screen_size[1] / 2), screen_size)

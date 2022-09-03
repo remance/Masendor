@@ -16,4 +16,3 @@ def leader_role_change(self, leader):
             for this_unit in self.battle.all_team_unit[self.team]:
                 this_unit.team_commander = leader
                 this_unit.authority_recalculation()
-

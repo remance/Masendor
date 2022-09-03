@@ -63,6 +63,3 @@ def add_weapon_trait(self):
     self.base_mental += mental_bonus
     self.base_sight += sight_bonus
     self.base_hidden += hidden_bonus
-
-
-

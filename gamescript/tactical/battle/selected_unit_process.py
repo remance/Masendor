@@ -1,6 +1,6 @@
 import pygame
 
-from gamescript import weather, menu, battleui, unit
+from gamescript import unit
 from gamescript.common import utility
 
 list_scroll = utility.list_scroll
@@ -9,7 +9,8 @@ setup_list = utility.setup_list
 team_colour = unit.team_colour
 
 
-def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_right, mouse_left_down, mouse_right_down, key_state, key_press):
+def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_right, mouse_left_down, mouse_right_down,
+                          key_state, key_press):
     if self.current_selected is not None:
         if self.game_state == "battle" and self.current_selected.state != 100:
             if self.before_selected is None:  # add back the pop-up ui, so it gets shown when click subunit with none selected before
@@ -43,7 +44,8 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
 
         elif self.game_state == "editor" and self.subunit_build not in self.battle_ui_updater:
             if (mouse_right_up or mouse_right_down) and self.click_any is False:  # Unit placement
-                self.current_selected.placement(self.command_mouse_pos, mouse_right_up, mouse_right_down, double_mouse_right)
+                self.current_selected.placement(self.command_mouse_pos, mouse_right_up, mouse_right_down,
+                                                double_mouse_right)
 
             if key_state[pygame.K_DELETE]:
                 for this_unit in self.troop_number_sprite:
