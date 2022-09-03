@@ -45,32 +45,7 @@ def read_anim_data(direction_list, pool_type, anim_column_header):
     return pool, part_name_header
 
 
-def read_joint_data(direction_list, race_list, race_accept):
-    skel_joint_list = []
-    for race in race_list:
-        if race in race_accept:
-            for direction in direction_list:
-                with open(os.path.join(main_dir, "data", "sprite", "generic", race, direction, "skeleton_link.csv"),
-                          encoding="utf-8",
-                          mode="r") as edit_file:
-                    rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-                    rd = [row for row in rd]
-                    header = rd[0]
-                    list_column = ["Position"]  # value in list only
-                    list_column = [index for index, item in enumerate(header) if item in list_column]
-                    joint_list = {}
-                    for row_index, row in enumerate(rd):
-                        if row_index > 0:
-                            for n, i in enumerate(row):
-                                row = stat_convert(row, n, i, list_column=list_column)
-                                key = row[0].split("/")[0]
-                            if key in joint_list:
-                                joint_list[key].append({row[1:][0]: pygame.Vector2(row[1:][1])})
-                            else:
-                                joint_list[key] = [{row[1:][0]: pygame.Vector2(row[1:][1])}]
-                    skel_joint_list.append(joint_list)
-                edit_file.close()
-
+def read_joint_data(direction_list):
     weapon_joint_list = []
     for direction_index, direction in enumerate(direction_list):
         with open(os.path.join(main_dir, "data", "sprite", "generic", "weapon", "joint.csv"), encoding="utf-8",
@@ -98,7 +73,7 @@ def read_joint_data(direction_list, race_list, race_accept):
                         joint_list[key] = [{row[0]: position}]
             weapon_joint_list.append(joint_list)
         edit_file.close()
-    return skel_joint_list, weapon_joint_list
+    return weapon_joint_list
 
 
 def anim_to_pool(animation_name, pool, char, activate_list, new=False, replace=None, duplicate=None):
@@ -133,8 +108,9 @@ def anim_save_pool(pool, pool_name, direction_list, anim_column_header):
                     for item_index, min_item in enumerate(subitem):
                         if type(min_item) == list:
                             new_item = str(min_item)
-                            for character in "'[] ":
+                            for character in "'[]":
                                 new_item = new_item.replace(character, '')
+                            new_item = new_item.replace(", ", ",")
                             subitem[item_index] = new_item
                     new_item = [item[0] + "/" + str(frame_num)] + subitem
                     final_save.append(new_item)

@@ -169,7 +169,6 @@ def change_animation(new_name):
 
 
 race_list = []
-race_acro = []
 with open(os.path.join(main_dir, "data", "troop", "troop_race.csv"), encoding="utf-8", mode="r") as edit_file:
     rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
     for row in rd:
@@ -182,15 +181,12 @@ with open(os.path.join(main_dir, "data", "troop", "troop_race.csv"), encoding="u
             if i.isdigit() or ("." in i and re.search("[a-zA-Z]", i) is None) or i == "inf":
                 row[n] = float(i)
         race_list.append(row[1])
-        race_acro.append(row[3])
 edit_file.close()
 
 race_list = race_list[2:]  # remove header and any race
-race_acro = race_acro[2:]
-race_accept = ["Human", "Horse"]  # for now accept only Human race
 
 generic_animation_pool, part_name_header = read_anim_data(direction_list, "generic", anim_column_header)
-skel_joint_list, weapon_joint_list = read_joint_data(direction_list, race_list, race_accept)
+weapon_joint_list = read_joint_data(direction_list)
 
 with open(os.path.join(main_dir, "data", "sprite", "generic", "skin_colour_rgb.csv"), encoding="utf-8",
           mode="r") as edit_file:
@@ -209,15 +205,21 @@ with open(os.path.join(main_dir, "data", "sprite", "generic", "skin_colour_rgb.c
 
 gen_body_sprite_pool = {}
 for race in race_list:
-    if race in race_accept:
-        gen_body_sprite_pool[race] = {}
-        for direction in direction_list:
-            gen_body_sprite_pool[race][direction] = {}
-            part_folder = Path(os.path.join(main_dir, "data", "sprite", "generic", race, direction))
-            subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
-            for folder in subdirectories:
-                imgs = load_textures(main_dir, folder, scale=screen_scale)
-                gen_body_sprite_pool[race][direction][folder[-1]] = imgs
+    if race != "":
+        try:
+            [str(x).split("data\\")[1].split("\\") for x in Path(os.path.join(main_dir, "data", "sprite", "generic", race)).iterdir() if x.is_dir()]  # check if race folder exist
+            gen_body_sprite_pool[race] = {}
+            for direction in direction_list:
+                gen_body_sprite_pool[race][direction] = {}
+                part_folder = Path(os.path.join(main_dir, "data", "sprite", "generic", race, direction))
+                subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
+                for folder in subdirectories:
+                    imgs = load_textures(main_dir, folder, scale=screen_scale)
+                    gen_body_sprite_pool[race][direction][folder[-1]] = imgs
+        except FileNotFoundError:
+            pass
+
+race_list = [race for race in gen_body_sprite_pool if race != ""]  # get only race with existed folder and parts
 
 gen_armour_sprite_pool = {}
 for race in race_list:
@@ -537,9 +539,7 @@ class BodyHelper(pygame.sprite.Sprite):
                     stat.pop(3)
                     stat.pop(3)
 
-                if stat[0] in race_acro:
-                    stat[0] = race_acro[race_list.index(stat[0])]
-                new_change = ["S", "F", "B", "CU", "CD"]
+                new_change = ["S", "F", "B", "CU", "CD"]  # side, front, back, sideup, sidedown
                 for index2, change in enumerate(["side", "front", "back", "sideup", "sidedown"]):
                     if stat[1] == index2:
                         stat[1] = new_change[index2]
@@ -799,7 +799,7 @@ class Model:
                                 if stuff not in frame_property_select[index]:
                                     frame_property_select[index].append(stuff)
                 self.bodypart_list[index] = bodypart_list
-                main_joint_pos_list = self.generate_body(self.bodypart_list[index])
+                self.generate_body(self.bodypart_list[index])
                 part_name = {key: None for key in self.mask_part_list}
 
                 except_list = ("eye", "mouth", "size")
@@ -821,7 +821,7 @@ class Model:
                                                      (self.sprite_image[part].get_width() / 2, self.sprite_image[part].get_height() / 2),
                                                      link_list[part], pose[part][5], pose[part][6], pose[part][7], pose[part][8]]
                             else:
-                                sprite_part[part] = [self.sprite_image[part], main_joint_pos_list[part], link_list[part], pose[part][5],
+                                sprite_part[part] = [self.sprite_image[part], "center", link_list[part], pose[part][5],
                                                      pose[part][6], pose[part][7], pose[part][8]]
                             part_name[part] = [pose[part][0], pose[part][1], pose[part][2]]
                 pose_layer_list = self.make_layer_list(sprite_part)
@@ -829,8 +829,6 @@ class Model:
                 self.part_name_list[index] = part_name
                 image = self.create_animation_film(pose_layer_list, index)
                 self.animation_list[index] = image
-                if index == current_frame:
-                    self.create_joint(pose_layer_list)
             self.frame_list = frame_list
 
         activate_list = [False] * max_frame
@@ -860,25 +858,6 @@ class Model:
                 if part is not None and part[0] is not None:
                     image = self.part_to_sprite(image, part[0], layer, part[2], part[3], part[4], part[6], save_mask=save_mask)
         return image
-
-    def create_joint(self, pose_layer_list):
-        for index, layer in enumerate(pose_layer_list):
-            part = self.animation_part_list[current_frame][layer]
-            if part[0] is not None:
-                name_check = layer
-                if any(ext in name_check for ext in p_list):
-                    name_check = name_check[3:]  # remove p*number*_
-                if self.part_name_list[current_frame][layer] is not None and \
-                        name_check in skel_joint_list[direction_list.index(self.part_name_list[current_frame][layer][1])]:
-                    for index2, item in enumerate(
-                            skel_joint_list[direction_list.index(self.part_name_list[current_frame][layer][1])][name_check]):
-                        joint_type = 0  # main
-                        if index2 > 0:
-                            joint_type = 1
-                        joint_pos = list(item.values())[0]
-                        pos = (part[2][0] + (joint_pos[0] - (part[0].get_width() / 2)),
-                               part[2][1] + (joint_pos[1] - (part[0].get_height() / 2)))
-                        Joint(joint_type, layer, name_check, (pos[0] / self.size, pos[1] / self.size), part[3])
 
     def grab_face_part(self, race, side, part, part_check, part_default=None):
         """For creating body part like eye or mouth in animation that accept any part (1) so use default instead"""
@@ -989,17 +968,6 @@ class Model:
         #     for part in list(self.sprite_image.keys())[1:]:
         #         self.sprite_image[part] = self.apply_colour(self.sprite_image[part], skin_colour)
 
-        main_joint_pos_list = {}
-        for part_index, part in enumerate(part_name_header):
-            for part_link in skel_joint_list[self.side]:
-                if part_link in part:  # match part name, p*number*_head = head in part link
-                    main_joint_pos_list[part] = list(skel_joint_list[self.side][part_link][0].values())[0]
-                    break
-            if part in self.weapon and self.weapon[part] in weapon_joint_list[self.side]:  # weapon joint
-                main_joint_pos_list[part] = list(weapon_joint_list[self.side][self.weapon[part]][0].values())[0]
-
-        return main_joint_pos_list
-
     def click_part(self, mouse_pos, shift_press, ctrl_press, part=None):
         if part is None:
             click_part = False
@@ -1100,7 +1068,7 @@ class Model:
         elif "armour" in edit_type:
             if any(ext in edit_type for ext in p_list):
                 self.armour[edit_type[0:2] + "_armour"] = edit_type.split(edit_type[0:2] + "_armour_")[1]
-            main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
+            self.generate_body(self.bodypart_list[current_frame])
             for part in self.sprite_image:
                 if self.animation_part_list[current_frame][part] is not None:
                     self.animation_part_list[current_frame][part][0] = self.sprite_image[part]
@@ -1130,15 +1098,10 @@ class Model:
                 part_change = edit_type[5:]
                 self.bodypart_list[current_frame][part_index][2] = part_change
                 self.part_name_list[current_frame][part_index][2] = part_change
-                main_joint_pos_list = self.generate_body(self.bodypart_list[current_frame])
+                self.generate_body(self.bodypart_list[current_frame])
                 if not self.animation_part_list[current_frame][part_index]:
                     self.animation_part_list[current_frame][part_index] = self.empty_sprite_part.copy()
-                    if any(ext in part_index for ext in ("effect", "special")):
-                        self.animation_part_list[current_frame][part_index][1] = "center"
-                    elif "weapon" in part_index:
-                        self.animation_part_list[current_frame][part_index][1] = main_joint_pos_list[part_index]
-                    else:
-                        self.animation_part_list[current_frame][part_index][1] = main_joint_pos_list[part_index]
+                    self.animation_part_list[current_frame][part_index][1] = "center"
                 self.animation_part_list[current_frame][part_index][0] = self.sprite_image[part_index]
 
         elif "race" in edit_type:  # change race/base part type
@@ -1292,7 +1255,6 @@ class Model:
 
         # recreate current frame image
         pose_layer_list = self.make_layer_list(self.animation_part_list[current_frame])
-        self.create_joint(pose_layer_list)
         for frame_num, _ in enumerate(self.animation_list):
             pose_layer_list = self.make_layer_list(self.animation_part_list[frame_num])
             surface = self.create_animation_film(pose_layer_list, frame_num)
@@ -2262,8 +2224,11 @@ while True:
                                     part_list = list(
                                         gen_body_sprite_pool[race_part_button.text][direction_part_button.text]["special"].keys())
                             except KeyError:  # look at weapon next
-                                selected_part = race_part_button.text
-                                part_list = list(gen_weapon_sprite_pool[selected_part][direction_part_button.text].keys())
+                                try:
+                                    selected_part = race_part_button.text
+                                    part_list = list(gen_weapon_sprite_pool[selected_part][direction_part_button.text].keys())
+                                except KeyError:  # part not exist
+                                    pass
                             popup_list_open(popup_list_box, popup_namegroup, ui, "part_select",
                                             part_selector.rect.topleft, part_list, "bottom", screen_scale)
 
@@ -2279,7 +2244,7 @@ while True:
                         popup_list_open(popup_list_box, popup_namegroup, ui, p_body_helper.ui_type + "_armour_select",
                                         armour_selector.rect.topleft, part_list, "bottom", screen_scale)
 
-                    elif eye_selector.rect.collidepoint(mouse_pos):
+                    elif eye_selector.rect.collidepoint(mouse_pos) and model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"] is not None:
                         part_list = ["Any"]
                         if "eye" in gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][
                                                        model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"][1]]:
@@ -2288,7 +2253,7 @@ while True:
                         popup_list_open(popup_list_box, popup_namegroup, ui, p_body_helper.ui_type + "_eye_select",
                                         eye_selector.rect.topleft, part_list, "bottom", screen_scale)
 
-                    elif mouth_selector.rect.collidepoint(mouse_pos):
+                    elif mouth_selector.rect.collidepoint(mouse_pos) and model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"] is not None:
                         ui_type = p_body_helper.ui_type
                         part_list = ["Any"]
                         if "mouth" in gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][
