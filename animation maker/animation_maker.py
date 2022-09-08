@@ -59,10 +59,9 @@ for p in range(1, max_person + 1):
 anim_column_header += ["effect_1", "effect_2", "effect_3", "effect_4", "dmg_effect_1", "dmg_effect_2", "dmg_effect_3", "dmg_effect_4",
                        "special_1", "special_2", "special_3", "special_4", "special_5", "special_6", "special_7", "special_8", "special_9",
                        "special_10", "size", "frame_property", "animation_property"]  # For csv saving and accessing
-frame_property_list = ["hold", "p1_turret", "p2_turret", "p3_turret", "p4_turret", "p1_fix_main_weapon", "p1_fix_sub_weapon",
-                       "p2_fix_main_weapon", "p2_fix_sub_weapon", "p3_fix_main_weapon", "p3_fix_sub_weapon",
-                       "p4_fix_main_weapon", "p4_fix_sub_weapon", "effect_blur_", "effect_contrast_", "effect_brightness_", "effect_fade_",
-                       "effect_grey", "effect_colour_"]  # starting property list
+frame_property_list = ["hold", "p1_fix_main_weapon", "p1_fix_sub_weapon", "p2_fix_main_weapon", "p2_fix_sub_weapon", "p3_fix_main_weapon",
+                       "p3_fix_sub_weapon", "p4_fix_main_weapon", "p4_fix_sub_weapon", "effect_blur_", "effect_contrast_", "effect_brightness_",
+                       "effect_fade_", "effect_grey", "effect_colour_"]  # starting property list
 
 anim_property_list = ["dmgsprite", "interuptrevert", "norestart"] + frame_property_list
 
@@ -690,7 +689,8 @@ class Model:
         self.p_any_mouth = {}
         self.p_beard = {}
         self.part_selected = []
-        self.p_race = {"p" + str(p): "Human" for p in range(1, max_person + 1)}
+        self.head_race = {"p" + str(p): "Human" for p in range(1, max_person + 1)}  # for head generation
+        self.body_race = {"p" + str(p): "Human" for p in range(1, max_person + 1)}  # for armour preview
         skin = list(skin_colour_list.keys())[random.randint(0, len(skin_colour_list) - 1)]
         # skin_colour = skin_colour_list[skin]
         self.p_hair_colour = {"p" + str(p): [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)] for p in
@@ -875,8 +875,10 @@ class Model:
         for key in p_head_sprite_surface:
             head_sprite_surface = None
             try:
+                race = bodypart_list[key + "_body"][0]
+                self.body_race[key] = race
                 head_race = bodypart_list[key + "_head"][0]
-                self.p_race[key] = head_race
+                self.head_race[key] = head_race
                 head_side = bodypart_list[key + "_head"][1]
                 head_sprite = gen_body_sprite_pool[head_race][head_side]["head"][bodypart_list[key + "_head"][2]].copy()
                 head_sprite_surface = pygame.Surface(head_sprite.get_size(), pygame.SRCALPHA)
@@ -2237,8 +2239,8 @@ while True:
                                         p_selector.rect.topleft, p_list, "bottom", screen_scale)
                     elif armour_selector.rect.collidepoint(mouse_pos):
                         armour_part_list = []
-                        for item in list(gen_armour_sprite_pool[model.p_race[p_body_helper.ui_type]].keys()):
-                            for armour in gen_armour_sprite_pool[model.p_race[p_body_helper.ui_type]][item]:
+                        for item in list(gen_armour_sprite_pool[model.body_race[p_body_helper.ui_type]].keys()):
+                            for armour in gen_armour_sprite_pool[model.body_race[p_body_helper.ui_type]][item]:
                                 armour_part_list.append(item + "/" + armour)
                         part_list = ["None"] + armour_part_list
                         popup_list_open(popup_list_box, popup_namegroup, ui, p_body_helper.ui_type + "_armour_select",
@@ -2246,9 +2248,9 @@ while True:
 
                     elif eye_selector.rect.collidepoint(mouse_pos) and model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"] is not None:
                         part_list = ["Any"]
-                        if "eye" in gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][
+                        if "eye" in gen_body_sprite_pool[model.head_race[p_body_helper.ui_type]][
                                                        model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"][1]]:
-                            part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][
+                            part_list = ["Any"] + list(gen_body_sprite_pool[model.head_race[p_body_helper.ui_type]][
                                                            model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"][1]]["eye"].keys())
                         popup_list_open(popup_list_box, popup_namegroup, ui, p_body_helper.ui_type + "_eye_select",
                                         eye_selector.rect.topleft, part_list, "bottom", screen_scale)
@@ -2256,9 +2258,9 @@ while True:
                     elif mouth_selector.rect.collidepoint(mouse_pos) and model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"] is not None:
                         ui_type = p_body_helper.ui_type
                         part_list = ["Any"]
-                        if "mouth" in gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][
+                        if "mouth" in gen_body_sprite_pool[model.head_race[p_body_helper.ui_type]][
                                                        model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"][1]]:
-                            part_list = ["Any"] + list(gen_body_sprite_pool[model.p_race[p_body_helper.ui_type]][
+                            part_list = ["Any"] + list(gen_body_sprite_pool[model.head_race[p_body_helper.ui_type]][
                                                            model.bodypart_list[current_frame][p_body_helper.ui_type + "_head"][1]]["mouth"].keys())
                         popup_list_open(popup_list_box, popup_namegroup, ui, ui_type + "_mouth_select",
                                         mouth_selector.rect.topleft, part_list, "bottom", screen_scale)
