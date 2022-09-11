@@ -1,17 +1,17 @@
 "ID","Name","Status","Description"
-1,"Uncontrollable",,
-2,"Unbreakable",,
+1,"Uncontrollable",,"These troops can not be controlled. They will move, fight, and flee according to their own will."
+2,"Unbreakable",,"These troops' morale can not be broken. They will fight to the last if their commander wills it."
 3,"Terrain Immunity",,
-4,"No Attack",,
-5,"No Skill",,
-6,"No Spell",,
-7,"Weather Immunity",,
-8,"Temperature Immunity",,
-9,"Status Immunity",,
-10,"Immortal",,
+4,"No Attack",,"These troops are unable to perform any attack."
+5,"No Skill",,"These troops are unable to perform any skill."
+6,"No Spell",,"These troops are unable to perform any spell."
+7,"Weather Immunity",,"These troops are resilient against every kind of weather in existence. Rain will not make them wet, and fog will not hinder their vision."
+8,"Temperature Immunity",,"These troops are unsusceptible to temperature change. Neither cold nor heat can affect them in any way."
+9,"Status Immunity",,"These troops are immune to all status effects, both positive and negative."
+10,"Immortal",,"These troops are nigh impossible to kill by any ordinary means."
 11,,,
 12,,,
-13,"Gunpowder based Weapon",109,
+13,"Gunpowder based Weapon",109,"These troops are equipped with a gunpowder-based weapon such as a musket. Rain weather will make their weapon at minimal effectiveness, and their shooting will produce a cloud of smoke that can block their vision."
 15,,,
 16,,,
 17,,,
