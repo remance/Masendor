@@ -23,7 +23,6 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
             if mount_race != 0:
                 this_subunit["Size"] = self.troop_data.race_list[mount_race]["Size"] / 10
             mount_race = self.troop_data.race_list[mount_race]["Name"]  # replace id with name
-
             primary_main_weapon = this_subunit["Primary Main Weapon"][0]
             primary_sub_weapon = this_subunit["Primary Sub Weapon"][0]
             secondary_main_weapon = this_subunit["Secondary Main Weapon"][0]

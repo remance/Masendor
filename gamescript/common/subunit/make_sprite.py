@@ -19,7 +19,6 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
     frame_property = animation_part_list["frame_property"].copy()
     animation_property = animation_property.copy()
     check_prop = frame_property + animation_property
-
     size = int(size)
     if size > 5:
         size = 5
@@ -36,10 +35,12 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
     for index, layer in enumerate(pose_layer_list):
         part = animation_part_list[layer]
         new_part = part.copy()
-        this_armour = None
-        for p_index, p in enumerate(("p1_", "p2_", "p3_", "p4_")):
-            if p in layer:
-                this_armour = armour[p_index]
+        # this_armour = None
+        # for p_index, p in enumerate(("p1_", "p2_", "p3_", "p4_")):
+        if "p1_" in layer:
+            this_armour = armour[0]
+        else:
+            this_armour = armour[1]
         if "head" in layer:
             image_part = generate_head(layer[:2], animation_part_list, part[0:3], troop_sprite_list, body_sprite_pool,
                                        armour_sprite_pool,
@@ -262,8 +263,8 @@ def generate_body(part, body_part_list, troop_sprite_list, sprite_pool, armour_s
         else:
             new_part_name = part
             part_name = part
-            if "p1_" in part or "p2_" in part:
-                part_name = part[3:]  # remove p1_ or p2_ to get part name
+            if any(ext in part for ext in ("p1_", "p2_", "p3_", "p4_")):
+                part_name = part[3:]  # remove person header
                 new_part_name = part_name
             if "special" in part:
                 new_part_name = "special"
@@ -276,7 +277,7 @@ def generate_body(part, body_part_list, troop_sprite_list, sprite_pool, armour_s
         # add armour if there is one
         if armour is not None and armour != "None":
             part_name = part
-            if "p1_" in part or "p2_" in part:
+            if any(ext in part for ext in ("p1_", "p2_", "p3_", "p4_")):
                 part_name = part[3:]  # remove p1_ or p2_ to get part name
             gear_image = \
             armour_sprite_pool[body_part_list[0]][armour][troop_sprite_list[part]][body_part_list[1]][part_name][
