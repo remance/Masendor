@@ -188,7 +188,8 @@ class Game:
 
             config["DEFAULT"] = {"screen_width": screen_width, "screen_height": screen_height, "fullscreen": "0",
                                  "player_Name": "Noname", "master_volume": "100.0", "music_volume": "0.0",
-                                 "voice_volume": "0.0", "max_fps": "60", "ruleset": "1", "genre": genre_folder[-1]}
+                                 "voice_volume": "0.0", "max_fps": "60", "ruleset": "1", "genre": genre_folder[-1],
+                                 "language": "en"}
             config["USER"] = {key: value for key, value in config["DEFAULT"].items()}
             with open("configuration.ini", "w") as cf:
                 config.write(cf)
@@ -201,6 +202,7 @@ class Game:
         self.master_volume = float(self.config["USER"]["master_volume"])
         self.profile_name = str(self.config["USER"]["player_Name"])
         self.genre = str(self.config["USER"]["genre"])
+        self.language = str(self.config["USER"]["language"])
         self.ruleset = 1  # for now default historical ruleset only
 
         # Set the display mode
@@ -713,7 +715,10 @@ class Game:
 
         self.change_game_genre(self.genre)
 
-        self.troop_card_ui.feature_list = self.battle_map_data.feature_list  # add terrain feature list name to subunit card
+        self.troop_card_ui.weapon_list = self.troop_data.weapon_list
+        self.troop_card_ui.armour_list = self.troop_data.armour_list
+        self.troop_card_ui.terrain_list = self.battle_base_map.terrain_list
+        self.troop_card_ui.feature_list = self.battle_feature_map.feature_list  # add terrain feature list name to subunit card
 
         subunit.Subunit.battle = self.battle_game
         leader.Leader.battle = self.battle_game
@@ -742,7 +747,8 @@ class Game:
         self.troop_data, self.leader_data, self.faction_data = make_faction_troop_leader_data(self.main_dir,
                                                                                               self.screen_scale,
                                                                                               self.ruleset,
-                                                                                              self.ruleset_folder)
+                                                                                              self.ruleset_folder,
+                                                                                              self.language)
         subunit.Subunit.troop_data = self.troop_data
         subunit.Subunit.leader_data = self.leader_data
         subunit.Subunit.troop_sprite_list = self.troop_data.troop_sprite_list
@@ -755,7 +761,7 @@ class Game:
         unit.Unit.unit_formation_list = self.troop_data.unit_formation_list
 
         self.preset_map_list, self.preset_map_folder, self.custom_map_list, \
-        self.custom_map_folder = make_battle_list_data(self.main_dir, self.ruleset_folder)
+        self.custom_map_folder = make_battle_list_data(self.main_dir, self.ruleset_folder, self.language)
 
         self.troop_animation = datasprite.TroopAnimationData(self.main_dir,
                                                              [self.troop_data.race_list[key]["Name"] for key in

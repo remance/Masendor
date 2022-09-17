@@ -23,6 +23,10 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
             if mount_race != 0:
                 this_subunit["Size"] = self.troop_data.race_list[mount_race]["Size"] / 10
             mount_race = self.troop_data.race_list[mount_race]["Name"]  # replace id with name
+            mount_race_name = mount_race
+            if mount_race != "None":
+                mount_race_name = mount_race_name + "_"
+
             primary_main_weapon = this_subunit["Primary Main Weapon"][0]
             primary_sub_weapon = this_subunit["Primary Sub Weapon"][0]
             secondary_main_weapon = this_subunit["Secondary Main Weapon"][0]
@@ -56,8 +60,8 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                          self.generic_action_data[subunit_weapon_list[1][1]]["Attack"])]
             if preview:  # only create random right side sprite for preview in lorebook
                 animation = [this_animation for this_animation in self.generic_animation_pool[0] if race in
-                             this_animation and ((mount_race == "None" and "&" not in this_animation) or
-                                                 mount_race in this_animation)]
+                             this_animation and ((mount_race_name == "None" and "&" not in this_animation) or
+                                                 mount_race_name in this_animation)]
                 animation = [this_animation for this_animation in animation
                              if (any(ext in this_animation for ext in weapon_common_type_list) is False or
                                  weapon_common_action[0][0] in this_animation) and
@@ -81,7 +85,7 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                           self.weapon_joint_list,
                                           (0, subunit_weapon_list[0]), armour,
                                           self.hair_colour_list, self.skin_colour_list,
-                                          genre_sprite_size, screen_scale)
+                                          genre_sprite_size, screen_scale, self.troop_data.race_list)
 
                 animation_sprite_pool[subunit_id] = {"sprite": sprite_dict["sprite"],
                                                      "animation_property": sprite_dict["animation_property"],
@@ -114,7 +118,7 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                     next_level[weapon_key[1]] = {}
                 for animation in self.generic_animation_pool[0]:  # use one side in the list for finding animation name
                     if "Preview" not in animation and race in animation and \
-                            ((mount_race == "None" and "&" not in animation) or mount_race in animation):
+                            ((mount_race_name == "None" and "&" not in animation) or mount_race_name in animation):
                         animation_property = self.generic_animation_pool[0][animation][0]["animation_property"].copy()
                         for weapon_set_index, weapon_set in enumerate(
                                 subunit_weapon_list):  # create animation for each weapon set
@@ -133,19 +137,19 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                 else:
                                     make_animation = False
 
-                                # if "_Skill_" in animation:  # skill animation
-                                #     make_animation = False  # not make animation for troop with no related skill animation
-                                #     for skill in skill_list:
-                                #         if type(skill) == int:
-                                #             if skill in self.troop_data.skill_list:  # skip skill not in ruleset
-                                #                 if self.troop_data.skill_list[skill]["Action"][0] in animation:
-                                #                     make_animation = True
-                                #                     break
-                                #         else:  # leader skill
-                                #             if skill in self.leader_data.skill_list:  # skip skill not in ruleset
-                                #                 if self.leader_data.skill_list[skill]["Action"][0] in animation:
-                                #                     make_animation = True
-                                #                     break
+                                if "_Skill_" in animation:  # skill animation
+                                    make_animation = False  # not make animation for troop with no related skill animation
+                                    for skill in skill_list:
+                                        if type(skill) == int:
+                                            if skill in self.troop_data.skill_list:  # skip skill not in ruleset
+                                                if self.troop_data.skill_list[skill]["Action"][0] in animation:
+                                                    make_animation = True
+                                                    break
+                                        else:  # leader skill
+                                            if skill in self.leader_data.skill_list:  # skip skill not in ruleset
+                                                if self.leader_data.skill_list[skill]["Action"][0] in animation:
+                                                    make_animation = True
+                                                    break
 
                                 if make_animation:
                                     for index, direction in enumerate(direction_list):
@@ -181,7 +185,8 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                                                       self.weapon_joint_list,
                                                                       (weapon_set_index, weapon_set), armour,
                                                                       self.hair_colour_list, self.skin_colour_list,
-                                                                      genre_sprite_size, screen_scale)
+                                                                      genre_sprite_size, screen_scale,
+                                                                      self.troop_data.race_list)
 
                                             current_in_pool[name_input][new_direction][frame_num] = \
                                                 {"sprite": sprite_dict["sprite"],

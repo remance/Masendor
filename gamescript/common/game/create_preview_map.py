@@ -21,7 +21,7 @@ def create_preview_map(self, map_folder_list, map_list, custom_map=False):
     self.main_ui_updater.add(self.map_title)
 
     # Create map description
-    self.map_data = self.read_selected_map_data(map_folder_list, "info.csv")
+    self.map_data = self.read_selected_map_data(map_folder_list, "info_" + self.language + ".csv")
     description = [self.map_data[map_list[self.current_map_select]]["Description 1"],
                    self.map_data[map_list[self.current_map_select]]["Description 2"]]
     self.map_description.change_text(description)

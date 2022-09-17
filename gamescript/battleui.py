@@ -140,8 +140,10 @@ class TopBar(pygame.sprite.Sprite):
 
 
 class TroopCard(pygame.sprite.Sprite):
-    weapon_data = None
-    armour_data = None
+    weapon_list = None
+    armour_list = None
+    terrain_list = None
+    feature_list = None
 
     def __init__(self, image, font_size=16):
         from gamescript import game
@@ -200,7 +202,7 @@ class TroopCard(pygame.sprite.Sprite):
         self.value["Charge Defense: "] = str(int(who.charge_def))
         self.value["Mental: "] = str(int(who.mental_text))
 
-        self.value2 = [who.trait, who.skill, who.skill_cooldown, who.skill_effect, who.status_effect]
+        self.value2 = [who.trait["Original"] | who.trait["Weapon"], who.skill, who.skill_cooldown, who.skill_effect, who.status_effect]
         self.description = who.description
         if type(self.description) == list:
             self.description = self.description[0]
@@ -242,16 +244,16 @@ class TroopCard(pygame.sprite.Sprite):
                 # Equipment text
                 text_value = ["Weapon 1: " +
                               self.quality_text[who.primary_main_weapon[1]] + " " + str(
-                    self.weapon_data.weapon_list[who.primary_main_weapon[0]]["Name"]) + " / " +
+                    self.weapon_list[who.primary_main_weapon[0]]["Name"]) + " / " +
                               self.quality_text[who.primary_sub_weapon[1]] + " " + str(
-                    self.weapon_data.weapon_list[who.primary_sub_weapon[0]]["Name"]),
+                    self.weapon_list[who.primary_sub_weapon[0]]["Name"]),
                               "Weapon 2: " + self.quality_text[who.secondary_main_weapon[1]] + " " + str(
-                                  self.weapon_data.weapon_list[who.secondary_main_weapon[0]]["Name"]) + " / " +
+                                  self.weapon_list[who.secondary_main_weapon[0]]["Name"]) + " / " +
                               self.quality_text[who.secondary_sub_weapon[1]] + " " + str(
-                                  self.weapon_data.weapon_list[who.secondary_sub_weapon[0]]["Name"])]
+                                  self.weapon_list[who.secondary_sub_weapon[0]]["Name"])]
 
-                text_value += ["Armour : " + str(self.armour_data.armour_list[who.armour_gear[0]]["Name"]) + ", W: " +
-                               str(self.armour_data.armour_list[who.armour_gear[0]]["Weight"]),
+                text_value += ["Armour : " + str(self.armour_list[who.armour_gear[0]]["Name"]) + ", W: " +
+                               str(self.armour_list[who.armour_gear[0]]["Weight"]),
                                "Total Weight:" + str(who.weight), "Terrain:" + terrain,
                                "Height:" + str(who.height), "Temperature:" + str(who.temperature_count).split(".")[0]]
 

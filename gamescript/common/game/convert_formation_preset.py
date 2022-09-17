@@ -16,7 +16,7 @@ def convert_formation_preset(self):
         self)
 
     for key, value in self.troop_data.default_unit_formation_list.items():
-        image = Image.fromarray(value)
+        image = Image.fromarray((value * 255).astype(np.uint8))
         image = image.resize((self.unit_size[0], self.unit_size[1]))
         new_value = np.array(image)
         front_score = new_value.copy()

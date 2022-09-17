@@ -105,7 +105,7 @@ def convert_str_time(event):
             event[index].append(item[2])
 
 
-def csv_read(main_dir, file, subfolder=(), output_type=0, header_key=False):
+def csv_read(main_dir, file, subfolder=(), output_type=0, header_key=False, language=None):
     """output type 0 = dict, 1 = list"""
     return_output = {}
     if output_type == 1:
@@ -116,6 +116,8 @@ def csv_read(main_dir, file, subfolder=(), output_type=0, header_key=False):
         folder_dir = os.path.join(folder_dir, folder)
     folder_dir = os.path.join(folder_dir, file)
     folder_dir = os.path.join(main_dir, folder_dir)
+    if language is not None:
+        folder_dir += "_" + language
     with open(folder_dir, encoding="utf-8", mode="r") as edit_file:
         rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
         rd = [row for row in rd]
@@ -404,15 +406,13 @@ def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tu
         elif i == "":
             row[n] = 0
 
-    elif n in boolean_column:
-        if i.lower() == "true":
-            row[n] = True
-        elif i.lower() == "false":
-            row[n] = False
-
     else:
         if i == "":
             row[n] = 0
+        elif i.lower() == "true":
+            row[n] = True
+        elif i.lower() == "false":
+            row[n] = False
         elif i.isdigit() or (("-" in i or "." in i) and re.search("[a-zA-Z]", i) is None) or i == "inf":
             row[n] = float(i)
     return row
