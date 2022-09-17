@@ -210,8 +210,10 @@ class Lorebook(pygame.sprite.Sprite):
         make_long_text = utility.make_long_text
 
         stat = self.stat_data[self.subsection]
-        name = list(stat.values())[0]
-        description = stat["Description"]
+        lore = self.lore_data[self.subsection]
+        name = lore[0]
+        description = lore[1]
+
         text_surface = self.font_header.render(str(name), True, (0, 0, 0))
         text_rect = text_surface.get_rect(topleft=(int(28 * self.screen_scale[0]), int(20 * self.screen_scale[1])))
         self.image.blit(text_surface, text_rect)  # add name of item to the top of page

@@ -196,6 +196,7 @@ class Subunit(pygame.sprite.Sprite):
             self.troop_id = int(troop_id)  # ID of preset used for this subunit
             sprite_list = self.troop_sprite_list
             stat = self.troop_data.troop_list[self.troop_id].copy()
+            lore = self.troop_data.troop_lore[self.troop_id].copy()
             self.grade = stat["Grade"]  # training level/class grade
             grade_stat = self.troop_data.grade_list[self.grade]
 
@@ -221,6 +222,7 @@ class Subunit(pygame.sprite.Sprite):
             if int(troop_id.replace("h", "")) >= 10000:
                 sprite_list = self.common_leader_sprite_list
             stat = self.leader_data.leader_list[int(troop_id.replace("h", ""))].copy()
+            lore = self.leader_data.leader_lore[int(troop_id.replace("h", ""))].copy()
             self.grade = 12  # leader grade by default
             grade_stat = self.troop_data.grade_list[self.grade]
 
@@ -235,7 +237,7 @@ class Subunit(pygame.sprite.Sprite):
                 "Mental Bonus"]  # mental resistance from morale melee_dmg and mental status effect
             self.subunit_type = 0
 
-        self.name = stat["Name"]  # name according to the preset
+        self.name = lore[0]  # name according to the preset
         self.race = stat["Race"]  # creature race
         race_stat = self.troop_data.race_list[stat["Race"]]
         self.race_name = race_stat["Name"]
@@ -438,7 +440,7 @@ class Subunit(pygame.sprite.Sprite):
 
         self.base_speed = (self.base_speed * ((100 - self.weight) / 100)) + grade_stat[
             "Speed Bonus"]  # finalise base speed with weight and grade bonus
-        self.description = stat["Description"]  # subunit description for inspect ui
+        self.description = lore[1]  # subunit description for inspect ui
 
         # Reset stat variable for receiving modifier effect from various sources, used for activity and effect calculation
         self.max_morale = self.base_morale

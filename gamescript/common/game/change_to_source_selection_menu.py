@@ -14,18 +14,15 @@ def change_to_source_selection_menu(self):
     if self.last_select == "custom":
         openfolder = self.custom_map_folder
     try:
-        self.source_list = self.read_selected_map_data(openfolder, "source.csv")
+        self.source_list = self.read_selected_map_data(openfolder, "source_" + self.language + ".csv")
         self.source_name_list = [value["Source"] for value in list(self.source_list.values())]
         self.source_scale_text = [value["Number Text"] for value in list(self.source_list.values())]
         self.source_scale = [{0: float(value["Team 0 Scale"]), 1: float(value["Team 1 Scale"]),
                               2: float(value["Team 2 Scale"]), 3: float(value["Team 3 Scale"])}
                              for value in list(self.source_list.values())]
         self.source_text = [value["Description"] for value in list(self.source_list.values())]
-    except Exception:  # no source.csv make empty list
-        self.source_name_list = [""]
-        self.source_scale_text = [""]
-        self.source_scale = [""]
-        self.source_text = [""]
+    except FileNotFoundError:  # no source file, crash game
+        no_source
 
     setup_list(self.screen_scale, menu.NameList, self.current_source_row, self.source_name_list,
                self.source_namegroup, self.source_list_box, self.main_ui_updater)

@@ -14,7 +14,7 @@ def trait_skill_icon_blit(self):
 
     for trait in self.troop_card_ui.value2[0]:
         self.skill_icon.add(
-            battleui.SkillCardIcon(self.trait_images["0.png"], (position[0], position[1]), 0,
+            battleui.SkillCardIcon(self.trait_images["0"], (position[0], position[1]), 0,
                                    game_id=trait))  # For now use placeholder image 0
         position[0] += 40
         if position[0] >= screen_rect.width:
@@ -27,7 +27,7 @@ def trait_skill_icon_blit(self):
 
     for skill in self.troop_card_ui.value2[1]:
         self.skill_icon.add(
-            battleui.SkillCardIcon(self.skill_images["0.png"], (position[0], position[1]), 1,
+            battleui.SkillCardIcon(self.skill_images["0"], (position[0], position[1]), 1,
                                    game_id=skill))  # For now use placeholder image 0
         position[0] += 40
         if position[0] >= screen_rect.width:

@@ -19,8 +19,9 @@ class Leader(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.morale = 100
         stat = leader_data.leader_list[leader_id]
+        lore = leader_data.leader_lore[leader_id]
         self.leader_id = leader_id  # leader_id is only used as reference to the data
-        self.name = stat["Name"]
+        self.name = lore[0]
 
         self.strength = stat["Strength"]
         self.dexterity = stat["Dexterity"]
@@ -37,7 +38,7 @@ class Leader(pygame.sprite.Sprite):
                        (self.wisdom * 0.5))
         self.social = leader_data.leader_class[stat["Social Class"]]
         self.formation = ["Cluster"] + stat["Formation"]
-        self.description = stat["Description"]
+        self.description = lore[1]
 
         self.subunit_pos = int(subunit_position)  # Squad position is the index of subunit in subunit sprite loop
         # self.trait = stat

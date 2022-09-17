@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 
 
-def make_battle_list_data(main_dir, ruleset_folder):
+def make_battle_list_data(main_dir, ruleset_folder, language):
     """Load battle map list"""
     read_folder = Path(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "map"))
     subdirectories = [x for x in read_folder.iterdir() if x.is_dir()]
@@ -18,7 +18,7 @@ def make_battle_list_data(main_dir, ruleset_folder):
 
     for file_map in subdirectories:
         preset_map_folder.append(str(file_map).split("\\")[-1])
-        with open(os.path.join(str(file_map), "info.csv"), encoding="utf-8", mode="r") as edit_file:
+        with open(os.path.join(str(file_map), "info_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             for row in rd:
                 if row[0] != "Name":
@@ -34,7 +34,7 @@ def make_battle_list_data(main_dir, ruleset_folder):
 
     for file_map in subdirectories:
         custom_map_folder.append(str(file_map).split("\\")[-1])
-        with open(os.path.join(str(file_map), "info.csv"), encoding="utf-8", mode="r") as edit_file:
+        with open(os.path.join(str(file_map), "info_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             for row in rd:
                 if row[0] != "Name":

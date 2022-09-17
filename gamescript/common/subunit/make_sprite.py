@@ -13,9 +13,8 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
                 armour_sprite_pool,
                 effect_sprite_pool, animation_property, weapon_joint_list, weapon, armour, hair_colour_list,
                 skin_colour_list, genre_sprite_size,
-                screen_scale):
+                screen_scale, race_list):
     apply_colour = animation.apply_colour
-
     frame_property = animation_part_list["frame_property"].copy()
     animation_property = animation_property.copy()
     check_prop = frame_property + animation_property
@@ -35,12 +34,14 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
     for index, layer in enumerate(pose_layer_list):
         part = animation_part_list[layer]
         new_part = part.copy()
-        # this_armour = None
-        # for p_index, p in enumerate(("p1_", "p2_", "p3_", "p4_")):
-        if "p1_" in layer:
-            this_armour = armour[0]
-        else:
-            this_armour = armour[1]
+        this_armour = None
+        if any(ext in layer for ext in ("p1_", "p2_", "p3_", "p4_")) and "weapon" not in layer:
+            part_race = [value["Name"] for value in race_list.values()].index(new_part[0])
+            part_race = tuple(race_list.keys())[part_race]
+            if race_list[part_race]["Mount Armour"] is False:
+                this_armour = armour[0]
+            else:
+                this_armour = armour[1]
         if "head" in layer:
             image_part = generate_head(layer[:2], animation_part_list, part[0:3], troop_sprite_list, body_sprite_pool,
                                        armour_sprite_pool,

@@ -14,7 +14,7 @@ load_images = utility.load_images
 
 
 class TroopData:
-    def __init__(self, main_dir, weapon_icon_images, ruleset, ruleset_folder):
+    def __init__(self, main_dir, weapon_icon_images, ruleset, ruleset_folder, language):
         """
         For keeping all data related to troop.
         :param main_dir: Game folder direction
@@ -50,8 +50,8 @@ class TroopData:
 
         # Lore of the troop
         self.troop_lore = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "troop_lore.csv"),
-                  encoding="utf-8", mode="r") as edit_file:
+        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop",
+                               "troop_lore" + "_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -409,7 +409,7 @@ class TroopData:
 
 
 class LeaderData:
-    def __init__(self, main_dir, images, ruleset, ruleset_folder):
+    def __init__(self, main_dir, images, ruleset, ruleset_folder, text_language):
         """
         For keeping all data related to leader.
         :param main_dir: Game folder direction
@@ -515,15 +515,16 @@ class LeaderData:
 
         # Lore of the leader dict
         self.leader_lore = {}
-        with open(os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader", "leader_lore.csv"),
-                  encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            for row in rd:
-                for n, i in enumerate(row):
-                    if i.isdigit():
-                        row[n] = int(i)
-                self.leader_lore[row[0]] = row[1:]
-            edit_file.close()
+        for leader_file in ("leader_lore", "common_leader_lore"):  # merge leader and common leader lore together
+            with open(os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader",
+                                   leader_file + "_" + text_language + ".csv"), encoding="utf-8", mode="r") as edit_file:
+                rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+                for row in rd:
+                    for n, i in enumerate(row):
+                        if i.isdigit():
+                            row[n] = int(i)
+                    self.leader_lore[row[0]] = row[1:]
+                edit_file.close()
 
         # Leader sprite
         self.leader_sprite_list = {}
@@ -571,7 +572,7 @@ class LeaderData:
 class FactionData:
     images = []
 
-    def __init__(self, main_dir, ruleset_folder, screen_scale):
+    def __init__(self, main_dir, ruleset_folder, screen_scale, text_language):
         """
         For keeping all data related to leader.
         :param main_dir: Game folder direction
