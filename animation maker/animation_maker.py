@@ -1071,9 +1071,10 @@ class Model:
             if any(ext in edit_type for ext in p_list):
                 self.armour[edit_type[0:2] + "_armour"] = edit_type.split(edit_type[0:2] + "_armour_")[1]
             self.generate_body(self.bodypart_list[current_frame])
-            for part in self.sprite_image:
-                if self.animation_part_list[current_frame][part] is not None:
-                    self.animation_part_list[current_frame][part][0] = self.sprite_image[part]
+            for frame in range(max_frame):
+                for part in self.sprite_image:
+                    if self.animation_part_list[frame][part] is not None:
+                        self.animation_part_list[frame][part][0] = self.sprite_image[part]
 
         elif "eye" in edit_type:
             if "Any" in edit_type:
@@ -2076,21 +2077,14 @@ while True:
                                 for part in model.part_selected:
                                     if list(model.mask_part_list.keys())[part] in frame:
                                         add_part = frame[list(model.mask_part_list.keys())[part]]
-                                        if type(add_part) != list:
-                                            frame_item[list(model.mask_part_list.keys())[part]] = add_part
-                                        else:
-                                            frame_item[list(model.mask_part_list.keys())[part]] = add_part.copy()
+                                        frame_item[list(model.mask_part_list.keys())[part]] = [item for item in add_part]
                                 all_copy_list.append(frame_item)
 
                     elif all_frame_part_paste_button.rect.collidepoint(mouse_pos):
                         if all_copy_list is not None:
                             for frame_index, frame in enumerate(all_copy_list):
                                 for key, value in frame.items():
-                                    if value != {}:
-                                        if type(value) == list:
-                                            model.frame_list[frame_index][key] = value.copy()
-                                        else:
-                                            model.frame_list[frame_index][key] = value
+                                    model.frame_list[frame_index][key] = [item for item in value]
                             model.read_animation(animation_name, old=True)
                             reload_animation(anim, model)
 
