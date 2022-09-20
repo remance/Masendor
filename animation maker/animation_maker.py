@@ -1002,24 +1002,32 @@ class Model:
             else:
                 self.part_selected = [list(self.mask_part_list.keys()).index(part)]
 
-    def edit_part(self, mouse_pos, edit_type):
+    def edit_part(self, mouse_pos, edit_type, specific_frame=None):
+        edit_frame = current_frame
+        if specific_frame is not None:
+            edit_frame = specific_frame
         key_list = list(self.mask_part_list.keys())
         if edit_type == "default":  # reset to default
-            self.animation_part_list[current_frame] = {key: (value[:].copy() if value is not None else value) for key, value in
+            self.animation_part_list[edit_frame] = {key: (value[:].copy() if value is not None else value) for key, value in
                                                        self.default_sprite_part.items()}
-            self.bodypart_list[current_frame] = {key: value for key, value in self.default_body_part.items()}
-            self.part_name_list[current_frame] = {key: value for key, value in self.default_part_name.items()}
+            self.bodypart_list[edit_frame] = {key: value for key, value in self.default_body_part.items()}
+            self.part_name_list[edit_frame] = {key: value for key, value in self.default_part_name.items()}
             self.part_selected = []
             race_part_button.change_text("")
             direction_part_button.change_text("")
             part_selector.change_name("")
 
         elif edit_type == "clear":  # clear whole strip
-            for part in self.part_name_list[current_frame]:
-                self.bodypart_list[current_frame][part] = [0, 0, 0]
-                self.part_name_list[current_frame][part] = ["", "", ""]
-                self.animation_part_list[current_frame][part] = []
+            for part in self.part_name_list[edit_frame]:
+                self.bodypart_list[edit_frame][part] = [0, 0, 0]
+                self.part_name_list[edit_frame][part] = ["", "", ""]
+                self.animation_part_list[edit_frame][part] = []
             self.part_selected = []
+            frame_property_select[edit_frame] = []
+            self.frame_list[edit_frame]["frame_property"] = frame_property_select[edit_frame]
+            setup_list(menu.NameList, current_frame_row, frame_prop_list_box.namelist[edit_frame], frame_prop_namegroup,
+                       frame_prop_list_box, ui, screen_scale, layer=9,
+                       old_list=frame_property_select[edit_frame])  # change frame property list
 
         # elif edit_type == "change":  # change strip
         #     self.part_selected = []
@@ -1027,9 +1035,9 @@ class Model:
         elif edit_type == "paste":  # paste copy part
             for part in copy_part:
                 if copy_part[part] is not None:
-                    self.bodypart_list[current_frame][part] = copy_part[part].copy()
-                    self.animation_part_list[current_frame][part] = copy_animation[part].copy()
-                    self.part_name_list[current_frame][part] = copy_name[part].copy()
+                    self.bodypart_list[edit_frame][part] = copy_part[part].copy()
+                    self.animation_part_list[edit_frame][part] = copy_animation[part].copy()
+                    self.part_name_list[edit_frame][part] = copy_name[part].copy()
 
         elif edit_type == "paste part stat":  # paste copy stat
             for part in copy_part_stat:
@@ -1037,9 +1045,9 @@ class Model:
                 if any(ext in part for ext in ("effect", "special")) is False:
                     new_part = p_body_helper.ui_type + part[2:]
                 if copy_part_stat[part] is not None:
-                    self.bodypart_list[current_frame][new_part] = copy_part_stat[part].copy()
-                    self.animation_part_list[current_frame][new_part] = copy_animation_stat[part].copy()
-                    self.part_name_list[current_frame][new_part] = copy_name_stat[part].copy()
+                    self.bodypart_list[edit_frame][new_part] = copy_part_stat[part].copy()
+                    self.animation_part_list[edit_frame][new_part] = copy_animation_stat[part].copy()
+                    self.part_name_list[edit_frame][new_part] = copy_name_stat[part].copy()
 
         elif "direction" in edit_type:
             if self.part_selected:
@@ -1047,18 +1055,18 @@ class Model:
                     try:
                         part_index = key_list[part]
                         sidechange = edit_type.split("_")[1]
-                        self.bodypart_list[current_frame][part_index][1] = sidechange
-                        self.part_name_list[current_frame][part_index][1] = sidechange
-                        self.generate_body(self.bodypart_list[current_frame])
-                        self.animation_part_list[current_frame][part_index][0] = self.sprite_image[part_index]
+                        self.bodypart_list[edit_frame][part_index][1] = sidechange
+                        self.part_name_list[edit_frame][part_index][1] = sidechange
+                        self.generate_body(self.bodypart_list[edit_frame])
+                        self.animation_part_list[edit_frame][part_index][0] = self.sprite_image[part_index]
                     except IndexError:
                         pass
                     except TypeError:  # None type
                         pass
                     except KeyError:  # change side and not found part with same name
-                        self.bodypart_list[current_frame][part_index][2] = None
-                        self.part_name_list[current_frame][part_index][2] = None
-                        self.animation_part_list[current_frame][part_index][0] = None
+                        self.bodypart_list[edit_frame][part_index][2] = None
+                        self.part_name_list[edit_frame][part_index][2] = None
+                        self.animation_part_list[edit_frame][part_index][0] = None
 
         elif edit_type == "undo" or edit_type == "redo":
             for frame_num, _ in enumerate(self.animation_part_list):
@@ -1070,7 +1078,7 @@ class Model:
         elif "armour" in edit_type:
             if any(ext in edit_type for ext in p_list):
                 self.armour[edit_type[0:2] + "_armour"] = edit_type.split(edit_type[0:2] + "_armour_")[1]
-            self.generate_body(self.bodypart_list[current_frame])
+            self.generate_body(self.bodypart_list[edit_frame])
             for frame in range(max_frame):
                 for part in self.sprite_image:
                     if self.animation_part_list[frame][part] is not None:
@@ -1078,34 +1086,34 @@ class Model:
 
         elif "eye" in edit_type:
             if "Any" in edit_type:
-                self.bodypart_list[current_frame][edit_type[0:2] + "_eye"] = 1
+                self.bodypart_list[edit_frame][edit_type[0:2] + "_eye"] = 1
             else:
-                self.bodypart_list[current_frame][edit_type[0:2] + "_eye"] = edit_type.split(edit_type[0:2] + "_eye_")[1]
-            self.generate_body(self.bodypart_list[current_frame])
+                self.bodypart_list[edit_frame][edit_type[0:2] + "_eye"] = edit_type.split(edit_type[0:2] + "_eye_")[1]
+            self.generate_body(self.bodypart_list[edit_frame])
             part = edit_type[0:2] + "_head"
-            self.animation_part_list[current_frame][part][0] = self.sprite_image[part]
+            self.animation_part_list[edit_frame][part][0] = self.sprite_image[part]
 
         elif "mouth" in edit_type:
             if "Any" in edit_type:
-                self.bodypart_list[current_frame][edit_type[0:2] + "_mouth"] = 1
+                self.bodypart_list[edit_frame][edit_type[0:2] + "_mouth"] = 1
             else:
-                self.bodypart_list[current_frame][edit_type[0:2] + "_mouth"] = edit_type.split(edit_type[0:2] + "_mouth_")[1]
-            self.generate_body(self.bodypart_list[current_frame])
+                self.bodypart_list[edit_frame][edit_type[0:2] + "_mouth"] = edit_type.split(edit_type[0:2] + "_mouth_")[1]
+            self.generate_body(self.bodypart_list[edit_frame])
             part = edit_type[0:2] + "_head"
-            self.animation_part_list[current_frame][part][0] = self.sprite_image[part]
+            self.animation_part_list[edit_frame][part][0] = self.sprite_image[part]
 
         elif "part" in edit_type:
             if self.part_selected:
                 part = self.part_selected[-1]
                 part_index = key_list[part]
                 part_change = edit_type[5:]
-                self.bodypart_list[current_frame][part_index][2] = part_change
-                self.part_name_list[current_frame][part_index][2] = part_change
-                self.generate_body(self.bodypart_list[current_frame])
-                if not self.animation_part_list[current_frame][part_index]:
-                    self.animation_part_list[current_frame][part_index] = self.empty_sprite_part.copy()
-                    self.animation_part_list[current_frame][part_index][1] = "center"
-                self.animation_part_list[current_frame][part_index][0] = self.sprite_image[part_index]
+                self.bodypart_list[edit_frame][part_index][2] = part_change
+                self.part_name_list[edit_frame][part_index][2] = part_change
+                self.generate_body(self.bodypart_list[edit_frame])
+                if not self.animation_part_list[edit_frame][part_index]:
+                    self.animation_part_list[edit_frame][part_index] = self.empty_sprite_part.copy()
+                    self.animation_part_list[edit_frame][part_index][1] = "center"
+                self.animation_part_list[edit_frame][part_index][0] = self.sprite_image[part_index]
 
         elif "race" in edit_type:  # change race/base part type
             if self.part_selected:
@@ -1114,17 +1122,17 @@ class Model:
                 part_change = edit_type[5:]
                 if "weapon" in part_index:
                     self.weapon[part_index] = part_change
-                if self.bodypart_list[current_frame][part_index] is None:
-                    self.bodypart_list[current_frame][part_index] = [0, 0, 0]
-                    self.part_name_list[current_frame][part_index] = ["", "", ""]
-                    self.animation_part_list[current_frame][part_index] = []
-                self.bodypart_list[current_frame][part_index][0] = part_change
-                self.part_name_list[current_frame][part_index][0] = part_change
-                self.bodypart_list[current_frame][part_index][2] = self.part_name_list[current_frame][part_index][
+                if self.bodypart_list[edit_frame][part_index] is None:
+                    self.bodypart_list[edit_frame][part_index] = [0, 0, 0]
+                    self.part_name_list[edit_frame][part_index] = ["", "", ""]
+                    self.animation_part_list[edit_frame][part_index] = []
+                self.bodypart_list[edit_frame][part_index][0] = part_change
+                self.part_name_list[edit_frame][part_index][0] = part_change
+                self.bodypart_list[edit_frame][part_index][2] = self.part_name_list[edit_frame][part_index][
                     2]  # attempt to get part again in case the initial reading not found
                 try:
-                    self.generate_body(self.bodypart_list[current_frame])
-                    self.animation_part_list[current_frame][part_index][0] = self.sprite_image[part_index]
+                    self.generate_body(self.bodypart_list[edit_frame])
+                    self.animation_part_list[edit_frame][part_index][0] = self.sprite_image[part_index]
                 except IndexError:
                     pass
                 except KeyError:  # change side and not found part with same name
@@ -1145,22 +1153,22 @@ class Model:
             for part in self.part_selected:
                 if part < len(key_list):  # can't edit part that not exist
                     part_index = key_list[part]
-                    if self.animation_part_list[current_frame][part_index] is not None and \
-                            len(self.animation_part_list[current_frame][part_index]) > 3:
+                    if self.animation_part_list[edit_frame][part_index] is not None and \
+                            len(self.animation_part_list[edit_frame][part_index]) > 3:
                         if edit_type == "place":  # mouse place
                             new_point = mouse_pos
                             if point_edit == 1:  # use joint
                                 part_image = self.sprite_image[part_index]
                                 center = pygame.Vector2(part_image.get_width() / 2, part_image.get_height() / 2)
-                                pos_different = center - self.animation_part_list[current_frame][part_index][
+                                pos_different = center - self.animation_part_list[edit_frame][part_index][
                                     1]  # find distance between image center and connect point main_joint_pos
                                 new_point = new_point + pos_different
-                            self.animation_part_list[current_frame][part_index][2] = new_point
+                            self.animation_part_list[edit_frame][part_index][2] = new_point
 
                         elif "move_" in edit_type:  # keyboard move
                             try:
-                                new_point = [self.animation_part_list[current_frame][part_index][2][0],
-                                             self.animation_part_list[current_frame][part_index][2][1]]
+                                new_point = [self.animation_part_list[edit_frame][part_index][2][0],
+                                             self.animation_part_list[edit_frame][part_index][2][1]]
                             except TypeError:  # None position
                                 new_point = [0, 0]
                             if "w" in edit_type:
@@ -1171,18 +1179,18 @@ class Model:
                                 new_point[0] = new_point[0] - 0.5
                             elif "d" in edit_type:
                                 new_point[0] = new_point[0] + 0.5
-                            self.animation_part_list[current_frame][part_index][2] = new_point.copy()
+                            self.animation_part_list[edit_frame][part_index][2] = new_point.copy()
 
                         elif "tilt_" in edit_type:  # keyboard rotate
-                            new_angle = self.animation_part_list[current_frame][part_index][3]
+                            new_angle = self.animation_part_list[edit_frame][part_index][3]
                             if "q" in edit_type:
                                 new_angle = new_angle - 0.5
                             elif "e" in edit_type:
                                 new_angle = new_angle + 0.5
-                            self.animation_part_list[current_frame][part_index][3] = new_angle
+                            self.animation_part_list[edit_frame][part_index][3] = new_angle
 
                         elif edit_type == "rotate":  # mouse rotate
-                            base_pos = self.animation_part_list[current_frame][part_index][2]
+                            base_pos = self.animation_part_list[edit_frame][part_index][2]
                             myradians = math.atan2(mouse_pos[1] - base_pos[1], mouse_pos[0] - base_pos[0])
                             new_angle = math.degrees(myradians)
                             # """upper left -"""
@@ -1201,93 +1209,93 @@ class Model:
                             elif 90 < new_angle <= 180:
                                 new_angle = 270 - new_angle
 
-                            self.animation_part_list[current_frame][part_index][3] = new_angle
+                            self.animation_part_list[edit_frame][part_index][3] = new_angle
 
                         elif "scale" in edit_type:  # part scale
                             if "up" in edit_type:
-                                self.animation_part_list[current_frame][part_index][6] += 0.1
-                                self.animation_part_list[current_frame][part_index][6] = round(self.animation_part_list[current_frame][part_index][6],
+                                self.animation_part_list[edit_frame][part_index][6] += 0.1
+                                self.animation_part_list[edit_frame][part_index][6] = round(self.animation_part_list[edit_frame][part_index][6],
                                                                                                1)
                             elif "down" in edit_type:
-                                self.animation_part_list[current_frame][part_index][6] -= 0.1
-                                if self.animation_part_list[current_frame][part_index][6] < 0:
-                                    self.animation_part_list[current_frame][part_index][6] = 0
-                                self.animation_part_list[current_frame][part_index][6] = round(self.animation_part_list[current_frame][part_index][6],
+                                self.animation_part_list[edit_frame][part_index][6] -= 0.1
+                                if self.animation_part_list[edit_frame][part_index][6] < 0:
+                                    self.animation_part_list[edit_frame][part_index][6] = 0
+                                self.animation_part_list[edit_frame][part_index][6] = round(self.animation_part_list[edit_frame][part_index][6],
                                                                                                1)
                         elif "flip" in edit_type:
                             flip_type = int(edit_type[-1])
-                            current_flip = self.animation_part_list[current_frame][part_index][4]
+                            current_flip = self.animation_part_list[edit_frame][part_index][4]
                             if current_flip == 0:  # current no flip
-                                self.animation_part_list[current_frame][part_index][4] = flip_type
+                                self.animation_part_list[edit_frame][part_index][4] = flip_type
                             elif current_flip == 1:  # current horizon flip
                                 if flip_type == 1:
-                                    self.animation_part_list[current_frame][part_index][4] = 0
+                                    self.animation_part_list[edit_frame][part_index][4] = 0
                                 else:
-                                    self.animation_part_list[current_frame][part_index][4] = 3
+                                    self.animation_part_list[edit_frame][part_index][4] = 3
                             elif current_flip == 2:  # current vertical flip
                                 if flip_type == 1:
-                                    self.animation_part_list[current_frame][part_index][4] = 3
+                                    self.animation_part_list[edit_frame][part_index][4] = 3
                                 else:
-                                    self.animation_part_list[current_frame][part_index][4] = 0
+                                    self.animation_part_list[edit_frame][part_index][4] = 0
                             elif current_flip == 3:  # current both hori and vert flip
                                 if flip_type == 1:
-                                    self.animation_part_list[current_frame][part_index][4] = 2
+                                    self.animation_part_list[edit_frame][part_index][4] = 2
                                 else:
-                                    self.animation_part_list[current_frame][part_index][4] = 1
+                                    self.animation_part_list[edit_frame][part_index][4] = 1
 
                         elif "reset" in edit_type:
-                            self.animation_part_list[current_frame][part_index][3] = 0
-                            self.animation_part_list[current_frame][part_index][4] = 0
+                            self.animation_part_list[edit_frame][part_index][3] = 0
+                            self.animation_part_list[edit_frame][part_index][4] = 0
 
                         elif "delete" in edit_type:
-                            self.bodypart_list[current_frame][part_index] = None
-                            self.part_name_list[current_frame][part_index] = None
-                            self.animation_part_list[current_frame][part_index] = None
+                            self.bodypart_list[edit_frame][part_index] = None
+                            self.part_name_list[edit_frame][part_index] = None
+                            self.animation_part_list[edit_frame][part_index] = None
 
                         elif "layer_" in edit_type:
                             if "up" in edit_type:
-                                self.animation_part_list[current_frame][part_index][5] += 1
+                                self.animation_part_list[edit_frame][part_index][5] += 1
                             elif "down" in edit_type:
-                                self.animation_part_list[current_frame][part_index][5] -= 1
-                                if self.animation_part_list[current_frame][part_index][5] == 0:
-                                    self.animation_part_list[current_frame][part_index][5] = 1
+                                self.animation_part_list[edit_frame][part_index][5] -= 1
+                                if self.animation_part_list[edit_frame][part_index][5] == 0:
+                                    self.animation_part_list[edit_frame][part_index][5] = 1
         for key, value in self.mask_part_list.items():  # reset rect list
             self.mask_part_list[key] = None
         for joint in joints:  # remove all joint first
             joint.kill()
 
         # recreate current frame image
-        pose_layer_list = self.make_layer_list(self.animation_part_list[current_frame])
+        pose_layer_list = self.make_layer_list(self.animation_part_list[edit_frame])
         for frame_num, _ in enumerate(self.animation_list):
             pose_layer_list = self.make_layer_list(self.animation_part_list[frame_num])
             surface = self.create_animation_film(pose_layer_list, frame_num)
             self.animation_list[frame_num] = surface
-        name_list = self.part_name_list[current_frame]
+        name_list = self.part_name_list[edit_frame]
         try:
-            sprite_part = self.animation_part_list[current_frame]
-            self.frame_list[current_frame] = {
+            sprite_part = self.animation_part_list[edit_frame]
+            self.frame_list[edit_frame] = {
                 key: name_list[key] + [sprite_part[key][2][0], sprite_part[key][2][1], sprite_part[key][3], sprite_part[key][4],
                                        sprite_part[key][5], sprite_part[key][6]] if sprite_part[key] is not None else [0]
                 for key in list(self.mask_part_list.keys())}
         except TypeError:  # None type error from empty frame
-            self.frame_list[current_frame] = {key: [0] for key in list(self.mask_part_list.keys())}
+            self.frame_list[edit_frame] = {key: [0] for key in list(self.mask_part_list.keys())}
         except IndexError:
-            self.frame_list[current_frame] = {key: [0] for key in list(self.mask_part_list.keys())}
-        for key in list(self.frame_list[current_frame].keys()):
-            if "weapon" in key and self.frame_list[current_frame][key] != [0]:
-                self.frame_list[current_frame][key] = self.frame_list[current_frame][key][1:]
+            self.frame_list[edit_frame] = {key: [0] for key in list(self.mask_part_list.keys())}
+        for key in list(self.frame_list[edit_frame].keys()):
+            if "weapon" in key and self.frame_list[edit_frame][key] != [0]:
+                self.frame_list[edit_frame][key] = self.frame_list[edit_frame][key][1:]
         p_face = {}
         for p in p_list:
-            p_face = p_face | {p: {p + "_eye": self.bodypart_list[current_frame][p + "_eye"],
-                                   p + "_mouth": self.bodypart_list[current_frame][p + "_mouth"]}}
+            p_face = p_face | {p: {p + "_eye": self.bodypart_list[edit_frame][p + "_eye"],
+                                   p + "_mouth": self.bodypart_list[edit_frame][p + "_mouth"]}}
         for p in p_face:
-            p_face_pos = list(self.frame_list[current_frame].keys()).index(p + "_head") + 1
-            self.frame_list[current_frame] = {k: v for k, v in (list(self.frame_list[current_frame].items())[:p_face_pos] + list(p_face[p].items()) +
-                                                                list(self.frame_list[current_frame].items())[p_face_pos:])}
+            p_face_pos = list(self.frame_list[edit_frame].keys()).index(p + "_head") + 1
+            self.frame_list[edit_frame] = {k: v for k, v in (list(self.frame_list[edit_frame].items())[:p_face_pos] + list(p_face[p].items()) +
+                                                                list(self.frame_list[edit_frame].items())[p_face_pos:])}
 
-        self.frame_list[current_frame]["size"] = self.size
-        self.frame_list[current_frame]["frame_property"] = frame_property_select[current_frame]
-        self.frame_list[current_frame]["animation_property"] = anim_property_select
+        self.frame_list[edit_frame]["size"] = self.size
+        self.frame_list[edit_frame]["frame_property"] = frame_property_select[edit_frame]
+        self.frame_list[edit_frame]["animation_property"] = anim_property_select
         anim_to_pool(animation_name, current_pool, self, activate_list)
         reload_animation(anim, self)
 
@@ -1537,6 +1545,14 @@ all_frame_part_copy_button = Button("Copy PA", image, (screen_size[1] / 2 - play
 all_frame_part_paste_button = Button("Paste PA", image, (screen_size[1] / 2 - play_animation_button.image.get_width(),
                                                          filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 0.5)),
                                      description=("Paste parts in all frame", "Only copied from all frame part copy."))
+
+add_frame_button = Button("Add F", image, (play_animation_button.image.get_width() + screen_size[1] / 2,
+                                                         filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 0.5)),
+                                     description=("Add empty frame and move the other after frames", "Will remove the last frame."))
+
+remove_frame_button = Button("Del F", image, ((play_animation_button.image.get_width() * 2) + screen_size[1] / 2,
+                                                         filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 0.5)),
+                                     description=("Remove current frame",))
 
 joint_button = SwitchButton(["Joint:OFF", "Joint:ON"], image, (play_animation_button.pos[0] + play_animation_button.image.get_width() * 5,
                                                                filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 1.5)),
@@ -2089,6 +2105,47 @@ while True:
                             reload_animation(anim, model)
 
                             model.edit_part(mouse_pos, "change")
+
+                    elif add_frame_button.rect.collidepoint(mouse_pos):
+                        change_frame = len(model.bodypart_list) - 1
+                        frame_property_select = [[] for _ in range(max_frame)]
+                        while change_frame > current_frame:
+                            model.frame_list[change_frame] = {key: value.copy() if type(value) == list else value for key, value
+                                                              in model.frame_list[change_frame - 1].items()}
+                            model.read_animation(animation_name, old=True)
+                            change_frame -= 1
+                        model.edit_part(mouse_pos, "clear")
+                        model.edit_part(mouse_pos, "change")
+                        reload_animation(anim, model)
+                        model.add_history()
+
+                        for strip_index, strip in enumerate(filmstrips):  # enable frame that not empty
+                            for stuff in model.animation_part_list[strip_index].values():
+                                if stuff is not None:
+                                    strip.activate = True
+                                    activate_list[strip_index] = True
+                                    strip.add_strip(change=False)
+                                    break
+
+                    elif remove_frame_button.rect.collidepoint(mouse_pos):
+                        change_frame = current_frame
+                        frame_property_select = [[] for _ in range(max_frame)]
+                        while change_frame < len(model.bodypart_list) - 1:
+                            model.frame_list[change_frame] = model.frame_list[change_frame + 1]
+                            model.read_animation(animation_name, old=True)
+                            change_frame += 1
+                        model.edit_part(mouse_pos, "clear", specific_frame=len(model.bodypart_list) - 1)
+                        model.edit_part(mouse_pos, "change")
+                        reload_animation(anim, model)
+                        model.add_history()
+
+                        for strip_index, strip in enumerate(filmstrips):  # enable frame that not empty
+                            for stuff in model.animation_part_list[strip_index].values():
+                                if stuff is not None:
+                                    strip.activate = True
+                                    activate_list[strip_index] = True
+                                    strip.add_strip(change=False)
+                                    break
 
                     elif frame_copy_button.rect.collidepoint(mouse_pos):
                         copy_press = True
