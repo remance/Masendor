@@ -56,9 +56,9 @@ class Lorebook(pygame.sprite.Sprite):
 
         # some section get stat from multiple list, need to keep track of last item index
         self.equipment_stat = {}
-        self.equipment_last_index = []
+        self.equipment_lore = {}
         self.skill_stat = {}
-        self.skill_last_index = []
+        self.skill_lore = {}
         self.section_list = ()
 
         self.current_subsection_row = 0
@@ -72,32 +72,48 @@ class Lorebook(pygame.sprite.Sprite):
         # Make new equipment list that contain all type weapon, armour, mount
         self.equipment_stat = {}
         run = 1
-        self.equipment_last_index = []
         for stat_list in (self.troop_data.weapon_list, self.troop_data.armour_list, self.troop_data.mount_list,
                           self.troop_data.mount_armour_list):
             for index in stat_list:
                 if index != "ID":
                     self.equipment_stat[run] = stat_list[index]
                     run += 1
-            self.equipment_last_index.append(run)
+
+        self.equipment_lore = {}
+        run = 1
+        for stat_list in (self.troop_data.weapon_lore, self.troop_data.armour_lore, self.troop_data.mount_lore,
+                          self.troop_data.mount_armour_lore):
+            for index in stat_list:
+                if index != "ID":
+                    self.equipment_stat[run] = stat_list[index]
+                    run += 1
 
         # Make new skill list that contain all troop and leader skills
         self.skill_stat = {}
         run = 1
-        self.skill_last_index = []
         for stat_list in (self.troop_data.skill_list, self.leader_data.skill_list):
             for index in stat_list:
                 if index != "ID":
                     self.skill_stat[run] = stat_list[index]
                     run += 1
-            self.skill_last_index.append(run)
+
+        self.skill_lore = {}
+        run = 1
+        for stat_list in (self.troop_data.skill_lore, self.leader_data.skill_lore):
+            for index in stat_list:
+                if index != "ID":
+                    self.skill_lore[run] = stat_list[index]
+                    run += 1
 
         self.section_list = (
             (self.concept_stat, self.concept_lore), (self.history_stat, self.history_lore),
-            (self.faction_data.faction_list, None), (self.troop_data.troop_list, self.troop_data.troop_lore),
-            (self.equipment_stat, None), (self.troop_data.status_list, None), (self.skill_stat, None),
-            (self.troop_data.trait_list, None), (self.leader_data.leader_list, self.leader_data.leader_lore),
-            (self.battle_map_data.feature_mod, None), (self.battle_map_data.weather_data, None))
+            (self.faction_data.faction_list, self.faction_data.faction_lore),
+            (self.troop_data.troop_list, self.troop_data.troop_lore), (self.equipment_stat, self.equipment_lore),
+            (self.troop_data.status_list, self.troop_data.status_lore),
+            (self.skill_stat, self.skill_lore), (self.troop_data.trait_list, self.troop_data.trait_lore),
+            (self.leader_data.leader_list, self.leader_data.leader_lore),
+            (self.battle_map_data.feature_mod, self.battle_map_data.feature_mod_lore),
+            (self.battle_map_data.weather_data, self.battle_map_data.weather_lore))
 
     def change_page(self, page, page_button, main_ui, portrait=None):
         """Change page of the current subsection, either next or previous page"""
@@ -105,9 +121,8 @@ class Lorebook(pygame.sprite.Sprite):
         self.image = self.image_original.copy()  # reset encyclopedia image
         self.page_design()  # draw new pages
 
-        # v Next/previous page button
-        if self.lore_data is None or self.page == self.max_page or \
-                self.lore_data[self.subsection][self.page * 4] == "":  # remove next page button when reach last page
+        # Add or remove next/previous page button
+        if self.page >= self.max_page:  # remove next page button when reach last page
             main_ui.remove(page_button[1])
         else:
             main_ui.add(page_button[1])
@@ -149,14 +164,12 @@ class Lorebook(pygame.sprite.Sprite):
         main_ui.remove(page_button[0])
         main_ui.remove(page_button[1])
         self.max_page = 0  # some subsection may not have lore data in file (maxpage would be just 0)
-        if self.lore_data is not None:  # some subsection may not have lore data
-            try:
-                if self.lore_data[self.subsection][0] != "":
-                    self.max_page = 0 + int(len(self.lore_data[
-                                                    subsection]) / 4)  # Number of maximum page of lore for that subsection (4 para per page)
-                    main_ui.add(page_button[1])
-            except:
-                pass
+
+        # Number of maximum page of lore for that subsection (4 para per page) and not count first one (name + description)
+        print(self.lore_data)
+        if len(self.lore_data[self.subsection]) > 2:
+            self.max_page = int((len(self.lore_data[subsection]) - 2) / 4)
+            main_ui.add(page_button[1])
 
         if self.section == self.leader_section:  # leader section exclusive for now (will merge with other section when add portrait for others)
             try:
@@ -211,6 +224,7 @@ class Lorebook(pygame.sprite.Sprite):
 
         stat = self.stat_data[self.subsection]
         lore = self.lore_data[self.subsection]
+
         name = lore[0]
         description = lore[1]
 
@@ -444,13 +458,15 @@ class Lorebook(pygame.sprite.Sprite):
                                 row = 50 * self.screen_scale[1]
 
         else:  # lore page, the paragraph can be in text or image (IMAGE:)
-            if self.lore_data is not None and self.max_page != 0:
-                lore = self.lore_data[self.subsection][(self.page - 1) * 4:]
+            if self.max_page != 0:
+                if self.page == 1:  # first page skip first two paragraph (name and description)
+                    lore = self.lore_data[self.subsection][2:]
+                else:
+                    lore = self.lore_data[self.subsection][(self.page * 4) + 2:]
                 row = 420 * self.screen_scale[1]
                 col = 60 * self.screen_scale[0]
                 for index, text in enumerate(lore):
                     if text != "":
-
                         # blit paragraph of text
                         if "IMAGE:" not in text:
                             text_surface = pygame.Surface((500 * self.screen_scale[0], 300 * self.screen_scale[1]),

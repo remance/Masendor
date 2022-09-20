@@ -11,6 +11,7 @@ from gamescript.common import utility
 
 stat_convert = utility.stat_convert
 load_images = utility.load_images
+lore_csv_read = utility.lore_csv_read
 
 
 class TroopData:
@@ -52,12 +53,7 @@ class TroopData:
         self.troop_lore = {}
         with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop",
                                "troop_lore" + "_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            for row in rd:
-                for n, i in enumerate(row):
-                    if i.isdigit():
-                        row[n] = int(i)
-                self.troop_lore[row[0]] = row[1:]
+            lore_csv_read(edit_file, self.troop_lore)
             edit_file.close()
 
         # Troop sprite
@@ -92,10 +88,10 @@ class TroopData:
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]
             for index, row in enumerate(rd):
-                if "," in row[-2]:  # make str with , into list
-                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                if "," in row[-1]:  # make str with , into list
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-1].split(",")]
                 else:
-                    this_ruleset = [row[-2]]
+                    this_ruleset = [row[-1]]
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in
                        this_ruleset):  # only grab effect that existed in the ruleset and first row
                     for n, i in enumerate(row):
@@ -103,6 +99,11 @@ class TroopData:
                             row = stat_convert(row, n, i, mod_column=mod_column, tuple_column=tuple_column,
                                                int_column=int_column, true_empty=True)
                     self.status_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
+        edit_file.close()
+
+        self.status_lore = {}
+        with open(os.path.join(main_dir, "data", "troop", "troop_status_lore_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
+            lore_csv_read(edit_file, self.status_lore)
         edit_file.close()
 
         # Troop special status effect dict
@@ -138,10 +139,10 @@ class TroopData:
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
             for index, row in enumerate(rd):
-                if "," in row[-2]:  # make str with , into list
-                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                if "," in row[-1]:  # make str with , into list
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-1].split(",")]
                 else:
-                    this_ruleset = [row[-2]]
+                    this_ruleset = [row[-1]]
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in
                        this_ruleset):  # only grab effect that existed in the ruleset and first row
                     for n, i in enumerate(row):
@@ -189,10 +190,10 @@ class TroopData:
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]
             for index, row in enumerate(rd):
-                if "," in row[-2]:  # make str with , into list
-                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                if "," in row[-1]:  # make str with , into list
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-1].split(",")]
                 else:
-                    this_ruleset = [row[-2]]
+                    this_ruleset = [row[-1]]
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in
                        this_ruleset):  # only grab effect that existed in the ruleset and first row
                     for n, i in enumerate(row):
@@ -200,6 +201,11 @@ class TroopData:
                             row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
                                                tuple_column=tuple_column, int_column=int_column, true_empty=True)
                     self.skill_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
+        edit_file.close()
+
+        self.skill_lore = {}
+        with open(os.path.join(main_dir, "data", "troop", "troop_skill_lore_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
+            lore_csv_read(edit_file, self.skill_lore)
         edit_file.close()
 
         # Troop trait dict
@@ -219,10 +225,10 @@ class TroopData:
             percent_column = [index for index, item in enumerate(header) if item in percent_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]
             for index, row in enumerate(rd):
-                if "," in row[-2]:  # make str with , into list
-                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                if "," in row[-1]:  # make str with , into list
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-1].split(",")]
                 else:
-                    this_ruleset = [row[-2]]
+                    this_ruleset = [row[-1]]
 
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in this_ruleset):
                     for n, i in enumerate(row):
@@ -232,9 +238,14 @@ class TroopData:
                     self.trait_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
+        self.trait_lore = {}
+        with open(os.path.join(main_dir, "data", "troop", "troop_trait_lore_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
+            lore_csv_read(edit_file, self.trait_lore)
+        edit_file.close()
+
         # Troop role dict
         self.role = {}
-        with open(os.path.join(main_dir, "data", "troop", "troop_class.csv"), encoding="utf-8", mode="r") as edit_file:
+        with open(os.path.join(main_dir, "data", "troop", "troop_class_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             for row in rd:
                 for n, i in enumerate(row):
@@ -278,10 +289,10 @@ class TroopData:
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
             percent_column = [index for index, item in enumerate(header) if item in percent_column]
             for row_index, row in enumerate(rd):
-                if "," in row[-2]:  # make str with , into list
-                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                if "," in row[-1]:  # make str with , into list
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-1].split(",")]
                 else:
-                    this_ruleset = [row[-2]]
+                    this_ruleset = [row[-1]]
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in
                        this_ruleset):  # only grab effect that existed in the ruleset and first row
                     if row_index > 0:
@@ -289,6 +300,11 @@ class TroopData:
                             row = stat_convert(row, n, i, percent_column=percent_column, list_column=list_column,
                                                tuple_column=tuple_column, int_column=int_column, true_empty=True)
                     self.weapon_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
+        edit_file.close()
+
+        self.weapon_lore = {}
+        with open(os.path.join(main_dir, "data", "troop", "troop_weapon_lore_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
+            lore_csv_read(edit_file, self.weapon_lore)
         edit_file.close()
 
         # Armour dict
@@ -304,10 +320,10 @@ class TroopData:
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
             for row_index, row in enumerate(rd):
-                if "," in row[-2]:  # make str with , into list
-                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                if "," in row[-1]:  # make str with , into list
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-1].split(",")]
                 else:
-                    this_ruleset = [row[-2]]
+                    this_ruleset = [row[-1]]
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in
                        this_ruleset):  # only grab effect that existed in the ruleset and first row
                     if row_index > 0:
@@ -315,6 +331,11 @@ class TroopData:
                             row = stat_convert(row, n, i, list_column=list_column, tuple_column=tuple_column,
                                                int_column=int_column, true_empty=True)
                     self.armour_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
+        edit_file.close()
+
+        self.armour_lore = {}
+        with open(os.path.join(main_dir, "data", "troop", "troop_armour_lore_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
+            lore_csv_read(edit_file, self.armour_lore)
         edit_file.close()
 
         # Mount dict
@@ -330,16 +351,21 @@ class TroopData:
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
             for row_index, row in enumerate(rd):
-                if "," in row[-2]:  # make str with , into list
-                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                if "," in row[-1]:  # make str with , into list
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-1].split(",")]
                 else:
-                    this_ruleset = [row[-2]]
+                    this_ruleset = [row[-1]]
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in
                        this_ruleset) and row_index > 0:  # only grab effect that existed in the ruleset and first row
                     for n, i in enumerate(row):
                         row = stat_convert(row, n, i, tuple_column=tuple_column, list_column=list_column,
                                            int_column=int_column, true_empty=True)
                     self.mount_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
+        edit_file.close()
+
+        self.mount_lore = {}
+        with open(os.path.join(main_dir, "data", "troop", "mount_preset_lore_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
+            lore_csv_read(edit_file, self.mount_lore)
         edit_file.close()
 
         # Mount grade dict
@@ -371,10 +397,10 @@ class TroopData:
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
             self.mount_armour_list_header = {k: v for v, k in enumerate(header[1:])}
             for row_index, row in enumerate(rd):
-                if "," in row[-2]:  # make str with , into list
-                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                if "," in row[-1]:  # make str with , into list
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-1].split(",")]
                 else:
-                    this_ruleset = [row[-2]]
+                    this_ruleset = [row[-1]]
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in
                        this_ruleset):  # only grab effect that existed in the ruleset and first row
                     if row_index > 0:
@@ -383,6 +409,18 @@ class TroopData:
                                                true_empty=True)
                         self.mount_armour_list[row[0]] = {header[index + 1]: stuff for index, stuff in
                                                           enumerate(row[1:])}
+        edit_file.close()
+
+        self.mount_armour_lore = {}
+        with open(os.path.join(main_dir, "data", "troop", "mount_armour_lore_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+            rd = [row for row in rd]
+            for index, row in enumerate(rd):
+                if row[0] in self.mount_armour_list:  # keep only active mount armour in ruleset
+                    for n, i in enumerate(row):
+                        if i.isdigit():
+                            row[n] = int(i)
+                    self.mount_armour_lore[row[0]] = [stuff for index, stuff in enumerate(row[1:])]
         edit_file.close()
 
         # Unit formation dict
@@ -409,7 +447,7 @@ class TroopData:
 
 
 class LeaderData:
-    def __init__(self, main_dir, images, ruleset, ruleset_folder, text_language):
+    def __init__(self, main_dir, images, ruleset, ruleset_folder, language):
         """
         For keeping all data related to leader.
         :param main_dir: Game folder direction
@@ -469,10 +507,10 @@ class LeaderData:
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]
             for index, row in enumerate(rd):
-                if "," in row[-2]:  # make str with , into list
-                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                if "," in row[-1]:  # make str with , into list
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-1].split(",")]
                 else:
-                    this_ruleset = [row[-2]]
+                    this_ruleset = [row[-1]]
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in
                        this_ruleset):  # only grab effect that existed in the ruleset and first row
                     for n, i in enumerate(row):
@@ -480,6 +518,18 @@ class LeaderData:
                             row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
                                                tuple_column=tuple_column, int_column=int_column, true_empty=True)
                     self.skill_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
+        edit_file.close()
+
+        self.skill_lore = {}
+        with open(os.path.join(main_dir, "data", "leader", "leader_skill_lore_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+            rd = [row for row in rd]
+            for index, row in enumerate(rd):
+                if row[0] in self.skill_list:  # keep only active skill in ruleset
+                    for n, i in enumerate(row):
+                        if i.isdigit():
+                            row[n] = int(i)
+                    self.skill_lore[row[0]] = [stuff for index, stuff in enumerate(row[1:])]
         edit_file.close()
 
         self.commander_skill_list = {}
@@ -499,10 +549,10 @@ class LeaderData:
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]
             for index, row in enumerate(rd):
-                if "," in row[-2]:  # make str with , into list
-                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
+                if "," in row[-1]:  # make str with , into list
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-1].split(",")]
                 else:
-                    this_ruleset = [row[-2]]
+                    this_ruleset = [row[-1]]
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in
                        this_ruleset):  # only grab effect that existed in the ruleset and first row
                     for n, i in enumerate(row):
@@ -517,13 +567,8 @@ class LeaderData:
         self.leader_lore = {}
         for leader_file in ("leader_lore", "common_leader_lore"):  # merge leader and common leader lore together
             with open(os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader",
-                                   leader_file + "_" + text_language + ".csv"), encoding="utf-8", mode="r") as edit_file:
-                rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-                for row in rd:
-                    for n, i in enumerate(row):
-                        if i.isdigit():
-                            row[n] = int(i)
-                    self.leader_lore[row[0]] = row[1:]
+                                   leader_file + "_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
+                lore_csv_read(edit_file, self.leader_lore)
                 edit_file.close()
 
         # Leader sprite
@@ -572,7 +617,7 @@ class LeaderData:
 class FactionData:
     images = []
 
-    def __init__(self, main_dir, ruleset_folder, screen_scale, text_language):
+    def __init__(self, main_dir, ruleset_folder, screen_scale, language):
         """
         For keeping all data related to leader.
         :param main_dir: Game folder direction
@@ -596,6 +641,13 @@ class FactionData:
                             row[n] = [int(i)]
                 self.faction_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
+
+        self.faction_lore = {}
+        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "faction",
+                               "faction_lore_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
+            lore_csv_read(edit_file, self.faction_lore)
+            edit_file.close()
+
         images_old = load_images(main_dir, screen_scale, ["ruleset", ruleset_folder, "faction", "coa"],
                                  load_order=False)  # coa_list images list
         self.coa_list = []

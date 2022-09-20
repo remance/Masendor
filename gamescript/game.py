@@ -708,7 +708,7 @@ class Game:
 
         self.encyclopedia, self.lore_name_list, self.lore_button_ui, self.page_button = make_lorebook(self.main_dir, self.ruleset_folder, self.screen_scale, self.screen_rect)
 
-        self.battle_map_data = datamap.BattleMapData(self.main_dir, self.screen_scale)
+        self.battle_map_data = datamap.BattleMapData(self.main_dir, self.screen_scale, self.language)
 
         self.battle_game = battle.Battle(self, self.window_style)
         self.battle_game.generate_unit = self.generate_unit

@@ -1,0 +1,111 @@
+"ID","Name","Description"
+1,"Fearless","Being fearless is a beneficial trait in a place of life and death in battle. Although fear allows a person to survive longer to fight another day, being fearless is more of a double-edged sword."
+2,"Fear","There should be no fear in the machine of war. Fear makes even obedient soldiers refuse to follow the command after all."
+3,"Hope","Optimism to survive and see the better days is good. A soldier always fights harder when there is hope."
+4,"Stampede",
+5,"Disrupt","Disruption must be quelled before chaos breaks out."
+6,"Hidden","Unseen by enemies. Ambush them at the right time, and you may win this battle effortlessly."
+7,"Blind","Blindness is pretty much the equivalent of certain death in battle. Unable to both attack and defend, such disability must be treated as soon as possible."
+8,"Silence","Unable to speak, unable to cast a spell. Looking at the bright side, this is the time to replenish mana."
+9,"Fight To The Death","These troops are already broken but cannot flee from battle. They will fight to the last man."
+10,"Sleep","While sleeping is good for the body, sleeping at the wrong time and place is not a wise thing to do."
+11,"Panic","""Forward! I said forward you fool! Listen to my command!"""
+12,"Berserk","Desolation, destruction, elimination and eradication! Stop at nothing until your enemy is no more."
+13,"Orc Berserk","Even more devastating and violent than normal berserk, orc berserk make these soldiers an ultimate killing machine!"
+14,"Confuse","""Where is the enemy? What is going on? Why is everyone around me doing nothing?"""
+15,"Run Amok","Cavalry troops have one downside is that their mounts can run amok from anything that spooks them, Be it fire or very loud noise or even stress. This makes their mount uncontrollable and will attack anyone in their path."
+16,"Unconscious","Being unconscious in battle is often a death sentence, especially in melee combat."
+17,"Oiled","Oiled up and ready to be cooked. These troops will catch fire much faster."
+18,"Blessed","Blessed be the believer. Your god grant you the purpose to fulfil your destiny."
+19,"Cursed","The damned will walk the earth until no sun longer shines."
+20,"Plague","Anyone with a plague is dangerous to everyone around him, especially when so many people are staying so close in tight formation."
+21,"Blight",
+22,"Strong Will","Strength in the mind is the foundation of true strength."
+23,"Stun","Vision blur, hearing deafen, regain oneself or be perished."
+24,"Entangle","Entangle to the ground, unable to move. The time to run may yet come, so shake off the obstacle as soon as possible."
+25,"Focus","Focus to accomplish what is necessary. These troops will fight to the fullest without distraction. "
+26,"Poison","A dangerous substance that causes damage over time. Endure and hope for the best or seek aid."
+27,"Deadly Poison","A deadly poison that cannot be cured. Very few can survive this painful experience, and even fewer can live a long life after."
+28,"Burn","Dead by burning is not a good way to go. Try to drench yourselves as soon as possible."
+29,"Freeze","Frozen in place and time. Nothing to be done but wait."
+30,"Shock",
+31,"Wet","Being wet can either be good or bad. Fire and burning become much less effective, but the damage and effect of air and water become a dangerous threat."
+32,"Whistle Arrow",
+33,"Drunk","Getting drunk in battle may not be the smartest thing to do, but It sure helps raise the morale and fierceness of the troops."
+34,"Cripple","Cripple in body, but can the heart hold out? Only time will tell."
+35,"Petrify","Fresh to stone. Statue of endless time to serve as a warning to others."
+36,"Slow","Slowing to a crawl. Best be steady, or you may lose both race and war."
+37,"Haste","Superior speed leads to victory. The momentum is with us to seize any fortune from the enemy."
+38,"Undead Curse","Restless in life and disturbed in death. This curse is hideous in all forms."
+39,"Flying","The dream of flight is now the reality of warfare."
+40,"Floating","Air superiority is gained by a small height difference at a time."
+41,"Charmed","""Damn! Akusb got charmed by succubus again! Someone go get some water, beer and a stick!"""
+42,"Bewitched","""Damn! Akusb got bewitched by mermaids this time! Go get a compass, a priest, and a monkey here!"""
+43,"Paralysed","Paralysed and unable to act, these troops are now an easy target for coup de grace."
+44,"Knock Down","No matter how many times you get knocked down, only by getting up is when you can fight again."
+45,"Aging","The flow of time is unstoppable, but the process of life can be accelerated. "
+46,"Disarmed","Losing a weapon is a shame that any warrior worth their salt should reconsider their life. But now is a good time to run."
+47,"Enlarged","Larger body to inflict unimaginable scale of destruction. Can a larger brain increase one intelligence also?"
+48,"Rusted","No longer as impressive as the old time. Rusted and corroded to become dirt in the soil."
+49,"Cure",
+50,"Clear Mind","Unoccupied by unnecessary thought. A mind is most useful when it is empty."
+51,"Bounty Issued",
+52,"Bleeding","A bleeding wound is often not much emergency issue in the face of life and death in battle. Such a wound still takes its toll in long term, though."
+53,"Deaf","Free from the music of the universe. The first step into the true quietness of a grave."
+54,"Decay",
+55,"Infect","Precarious threat from outside invading the inside. Cured only by either the inner strength or assistance from cleansing substances."
+56,"Side Flanked",
+57,"Rear Flanked",
+58,"Marked","Marked for death to embrace the grip of life. Endure the pain, and you may live to see another day."
+59,"Weaken","Weaken but not unwilling to fight. May the Lord grants them strength once again."
+60,"Strengthen",
+61,"Melee Lock",
+62,"Smoke","Smoke reduces the sight of these troops, making them less effective in combat, but improves range defence."
+63,"Poison Smoke",
+64,"Sleep Smoke",
+65,"Suppressed","These troops are being suppressed by range attacks making them almost unable to move. But it also improves their range defence."
+66,"Armour Shattered","Protection no more. Fresh and blood are exposed to danger now."
+67,"Final Drive","Last dance of life, to embrace death willingly."
+68,"Whip Cracked","The very sound of oppression of the soul. One crack and all shall obey."
+69,"Spell Bind",
+70,"Unleash Companion",
+71,"Unlife",
+72,"Wail of Death",
+73,"Mind Controlled",
+74,"Eight Gates Of Heaven",
+75,"Calm Berserk","Controlled chaos is nothing short of unnatural. By the process of intensive training, calm berserk allows these troops to unleash its wrath without losing control."
+76,"Breaching","Breaching through a mass of battalion is no easy task, even for the finest cavalry force. Hold fast and be tenacious."
+77,"Insane","Sanity is a fickle thing. Once changed, the world turns over."
+78,"Gobbling","Something big is inside these creatures' mouths or stomachs causing them to have trouble moving and fighting."
+79,"Polymorph",
+80,"Shapeshift",
+81,"Pain Reflect",
+82,"Benediction",
+83,"Turn Undead",
+84,"Sacrificial Brand",
+85,"Indictment",
+86,"Awaken",
+87,"Reviving","Return from death to bear the burden of life once again."
+88,"Angel Guardian","Receive 50% of damage from damage taken by nearby friendly squads"
+89,"Provoke","Exploited by the sin of wrath. The enemy must be vanquished!"
+90,"Taint",
+91,"All Round Defense","The perfect form of fighting with no weakness. This will surely be worth the tale of heroism."
+92,"Severe Burning","The burning wounds become so severe now that simply drenching the fire may not save the person anymore. This also causes panic among the troop trying to flee from such fire."
+93,"Drench","Wet from head to toes, almost as if swimming in the water. Avoid cold temperature or air element damage at all costs."
+94,"Electrocution",
+95,"Cold","Cold and shivering. Not a good sign for winter warfare. Find someplace warm or light up the fire."
+96,"Hot","Hot, is it not? Be careful of heatstroke."
+97,"Heatstroke",
+98,"Decimated","Decimation can increase the morale of the troops for a short while so they can fight longer before they realise that surrender may be an option after all. "
+99,"Enraged","Anger clouded rational judgment. Exploit this momentary weakness or suffer the punishment. "
+100,"Dishonourable Displayed",
+101,"Sink",
+102,"Drown","Drowning is not the most comfortable way to go."
+103,"Quicksand Sink","Worse than any other kind of death when you can see an escape in sight but cannot grasp it."
+104,"Swimming",
+105,"Collapse","Collapsing may allow one to recover strength. If they can wake up again, that is."
+106,"Muddy Leg",
+107,"Dispelled",
+108,"Shrinked",
+109,"Wet Gunpowder",
+110,"Guided Missile",

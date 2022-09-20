@@ -8,10 +8,11 @@ stat_convert = utility.stat_convert
 load_image = utility.load_image
 load_images = utility.load_images
 csv_read = utility.csv_read
+lore_csv_read = utility.lore_csv_read
 
 
 class BattleMapData:
-    def __init__(self, main_dir, screen_scale):
+    def __init__(self, main_dir, screen_scale, language):
         self.feature_list = []
         with open(os.path.join(main_dir, "data", "map", "terrain_effect.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
@@ -52,7 +53,11 @@ class BattleMapData:
                 self.feature_mod[row[0]]["Twilight Temperature"] = \
                     int((self.feature_mod[row[0]]["Day Temperature"] +
                          self.feature_mod[row[0]]["Night Temperature"]) / 2)
+        edit_file.close()
 
+        self.feature_mod_lore = {}
+        with open(os.path.join(main_dir, "data", "map", "terrain_effect_lore_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
+            lore_csv_read(edit_file, self.feature_mod_lore)
         edit_file.close()
 
         self.day_effect_images = load_images(main_dir, screen_scale, ["map", "day"], load_order=False)
@@ -85,6 +90,20 @@ class BattleMapData:
         for item in weather_list:  # list of weather with different strength
             for strength in strength_list:
                 self.weather_list.append(strength + item)
+        edit_file.close()
+
+        weather_list = [item["Name"] for item in self.weather_data.values()]
+        strength_list = ["Light ", "Normal ", "Strong "]
+        self.weather_list = []
+        for item in weather_list:  # list of weather with different strength
+            for strength in strength_list:
+                self.weather_list.append(strength + item)
+
+        self.weather_lore = {}
+        with open(os.path.join(main_dir, "data", "map", "weather", "weather_lore_" + language + ".csv"),
+                  encoding="utf-8", mode="r") as edit_file:
+            lore_csv_read(edit_file, self.weather_lore)
+        edit_file.close()
 
         self.weather_matter_images = []
         for weather_sprite in weather_list:  # Load weather matter sprite image

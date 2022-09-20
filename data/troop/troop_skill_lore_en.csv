@@ -1,0 +1,230 @@
+"ID","Name","Description"
+1,"Fearless Charge","Fear only bring the weakest of men. To be fearless is to charge on even against the face of death itself."
+2,"Glorious Charge","Glory to those who brave the fear of death and charge onward to the unknown."
+3,"Steady Charge","Steady but not too slow will win even more races and battles."
+4,"Frenzied Charge","Mindless and aggressive make the most powerful charge."
+5,"Devastating Charge","What is a better objective of a charge aside to devastate the enemies utterly?"
+6,"Stampede","Under the iron hooves and beneath the blazing sun, only the strongest can rise up again."
+7,"Breach","Breaching through the enemy's formation to crush whoever dares to stand at their front is the greatest achievement every shock cavalry troop should dream of."
+8,"Cover Charge","Risky yet safe. Shield at the front and no archer or spearman can halt your advance."
+9,"Agile Charge","Agility is the most important aspect of a charge. You do not really charge by standing still, do you?"
+10,"Highland Charge",
+11,"Dread Charge","Oh great horror, what sin did we do to bring you into us."
+12,"Leaping Charge","Momentum gain from leaping can make any following blow a massive crushing power."
+13,"Banzai Charge",
+14,"Reckless Charge",
+15,"Historic Moment","There are not many events in the world that would be worthwhile recorded into a history book. The same cannot be said for this moment."
+16,"Hidden Charge","It should be practically impossible to charge while remaining hidden. And how can someone defend against such an impossible feat?"
+17,"Clumsy Charge","Some troops are just not suitable for charging, whether it be because of their insufficient training or unsuitable equipment."
+18,"Heroic Charge","Just follows the hero, and everything will be alright. They become masters of battle by staying alive after all."
+19,"Weak Charge","A weak charge can often time results in total disaster. Exercise charging tactic for troops with this skill with caution."
+20,"Slow Charge","Due to the troop's equipment weight, its charge is much slower than usual and less effective overall."
+21,"Charge","An act of charging is often one of the most crucial turning points in any battle. A successful charge can deliver a massive shocking blow to enemies that completely destroy their morale, or it can be a total disaster that results in a retreat of the charge initiator instead."
+22,"Chanting Charge",
+23,"Break Charge",
+24,"Counter Charge",
+25,"Leading Charge",
+26,,
+27,,
+28,"Reconnaissance","Only the very best of plans can be created from the most thorough information gathering process."
+29,"Berserk",
+30,"Keen Strike",
+31,"Graceful Evasion","There is nothing more elegant than gracefully evading a blow from a brute."
+32,"Spear Schiltron",
+33,"Spearwall","Spearwall is a simple yet effective method to counter a charging unit. It is difficult to dodge an object when you are rushing at full speed, after all."
+34,"Spearguard","Due to the length of the spear, a well-positioned spear stance can already improve the defence ability significantly."
+35,"Angel Guardian",
+36,"Shieldwall","What is the most common tactic used in the most disciplined troops by every world-conquering empire? The answer is always shieldwall. The key basis of winning the war is to avoid having the soldiers die in senseless deaths. The longer the soldiers survive in the war, the more experience in killing they become. And a more experienced soldier make a more effective army."
+37,"Shield Turtle","Defensive yet still mobile. This tactic is superb against approaching enemy armies that excel in range attacks."
+38,"Shield Dome","The ultimate defence tactic. This shield dome leaves no vulnerable spot for an enemy to attack."
+39,"Shield Barrier",
+40,"Shield Fortress",
+41,"Rapid Shots","Opportunity to attack is of the essence, especially for archers on a battlefield. The more arrows remain in the quiver equate to the less enemy killed."
+42,"Rapid Defense",
+43,"Rapid Attack","Strike fast enough, and the enemy will never know what hit them."
+44,"Rapid Advance","Speed can often determine the fate of a battle and even war. Being faster than the enemy is never a disadvantage."
+45,"Steady Aims","The most important part of range weaponry is to hit the target. Arrows missed are arrow wasted."
+46,"Steady Shield","The art of defence begins with stability. No unsteady shield can defend against harm for its user."
+47,"Victory Or Death","Sometimes retreat is a valid option, but not for this time."
+48,"Chain Attack","Hitting all enemies at once in a swift fashion is not an easy feat. Extremely powerful skill in battlefield combat with no end of enemies to slay."
+49,"Sweep Asunder","Only the strong can sweep a large weapon so powerful that the blow can leave all those standing at the front asunder."
+50,"Pledge Of Honour",
+51,"Ruthless Pursuit",
+52,"Cantabrian Circle","A manoeuvre that is only possible with the mastery of both equitation and archery. To attack even when moving is the pinnacle of warfare."
+53,"Hold Ground","""Hold your ground men! No enemy will pass through this place as long as we are here.""  "
+54,"Pikewall","The deadly charge of cavalry was the domination tactic on the battlefield until the invention of the pikewall tactic. By simply having infantries holding pikes in line, an impregnable wall is created, "
+55,"Hidden Pike","A nasty surprise. Who can expect a complete death trap in their charge to glory? Only fool fight a fair fight."
+56,"Overdrive","The limit can be surpassed. But careful your life will not be extinguished by your own limitation."
+57,"Death Volunteer","Volunteering to die is an act that surpasses natural instinct. To excess oneself to death for victory is either madness or complete devotion."
+58,"Warcry",
+59,,
+60,,
+61,"Second Wind","One more push to victory. Such a chance never come often. "
+62,"Bloodlust","All stat +10%, stamina +10% for every enemy destroyed"
+63,"Critical Measure","A critical measure must be taken for this crisis, or we will not survive. "
+64,"Camaraderie","Should a task be too difficult to accomplish alone, a fine work of cooperation should make clear any obstacle."
+65,"Cripple Strike","Why kill when you can cripple the enemy and make them suffer for all to see. "
+66,"Random Throwing","Sacrificing accuracy for speed can be beneficial if the situation does not permit taking time to aim."
+67,"Joy Of The Barbarian","Pillage and destroy is the joy of savages. And it is the best feeling ever."
+68,"Sand Pocket","Throwing sand to the eyes is a trick as old as humanity itself."
+69,"Terror Strike","Terror comes in all forms. Physical appearance is often the key. Even more so if it is impactful."
+70,"Martrydom ","To give your life for the cause is the ultimate purpose in life. Surely God will reward you for it."
+71,"Proud Force","Pride is necessary for victory. Only those who believe in themselves prevail against their foes."
+72,,
+73,,
+74,,
+75,"Soothing Ritual","My hand on your shoulder shall bring light to your mind."
+76,,
+77,"Whirlwind Strike","The wind cannot be dodged, only endured."
+78,"Arrow Shower","Deadly rain that can blotch the sun for eternity."
+79,"Poison Arrow","The greatest tool of cowardice. Unleash hell to the enemy from safety and see them suffer."
+80,"Heavy Arrow","Arrow specifically made to pierce heavy armour. Less ideal for other uses due to its weight."
+81,"Inferno Trail Arrow",
+82,"Fire Arrow","A fire arrow tactic is often used to ignite a structure, ship or siege machine. It is also used to inflict damage to enemy morale."
+83,"Whistle Arrow","Whistle arrow by itself does little to no physical damage. The sound, though, does have a superstitious belief attached to it."
+84,"Curse Arrow","Nothing is more vicious than a guided curse."
+85,"Smoke Arrow","Useful for either support or distraction but will last only for a short while."
+86,"Magic Arrow",
+87,"Fireblast Arrow","Exploding arrow is nothing short of innovative engineering between the new and the old."
+88,"Unwavering Resolve","Never give up, never surrender!"
+89,"Heroic Resolve","Always prevail, always resolute!"
+90,"Sacrifical Strike","Sacrifice to accomplish the impossible. Or is it merely a foolish struggle?"
+91,"Stalwart Defense",
+92,"Sudden Fortitude","A sudden burst of life will catch anyone off-guard."
+93,"Indestructible","Why attack something that cannot be destroyed?"
+94,"Iron Wall","None shall pass!"
+95,"Focus Strike","Focus and steady!"
+96,"Absolute Devotion","God rewards only those that give absolute devotion to him."
+97,"Provoke","""Hey over here! Come and get me."" *all kind of rude gesture*"
+98,"Double Slash","Twice the slash, double the damage!"
+99,"Triple Slash","Thrice the damage, triple the prize!"
+100,"Great Sweep","“One great circle and the bodies will fall. No life shall be forgiven under the dying muttering.” Gasiernse Poem of Blade."
+101,"Pinpoint Shot","Waste not the arrows nor mind."
+102,"Swift Thrusts",
+103,,
+104,"Combine Determination",
+105,"Clear Mind","Clear thy mind and the Lord will carry guidance to thee."
+106,"The Great Banner",
+107,"Hammer Of Faith",
+108,"Blade Dance","The dance of death never ends. A man and his sword never part until the stage turn red from the audiences’ gore."
+109,"Desperate Struggle","Desperation to cling to survival in a crisis that may not be overturned. No price is too cheap to pay."
+110,"Payday Imminent","Nothing can bring joy as waiting for payday! Hard-earned money and reward are one of the meanings of work, after all."
+111,"Finest Hour",
+112,"Final Strike","Final breath in this world, one final farewell to the beloved enemy so we may meet together in the afterlife."
+113,"All Out Assault",
+114,"Poison Attack","Poison at the tip of a blade never fails to disappoint, especially for those who receive it."
+115,,
+116,,
+117,"Suppressing Fire",
+118,"Soul Reap",
+119,"Aegis",
+120,"Crushing Leap",
+121,"Final Showdown",
+122,"Unto Demise",
+123,,
+124,"Purge The Infidels","The villains of the peace must be purged. For true peace only existed in our lord’s guidance."
+125,"Hex Wind",
+126,"Grasp The Opportunity","There is always a possibility in every impossible lies waiting."
+127,"Blood Demand","Demand to be made. Or this tribunal will never end."
+128,"Valiant Struggle","History will remember this day of our valiant struggle!"
+129,"Ground Shake","Those who have legs cannot fight effectively on a shaky foundation."
+130,"Spike Burst","Who would expect the ground they stand on to be their enemy?"
+131,"Deathblow","These troops can muster their last strength to deal the final blow before they die. Death in melee combat will cause damage to the attackers."
+132,"Impact Slam",
+133,,
+134,"Requiem",
+135,"Nature Awakening",
+136,"Faithful Fury","Friendly to the followers. Faithful to the cause. Fury to the offenders."
+137,"Armour Shatters","Armour is completely useless before this strike. Even worse, any enemy that survives against this attack will receive armour shatter status."
+138,"Cheer To Death",
+139,"Battle Rhythm",
+140,"Heroic Counter","Deal 20% of melee attack damage back to enemy when receive melee damage"
+141,"Cursed Song",
+142,"By Beard And Hammer!",
+143,"Rushing Engagement",
+144,"Final Drive","Only a few are prepared to meet their end. Even fewer dare to confront it."
+145,"Primal Carnage",
+146,"Upbeat Melody",
+147,"Bloody Onslaught",
+148,"Crack The Whip","Work for your master, slaves! Nothing makes slaves work harder than the sound of whiplash."
+149,"Silver Arrow","Next range attack deals 100% and +100% damage to spirit, evil and demon squads"
+150,"Rampage",
+151,"Overpower","A total display of dominance in strength. The weak shall always cower before the strong."
+152,"Overwhelm",
+153,"Flashy Display",
+154,,
+155,"Callback Companion",
+156,"Unleash Companion",
+157,"Clear Insight","The route is clear. Now only focus."
+158,"Blood For Blood",
+159,"Shield Breaking","Render their faith in the protection of their lives shattered, and their will to fight will be broken."
+160,,
+161,"Battle Prayer","Prayer for safety and victory. Preparing for the departure."
+162,"Disrupting Song","A song can soothe the minds just as much as it can disrupt listeners' focus."
+163,"Exact Justice",
+164,"Collect Corpse","Good flesh and bone never should go to waste."
+165,"Unlife",
+166,"Devour Corpse","All flesh can nourish life, especially if they are still fresh."
+167,"Wail Of Death","The deaths sing, all lives follow."
+168,"Cleaving Strike","Cleaving through bodies and armour with ease. A feat that is achievable only by the strongest warriors."
+169,"Mark For Death","Those who are marked will never know."
+170,"Dominate","Every mind can be changed. Submission is the natural process of all lives."
+171,"Will Release",
+172,"Revival","Return from death to fulfil their duty once more."
+173,"Bounty Hunting",
+174,"Put A Bounty","Every life has a price."
+175,"Digging","Dig down the earth, greater prizes are never above the ground."
+176,"Petal Slash",
+177,"Paramount Effort",
+178,"Brutal Cleave",
+179,"Tar Ball Sling",
+180,"Storming Impact",
+181,"Skewing Impale",
+182,"Into Insanity","Crossing the line into the domain that no sane mind will ever glance inside."
+183,"Gobble",
+184,"Vampiric Aura",
+185,"Polymorph",
+186,"Shapeshift",
+187,"Pain Reflect",
+188,"Courage Song",
+189,"Benediction",
+190,"Healing Support","You will be healed and ready to take up your arms to repeal the enemy once again."
+191,"Guidance To Heaven Embrace",
+192,"Sacrifice Choosing",
+193,"Indictment",
+194,"Massacre",
+195,"Swift Chant","Magic chanting always takes time. A mage who can swift chant is considered to be a rare talent even among the learned."
+196,"Sneaky Ambush",
+197,"Guiding Wind",
+198,"Corrupted Mist",
+199,"Vacillation Influence",
+200,"Fantasy Imagination","The route is clear. Now only the body must accomplish what the imagination can fantasise. "
+201,"Corpse Burst",
+202,"Carbidarleht Piper",
+203,"Spider Web Shot",
+204,"Aging Touch","Ageing is inevitable, but what is worse one can do to others than escalate the process. The ability to turn a well-toned soldier into a weak senile old fool is beyond terrifying."
+205,"Ashen Rising","Rising from ash, the flame of life will never be extinguished."
+206,"Chain Lightning Strike",
+207,"Silencing Glare","A glare so intimidating that it leaves anyone in sight incapable of even producing coherent speech from fear. Devastatingly useful against mage units that entirely rely on their chanting."
+208,"Deathshriek","The voice of death instils terror no sight can ever achieve."
+209,"Abyssal Hatred","Next melee attack deal damage +1% per number of troop killed"
+210,"Flying","Flying troop does not suffer terrain and height penalty while also can only be damaged by melee attack when the troops themselves attack."
+211,"Floating","Floating troops do not suffer terrain penalties but still receive height penalties. Moreover, the troops receive a melee defence bonus against enemies with no Anti-Cavalry and Anti-Flying."
+212,"Spellbind",
+213,"Petrifying gaze",
+214,"Hide In The Shell",
+215,"Baledarnnian",
+216,"Delrmerh Festival",
+217,"Fullmoon Strike",
+218,"Halfmoon Slit",
+219,"Crescentmoon Pierce",
+220,"Darkmoon Ritual",
+221,"Stun Strike","Stun the enemy so they cannot fight back. An effective solution."
+222,"Eight Gates Of Heaven",
+223,"Great Hunt Of The Sentinels",
+224,"Sunstrike","Blinding like the sun, such brilliance will be feared by all."
+225,"For Ancestor!","The ancestors guide us not only in the past. For now, we devote our lives to our beloved forebears."
+226,"Malabel Igiela","The great charge of Malabel cavalry may one day rest in a page of legend or history book, but today, let us offer condolences to the unfortunate victims of this charge."
+227,"Charge Of Regret","The only word to describe this momentous moment is regret. The regret to not being able to relive this same exact moment ever again, no matter how many times it gets replicated."
+228,"Giant Rush","A charge from giants can be count as one of the most devastating charge in history , it is almost impossible to hold position against such massive blows."
+229,"Astral Projection",

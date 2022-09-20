@@ -1,29 +1,29 @@
-"traitid","name","authority_bonus","self_health_bonus","self_health_regen","atk_effect","def_melee_effect","def_range_effect","speed_effect","accuracy_effect","reload_effect","charge_effect","charge_def_effect","morale_bonus","discipline_bonus","critical_bonus","personality(Aggro, clever, careful)","description"
-1,"Immortal",,"inf","inf",,,,,,,,,,,,"5,0,-10",
-2,"Socially Inept",-50,,,,,,,,,,,,,,"-4,0,3",
-3,"Forgetful",,,,,,,,,,,,,,,"-2,-10,0",
-4,"Stutter",-20,,,,,,,,,,,,,,"-1,0,0",
-5,"Flail",,0.7,0.5,,,,,,,,,-10,-10,,"-3, 0, 4",
-6,"Strong",,1.3,1.5,,,,,,,,,10,10,,"3, 0, 3","Having a physically strong leader in battle is always reassuring for those that follow him. Especially when you need strength to survive the fight."
-7,"Craven",,,,,,,,,,,,,,,"-7, 0, 8",
-8,"Brave",,,,,,,,,,,,,,,"2, 0, -8",
-9,"Ruthless",,,,,,,,,,,,,,,"5,0,-6",
-10,"Insane",-10,,,120,90,90,,,,150,,-20,-20,,"10,10,-10","When the leader is insane, you don't expect the army to act like proper army. Although, insanity may make him looking like completely fearless warrior, the best example anyone can want out of individual in the battlefield. This can make the troop fight alongside him with the same relentless fury."
-11,"Mute",-20,,,,,,,,,,,,,,"-4,-2,3","It is not common for an army to be led by a mute general. While silencing type can make a person more threatening looking. The lack of vocal command from the leader can make the troop uneasy."
-12,"Deaf",-20,,,,,,,,,,,-10,,,"1,-2, -2",
-13,"Honourable",,,,,,,,,,,,,,,"2, -2, 2","Chivalry in warfare when all is fair is something that almost should not exist. But since it exist here and now, both foes and friends alike will look in awe at this finest example of warrior."
-14,"Dishonourable",,,,,,,,,,,,,,,"2, 2, -2",
-15,"Dumb",,,,,,,,,,,,,,,"0, -5, -5","It is often said that the best soldiers are the one that are too dumb and obedient to disobey any order given to them. But what happen if their leader is also dumb? Well we are about to finding that out, aren't we? "
-16,"Smart",,,,,,,,,,,,,,,"0, 5, 5",
-17,"Patient",,,,,,,,,,,,,,,"-3, 2, 5",
-18,"Decisive",,,,,,,,,,,,,,,"0,0,-4",
-19,"Indecisive",,,,,,,,,,,,,,,"0,0,4",
-20,"Paranoid",,,,,,,,,,,,,,,"2,0,10",
-21,"Kind",,,,,,,,,,,,,,,"-3,0,0",
-22,"Cruel",,,,,,,,,,,,,,,"3,0,0",
-23,"Genius",10,,,,,,,,,,,10,,,"0,10,0",
+"ID","name","Authority Bonus","Health Bonus","HP Regeneration Bonus","Stamina Regeneration Bonus","Melee Attack Effect","Melee Defence Effect","Ranged Defence Effect","Speed Effect","Accuracy Effect","Reload Effect","Charge Effect","Charge Defence Bonus","Morale Bonus","Discipline Bonus","Critical Effect","Personality(Aggro, clever, careful)"
+1,"Immortal",,"inf","inf",,,,,,,,,,,,,"5,0,-10"
+2,"Socially Inept",-50,,,,,,,,,,,,,,,"-4,0,3"
+3,"Forgetful",,,,,,,,,,,,,,,,"-2,-10,0"
+4,"Stutter",-20,,,,,,,,,,,,,,,"-1,0,0"
+5,"Flail",,0.7,0.5,,,,,,,,,,-10,-10,,"-3, 0, 4"
+6,"Strong",,1.3,1.5,,,,,,,,,,10,10,,"3, 0, 3"
+7,"Craven",,,,,,,,,,,,,,,,"-7, 0, 8"
+8,"Brave",,,,,,,,,,,,,,,,"2, 0, -8"
+9,"Ruthless",,,,,,,,,,,,,,,,"5,0,-6"
+10,"Insane",-10,,,,120,90,90,,,,150,,-20,-20,,"10,10,-10"
+11,"Mute",-20,,,,,,,,,,,,,,,"-4,-2,3"
+12,"Deaf",-20,,,,,,,,,,,,-10,,,"1,-2, -2"
+13,"Honourable",,,,,,,,,,,,,,,,"2, -2, 2"
+14,"Dishonourable",,,,,,,,,,,,,,,,"2, 2, -2"
+15,"Dumb",,,,,,,,,,,,,,,,"0, -5, -5"
+16,"Smart",,,,,,,,,,,,,,,,"0, 5, 5"
+17,"Patient",,,,,,,,,,,,,,,,"-3, 2, 5"
+18,"Decisive",,,,,,,,,,,,,,,,"0,0,-4"
+19,"Indecisive",,,,,,,,,,,,,,,,"0,0,4"
+20,"Paranoid",,,,,,,,,,,,,,,,"2,0,10"
+21,"Kind",,,,,,,,,,,,,,,,"-3,0,0"
+22,"Cruel",,,,,,,,,,,,,,,,"3,0,0"
+23,"Genius",10,,,,,,,,,,,,10,,,"0,10,0"
 24,"Blind",,,,,,,,,,,,,,,,
-25,"Infirm",,,,,,,80,,,,,,,,,
+25,"Infirm",,,,,,,,80,,,,,,,,
 26,"Holy",,,,,,,,,,,,,,,,
 27,"Unholy",,,,,,,,,,,,,,,,
 28,"Greedy",,,,,,,,,,,,,,,,
