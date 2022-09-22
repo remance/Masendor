@@ -140,11 +140,11 @@ class TextPopup(pygame.sprite.Sprite):
 
 
 class EffectIconPopup(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, screen_scale):
         self._layer = 12
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.head_font = pygame.font.SysFont("helvetica", 16)
-        self.font = pygame.font.SysFont("helvetica", 12)
+        self.head_font = pygame.font.SysFont("helvetica", int(16 * screen_scale[1]))
+        self.font = pygame.font.SysFont("helvetica", int(12 * screen_scale[1]))
         self.pos = (0, 0)
         self.text_input = ""
 

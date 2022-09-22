@@ -64,7 +64,7 @@ def main_menu_process(self, mouse_left_up):
 
         self.menu_button.add(*self.option_menu_button)
         self.main_ui_updater.add(*self.menu_button, self.option_menu_slider, self.value_box)
-        self.main_ui_updater.add(*self.option_icon_list)
+        self.main_ui_updater.add(*self.option_text_list)
 
     elif self.lore_button.event:  # open encyclopedia
         self.before_lore_state = self.menu_state

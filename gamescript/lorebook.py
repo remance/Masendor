@@ -166,7 +166,6 @@ class Lorebook(pygame.sprite.Sprite):
         self.max_page = 0  # some subsection may not have lore data in file (maxpage would be just 0)
 
         # Number of maximum page of lore for that subsection (4 para per page) and not count first one (name + description)
-        print(self.lore_data)
         if len(self.lore_data[self.subsection]) > 2:
             self.max_page = int((len(self.lore_data[subsection]) - 2) / 4)
             main_ui.add(page_button[1])

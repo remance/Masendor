@@ -27,46 +27,22 @@ load_base_button = utility.load_base_button
 text_objects = utility.text_objects
 setup_list = utility.setup_list
 list_scroll = utility.list_scroll
+empty_function = utility.empty_function
 
 
 # Module that get loads with import in common.game.setup after
-
-
-def make_battle_list_data(*args): pass
-
-
-def make_battle_ui(*args): pass
-
-
-def make_editor_ui(*args): pass
-
-
-def make_esc_menu(*args): pass
-
-
-def make_event_log(*args): pass
-
-
-def make_faction_troop_leader_data(*args): pass
-
-
-def make_genre_specific_ui(*args): pass
-
-
-def make_icon_data(*args): pass
-
-
-def make_input_box(*args): pass
-
-
-def make_lorebook(*args): pass
-
-
-def make_option_menu(*args): pass
-
-
-def make_popup_ui(*args): pass
-
+make_battle_list_data = empty_function
+make_battle_ui = empty_function
+make_editor_ui = empty_function
+make_esc_menu = empty_function
+make_event_log = empty_function
+make_faction_troop_leader_data = empty_function
+make_genre_specific_ui = empty_function
+make_icon_data = empty_function
+make_input_box = empty_function
+make_lorebook = empty_function
+make_option_menu = empty_function
+make_popup_ui = empty_function
 
 script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
 
@@ -162,7 +138,7 @@ class Game:
     def __init__(self, main_dir, error_log):
         pygame.init()  # Initialize pygame
 
-        pygame.mouse.set_visible(False)  # set mouse as not visible
+        pygame.mouse.set_visible(False)  # set mouse as not visible, use in-game mouse sprite
 
         self.main_dir = main_dir
         self.error_log = error_log
@@ -186,10 +162,10 @@ class Game:
             screen_width = int(screen.width)
             screen_height = int(screen.height)
 
-            config["DEFAULT"] = {"screen_width": screen_width, "screen_height": screen_height, "fullscreen": "0",
+            config["DEFAULT"] = {"screen_width": screen_width, "screen_height": screen_height, "full_screen": "0",
                                  "player_Name": "Noname", "master_volume": "100.0", "music_volume": "0.0",
                                  "voice_volume": "0.0", "max_fps": "60", "ruleset": "1", "genre": genre_folder[-1],
-                                 "language": "en"}
+                                 "language": "en", "play_troop_animation": "1"}
             config["USER"] = {key: value for key, value in config["DEFAULT"].items()}
             with open("configuration.ini", "w") as cf:
                 config.write(cf)
@@ -198,12 +174,13 @@ class Game:
         self.config = config
         self.screen_width = int(self.config["USER"]["screen_width"])
         self.screen_height = int(self.config["USER"]["screen_height"])
-        self.full_screen = int(self.config["USER"]["fullscreen"])
+        self.full_screen = int(self.config["USER"]["full_screen"])
         self.master_volume = float(self.config["USER"]["master_volume"])
         self.profile_name = str(self.config["USER"]["player_Name"])
         self.genre = str(self.config["USER"]["genre"])
         self.language = str(self.config["USER"]["language"])
         self.ruleset = 1  # for now default historical ruleset only
+        self.play_troop_animation = int(self.config["USER"]["play_troop_animation"])
 
         # Set the display mode
         self.screen_rect = Rect(0, 0, self.screen_width, self.screen_height)
@@ -213,7 +190,7 @@ class Game:
         damagesprite.DamageSprite.screen_scale = self.screen_scale
 
         self.window_style = 0
-        if self.full_screen == 1:  # fullscreen = 1
+        if self.full_screen == 1:
             self.window_style = pygame.FULLSCREEN
         self.best_depth = pygame.display.mode_ok(self.screen_rect.size, self.window_style, 32)
         self.screen = pygame.display.set_mode(self.screen_rect.size, self.window_style | pygame.RESIZABLE,
@@ -343,7 +320,7 @@ class Game:
 
         # Assign containers
         menu.MenuButton.containers = self.menu_button
-        menu.MenuIcon.containers = self.menu_icon
+        menu.OptionMenuText.containers = self.menu_icon
         menu.SliderMenu.containers = self.menu_slider, self.slider_menu
         menu.ValueBox.containers = self.value_box
 
@@ -519,19 +496,23 @@ class Game:
 
         # Option menu button
         option_menu_dict = make_option_menu(self.main_dir, self.screen_scale, self.screen_rect, self.screen_width,
-                                            self.screen_height,
-                                            image_list, self.master_volume, self.main_ui_updater)
+                                            self.screen_height, image_list, self.master_volume, self.full_screen,
+                                            self.play_troop_animation, self.main_ui_updater, battle_select_image)
         self.back_button = option_menu_dict["back_button"]
         self.default_button = option_menu_dict["default_button"]
         self.resolution_drop = option_menu_dict["resolution_drop"]
         self.resolution_bar = option_menu_dict["resolution_bar"]
-        self.resolution_icon = option_menu_dict["resolution_icon"]
+        self.resolution_text = option_menu_dict["resolution_text"]
         self.volume_slider = option_menu_dict["volume_slider"]
         self.value_box = option_menu_dict["value_box"]
-        self.volume_icon = option_menu_dict["volume_icon"]
+        self.volume_text = option_menu_dict["volume_text"]
+        self.fullscreen_box = option_menu_dict["fullscreen_box"]
+        self.fullscreen_text = option_menu_dict["fullscreen_text"]
+        self.animation_box = option_menu_dict["animation_box"]
+        self.animation_text = option_menu_dict["animation_text"]
 
-        self.option_icon_list = (self.resolution_icon, self.volume_icon)
-        self.option_menu_button = (self.back_button, self.default_button, self.resolution_drop)
+        self.option_text_list = (self.resolution_text, self.volume_text, self.fullscreen_text, self.animation_text)
+        self.option_menu_button = (self.back_button, self.default_button, self.resolution_drop, self.fullscreen_box, self.animation_box)
         self.option_menu_slider = self.volume_slider
 
         # Genre related stuff
@@ -693,7 +674,7 @@ class Game:
         self.battle_menu_button = esc_menu_dict["battle_menu_button"]
         self.esc_option_menu_button = esc_menu_dict["esc_option_menu_button"]
         self.esc_slider_menu = esc_menu_dict["esc_slider_menu"]
-        self.esc_value_box = esc_menu_dict["esc_value_box"]
+        self.esc_value_boxes = esc_menu_dict["esc_value_boxes"]
 
         popup_ui_dict = make_popup_ui(self.main_dir, self.screen_rect, self.screen_scale, battle_ui_image)
         self.troop_card_ui = popup_ui_dict["troop_card_ui"]

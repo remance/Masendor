@@ -26,10 +26,10 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
         if self.battle_menu.mode == "option":  # option menu
             self.master_volume = self.old_setting
             pygame.mixer.music.set_volume(self.master_volume)
-            self.esc_slider_menu[0].player_input(self.master_volume, self.esc_value_box[0], forced_value=True)
+            self.esc_slider_menu[0].player_input(self.master_volume, self.esc_value_boxes[0], forced_value=True)
             self.battle_menu.change_mode("menu")
         self.battle_ui_updater.remove(self.battle_menu, *self.battle_menu_button, *self.esc_option_menu_button,
-                                      *self.esc_slider_menu, *self.esc_value_box)
+                                      *self.esc_slider_menu, *self.esc_value_boxes)
         self.game_state = self.previous_game_state
 
     elif self.battle_menu.mode == "menu":  # start_set esc menu
@@ -41,7 +41,7 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                     if button.text == "Resume":  # resume self
                         self.game_state = self.previous_game_state  # resume battle gameplay state
                         self.battle_ui_updater.remove(self.battle_menu, *self.battle_menu_button, *self.esc_slider_menu,
-                                                      *self.esc_value_box)  # remove menu sprite
+                                                      *self.esc_value_boxes)  # remove menu sprite
 
                     elif button.text == "Encyclopedia":  # open encyclopedia
                         self.battle_menu.change_mode("encyclopedia")  # change to enclycopedia mode
@@ -51,13 +51,13 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                                                          self.lore_name_list.scroll, self.page_button,
                                                          self.battle_ui_updater)
                         self.battle_ui_updater.remove(self.battle_menu, *self.battle_menu_button, *self.esc_slider_menu,
-                                                      *self.esc_value_box)  # remove menu sprite
+                                                      *self.esc_value_boxes)  # remove menu sprite
 
                     elif button.text == "Option":  # open option menu
                         self.battle_menu.change_mode("option")  # change to option menu mode
                         self.battle_ui_updater.remove(*self.battle_menu_button)  # remove start_set esc menu button
                         self.battle_ui_updater.add(*self.esc_option_menu_button, *self.esc_slider_menu,
-                                                   *self.esc_value_box)
+                                                   *self.esc_value_boxes)
                         self.old_setting = self.esc_slider_menu[0].value  # Save previous setting for in case of cancel
 
                     elif button.text == "End Battle":  # back to start_set menu
@@ -85,7 +85,7 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                                     self.config)  # save to config file
                         self.battle_menu.change_mode("menu")  # go back to start_set esc menu
                         self.battle_ui_updater.remove(*self.esc_option_menu_button, *self.esc_slider_menu,
-                                                      *self.esc_value_box)  # remove option menu sprite
+                                                      *self.esc_value_boxes)  # remove option menu sprite
                         self.battle_ui_updater.add(*self.battle_menu_button)  # add start_set esc menu buttons back
 
                     elif button.text == "Apply":  # apply button, save the setting
@@ -97,11 +97,11 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                     elif button.text == "Cancel":  # cancel button, revert the setting to the last saved one
                         self.master_volume = self.old_setting  # revert to old setting
                         pygame.mixer.music.set_volume(self.master_volume)  # set new music player volume
-                        self.esc_slider_menu[0].player_input(self.master_volume, self.esc_value_box[0],
+                        self.esc_slider_menu[0].player_input(self.master_volume, self.esc_value_boxes[0],
                                                              forced_value=True)  # update slider bar
                         self.battle_menu.change_mode("menu")  # go back to start_set esc menu
                         self.battle_ui_updater.remove(*self.esc_option_menu_button, *self.esc_slider_menu,
-                                                      *self.esc_value_box)  # remove option menu sprite
+                                                      *self.esc_value_boxes)  # remove option menu sprite
                         self.battle_ui_updater.add(*self.battle_menu_button)  # add start_set esc menu buttons back
 
             else:  # no button currently collided with mouse
@@ -109,7 +109,7 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
 
         for slider in self.esc_slider_menu:
             if slider.rect.collidepoint(self.mouse_pos) and (mouse_leftdown or mouse_up):  # mouse click on slider bar
-                slider.player_input(self.mouse_pos, self.esc_value_box[0])  # update slider button based on mouse value
+                slider.player_input(self.mouse_pos, self.esc_value_boxes[0])  # update slider button based on mouse value
                 self.master_volume = float(slider.value / 100)  # for now only music volume slider exist
 
     elif self.battle_menu.mode == "encyclopedia":  # Encyclopedia mode

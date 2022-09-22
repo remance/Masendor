@@ -35,7 +35,7 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
         part = animation_part_list[layer]
         new_part = part.copy()
         this_armour = None
-        if any(ext in layer for ext in ("p1_", "p2_", "p3_", "p4_")) and "weapon" not in layer:
+        if any(ext in layer for ext in ("p1_", "p2_", "p3_", "p4_", "special_")) and "weapon" not in layer:
             part_race = [value["Name"] for value in race_list.values()].index(new_part[0])
             part_race = tuple(race_list.keys())[part_race]
             if race_list[part_race]["Mount Armour"] is False:

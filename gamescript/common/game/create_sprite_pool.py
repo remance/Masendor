@@ -7,7 +7,6 @@ make_sprite = make_sprite.make_sprite
 
 
 def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, who_todo, preview=False):
-    # TODO maybe add body pos and size for check collide?
     animation_sprite_pool = {}  # TODO need to add for subunit creator
     weapon_common_type_list = list(set(["_" + value["Common"] for key, value in self.generic_action_data.items() if
                                         key != ""]))  # list of all common type animation set
@@ -117,8 +116,9 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                 if weapon_key[1] not in next_level:
                     next_level[weapon_key[1]] = {}
                 for animation in self.generic_animation_pool[0]:  # use one side in the list for finding animation name
-                    if "Preview" not in animation and race in animation and \
-                            ((mount_race_name == "None" and "&" not in animation) or mount_race_name in animation):
+                    if (self.play_troop_animation == 1 or "Default" in animation) and \
+                            ("Preview" not in animation and race in animation and
+                             ((mount_race_name == "None" and "&" not in animation) or mount_race_name in animation)):
                         animation_property = self.generic_animation_pool[0][animation][0]["animation_property"].copy()
                         for weapon_set_index, weapon_set in enumerate(
                                 subunit_weapon_list):  # create animation for each weapon set

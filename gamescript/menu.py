@@ -46,13 +46,13 @@ class EscBox(pygame.sprite.Sprite):
 
 
 class EscButton(pygame.sprite.Sprite):
-    def __init__(self, images, pos, text="", size=16):
+    def __init__(self, images, pos, text="", text_size=16):
         self._layer = 25
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
         self.images = [image.copy() for image in list(images.values())]
         self.text = text
-        self.font = pygame.font.SysFont("timesnewroman", size)
+        self.font = pygame.font.SysFont("timesnewroman", text_size)
 
         if text != "":  # blit menu text into button image
             text_surface = self.font.render(self.text, True, (0, 0, 0))
@@ -296,23 +296,19 @@ class MenuButton(pygame.sprite.Sprite):
         self.event = False
 
 
-class MenuIcon(pygame.sprite.Sprite):
-    def __init__(self, image, pos, text=""):
+class OptionMenuText(pygame.sprite.Sprite):
+    def __init__(self, pos, text, text_size):
+        text_render = utility.text_render
+
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
-        self.image = image
-        self.text = text
-        self.font = pygame.font.SysFont("timesnewroman", 16)
-        if text != "":
-            text_surface = self.font.render(self.text, True, (0, 0, 0))
-            text_rect = text_surface.get_rect(center=self.image.get_rect().center)
-            self.image.blit(text_surface, text_rect)
-        self.rect = self.image.get_rect(center=self.pos)
-        self.event = False
+        self.font = pygame.font.SysFont("helvetica", text_size)
+        self.image = text_render(text, self.font, pygame.Color("black"))
+        self.rect = self.image.get_rect(center=(self.pos[0] - (self.image.get_width() / 2), self.pos[1]))
 
 
 class ValueBox(pygame.sprite.Sprite):
-    def __init__(self, image, pos, value, text_size=26):
+    def __init__(self, image, pos, value, text_size):
         self._layer = 26
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("timesnewroman", text_size)
@@ -594,7 +590,8 @@ class TickBox(pygame.sprite.Sprite):
 
         self.image = self.not_tick_image
 
-        self.rect = self.image.get_rect(topright=pos)
+        self.pos = pos
+        self.rect = self.image.get_rect(center=self.pos)
 
     def change_tick(self, tick):
         self.tick = tick

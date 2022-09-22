@@ -97,6 +97,7 @@ class Battle:
 
         self.config = main.config
         self.master_volume = main.master_volume
+        self.play_troop_animation = main.play_troop_animation
         self.screen_rect = main.screen_rect
         self.main_dir = main.main_dir
         self.screen_scale = main.screen_scale
@@ -225,7 +226,7 @@ class Battle:
         self.map_def_array = []  # array for defence calculation
 
         self.esc_slider_menu = main.esc_slider_menu
-        self.esc_value_box = main.esc_value_box
+        self.esc_value_boxes = main.esc_value_boxes
 
         self.event_log_button = main.event_log_button
         self.time_button = main.time_button
@@ -1059,7 +1060,7 @@ class Battle:
         self.setup_battle_ui("remove")  # remove ui from group
 
         self.battle_ui_updater.remove(self.battle_menu, *self.battle_menu_button, *self.esc_slider_menu,
-                                      *self.esc_value_box, self.battle_done_box, self.battle_done_button)  # remove menu
+                                      *self.esc_value_boxes, self.battle_done_box, self.battle_done_button)  # remove menu
 
         # remove all reference from battle object
         self.player_char = None

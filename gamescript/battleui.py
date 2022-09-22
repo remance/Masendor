@@ -4,6 +4,7 @@ import pygame
 import pygame.freetype
 from gamescript.common import utility, animation
 
+text_render = utility.text_render
 
 class UIButton(pygame.sprite.Sprite):
     def __init__(self, image, event=None, layer=11):
@@ -1220,57 +1221,15 @@ class TroopNumber(pygame.sprite.Sprite):
                 zoom = 1
             new_font_size = int(60 / zoom * self.screen_scale[1])
             self.font = pygame.font.SysFont("timesnewroman", new_font_size)
-            self.image = self.render(str(self.number), self.font, self.text_colour)
+            self.image = text_render(str(self.number), self.font, self.text_colour)
             self.rect = self.image.get_rect(topleft=self.pos)
 
         if self.number != self.who.troop_number:  # new troop number
             self.number = self.who.troop_number
-            self.image = self.render(str(self.number), self.font, self.text_colour)
+            self.image = text_render(str(self.number), self.font, self.text_colour)
             self.rect = self.image.get_rect(topleft=self.pos)
 
         if self.who.state == 100:
             self.who = None
             self.kill()
 
-    @staticmethod
-    def circle_points(r):
-        """Calculate text point to add background"""
-        circle_cache = {}
-        r = int(round(r))
-        if r in circle_cache:
-            return circle_cache[r]
-        x, y, e = r, 0, 1 - r
-        circle_cache[r] = points = []
-        while x >= y:
-            points.append((x, y))
-            y += 1
-            if e < 0:
-                e += 2 * y - 1
-            else:
-                x -= 1
-                e += 2 * (y - x) - 1
-        points += [(y, x) for x, y in points if x > y]
-        points += [(-x, y) for x, y in points if x]
-        points += [(x, -y) for x, y in points if y]
-        points.sort()
-        return points
-
-    def render(self, text, font, gf_colour=pygame.Color("black"), o_colour=(255, 255, 255), opx=2):
-        """Render text with background border"""
-        text_surface = font.render(text, True, gf_colour).convert_alpha()
-        w = text_surface.get_width() + 2 * opx
-        h = font.get_height()
-
-        osurf = pygame.Surface((w, h + 2 * opx)).convert_alpha()
-        osurf.fill((0, 0, 0, 0))
-
-        surface = osurf.copy()
-
-        osurf.blit(font.render(text, True, o_colour).convert_alpha(), (0, 0))
-
-        for dx, dy in self.circle_points(opx):
-            surface.blit(osurf, (dx + opx, dy + opx))
-
-        surface.blit(text_surface, (opx, opx))
-
-        return surface

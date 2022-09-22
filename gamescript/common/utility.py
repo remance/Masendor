@@ -23,6 +23,10 @@ def empty_method(self, *args):
         self.error_log.write(error_text)
 
 
+def empty_function(*args):
+    pass
+
+
 def change_group(item, group, change):
     if change == "add":
         group.add(item)
@@ -184,6 +188,50 @@ def make_long_text(surface, text, pos, font, color=pygame.Color("black")):
                 x += word_width + space
             x = pos[0]  # reset x
             y += word_height  # start on new row
+
+
+def text_render(text, font, gf_colour=pygame.Color("black"), o_colour=(255, 255, 255), opx=2):
+    """Render text with background border"""
+    text_surface = font.render(text, True, gf_colour).convert_alpha()
+    w = text_surface.get_width() + 2 * opx
+    h = font.get_height()
+
+    osurf = pygame.Surface((w, h + 2 * opx)).convert_alpha()
+    osurf.fill((0, 0, 0, 0))
+
+    surface = osurf.copy()
+
+    osurf.blit(font.render(text, True, o_colour).convert_alpha(), (0, 0))
+
+    for dx, dy in circle_points(opx):
+        surface.blit(osurf, (dx + opx, dy + opx))
+
+    surface.blit(text_surface, (opx, opx))
+
+    return surface
+
+
+def circle_points(r):
+    """Calculate text point to add background"""
+    circle_cache = {}
+    r = int(round(r))
+    if r in circle_cache:
+        return circle_cache[r]
+    x, y, e = r, 0, 1 - r
+    circle_cache[r] = points = []
+    while x >= y:
+        points.append((x, y))
+        y += 1
+        if e < 0:
+            e += 2 * y - 1
+        else:
+            x -= 1
+            e += 2 * (y - x) - 1
+    points += [(y, x) for x, y in points if x > y]
+    points += [(-x, y) for x, y in points if x]
+    points += [(x, -y) for x, y in points if y]
+    points.sort()
+    return points
 
 
 def make_bar_list(main_dir, screen_scale, list_to_do, menu_image, updater):
