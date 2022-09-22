@@ -1007,6 +1007,18 @@ class Model:
         if specific_frame is not None:
             edit_frame = specific_frame
         key_list = list(self.mask_part_list.keys())
+
+        if edit_type not in ("undo", "redo", "change", "new"):
+            accept_history = True
+            if edit_type == "place" and mouse_right_down:  # save only when release mouse for mouse input
+                accept_history = False
+            if accept_history:
+                if self.current_history < len(self.animation_history) - 1:
+                    self.part_name_history = self.part_name_history[:self.current_history + 1]  # remove all future redo history
+                    self.animation_history = self.animation_history[:self.current_history + 1]
+                    self.body_part_history = self.body_part_history[:self.current_history + 1]
+                self.add_history()
+
         if edit_type == "default":  # reset to default
             self.animation_part_list[edit_frame] = {key: (value[:].copy() if value is not None else value) for key, value in
                                                        self.default_sprite_part.items()}
@@ -1306,17 +1318,6 @@ class Model:
 
             # reset history when create new animation
             self.clear_history()
-
-        elif edit_type not in ("undo", "redo", "change", "new"):
-            accept_history = True
-            if edit_type == "place" and mouse_right_down:  # save only when release mouse for mouse input
-                accept_history = False
-            if accept_history:
-                if self.current_history < len(self.animation_history) - 1:
-                    self.part_name_history = self.part_name_history[:self.current_history + 1]  # remove all future redo history
-                    self.animation_history = self.animation_history[:self.current_history + 1]
-                    self.body_part_history = self.body_part_history[:self.current_history + 1]
-                self.add_history()
 
         if len(self.animation_history) > 2:  # save only last 1000 activity
             new_first = len(self.animation_history) - 2
@@ -2107,6 +2108,7 @@ while True:
                             model.edit_part(mouse_pos, "change")
 
                     elif add_frame_button.rect.collidepoint(mouse_pos):
+                        model.add_history()
                         change_frame = len(model.bodypart_list) - 1
                         frame_property_select = [[] for _ in range(max_frame)]
                         while change_frame > current_frame:
@@ -2117,7 +2119,6 @@ while True:
                         model.edit_part(mouse_pos, "clear")
                         model.edit_part(mouse_pos, "change")
                         reload_animation(anim, model)
-                        model.add_history()
 
                         for strip_index, strip in enumerate(filmstrips):  # enable frame that not empty
                             for stuff in model.animation_part_list[strip_index].values():
@@ -2128,6 +2129,7 @@ while True:
                                     break
 
                     elif remove_frame_button.rect.collidepoint(mouse_pos):
+                        model.add_history()
                         change_frame = current_frame
                         frame_property_select = [[] for _ in range(max_frame)]
                         while change_frame < len(model.bodypart_list) - 1:
@@ -2137,7 +2139,6 @@ while True:
                         model.edit_part(mouse_pos, "clear", specific_frame=len(model.bodypart_list) - 1)
                         model.edit_part(mouse_pos, "change")
                         reload_animation(anim, model)
-                        model.add_history()
 
                         for strip_index, strip in enumerate(filmstrips):  # enable frame that not empty
                             for stuff in model.animation_part_list[strip_index].values():
@@ -2401,6 +2402,7 @@ while True:
 
                 elif paste_press:
                     if copy_animation_frame is not None:
+                        model.add_history()
                         model.bodypart_list[current_frame] = {key: (value[:].copy() if type(value) == list else value) for key, value in
                                                               copy_part_frame.items()}
                         model.animation_part_list[current_frame] = {key: (value[:].copy() if value is not None else value) for key, value in
@@ -2409,7 +2411,6 @@ while True:
                                                                copy_name_frame.items()}
                         model.edit_part(mouse_pos, "change")
 
-                        model.add_history()
 
                 elif part_copy_press:
                     if model.part_selected:
