@@ -30,9 +30,10 @@ def pick_animation(self):
         self.current_animation = self.current_animation[random.choice(list(self.current_animation.keys()))]
 
     except KeyError:  # animation not found, use default
-        self.current_animation = self.animation_pool[self.animation_race_name + "_Default"]
+        self.current_animation = self.animation_pool[self.animation_race_name + "_Default/0"]
 
-    # except IndexError:
+    except IndexError:  # animation not found, use default
+        self.current_animation = self.animation_pool[self.animation_race_name + "_Default/0"]
     #     print(animation_name)
     #     print(self.animation_pool)
     #     print(self.current_animation)

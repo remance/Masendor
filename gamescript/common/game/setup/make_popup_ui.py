@@ -21,7 +21,7 @@ def make_popup_ui(main_dir, screen_rect, screen_scale, battle_ui_image):
     terrain_check = popup.TerrainPopup()  # popup box that show terrain information when right click on map
     single_text_popup = popup.TextPopup(screen_scale, screen_rect.size)  # popup box that show name when mouse over
     leader_popup = popup.TextPopup(screen_scale, screen_rect.size)  # popup box that show leader name when mouse over
-    effect_popup = popup.EffectIconPopup()  # popup box that show skill/trait/status name when mouse over
+    effect_popup = popup.EffectIconPopup(screen_scale)  # popup box that show skill/trait/status name when mouse over
     char_popup = popup.TextPopup(screen_scale, screen_rect.size)  # popup box that show leader name when mouse over
 
     return {"troop_card_ui": troop_card_ui, "troop_card_button": troop_card_button, "terrain_check": terrain_check,

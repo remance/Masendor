@@ -9,7 +9,7 @@ def menu_option(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scr
     if self.back_button.event or esc_press:  # back to start_set menu
         self.back_button.event = False
 
-        self.main_ui_updater.remove(*self.option_icon_list, self.option_menu_slider, self.value_box)
+        self.main_ui_updater.remove(*self.option_text_list, self.option_menu_slider, self.value_box)
 
         self.back_mainmenu()
 
@@ -17,6 +17,7 @@ def menu_option(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scr
         self.back_button.event = False
 
         self.master_volume = float(self.config["DEFAULT"]["master_volume"])
+        self.battle_game.master_volume = self.master_volume
         edit_config("USER", "master_volume", self.volume_slider.value, "configuration.ini",
                     self.config)
         pygame.mixer.music.set_volume(self.master_volume)
@@ -33,6 +34,7 @@ def menu_option(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scr
                                             self.value_box[0])  # update slider button based on mouse value
             self.master_volume = float(
                 self.volume_slider.value / 100)  # for now only music volume slider exist
+            self.battle_game.master_volume = self.master_volume
             edit_config("USER", "master_volume", self.volume_slider.value, "configuration.ini",
                         self.config)
             pygame.mixer.music.set_volume(self.master_volume)
@@ -46,6 +48,26 @@ def menu_option(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scr
                     self.main_ui_updater.add(self.resolution_bar)
                     self.menu_button.add(self.resolution_bar)
 
+            elif self.fullscreen_box.rect.collidepoint(self.mouse_pos):
+                if self.fullscreen_box.tick is False:
+                    self.fullscreen_box.change_tick(True)
+                    self.full_screen = 1
+                else:
+                    self.fullscreen_box.change_tick(False)
+                    self.full_screen = 0
+                edit_config("USER", "full_screen", self.full_screen, "configuration.ini",
+                            self.config)
+                change_resolution(self, (self.screen_width, "", self.screen_height))
+
+            elif self.animation_box.rect.collidepoint(self.mouse_pos):
+                if self.animation_box.tick is False:
+                    self.animation_box.change_tick(True)
+                    self.troop_animation = 1
+                else:
+                    self.animation_box.change_tick(False)
+                    self.troop_animation = 0
+                edit_config("USER", "troop_animation", self.troop_animation, "configuration.ini",
+                            self.config)
             else:
                 for bar in self.resolution_bar:  # loop to find which resolution bar is selected, this happens outside of clicking check below
                     if bar.event:
