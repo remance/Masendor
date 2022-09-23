@@ -109,7 +109,7 @@ def anim_save_pool(pool, pool_name, direction_list, anim_column_header):
                         if type(min_item) == list:
                             new_item = str(min_item)
                             for character in "'[]":
-                                new_item = new_item.replace(character, '')
+                                new_item = new_item.replace(character, "")
                             new_item = new_item.replace(", ", ",")
                             subitem[item_index] = new_item
                     new_item = [item[0] + "/" + str(frame_num)] + subitem
