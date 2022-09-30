@@ -83,7 +83,7 @@ def anim_to_pool(animation_name, pool, char, activate_list, new=False, replace=N
             pool[direction][animation_name] = pool[direction].pop(replace)
     elif duplicate is not None:
         for direction in range(0, 5):
-            pool[direction][animation_name] = [{key: value.copy() if type(value) == list else value for key, value in this_duplicate.items()} for this_duplicate in pool[direction][duplicate]]
+            pool[direction][animation_name] = [{key: [small_value for small_value in value] if type(value) == list else value for key, value in this_duplicate.items()} for this_duplicate in pool[direction][duplicate]]
     else:
         if animation_name not in pool[0]:
             for direction in range(0, 5):
@@ -109,7 +109,7 @@ def anim_save_pool(pool, pool_name, direction_list, anim_column_header):
                         if type(min_item) == list:
                             new_item = str(min_item)
                             for character in "'[]":
-                                new_item = new_item.replace(character, '')
+                                new_item = new_item.replace(character, "")
                             new_item = new_item.replace(", ", ",")
                             subitem[item_index] = new_item
                     new_item = [item[0] + "/" + str(frame_num)] + subitem

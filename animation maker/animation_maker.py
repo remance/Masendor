@@ -1007,6 +1007,18 @@ class Model:
         if specific_frame is not None:
             edit_frame = specific_frame
         key_list = list(self.mask_part_list.keys())
+
+        if edit_type not in ("undo", "redo", "change", "new"):
+            accept_history = True
+            if edit_type == "place" and mouse_right_down:  # save only when release mouse for mouse input
+                accept_history = False
+            if accept_history:
+                if self.current_history < len(self.animation_history) - 1:
+                    self.part_name_history = self.part_name_history[:self.current_history + 1]  # remove all future redo history
+                    self.animation_history = self.animation_history[:self.current_history + 1]
+                    self.body_part_history = self.body_part_history[:self.current_history + 1]
+                self.add_history()
+
         if edit_type == "default":  # reset to default
             self.animation_part_list[edit_frame] = {key: (value[:].copy() if value is not None else value) for key, value in
                                                        self.default_sprite_part.items()}
@@ -1307,17 +1319,6 @@ class Model:
             # reset history when create new animation
             self.clear_history()
 
-        elif edit_type not in ("undo", "redo", "change", "new"):
-            accept_history = True
-            if edit_type == "place" and mouse_right_down:  # save only when release mouse for mouse input
-                accept_history = False
-            if accept_history:
-                if self.current_history < len(self.animation_history) - 1:
-                    self.part_name_history = self.part_name_history[:self.current_history + 1]  # remove all future redo history
-                    self.animation_history = self.animation_history[:self.current_history + 1]
-                    self.body_part_history = self.body_part_history[:self.current_history + 1]
-                self.add_history()
-
         if len(self.animation_history) > 2:  # save only last 1000 activity
             new_first = len(self.animation_history) - 2
             self.part_name_history = self.part_name_history[new_first:]
@@ -1530,7 +1531,9 @@ rename_button = Button("Rename", image, (screen_size[0] - (image.get_width() * 3
                        description=("Rename animation", "Input will not be accepted if another animation with the input name exists."))
 duplicate_button = Button("Duplicate", image, (screen_size[0] - (image.get_width() * 2.5), image.get_height() / 2),
                           description=("Duplicate animation", "Duplicate the current animation as a new animation."))
-export_button = Button("Export", image, (screen_size[0] - (image.get_width() * 1.5), image.get_height() / 2),
+filter_button = Button("Filter", image, (screen_size[0] - (image.get_width() * 1.5), image.get_height() / 2),
+                       description=("Filter animation list according to input", "Use ',' for multiple filters."))
+export_button = Button("Export", image, (screen_size[0] - (image.get_width() * 1.5), p_body_helper.rect.midtop[1] - (image.get_height() * 5)),
                        description=("Export animation", "Export the current animation to several png image files."))
 delete_button = Button("Delete", image, (screen_size[0] - (image.get_width() / 2), image.get_height() / 2),
                        description=("Delete animation", "Delete the current animation."))
@@ -1686,11 +1689,11 @@ colour_cancel_button = menu.MenuButton(screen_scale, image_list,
 colour_ui_popup = (colour_ui, colour_wheel, colour_input_box, colour_ok_button, colour_cancel_button)
 
 box_img = load_image(current_dir, screen_scale, "property_box.png", "animation_maker_ui")
-big_box_img = load_image(main_dir, screen_scale, "biglistbox.png", "ui\\mainmenu_ui")
+big_box_img = load_image(current_dir, screen_scale, "biglistbox.png", "animation_maker_ui")
 
 menu.ListBox.containers = popup_list_box
 popup_list_box = menu.ListBox(screen_scale, (0, 0), big_box_img, 16)  # popup box need to be in higher layer
-battleui.UIScroll(popup_list_box, popup_list_box.rect.topright) # create scroll for popup list box
+battleui.UIScroll(popup_list_box, popup_list_box.rect.topright)  # create scroll for popup list box
 anim_prop_list_box = menu.ListBox(screen_scale, (0, filmstrip_list[0].rect.midbottom[1] +
                                                  (reset_button.image.get_height() * 1.5)), box_img, 8)
 anim_prop_list_box.namelist = anim_property_list + ["Custom"]
@@ -1741,6 +1744,7 @@ for index, selector in enumerate([eye_selector, mouth_selector]):
         this_text = face[index]
     selector.change_name(head_text[index] + str(this_text))
 model.add_history()
+animation_filter = [""]
 
 while True:
     dt = clock.get_time() / 1000
@@ -2107,6 +2111,7 @@ while True:
                             model.edit_part(mouse_pos, "change")
 
                     elif add_frame_button.rect.collidepoint(mouse_pos):
+                        model.add_history()
                         change_frame = len(model.bodypart_list) - 1
                         frame_property_select = [[] for _ in range(max_frame)]
                         while change_frame > current_frame:
@@ -2117,7 +2122,6 @@ while True:
                         model.edit_part(mouse_pos, "clear")
                         model.edit_part(mouse_pos, "change")
                         reload_animation(anim, model)
-                        model.add_history()
 
                         for strip_index, strip in enumerate(filmstrips):  # enable frame that not empty
                             for stuff in model.animation_part_list[strip_index].values():
@@ -2128,6 +2132,7 @@ while True:
                                     break
 
                     elif remove_frame_button.rect.collidepoint(mouse_pos):
+                        model.add_history()
                         change_frame = current_frame
                         frame_property_select = [[] for _ in range(max_frame)]
                         while change_frame < len(model.bodypart_list) - 1:
@@ -2137,7 +2142,6 @@ while True:
                         model.edit_part(mouse_pos, "clear", specific_frame=len(model.bodypart_list) - 1)
                         model.edit_part(mouse_pos, "change")
                         reload_animation(anim, model)
-                        model.add_history()
 
                         for strip_index, strip in enumerate(filmstrips):  # enable frame that not empty
                             for stuff in model.animation_part_list[strip_index].values():
@@ -2237,6 +2241,16 @@ while True:
                     elif duplicate_button.rect.collidepoint(mouse_pos):
                         text_input_popup = ("confirm_input", "duplicate_animation")
                         input_ui.change_instruction("Duplicate Current Animation?")
+                        ui.add(input_ui_popup)
+
+                    elif filter_button.rect.collidepoint(mouse_pos):
+                        text_input_popup = ("text_input", "filter")
+                        input_ui.change_instruction("Input text filters:")
+                        input_filter = str(animation_filter)
+                        for character in "'[]":
+                            input_filter = input_filter.replace(character, "")
+                        input_filter = input_filter.replace(", ", ",")
+                        input_box.text_start(input_filter)
                         ui.add(input_ui_popup)
 
                     elif export_button.rect.collidepoint(mouse_pos):
@@ -2349,11 +2363,16 @@ while True:
                         ui.add(input_ui_popup)
 
                     elif animation_selector.rect.collidepoint(mouse_pos):
+                        animation_list = list(current_pool[direction].keys())
+                        for filter in animation_filter:
+                            animation_list = [item for item in animation_list if filter in item]
+                        current_popup_row = 0  # move current selected animation to top if not in filtered list
+                        if animation_name in animation_list:
+                            current_popup_row = animation_list.index(animation_name)
                         popup_list_open(popup_list_box, popup_namegroup, ui, "animation_select",
                                         animation_selector.rect.bottomleft,
-                                        [item for item in current_pool[direction]], "top", screen_scale,
-                                        current_row=list(current_pool[direction].keys()).index(animation_name))
-                        current_popup_row = list(current_pool[direction].keys()).index(animation_name)
+                                        animation_list, "top", screen_scale,
+                                        current_row=current_popup_row)
 
                     else:  # click on other stuff
                         for strip_index, strip in enumerate(filmstrips):  # click on frame film list
@@ -2401,6 +2420,7 @@ while True:
 
                 elif paste_press:
                     if copy_animation_frame is not None:
+                        model.add_history()
                         model.bodypart_list[current_frame] = {key: (value[:].copy() if type(value) == list else value) for key, value in
                                                               copy_part_frame.items()}
                         model.animation_part_list[current_frame] = {key: (value[:].copy() if value is not None else value) for key, value in
@@ -2409,7 +2429,6 @@ while True:
                                                                copy_name_frame.items()}
                         model.edit_part(mouse_pos, "change")
 
-                        model.add_history()
 
                 elif part_copy_press:
                     if model.part_selected:
@@ -2616,6 +2635,10 @@ while True:
                 model.frame_list[0]["size"] = int(input_box.text)
                 model.read_animation(animation_name, old=True)
                 reload_animation(anim, model)
+
+            elif text_input_popup[1] == "filter":
+                animation_filter = input_box.text.split(",")
+                print(animation_filter)
 
             elif text_input_popup[1] == "quit":
                 pygame.time.wait(1000)
