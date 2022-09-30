@@ -7,10 +7,11 @@ make_sprite = make_sprite.make_sprite
 
 
 def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, who_todo, preview=False):
+    weapon_list = self.troop_data.weapon_list
     animation_sprite_pool = {}  # TODO need to add for subunit creator
-    weapon_common_type_list = list(set(["_" + value["Common"] for key, value in self.generic_action_data.items() if
+    weapon_common_type_list = list(set(["_" + value["Common"] for key, value in weapon_list.items() if
                                         key != ""]))  # list of all common type animation set
-    weapon_attack_type_list = list(set(["_" + value["Attack"] for key, value in self.generic_action_data.items() if
+    weapon_attack_type_list = list(set(["_" + value["Attack"] for key, value in weapon_list.items() if
                                         key != ""]))  # list of all attack set
     for subunit_id, this_subunit in who_todo.items():
         # try:
@@ -34,39 +35,42 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                       self.troop_data.mount_armour_list[this_subunit["Mount"][2]]["Name"])
             weapon_key = (str(primary_main_weapon) + "," + str(primary_sub_weapon),
                           str(secondary_main_weapon) + "," + str(secondary_sub_weapon))
-            skill_list = this_subunit["Skill"] + self.troop_data.weapon_list[primary_main_weapon]["Skill"] + \
-                         self.troop_data.weapon_list[primary_sub_weapon]["Skill"] + \
-                         self.troop_data.weapon_list[secondary_main_weapon]["Skill"] + \
-                         self.troop_data.weapon_list[secondary_sub_weapon]["Skill"]
+            skill_list = this_subunit["Skill"] + weapon_list[primary_main_weapon]["Skill"] + \
+                         weapon_list[primary_sub_weapon]["Skill"] + \
+                         weapon_list[secondary_main_weapon]["Skill"] + \
+                         weapon_list[secondary_sub_weapon]["Skill"]
             skill_list = list(set([item for item in skill_list if item != 0]))
 
-            subunit_weapon_list = [(self.troop_data.weapon_list[primary_main_weapon]["Name"],
-                                    self.troop_data.weapon_list[primary_sub_weapon]["Name"])]
+            subunit_weapon_list = [(weapon_list[primary_main_weapon]["Name"],
+                                    weapon_list[primary_sub_weapon]["Name"])]
 
-            weapon_common_action = [(self.generic_action_data[subunit_weapon_list[0][0]]["Common"],
-                                     self.generic_action_data[subunit_weapon_list[0][1]]["Common"])]
-            weapon_attack_action = [(self.generic_action_data[subunit_weapon_list[0][0]]["Attack"],
-                                     self.generic_action_data[subunit_weapon_list[0][1]]["Attack"])]
+            weapon_common_action = [(weapon_list[primary_main_weapon]["Common"],
+                                     weapon_list[primary_sub_weapon]["Common"])]
+            weapon_attack_action = [(weapon_list[primary_main_weapon]["Attack"],
+                                     weapon_list[primary_sub_weapon]["Attack"])]
             if (primary_main_weapon, primary_sub_weapon) != (secondary_main_weapon, secondary_sub_weapon):
                 subunit_weapon_list = [subunit_weapon_list[0],
-                                       (self.troop_data.weapon_list[secondary_main_weapon]["Name"],
-                                        self.troop_data.weapon_list[secondary_sub_weapon]["Name"])]
+                                       (weapon_list[secondary_main_weapon]["Name"],
+                                        weapon_list[secondary_sub_weapon]["Name"])]
                 weapon_common_action = [weapon_common_action[0],
-                                        (self.generic_action_data[subunit_weapon_list[1][0]]["Common"],
-                                         self.generic_action_data[subunit_weapon_list[1][1]]["Common"])]
+                                        (weapon_list[secondary_main_weapon]["Common"],
+                                         weapon_list[secondary_sub_weapon]["Common"])]
                 weapon_attack_action = [weapon_attack_action[0],
-                                        (self.generic_action_data[subunit_weapon_list[1][0]]["Attack"],
-                                         self.generic_action_data[subunit_weapon_list[1][1]]["Attack"])]
+                                        (weapon_list[secondary_main_weapon]["Attack"],
+                                         weapon_list[secondary_sub_weapon]["Attack"])]
             if preview:  # only create random right side sprite for preview in lorebook
                 animation = [this_animation for this_animation in self.generic_animation_pool[0] if race in
                              this_animation and ((mount_race_name == "None" and "&" not in this_animation) or
                                                  mount_race_name in this_animation)]
+                # get animation with weapon
                 animation = [this_animation for this_animation in animation
                              if (any(ext in this_animation for ext in weapon_common_type_list) is False or
                                  weapon_common_action[0][0] in this_animation) and
                              (any(ext in this_animation for ext in weapon_attack_type_list) is False or
-                              (weapon_attack_action[0][0] in this_animation and ("Main", "Sub")[0] in this_animation))
-                             and "Default" not in this_animation]  # get animation with weapon
+                              (weapon_attack_action[0][0] in this_animation and ("Main", "Sub")[0] in this_animation))]
+                # remove animation not suitable for preview
+                animation = [this_animation for this_animation in animation if
+                             any(ext in this_animation for ext in ("_Default", "_Die", "_Flee", "_Damaged")) is False]
                 if len(animation) > 0:
                     animation = random.choice(animation)  # random animation
                 else:  # no animation found, use race default

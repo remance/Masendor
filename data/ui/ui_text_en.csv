@@ -21,6 +21,30 @@
 ,
 ,
 ,
-,
+"authority","Authority"
 ,
 "inspect_unit_button","Inspect Unit"
+,
+,
+,
+,
+"name","Name"
+"grade","Grade"
+"race","Race"
+"trait","Trait"
+"skill","Skill"
+"cost","Cost"
+"upkeep","Upkeep"
+"melee_atk","Melee Attack"
+"melee_def","Melee Defence"
+"ranged_atk","Ranged Attack"
+"ranged_def","Ranged Defence"
+"morale","Morale"
+"discipline","Discipline"
+"mental","Mental"
+,
+,
+,
+,
+,
+"mount","Mount"

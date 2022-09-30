@@ -747,7 +747,6 @@ class Game:
         self.troop_animation = datasprite.TroopAnimationData(self.main_dir,
                                                              [self.troop_data.race_list[key]["Name"] for key in
                                                               self.troop_data.race_list])
-        self.generic_action_data = self.troop_animation.generic_action_data  # action data pool
         self.generic_animation_pool = self.troop_animation.generic_animation_pool  # animation data pool
         self.gen_body_sprite_pool = self.troop_animation.gen_body_sprite_pool  # body sprite pool
         self.gen_weapon_sprite_pool = self.troop_animation.gen_weapon_sprite_pool  # weapon sprite pool
@@ -755,8 +754,6 @@ class Game:
         self.weapon_joint_list = self.troop_animation.weapon_joint_list  # weapon joint data
         self.hair_colour_list = self.troop_animation.hair_colour_list  # hair colour list
         self.skin_colour_list = self.troop_animation.skin_colour_list  # skin colour list
-
-        subunit.Subunit.generic_action_data = self.generic_action_data
 
         self.effect_sprite_data = datasprite.EffectSpriteData(self.main_dir)
 

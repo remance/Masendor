@@ -17,7 +17,7 @@ def play_animation(self, speed, dt, scale=1, replace_image=True):
     current_animation = self.current_animation[self.sprite_direction]
     if not self.current_action or (
             "hold" in self.current_action and "hold" in current_animation[self.show_frame]["frame_property"] and
-            "hold" in self.action_list[self.weapon_name[self.equipped_weapon][int(self.current_action[0][-1])]][
+            "hold" in self.action_list[int(self.current_action[0][-1])][
                 "Properties"]) is False:  # not holding current frame
         self.animation_timer += dt
         if self.animation_timer >= speed:

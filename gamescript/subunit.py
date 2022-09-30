@@ -32,7 +32,6 @@ class Subunit(pygame.sprite.Sprite):
     max_zoom = 10  # max zoom allow
     screen_scale = (1, 1)
     subunit_state = None
-    generic_action_data = None
 
     play_animation = animation.play_animation
     reset_animation = animation.reset_animation
@@ -162,6 +161,7 @@ class Subunit(pygame.sprite.Sprite):
         self.broken_limit = 0  # morale require for unit to stop broken state, will increase everytime broken state stop
         self.interrupt_animation = False
         self.use_animation_sprite = False
+        self.play_troop_animation = self.battle.play_troop_animation
 
         # Default element stat
         element_dict = {"Physical": 0, "Fire": 0, "Water": 0, "Air": 0, "Earth": 0, "Poison": 0, "Magic": 0}
@@ -319,6 +319,11 @@ class Subunit(pygame.sprite.Sprite):
         self.weapon_type = {}
         self.weapon_id = ((self.primary_main_weapon[0], self.primary_sub_weapon[0]),
                           (self.secondary_main_weapon[0], self.secondary_sub_weapon[0]))
+        self.weapon_data = ((self.troop_data.weapon_list[self.primary_main_weapon[0]],
+                             self.troop_data.weapon_list[self.primary_sub_weapon[0]]),
+                            (self.troop_data.weapon_list[self.secondary_main_weapon[0]],
+                             self.troop_data.weapon_list[self.secondary_sub_weapon[0]]))
+        self.equipped_weapon_data = self.weapon_data[self.equipped_weapon]
         self.weapon_name = ((self.troop_data.weapon_list[self.primary_main_weapon[0]]["Name"],
                              self.troop_data.weapon_list[self.primary_sub_weapon[0]]["Name"]),
                             (self.troop_data.weapon_list[self.secondary_main_weapon[0]]["Name"],
@@ -618,7 +623,7 @@ class Subunit(pygame.sprite.Sprite):
                  (len(self.current_action) > 1 and type(self.current_action[-1]) == int and self.current_action[
                      -1] not in self.skill_effect) or
                  (self.idle_action and self.idle_action != self.command_action)):
-            if done:  # finish animation, perform something
+            if done or self.play_troop_animation == 0:  # finish animation, perform something
                 if self.current_action and "Action" in self.current_action[0] and \
                         "Range Attack" in self.current_action and self.attack_pos is not None:  # shoot bullet
                     if len(self.current_action) > 2:  # second item as attack position
@@ -629,7 +634,7 @@ class Subunit(pygame.sprite.Sprite):
                         attack_pos = self.current_action[2]
                     damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
                                               self.weapon_penetrate[self.equipped_weapon][weapon],
-                                              self.troop_data.weapon_list[self.weapon_id[self.equipped_weapon][weapon]],
+                                              self.equipped_weapon_data[weapon],
                                               self.shoot_range[weapon], self.zoom, "range",
                                               specific_attack_pos=attack_pos)  # Shoot bullet
                     self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot

@@ -27,23 +27,22 @@ def swap_weapon(self):
     self.base_mental = self.original_mental
     self.skill = self.original_skill
 
-    for set_index, weapon_set in enumerate(((self.primary_main_weapon, self.primary_sub_weapon),
-                                            (self.secondary_main_weapon, self.secondary_sub_weapon))):
-        for weapon_index, weapon in enumerate(weapon_set):
-            weapon_stat = self.troop_data.weapon_list[weapon[0]]
-            if set_index == self.equipped_weapon:
-                self.base_melee_def += weapon_stat["Defence"] * self.troop_data.equipment_grade_list[weapon[1]][
-                    "Modifier"]
-                self.base_range_def += weapon_stat["Defence"] * self.troop_data.equipment_grade_list[weapon[1]][
-                    "Modifier"]
-                skill = self.weapon_skill[set_index][weapon_index]
-                if skill != 0 and (self.troop_data.skill_list[skill]["Troop Type"] != 0 and
-                                   self.troop_data.skill_list[skill]["Troop Type"] != self.subunit_type + 1):
-                    self.weapon_skill[set_index][weapon_index] = 0  # remove unmatch class skill
-                else:
-                    self.skill.append(skill)
+    self.equipped_weapon_data = self.weapon_data[self.equipped_weapon]
+
+    for weapon_index, weapon in enumerate(((self.primary_main_weapon, self.primary_sub_weapon),
+                                            (self.secondary_main_weapon, self.secondary_sub_weapon))[self.equipped_weapon]):
+        weapon_stat = self.equipped_weapon_data[weapon_index]
+        self.base_melee_def += weapon_stat["Defence"] * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]
+        self.base_range_def += weapon_stat["Defence"] * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]
+        skill = self.weapon_skill[self.equipped_weapon][weapon_index]
+        if skill != 0 and (self.troop_data.skill_list[skill]["Troop Type"] != 0 and
+                           self.troop_data.skill_list[skill]["Troop Type"] != self.subunit_type + 1):
+            self.weapon_skill[self.equipped_weapon][weapon_index] = 0  # remove unmatch class skill
+        else:
+            self.skill.append(skill)
 
     self.process_trait_skill()
 
-    self.action_list = {key: value for key, value in self.generic_action_data.items() if
-                        key in self.weapon_name[self.equipped_weapon]}
+    self.action_list = []
+    for item in self.equipped_weapon_data:
+        self.action_list.append({key: value for key, value in item.items() if key in ("Common", "Attack", "Properties")})

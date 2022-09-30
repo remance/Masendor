@@ -369,8 +369,6 @@ class Battle:
         self.hair_colour_list = self.main.hair_colour_list
         self.skin_colour_list = self.main.skin_colour_list
 
-        self.generic_action_data = self.main.generic_action_data
-
         # Load weather schedule
         try:
             self.weather_event = csv_read(self.main_dir, "weather.csv",
