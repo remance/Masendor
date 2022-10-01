@@ -1532,7 +1532,9 @@ rename_button = Button("Rename", image, (screen_size[0] - (image.get_width() * 3
 duplicate_button = Button("Duplicate", image, (screen_size[0] - (image.get_width() * 2.5), image.get_height() / 2),
                           description=("Duplicate animation", "Duplicate the current animation as a new animation."))
 filter_button = Button("Filter", image, (screen_size[0] - (image.get_width() * 1.5), image.get_height() / 2),
-                       description=("Filter animation list according to input", "Use ',' for multiple filters."))
+                       description=("Filter animation list according to input", "Capital letter sensitive.",
+                                    "Use ',' for multiple filters (e.g., Human,Slash).",
+                                    "Add '--' in front of the keyword for exclusion instead of inclusion."))
 export_button = Button("Export", image, (screen_size[0] - (image.get_width() * 1.5), p_body_helper.rect.midtop[1] - (image.get_height() * 5)),
                        description=("Export animation", "Export the current animation to several png image files."))
 delete_button = Button("Delete", image, (screen_size[0] - (image.get_width() / 2), image.get_height() / 2),
@@ -2364,8 +2366,11 @@ while True:
 
                     elif animation_selector.rect.collidepoint(mouse_pos):
                         animation_list = list(current_pool[direction].keys())
-                        for filter in animation_filter:
-                            animation_list = [item for item in animation_list if filter in item]
+                        for key_filter in animation_filter:
+                            if key_filter[0] == "-":  # exclude
+                                animation_list = [item for item in animation_list if key_filter[1:] not in item]
+                            else:
+                                animation_list = [item for item in animation_list if key_filter in item]
                         current_popup_row = 0  # move current selected animation to top if not in filtered list
                         if animation_name in animation_list:
                             current_popup_row = animation_list.index(animation_name)
@@ -2638,7 +2643,6 @@ while True:
 
             elif text_input_popup[1] == "filter":
                 animation_filter = input_box.text.split(",")
-                print(animation_filter)
 
             elif text_input_popup[1] == "quit":
                 pygame.time.wait(1000)
