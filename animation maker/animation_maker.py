@@ -2366,11 +2366,12 @@ while True:
 
                     elif animation_selector.rect.collidepoint(mouse_pos):
                         animation_list = list(current_pool[direction].keys())
-                        for key_filter in animation_filter:
-                            if key_filter[0] == "-":  # exclude
-                                animation_list = [item for item in animation_list if key_filter[1:] not in item]
-                            else:
-                                animation_list = [item for item in animation_list if key_filter in item]
+                        if animation_filter[0] != "":
+                            for key_filter in animation_filter:
+                                if key_filter[0] == "-":  # exclude
+                                    animation_list = [item for item in animation_list if key_filter[1:] not in item]
+                                else:
+                                    animation_list = [item for item in animation_list if key_filter in item]
                         current_popup_row = 0  # move current selected animation to top if not in filtered list
                         if animation_name in animation_list:
                             current_popup_row = animation_list.index(animation_name)
