@@ -281,7 +281,7 @@ class TroopData:
                           "Armour Penetration", "Defence", "Weight", "Speed", "Ammunition", "Magazine", "Range",
                           "Travel Speed", "Learning Difficulty", "Mastery Difficulty", "Learning Difficulty", "Cost",
                           "ImageID", "Speed", "Hand")  # value int only
-            list_column = ("Skill", "Trait")  # value in list only
+            list_column = ("Skill", "Trait", "Properties")  # value in list only
             tuple_column = ("Bullet", "Ruleset")  # value in tuple only
             percent_column = ("Damage Balance",)
             int_column = [index for index, item in enumerate(header) if item in int_column]

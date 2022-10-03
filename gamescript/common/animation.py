@@ -26,12 +26,8 @@ def play_animation(self, speed, dt, scale=1, replace_image=True):
                 self.show_frame += 1
             else:  # TODO add property
                 done = True
-        if replace_image:  # replace image sprite
-            self.image = current_animation[self.show_frame]["sprite"]
-    # if scale == 1:
-    # else:
-    #     self.image = pygame.transform.scale(current_animation[self.show_frame]["sprite"].copy(),
-    #                                         (self.image.get_width() * scale, self.image.get_height() * scale))
+    if replace_image:  # replace sprite image
+        self.image = current_animation[self.show_frame]["sprite"]
     return done
 
 

@@ -7,21 +7,20 @@ def manual_aim(self, key_press, mouse_left_up, mouse_right_up, mouse_scroll_up, 
     """
     shoot_text = ""
     shoot_ready = [0, 0]
-    ammo_ready = [0, 0]
-    can_shoot = [0, 0]
+    has_ammo = [0, 0]
     shoot_ready_list = [[], []]
+    self.battle_ui_updater.add(self.single_text_popup)
     if self.player_input_state == "leader aim":
         if self.player_char.equipped_weapon in self.player_char.ammo_now:
             for weapon in self.player_char.ammo_now[self.player_char.equipped_weapon]:
                 shoot_distance = self.player_char.base_pos.distance_to(self.command_mouse_pos)
                 shoot_range = self.player_char.shoot_range[weapon]
-                if (self.player_char.ammo_now[self.player_char.equipped_weapon][weapon]) > 0:
-                    if shoot_range >= shoot_distance:
-                        shoot_ready_list[weapon].append(self.player_char)
-                shoot_text += str(self.player_char.ammo_now[self.player_char.equipped_weapon][weapon]) + " " + \
-                              str(int(self.player_char.weapon_cooldown[weapon])) + "/" + \
-                              str(int(self.player_char.weapon_speed[weapon])) + ", " + " Range " + \
-                              str(int(shoot_distance)) + "/" + str(int(shoot_range))
+                if (self.player_char.ammo_now[self.player_char.equipped_weapon][weapon]) > 0 and shoot_range >= shoot_distance:
+                    shoot_ready_list[weapon].append(self.player_char)
+                    shoot_ready[weapon] += 1
+                shoot_text += str(self.player_char.ammo_now[self.player_char.equipped_weapon][weapon]) + "/" + \
+                              str(self.player_char.magazine_count[self.player_char.equipped_weapon][weapon]) + " Range " + \
+                              str(int(shoot_distance)) + "/" + str(int(shoot_range)) + ", "
             shoot_text = shoot_text[:-2]
 
     elif self.player_input_state == "volley aim" or self.player_input_state == "troop aim":
@@ -31,14 +30,13 @@ def manual_aim(self, key_press, mouse_left_up, mouse_right_up, mouse_scroll_up, 
                         self.player_input_state == "troop aim" and this_subunit.leader is None):
                     if this_subunit.equipped_weapon in this_subunit.ammo_now:
                         if weapon in this_subunit.ammo_now[this_subunit.equipped_weapon]:
-                            can_shoot[weapon] += 1
+                            has_ammo[weapon] += 1
                             shoot_distance = this_subunit.base_pos.distance_to(self.command_mouse_pos)
                             if this_subunit.ammo_now[this_subunit.equipped_weapon][weapon] > 0:
-                                ammo_ready[weapon] += 1
                                 if this_subunit.shoot_range[weapon] >= shoot_distance:
                                     shoot_ready_list[weapon].append(this_subunit)
                                     shoot_ready[weapon] += 1
-            shoot_text += str(shoot_ready[weapon]) + "/" + str(can_shoot[weapon]) + ", "
+            shoot_text += str(shoot_ready[weapon]) + "/" + str(has_ammo[weapon]) + ", "
         shoot_text = shoot_text[:-2]
 
     self.single_text_popup.pop(self.cursor.rect.bottomright, shoot_text)
@@ -51,12 +49,12 @@ def manual_aim(self, key_press, mouse_left_up, mouse_right_up, mouse_scroll_up, 
         for this_subunit in self.player_char.unit.subunit_list:
             if this_subunit.equipped_weapon != this_subunit.player_equipped_weapon:
                 this_subunit.player_weapon_selection()
-    if mouse_left_up and shoot_ready[0] > 0:
+    elif mouse_left_up and shoot_ready[0] > 0:
         for this_subunit in shoot_ready_list[0]:
-            this_subunit.command_action = ("Action " + str(0), "Range Attack", self.command_mouse_pos)
+            this_subunit.command_action = ("Action 0", "Range Attack", self.command_mouse_pos)
     elif mouse_right_up and shoot_ready[1] > 0:
         for this_subunit in shoot_ready_list[1]:
-            this_subunit.command_action = ("Action " + str(1), "Range Attack", self.command_mouse_pos)
+            this_subunit.command_action = ("Action 1", "Range Attack", self.command_mouse_pos)
     elif self.map_scale_delay == 0:
         if mouse_scroll_up:
             self.camera_zoom += 1

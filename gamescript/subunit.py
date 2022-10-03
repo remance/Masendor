@@ -127,6 +127,7 @@ class Subunit(pygame.sprite.Sprite):
         self.close_target = None  # closet target to move to in melee
         self.attacking = False  # for checking if unit in attacking state or not for using charge skill
         self.control = True  # subunit will obey command input
+        self.player_manual_control = False  # for mode that allow player to manually control a subunit
 
         self.animation_pool = {}  # list of animation sprite this subunit can play with its action
         self.current_animation = {}  # list of animation frames playing
@@ -562,9 +563,7 @@ class Subunit(pygame.sprite.Sprite):
 
                 if self.timer > 1:  # Update status and skill use around every 1 second
                     self.status_update(weather=weather)
-
                     self.charge_logic(unit_state)
-
                     self.timer -= 1
 
                 self.state_reset_logic(unit_state)
@@ -625,7 +624,7 @@ class Subunit(pygame.sprite.Sprite):
                  (self.idle_action and self.idle_action != self.command_action)):
             if done or self.play_troop_animation == 0:  # finish animation, perform something
                 if self.current_action and "Action" in self.current_action[0] and \
-                        "Range Attack" in self.current_action and self.attack_pos is not None:  # shoot bullet
+                        "Range Attack" in self.current_action:  # shoot bullet
                     if len(self.current_action) > 2:  # second item as attack position
                         self.attack_pos = self.current_action[2]
                     weapon = int(self.current_action[0][-1])

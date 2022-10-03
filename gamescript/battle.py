@@ -570,6 +570,7 @@ class Battle:
                 for unit in self.all_team_unit["alive"]:  # get player char
                     if unit.game_id == self.char_selected:
                         self.player_char = unit.leader[0].subunit
+                        unit.leader[0].subunit.player_manual_control = True
                         self.current_selected = unit
                         unit.just_selected = True
                         unit.selected = True
