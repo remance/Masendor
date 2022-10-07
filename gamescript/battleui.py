@@ -1205,7 +1205,7 @@ class TroopNumber(pygame.sprite.Sprite):
 
         self.font = pygame.font.SysFont("timesnewroman", int(22 * self.screen_scale[1]))
 
-        self.image = self.render(str(self.number), self.font, self.text_colour)
+        self.image = self.font.render(str(self.number), self.font, self.text_colour)
         self.rect = self.image.get_rect(topleft=self.pos)
 
     def update(self, *args, **kwargs) -> None:
