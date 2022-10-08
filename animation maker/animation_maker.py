@@ -2476,7 +2476,7 @@ while True:
                             if model.part_selected:
                                 for part in model.part_selected:
                                     if list(model.mask_part_list.keys())[part] in helper.rect_part_list:
-                                        helper.select_part(mouse_pos, shift_press, ctrl_press, list(model.mask_part_list.keys())[part])
+                                        helper.select_part(mouse_pos, True, False, list(model.mask_part_list.keys())[part])
                     if mouse_wheel_up or mouse_wheel_down:
                         model.edit_part(new_mouse_pos, "rotate")
                     elif mouse_right_up or mouse_right_down:
