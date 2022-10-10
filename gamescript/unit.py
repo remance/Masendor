@@ -59,9 +59,12 @@ class Unit(pygame.sprite.Sprite):
     transfer_leader = empty_method
     unit_ai = empty_method
 
-    for entry in os.scandir(script_dir + "/common/unit/"):  # load and replace modules from common.unit
-        if entry.is_file() and ".py" in entry.name:
-            file_name = entry.name[:-3]
+    for entry in os.scandir(script_dir + "\\common\\unit\\"):  # load and replace modules from common.unit
+        if entry.is_file():
+            if ".pyc" in entry.name:
+                file_name = entry.name[:-4]
+            elif ".py" in entry.name:
+                file_name = entry.name[:-3]
             exec(f"from gamescript.common.unit import " + file_name)
             exec(f"" + file_name + " = " + file_name + "." + file_name)
 

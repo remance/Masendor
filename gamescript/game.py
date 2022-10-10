@@ -44,11 +44,13 @@ make_lorebook = empty_function
 make_option_menu = empty_function
 make_popup_ui = empty_function
 
-script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
-
-for entry in os.scandir(script_dir + "/common/game/setup/"):  # load and replace modules from common.game.setup
-    if entry.is_file() and ".py" in entry.name:
-        file_name = entry.name[:-3]
+script_dir = os.path.split(os.path.abspath(__file__))[0] + "\\"
+for entry in os.scandir(script_dir + "\\common\\game\\setup\\"):  # load and replace modules from common.game.setup
+    if entry.is_file():
+        if ".pyc" in entry.name:
+            file_name = entry.name[:-4]
+        elif ".py" in entry.name:
+            file_name = entry.name[:-3]
         exec(f"from gamescript.common.game.setup import " + file_name)
         exec(f"" + file_name + " = " + file_name + "." + file_name)
 
@@ -118,11 +120,14 @@ class Game:
     lorebook_process = lorebook.lorebook_process
 
     script_dir = script_dir
-    for entry in os.scandir(script_dir + "/common/game/"):  # load and replace modules from common.game
-        if entry.is_file() and ".py" in entry.name:
-            file_name = entry.name[:-3]
-            exec(f"from gamescript.common.game import " + file_name)
-            exec(f"" + file_name + " = " + file_name + "." + file_name)
+    for entry in os.scandir(script_dir + "\\common\\game\\"):  # load and replace modules from common.game
+        if entry.is_file():
+            if ".pyc" in entry.name:
+                file_name = entry.name[:-4]
+            elif ".py" in entry.name:
+                file_name = entry.name[:-3]
+                exec(f"from gamescript.common.game import " + file_name)
+                exec(f"" + file_name + " = " + file_name + "." + file_name)
 
     # Will be changed in change_game_genre function depending on selected genre
     char_select = False
@@ -151,10 +156,15 @@ class Game:
         try:
             config.read_file(open("configuration.ini"))  # read config file
         except FileNotFoundError:  # Create config file if not found with the default
-            genre_folder = Path(os.path.join(self.main_dir, "gamescript"))
-            genre_folder = [x for x in genre_folder.iterdir() if x.is_dir()]
+            try:  # for repo version
+                genre_folder = Path(os.path.join(self.main_dir, "gamescript"))
+                genre_folder = [x for x in genre_folder.iterdir() if x.is_dir()]
+            except FileNotFoundError:  # for release version
+                genre_folder = Path(os.path.join(self.main_dir, "lib", "gamescript"))
+                genre_folder = [x for x in genre_folder.iterdir() if x.is_dir()]
             genre_folder = [str(folder_name).split("\\")[-1].capitalize() for folder_name in genre_folder]
-            genre_folder.remove("__pycache__")  # just grab the first genre folder as default
+            if "__pycache__" in genre_folder:
+                genre_folder.remove("__pycache__")  # just grab the first genre folder as default
 
             config = configparser.ConfigParser()
 
@@ -204,9 +214,9 @@ class Game:
         self.ruleset_list = csv_read(self.main_dir, "ruleset_list.csv", ["data", "ruleset"])  # get ruleset list
         self.ruleset_folder = str(self.ruleset_list[self.ruleset][1]).strip("/").strip("\\")
 
-        if not os.path.exists("../profile"):  # make profile folder if not existed
-            os.makedirs("../profile")
-            os.makedirs("../profile/unitpreset")
+        if not os.path.exists("\\profile"):  # make profile folder if not existed
+            os.makedirs("\\profile")
+            os.makedirs("\\profile\\unitpreset")
         if not os.path.exists("profile/unitpreset/" + str(self.ruleset)):  # create unitpreset folder for ruleset
             os.makedirs("profile/unitpreset/" + str(self.ruleset))
         try:
@@ -817,9 +827,12 @@ class Game:
 
             for folder in folder_list:
                 try:
-                    for this_file in os.scandir(directory + new_genre + "/" + folder):
-                        if this_file.is_file() and ".py" in this_file.name:
-                            file_name = this_file.name[:-3]
+                    for this_file in os.scandir(directory + new_genre + "\\" + folder):
+                        if this_file.is_file():
+                            if ".pyc" in this_file.name:
+                                file_name = this_file.name[:-4]
+                            elif ".py" in this_file.name:
+                                file_name = this_file.name[:-3]
                             exec(f"from " + script_folder + "." + new_genre + "." +
                                  folder.replace("/", ".") + " import " + file_name)
                             try:
@@ -836,14 +849,17 @@ class Game:
                 # Check whether the old genre method not existed in the new one, replace with empty method
                 if old_genre != new_genre:
                     try:
-                        new_folder = [this_file.name for this_file in os.scandir(directory + new_genre + "/" + folder)]
+                        new_folder = [this_file.name for this_file in os.scandir(directory + new_genre + "\\" + folder)]
                     except FileNotFoundError:
                         new_folder = ()
                     try:
-                        for this_file in os.scandir(directory + old_genre + "/" + folder):
-                            if this_file.is_file() and ".py" in this_file.name:
+                        for this_file in os.scandir(directory + old_genre + "\\" + folder):
+                            if this_file.is_file():
                                 if this_file.name not in new_folder:
-                                    file_name = this_file.name[:-3]
+                                    if ".pyc" in this_file.name:
+                                        file_name = this_file.name[:-4]
+                                    elif ".py" in this_file.name:
+                                        file_name = this_file.name[:-3]
                                     try:
                                         exec(
                                             f"" + change_object.lower() + "." + change_object + "." +

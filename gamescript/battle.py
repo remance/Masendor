@@ -22,7 +22,7 @@ edit_config = utility.edit_config
 setup_list = utility.setup_list
 clean_group_object = utility.clean_group_object
 
-script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
+script_dir = os.path.split(os.path.abspath(__file__))[0] + "\\"
 
 
 class Battle:
@@ -76,9 +76,12 @@ class Battle:
     setup_battle_ui = empty_method
 
     for folder in ("battle", "ui"):
-        for entry in os.scandir(script_dir + "/common/" + folder + "/"):  # load and replace modules from common
-            if entry.is_file() and ".py" in entry.name:
-                file_name = entry.name[:-3]
+        for entry in os.scandir(script_dir + "\\common\\" + folder + "\\"):  # load and replace modules from common
+            if entry.is_file():
+                if ".pyc" in entry.name:
+                    file_name = entry.name[:-4]
+                elif ".py" in entry.name:
+                    file_name = entry.name[:-3]
                 exec(f"from gamescript.common." + folder + " import " + file_name)
                 exec(f"" + file_name + " = " + file_name + "." + file_name)
 

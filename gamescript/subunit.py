@@ -7,6 +7,10 @@ import pygame.freetype
 from gamescript import damagesprite
 from gamescript.common import utility, animation
 
+from pathfinding.core.diagonal_movement import DiagonalMovement
+from pathfinding.core.grid import Grid
+from pathfinding.finder.a_star import AStarFinder
+
 rotation_list = (90, 120, 45, 0, -90, -45, -120, 180, -180)
 rotation_name = ("l_side", "l_sidedown", "l_sideup", "front", "r_side", "r_sideup", "r_sidedown", "back", "back")
 rotation_dict = {key: rotation_name[index] for index, key in enumerate(rotation_list)}
@@ -36,6 +40,10 @@ class Subunit(pygame.sprite.Sprite):
     play_animation = animation.play_animation
     reset_animation = animation.reset_animation
     set_rotate = utility.set_rotate
+
+    DiagonalMovement = DiagonalMovement
+    Grid = Grid
+    AStarFinder = AStarFinder
 
     # Import from common.subunit
     add_mount_stat = empty_method
@@ -87,8 +95,11 @@ class Subunit(pygame.sprite.Sprite):
 
     script_dir = os.path.split(os.path.abspath(__file__))[0]
     for entry in os.scandir(script_dir + "\\common\\subunit\\"):  # load and replace modules from common.unit
-        if entry.is_file() and ".py" in entry.name:
-            file_name = entry.name[:-3]
+        if entry.is_file():
+            if ".pyc" in entry.name:
+                file_name = entry.name[:-4]
+            elif ".py" in entry.name:
+                file_name = entry.name[:-3]
             exec(f"from gamescript.common.subunit import " + file_name)
             exec(f"" + file_name + " = " + file_name + "." + file_name)
 
@@ -662,8 +673,8 @@ class EditorSubunit(Subunit):
         """Create subunit object used for editor only"""
         Subunit.__init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale)
         self.pos = start_pos
-        self.inspect_pos = (self.pos[0] - (self.image.get_width() / 2), self.pos[1] - (self.image.get_height() / 2))
         self.image = self.block
         self.inspect_image_original = self.block_original
+        self.inspect_pos = (self.pos[0] - (self.image.get_width() / 2), self.pos[1] - (self.image.get_height() / 2))
         self.commander = True
         self.rect = self.image.get_rect(center=self.pos)

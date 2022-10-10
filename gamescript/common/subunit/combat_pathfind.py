@@ -1,8 +1,3 @@
-from pathfinding.core.diagonal_movement import DiagonalMovement
-from pathfinding.core.grid import Grid
-from pathfinding.finder.a_star import AStarFinder
-
-
 def combat_pathfind(self):
     """Pathfinding for unit in melee combat"""
     self.combat_move_queue = []
@@ -27,13 +22,13 @@ def combat_pathfind(self):
     move_array = [this_array[start_point[0]:end_point[0]] for this_array in move_array]  # cut by column
 
     # if len(move_array) < 100 and len(move_array[0]) < 100: # if too big then skip combat pathfinding
-    grid = Grid(matrix=move_array)
+    grid = self.Grid(matrix=move_array)
     grid.cleanup()
 
     start = grid.node(int_base_pos[0] - start_point[0], int_base_pos[1] - start_point[1])  # start point
     end = grid.node(int_base_target[0] - start_point[0], int_base_target[1] - start_point[1])  # end point
 
-    finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
+    finder = self.AStarFinder(diagonal_movement=self.DiagonalMovement.always)
     path, runs = finder.find_path(start, end, grid)
     path = [(this_path[0] + start_point[0], this_path[1] + start_point[1]) for this_path in
             path]  # remake pos into actual map pos

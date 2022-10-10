@@ -66,8 +66,7 @@ class DamageSprite(pygame.sprite.Sprite):
                 target_now = specific_attack_pos
             else:
                 target_now = self.attacker.attack_pos
-
-            attack_range = self.attacker.base_pos.distance_to(target_now)
+            attack_range = self.attacker.base_pos.distance_to(target_now)  # TODO FIX THIS ISSUE
             if True in self.attacker.special_effect["No Range Penalty"]:
                 hit_chance = self.accuracy
             elif True in self.attacker.special_effect["Long Range Accurate"]:

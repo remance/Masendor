@@ -63,4 +63,4 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
     return {"back_button": back_button, "default_button": default_button, "resolution_drop": resolution_drop,
             "resolution_bar": resolution_bar, "resolution_text": resolution_text, "volume_slider": volume_slider,
             "value_box": value_box, "volume_text": volume_text, "fullscreen_box": fullscreen_box,
-            "fullscreen_text": fullscreen_text, "animation_box":animation_box, "animation_text": animation_text}
+            "fullscreen_text": fullscreen_text, "animation_box": animation_box, "animation_text": animation_text}
