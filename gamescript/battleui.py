@@ -106,7 +106,7 @@ class TopBar(pygame.sprite.Sprite):
         self.pos = pos
         self.rect = self.image.get_rect(center=self.pos)
 
-    def value_input(self, who, weapon_list="", armour_list="", button="", change_option=0, split=False):
+    def value_input(self, who, split=False):
         position = 65
         self.value = ["{:,}".format(who.troop_number) + " (" + "{:,}".format(who.max_health) + ")", who.stamina_state,
                       who.morale_state, who.state]
@@ -177,7 +177,7 @@ class TroopCard(pygame.sprite.Sprite):
         self.pos = pos
         self.rect = self.image.get_rect(center=self.pos)
 
-    def value_input(self, who, button="", change_option=0, split=False):
+    def value_input(self, who, change_option=0, split=False):
         make_long_text = utility.make_long_text
         position = 15  # starting row
         position_x = 45  # starting point of text
@@ -276,10 +276,13 @@ class TroopCard(pygame.sprite.Sprite):
         self.last_who = who.game_id
 
 
-class CommandBar(pygame.sprite.Sprite):
-    def __init__(self, text_size=16):
+class CommandUI(pygame.sprite.Sprite):
+    weapon_sprite_pool = None
+
+    def __init__(self, screen_scale, ui_type, text_size=16):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self)
+        self.screen_scale = screen_scale
         self.font = pygame.font.SysFont("helvetica", text_size)
         self.value = [-1, -1]
         self.last_value = 0
@@ -287,35 +290,58 @@ class CommandBar(pygame.sprite.Sprite):
         self.last_who = -1  # last showed parent unit, start with -1 which mean any new clicked will show up at start
         self.last_auth = 0
 
+        self.ui_type = ui_type
+
+        if self.ui_type == "hero":
+            self.image = pygame.Surface((400 * self.screen_scale[0], 200 * self.screen_scale[1]), pygame.SRCALPHA)
+            self.image_original = self.image.copy()
+
+            self.health_bar_size = (self.image.get_width(), 20 * self.screen_scale[1])
+
+            self.health_bar = pygame.Surface(self.health_bar_size, pygame.SRCALPHA)
+            self.health_bar_original = self.health_bar.copy()
+            self.health_bar_rect = self.health_bar.get_rect(
+                bottomleft=(0, self.image.get_height()))
+            self.health_bar.fill((200, 0, 0))
+
+            self.weapon_image = pygame.Surface((100 * self.screen_scale[0], 100 * self.screen_scale[1]), pygame.SRCALPHA)
+            self.weapon_image_original = self.weapon_image.copy()
+            self.weapon_image_rect = self.weapon_image.get_rect(topright=(self.image.get_width(), 0))
+
+            self.equipped_weapon = None
+
     def load_sprite(self, image, icon):
-        self.image = image
-        self.icon = icon
-        self.inspect_pos = ((self.image.get_width() / 2.1, self.image.get_height() / 2.5),  # general
-                            (self.image.get_width() / 3.5, self.image.get_height() / 1.6),  # left sub general
-                            (self.image.get_width() / 1.5, self.image.get_height() / 1.6),  # right sub general
-                            (self.image.get_width() / 2.1, self.image.get_height() / 1.2))  # advisor
+        if image is not None:
+            self.image = image
+            self.icon = icon
+            self.inspect_pos = ((self.image.get_width() / 2.1, self.image.get_height() / 2.5),  # general
+                                (self.image.get_width() / 3.5, self.image.get_height() / 1.6),  # left sub general
+                                (self.image.get_width() / 1.5, self.image.get_height() / 1.6),  # right sub general
+                                (self.image.get_width() / 2.1, self.image.get_height() / 1.2))  # advisor
 
-        icon_rect = self.icon["authority"].get_rect(
-            center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.1, self.image.get_rect()[1] + 40))
-        self.image.blit(self.icon["authority"], icon_rect)
-        try:
-            self.white = [self.icon["white_king"], self.icon["white_queen"], self.icon["white_rook"],
-                          self.icon["white_knight_left"],
-                          self.icon["white_knight_right"], self.icon["white_bishop"]]  # team 1 white chess head
-            self.black = [self.icon["red_king"], self.icon["red_queen"], self.icon["red_rook"],
-                          self.icon["red_knight_left"],
-                          self.icon["red_knight_right"], self.icon["red_bishop"]]  # team 2 black chess head
-        except KeyError:
-            self.white = [self.icon["king"], self.icon["queen"], self.icon["rook"],
-                          self.icon["knight"], self.icon["knight"], self.icon["bishop"]]  # team 1 white chess head
-            self.black = self.white  # no colour change
+            icon_rect = self.icon["authority"].get_rect(
+                center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.1, self.image.get_rect()[1] + 40))
+            self.image.blit(self.icon["authority"], icon_rect)
+            try:
+                self.white = [self.icon["white_king"], self.icon["white_queen"], self.icon["white_rook"],
+                              self.icon["white_knight_left"],
+                              self.icon["white_knight_right"], self.icon["white_bishop"]]  # team 1 white chess head
+                self.black = [self.icon["red_king"], self.icon["red_queen"], self.icon["red_rook"],
+                              self.icon["red_knight_left"],
+                              self.icon["red_knight_right"], self.icon["red_bishop"]]  # team 2 black chess head
+            except KeyError:
+                self.white = [self.icon["king"], self.icon["queen"], self.icon["rook"],
+                              self.icon["knight"], self.icon["knight"], self.icon["bishop"]]  # team 1 white chess head
+                self.black = self.white  # no colour change
 
-        self.leader_pos = ((self.inspect_pos[0][0], self.inspect_pos[0][1]),
-                           (self.inspect_pos[1][0], self.inspect_pos[1][1]),
-                           (self.inspect_pos[2][0], self.inspect_pos[2][1]),
-                           (self.inspect_pos[3][0], self.inspect_pos[3][1]))
+            self.leader_pos = ((self.inspect_pos[0][0], self.inspect_pos[0][1]),
+                               (self.inspect_pos[1][0], self.inspect_pos[1][1]),
+                               (self.inspect_pos[2][0], self.inspect_pos[2][1]),
+                               (self.inspect_pos[3][0], self.inspect_pos[3][1]))
+            self.image_original = self.image.copy()
+        else:
+            self.image.blit(self.health_bar, self.health_bar_rect)
 
-        self.image_original = self.image.copy()
 
     def change_pos(self, pos):
         """change position of ui to new one"""
@@ -328,38 +354,79 @@ class CommandBar(pygame.sprite.Sprite):
         (self.inspect_pos[2][0] + self.rect.topleft[0], self.inspect_pos[2][1] + self.rect.topleft[1]),
         (self.inspect_pos[3][0] + self.rect.topleft[0], self.inspect_pos[3][1] + self.rect.topleft[1]))
 
-    def value_input(self, who, weapon_list="", armour_list="", button="", change_option=0, split=False):
-        for this_button in button:
-            this_button.draw(self.image)
+    def value_input(self, who, button="", split=False):
+        if self.ui_type == "command":
+            for this_button in button:
+                this_button.draw(self.image)
 
-        if who.game_id != self.last_who or split:  # only redraw leader circle when change subunit
-            use_colour = self.white  # colour of the chess icon for leader, white for team 1
-            if who.team == 2:  # black for team 2
-                use_colour = self.black
-            self.image = self.image_original.copy()
-            self.image.blit(who.coa, who.coa.get_rect(topleft=self.image.get_rect().topleft))  # blit coa
+            if who != self.last_who or split:  # only redraw leader circle when change subunit
+                use_colour = self.white  # colour of the chess icon for leader, white for team 1
+                if who.team == 2:  # black for team 2
+                    use_colour = self.black
+                self.image = self.image_original.copy()
+                self.image.blit(who.coa, who.coa.get_rect(topleft=self.image.get_rect().topleft))  # blit coa
 
-            pic_list = (0, 3, 4, 5)  # rook, bishop, left knight, right knight
-            if who.commander:
-                pic_list = (2, 3, 4, 5)  # king, queen, left knight, right knight
-            for index, _ in enumerate(who.leader):
-                icon_rect = use_colour[pic_list[index]].get_rect(midbottom=self.inspect_pos[index])
-                self.image.blit(use_colour[pic_list[index]], icon_rect)
+                pic_list = (0, 3, 4, 5)  # rook, bishop, left knight, right knight
+                if who.commander:
+                    pic_list = (2, 3, 4, 5)  # king, queen, left knight, right knight
+                for index, _ in enumerate(who.leader):
+                    icon_rect = use_colour[pic_list[index]].get_rect(midbottom=self.inspect_pos[index])
+                    self.image.blit(use_colour[pic_list[index]], icon_rect)
 
-            self.image_original2 = self.image.copy()
+                self.image_original2 = self.image.copy()
 
-        authority = str(who.authority).split(".")[0]
-        if self.last_auth != authority or who.game_id != self.last_who or split:  # authority number change only when not same as last
-            self.image = self.image_original2.copy()
-            text_surface = self.font.render(authority, True, (0, 0, 0))
-            text_rect = text_surface.get_rect(
-                center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.12, self.image.get_rect()[1] + 83))
-            self.image.blit(text_surface, text_rect)
-            self.last_auth = authority
+            authority = str(who.authority).split(".")[0]
+            if self.last_auth != authority or who != self.last_who or split:  # authority number change only when not same as last
+                self.image = self.image_original2.copy()
+                text_surface = self.font.render(authority, True, (0, 0, 0))
+                text_rect = text_surface.get_rect(
+                    center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.12, self.image.get_rect()[1] + 83))
+                self.image.blit(text_surface, text_rect)
+                self.last_auth = authority
 
-        self.last_value = self.value
-        self.last_who = who.game_id
+            self.last_value = self.value
 
+        elif self.ui_type == "hero":
+            change = False  # for checking to blit everything again after image got replaced with original
+            if self.equipped_weapon != who.equipped_weapon:
+                change = True
+                self.equipped_weapon = who.equipped_weapon
+                self.weapon_image = self.weapon_image_original.copy()
+                weapon_set = who.weapon_name[self.equipped_weapon]
+
+                if weapon_set[0] != "Unarmed":
+                    weapon_image = self.weapon_sprite_pool[weapon_set[0]][who.weapon_version[self.equipped_weapon][0]][
+                        "side"]["base_main"]
+
+                    weapon_image_rect = weapon_image.get_rect(center=(self.weapon_image.get_width() / 4,
+                                                                      self.weapon_image.get_height() / 2))
+
+                    self.weapon_image.blit(weapon_image, weapon_image_rect)
+
+                if weapon_set[1] != "Unarmed":
+                    weapon_image = self.weapon_sprite_pool[weapon_set[1]][who.weapon_version[self.equipped_weapon][1]][
+                        "side"]["base_main"]
+
+                    weapon_image_rect = weapon_image.get_rect(center=(self.weapon_image.get_width() / 1.5,
+                                                                      self.weapon_image.get_height() / 2))
+
+                    self.weapon_image.blit(weapon_image, weapon_image_rect)
+
+                self.image = self.image_original.copy()
+                self.image.blit(self.weapon_image, self.weapon_image_rect)
+
+            if change or who.old_last_health != who.subunit_health:
+                if change is False:
+                    self.health_bar = self.health_bar_original.copy()
+                    health_bar = pygame.Surface((self.health_bar_size[0] * (who.subunit_health / who.max_health),
+                                                 self.health_bar_size[1]))
+                    health_bar.fill((200, 0, 0))
+                    health_bar_rect = health_bar.get_rect(topleft=(0, 0))
+                    self.health_bar.blit(health_bar, health_bar_rect)
+
+                self.image.blit(self.health_bar, self.health_bar_rect)
+
+        self.last_who = who
 
 class SkillCardIcon(pygame.sprite.Sprite):
     cooldown = None
@@ -1232,4 +1299,3 @@ class TroopNumber(pygame.sprite.Sprite):
         if self.who.state == 100:
             self.who = None
             self.kill()
-

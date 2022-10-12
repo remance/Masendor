@@ -139,6 +139,7 @@ class Game:
     time_speed_scale = 1
     troop_size_adjustable = False
     add_troop_number_sprite = False
+    command_ui_type = "command"
 
     def __init__(self, main_dir, error_log):
         pygame.init()  # Initialize pygame
@@ -637,28 +638,6 @@ class Game:
         self.input_ui_popup = (self.input_ui, self.input_box, self.input_ok_button, self.input_cancel_button)
         self.confirm_ui_popup = (self.confirm_ui, self.input_ok_button, self.input_cancel_button)
 
-        self.genre_ui_dict = make_genre_specific_ui(self.main_dir, self.screen_scale, self.genre)
-        self.command_ui = self.genre_ui_dict["command_ui"]
-        self.ui_updater.add(self.command_ui)
-        uniteditor.PreviewLeader.leader_pos = self.command_ui.leader_pos
-        leader.Leader.leader_pos = self.command_ui.leader_pos
-
-        self.col_split_button = self.genre_ui_dict["col_split_button"]
-        self.row_split_button = self.genre_ui_dict["row_split_button"]
-        self.decimation_button = self.genre_ui_dict["decimation_button"]
-        self.inspect_button = self.genre_ui_dict["inspect_button"]
-        self.main_ui_updater.remove(
-            self.inspect_selected_border)  # remove subunit border sprite from start_set menu drawer
-
-        self.inspect_ui = self.genre_ui_dict["inspect_ui"]
-        self.ui_updater.add(self.inspect_ui)
-        self.inspect_selected_border = battleui.SelectedSquad((0, 0))  # yellow border on selected subunit in inspect ui
-        self.main_ui_updater.remove(
-            self.inspect_selected_border)  # remove subunit border sprite from start_set menu drawer
-
-        # Behaviour button that once click switch to other mode for subunit behaviour
-        self.behaviour_switch_button = self.genre_ui_dict["behaviour_switch_button"]
-
         # Other ui in battle
         self.battle_done_box = battleui.BattleDone(self.screen_scale, (self.screen_width / 2, self.screen_height / 2),
                                                    battle_ui_image["end_box"], battle_ui_image["result_box"])
@@ -766,6 +745,8 @@ class Game:
         self.skin_colour_list = self.troop_animation.skin_colour_list  # skin colour list
 
         self.effect_sprite_data = datasprite.EffectSpriteData(self.main_dir)
+
+        self.command_ui.weapon_sprite_pool = self.gen_weapon_sprite_pool
 
         # flip (covert for ingame angle) and reduce bullet sprite size by half
         bullet_sprite_pool = {}
@@ -915,8 +896,40 @@ class Game:
 
         genre_icon_image = load_images(self.main_dir, self.screen_scale, [self.genre, "ui", "battle_ui",
                                                                           "commandbar_icon"], load_order=False)
-        self.genre_ui_dict["command_ui"].load_sprite(genre_battle_ui_image["command_box"], genre_icon_image)
 
+        self.genre_ui_dict = make_genre_specific_ui(self.main_dir, self.screen_scale, self.genre, self.command_ui_type)
+        self.command_ui = self.genre_ui_dict["command_ui"]
+        self.ui_updater.add(self.command_ui)
+        uniteditor.PreviewLeader.leader_pos = self.command_ui.leader_pos
+        leader.Leader.leader_pos = self.command_ui.leader_pos
+
+        self.col_split_button = self.genre_ui_dict["col_split_button"]
+        self.row_split_button = self.genre_ui_dict["row_split_button"]
+        self.decimation_button = self.genre_ui_dict["decimation_button"]
+        self.inspect_button = self.genre_ui_dict["inspect_button"]
+        self.main_ui_updater.remove(
+            *self.inspect_selected_border)  # remove subunit border sprite from start_set menu drawer
+
+        self.inspect_ui = self.genre_ui_dict["inspect_ui"]
+        self.ui_updater.add(self.inspect_ui)
+        self.inspect_selected_border = battleui.SelectedSquad((0, 0))  # yellow border on selected subunit in inspect ui
+        self.main_ui_updater.remove(
+            self.inspect_selected_border)  # remove subunit border sprite from start_set menu drawer
+
+        # Behaviour button that once click switch to other mode for subunit behaviour
+        self.behaviour_switch_button = self.genre_ui_dict["behaviour_switch_button"]
+
+        self.battle_game.command_ui = self.command_ui
+        self.battle_game.col_split_button = self.col_split_button
+        self.battle_game.row_split_button = self.row_split_button
+        self.battle_game.inspect_button = self.inspect_button
+        self.battle_game.inspect_ui = self.inspect_ui
+        self.battle_game.behaviour_switch_button = self.behaviour_switch_button
+
+        if self.command_ui.ui_type == "command":
+            self.command_ui.load_sprite(genre_battle_ui_image["command_box"], genre_icon_image)
+        else:
+            self.command_ui.load_sprite(None, None)
         self.genre_ui_dict["col_split_button"].image = genre_battle_ui_image["colsplit_button"]
         self.genre_ui_dict["row_split_button"].image = genre_battle_ui_image["rowsplit_button"]
 

@@ -130,8 +130,6 @@ class Battle:
         self.event_log = main.event_log
         self.button_ui = main.button_ui
         self.inspect_selected_border = main.inspect_selected_border
-        self.behaviour_switch_button = main.behaviour_switch_button
-        self.decimation_button = main.decimation_button
 
         self.fps_count = main.fps_count
 
@@ -233,18 +231,23 @@ class Battle:
 
         self.event_log_button = main.event_log_button
         self.time_button = main.time_button
-        self.command_ui = main.command_ui
-        self.troop_card_ui = main.troop_card_ui
 
+        self.troop_card_ui = main.troop_card_ui
         self.troop_card_button = main.troop_card_button
-        self.inspect_ui = main.inspect_ui
-        self.inspect_button = main.inspect_button
-        self.col_split_button = main.col_split_button
-        self.row_split_button = main.row_split_button
         self.unitstat_ui = main.unitstat_ui
         self.wheel_ui = main.wheel_ui
         self.eight_wheel_ui = main.eight_wheel_ui
         self.four_wheel_ui = main.four_wheel_ui
+
+        # Genre UI, get added later in change_genre method in Game
+
+        self.command_ui = None
+        self.inspect_ui = None
+        self.inspect_button = None
+        self.col_split_button = None
+        self.row_split_button = None
+        self.decimation_button = None
+        self.behaviour_switch_button = None
 
         self.leader_level = main.leader_level
 

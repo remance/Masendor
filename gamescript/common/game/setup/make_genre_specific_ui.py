@@ -4,12 +4,12 @@ from gamescript.common import utility
 load_images = utility.load_images
 
 
-def make_genre_specific_ui(main_dir, screen_scale, genre):
+def make_genre_specific_ui(main_dir, screen_scale, genre, command_ui_type):
     genre_battle_ui_image = load_images(main_dir, screen_scale, [genre, "ui", "battle_ui"], load_order=False)
 
     genre_icon_image = load_images(main_dir, screen_scale, [genre, "ui", "battle_ui",
                                                             "commandbar_icon"], load_order=False)
-    command_ui = battleui.CommandBar()  # Command ui with leader and unit behaviours button
+    command_ui = battleui.CommandUI(screen_scale, command_ui_type)  # Command ui with leader and unit behaviours button
     command_ui.load_sprite(genre_battle_ui_image["command_box"], genre_icon_image)
 
     col_split_button = battleui.UIButton(genre_battle_ui_image["colsplit_button"],

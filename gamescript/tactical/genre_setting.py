@@ -11,6 +11,7 @@ object_variable = {("self", "object"): {"add_troop_number_sprite": True,  # troo
                                         "leader_sprite": False,  # leader has its own animation sprite
                                         "troop_sprite_size": (200, 200),  # troop animation sprite size
                                         "unit_size": unit_size,  # maximum array size unit can contain subunits
+                                        "command_ui_type": "command",  # type of command bar, either hero or rts command
                                         },
                    ("battle_game", "self-object"): {"start_zoom_mode": "Free",  # rts style camera
                                                     "start_zoom": 1,  # start with the furthest zoom

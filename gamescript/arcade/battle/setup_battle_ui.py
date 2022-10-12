@@ -23,13 +23,8 @@ def setup_battle_ui(self, change):
 
         # self.speed_number.change_pos(self.time_ui.rect.center)  # self speed number on the time ui
 
-        # self.switch_button[0].change_pos((self.command_ui.pos[0] - 40, self.command_ui.pos[1] + 96))  # skill condition button
-        # self.switch_button[1].change_pos((self.command_ui.pos[0] - 80, self.command_ui.pos[1] + 96))  # fire at will button
-        # self.switch_button[2].change_pos((self.command_ui.pos[0], self.command_ui.pos[1] + 96))  # behaviour button
-        # self.switch_button[3].change_pos((self.command_ui.pos[0] + 40, self.command_ui.pos[1] + 96))  # shoot range button
-        # self.switch_button[4].change_pos((self.command_ui.pos[0] - 125, self.command_ui.pos[1] + 96))  # arc_shot button
-        # self.switch_button[5].change_pos((self.command_ui.pos[0] + 80, self.command_ui.pos[1] + 96))  # toggle run button
-        # self.switch_button[6].change_pos((self.command_ui.pos[0] + 120, self.command_ui.pos[1] + 96))  # toggle melee mode
+        self.command_ui.change_pos((self.inspect_ui.image.get_width() + self.command_ui.image.get_width() / 2,
+                                    self.command_ui.image.get_height() / 2))
 
         inspect_ui_pos = [self.inspect_ui.rect.topleft[0] + self.icon_sprite_width / 1.25,
                           self.inspect_ui.rect.topleft[1]]
@@ -44,6 +39,8 @@ def setup_battle_ui(self, change):
                 width = inspect_ui_pos[0]
                 height += imgsize[1]
                 sub_unit_number = 0
+
+        change_group(self.command_ui, self.battle_ui_updater, change)
 
         if self.mode == "unit_editor":
             change_group(self.unit_selector, self.battle_ui_updater, change)

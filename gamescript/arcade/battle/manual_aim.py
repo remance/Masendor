@@ -3,7 +3,7 @@ import pygame
 
 def manual_aim(self, key_press, mouse_left_up, mouse_right_up, mouse_scroll_up, mouse_scroll_down):
     """
-    Range attack player aim control.
+    Range attack aim with player manual control.
     """
     shoot_text = ""
     shoot_ready = [0, 0]
@@ -40,6 +40,7 @@ def manual_aim(self, key_press, mouse_left_up, mouse_right_up, mouse_scroll_up, 
         shoot_text = shoot_text[:-2]
 
     self.single_text_popup.pop(self.cursor.rect.bottomright, shoot_text)
+
     if key_press == pygame.K_q:  # Cancel manual aim
         self.camera_zoom = 10
         self.camera_zoom_change()

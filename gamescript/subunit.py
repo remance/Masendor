@@ -329,6 +329,8 @@ class Subunit(pygame.sprite.Sprite):
         self.melee_weapon_set = {}
         self.range_weapon_set = {}
         self.weapon_type = {}
+        self.weapon_set = ((self.primary_main_weapon, self.primary_sub_weapon),
+                          (self.secondary_main_weapon, self.secondary_sub_weapon))
         self.weapon_id = ((self.primary_main_weapon[0], self.primary_sub_weapon[0]),
                           (self.secondary_main_weapon[0], self.secondary_sub_weapon[0]))
         self.weapon_data = ((self.troop_data.weapon_list[self.primary_main_weapon[0]],
@@ -556,7 +558,7 @@ class Subunit(pygame.sprite.Sprite):
             self.weapon_version = ((sprite_list[self.sprite_id]["p1_primary_main_weapon"],
                                     sprite_list[self.sprite_id]["p1_primary_sub_weapon"]),
                                    (sprite_list[self.sprite_id]["p1_secondary_main_weapon"],
-                                    sprite_list[self.sprite_id]["p1_secondary_sub_weapon"]))  # keep only main p1 weapon
+                                    sprite_list[self.sprite_id]["p1_secondary_sub_weapon"]))
         except AttributeError:  # for subunit with dummy unit, use in editor
             pass
 

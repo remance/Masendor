@@ -2,8 +2,7 @@ def add_weapon_stat(self):
     self.melee_weapon_set = {0: 0, 1: 0}
     self.range_weapon_set = {0: 0, 1: 0}
     self.weapon_type = {0: ["melee", "melee"], 1: ["melee", "melee"]}
-    for set_index, weapon_set in enumerate(((self.primary_main_weapon, self.primary_sub_weapon),
-                                            (self.secondary_main_weapon, self.secondary_sub_weapon))):
+    for set_index, weapon_set in enumerate(self.weapon_set):
         for weapon_index, weapon in enumerate(weapon_set):
             weapon_stat = self.troop_data.weapon_list[weapon[0]]
             dmg_sum = 0
