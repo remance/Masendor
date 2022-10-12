@@ -43,8 +43,8 @@ If you want to download the release version to test the game, go to [Release](ht
 To start testing the game run `main.py` for the source code or `main.exe` for the release version. <br>
 
 ## Compile
-To compile the source code into exe, I would recommend using `main.spec` to compile the game. <br>
-The `main.spec` compile only `main.py`, so you will need to copy gamescript, data, profile folder manually to the distribute folder after.
+To compile the source code into a executable program, I would recommend using pyinstaller and `main.spec` to compile the game. <br>
+The `main.spec` compile only `main.py`, so you will need to copy gamescript, data, profile folder manually to the dist folder after.
 
 Check the [`requirements.txt`](requirements.txt) file for dependency requirements if running with the python source code.<br>
 Also, the game is now optimised based on the pygame 2.0.1 module (much faster than 1.9.6) and python 3.10. (may have to use cython later for a huge size battle)
