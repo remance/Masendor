@@ -50,53 +50,49 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
             elif key_state[pygame.K_d]:  # move right
                 new_pos[0] += speed
 
-        if mouse_left_down:
-            if "Action 0" in self.leader_subunit.current_action:  # No adding attack command if current already doing
-                if "hold" not in self.leader_subunit.current_action:  # start holding
-                    self.leader_subunit.current_action = [item for item in self.leader_subunit.current_action] + ["hold"]
+        if self.rotate_only:
+            self.issue_order(cursor_pos, run_command=key_state[pygame.K_LSHIFT])
+
+        elif new_pos == self.leader_subunit.base_pos:
+            if mouse_left_down:
+                if "Action 0" in self.leader_subunit.current_action:  # No new attack command if already doing it
+                    if "hold" not in self.leader_subunit.current_action:  # start holding
+                        self.leader_subunit.current_action = [item for item in self.leader_subunit.current_action] + ["hold"]
+                    else:  # holding
+                        if "Range Attack" in self.leader_subunit.current_action:  # update new attack pos
+                            self.leader_subunit.current_action[2] = cursor_pos
                 else:
-                    if "Range Attack" in self.leader_subunit.current_action:  # update new attack pos
-                        self.leader_subunit.current_action[2] = cursor_pos
-            else:
-                if self.leader_subunit.equipped_weapon in self.leader_subunit.ammo_now and \
-                        0 in self.leader_subunit.ammo_now[self.leader_subunit.equipped_weapon]:  # range attack
-                    if self.leader_subunit.ammo_now[self.leader_subunit.equipped_weapon][0] > 0:
-                        self.leader_subunit.command_action = ("Action 0", "Range Attack", cursor_pos)
-                else:  # melee attack
-                    self.leader_subunit.command_action = ("Action 0",)
+                    if self.leader_subunit.equipped_weapon in self.leader_subunit.ammo_now and \
+                            0 in self.leader_subunit.ammo_now[self.leader_subunit.equipped_weapon]:  # range attack
+                        if self.leader_subunit.ammo_now[self.leader_subunit.equipped_weapon][0] > 0:
+                            self.leader_subunit.command_action = ("Action 0", "Range Attack", cursor_pos)
+                    else:  # melee attack
+                        self.leader_subunit.command_action = ("Action 0",)
 
-        elif mouse_right_down:
-            if "Action 1" in self.leader_subunit.current_action:  # No adding attack command if current already doing
-                if "hold" not in self.leader_subunit.current_action:  # start holding
-                    self.leader_subunit.current_action = [item for item in self.leader_subunit.current_action] + ["hold"]
+            elif mouse_right_down:
+                if "Action 1" in self.leader_subunit.current_action:  # No adding attack command if current already doing
+                    if "hold" not in self.leader_subunit.current_action:  # start holding
+                        self.leader_subunit.current_action = [item for item in self.leader_subunit.current_action] + ["hold"]
+                    else:
+                        if "Range Attack" in self.leader_subunit.current_action:  # update new attack pos
+                            self.leader_subunit.current_action[2] = cursor_pos
                 else:
-                    if "Range Attack" in self.leader_subunit.current_action:  # update new attack pos
-                        self.leader_subunit.current_action[2] = cursor_pos
-            else:
-                if self.leader_subunit.equipped_weapon in self.leader_subunit.ammo_now and \
-                        1 in self.leader_subunit.ammo_now[self.leader_subunit.equipped_weapon]:  # range attack
-                    if self.leader_subunit.ammo_now[self.leader_subunit.equipped_weapon][1] > 0:
-                        self.leader_subunit.command_action = ("Action 1", "Range Attack", cursor_pos)
-                else:  # melee attack
-                    self.leader_subunit.command_action = ("Action 1",)
+                    if self.leader_subunit.equipped_weapon in self.leader_subunit.ammo_now and \
+                            1 in self.leader_subunit.ammo_now[self.leader_subunit.equipped_weapon]:  # range attack
+                        if self.leader_subunit.ammo_now[self.leader_subunit.equipped_weapon][1] > 0:
+                            self.leader_subunit.command_action = ("Action 1", "Range Attack", cursor_pos)
+                    else:  # melee attack
+                        self.leader_subunit.command_action = ("Action 1",)
 
-        elif mouse_left_up:
-            if "Main" in self.leader_subunit.current_action:
-                if "Charge" in self.leader_subunit.current_action:
-                    self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
-                                     other_command="Action 0")
-            elif "hold" in self.leader_subunit.current_action:  # release holding
-                self.leader_subunit.current_action.remove("hold")
+            elif mouse_left_up:
+                if "hold" in self.leader_subunit.current_action:  # release holding
+                    self.leader_subunit.current_action.remove("hold")
 
-        elif mouse_right_up:
-            if "Sub" in self.leader_subunit.current_action:
-                if "Charge" in self.leader_subunit.current_action:
-                    self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
-                                     other_command="Action 1")
-            elif "hold" in self.leader_subunit.current_action:  # release holding
-                self.leader_subunit.current_action.remove("hold")
+            elif mouse_right_up:
+                if "hold" in self.leader_subunit.current_action:  # release holding
+                    self.leader_subunit.current_action.remove("hold")
 
-        elif new_pos != self.leader_subunit.base_pos:
+        else:
             self.leader_subunit.command_target = new_pos
             self.leader_subunit.new_angle = self.leader_subunit.set_rotate(new_pos)
             if mouse_left_down:
@@ -117,9 +113,17 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                 elif key_state[pygame.K_LSHIFT]:  # melee weapon charge
                     self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
                                      other_command="Charge Skill 1")
+            elif mouse_left_up:
+                if "Main_" in self.leader_subunit.current_action[0]:  # perform attack when release charge
+                    if "_Charge" in self.leader_subunit.current_action[0]:
+                        self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
+                                         other_command="Action 0")
+            elif mouse_right_up:
+                if "Sub_" in self.leader_subunit.current_action[0]:  # perform attack when release charge
+                    if "_Charge" in self.leader_subunit.current_action[0]:
+                        self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
+                                         other_command="Action 1")
             else:
                 self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True)
 
-        elif self.rotate_only:
-            self.issue_order(cursor_pos, run_command=key_state[pygame.K_LSHIFT])
         # else:  # no new movement register other command

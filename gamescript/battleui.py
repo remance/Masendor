@@ -304,9 +304,13 @@ class CommandUI(pygame.sprite.Sprite):
                 bottomleft=(0, self.image.get_height()))
             self.health_bar.fill((200, 0, 0))
 
-            self.weapon_image = pygame.Surface((100 * self.screen_scale[0], 100 * self.screen_scale[1]), pygame.SRCALPHA)
+            self.weapon_image = pygame.Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]), pygame.SRCALPHA)
+            self.weapon_image.fill((50,50,50))
             self.weapon_image_original = self.weapon_image.copy()
             self.weapon_image_rect = self.weapon_image.get_rect(topright=(self.image.get_width(), 0))
+            self.weapon_image_set_pos = (((0, 0), ((80 * self.screen_scale[0]) * self.screen_scale[0], 0)),
+                                         ((self.weapon_image.get_width() / 2, self.weapon_image.get_height() / 2.5),
+                                         (self.weapon_image.get_width() / 1.3, self.weapon_image.get_height() / 2.5)))
 
             self.equipped_weapon = None
 
@@ -340,8 +344,8 @@ class CommandUI(pygame.sprite.Sprite):
                                (self.inspect_pos[3][0], self.inspect_pos[3][1]))
             self.image_original = self.image.copy()
         else:
+            self.image = self.image_original.copy()
             self.image.blit(self.health_bar, self.health_bar_rect)
-
 
     def change_pos(self, pos):
         """change position of ui to new one"""
@@ -392,25 +396,25 @@ class CommandUI(pygame.sprite.Sprite):
                 change = True
                 self.equipped_weapon = who.equipped_weapon
                 self.weapon_image = self.weapon_image_original.copy()
-                weapon_set = who.weapon_name[self.equipped_weapon]
+                weapon_name_set = list(who.weapon_name)
+                weapon_name_set.insert(0, weapon_name_set.pop(weapon_name_set.index(weapon_name_set[self.equipped_weapon])))
+                weapon_set_index = list(range(0, len(who.weapon_name)))
+                weapon_set_index.insert(0, weapon_set_index.pop(weapon_set_index.index(self.equipped_weapon)))
+                for index, this_weapon_set in enumerate(weapon_name_set):
+                    if index > len(weapon_name_set) - 1:
+                        index = len(weapon_name_set) - 1
+                    for index2, this_weapon in enumerate(this_weapon_set):
+                        if this_weapon != "Unarmed":
+                            weapon_image = self.weapon_sprite_pool[this_weapon][who.weapon_version[
+                                weapon_set_index[index]][index2]]["icon"]["icon"]
 
-                if weapon_set[0] != "Unarmed":
-                    weapon_image = self.weapon_sprite_pool[weapon_set[0]][who.weapon_version[self.equipped_weapon][0]][
-                        "side"]["base_main"]
+                            if index > 0:
+                                weapon_image = pygame.transform.scale(weapon_image,
+                                                                      (self.weapon_image.get_width() / 4,
+                                                                       self.weapon_image.get_height() / 4))
+                            weapon_image_rect = weapon_image.get_rect(topleft=self.weapon_image_set_pos[index][index2])
 
-                    weapon_image_rect = weapon_image.get_rect(center=(self.weapon_image.get_width() / 4,
-                                                                      self.weapon_image.get_height() / 2))
-
-                    self.weapon_image.blit(weapon_image, weapon_image_rect)
-
-                if weapon_set[1] != "Unarmed":
-                    weapon_image = self.weapon_sprite_pool[weapon_set[1]][who.weapon_version[self.equipped_weapon][1]][
-                        "side"]["base_main"]
-
-                    weapon_image_rect = weapon_image.get_rect(center=(self.weapon_image.get_width() / 1.5,
-                                                                      self.weapon_image.get_height() / 2))
-
-                    self.weapon_image.blit(weapon_image, weapon_image_rect)
+                            self.weapon_image.blit(weapon_image, weapon_image_rect)
 
                 self.image = self.image_original.copy()
                 self.image.blit(self.weapon_image, self.weapon_image_rect)
@@ -418,15 +422,22 @@ class CommandUI(pygame.sprite.Sprite):
             if change or who.old_last_health != who.subunit_health:
                 if change is False:
                     self.health_bar = self.health_bar_original.copy()
-                    health_bar = pygame.Surface((self.health_bar_size[0] * (who.subunit_health / who.max_health),
+                    health_percent = who.subunit_health / who.max_health
+                    health_bar = pygame.Surface((self.health_bar_size[0] * health_percent,
                                                  self.health_bar_size[1]))
-                    health_bar.fill((200, 0, 0))
+                    if health_percent >= 70:
+                        health_bar.fill((0, 180, 0))
+                    elif health_percent >= 30:
+                        health_bar.fill((220, 220, 0))
+                    else:
+                        health_bar.fill((200, 0, 0))
                     health_bar_rect = health_bar.get_rect(topleft=(0, 0))
                     self.health_bar.blit(health_bar, health_bar_rect)
 
                 self.image.blit(self.health_bar, self.health_bar_rect)
 
         self.last_who = who
+
 
 class SkillCardIcon(pygame.sprite.Sprite):
     cooldown = None

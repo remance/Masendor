@@ -291,6 +291,8 @@ class BeautifulMap(pygame.sprite.Sprite):
         self.image_topology_original = self.image.copy()
         self.image_topology_original.blit(height_map.topology_image, rect)
 
+        self.change_scale(self.scale)
+
     def change_mode(self, mode):
         """Switch between normal, height normal map, topology map mode"""
         self.mode = mode

@@ -196,6 +196,8 @@ class TroopAnimationData:
             subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in part_subfolder.iterdir() if x.is_dir()]
             for subfolder in subsubdirectories:
                 self.gen_weapon_sprite_pool[folder[-1]][subfolder[-1]] = {}
+                icon_imgs = load_textures(main_dir, ["sprite", "generic", "weapon", folder[-1], subfolder[-1]])
+                self.gen_weapon_sprite_pool[folder[-1]][subfolder[-1]]["icon"] = icon_imgs
                 for direction in direction_list:
                     imgs = load_textures(main_dir,
                                          ["sprite", "generic", "weapon", folder[-1], subfolder[-1], direction])
