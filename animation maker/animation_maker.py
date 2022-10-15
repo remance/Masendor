@@ -51,14 +51,14 @@ max_person = 4
 max_frame = 20
 p_list = tuple(["p" + str(p) for p in range(1, max_person + 1)])
 part_column_header = ["head", "eye", "mouth", "body", "r_arm_up", "r_arm_low", "r_hand", "l_arm_up",
-                      "l_arm_low", "l_hand", "r_leg", "r_foot", "l_leg", "l_foot", "main_weapon", "sub_weapon"]
+                      "l_arm_low", "l_hand", "r_leg", "r_foot", "l_leg", "l_foot", "main_weapon", "sub_weapon",
+                      "special_1", "special_2", "special_3", "special_4", "special_5"]
 anim_column_header = ["Name"]
 for p in range(1, max_person + 1):
     p_name = "p" + str(p) + "_"
     anim_column_header += [p_name + item for item in part_column_header]
 anim_column_header += ["effect_1", "effect_2", "effect_3", "effect_4", "dmg_effect_1", "dmg_effect_2", "dmg_effect_3", "dmg_effect_4",
-                       "special_1", "special_2", "special_3", "special_4", "special_5", "special_6", "special_7", "special_8", "special_9",
-                       "special_10", "size", "frame_property", "animation_property"]  # For csv saving and accessing
+                       "size", "frame_property", "animation_property"]  # For csv saving and accessing
 frame_property_list = ["hold", "p1_fix_main_weapon", "p1_fix_sub_weapon", "p2_fix_main_weapon", "p2_fix_sub_weapon", "p3_fix_main_weapon",
                        "p3_fix_sub_weapon", "p4_fix_main_weapon", "p4_fix_sub_weapon", "effect_blur_", "effect_contrast_", "effect_brightness_",
                        "effect_fade_", "effect_grey", "effect_colour_"]  # starting property list
@@ -423,7 +423,7 @@ class BodyHelper(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
         self.ui_type = ui_type
         self.part_images_original = [image.copy() for image in part_images]
-        if "p" in self.ui_type:
+        if "effect" not in self.ui_type:
             self.box_font = pygame.font.SysFont("helvetica", int(22 * screen_scale[1]))
             empty_box = self.part_images_original[-1]
             self.part_images_original = self.part_images_original[:-1]
@@ -437,7 +437,7 @@ class BodyHelper(pygame.sprite.Sprite):
             self.box_font = pygame.font.SysFont("helvetica", int(18 * screen_scale[1]))
             empty_box = self.part_images_original[0]
             self.part_images_original = self.part_images_original[:-1]
-            for box_part in ("S1", "S2", "S3", "S4", "S5", "E1", "E2", "DE1", "DE2", "S6", "S7", "S8", "S9", "S10", "E3", "E4", "DE3", "DE4"):
+            for box_part in ("S1", "S2", "S3", "S4", "S5", "E1", "E2", "DE1", "DE2", "E3", "E4", "DE3", "DE4"):
                 text_surface = self.box_font.render(box_part, True, (0, 0, 0))
                 text_rect = text_surface.get_rect(center=(empty_box.get_width() / 2, empty_box.get_height() / 2))
                 new_box = empty_box.copy()
@@ -448,19 +448,7 @@ class BodyHelper(pygame.sprite.Sprite):
         self.part_selected = []
         self.stat1 = {}
         self.stat2 = {}
-        if "p" in self.ui_type:
-            self.change_p_type(self.ui_type)
-        else:
-            self.rect_part_list = {"special_1": None, "special_2": None, "special_3": None, "special_4": None, "special_5": None,
-                                   "effect_1": None, "effect_2": None, "dmg_effect_1": None, "dmg_effect_2": None, "special_6": None,
-                                   "special_7": None, "special_8": None, "special_9": None, "special_10": None,
-                                   "effect_3": None, "effect_4": None, "dmg_effect_3": None, "dmg_effect_4": None}
-            self.part_pos = {"special_1": (20, 15), "special_2": (20, 45), "special_3": (20, 75), "special_4": (20, 105), "special_5": (20, 135),
-                             "effect_1": (20, 165), "effect_2": (20, 195), "dmg_effect_1": (20, 225), "dmg_effect_2": (20, 255),
-                             "special_6": (225, 15), "special_7": (225, 45), "special_8": (225, 75), "special_9": (225, 105),
-                             "special_10": (225, 135),
-                             "effect_3": (225, 165), "effect_4": (225, 195), "dmg_effect_3": (225, 225), "dmg_effect_4": (225, 255)}
-
+        self.change_p_type(self.ui_type)
         for key, item in self.part_pos.items():
             self.part_pos[key] = (item[0] * screen_scale[0], item[1] * screen_scale[1])
         self.blit_part()
@@ -468,16 +456,27 @@ class BodyHelper(pygame.sprite.Sprite):
     def change_p_type(self, new_type, player_change=False):
         """For helper that can change person"""
         self.ui_type = new_type
-        self.rect_part_list = {self.ui_type + "_head": None, self.ui_type + "_body": None, self.ui_type + "_r_arm_up": None,
-                               self.ui_type + "_r_arm_low": None, self.ui_type + "_r_hand": None,
-                               self.ui_type + "_l_arm_up": None, self.ui_type + "_l_arm_low": None, self.ui_type + "_l_hand": None,
-                               self.ui_type + "_r_leg": None, self.ui_type + "_r_foot": None, self.ui_type + "_l_leg": None,
-                               self.ui_type + "_l_foot": None, self.ui_type + "_main_weapon": None, self.ui_type + "_sub_weapon": None}
-        self.part_pos = {self.ui_type + "_head": (225, 85), self.ui_type + "_body": (225, 148), self.ui_type + "_r_arm_up": (195, 126),
-                         self.ui_type + "_r_arm_low": (195, 156), self.ui_type + "_r_hand": (195, 187), self.ui_type + "_l_arm_up": (255, 126),
-                         self.ui_type + "_l_arm_low": (255, 156), self.ui_type + "_l_hand": (255, 187), self.ui_type + "_r_leg": (210, 216),
-                         self.ui_type + "_r_foot": (210, 246), self.ui_type + "_l_leg": (240, 216), self.ui_type + "_l_foot": (240, 246),
-                         self.ui_type + "_main_weapon": (205, 30), self.ui_type + "_sub_weapon": (245, 30)}
+        if "effect" not in self.ui_type:
+            self.rect_part_list = {self.ui_type + "_head": None, self.ui_type + "_body": None, self.ui_type + "_r_arm_up": None,
+                                   self.ui_type + "_r_arm_low": None, self.ui_type + "_r_hand": None,
+                                   self.ui_type + "_l_arm_up": None, self.ui_type + "_l_arm_low": None, self.ui_type + "_l_hand": None,
+                                   self.ui_type + "_r_leg": None, self.ui_type + "_r_foot": None, self.ui_type + "_l_leg": None,
+                                   self.ui_type + "_l_foot": None, self.ui_type + "_main_weapon": None, self.ui_type + "_sub_weapon": None}
+            self.part_pos = {self.ui_type + "_head": (225, 85), self.ui_type + "_body": (225, 148), self.ui_type + "_r_arm_up": (195, 126),
+                             self.ui_type + "_r_arm_low": (195, 156), self.ui_type + "_r_hand": (195, 187), self.ui_type + "_l_arm_up": (255, 126),
+                             self.ui_type + "_l_arm_low": (255, 156), self.ui_type + "_l_hand": (255, 187), self.ui_type + "_r_leg": (210, 216),
+                             self.ui_type + "_r_foot": (210, 246), self.ui_type + "_l_leg": (240, 216), self.ui_type + "_l_foot": (240, 246),
+                             self.ui_type + "_main_weapon": (205, 30), self.ui_type + "_sub_weapon": (245, 30)}
+        else:
+            p_type = self.ui_type[:2]
+            self.rect_part_list = {p_type + "_special_1": None, p_type + "_special_2": None, p_type + "_special_3": None,
+                                   p_type + "_special_4": None, p_type + "_special_5": None,
+                                   "effect_1": None, "effect_2": None, "dmg_effect_1": None, "dmg_effect_2": None,
+                                   "effect_3": None, "effect_4": None, "dmg_effect_3": None, "dmg_effect_4": None}
+            self.part_pos = {p_type + "_special_1": (20, 15), p_type + "_special_2": (20, 45), p_type + "_special_3": (20, 75),
+                             p_type + "_special_4": (20, 105), p_type + "_special_5": (20, 135),
+                             "effect_1": (20, 165), "effect_2": (20, 195), "dmg_effect_1": (20, 225), "dmg_effect_2": (20, 255),
+                             "effect_3": (225, 165), "effect_4": (225, 195), "dmg_effect_3": (225, 225), "dmg_effect_4": (225, 255)}
         if player_change:
             self.select_part(None, False, False)  # reset first
             for part in model.part_selected:  # blit selected part that is in helper
@@ -667,7 +666,9 @@ class Model:
                                                          "p" + str(p) + "_l_hand": None, "p" + str(p) + "_r_leg": None,
                                                          "p" + str(p) + "_r_foot": None, "p" + str(p) + "_l_leg": None,
                                                          "p" + str(p) + "_l_foot": None, "p" + str(p) + "_main_weapon": None,
-                                                         "p" + str(p) + "_sub_weapon": None}
+                                                         "p" + str(p) + "_sub_weapon": None, "p" + str(p) + "_special_1": None,
+                                                         "p" + str(p) + "_special_2": None, "p" + str(p) + "_special_3": None,
+                                                         "p" + str(p) + "_special_4": None, "p" + str(p) + "_special_5": None}
             self.all_part_list = self.all_part_list | {"p" + str(p) + "_head": None, "p" + str(p) + "_eye": 1, "p" + str(p) + "_mouth": 1,
                                                        "p" + str(p) + "_body": None, "p" + str(p) + "_r_arm_up": None,
                                                        "p" + str(p) + "_r_arm_low": None, "p" + str(p) + "_r_hand": None,
@@ -675,15 +676,15 @@ class Model:
                                                        "p" + str(p) + "_l_hand": None, "p" + str(p) + "_r_leg": None,
                                                        "p" + str(p) + "_r_foot": None, "p" + str(p) + "_l_leg": None,
                                                        "p" + str(p) + "_l_foot": None, "p" + str(p) + "_main_weapon": None,
-                                                       "p" + str(p) + "_sub_weapon": None}
+                                                       "p" + str(p) + "_sub_weapon": None, "p" + str(p) + "_special_1": None,
+                                                       "p" + str(p) + "_special_2": None,
+                                                       "p" + str(p) + "_special_3": None, "p" + str(p) + "_special_4": None,
+                                                       "p" + str(p) + "_special_5": None}
         self.mask_part_list = self.mask_part_list | {"effect_1": None, "effect_2": None, "effect_3": None, "effect_4": None,
                                                      "dmg_effect_1": None, "dmg_effect_2": None, "dmg_effect_3": None, "dmg_effect_4": None,
-                                                     "special_1": None, "special_2": None, "special_3": None, "special_4": None, "special_5": None,
-                                                     "special_6": None, "special_7": None, "special_8": None, "special_9": None, "special_10": None}
+                                                     }
         self.all_part_list = self.all_part_list | {"effect_1": None, "effect_2": None, "effect_3": None, "effect_4": None,
-                                                   "dmg_effect_1": None, "dmg_effect_2": None, "dmg_effect_3": None, "dmg_effect_4": None,
-                                                   "special_1": None, "special_2": None, "special_3": None, "special_4": None, "special_5": None,
-                                                   "special_6": None, "special_7": None, "special_8": None, "special_9": None, "special_10": None}
+                                                   "dmg_effect_1": None, "dmg_effect_2": None, "dmg_effect_3": None, "dmg_effect_4": None}
         self.p_eyebrow = {}
         self.p_any_eye = {}
         self.p_any_mouth = {}
@@ -1507,7 +1508,7 @@ images = load_images(current_dir, screen_scale, ["animation_maker_ui", "helper_p
 body_helper_size = (450 * screen_scale[0], 270 * screen_scale[1])
 effect_helper_size = (450 * screen_scale[0], 270 * screen_scale[1])
 effect_helper = BodyHelper(effect_helper_size, (screen_size[0] / 1.25, screen_size[1] - (body_helper_size[1] / 2)),
-                           "effect", [images["smallbox_helper"]])
+                           "p1_effect", [images["smallbox_helper"]])
 del images["smallbox_helper"]
 p_body_helper = BodyHelper(body_helper_size, (body_helper_size[0] / 2,
                                               screen_size[1] - (body_helper_size[1] / 2)), "p1", list(images.values()))
@@ -1905,6 +1906,7 @@ while True:
                                 model.edit_part(mouse_pos, "race_" + name.name)
                             elif "person" in popup_list_box.action:
                                 p_body_helper.change_p_type(name.name, player_change=True)
+                                effect_helper.change_p_type(name.name + "_effect", player_change=True)
                                 p_selector.change_name(name.name)
                                 face = [model.bodypart_list[current_frame][p_body_helper.ui_type + "_eye"],
                                         model.bodypart_list[current_frame][p_body_helper.ui_type + "_mouth"]]
@@ -2282,16 +2284,17 @@ while True:
                         if direction_part_button.text != "" and race_part_button.text != "":
                             current_part = list(model.animation_part_list[current_frame].keys())[model.part_selected[-1]]
                             try:
-                                if any(ext in current_part for ext in p_list):
+                                if "special" in current_part:
+                                    part_list = list(
+                                        gen_body_sprite_pool[race_part_button.text][direction_part_button.text]["special"].keys())
+                                elif any(ext in current_part for ext in p_list):
                                     selected_part = current_part[3:]
                                     if selected_part[0:2] == "r_" or selected_part[0:2] == "l_":
                                         selected_part = selected_part[2:]
                                     part_list = list(gen_body_sprite_pool[race_part_button.text][direction_part_button.text][selected_part].keys())
                                 elif "effect" in current_part:
                                     part_list = list(effect_sprite_pool[race_part_button.text][direction_part_button.text].keys())
-                                elif "special" in current_part:
-                                    part_list = list(
-                                        gen_body_sprite_pool[race_part_button.text][direction_part_button.text]["special"].keys())
+
                             except KeyError:  # look at weapon next
                                 try:
                                     selected_part = race_part_button.text

@@ -25,7 +25,6 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
                              pygame.SRCALPHA)  # default size will scale down later
 
     except_list = ["eye", "mouth", "size", "property"]
-
     pose_layer_list = {k: v[7] for k, v in animation_part_list.items() if v != [0] and v != "" and v != [""] and
                        any(ext in k for ext in except_list) is False and "weapon" not in k}  # layer list
     pose_layer_list.update({k: v[6] for k, v in animation_part_list.items() if v != [0] and v != "" and v != [""]
@@ -35,7 +34,7 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
         part = animation_part_list[layer]
         new_part = part.copy()
         this_armour = None
-        if any(ext in layer for ext in ("p1_", "p2_", "p3_", "p4_", "special_")) and "weapon" not in layer:
+        if any(ext in layer for ext in ("p1_", "p2_", "p3_", "p4_")) and "weapon" not in layer:
             part_race = [value["Name"] for value in race_list.values()].index(new_part[0])
             part_race = tuple(race_list.keys())[part_race]
             if race_list[part_race]["Mount Armour"] is False:
@@ -43,18 +42,29 @@ def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, bo
             else:
                 this_armour = armour[1]
         if "head" in layer:
-            image_part = generate_head(layer[:2], animation_part_list, part[0:3], troop_sprite_list, body_sprite_pool,
+            image_part = generate_head(layer[:2], animation_part_list, part[:3], troop_sprite_list, body_sprite_pool,
                                        armour_sprite_pool,
                                        this_armour, hair_colour_list, skin_colour_list)
         elif "weapon" in layer:
             new_part.insert(2, "Dummy")  # insert dummy value for weapon list so can use indexing similar as other part
-            image_part = generate_body(layer, part[0:2], troop_sprite_list, weapon_sprite_pool, weapon=weapon)
-        elif "effect" in layer and "dmg" not in layer:
-            image_part = generate_body(layer, part[0:3], troop_sprite_list, effect_sprite_pool)
+            image_part = generate_body(layer, part[:2], troop_sprite_list, weapon_sprite_pool, weapon=weapon)
+        elif "effect" in layer:
+            if "dmg_" not in layer:
+                image_part = generate_body(layer, part[:3], troop_sprite_list, effect_sprite_pool)
         else:  # other body part
-            image_part = generate_body(layer, part[0:3], troop_sprite_list, body_sprite_pool,
-                                       armour_sprite_pool=armour_sprite_pool,
-                                       colour_list=skin_colour_list, armour=this_armour)
+            colour_list = skin_colour_list
+            colour = troop_sprite_list[layer[:2] + "_skin"]
+            if any(ext in part[2] for ext in race_list[part_race]["Special Hair Part"]):
+                colour_list = hair_colour_list
+                colour = troop_sprite_list[layer[:2] + "_hair"]
+                if colour != "":
+                    if len(colour) == 2:
+                        colour = colour[1]
+                    else:
+                        colour = colour[0]
+            image_part = generate_body(layer, part[:3], troop_sprite_list, body_sprite_pool,
+                                       armour_sprite_pool=armour_sprite_pool, colour=colour,
+                                       colour_list=colour_list, armour=this_armour)
         if image_part is not None:  # skip for empty image
             target = (new_part[3], new_part[4])
             angle = new_part[5]
@@ -190,7 +200,8 @@ def grab_face_part(pool, race, side, part, part_check, part_default=None):
             check = part_check
             if type(part_check) != str:
                 check = part_check[0]
-            surface = pool[race][side][part][check].copy()
+            if check != "none":
+                surface = pool[race][side][part][check].copy()
     return surface
 
 
@@ -204,28 +215,25 @@ def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool
         head_side = body_part_list[1]
         head = body_pool[head_race][head_side]["head"][body_part_list[2]].copy()
         head_sprite_surface = pygame.Surface((head.get_width(), head.get_height()), pygame.SRCALPHA)
-        head_rect = head.get_rect(midtop=(head_sprite_surface.get_width() / 2, 0))
+        head_rect = head.get_rect(topleft=(0, 0))
         head_sprite_surface.blit(head, head_rect)
+        if sprite_list[p + "_skin"] not in ("", "none"):
+            head_sprite_surface = apply_colour(head_sprite_surface, sprite_list[p + "_skin"], skin_colour_list, keep_white=False)
         face = [grab_face_part(body_pool, head_race, head_side, "eyebrow", sprite_list[p + "_eyebrow"]),
                 grab_face_part(body_pool, head_race, head_side, "eye", animation_part_list[p + "_eye"],
-                               sprite_list[p + "_eye"]),
+                               part_default=sprite_list[p + "_eye"]),
                 grab_face_part(body_pool, head_race, head_side, "beard", sprite_list[p + "_beard"]),
                 grab_face_part(body_pool, head_race, head_side, "mouth", animation_part_list[p + "_mouth"],
-                               sprite_list[p + "_mouth"])]
-        # if skin != "white":
-        #     face[0] = self.apply_colour(face[0], skin_colour)
+                               part_default=sprite_list[p + "_mouth"])]
 
-        face[0] = apply_colour(face[0], sprite_list[p + "_hair"][1], hair_colour_list)
-        face[1] = apply_colour(face[1], sprite_list[p + "_eye"][1], hair_colour_list)
-        face[2] = apply_colour(face[2], sprite_list[p + "_beard"][1], hair_colour_list)
-
-        head_sprite_surface = pygame.Surface((face[0].get_width(), face[0].get_height()), pygame.SRCALPHA)
-        rect = head.get_rect(center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
-        head_sprite_surface.blit(head, rect)
+        for face_index, face_part in enumerate(("_eyebrow", "_eye", "_beard")):
+            if face[face_index] is not None:
+                face[face_index] = apply_colour(face[face_index], sprite_list[p + face_part][1], hair_colour_list)
 
         for index, item in enumerate(face):
-            rect = item.get_rect(center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
-            head_sprite_surface.blit(item, rect)
+            if item is not None:
+                rect = item.get_rect(center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
+                head_sprite_surface.blit(item, rect)
     except KeyError:  # some head direction show no face
         pass
     except TypeError:  # empty
@@ -269,11 +277,13 @@ def generate_body(part, body_part_list, troop_sprite_list, sprite_pool, armour_s
                 new_part_name = part_name
             if "special" in part:
                 new_part_name = "special"
-            if "r_" in part_name[0:2] or "l_" in part_name[0:2]:
+            if "r_" in part_name[:2] or "l_" in part_name[:2]:
                 new_part_name = part_name[2:]  # remove side
             sprite_image = sprite_pool[body_part_list[0]][body_part_list[1]][new_part_name][body_part_list[2]].copy()
+            # if sprite_list[p + "_skin"] != "none":
+            #     head_sprite_surface = apply_colour(head_sprite_surface, sprite_list[p + "_skin"], hair_colour_list)
         if colour is not None:  # apply skin colour, maybe add for armour colour later
-            sprite_image = apply_colour(sprite_image, colour, colour_list)
+            sprite_image = apply_colour(sprite_image, colour, colour_list, keep_white=False)
 
         # add armour if there is one
         if armour is not None and armour != "None":

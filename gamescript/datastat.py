@@ -134,7 +134,7 @@ class TroopData:
                           "Physical Resistance", "Fire Resistance", "Water Resistance", " Air Resistance",
                           "Earth Resistance", "Poison Resistance", "Magic Resistance", "Size")  # value int only
             list_column = ("Trait",)  # value in list only
-            tuple_column = ("Ruleset",)  # value in tuple only
+            tuple_column = ("Ruleset", "Special Hair Part", "Special Body Part")  # value in tuple only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]

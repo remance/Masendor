@@ -907,8 +907,7 @@ class Game:
         self.row_split_button = self.genre_ui_dict["row_split_button"]
         self.decimation_button = self.genre_ui_dict["decimation_button"]
         self.inspect_button = self.genre_ui_dict["inspect_button"]
-        self.main_ui_updater.remove(
-            *self.inspect_selected_border)  # remove subunit border sprite from start_set menu drawer
+        self.main_ui_updater.remove(self.inspect_selected_border)  # remove subunit border sprite from start_set menu drawer
 
         self.inspect_ui = self.genre_ui_dict["inspect_ui"]
         self.ui_updater.add(self.inspect_ui)

@@ -58,14 +58,13 @@ class TroopAnimationData:
                 rd = [row for row in rd]
                 part_name_header = rd[0]
                 list_column = ["head", "body", "r_arm_up", "r_arm_low", "r_hand", "l_arm_up",
-                               "l_arm_low", "l_hand", "r_leg", "r_foot", "l_leg", "l_foot", "main_weapon", "sub_weapon"]
+                               "l_arm_low", "l_hand", "r_leg", "r_foot", "l_leg", "l_foot", "main_weapon", "sub_weapon",
+                               "special_1", "special_2", "special_3", "special_4", "special_5"]
                 for p in range(1, 5):  # up to p4
                     p_name = "p" + str(p) + "_"
                     list_column += [p_name + item for item in list_column]
                 list_column += ["effect_1", "effect_2", "effect_3", "effect_4", "dmg_effect_1", "dmg_effect_2",
-                                "dmg_effect_3", "dmg_effect_4", "special_1", "special_2", "special_3", "special_4",
-                                "special_5", "special_6", "special_7", "special_8", "special_9",
-                                "special_10", "frame_property", "animation_property"]  # value in list only
+                                "dmg_effect_3", "dmg_effect_4", "frame_property", "animation_property"]  # value in list only
                 list_column = [index for index, item in enumerate(part_name_header) if item in list_column]
                 part_name_header = part_name_header[1:]  # keep only part name for list ref later
                 animation_pool = {}
