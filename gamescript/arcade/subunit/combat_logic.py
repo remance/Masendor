@@ -67,7 +67,7 @@ def combat_logic(self, dt, unit_state):
                         else:  # rear
                             hit_side = 2
                         self.hit_register(weapon, subunit, 0, hit_side, self.battle.troop_data.status_list)
-                        self.command_action = ("Action " + str(weapon),)
+                        self.command_action = {"name": "Action " + str(weapon)}
                         self.stamina -= self.weapon_weight[self.equipped_weapon][weapon]
                         self.weapon_cooldown[weapon] -= self.weapon_speed[weapon]
                     break
@@ -90,7 +90,10 @@ def combat_logic(self, dt, unit_state):
                     # can shoot if reload finish and base_target existed and not dead. Non arc_shot cannot shoot if forbid
                     if self.ammo_now[self.equipped_weapon][weapon] > 0 and \
                             (self.special_effect_check("Arc Shot", weapon=weapon) or self.unit.shoot_mode != 1):
-                        self.command_action = ("Action " + str(weapon), "Range Attack")
+                        self.command_action = {"name": "Action " + str(weapon), "range attack": True}
+                        if self.state in (12, 13):  # shoot while moving
+                            self.command_action = {"name": "Action " + str(weapon), "range attack": True,
+                                                   "move attack": True, "movable": True}
                         break
 
     return unit_state, collide_list

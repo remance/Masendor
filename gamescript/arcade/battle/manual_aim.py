@@ -52,10 +52,10 @@ def manual_aim(self, key_press, mouse_left_up, mouse_right_up, mouse_scroll_up, 
                 this_subunit.player_weapon_selection()
     elif mouse_left_up and shoot_ready[0] > 0:
         for this_subunit in shoot_ready_list[0]:
-            this_subunit.command_action = ("Action 0", "Range Attack", self.command_mouse_pos)
+            this_subunit.command_action = {"name": "Action 0", "range attack": True, "pos": self.command_mouse_pos}
     elif mouse_right_up and shoot_ready[1] > 0:
         for this_subunit in shoot_ready_list[1]:
-            this_subunit.command_action = ("Action 1", "Range Attack", self.command_mouse_pos)
+            this_subunit.command_action = {"name": "Action 1", "range attack": True, "pos": self.command_mouse_pos}
     elif self.map_scale_delay == 0:
         if mouse_scroll_up:
             self.camera_zoom += 1

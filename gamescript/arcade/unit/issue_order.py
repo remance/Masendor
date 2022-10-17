@@ -7,7 +7,7 @@ def issue_order(self, target_pos, run_command=False, revert_move=False, enemy=No
                 self.state += 1  # run state
 
             self.command_target = self.base_target
-            if revert_move:  # revert subunit without rotate, cannot run in this state
+            if revert_move:  # move subunit without rotate entire unit first
                 self.set_target(target_pos)
             else:  # rotate unit only
                 self.new_angle = self.set_rotate(target_pos)
@@ -23,16 +23,16 @@ def issue_order(self, target_pos, run_command=False, revert_move=False, enemy=No
                                     int(other_command[-1])] == "melee":
                             subunit.equipped_weapon = subunit.swap_weapon_list[subunit.equipped_weapon]
                             subunit.swap_weapon()  # swap to melee weapon for charge
-                        subunit.command_action = (other_command,)
+                        subunit.command_action = {"name": other_command}
                         subunit.state = 4
                 else:
                     for subunit in self.alive_subunit_list:
-                        subunit.command_action = (other_command,)
+                        subunit.command_action = {"name": other_command}
 
             elif "Action" in other_command:  # for releasing attack after charging
                 for subunit in self.alive_subunit_list:
-                    subunit.command_action = (other_command,)
+                    subunit.command_action = {"name": other_command}
                     subunit.interrupt_animation = True
-                    subunit.idle_action = ()
+                    subunit.idle_action = {}
 
         self.command_state = self.state

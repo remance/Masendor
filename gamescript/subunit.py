@@ -145,9 +145,10 @@ class Subunit(pygame.sprite.Sprite):
         self.animation_queue = []  # list of animation queue
         self.show_frame = 0  # current animation frame
         self.animation_timer = 0
-        self.current_action = ()  # for genre that use specific action instead of state
-        self.command_action = ()  # next action to be performed
-        self.idle_action = ()  # action that is performed when subunit is idle such as hold spear wall when skill active
+        self.current_action = {}  # for genre that use specific action instead of state
+        self.command_action = {}  # next action to be performed
+        self.idle_action = {}  # action that is performed when subunit is idle such as hold spear wall when skill active
+        self.last_current_action = {}  # for checking if animation suddenly change
 
         self.enemy_front = []  # list of front collide sprite
         self.enemy_side = []  # list of side collide sprite
@@ -200,6 +201,12 @@ class Subunit(pygame.sprite.Sprite):
         self.player_equipped_weapon = self.equipped_weapon
         self.swap_weapon_list = (1, 0)  # for swapping to other set
 
+        # Set up special effect variable, first main item is for effect from troop/trait, second main item is for weapon
+        # first sub item is permanent effect from trait, second sub item from temporary status or skill
+        self.special_effect = {status_name["Name"]: [[False, False], [False, False]]
+                               for status_name in self.troop_data.special_effect_list.values() if
+                               status_name["Name"] != "Name"}
+
         # Setup troop original stat before applying trait, gear and other stuffs
         skill = []  # keep only troop and weapon skills in here, leader skills are kept in Leader object
         self.troop_number = 1  # number of troops inside the subunit
@@ -248,6 +255,8 @@ class Subunit(pygame.sprite.Sprite):
             self.original_mental = 50 + grade_stat[
                 "Mental Bonus"]  # mental resistance from morale melee_dmg and mental status effect
             self.subunit_type = 0
+
+            self.special_effect["Shoot While Moving"][0][0] = True  # allow shoot while moving for hero
 
         self.name = lore[0]  # name according to the preset
         self.race = stat["Race"]  # creature race
@@ -374,12 +383,6 @@ class Subunit(pygame.sprite.Sprite):
         self.status_effect = {}  # current status effect
         self.skill_effect = {}  # activate skill effect
         self.base_inflict_status = {}  # status that this subunit will inflict to enemy when melee_attack
-
-        # Set up special effect variable, first item is permanent or from trait, second item from status or skill
-        self.special_effect = {status_name["Name"]: [[False, False], [False, False]]
-                               # first item is for effect from troop/trait, second item is for weapon
-                               for status_name in self.troop_data.special_effect_list.values() if
-                               status_name["Name"] != "Name"}
 
         if self.mount_gear[0] != 1:  # have a mount, add mount stat with its grade to subunit stat
             self.add_mount_stat()
@@ -632,18 +635,16 @@ class Subunit(pygame.sprite.Sprite):
                 ((self.interrupt_animation and "uninterruptible" not in self.current_action) or
                  (not self.current_action and self.command_action) or
                  (done and "repeat" not in self.current_action) or
-                 (len(self.current_action) > 1 and type(self.current_action[-1]) == int and self.current_action[
-                     -1] not in self.skill_effect) or
-                 (self.idle_action and self.idle_action != self.command_action)):
+                 ("skill" in self.current_action and self.current_action["skill"] not in self.skill_effect) or
+                 (self.idle_action and self.idle_action != self.command_action) or
+                 self.current_action != self.last_current_action):
             if done or self.play_troop_animation == 0:  # finish animation, perform something
-                if self.current_action and "Action" in self.current_action[0] and \
-                        "Range Attack" in self.current_action:  # shoot bullet
-                    if len(self.current_action) > 2:  # second item as attack position
-                        self.attack_pos = self.current_action[2]
-                    weapon = int(self.current_action[0][-1])
+                if self.current_action and "Action" in self.current_action["name"] and \
+                        "range attack" in self.current_action:  # shoot bullet
+                    weapon = int(self.current_action["name"][-1])
                     attack_pos = None
-                    if len(self.current_action) == 3:  # manual aim
-                        attack_pos = self.current_action[2]
+                    if "pos" in self.current_action:  # manual attack position
+                        attack_pos = self.current_action["pos"]
                     damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
                                               self.weapon_penetrate[self.equipped_weapon][weapon],
                                               self.equipped_weapon_data[weapon],
@@ -659,11 +660,16 @@ class Subunit(pygame.sprite.Sprite):
                             self.magazine_count.pop(self.equipped_weapon)
                     self.stamina -= self.weapon_weight[self.equipped_weapon][weapon]
 
-            self.reset_animation()
+            if self.current_action != self.last_current_action:
+                self.last_current_action = self.current_action
+            else:
+                self.reset_animation()
+                self.current_action = self.command_action  # continue next action when animation finish
+                self.command_action = self.idle_action
+
             self.interrupt_animation = False
-            self.current_action = self.command_action  # continue next action when animation finish
             self.pick_animation()
-            self.command_action = self.idle_action
+
         if recreate_rect:
             self.rect = self.image.get_rect(center=self.pos)
         if self.player_equipped_weapon != self.equipped_weapon and self.state == 0:  # reset equipped weapon to player chose

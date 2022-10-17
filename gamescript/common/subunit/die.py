@@ -19,7 +19,7 @@ def die(self):
     self.battle.alive_subunit_list.remove(self)
     self.unit.alive_subunit_list.remove(self)
 
-    self.command_action = ("Die", "uninterruptible")
+    self.command_action = {"name": "Die", "uninterruptible": True}
     self.reset_animation()
     self.current_action = self.command_action  # replace any current action
     self.pick_animation()

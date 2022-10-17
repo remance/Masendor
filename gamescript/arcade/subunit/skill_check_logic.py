@@ -5,13 +5,15 @@ def skill_check_logic(self):
                                 and self.discipline >= self.skill[skill]["Discipline Requirement"]
                                 and self.stamina > self.skill[skill]["Stamina Cost"] and skill != 0]
         if self.command_action:  # no current action and has skill command waiting
-            command_action = self.command_action[0]
+            command_action = self.command_action["name"]
             if "Skill" in command_action:  # use skill and convert command action into skill action name
                 if ("Troop" in command_action and self.unit_leader is False) or (
                         "Leader" in command_action and self.unit_leader):
-                    skill = int(self.command_action[0][-1])
+                    skill = int(self.command_action["name"][-1])
+                    skill_command = None
                     if "Weapon" in command_action:  # weapon skill
                         skill = self.weapon_skill[self.equipped_weapon][skill]
+                        skill_command = skill
                         action = self.skill[skill]["Action"].copy() + [skill]
                         action[0] += " " + command_action[-1]
                     else:  # troop or leader skill
@@ -29,17 +31,19 @@ def skill_check_logic(self):
                     if skill != 0 and skill in self.available_skill:
                         self.skill_effect = {}  # arcade mode allows only 1 skill active at a time
                         self.use_skill(skill)
-                        self.command_action = action
+                        self.command_action = {"name": action[0]} | {key: True for key in action[1:]}
+                        if skill_command is not None:
+                            self.command_action["skill"] = skill
                         if "hold" in self.command_action or "repeat" in self.command_action:
                             self.idle_action = self.command_action
                         self.unit.input_delay = 1
                     else:
-                        self.command_action = ()
+                        self.command_action = {}
                 elif "Charge" in command_action:
                     action = self.skill[0]["Action"].copy()
                     weapon = int(command_action[-1])
                     action[0] = ("Main_", "Sub_")[weapon] + self.action_list[weapon]["Common"] + "_" + \
                                 action[0]
-                    self.command_action = tuple(action)
+                    self.command_action = {"name": action[0]} | {key: True for key in action[1:]}
                 else:
-                    self.command_action = ()
+                    self.command_action = {}

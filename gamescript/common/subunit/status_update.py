@@ -308,7 +308,7 @@ def status_update(self, weather=None):
                            self.skill_cooldown.items()}  # cooldown decrease overtime
     self.skill_cooldown = {key: val for key, val in self.skill_cooldown.items() if
                            val > 0}  # remove cooldown if time reach 0
-    self.idle_action = ()
+    self.idle_action = {}
     for key, value in self.skill_effect.items():  # Can't use dict comprehension here since value include all other skill stat
         value["Duration"] -= self.timer
         if key != 0 and ("hold" in value["Action"] or "repeat" in value["Action"]):

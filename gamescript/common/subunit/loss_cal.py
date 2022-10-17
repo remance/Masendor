@@ -17,9 +17,9 @@ def loss_cal(self, target, final_dmg, final_morale_dmg, leader_dmg, element_effe
 
     if final_dmg > target.max_health5:  # play damaged animation
         target.interrupt_animation = True
-        target.command_action = ("Damaged", "uninterruptible")
+        target.command_action = {"name": "Damaged", "uninterruptible": True}
         if final_dmg > target.max_health10:
-            target.command_action = ("HeavyDamaged", "uninterruptible")
+            target.command_action = {"name": "HeavyDamaged", "uninterruptible": True}
 
     target.subunit_health -= final_dmg
     health_check = 0.1
