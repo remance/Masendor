@@ -2379,7 +2379,7 @@ while True:
                         if animation_name in animation_list:
                             current_popup_row = animation_list.index(animation_name)
                         popup_list_open(popup_list_box, popup_namegroup, ui, "animation_select",
-                                        animation_selector.rect.bottomleft,
+                                        (animation_selector.rect.bottomleft[0] - 100, animation_selector.rect.bottomleft[1]),
                                         animation_list, "top", screen_scale,
                                         current_row=current_popup_row)
 

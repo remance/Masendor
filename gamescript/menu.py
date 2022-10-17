@@ -149,6 +149,7 @@ class InputBox(pygame.sprite.Sprite):
         self.font = pygame.font.SysFont("timesnewroman", int(30 * screen_scale[1]))
         self.pos = pos
         self.image = pygame.Surface((width - 10, int(34 * screen_scale[1])))
+        self.max_text = int((self.image.get_width() / int(30 * screen_scale[1])) * 2.2)
         self.image.fill((255, 255, 255))
 
         self.image_original = self.image.copy()
@@ -212,6 +213,8 @@ class InputBox(pygame.sprite.Sprite):
                 self.current_pos += 1
             # Re-render the text.
             show_text = self.text[:self.current_pos] + "|" + self.text[self.current_pos:]
+            if self.current_pos > self.max_text:
+                show_text = show_text[abs(self.current_pos - self.max_text):]
             text_surface = self.font.render(show_text, True, (0, 0, 0))
             text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
             self.image.blit(text_surface, text_rect)
