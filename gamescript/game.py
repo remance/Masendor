@@ -756,7 +756,7 @@ class Game:
                 bullet_sprite_pool[key][key2] = {}
                 for key3, value3 in value2.items():
                     image = pygame.transform.flip(value3, False, True)
-                    image = pygame.transform.scale(image, (int(image.get_width() / 2), int(image.get_height() / 2)))
+                    # image = pygame.transform.scale(image, (int(image.get_width() / 2), int(image.get_height() / 2)))
                     bullet_sprite_pool[key][key2][key3] = image
         bullet_weapon_sprite_pool = {}
         for key, value in self.gen_weapon_sprite_pool.items():

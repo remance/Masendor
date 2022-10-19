@@ -2,8 +2,8 @@ def add_mount_stat(self):
     """Combine mount stat"""
     mount_size = self.troop_data.race_list[self.mount["Race"]]["Size"]
     # self.race_name += "&" + self.troop_data.race_list[race_id]["Name"]
-    if mount_size > self.size:  # replace size if mount is larger
-        self.size = mount_size
+    if mount_size > self.troop_size:  # replace size if mount is larger
+        self.troop_size = mount_size
 
     self.original_charge_def = 25  # charge defence only 25 for cav
     self.original_speed = (self.mount["Speed"] + self.mount_grade["Speed Bonus"])  # use mount base speed instead

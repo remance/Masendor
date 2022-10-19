@@ -62,18 +62,18 @@ def dmg_cal(self, target, hit, defence, weapon, dmg_object, hit_side=None):
                     side_cal = combat_side_cal[hit_side]
                     if target.special_effect_check("All Side Full Defence"):  # defence all side
                         side_cal = 1
-                    dmg_sum = dmg_sum + ((self.charge - (target.charge_def * side_cal)) * 2)
-                    if (target.charge_def * side_cal) >= self.charge / 2:
+                    dmg_sum = dmg_sum + ((self.charge_power - (target.charge_def_power * side_cal)) * 2)
+                    if (target.charge_def * side_cal) >= self.charge_power / 2:
                         self.charge_momentum = 1  # charge get stopped by charge def
                     else:
-                        self.charge_momentum -= (target.charge_def * side_cal) / self.charge
+                        self.charge_momentum -= (target.charge_def_power * side_cal) / self.charge_power
                 else:
-                    dmg_sum = dmg_sum + (self.charge * 2)
-                    self.charge_momentum -= 1 / self.charge
+                    dmg_sum = dmg_sum + (self.charge_power * 2)
+                    self.charge_momentum -= 1 / self.charge_power
 
             if 0 in target.skill_effect:  # also include its own charge defence in dmg if enemy also charging
                 if self.special_effect_check("Ignore Charge Defence") is False:
-                    charge_def_cal = self.charge_def - target.charge
+                    charge_def_cal = self.charge_def_power - target.charge_power
                     if charge_def_cal < 0:
                         charge_def_cal = 0
                     dmg_sum = dmg_sum + (

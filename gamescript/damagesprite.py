@@ -4,7 +4,6 @@ import random
 import pygame
 import pygame.freetype
 from gamescript.common import animation
-from pygame.transform import scale
 
 
 class DamageSprite(pygame.sprite.Sprite):
@@ -15,7 +14,7 @@ class DamageSprite(pygame.sprite.Sprite):
 
     play_animation = animation.play_animation
 
-    def __init__(self, attacker, weapon, dmg, penetrate, weapon_stat, max_range, view_mode,
+    def __init__(self, attacker, weapon, dmg, penetrate, weapon_stat, max_range, camera_scale,
                  attack_type, specific_attack_pos=None):
         self._layer = 50
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -35,6 +34,8 @@ class DamageSprite(pygame.sprite.Sprite):
         self.penetrate = penetrate
 
         self.pass_subunit = None  # subunit that damage sprite passing through, receive damage if movement stop
+
+        self.camera_scale = camera_scale
 
         if self.attack_type == "range":
             self.speed = weapon_stat["Travel Speed"]  # bullet travel speed
@@ -131,12 +132,20 @@ class DamageSprite(pygame.sprite.Sprite):
         elif 90 < self.angle <= 180:  # lower left +
             self.angle = 270 - self.angle
 
+        self.image_original = self.image.copy()
+        self.image_scale = (11 - self.camera_scale) / 4
+        if self.image_scale <= 1:
+            self.image_scale = 1
+        else:
+            self.image = pygame.transform.scale(self.image_original,
+                                                (int(self.image_original.get_width() / self.image_scale),
+                                                 int(self.image_original.get_height() / self.image_scale)))
         self.image = pygame.transform.rotate(self.image, self.angle)
 
         self.base_pos = pygame.Vector2(self.attacker.base_pos[0], self.attacker.base_pos[1])
         self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
-                                  self.base_pos[1] * self.screen_scale[1]) * view_mode
-        self.rect = self.image.get_rect(midbottom=self.pos)
+                                  self.base_pos[1] * self.screen_scale[1]) * self.camera_scale
+        self.rect = self.image.get_rect(center=self.pos)
 
     def range_dmg_cal(self, attacker, target, target_side, side_percent=(1, 0.3, 0.3, 0)):
         """Calculate range attack hit chance and defence chance, side_percent is more punishing than melee attack"""
@@ -176,9 +185,22 @@ class DamageSprite(pygame.sprite.Sprite):
                 self.attacker.hit_register(self.weapon, subunit, 0, hit_side,
                                            self.attacker.battle.troop_data.status_list)
 
-    def update(self, unit_list, dt, view_mode):
+    def update(self, unit_list, dt, camera_scale):
         move = self.base_target - self.base_pos
         move_length = move.length()
+        if self.camera_scale != camera_scale:
+            self.camera_scale = camera_scale
+            self.image_scale = (11 - self.camera_scale) / 4
+            if self.image_scale <= 1:
+                self.image_scale = 1
+            else:
+                self.image = pygame.transform.scale(self.image_original,
+                                                    (int(self.image_original.get_width() / self.image_scale),
+                                                     int(self.image_original.get_height() / self.image_scale)))
+            self.image = pygame.transform.rotate(self.image, self.angle)
+            self.rect = self.image.get_rect(center=self.pos)
+            self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
+                                      self.base_pos[1] * self.screen_scale[1]) * self.camera_scale
 
         self.pass_subunit = None  # reset every movement update
         for subunit in pygame.sprite.spritecollide(self, unit_list, 0):
@@ -205,12 +227,12 @@ class DamageSprite(pygame.sprite.Sprite):
                     if self.height_map.get_height(self.base_pos) > self.target_height + 20:
                         self.kill()
                 self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
-                                          self.base_pos[1] * self.screen_scale[1]) * view_mode
+                                          self.base_pos[1] * self.screen_scale[1]) * camera_scale
                 self.rect.center = list(int(v) for v in self.pos)
             else:
                 self.base_pos = self.base_target
                 self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
-                                          self.base_pos[1] * self.screen_scale[1]) * view_mode
+                                          self.base_pos[1] * self.screen_scale[1]) * camera_scale
                 self.rect.center = self.pos
 
             for element in self.dmg:

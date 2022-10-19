@@ -271,6 +271,9 @@ def status_update(self, weather=None):
     self.hidden = self.hidden + hidden_bonus
     self.crit_effect = self.crit_effect * crit_effect_modifier
 
+    self.charge_power = ((self.charge * self.speed) / 2) * self.troop_size
+    self.charge_def_power = self.charge_def * self.troop_size
+
     full_merge_len = len(self.full_merge) + 1
     if full_merge_len > 1:  # reduce discipline if there are overlap subunit
         self.discipline = self.discipline / full_merge_len
@@ -289,10 +292,10 @@ def status_update(self, weather=None):
         self.accuracy = 0
     if self.reload < 0:
         self.reload = 0
-    if self.charge < 0:
-        self.charge = 0
-    if self.charge_def < 0:
-        self.charge_def = 0
+    if self.charge_power < 0:
+        self.charge_power = 0
+    if self.charge_def_power < 0:
+        self.charge_def_power = 0
     if self.discipline < 0:
         self.discipline = 0
     if self.equipped_weapon in self.magazine_count:  # add reload speed skill to reduce ranged weapon cooldown

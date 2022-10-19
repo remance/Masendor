@@ -362,7 +362,7 @@ class Subunit(pygame.sprite.Sprite):
         if self.mount_race_name != "None":
             self.animation_race_name += "&" + self.mount_race_name
 
-        self.size = race_stat["Size"]
+        self.troop_size = race_stat["Size"]
 
         self.original_inflict_status = {}  # status that this subunit will inflict to enemy when melee_attack
         self.feature_mod = "Infantry"  # the terrain feature that will be used on this subunit
@@ -387,7 +387,7 @@ class Subunit(pygame.sprite.Sprite):
         if self.mount_gear[0] != 1:  # have a mount, add mount stat with its grade to subunit stat
             self.add_mount_stat()
 
-        self.original_hidden = 1000 / self.size  # hidden based on size, use size after add mount
+        self.original_hidden = 1000 / self.troop_size  # hidden based on size, use size after add mount
 
         self.trait["Original"] += self.troop_data.armour_list[self.armour_gear[0]][
             "Trait"]  # add armour trait to subunit
@@ -476,7 +476,9 @@ class Subunit(pygame.sprite.Sprite):
         self.morale = self.base_morale
         self.discipline = self.base_discipline
         self.charge = self.base_charge
+        self.charge_power = self.charge * self.speed / 2 * self.troop_size
         self.charge_def = self.base_charge_def
+        self.charge_def_power = self.charge_def * self.troop_size
         self.auth_penalty = self.base_auth_penalty
         self.hp_regen = self.base_hp_regen
         self.stamina_regen = self.base_stamina_regen
