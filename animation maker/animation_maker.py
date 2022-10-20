@@ -1879,6 +1879,27 @@ while True:
                 keypress_delay = 0.1
                 if model.part_selected:
                     model.edit_part(mouse_pos, "layer_down")
+            elif key_press[pygame.K_LEFTBRACKET] or key_press[pygame.K_RIGHTBRACKET]:
+                if keypress_delay == 0:
+                    keypress_delay = 0.1
+                    animation_change = 1
+                    if key_press[pygame.K_LEFTBRACKET]:
+                        animation_change = -1
+                    animation_list = list(current_pool[direction].keys())
+                    if animation_filter[0] != "":
+                        for key_filter in animation_filter:
+                            if len(key_filter) > 0:
+                                if key_filter[0] == "-":  # exclude
+                                    animation_list = [item for item in animation_list if key_filter[1:] not in item]
+                                else:
+                                    animation_list = [item for item in animation_list if key_filter in item]
+                    try:
+                        new_animation = animation_list[animation_list.index(animation_name) + animation_change]
+                        change_animation(new_animation)
+                    except (IndexError, ValueError):
+                        if len(animation_list) > 0:
+                            new_animation = animation_list[0]
+                            change_animation(new_animation)
 
         if mouse_timer != 0:  # player click mouse once before
             mouse_timer += ui_dt  # increase timer for mouse click using real time
@@ -2371,10 +2392,11 @@ while True:
                         animation_list = list(current_pool[direction].keys())
                         if animation_filter[0] != "":
                             for key_filter in animation_filter:
-                                if key_filter[0] == "-":  # exclude
-                                    animation_list = [item for item in animation_list if key_filter[1:] not in item]
-                                else:
-                                    animation_list = [item for item in animation_list if key_filter in item]
+                                if len(key_filter) > 0:
+                                    if key_filter[0] == "-":  # exclude
+                                        animation_list = [item for item in animation_list if key_filter[1:] not in item]
+                                    else:
+                                        animation_list = [item for item in animation_list if key_filter in item]
                         current_popup_row = 0  # move current selected animation to top if not in filtered list
                         if animation_name in animation_list:
                             current_popup_row = animation_list.index(animation_name)
@@ -2437,7 +2459,6 @@ while True:
                         model.part_name_list[current_frame] = {key: (value[:].copy() if value is not None else value) for key, value in
                                                                copy_name_frame.items()}
                         model.edit_part(mouse_pos, "change")
-
 
                 elif part_copy_press:
                     if model.part_selected:
