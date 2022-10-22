@@ -17,22 +17,25 @@ def issue_order(self, target_pos, run_command=False, revert_move=False, enemy=No
                 if "Charge" in other_command:  # also move when charge
                     self.state = 4
                     self.set_target(target_pos)
-                    for subunit in self.alive_subunit_list:
-                        if subunit.weapon_type[subunit.equipped_weapon][int(other_command[-1])] == "ranged" and \
-                                subunit.weapon_type[subunit.swap_weapon_list[subunit.equipped_weapon]][
-                                    int(other_command[-1])] == "melee":
-                            subunit.equipped_weapon = subunit.swap_weapon_list[subunit.equipped_weapon]
-                            subunit.swap_weapon()  # swap to melee weapon for charge
-                        subunit.command_action = {"name": other_command}
-                        subunit.state = 4
+                    for this_subunit in self.alive_subunit_list:
+                        if "uninterruptible" not in this_subunit.command_action:
+                            if this_subunit.weapon_type[this_subunit.equipped_weapon][int(other_command[-1])] == "ranged" and \
+                                    this_subunit.weapon_type[this_subunit.swap_weapon_list[this_subunit.equipped_weapon]][
+                                        int(other_command[-1])] == "melee":
+                                this_subunit.equipped_weapon = this_subunit.swap_weapon_list[this_subunit.equipped_weapon]
+                                this_subunit.swap_weapon()  # swap to melee weapon for charge
+                            this_subunit.command_action = {"name": other_command}
+                            this_subunit.state = 4
                 else:
-                    for subunit in self.alive_subunit_list:
-                        subunit.command_action = {"name": other_command}
+                    for this_subunit in self.alive_subunit_list:
+                        if "uninterruptible" not in this_subunit.command_action:
+                            this_subunit.command_action = {"name": other_command}
 
             elif "Action" in other_command:  # for releasing attack after charging
-                for subunit in self.alive_subunit_list:
-                    subunit.command_action = {"name": other_command}
-                    subunit.interrupt_animation = True
-                    subunit.idle_action = {}
+                for this_subunit in self.alive_subunit_list:
+                    if "uninterruptible" not in this_subunit.command_action:
+                        this_subunit.command_action = {"name": other_command}
+                        this_subunit.interrupt_animation = True
+                        this_subunit.idle_action = {}
 
         self.command_state = self.state

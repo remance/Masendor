@@ -60,11 +60,16 @@ def reset_animation(self):
 def apply_colour(surface, colour, colour_list, keep_white=True):
     """Colorise body part sprite"""
     if colour is not None and colour != "none":
-        # max_colour = 255  # - (colour[0] + colour[1] + colour[2])
-        white_colour = colour_list[colour]
+        if colour_list is None:
+            white_colour = colour
+        else:
+            white_colour = colour_list[colour]
         mid_colour = [int(c / 2) for c in white_colour]
         if keep_white:
-            mid_colour = colour_list[colour]
+            if colour_list is None:
+                mid_colour = colour
+            else:
+                mid_colour = colour_list[colour]
             white_colour = "white"
         size = (surface.get_width(), surface.get_height())
         data = pygame.image.tostring(surface, "RGBA")  # convert image to string data for filtering effect

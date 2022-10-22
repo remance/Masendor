@@ -666,8 +666,11 @@ class Subunit(pygame.sprite.Sprite):
                 self.last_current_action = self.current_action
             else:
                 self.reset_animation()
-                self.current_action = self.command_action  # continue next action when animation finish
-                self.command_action = self.idle_action
+                if self.current_action and self.current_action["name"] == "Knockdown":  # stand up after finish knock down
+                    self.current_action = {"name": "StandUp", "uninterruptible": True}
+                else:
+                    self.current_action = self.command_action  # continue next action when animation finish
+                    self.command_action = self.idle_action
 
             self.interrupt_animation = False
             self.pick_animation()
