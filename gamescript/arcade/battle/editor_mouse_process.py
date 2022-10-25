@@ -151,8 +151,6 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                     pass
                 elif self.effect_icon_mouse_over(self.effect_icon, mouse_right_up):
                     pass
-                else:
-                    self.battle_ui_updater.remove(self.effect_popup)
 
     elif mouse_left_up or mouse_left_down or mouse_right_up:  # left click for select, hold left mouse for scrolling, right click for encyclopedia
         if mouse_left_up or mouse_left_down:

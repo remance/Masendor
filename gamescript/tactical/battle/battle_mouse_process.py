@@ -236,8 +236,6 @@ def battle_mouse_process(self, mouse_left_up, mouse_right_up, double_mouse_right
                     pass
                 elif self.effect_icon_mouse_over(self.effect_icon, mouse_right_up):
                     pass
-                else:
-                    self.battle_ui_updater.remove(self.effect_popup)
 
         else:
             self.kill_effect_icon()

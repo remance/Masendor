@@ -135,7 +135,6 @@ class Battle:
 
         self.terrain_check = main.terrain_check
         self.single_text_popup = main.single_text_popup
-        self.effect_popup = main.effect_popup
         self.drama_text = main.drama_text
 
         self.skill_icon = main.skill_icon

@@ -434,14 +434,15 @@ class Subunit(pygame.sprite.Sprite):
         self.action_list = {}  # get added in change_equipment
 
         self.swap_weapon()
-        self.last_health_state = 4  # state start at full
-        self.last_stamina_state = 4
+        self.last_health_state = 0  # state start at full
+        self.last_stamina_state = 0
 
         self.max_stamina = self.stamina
         self.stamina75 = self.stamina * 0.75
         self.stamina50 = self.stamina * 0.5
         self.stamina25 = self.stamina * 0.25
         self.stamina5 = self.stamina * 0.05
+        self.stamina_list = (self.stamina75, self.stamina50, self.stamina25, self.stamina5, -1)
 
         self.subunit_health = self.troop_health * self.troop_number  # Total health of subunit from all troop
         self.old_subunit_health = self.subunit_health
@@ -647,20 +648,23 @@ class Subunit(pygame.sprite.Sprite):
                     attack_pos = None
                     if "pos" in self.current_action:  # manual attack position
                         attack_pos = self.current_action["pos"]
-                    damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
-                                              self.weapon_penetrate[self.equipped_weapon][weapon],
-                                              self.equipped_weapon_data[weapon],
-                                              self.shoot_range[weapon], self.zoom, "range",
-                                              specific_attack_pos=attack_pos)  # Shoot bullet
-                    self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
-                    if self.ammo_now[self.equipped_weapon][weapon] == 0 and \
-                            self.magazine_count[self.equipped_weapon][weapon] == 0:
-                        self.ammo_now[self.equipped_weapon].pop(weapon)  # remove weapon with no ammo
-                        self.magazine_count[self.equipped_weapon].pop(weapon)
-                        if len(self.ammo_now[self.equipped_weapon]) == 0:  # remove entire set if no ammo at all
-                            self.ammo_now.pop(self.equipped_weapon)
-                            self.magazine_count.pop(self.equipped_weapon)
-                    self.stamina -= self.weapon_weight[self.equipped_weapon][weapon]
+                    elif self.attack_pos is not None:
+                        attack_pos = self.attack_pos
+                    if attack_pos is not None or self.attack_target is not None:
+                        damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
+                                                  self.weapon_penetrate[self.equipped_weapon][weapon],
+                                                  self.equipped_weapon_data[weapon],
+                                                  self.shoot_range[weapon], self.zoom, "range",
+                                                  specific_attack_pos=attack_pos)  # Shoot bullet
+                        self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
+                        if self.ammo_now[self.equipped_weapon][weapon] == 0 and \
+                                self.magazine_count[self.equipped_weapon][weapon] == 0:
+                            self.ammo_now[self.equipped_weapon].pop(weapon)  # remove weapon with no ammo
+                            self.magazine_count[self.equipped_weapon].pop(weapon)
+                            if len(self.ammo_now[self.equipped_weapon]) == 0:  # remove entire set if no ammo at all
+                                self.ammo_now.pop(self.equipped_weapon)
+                                self.magazine_count.pop(self.equipped_weapon)
+                        self.stamina -= self.weapon_weight[self.equipped_weapon][weapon]
 
             if self.current_action != self.last_current_action:
                 self.last_current_action = self.current_action

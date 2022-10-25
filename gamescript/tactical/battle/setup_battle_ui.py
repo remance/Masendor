@@ -42,9 +42,9 @@ def setup_battle_ui(self, change):
         self.row_split_button.change_pos(
             (self.command_ui.rect.midleft[0] + (self.row_split_button.image.get_width() / 2),
              self.command_ui.rect.midleft[1] + (self.col_split_button.image.get_height() * 3)))
-        self.decimation_button.change_pos(
-            (self.command_ui.rect.midleft[0] + (self.decimation_button.image.get_width() / 2),
-             self.command_ui.rect.midleft[1] + (self.decimation_button.image.get_height() * 2)))
+        # self.decimation_button.change_pos(
+        #     (self.command_ui.rect.midleft[0] + (self.decimation_button.image.get_width() / 2),
+        #      self.command_ui.rect.midleft[1] + (self.decimation_button.image.get_height() * 2)))
 
         self.behaviour_switch_button[0].change_pos(
             (self.command_ui.rect.bottomleft[0] + (self.behaviour_switch_button[0].image.get_width()),

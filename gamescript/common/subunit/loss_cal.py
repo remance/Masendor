@@ -37,7 +37,7 @@ def loss_cal(self, target, final_dmg, final_morale_dmg, leader_dmg, element_effe
     for key, value in element_effect.items():
         target.element_status_check[key] += round(final_dmg * value * (100 - target.element_resistance[key] / 100))
 
-    self.base_morale += round((final_morale_dmg / 5))  # recover some morale when deal morale dmg to enemy
+    # self.base_morale += round((final_morale_dmg / 5))  # recover some morale when deal morale dmg to enemy
 
     if target.leader is not None and target.leader.health > 0 and random.randint(0,
                                                                                  10) > 9:  # dmg on subunit leader, only 10% chance

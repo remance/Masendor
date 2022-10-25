@@ -23,7 +23,7 @@ def skill_convert(self, skill_list, add_charge_skill=False):
     skill_dict = {x: self.troop_data.skill_list[x].copy() for x in skill_dict if
                   x != 0 and x in self.troop_data.skill_list}  # grab skill stat into dict
     if add_charge_skill:
-        skill_dict[0] = self.troop_data.skill_list[self.charge_skill].copy()  # add charge skill with key 0
+        skill_dict[self.charge_skill] = self.troop_data.skill_list[self.charge_skill].copy()  # add charge skill with key 0
     skill_dict = {skill: skill_dict[skill] for skill in skill_dict if skill == 0 or  # keep skill if class match
                   (skill != 0 and (self.troop_data.skill_list[skill]["Troop Type"] == 0 or
                                    self.troop_data.skill_list[skill]["Troop Type"] == self.subunit_type + 1))}

@@ -137,32 +137,3 @@ class TextPopup(pygame.sprite.Sprite):
                 self.rect = self.image.get_rect(topleft=self.pos)
             else:
                 self.rect = self.image.get_rect(bottomleft=self.pos)
-
-
-class EffectIconPopup(pygame.sprite.Sprite):
-    def __init__(self, screen_scale):
-        self._layer = 12
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        self.head_font = pygame.font.SysFont("helvetica", int(16 * screen_scale[1]))
-        self.font = pygame.font.SysFont("helvetica", int(12 * screen_scale[1]))
-        self.pos = (0, 0)
-        self.text_input = ""
-
-    def pop(self, pos, text_input):
-        if self.pos != pos or self.text_input != text_input:
-            self.text_input = text_input
-            self.pos = pos
-            name_surface = self.head_font.render(self.text_input["Name"], True, (0, 0, 0))  # name font surface
-            name_rect = name_surface.get_rect(topleft=(1, 1))  # text input position at (1,1) on white box image
-            # text_surface = self.font.render(self.textinput[-1], 1, (0, 0, 0))  ## description
-            # text_rect = text_surface.get_rect(topleft=(1, text_rect.height + 1))
-            self.image = pygame.Surface((name_rect.width + 6, name_rect.height + 6))  # black border
-            image = pygame.Surface((name_rect.width + 2, name_rect.height + 2))  # white Box for text
-            # self.image = pygame.Surface((namerect.width + 6, text_rect.height + namerect.height + 6)) ## Black border
-            # image = pygame.Surface((namerect.width + 2, text_rect.height + namerect.height + 2)) ## White Box for text
-            image.fill((255, 255, 255))
-            image.blit(name_surface, name_rect)  # blit text into white box
-            # image.blit(text_surface, text_rect)
-            rect = self.image.get_rect(topleft=(2, 2))  # white box image position at (2,2) on black border image
-            self.image.blit(image, rect)  # blit white box into black border image to create text box image
-            self.rect = self.image.get_rect(bottomleft=self.pos)

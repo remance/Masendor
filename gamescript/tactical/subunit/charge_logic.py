@@ -4,7 +4,7 @@ def charge_logic(self, parent_state):
 
         self.charge_momentum += self.timer * (self.speed / 50)
         if self.charge_momentum >= 5:
-            self.use_skill(0)  # Use charge skill
+            self.use_skill(self.charge_skill)  # Use charge skill
             self.unit.charging = True
             self.charge_momentum = 5
 

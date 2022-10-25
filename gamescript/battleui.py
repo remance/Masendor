@@ -173,6 +173,7 @@ class TroopCard(pygame.sprite.Sprite):
                       "Melee Defense: ": 0, "Range Defense: ": 0, "Speed: ": 0, "Accuracy: ": 0,
                       "Range: ": 0, "Reload: ": 0, "Ammunition: ": 0, "Weapon CD: ": 0, "Charge Power: ": 0,
                       "Charge Defense: ": 0, "Mental: ": 0}  # stat
+        self.value2 = {"trait": (), "skill": (), "skill cd": (), "skill effect": (), "status": ()}
 
     def change_pos(self, pos):
         """change position of ui to new one"""
@@ -199,13 +200,18 @@ class TroopCard(pygame.sprite.Sprite):
         self.value["Ammunition: "] = str([str(key + key2) + " : " + str(int(value2)) + "/" +
                                           str(int(who.magazine_size[key][key2])) for key, value in
                                           who.magazine_count.items()
-                                          for key2, value2 in value.items()]).replace("'", "").replace("[", "").replace(
-            "]", "")
+                                          for key2, value2 in
+                                          value.items()]).replace("'", "").replace("[", "").replace("]", "")
         self.value["Charge Power: "] = str(int(who.charge_power))
         self.value["Charge Defense: "] = str(int(who.charge_def_power))
         self.value["Mental: "] = str(int(who.mental_text))
 
-        self.value2 = [who.trait["Original"] | who.trait["Weapon"], who.skill, who.skill_cooldown, who.skill_effect, who.status_effect]
+        self.value2["trait"] = who.trait["Original"] | who.trait["Weapon"][who.equipped_weapon][0] | who.trait["Weapon"][who.equipped_weapon][1]
+        self.value2["skill"] = who.skill
+        self.value2["skill cd"] = who.skill_cooldown
+        self.value2["skill effect"] = who.skill_effect
+        self.value2["status"] = who.status_effect
+
         self.description = who.description
         if type(self.description) == list:
             self.description = self.description[0]
@@ -471,7 +477,7 @@ class SkillCardIcon(pygame.sprite.Sprite):
     def __init__(self, image, pos, icon_type, game_id=None):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.icon_type = icon_type  # type 0 is trait 1 is skill
+        self.icon_type = icon_type
         self.game_id = game_id  # ID of the skill
         self.pos = pos  # pos of the skill on ui
         self.font = pygame.font.SysFont("helvetica", 18)

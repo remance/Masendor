@@ -316,8 +316,6 @@ class Game:
         self.inspect_selected_border = pygame.sprite.Group()  # subunit selected border in inspect ui unit box
         self.wheel_ui = pygame.sprite.Group()
 
-        self.effect_popup = pygame.sprite.Group()  # effect name pop up ui when mouse over status effect icon
-
         self.skill_icon = pygame.sprite.Group()  # skill and trait icon objects
         self.effect_icon = pygame.sprite.Group()  # status effect icon objects
 
@@ -348,15 +346,13 @@ class Game:
 
         # battle containers
         battleui.SwitchButton.containers = self.ui_updater
-        battleui.SelectedSquad.containers = self.inspect_selected_border, self.unit_edit_border, self.main_ui_updater, self.battle_ui_updater
+        battleui.SelectedSquad.containers = self.unit_edit_border, self.battle_ui_updater
         battleui.SkillCardIcon.containers = self.skill_icon, self.battle_ui_updater
         battleui.EffectCardIcon.containers = self.effect_icon, self.battle_ui_updater
         battleui.UnitIcon.containers = self.unit_icon, self.main_ui_updater, self.battle_ui_updater
         battleui.TroopNumber.containers = self.troop_number_sprite, self.effect_updater, self.battle_camera
         battleui.DirectionArrow.containers = self.direction_arrows, self.effect_updater, self.battle_camera
         battleui.WheelUI.containers = self.wheel_ui
-
-        popup.EffectIconPopup.containers = self.effect_popup
 
         damagesprite.DamageSprite.containers = self.damage_sprites, self.effect_updater, self.battle_camera
 
@@ -571,6 +567,8 @@ class Game:
         battleui.SelectedSquad.image = battle_ui_image[
             "ui_subunit_clicked"]  # subunit border image always the last one
 
+        self.inspect_selected_border = battleui.SelectedSquad((0, 0))  # yellow border on selected subunit in inspect ui
+
         # Battle ui
         self.status_images, self.role_images, self.trait_images, self.skill_images = make_icon_data(self.main_dir,
                                                                                                     self.screen_scale)
@@ -671,7 +669,6 @@ class Game:
         self.terrain_check = popup_ui_dict["terrain_check"]
         self.single_text_popup = popup_ui_dict["single_text_popup"]
         self.terrain_check = popup_ui_dict["terrain_check"]
-        self.effect_popup = popup_ui_dict["effect_popup"]
         self.char_popup = popup_ui_dict["char_popup"]
         self.ui_updater.add(self.troop_card_ui)
         self.button_ui.add(self.troop_card_button)
@@ -907,13 +904,9 @@ class Game:
         self.row_split_button = self.genre_ui_dict["row_split_button"]
         self.decimation_button = self.genre_ui_dict["decimation_button"]
         self.inspect_button = self.genre_ui_dict["inspect_button"]
-        self.main_ui_updater.remove(self.inspect_selected_border)  # remove subunit border sprite from start_set menu drawer
 
         self.inspect_ui = self.genre_ui_dict["inspect_ui"]
         self.ui_updater.add(self.inspect_ui)
-        self.inspect_selected_border = battleui.SelectedSquad((0, 0))  # yellow border on selected subunit in inspect ui
-        self.main_ui_updater.remove(
-            self.inspect_selected_border)  # remove subunit border sprite from start_set menu drawer
 
         # Behaviour button that once click switch to other mode for subunit behaviour
         self.behaviour_switch_button = self.genre_ui_dict["behaviour_switch_button"]

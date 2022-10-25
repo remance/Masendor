@@ -3,7 +3,7 @@ def skill_check_logic(self):
     if self.state not in (98, 99):
         self.available_skill = [skill for skill in self.skill if skill not in self.skill_cooldown.keys()
                                 and self.discipline >= self.skill[skill]["Discipline Requirement"]
-                                and self.stamina > self.skill[skill]["Stamina Cost"] and skill != 0]
+                                and self.stamina > self.skill[skill]["Stamina Cost"] and skill != self.charge_skill]
         if self.command_action:  # no current action and has skill command waiting
             command_action = self.command_action["name"]
             if "Skill" in command_action:  # use skill and convert command action into skill action name

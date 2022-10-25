@@ -11,7 +11,7 @@ def skill_check_logic(self):
             self.available_skill = [skill for skill in self.skill if skill not in self.skill_cooldown.keys()
                                     and self.state in self.skill[skill]["Condition"] and self.discipline >=
                                     self.skill[skill]["Discipline Requirement"]
-                                    and self.stamina > self.skill[skill]["Stamina Cost"] and skill != 0]
+                                    and self.stamina > self.skill[skill]["Stamina Cost"] and skill != self.charge_skill]
 
     if len(self.available_skill) > 0 and random.randint(0, 10) >= 6:  # random chance to use random available skill
         self.use_skill(self.available_skill[random.randint(0, len(self.available_skill) - 1)])

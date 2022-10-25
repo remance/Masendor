@@ -38,11 +38,11 @@ def health_stamina_logic(self, dt):
             # v Health bar
             for index, health in enumerate(self.health_list):
                 if self.subunit_health > health:
-                    if self.last_health_state != abs(4 - index):
-                        self.inspect_image_original3.blit(self.health_image_list[index + 1], self.health_image_rect)
-                        self.block_original.blit(self.health_image_list[index + 1], self.health_block_rect)
+                    if self.last_health_state != index:
+                        self.inspect_image_original3.blit(self.health_image_list[index], self.health_image_rect)
+                        self.block_original.blit(self.health_image_list[index], self.health_block_rect)
                         self.block.blit(self.block_original, self.corner_image_rect)
-                        self.last_health_state = abs(4 - index)
+                        self.last_health_state = index
                         self.zoom_scale()
                     break
 
@@ -55,15 +55,14 @@ def health_stamina_logic(self, dt):
             self.stamina = self.max_stamina
 
         if self.old_last_stamina != self.stamina:
-            for index, stamina in enumerate((self.stamina75, self.stamina50, self.stamina25, self.stamina5, -1)):
+            for index, stamina in enumerate(self.stamina_list):
                 if self.stamina >= stamina:
-                    if self.last_stamina_state != abs(4 - index):
-                        # if index != 3:
-                        self.inspect_image_original3.blit(self.stamina_image_list[index + 6], self.stamina_image_rect)
+                    if self.last_stamina_state != index:
+                        self.inspect_image_original3.blit(self.stamina_image_list[index], self.stamina_image_rect)
                         self.zoom_scale()
-                        self.block_original.blit(self.stamina_image_list[index + 6], self.stamina_block_rect)
+                        self.block_original.blit(self.stamina_image_list[index], self.stamina_block_rect)
                         self.block.blit(self.block_original, self.corner_image_rect)
-                        self.last_stamina_state = abs(4 - index)
+                        self.last_stamina_state = index
                     break
 
             self.old_last_stamina = self.stamina
