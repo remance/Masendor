@@ -20,10 +20,7 @@ def change_battle_source(self, scale_value, team_army, team_commander):
                     self.troop_data.troop_list[this_unit]["Troop"] * scale_value[index])
         troop_type_list[index].append(len(team))
 
-    army_loop_list = {key: "{:,}".format(troop) + " Troops" for key, troop in team_total_troop.items()}
-    army_loop_list = {key: self.leader_data.leader_list[leader_name_list[index]]["Name"] + ": " + troop for key, troop
-                      in
-                      army_loop_list.items()}
-
+    army_loop_list = {key: self.leader_data.leader_list[leader_name_list[key]]["Name"] + ": " +
+                           "{:,}".format(int(troop)) + " Troops" for key, troop in team_total_troop.items()}
     for index, army in enumerate(self.army_stat):  # + 1 index to skip neutral unit in stat
         army.add_army_stat(troop_type_list[index + 1], army_loop_list[index + 1])

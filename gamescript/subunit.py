@@ -416,7 +416,8 @@ class Subunit(pygame.sprite.Sprite):
         self.skill = self.original_skill.copy()
         self.troop_skill = self.original_skill.copy()
         self.troop_skill = [skill for skill in self.troop_skill if skill != 0 and
-                            (type(skill) == str or (self.troop_data.skill_list[skill]["Troop Type"] == 0 or
+                            (type(skill) == str or (skill in self.troop_data.skill_list and
+                                                    self.troop_data.skill_list[skill]["Troop Type"] == 0 or
                                                     self.troop_data.skill_list[skill][
                                                         "Troop Type"] == self.subunit_type + 1))]  # keep matched
         self.base_mana = self.original_mana

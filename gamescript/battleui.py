@@ -1009,21 +1009,20 @@ class BattleScaleUI(pygame.sprite.Sprite):
         self.image_width = self.image.get_width()
         self.image_height = self.image.get_height()
         self.rect = self.image.get_rect(topleft=self.pos)
-        self.troop_number_list = []
+        self.battle_scale_list = []
+        self.battle_scale = []
 
-    def change_fight_scale(self, troop_number_list):
-        if self.troop_number_list != troop_number_list:
-            self.troop_number_list = troop_number_list.copy()
-            total = sum(self.troop_number_list)
+    def change_fight_scale(self, battle_scale_list):
+        if self.battle_scale_list != battle_scale_list:
+            self.battle_scale_list = battle_scale_list.copy()
             percent_scale = 0  # start point fo fill colour of team scale
-            for team, value in enumerate(self.troop_number_list):
-                if value > 1:
+            for team, value in enumerate(self.battle_scale_list):
+                if value > 0:
                     self.image.fill(self.team_colour[team], (percent_scale, 0, self.image_width, self.image_height))
-
                     # team_text = self.font.render("{:,}".format(int(value - 1)), True, (0, 0, 0))  # add troop number text
                     # team_text_rect = team_text.get_rect(topleft=(percent_scale, 0))
                     # self.image.blit(team_text, team_text_rect)
-                    percent_scale = (value / total * 100) + percent_scale
+                    percent_scale += value
 
     def change_pos(self, pos):
         self.pos = pos

@@ -146,12 +146,14 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                     for skill in skill_list:
                                         if type(skill) == int:
                                             if skill in self.troop_data.skill_list:  # skip skill not in ruleset
-                                                if self.troop_data.skill_list[skill]["Action"][0] in animation:
+                                                if self.troop_data.skill_list[skill]["Action"] and \
+                                                        self.troop_data.skill_list[skill]["Action"][0] in animation:
                                                     make_animation = True
                                                     break
                                         else:  # leader skill
                                             if skill in self.leader_data.skill_list:  # skip skill not in ruleset
-                                                if self.leader_data.skill_list[skill]["Action"][0] in animation:
+                                                if self.leader_data.skill_list[skill]["Action"] and \
+                                                        self.leader_data.skill_list[skill]["Action"][0] in animation:
                                                     make_animation = True
                                                     break
 

@@ -14,9 +14,9 @@ def read_battle_source(self, description_text):
 
     self.map_show.change_mode(1, team_pos_list=self.team_pos)
 
-    team_army = {row["Team"]: [] for row in list(unit_info.values())[1:]}
-    team_leader = {row["Team"]: [] for row in list(unit_info.values())[1:]}
-    for row in list(unit_info.values())[1:]:
+    team_army = {row["Team"]: [] for row in list(unit_info.values())}
+    team_leader = {row["Team"]: [] for row in list(unit_info.values())}
+    for row in list(unit_info.values()):
         for small_row in [value for key, value in row.items() if "Row" in key]:
             for item in small_row.split(","):
                 if item.isdigit():

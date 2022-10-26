@@ -285,6 +285,7 @@ class Battle:
         self.leader_now = []
         self.team_troop_number = []  # list of troop number in each team, minimum at one because percentage can't divide by 0
         self.last_team_troop_number = []
+        self.battle_scale = []
         self.start_troop_number = []
         self.wound_troop_number = []
         self.death_troop_number = []
@@ -468,6 +469,7 @@ class Battle:
             self.camera_mode = self.start_zoom_mode
             self.setup_battle_unit(self.all_team_unit, self.troop_data.troop_list)
             self.team_troop_number = [1 for _ in self.all_team_unit]  # reset list of troop number in each team
+            self.battle_scale = [(value / sum(self.team_troop_number) * 100) for value in self.team_troop_number]
             self.start_troop_number = [0 for _ in self.all_team_unit]
             self.wound_troop_number = [0 for _ in self.all_team_unit]
             self.death_troop_number = [0 for _ in self.all_team_unit]
@@ -475,6 +477,9 @@ class Battle:
             self.capture_troop_number = [0 for _ in self.all_team_unit]
             self.team_pos_list = {key: {} for key in self.all_team_unit.keys()}
             self.visible_subunit_list = {key: {} for key in self.all_team_unit.keys() if key != "alive"}
+
+            self.battle_scale_ui.change_fight_scale(
+                self.battle_scale)
 
             subunit_to_make = list(set([this_subunit.troop_id for this_subunit in self.subunit_updater]))
             who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key in subunit_to_make}
@@ -560,6 +565,11 @@ class Battle:
                 else:  # reset all other slot
                     slot.selected = False
 
+            self.base_camera_pos = pygame.Vector2(500 * self.screen_scale[0],
+                                                  500 * self.screen_scale[1])
+            self.camera_pos = self.base_camera_pos * self.camera_zoom
+            self.camera_fix()
+
             self.weather_playing = None  # remove weather schedule from editor test
 
             self.change_battle_state()
@@ -585,6 +595,11 @@ class Battle:
                             self.camera_pos = self.base_camera_pos * self.camera_zoom
                             self.camera_fix()
                         break
+            else:
+                self.base_camera_pos = pygame.Vector2(500 * self.screen_scale[0],
+                                                      500 * self.screen_scale[1])
+                self.camera_pos = self.base_camera_pos * self.camera_zoom
+                self.camera_fix()
 
         self.map_scale_delay = 0  # delay for map zoom input
         self.mouse_timer = 0  # This is timer for checking double mouse click, use realtime
@@ -927,8 +942,10 @@ class Battle:
                     self.remove_unit_ui_check(mouse_left_up)
 
                     if self.ui_timer > 1:
+                        self.battle_scale = [(value / sum(self.team_troop_number) * 100) for value in
+                                             self.team_troop_number]
                         self.battle_scale_ui.change_fight_scale(
-                            self.team_troop_number)  # change fight colour scale on time_ui bar
+                            self.battle_scale)  # change fight colour scale on time_ui bar
 
                     self.effect_updater.update(self.subunit_updater, self.dt, self.camera_zoom)
                     self.weather_updater.update(self.dt, self.time_number.time_number)

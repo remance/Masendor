@@ -7,8 +7,6 @@ infinity = float("inf")
 
 def morale_logic(self, dt, parent_state):
     """Morale check"""
-    if self.morale > 1000:
-        print(self.morale, self.base_morale, self.max_morale, self.original_morale, self.name)
     if self.max_morale != infinity:
         if self.base_morale < self.max_morale:
             if self.morale <= 10:  # Enter retreat state when morale reach 0

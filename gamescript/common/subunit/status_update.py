@@ -277,6 +277,10 @@ def status_update(self, weather=None):
     if full_merge_len > 1:  # reduce discipline if there are overlap subunit
         self.discipline = self.discipline / full_merge_len
 
+    # include all penalties to morale like remaining health, battle situation scale
+    self.morale -= (((40 - (40 * self.subunit_health / self.max_health)) +
+                    (20 - (20 * self.battle.battle_scale[self.team] / 100))) * self.mental)
+
     if self.melee_attack < 0:  # seem like using if 0 is faster than max(0,)
         self.melee_attack = 0
     if self.melee_def < 0:
