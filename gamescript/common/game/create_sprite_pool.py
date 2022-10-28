@@ -1,9 +1,9 @@
 import random
 
 import pygame
-from gamescript.common.subunit import make_sprite
+from gamescript.common.subunit import create_troop_sprite
 
-make_sprite = make_sprite.make_sprite
+create_troop_sprite = create_troop_sprite.create_troop_sprite
 
 
 def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, who_todo, preview=False):
@@ -80,15 +80,15 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                 animation_property = self.generic_animation_pool[0][animation][0]["animation_property"].copy()
 
                 sprite_data = self.troop_data.troop_sprite_list[sprite_id]
-                sprite_dict = make_sprite(animation, this_subunit["Size"], frame_data,
-                                          sprite_data, self.gen_body_sprite_pool,
-                                          self.gen_weapon_sprite_pool,
-                                          self.gen_armour_sprite_pool,
-                                          self.effect_sprite_data, animation_property,
-                                          self.weapon_joint_list,
-                                          (0, subunit_weapon_list[0]), armour,
-                                          self.hair_colour_list, self.skin_colour_list,
-                                          genre_sprite_size, screen_scale, self.troop_data.race_list)
+                sprite_dict = create_troop_sprite(animation, this_subunit["Size"], frame_data,
+                                                  sprite_data, self.gen_body_sprite_pool,
+                                                  self.gen_weapon_sprite_pool,
+                                                  self.gen_armour_sprite_pool,
+                                                  self.effect_sprite_data, animation_property,
+                                                  self.weapon_joint_list,
+                                                  (0, subunit_weapon_list[0]), armour,
+                                                  self.hair_colour_list, self.skin_colour_list,
+                                                  genre_sprite_size, screen_scale, self.troop_data.race_list)
 
                 animation_sprite_pool[subunit_id] = {"sprite": sprite_dict["sprite"],
                                                      "animation_property": sprite_dict["animation_property"],
@@ -119,10 +119,12 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                     next_level[weapon_key[0]] = {}
                 if weapon_key[1] not in next_level:
                     next_level[weapon_key[1]] = {}
-                for animation in self.generic_animation_pool[0]:  # use one side in the list for finding animation name
-                    if (self.play_troop_animation == 1 or "Default" in animation) and \
-                            ("Preview" not in animation and race in animation and
-                             ((mount_race_name == "None" and "&" not in animation) or mount_race_name in animation)):
+                animation_list = list(self.generic_animation_pool[0].keys())
+                animation_list = [item for item in animation_list if "Default" in item] + \
+                                 [item for item in animation_list if "Default" not in item]
+                for animation in animation_list:  # use one side in the list for finding animation name
+                    if "Preview" not in animation and race in animation and \
+                            ((mount_race_name == "None" and "&" not in animation) or mount_race_name in animation):
                         animation_property = self.generic_animation_pool[0][animation][0]["animation_property"].copy()
                         for weapon_set_index, weapon_set in enumerate(
                                 subunit_weapon_list):  # create animation for each weapon set
@@ -183,27 +185,35 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                                     sprite_data = self.leader_data.leader_sprite_list[sprite_id]
                                                 else:  # common leader
                                                     sprite_data = self.leader_data.common_leader_sprite_list[sprite_id]
-                                            sprite_dict = make_sprite(animation, this_subunit["Size"], frame_data,
-                                                                      sprite_data, self.gen_body_sprite_pool,
-                                                                      self.gen_weapon_sprite_pool,
-                                                                      self.gen_armour_sprite_pool,
-                                                                      self.effect_sprite_data, animation_property,
-                                                                      self.weapon_joint_list,
-                                                                      (weapon_set_index, weapon_set), armour,
-                                                                      self.hair_colour_list, self.skin_colour_list,
-                                                                      genre_sprite_size, screen_scale,
-                                                                      self.troop_data.race_list)
-
+                                            sprite_dict = create_troop_sprite(animation, this_subunit["Size"], frame_data,
+                                                                              sprite_data, self.gen_body_sprite_pool,
+                                                                              self.gen_weapon_sprite_pool,
+                                                                              self.gen_armour_sprite_pool,
+                                                                              self.effect_sprite_data, animation_property,
+                                                                              self.weapon_joint_list,
+                                                                              (weapon_set_index, weapon_set), armour,
+                                                                              self.hair_colour_list, self.skin_colour_list,
+                                                                              genre_sprite_size, screen_scale,
+                                                                              self.troop_data.race_list)
+                                            sprite_pic = sprite_dict["sprite"]
+                                            if self.play_troop_animation == 0 and "_Default" not in animation:  # replace sprite with default if disable animation
+                                                sprite_pic = current_in_pool[tuple(current_in_pool.keys())[0]][new_direction][0]["sprite"]
                                             current_in_pool[name_input][new_direction][frame_num] = \
-                                                {"sprite": sprite_dict["sprite"],
+                                                {"sprite": sprite_pic,
                                                  "animation_property": sprite_dict["animation_property"],
                                                  "frame_property": sprite_dict["frame_property"]}
                                             if opposite_direction is not None:  # flip sprite for opposite direction
-                                                current_in_pool[name_input][opposite_direction][frame_num] = {
-                                                    "sprite": pygame.transform.flip(sprite_dict["sprite"].copy(),
-                                                                                    True, False),
-                                                    "animation_property": sprite_dict["animation_property"],
-                                                    "frame_property": sprite_dict["frame_property"]}
+                                                if self.play_troop_animation == 1 or "_Default" in animation:
+                                                    current_in_pool[name_input][opposite_direction][frame_num] = {
+                                                        "sprite": pygame.transform.flip(sprite_dict["sprite"].copy(),
+                                                                                        True, False),
+                                                        "animation_property": sprite_dict["animation_property"],
+                                                        "frame_property": sprite_dict["frame_property"]}
+                                                elif self.play_troop_animation == 0:
+                                                    current_in_pool[name_input][opposite_direction][frame_num] = {
+                                                        "sprite": current_in_pool[tuple(current_in_pool.keys())[0]][opposite_direction][0]["sprite"],
+                                                        "animation_property": sprite_dict["animation_property"],
+                                                        "frame_property": sprite_dict["frame_property"]}
     # except KeyError:  # any key error will return nothing
     #     pass
     return animation_sprite_pool

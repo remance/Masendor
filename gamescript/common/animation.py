@@ -24,8 +24,11 @@ def play_animation(self, speed, dt, scale=1, replace_image=True):
             self.animation_timer = 0
             if self.show_frame < len(current_animation) - 1:
                 self.show_frame += 1
-            else:  # TODO add property
-                done = True
+            else:
+                if "repeat" in self.current_action:
+                    self.show_frame = 0
+                else:
+                    done = True
     if replace_image:  # replace sprite image
         self.image = current_animation[self.show_frame]["sprite"]
     return done

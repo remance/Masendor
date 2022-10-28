@@ -65,7 +65,7 @@ class Subunit(pygame.sprite.Sprite):
     loss_cal = empty_method
     make_front_pos = empty_method
     make_pos_range = empty_method
-    make_sprite = empty_method
+    create_troop_sprite = empty_method
     pick_animation = empty_method
     player_weapon_selection = empty_method
     process_trait_skill = empty_method
@@ -642,7 +642,7 @@ class Subunit(pygame.sprite.Sprite):
                  ("skill" in self.current_action and self.current_action["skill"] not in self.skill_effect) or
                  (self.idle_action and self.idle_action != self.command_action) or
                  self.current_action != self.last_current_action):
-            if done or self.play_troop_animation == 0:  # finish animation, perform something
+            if done:  # finish animation, perform something
                 if self.current_action and "Action" in self.current_action["name"] and \
                         "range attack" in self.current_action:  # shoot bullet
                     weapon = int(self.current_action["name"][-1])
@@ -671,8 +671,8 @@ class Subunit(pygame.sprite.Sprite):
                 self.last_current_action = self.current_action
             else:
                 self.reset_animation()
-                if self.current_action and self.current_action["name"] == "Knockdown":  # stand up after finish knock down
-                    self.current_action = {"name": "StandUp", "uninterruptible": True}
+                if "next action" in self.current_action:  # play next action first instead of command
+                    self.current_action = self.current_action["next action"]
                 else:
                     self.current_action = self.command_action  # continue next action when animation finish
                     self.command_action = self.idle_action

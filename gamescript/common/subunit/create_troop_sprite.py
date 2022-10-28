@@ -9,11 +9,11 @@ rotation_xy = utility.rotation_xy
 default_sprite_size = (200, 200)
 
 
-def make_sprite(animation_name, size, animation_part_list, troop_sprite_list, body_sprite_pool, weapon_sprite_pool,
-                armour_sprite_pool,
-                effect_sprite_pool, animation_property, weapon_joint_list, weapon, armour, hair_colour_list,
-                skin_colour_list, genre_sprite_size,
-                screen_scale, race_list):
+def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_list, body_sprite_pool, weapon_sprite_pool,
+                        armour_sprite_pool,
+                        effect_sprite_pool, animation_property, weapon_joint_list, weapon, armour, hair_colour_list,
+                        skin_colour_list, genre_sprite_size,
+                        screen_scale, race_list):
     apply_colour = animation.apply_colour
     frame_property = animation_part_list["frame_property"].copy()
     animation_property = animation_property.copy()
