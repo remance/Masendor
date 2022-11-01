@@ -168,7 +168,7 @@ def add_new_unit(self, add_unit_list=True):
         if this_subunit.leader is not None:
             this_subunit.leader.subunit_pos = index
 
-    self.zoom = 11 - self.battle.camera_zoom
+    self.zoom = self.battle.max_camera_zoom_image_scale - self.battle.camera_zoom
     self.new_angle = self.angle
 
     self.start_set(self.battle.subunit_updater)

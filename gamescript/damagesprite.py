@@ -125,9 +125,9 @@ class DamageSprite(pygame.sprite.Sprite):
                              self.base_target[0] - self.attacker.unit.base_pos[0])
         self.angle = math.degrees(radians)
 
-        if -180 <= self.angle < 0:  # upper left and upper right
+        if -180 <= self.angle <= 0:  # upper left and upper right
             self.angle = -self.angle - 90
-        elif 0 <= self.angle <= 90:  # lower right -"
+        elif 0 < self.angle <= 90:  # lower right -"
             self.angle = -(self.angle + 90)
         elif 90 < self.angle <= 180:  # lower left +
             self.angle = 270 - self.angle

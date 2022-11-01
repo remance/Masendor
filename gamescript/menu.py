@@ -160,6 +160,9 @@ class InputBox(pygame.sprite.Sprite):
         self.image.blit(text_surface, text_rect)
         self.current_pos = 0
 
+        self.hold_key = 0
+        self.hold_key_unicode = ""
+
         self.active = True
         self.click_input = False
         if click_input:  # active only when click
@@ -178,11 +181,21 @@ class InputBox(pygame.sprite.Sprite):
         text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
         self.image.blit(text_surface, text_rect)
 
-    def player_input(self, event, key_press):
+    def player_input(self, input_event, key_press):
         """register user keyboard and mouse input"""
-        if event.type == pygame.KEYDOWN and self.active:  # text input
+        if self.active:  # text input
             self.image = self.image_original.copy()
-            if event.key == pygame.K_BACKSPACE:
+            event = input_event
+            event_key = None
+            event_unicode = ""
+            if event is not None:
+                event_key = input_event.key
+                event_unicode = event.unicode
+                self.hold_key = event_key  # save last holding press key
+                # print("hold", self.hold_key, key_press.index(True))
+                self.hold_key_unicode = event_unicode
+
+            if event_key == pygame.K_BACKSPACE or self.hold_key == pygame.K_BACKSPACE:
                 if self.current_pos > 0:
                     if self.current_pos > len(self.text):
                         self.text = self.text[:-1]
@@ -191,27 +204,31 @@ class InputBox(pygame.sprite.Sprite):
                     self.current_pos -= 1
                     if self.current_pos < 0:
                         self.current_pos = 0
-            elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:  # use external code instead for enter press
+            elif event_key == pygame.K_RETURN or event_key == pygame.K_KP_ENTER:  # use external code instead for enter press
                 pass
-            elif event.key == pygame.K_RIGHT:
+            elif event_key == pygame.K_RIGHT or self.hold_key == pygame.K_RIGHT:
                 self.current_pos += 1
                 if self.current_pos > len(self.text):
                     self.current_pos = len(self.text)
-            elif event.key == pygame.K_LEFT:
+            elif event_key == pygame.K_LEFT or self.hold_key == pygame.K_LEFT:
                 self.current_pos -= 1
                 if self.current_pos < 0:
                     self.current_pos = 0
-            elif key_press[pygame.K_LCTRL] or key_press[pygame.K_RCTRL]:
-                if event.key == pygame.K_c:
+            elif key_press[pygame.K_LCTRL] or key_press[pygame.K_RCTRL]:  # use keypress for ctrl as it has no effect on its own
+                if event_key == pygame.K_c:
                     pyperclip.copy(self.text)
-                elif event.key == pygame.K_v:
+                elif event_key == pygame.K_v:
                     paste_text = pyperclip.paste()
                     self.text = self.text[:self.current_pos] + paste_text + self.text[self.current_pos:]
                     self.current_pos = self.current_pos + len(paste_text)
-            elif event.unicode != "":
-                self.text = self.text[:self.current_pos] + event.unicode + self.text[self.current_pos:]
+            elif event_unicode != "" or self.hold_key_unicode != "":
+                if event_unicode != "":  # input event_unicode first before holding one
+                    input_unicode = event_unicode
+                elif self.hold_key_unicode != "":
+                    input_unicode = self.hold_key_unicode
+                self.text = self.text[:self.current_pos] + input_unicode + self.text[self.current_pos:]
                 self.current_pos += 1
-            # Re-render the text.
+            # Re-render the text
             show_text = self.text[:self.current_pos] + "|" + self.text[self.current_pos:]
             if self.current_pos > self.max_text:
                 show_text = show_text[abs(self.current_pos - self.max_text):]

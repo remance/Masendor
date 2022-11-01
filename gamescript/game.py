@@ -251,6 +251,9 @@ class Game:
         self.current_popup_row = 0
         self.team_pos = {}  # for saving preview map unit pos
 
+        self.dt = 0
+        self.text_delay = 0
+
         # Decorate the self window
         # icon = load_image(self.main_dir, "sword.jpg")
         # icon = pygame.transform.scale(icon, (32, 32))
@@ -917,6 +920,7 @@ class Game:
         self.battle_game.inspect_button = self.inspect_button
         self.battle_game.inspect_ui = self.inspect_ui
         self.battle_game.behaviour_switch_button = self.behaviour_switch_button
+        self.battle_game.max_camera_zoom_image_scale = self.battle_game.max_zoom + 1
 
         if self.command_ui.ui_type == "command":
             self.command_ui.load_sprite(genre_battle_ui_image["command_box"], genre_icon_image)
@@ -988,7 +992,8 @@ class Game:
 
     def run(self):
         while True:
-            # v Get user input
+            # Get user input
+            self.dt = self.clock.get_time() / 1000  # dt before game_speed
             mouse_left_up = False
             mouse_left_down = False
             mouse_right_up = False
@@ -1017,6 +1022,7 @@ class Game:
                             input_esc = True
                         elif self.input_popup[0] == "text_input":
                             self.input_box.player_input(event, key_press)
+                            self.text_delay = 0.1
                     else:
                         if event.key == K_ESCAPE:
                             esc_press = True
@@ -1064,6 +1070,16 @@ class Game:
                     self.input_box.text_start("")
                     self.input_popup = (None, None)
                     self.main_ui_updater.remove(*self.input_ui_popup, *self.confirm_ui_popup)
+
+                elif self.input_popup[0] == "text_input":
+                    if self.text_delay == 0:
+                        if key_press[self.input_box.hold_key]:
+                            self.input_box.player_input(None, key_press)
+                            self.text_delay = 0.1
+                    else:
+                        self.text_delay += self.dt
+                        if self.text_delay >= 0.3:
+                            self.text_delay = 0
 
             elif self.input_popup == (None, None):
                 self.menu_button.update(self.mouse_pos, mouse_left_up, mouse_left_down)

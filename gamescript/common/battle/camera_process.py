@@ -10,17 +10,17 @@ def camera_process(self, key_state):
             self.camera_fix()
 
         elif key_state[pygame.K_w] or self.mouse_pos[1] <= 5:  # Camera move up
-            self.base_camera_pos[1] -= 4 * (11 - self.camera_zoom)
+            self.base_camera_pos[1] -= 4 * (self.max_camera_zoom_image_scale - self.camera_zoom)
             self.camera_pos[1] = self.base_camera_pos[1] * self.camera_zoom
             self.camera_fix()
 
         if key_state[pygame.K_a] or self.mouse_pos[0] <= 5:  # Camera move left
-            self.base_camera_pos[0] -= 4 * (11 - self.camera_zoom)
+            self.base_camera_pos[0] -= 4 * (self.max_camera_zoom_image_scale - self.camera_zoom)
             self.camera_pos[0] = self.base_camera_pos[0] * self.camera_zoom
             self.camera_fix()
 
         elif key_state[pygame.K_d] or self.mouse_pos[0] >= self.right_corner:  # Camera move right
-            self.base_camera_pos[0] += 4 * (11 - self.camera_zoom)
+            self.base_camera_pos[0] += 4 * (self.max_camera_zoom_image_scale - self.camera_zoom)
             self.camera_pos[0] = self.base_camera_pos[0] * self.camera_zoom
             self.camera_fix()
 

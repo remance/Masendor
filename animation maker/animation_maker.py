@@ -66,7 +66,7 @@ frame_property_list = ["hold", "p1_fix_main_weapon", "p1_fix_sub_weapon", "p2_fi
 anim_property_list = ["dmgsprite", "interuptrevert", "norestart"] + frame_property_list
 
 
-# TODO: unique, lock?
+# TODO: unique (add race/type animation with separate folder instead of generic), lock?,
 
 
 def reload_animation(animation, char):
@@ -1455,6 +1455,7 @@ copy_animation_stat = None
 current_popup_row = 0
 keypress_delay = 0
 point_edit = 0
+text_delay = 0
 text_input_popup = (None, None)
 current_pool = generic_animation_pool
 
@@ -1780,6 +1781,7 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             quit()
+
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:  # left click
                 mouse_left_up = True
@@ -1815,15 +1817,23 @@ while True:
                                                     frame_prop_list_box, current_frame_row,
                                                     frame_prop_list_box.namelist[current_frame], frame_prop_namegroup,
                                                     ui, screen_scale, old_list=frame_property_select[current_frame])
-
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                input_esc = True
-            elif text_input_popup[0] == "text_input":
+            if text_input_popup[0] == "text_input":
                 if input_box in ui:
                     input_box.player_input(event, key_press)
                 elif colour_input_box in ui:
                     colour_input_box.player_input(event, key_press)
+                text_delay = 0.15
+
+            elif event.key == pygame.K_ESCAPE:
+                input_esc = True
+
+    if text_input_popup[0] == "text_input" and text_delay == 0 and key_press[input_box.hold_key]:
+        if input_box in ui:
+            input_box.player_input(None, key_press)
+        elif colour_input_box in ui:
+            colour_input_box.player_input(None, key_press)
+        text_delay = 0.1
 
     if pygame.mouse.get_pressed()[0]:  # Hold left click
         mouse_left_down = True
@@ -1833,8 +1843,13 @@ while True:
         mouse_right_down = True
 
     ui.remove(text_popup)
-    if input_ui not in ui and colour_ui not in ui:
 
+    if text_delay > 0:
+        text_delay += ui_dt
+        if text_delay >= 0.3:
+            text_delay = 0
+
+    if input_ui not in ui and colour_ui not in ui:
         if key_press is not None and keypress_delay < 0.1:
             if key_press[pygame.K_LCTRL] or key_press[pygame.K_RCTRL]:
                 ctrl_press = True
@@ -1906,9 +1921,9 @@ while True:
             if mouse_timer >= 0.3:  # time pass 0.3 second no longer count as double click
                 mouse_timer = 0
 
-        if keypress_delay != 0:  # player click mouse once before
-            keypress_delay += ui_dt  # increase timer for mouse click using real time
-            if keypress_delay >= 0.3:  # time pass 0.3 second no longer count as double click
+        if keypress_delay != 0:  # player press key once before
+            keypress_delay += ui_dt
+            if keypress_delay >= 0.3:
                 keypress_delay = 0
 
         if mouse_left_up:
@@ -2264,8 +2279,16 @@ while True:
                         ui.add(input_ui_popup)
 
                     elif duplicate_button.rect.collidepoint(mouse_pos):
-                        text_input_popup = ("confirm_input", "duplicate_animation")
+                        text_input_popup = ("text_input", "duplicate_animation")
                         input_ui.change_instruction("Duplicate Current Animation?")
+                        last_char = str(1)
+                        if animation_name + "(copy" + last_char + ")" in current_pool[0]:  # copy exist
+                            while animation_name + "(copy" + last_char + ")" in current_pool[0]:
+                                last_char = str(int(last_char) + 1)
+                        elif "(copy" in animation_name and animation_name[-2].isdigit() and animation_name[-1] == ")":
+                            last_char = str(int(animation_name[-2]) + 1)
+                        input_box.text_start(animation_name + "(copy" + last_char + ")")
+
                         ui.add(input_ui_popup)
 
                     elif filter_button.rect.collidepoint(mouse_pos):
@@ -2561,16 +2584,11 @@ while True:
 
             elif text_input_popup[1] == "duplicate_animation":
                 old_name = animation_name
-                last_char = str(1)
-                if animation_name + "(copy" + last_char + ")" in current_pool[0]:  # copy exist
-                    while animation_name + "(copy" + last_char + ")" in current_pool[0]:
-                        last_char = str(int(last_char) + 1)
-                elif "(copy" in animation_name and animation_name[-2].isdigit() and animation_name[-1] == ")":
-                    last_char = int(animation_name[-2]) + 1
-                animation_name = animation_name + "(copy" + last_char + ")"
-                animation_selector.change_name(animation_name)
-                anim_to_pool(animation_name, current_pool, model, activate_list, activate_list, duplicate=old_name)
-                model.clear_history()
+                if input_box.text not in current_pool[0]:  # no existing name already
+                    animation_name = input_box.text
+                    animation_selector.change_name(animation_name)
+                    anim_to_pool(animation_name, current_pool, model, activate_list, activate_list, duplicate=old_name)
+                    model.clear_history()
 
             elif text_input_popup[1] == "del_animation":
                 anim_del_pool(current_pool, animation_name)

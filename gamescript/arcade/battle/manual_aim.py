@@ -42,7 +42,7 @@ def manual_aim(self, key_press, mouse_left_up, mouse_right_up, mouse_scroll_up, 
     self.single_text_popup.pop(self.cursor.rect.bottomright, shoot_text)
 
     if key_press == pygame.K_q:  # Cancel manual aim
-        self.camera_zoom = 10
+        self.camera_zoom = self.max_zoom
         self.camera_zoom_change()
         self.cursor.change_image("normal")
         self.battle_ui_updater.remove(self.single_text_popup)
@@ -59,8 +59,8 @@ def manual_aim(self, key_press, mouse_left_up, mouse_right_up, mouse_scroll_up, 
     elif self.map_scale_delay == 0:
         if mouse_scroll_up:
             self.camera_zoom += 1
-            if self.camera_zoom > 10:
-                self.camera_zoom = 10
+            if self.camera_zoom > self.max_zoom:
+                self.camera_zoom = self.max_zoom
             else:
                 self.camera_zoom_change()
         elif mouse_scroll_down:

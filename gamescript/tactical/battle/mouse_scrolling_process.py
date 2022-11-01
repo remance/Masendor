@@ -86,8 +86,8 @@ def mouse_scrolling_process(self, mouse_scroll_up, mouse_scroll_down):
     elif self.map_scale_delay == 0:  # Scrolling in self map to zoom
         if mouse_scroll_up:
             self.camera_zoom += 1
-            if self.camera_zoom > 10:
-                self.camera_zoom = 10
+            if self.camera_zoom > self.max_zoom:
+                self.camera_zoom = self.max_zoom
             else:
                 self.camera_zoom_change()
 

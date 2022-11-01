@@ -33,8 +33,6 @@ class Subunit(pygame.sprite.Sprite):
     common_leader_sprite_list = None
     status_list = None
     animation_sprite_pool = None
-    max_zoom = 10  # max zoom allow
-    screen_scale = (1, 1)
     subunit_state = None
 
     play_animation = animation.play_animation
@@ -168,8 +166,13 @@ class Subunit(pygame.sprite.Sprite):
         self.timer = random.random()  # may need to use random.random()
         self.move_timer = 0  # timer for moving to front position before attacking nearest enemy
         self.charge_momentum = 1  # charging momentum to reach target before choosing the nearest enemy
+
         self.zoom = 1
+        self.max_zoom = self.battle.max_zoom  # closest zoom allowed
         self.last_zoom = 0
+
+        self.screen_scale = self.battle.screen_scale
+
         self.skill_cond = 0
         self.broken_limit = 0  # morale require for unit to stop broken state, will increase everytime broken state stop
         self.interrupt_animation = False

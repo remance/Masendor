@@ -87,6 +87,8 @@ class Battle:
 
     # variable that get changed based on genre
     start_zoom = 1
+    max_zoom = 10
+    max_camera_zoom_image_scale = 11
     start_zoom_mode = "Free"
     time_speed_scale = 1
     troop_size_adjustable = False
@@ -602,10 +604,11 @@ class Battle:
                 self.camera_fix()
 
         self.map_scale_delay = 0  # delay for map zoom input
+        self.text_delay = 0
         self.mouse_timer = 0  # This is timer for checking double mouse click, use realtime
         self.ui_timer = 0  # This is timer for ui update function, use realtime
         self.drama_timer = 0  # This is timer for combat related function, use self time (realtime * game_speed)
-        self.dt = 0  # Realtime used for in self calculation
+        self.dt = 0  # Realtime used for time calculation
         self.ui_dt = 0  # Realtime used for ui timer
         self.weather_spawn_timer = 0
         self.last_mouseover = None  # Which subunit last mouse over
@@ -636,7 +639,7 @@ class Battle:
 
         while True:  # self running
             self.fps_count.fps_show(self.clock)
-            key_press = None
+            event_key_press = None
             mouse_left_up = False  # left click
             mouse_left_down = False  # hold left click
             mouse_right_up = False  # right click
@@ -644,9 +647,11 @@ class Battle:
             double_mouse_right = False  # double right click
             mouse_scroll_down = False
             mouse_scroll_up = False
-            key_state = pygame.key.get_pressed()
+            key_press = pygame.key.get_pressed()
             esc_press = False
             self.click_any = False
+
+            self.true_dt = self.clock.get_time() / 1000  # dt before game_speed
 
             self.battle_ui_updater.remove(self.single_text_popup)  # remove button text popup every update
 
@@ -697,9 +702,10 @@ class Battle:
 
                 elif event.type == pygame.KEYDOWN:
                     if self.input_popup[0] == "text_input":  # event update to input box
-                        self.input_box.player_input(event)
+                        self.input_box.player_input(event, key_press)
+                        self.text_delay = 0.1
                     else:
-                        key_press = event.key
+                        event_key_press = event.key
 
             if pygame.mouse.get_pressed()[0]:  # Hold left click
                 mouse_left_down = True
@@ -725,41 +731,41 @@ class Battle:
                             self.mouse_scrolling_process(mouse_scroll_up, mouse_scroll_down)
 
                         # keyboard input
-                        if key_press is not None:
-                            self.battle_keyboard_process(key_press)
+                        if event_key_press is not None:
+                            self.battle_keyboard_process(event_key_press)
 
-                        self.camera_process(key_state)
+                        self.camera_process(key_press)
 
                         if self.mouse_timer != 0:  # player click mouse once before
                             self.mouse_timer += self.ui_dt  # increase timer for mouse click using real time
                             if self.mouse_timer >= 0.3:  # time pass 0.3 second no longer count as double click
                                 self.mouse_timer = 0
 
-                        if mouse_left_up or mouse_right_up or mouse_left_down or mouse_right_down or key_state:
+                        if mouse_left_up or mouse_right_up or mouse_left_down or mouse_right_down or key_press:
                             self.mouse_process(mouse_left_up, mouse_right_up, mouse_left_down,
-                                               mouse_right_down, key_state)
+                                               mouse_right_down, key_press)
 
                             if self.game_state == "battle":
                                 self.battle_mouse_process(mouse_left_up, mouse_right_up, double_mouse_right,
-                                                          mouse_left_down, mouse_right_down, key_state, key_press)
+                                                          mouse_left_down, mouse_right_down, key_press, event_key_press)
 
                             elif self.game_state == "editor":  # unit editor state
                                 self.editor_mouse_process(mouse_left_up, mouse_right_up, mouse_left_down,
-                                                          mouse_right_down, key_state, key_press)
+                                                          mouse_right_down, key_press, event_key_press)
 
                         self.selected_unit_process(mouse_left_up, mouse_right_up, double_mouse_right,
-                                                   mouse_left_down, mouse_right_down, key_state, key_press)
+                                                   mouse_left_down, mouse_right_down, key_press, event_key_press)
                     else:  # register and process ui that require player input and block everything else
                         if type(self.player_input_state) != str:  # ui input state
                             choice = self.player_input_state.selection(self.mouse_pos)
                             if self.player_input_state in self.wheel_ui:  # wheel ui process
                                 if mouse_left_up:
                                     self.wheel_ui_process(choice)
-                                elif key_press == pygame.K_q:  # Close unit command wheel ui
+                                elif event_key_press == pygame.K_q:  # Close unit command wheel ui
                                     self.battle_ui_updater.remove(self.wheel_ui)
                                     self.player_input_state = None
                         elif "aim" in self.player_input_state:
-                            self.manual_aim(key_press, mouse_left_up, mouse_right_up, mouse_scroll_up,
+                            self.manual_aim(event_key_press, mouse_left_up, mouse_right_up, mouse_scroll_up,
                                             mouse_scroll_down)
 
                     # Drama text function
@@ -956,13 +962,12 @@ class Battle:
                     self.camera.update(self.camera_pos, self.battle_camera, self.camera_zoom)
 
                     # Update game time
-                    self.dt = self.clock.get_time() / 1000  # dt before game_speed
+                    self.dt = self.true_dt * self.game_speed  # apply dt with game_speed for calculation
                     if self.ui_timer >= 1.1:  # reset ui timer every 1.1 seconds
                         self.ui_timer -= 1.1
                     self.ui_timer += self.dt  # ui update by real time instead of self time to reduce workload
                     self.ui_dt = self.dt  # get ui timer before apply self
 
-                    self.dt = self.dt * self.game_speed  # apply dt with game_speed for calculation
                     if self.dt > 0.1:
                         self.dt = 0.1  # make it so stutter and lag does not cause overtime issue
 
@@ -1068,6 +1073,16 @@ class Battle:
                     self.input_box.text_start("")
                     self.input_popup = (None, None)
                     self.battle_ui_updater.remove(*self.input_ui_popup, *self.confirm_ui_popup)
+
+                elif self.input_popup[0] == "text_input":
+                    if self.text_delay == 0:
+                        if event_key_press[self.input_box.hold_key]:
+                            self.input_box.player_input(None, key_press)
+                            self.text_delay = 0.1
+                    else:
+                        self.text_delay += self.true_dt
+                        if self.text_delay >= 0.3:
+                            self.text_delay = 0
 
             self.screen.blit(self.camera.image, (0, 0))  # Draw the self camera and everything that appear in it
             self.battle_ui_updater.draw(self.screen)  # Draw the UI

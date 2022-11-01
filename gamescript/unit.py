@@ -17,8 +17,6 @@ script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
 class Unit(pygame.sprite.Sprite):
     empty_method = utility.empty_method
 
-    max_zoom = 10  # max zoom allow
-    screen_scale = (1, 1)
     battle = None
     form_change_timer = 10
     image_size = None
@@ -96,8 +94,11 @@ class Unit(pygame.sprite.Sprite):
         self.colour = colour  # box colour according to team
         self.commander = commander  # True if commander unit
 
-        self.zoom = 10  # start with the closest zoom
+        self.max_zoom = self.battle.max_zoom  # closest zoom allowed
+        self.zoom = self.max_zoom  # start with the closest zoom
         self.last_zoom = 1  # zoom level without calculate with 11 - zoom for scale
+
+        self.screen_scale = self.battle.screen_scale
 
         self.base_width_box, self.base_height_box = len(self.subunit_id_array[0]) * (self.image_size[0] + 10) / 20, \
                                                     len(self.subunit_id_array) * (self.image_size[1] + 2) / 20

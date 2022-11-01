@@ -15,6 +15,7 @@ object_variable = {("self", "object"): {"add_troop_number_sprite": True,  # troo
                                         },
                    ("battle_game", "self-object"): {"start_zoom_mode": "Free",  # rts style camera
                                                     "start_zoom": 1,  # start with the furthest zoom
+                                                    "max_zoom": 10,  # maximum zoom level
                                                     "troop_size_adjustable": False,  # troop always at size 1
                                                     "time_speed_scale": 10,  # how fast time fly in battle
                                                     "unit_behaviour_wheel": unit_behaviour_wheel
