@@ -218,15 +218,15 @@ class Game:
         if not os.path.exists("\\profile"):  # make profile folder if not existed
             os.makedirs("\\profile")
             os.makedirs("\\profile\\unitpreset")
-        if not os.path.exists("profile/unitpreset/" + str(self.ruleset)):  # create unitpreset folder for ruleset
-            os.makedirs("profile/unitpreset/" + str(self.ruleset))
+        if not os.path.exists("profile\\unitpreset\\" + str(self.ruleset)):  # create unitpreset folder for ruleset
+            os.makedirs("profile\\unitpreset\\" + str(self.ruleset))
         try:
             custom_unit_preset_list = csv_read(self.main_dir, "custom_unitpreset.csv",
                                                ["profile", "unitpreset", str(self.ruleset)])
             del custom_unit_preset_list["presetname"]
             self.custom_unit_preset_list = {"New Preset": 0, **custom_unit_preset_list}
         except Exception:
-            with open("profile/unitpreset/" + str(self.ruleset) + "/custom_unitpreset.csv", "w") as edit_file:
+            with open("profile\\unitpreset\\" + str(self.ruleset) + "\\custom_unitpreset.csv", "w") as edit_file:
                 file_writer = csv.writer(edit_file, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL)
                 file_writer.writerow(
                     ["presetname", "unitline2", "unitline2", "unitline3", "unitline4", "unitline15", "unitline6",
@@ -547,7 +547,7 @@ class Game:
             self.master_volume = float(self.master_volume / 100)
             pygame.mixer.music.set_volume(self.master_volume)
             self.SONG_END = pygame.USEREVENT + 1
-            self.music_list = glob.glob(self.main_dir + "/data/sound/music/*.ogg")
+            self.music_list = glob.glob(self.main_dir + "\\data\\sound\\music\\*.ogg")
             pygame.mixer.music.load(self.music_list[0])
             pygame.mixer.music.play(-1)
         # ^ End Main menu
@@ -812,7 +812,7 @@ class Game:
                             elif ".py" in this_file.name:
                                 file_name = this_file.name[:-3]
                             exec(f"from " + script_folder + "." + new_genre + "." +
-                                 folder.replace("/", ".") + " import " + file_name)
+                                 folder.replace("\\", ".") + " import " + file_name)
                             try:
                                 exec(
                                     f"" + change_object.lower() + "." + change_object + "." +
@@ -860,7 +860,7 @@ class Game:
         # Change genre for other objects
         import_genre_module(self.script_dir, self.genre, new_genre, "Subunit", ("subunit",))
         import_genre_module(self.script_dir, self.genre, new_genre, "Unit", ("unit",))
-        import_genre_module(self.script_dir, self.genre, new_genre, "Battle", ("battle", "battle/uniteditor", "ui"))
+        import_genre_module(self.script_dir, self.genre, new_genre, "Battle", ("battle", "battle\\uniteditor", "ui"))
         import_genre_module(self.script_dir, self.genre, new_genre, "Leader", ("leader",))
 
         for object_key in genre_setting.object_variable:  # add genre-specific variables to appropriate object

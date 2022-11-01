@@ -31,6 +31,7 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
             primary_sub_weapon = this_subunit["Primary Sub Weapon"][0]
             secondary_main_weapon = this_subunit["Secondary Main Weapon"][0]
             secondary_sub_weapon = this_subunit["Secondary Sub Weapon"][0]
+            hand_weapon_list = ((primary_main_weapon, primary_sub_weapon), (secondary_main_weapon, secondary_sub_weapon))
             armour = (self.troop_data.armour_list[this_subunit["Armour"][0]]["Name"],
                       self.troop_data.mount_armour_list[this_subunit["Mount"][2]]["Name"])
             weapon_key = (str(primary_main_weapon) + "," + str(primary_sub_weapon),
@@ -48,6 +49,7 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                      weapon_list[primary_sub_weapon]["Common"])]
             weapon_attack_action = [(weapon_list[primary_main_weapon]["Attack"],
                                      weapon_list[primary_sub_weapon]["Attack"])]
+
             if (primary_main_weapon, primary_sub_weapon) != (secondary_main_weapon, secondary_sub_weapon):
                 subunit_weapon_list = [subunit_weapon_list[0],
                                        (weapon_list[secondary_main_weapon]["Name"],
@@ -86,8 +88,10 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                                   self.gen_armour_sprite_pool,
                                                   self.effect_sprite_data, animation_property,
                                                   self.weapon_joint_list,
-                                                  (0, subunit_weapon_list[0]), armour,
-                                                  self.hair_colour_list, self.skin_colour_list,
+                                                  (0, subunit_weapon_list[0],
+                                                   (self.troop_data.weapon_list[primary_main_weapon]["Hand"],
+                                                    self.troop_data.weapon_list[primary_sub_weapon]["Hand"])),
+                                                  armour, self.hair_colour_list, self.skin_colour_list,
                                                   genre_sprite_size, screen_scale, self.troop_data.race_list)
 
                 animation_sprite_pool[subunit_id] = {"sprite": sprite_dict["sprite"],
@@ -191,8 +195,11 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                                                               self.gen_armour_sprite_pool,
                                                                               self.effect_sprite_data, animation_property,
                                                                               self.weapon_joint_list,
-                                                                              (weapon_set_index, weapon_set), armour,
-                                                                              self.hair_colour_list, self.skin_colour_list,
+                                                                              (weapon_set_index, weapon_set,
+                                                                               (self.troop_data.weapon_list[hand_weapon_list[weapon_set_index][0]]["Hand"],
+                                                                                self.troop_data.weapon_list[hand_weapon_list[weapon_set_index][1]]["Hand"])),
+                                                                              armour, self.hair_colour_list,
+                                                                              self.skin_colour_list,
                                                                               genre_sprite_size, screen_scale,
                                                                               self.troop_data.race_list)
                                             sprite_pic = sprite_dict["sprite"]

@@ -34,7 +34,10 @@ def add_weapon_stat(self):
                 self.range_weapon_set[set_index] += dmg_sum  # add weapon damage for sort
 
             self.trait["Weapon"][set_index][weapon_index] += weapon_stat["Trait"]
-            self.original_weapon_speed[set_index][weapon_index] = weapon_stat["Cooldown"]
+            if weapon_index == 1 and weapon_stat["Hand"] == 2:  # 2 handed weapon as sub weapon get attack speed penalty
+                self.original_weapon_speed[set_index][weapon_index] = weapon_stat["Cooldown"] * 1.5
+            else:
+                self.original_weapon_speed[set_index][weapon_index] = weapon_stat["Cooldown"]
             self.weapon_weight[set_index][weapon_index] = weapon_stat["Weight"]
             self.weight += weapon_stat["Weight"]
             self.weapon_skill[set_index][weapon_index] = weapon_stat["Skill"][0]  # take only first skill

@@ -9,10 +9,9 @@ rotation_xy = utility.rotation_xy
 default_sprite_size = (200, 200)
 
 
-def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_list, body_sprite_pool, weapon_sprite_pool,
-                        armour_sprite_pool,
-                        effect_sprite_pool, animation_property, weapon_joint_list, weapon, armour, hair_colour_list,
-                        skin_colour_list, genre_sprite_size,
+def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_list, body_sprite_pool,
+                        weapon_sprite_pool, armour_sprite_pool, effect_sprite_pool, animation_property,
+                        weapon_joint_list, weapon, armour, hair_colour_list, skin_colour_list, genre_sprite_size,
                         screen_scale, race_list):
     apply_colour = animation.apply_colour
     frame_property = animation_part_list["frame_property"].copy()
@@ -67,9 +66,39 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
                                        colour_list=colour_list, armour=this_armour)
         if image_part is not None:  # skip for empty image
             target = (new_part[3], new_part[4])
-            angle = new_part[5]
             flip = new_part[6]
             scale = new_part[8]
+
+            new_target = target
+
+            use_center = False
+
+            p = layer[:3]
+
+            if "weapon" in layer:  # only weapon use joint to calculate position
+                part_name = weapon[1][0]  # main weapon
+                if "sub" in layer:
+                    part_name = weapon[1][1]  # sub weapon
+                center = pygame.Vector2(image_part.get_width() / 2, image_part.get_height() / 2)
+                use_center = True
+                if (p + "main_" in layer and p + "fix_main_weapon" not in check_prop) or \
+                        (p + "sub_" in layer and p + "fix_sub_weapon" not in check_prop):
+                    target = (animation_part_list[p + "r_hand"][3], animation_part_list[p + "r_hand"][4])
+                    use_center = False
+                    if p + "main_weapon" in layer:  # main weapon
+                        if weapon[2][1] == 2 and "_Sub_" in animation_name:  # sub weapon is 2 handed weapon and animation use sub weapon
+                            use_center = True
+                        elif part[1] != "sheath":  # change main weapon pos to right hand, if part is not sheath
+                            target = (animation_part_list[p + "r_hand"][3], animation_part_list[p + "r_hand"][4])
+                            use_center = False  # use weapon joint
+                    elif p + "sub_weapon" in layer:  # sub weapon
+                        if weapon[2][0] == 2:  # main weapon is 2 handed weapon
+                            use_center = True  # use center point instead of joint
+                            target = (animation_part_list[p + "body"][3],
+                                      animation_part_list[p + "body"][4])  # put on back
+                        elif part[1] != "sheath":  # change main weapon pos to left hand, if part is not sheath
+                            target = (animation_part_list[p + "l_hand"][3], animation_part_list[p + "l_hand"][4])
+                    new_target = target
 
             part_rotated = image_part.copy()
             if scale != 1:
@@ -82,56 +111,33 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
                     part_rotated = pygame.transform.flip(part_rotated, False, True)
                 elif flip == 3:
                     part_rotated = pygame.transform.flip(part_rotated, True, True)
+
+            angle = new_part[5]
+
             if angle != 0:
                 part_rotated = pygame.transform.rotate(part_rotated, angle)  # rotate part sprite
 
-            new_target = target
+            if "weapon" in layer and weapon_joint_list[new_part[0]][
+                part_name] != "center" and use_center is False:  # use weapon joint pos and hand pos for weapon position blit
+                main_joint_pos = [weapon_joint_list[new_part[0]][part_name][0],
+                                  weapon_joint_list[new_part[0]][part_name][1]]
 
-            if "weapon" in layer:  # only weapon use joint to calculate position
-                part_name = weapon[1][0]  # main weapon
-                if "sub" in layer:
-                    part_name = weapon[1][1]  # sub weapon
-                center = pygame.Vector2(image_part.get_width() / 2, image_part.get_height() / 2)
-                use_center = False
-                if ("p1_main" in layer and "p1_fix_main_weapon" not in check_prop) or \
-                        ("p2_main" in layer and "p2_fix_main_weapon" not in check_prop) or \
-                        ("p1_sub" in layer and "p1_fix_sub_weapon" not in check_prop) or \
-                        ("p2_sub" in layer and "p2_fix_sub_weapon" not in check_prop):
+                # change pos from flip
+                if flip in (1, 3):  # horizontal flip
+                    hori_diff = image_part.get_width() - main_joint_pos[0]
+                    main_joint_pos = (hori_diff, main_joint_pos[1])
+                if flip >= 2:  # vertical flip
+                    vert_diff = image_part.get_height() - main_joint_pos[1]
+                    main_joint_pos = (main_joint_pos[0], vert_diff)
 
-                    target = (animation_part_list["p1_r_hand"][3], animation_part_list["p1_r_hand"][4])
-                    if "p2_main" in layer:  # change p2 main weapon pos to p2 right hand
-                        target = (animation_part_list["p2_r_hand"][3], animation_part_list["p2_r_hand"][4])
-                    elif "sub" in layer and (
-                            "2hand" in animation_name or "2pole" in animation_name):  # has sub weapon but main is 2 hands weapon
-                        use_center = True  # use pos according to data instead of hand, usually attach to the back of body part. and use center not joint
-                    else:
-                        if "p1_sub" in layer:
-                            target = (animation_part_list["p1_l_hand"][3], animation_part_list["p1_l_hand"][4])
-                        elif "p2_sub" in layer:
-                            target = (animation_part_list["p2_l_hand"][3], animation_part_list["p2_l_hand"][4])
-                    new_target = target
-
-                if weapon_joint_list[new_part[0]][
-                    part_name] != "center" and use_center is False:  # use weapon joint pos and hand pos for weapon position blit
-                    main_joint_pos = [weapon_joint_list[new_part[0]][part_name][0],
-                                      weapon_joint_list[new_part[0]][part_name][1]]
-
-                    # change pos from flip
-                    if flip in (1, 3):  # horizontal flip
-                        hori_diff = image_part.get_width() - main_joint_pos[0]
-                        main_joint_pos = (hori_diff, main_joint_pos[1])
-                    if flip >= 2:  # vertical flip
-                        vert_diff = image_part.get_height() - main_joint_pos[1]
-                        main_joint_pos = (main_joint_pos[0], vert_diff)
-
-                    pos_different = center - main_joint_pos  # find distance between image center and connect point main_joint_pos
-                    new_target = new_target + pos_different
-                    if angle != 0:
-                        radians_angle = math.radians(360 - angle)
-                        if angle < 0:
-                            radians_angle = math.radians(-angle)
-                        new_target = rotation_xy(target, new_target,
-                                                 radians_angle)  # find new center point with rotation
+                pos_different = center - main_joint_pos  # find distance between image center and connect point main_joint_pos
+                new_target = new_target + pos_different
+                if angle != 0:
+                    radians_angle = math.radians(360 - angle)
+                    if angle < 0:
+                        radians_angle = math.radians(-angle)
+                    new_target = rotation_xy(target, new_target,
+                                             radians_angle)  # find new center point with rotation
 
             rect = part_rotated.get_rect(center=new_target)
             surface.blit(part_rotated, rect)
