@@ -40,7 +40,7 @@ def skill_check_logic(self):
                     else:
                         self.command_action = {}
                 elif "Charge" in command_action:
-                    action = self.skill[0]["Action"].copy()
+                    action = self.skill[self.charge_skill]["Action"].copy()
                     weapon = int(command_action[-1])
                     action[0] = ("Main_", "Sub_")[weapon] + self.action_list[weapon]["Common"] + "_" + \
                                 action[0]

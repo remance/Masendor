@@ -85,21 +85,23 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
                         (p + "sub_" in layer and p + "fix_sub_weapon" not in check_prop):
                     use_center = False
                     if p + "main_weapon" in layer:  # main weapon
-                        if weapon[2][1] == 2 and "_Sub_" in animation_name:  # sub weapon is 2 handed weapon and animation use sub weapon
-                            use_center = True
-                        elif part[1] != "sheath":  # change main weapon pos to right hand, if part is not sheath
+                        if part[1] != "sheath":  # change main weapon pos to right hand, if part is not sheath
                             target = (animation_part_list[p + "r_hand"][3], animation_part_list[p + "r_hand"][4])
                             use_center = False  # use weapon joint
-                    elif p + "sub_weapon" in layer:  # sub weapon
-                        if weapon[2][0] == 2:  # main weapon is 2 handed weapon
-                            use_center = True  # use center point instead of joint
+                        else:
                             target = (animation_part_list[p + "body"][3],
                                       animation_part_list[p + "body"][4])  # put on back
-                        elif part[1] != "sheath":  # change main weapon pos to hand, if part is not sheath
+                            use_center = True
+                    elif p + "sub_weapon" in layer:  # sub weapon
+                        if part[1] != "sheath":  # change main weapon pos to hand, if part is not sheath
                             if "_Sub_" in animation_name and weapon[2][1] == 2:  # two-handed sub weapon use same animation as main for attack, remove if different
                                 target = (animation_part_list[p + "r_hand"][3], animation_part_list[p + "r_hand"][4])
                             else:
                                 target = (animation_part_list[p + "l_hand"][3], animation_part_list[p + "l_hand"][4])
+                        else:
+                            target = (animation_part_list[p + "body"][3],
+                                      animation_part_list[p + "body"][4])  # put on back
+                            use_center = True
                     new_target = target
 
             part_rotated = image_part.copy()

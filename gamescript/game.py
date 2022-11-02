@@ -85,6 +85,8 @@ leader_level = ("Commander", "Sub-General", "Sub-General", "Sub-Commander", "Gen
 
 team_colour = unit.team_colour
 
+script_folder = "gamescript"
+
 
 class Game:
     empty_method = utility.empty_method
@@ -158,10 +160,10 @@ class Game:
             config.read_file(open("configuration.ini"))  # read config file
         except FileNotFoundError:  # Create config file if not found with the default
             try:  # for repo version
-                genre_folder = Path(os.path.join(self.main_dir, "gamescript"))
+                genre_folder = Path(os.path.join(self.main_dir, script_folder))
                 genre_folder = [x for x in genre_folder.iterdir() if x.is_dir()]
             except FileNotFoundError:  # for release version
-                genre_folder = Path(os.path.join(self.main_dir, "lib", "gamescript"))
+                genre_folder = Path(os.path.join(self.main_dir, "lib", script_folder))
                 genre_folder = [x for x in genre_folder.iterdir() if x.is_dir()]
             genre_folder = [str(folder_name).split("\\")[-1].capitalize() for folder_name in genre_folder]
             if "__pycache__" in genre_folder:
@@ -526,7 +528,7 @@ class Game:
         self.option_menu_slider = self.volume_slider
 
         # Genre related stuff
-        genre_folder = Path(os.path.join(main_dir, "gamescript"))  # Load genre list
+        genre_folder = Path(os.path.join(main_dir, script_folder))  # Load genre list
         subdirectories = [x for x in genre_folder.iterdir() if x.is_dir()]
         subdirectories = [str(folder_name).split("\\")[-1].capitalize() for folder_name in subdirectories]
         subdirectories.remove("__pycache__")
@@ -791,16 +793,14 @@ class Game:
     def change_game_genre(self, genre):
         """Add new genre module here"""
 
-        def import_genre_module(directory, old_genre, new_genre, change_object, folder_list,
-                                script_folder="gamescript"):
+        def import_genre_module(directory, old_genre, new_genre, change_object, folder_list):
             """
             Import module from specific genre folder
             :param directory: Directory path to game file
-            :param new_genre: Old genre folder name
-            :param genre: Genre folder name
+            :param old_genre: Old genre folder name
+            :param new_genre: Genre folder name
             :param change_object: Object that require the module as class function
             :param folder_list: List of folder name to import module
-            :param script_folder: Name of game script folder
             """
 
             def empty(*args):  # empty method for genre that does not use already existing method in new selected genre
