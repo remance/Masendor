@@ -14,7 +14,7 @@ def effect_icon_blit(self):
 
     for status in self.troop_card_ui.value2["status"]:
         self.effect_icon.add(
-            battleui.SkillCardIcon(self.status_images["0.png"], (position[0], position[1]), "status", game_id=status))
+            battleui.SkillCardIcon(self.status_images["0"], (position[0], position[1]), "status", game_id=status))
         position[0] += 40
         if position[0] >= screen_rect.width:
             position[1] += 30
