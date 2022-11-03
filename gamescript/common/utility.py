@@ -179,7 +179,7 @@ def make_long_text(surface, text, pos, font, color=pygame.Color("black")):
         max_width, max_height = surface.get_size()
         for line in words:
             for word in line:
-                word_surface = font.render(word, 0, color)
+                word_surface = font.render(word, True, color)
                 word_width, word_height = word_surface.get_size()
                 if x + word_width >= max_width:
                     x = pos[0]  # reset x

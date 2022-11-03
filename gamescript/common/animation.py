@@ -74,7 +74,7 @@ def apply_colour(surface, colour, colour_list, keep_white=True):
             else:
                 mid_colour = colour_list[colour]
             white_colour = "white"
-        size = (surface.get_width(), surface.get_height())
+        size = surface.get_size()
         data = pygame.image.tostring(surface, "RGBA")  # convert image to string data for filtering effect
         surface = Image.frombytes("RGBA", size, data)  # use PIL to get image data
         alpha = surface.split()[-1]  # save alpha

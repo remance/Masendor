@@ -3,6 +3,8 @@ import pygame.freetype
 
 from gamescript.common import utility
 
+from PIL import Image
+
 
 class Lorebook(pygame.sprite.Sprite):
     concept_stat = None
@@ -85,7 +87,7 @@ class Lorebook(pygame.sprite.Sprite):
                           self.troop_data.mount_armour_lore):
             for index in stat_list:
                 if index != "ID":
-                    self.equipment_stat[run] = stat_list[index]
+                    self.equipment_lore[run] = stat_list[index]
                     run += 1
 
         # Make new skill list that contain all troop and leader skills
@@ -105,15 +107,15 @@ class Lorebook(pygame.sprite.Sprite):
                     self.skill_lore[run] = stat_list[index]
                     run += 1
 
-        self.section_list = (
-            (self.concept_stat, self.concept_lore), (self.history_stat, self.history_lore),
-            (self.faction_data.faction_list, self.faction_data.faction_lore),
-            (self.troop_data.troop_list, self.troop_data.troop_lore), (self.equipment_stat, self.equipment_lore),
-            (self.troop_data.status_list, self.troop_data.status_lore),
-            (self.skill_stat, self.skill_lore), (self.troop_data.trait_list, self.troop_data.trait_lore),
-            (self.leader_data.leader_list, self.leader_data.leader_lore),
-            (self.battle_map_data.feature_mod, self.battle_map_data.feature_mod_lore),
-            (self.battle_map_data.weather_data, self.battle_map_data.weather_lore))
+        self.section_list = ((self.concept_stat, self.concept_lore), (self.history_stat, self.history_lore),
+                             (self.faction_data.faction_list, self.faction_data.faction_lore),
+                             (self.troop_data.troop_list, self.troop_data.troop_lore), (self.equipment_stat, self.equipment_lore),
+                             (self.troop_data.status_list, self.troop_data.status_lore),
+                             (self.skill_stat, self.skill_lore), (self.troop_data.trait_list, self.troop_data.trait_lore),
+                             (self.leader_data.leader_list, self.leader_data.leader_lore),
+                             (self.battle_map_data.feature_mod, self.battle_map_data.feature_mod_lore),
+                             (self.battle_map_data.weather_data, self.battle_map_data.weather_lore))
+
 
     def change_page(self, page, page_button, main_ui, portrait=None):
         """Change page of the current subsection, either next or previous page"""
@@ -184,14 +186,20 @@ class Lorebook(pygame.sprite.Sprite):
                     center=(self.portrait.get_width() / 2, self.portrait.get_height() / 1.3))
                 self.portrait.blit(text_image, text_rect)
 
-            self.portrait = pygame.transform.scale(self.portrait, (int(150 * self.screen_scale[0]),
-                                                                   int(150 * self.screen_scale[
-                                                                       1])))  # scale leader image to 150x150
+            self.portrait = pygame.transform.scale(self.portrait, (int(200 * self.screen_scale[0]),
+                                                                   int(200 * self.screen_scale[
+                                                                       1])))
+
         elif self.section == self.troop_section:
             try:
-                self.portrait = self.preview_sprite_pool[self.subsection]["sprite"]
+                self.portrait = self.preview_sprite_pool[self.subsection]["sprite"].copy()
+
+                self.portrait = pygame.transform.scale(self.portrait, (int(250 * self.screen_scale[0]),
+                                                                       int(250 * self.screen_scale[
+                                                                           1])))
             except KeyError:
                 pass
+
         self.page_design()
 
     def setup_subsection_list(self, list_surface, list_group):
@@ -231,22 +239,28 @@ class Lorebook(pygame.sprite.Sprite):
         text_rect = text_surface.get_rect(topleft=(int(28 * self.screen_scale[0]), int(20 * self.screen_scale[1])))
         self.image.blit(text_surface, text_rect)  # add name of item to the top of page
 
+        description_pos = (int(20 * self.screen_scale[1]), int(100 * self.screen_scale[0]))
+
         if self.portrait is not None:
+            description_pos = (int(20 * self.screen_scale[1]), int(300 * self.screen_scale[0]))
+
             portrait_rect = self.portrait.get_rect(
-                center=(int(100 * self.screen_scale[0]), int(150 * self.screen_scale[1])))
+                center=(int(300 * self.screen_scale[0]), int(200 * self.screen_scale[1])))
             self.image.blit(self.portrait, portrait_rect)
 
-        description_surface = pygame.Surface((int(410 * self.screen_scale[0]), int(370 * self.screen_scale[1])),
+        description_surface = pygame.Surface((int(550 * self.screen_scale[0]), int(400 * self.screen_scale[1])),
                                              pygame.SRCALPHA)
-        description_rect = description_surface.get_rect(
-            topleft=(int(190 * self.screen_scale[1]), int(70 * self.screen_scale[0])))
+        description_rect = description_surface.get_rect(topleft=description_pos)
         make_long_text(description_surface, description, (int(5 * self.screen_scale[1]), int(5 * self.screen_scale[0])),
                        self.font)
         self.image.blit(description_surface, description_rect)
 
         if self.page == 0:
-            row = 420 * self.screen_scale[1]
+            row = 350 * self.screen_scale[1]
             col = 60 * self.screen_scale[0]
+            if self.portrait is not None:
+                row = 600 * self.screen_scale[1]
+                col = 60 * self.screen_scale[0]
 
             # concept, history, faction section is simply for processed and does not need specific column read
             if self.section in (self.concept_section, self.history_section, self.faction_section):
@@ -522,7 +536,7 @@ class SubsectionName(pygame.sprite.Sprite):
         # ^ End white body
 
         # v Subsection name text
-        text_surface = self.font.render(str(name), 1, (0, 0, 0))
+        text_surface = self.font.render(str(name), True, (0, 0, 0))
         text_rect = text_surface.get_rect(midleft=(int(3 * screen_scale[0]), self.image.get_height() / 2))
         self.image.blit(text_surface, text_rect)
         # ^ End subsection name

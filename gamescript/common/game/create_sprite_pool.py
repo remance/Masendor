@@ -69,10 +69,11 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                              if (any(ext in this_animation for ext in weapon_common_type_list) is False or
                                  weapon_common_action[0][0] in this_animation) and
                              (any(ext in this_animation for ext in weapon_attack_type_list) is False or
-                              (weapon_attack_action[0][0] in this_animation and ("Main", "Sub")[0] in this_animation))]
+                              (weapon_attack_action[0][0] in this_animation and "_Main_" in this_animation))]
                 # remove animation not suitable for preview
                 animation = [this_animation for this_animation in animation if
-                             any(ext in this_animation for ext in ("_Default", "_Die", "_Flee", "_Damaged")) is False]
+                             any(ext in this_animation for ext in ("_Default", "_Die", "_Flee", "_Damaged")) is False and
+                             "_Sub_" not in this_animation]
                 if len(animation) > 0:
                     animation = random.choice(animation)  # random animation
                 else:  # no animation found, use race default
