@@ -24,6 +24,21 @@ a = Analysis(['main.py'],
     cipher=block_cipher,
     noarchive=False)
 
+
+b = Analysis(['animation_maker.py'],
+    pathex=[spec_root],
+    binaries=[],
+    datas=datas,
+    hiddenimports=[],
+    hookspath=[],
+    hooksconfig=[],
+    runtime_hooks=[],
+    excludes=[],
+    win_no_prefer_redirects=False,
+    win_private_assemblies=False,
+    cipher=block_cipher,
+    noarchive=False)
+
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
 exe = EXE(pyz,
@@ -36,10 +51,28 @@ exe = EXE(pyz,
     strip=False,
     upx=True,
     console=True)
+
+pyz = PYZ(b.pure, b.zipped_data, cipher=block_cipher)
+
+exe2 = EXE(pyz,
+    b.scripts,
+    [],
+    exclude_binaries=True,
+    name='animation_maker',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=True,
+    console=True)
+
 coll = COLLECT(exe,
     a.binaries,
     a.zipfiles,
     a.datas,
+    exe2,
+    b.binaries,
+    b.zipfiles,
+    b.datas,
     strip=False,
     upx=True,
     upx_exclude=[],

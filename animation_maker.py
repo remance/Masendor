@@ -10,14 +10,14 @@ from pathlib import Path
 import pygame
 from PIL import Image, ImageFilter, ImageEnhance
 
-from script import colour, listpopup, pool
-
-current_dir = os.path.split(os.path.abspath(__file__))[0]
-main_dir = current_dir[:current_dir.rfind("\\") + 1]
-sys.path.insert(1, main_dir)
-
-from gamescript import datastat, menu, battleui, popup  # keep here as it need to get sys path insert
+from gamescript import datastat, menu, battleui, popup
 from gamescript.common import utility
+
+main_dir = os.path.split(os.path.abspath(__file__))[0]
+current_dir = main_dir + "\\animation maker"  # animation maker folder
+sys.path.insert(1, current_dir)
+
+from script import colour, listpopup, pool  # keep here as it need to get sys path insert
 
 rotation_xy = utility.rotation_xy
 load_image = utility.load_image
@@ -213,7 +213,7 @@ for race in race_list:
                 part_folder = Path(os.path.join(main_dir, "data", "sprite", "generic", race, direction))
                 subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
                 for folder in subdirectories:
-                    imgs = load_textures(main_dir, folder, scale=screen_scale)
+                    imgs = load_textures(main_dir, folder)
                     gen_body_sprite_pool[race][direction][folder[-1]] = imgs
         except FileNotFoundError:
             pass
@@ -241,8 +241,7 @@ for race in race_list:
                     body_directories = [str(x).split("data\\")[1].split("\\") for x in body_subsubfolder.iterdir() if x.is_dir()]
                     for body_folder in body_directories:
                         imgs = load_textures(main_dir,
-                                             ["sprite", "generic", race, direction, "armour", subfolder[-1], subsubfolder[-1], body_folder[-1]],
-                                             scale=screen_scale)
+                                             ["sprite", "generic", race, direction, "armour", subfolder[-1], subsubfolder[-1], body_folder[-1]])
                         gen_armour_sprite_pool[race][subfolder[-1]][subsubfolder[-1]][direction][body_folder[-1]] = imgs
         except FileNotFoundError:
             pass
@@ -256,7 +255,7 @@ for folder in subdirectories:
     subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in part_subfolder.iterdir() if x.is_dir()]
     for direction in direction_list:
         imgs = load_textures(main_dir, ["sprite", "generic", "weapon", folder[-1],
-                                        "common", direction], scale=screen_scale)  # use only common weapon
+                                        "common", direction])  # use only common weapon
         if direction not in gen_weapon_sprite_pool[folder[-1]]:
             gen_weapon_sprite_pool[folder[-1]][direction] = imgs
         else:
@@ -270,7 +269,7 @@ for folder in subdirectories:
     part_folder = Path(os.path.join(main_dir, "data", "sprite", "effect", folder[-1]))
     subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
     for subfolder in subsubdirectories:
-        imgs = load_textures(main_dir, subfolder, scale=screen_scale)
+        imgs = load_textures(main_dir, subfolder)
         effect_sprite_pool[folder[-1]][subfolder[-1]] = imgs
 
 
