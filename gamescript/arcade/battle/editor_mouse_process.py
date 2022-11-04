@@ -134,7 +134,8 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
 
                 if mouse_left_up:  # open list of leader to change leader in that slot
                     self.selected_leader = leader_index
-                    self.popup_list_new_open(this_leader.rect.midright, self.leader_list, "leader")
+                    self.popup_list_open(this_leader.rect.midright, self.leader_list, "leader", "topleft",
+                                         self.battle_ui_updater)
 
                 elif mouse_right_up:
                     self.popout_lorebook(8, this_leader.leader_id)
@@ -520,19 +521,20 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
             elif self.terrain_change_button.rect.collidepoint(
                     self.mouse_pos) and mouse_left_up:  # change map terrain button
                 self.click_any = True
-                self.popup_list_new_open(self.terrain_change_button.rect.midtop, self.battle_map_base.terrain_list,
-                                         "terrain")
+                self.popup_list_open(self.terrain_change_button.rect.midtop, self.battle_map_base.terrain_list,
+                                         "terrain", "midbottom", self.battle_ui_updater)
 
             elif self.feature_change_button.rect.collidepoint(
                     self.mouse_pos) and mouse_left_up:  # change map feature button
                 self.click_any = True
-                self.popup_list_new_open(self.feature_change_button.rect.midtop, self.battle_map_feature.feature_list,
-                                         "feature")
+                self.popup_list_open(self.feature_change_button.rect.midtop, self.battle_map_feature.feature_list,
+                                         "feature", "midbottom", self.battle_ui_updater)
 
             elif self.weather_change_button.rect.collidepoint(
                     self.mouse_pos) and mouse_left_up:  # change map weather button
                 self.click_any = True
-                self.popup_list_new_open(self.weather_change_button.rect.midtop, self.weather_list, "weather")
+                self.popup_list_open(self.weather_change_button.rect.midtop, self.weather_list, "weather", "midbottom",
+                                     self.battle_ui_updater)
 
             elif self.unit_delete_button.rect.collidepoint(self.mouse_pos) and mouse_left_up and \
                     self.unit_delete_button in self.battle_ui_updater:  # delete preset button

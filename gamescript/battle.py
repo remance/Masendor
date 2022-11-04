@@ -27,14 +27,14 @@ script_dir = os.path.split(os.path.abspath(__file__))[0] + "\\"
 
 class Battle:
     empty_method = utility.empty_method
-    popout_lorebook = utility.popout_lorebook
-    popup_list_new_open = utility.popup_list_open
+    popup_list_open = utility.popup_list_open
 
     # Import from common.battle
     camera_fix = empty_method
     camera_process = empty_method
     camera_zoom_change = empty_method
     generate_unit = empty_method
+    popout_lorebook = empty_method
     remove_unit_ui = empty_method
     setup_battle_unit = empty_method
     time_update = empty_method
@@ -381,7 +381,7 @@ class Battle:
         try:
             self.weather_event = csv_read(self.main_dir, "weather.csv",
                                           ["data", "ruleset", self.ruleset_folder, "map", self.map_selected,
-                                           self.map_source], 1)
+                                           self.map_source], output_type="list")
             self.weather_event = self.weather_event[1:]
             utility.convert_str_time(self.weather_event)
         except FileNotFoundError:  # If no weather found use default light sunny weather start at 9.00
@@ -397,7 +397,8 @@ class Battle:
             self.musiclist = glob.glob(os.path.join(self.main_dir, "data", "sound", "music", "*.ogg"))
             try:
                 self.music_event = csv_read(self.main_dir, "musicevent.csv",
-                                            ["data", "ruleset", self.ruleset_folder, "map", self.map_selected], 1)
+                                            ["data", "ruleset", self.ruleset_folder, "map", self.map_selected],
+                                            output_type="list")
                 self.music_event = self.music_event[1:]
                 if len(self.music_event) > 0:
                     utility.convert_str_time(self.music_event)

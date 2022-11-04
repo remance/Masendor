@@ -82,7 +82,8 @@ def main_menu_process(self, mouse_left_up):
         self.main_ui_updater.add(self.input_ui_popup)
 
     elif mouse_left_up and self.genre_change_box.rect.collidepoint(self.mouse_pos):
-        self.popup_list_open(self.genre_change_box.rect.bottomleft, self.genre_list, "genre")
+        self.popup_list_open(self.genre_change_box.rect.bottomleft, self.genre_list, "genre", "topleft",
+                             self.main_ui_updater)
 
     elif self.popup_list_box in self.main_ui_updater:
         if self.popup_list_box.rect.collidepoint(self.mouse_pos):
