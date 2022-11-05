@@ -1,8 +1,5 @@
 import pygame
 from gamescript import battleui
-from gamescript.common import utility
-
-load_image = utility.load_image
 
 
 def make_battle_ui(battle_ui_image, battle_icon_image, team_colour, screen_size):

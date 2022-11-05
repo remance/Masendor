@@ -21,12 +21,12 @@ class BattleMapData:
         edit_file.close()
         self.feature_list = self.feature_list[1:]
 
-        empty_image = load_image(main_dir, (1, 1), "empty.png", "map/texture")  # empty texture image
+        empty_image = load_image(main_dir, (1, 1), "empty.png", ("map", "texture"))  # empty texture image
         map_texture = []
         texture_folder = [item for item in self.feature_list if
                           item != ""]  # For now remove terrain with no planned name/folder yet
         for index, folder in enumerate(texture_folder):
-            images = load_images(main_dir, (1, 1), ["map", "texture", folder], load_order=False)
+            images = load_images(main_dir, (1, 1), ("map", "texture", folder), load_order=False)
             map_texture.append(list(images.values()))
 
         # read terrain feature mode
@@ -60,7 +60,7 @@ class BattleMapData:
             lore_csv_read(edit_file, self.feature_mod_lore)
         edit_file.close()
 
-        self.day_effect_images = load_images(main_dir, screen_scale, ["map", "day"], load_order=False)
+        self.day_effect_images = load_images(main_dir, screen_scale, ("map", "day"), load_order=False)
 
         # set up default
         battlemap.FeatureMap.feature_mod = self.feature_mod
@@ -108,7 +108,7 @@ class BattleMapData:
         self.weather_matter_images = []
         for weather_sprite in weather_list:  # Load weather matter sprite image
             try:
-                images = load_images(main_dir, screen_scale, ["map", "weather", "matter", weather_sprite],
+                images = load_images(main_dir, screen_scale, ("map", "weather", "matter", weather_sprite),
                                      load_order=False)
                 self.weather_matter_images.append(list(images.values()))
             except FileNotFoundError:
@@ -117,13 +117,13 @@ class BattleMapData:
         self.weather_effect_images = []
         for weather_effect in weather_list:  # Load weather effect sprite image
             try:
-                images = load_images(main_dir, screen_scale, ["map", "weather", "effect", weather_effect],
+                images = load_images(main_dir, screen_scale, ("map", "weather", "effect", weather_effect),
                                      load_order=False)
                 self.weather_effect_images.append(list(images.values()))
             except FileNotFoundError:
                 self.weather_effect_images.append([])
 
-        weather_icon_list = load_images(main_dir, screen_scale, ["map", "weather", "icon"],
+        weather_icon_list = load_images(main_dir, screen_scale, ("map", "weather", "icon"),
                                         load_order=False)  # Load weather icon
         new_weather_icon = []
         for weather_icon in weather_list:

@@ -14,6 +14,8 @@ direction_list = datasprite.direction_list
 from pygame.locals import *
 from scipy.spatial import KDTree
 
+from pathlib import Path
+
 load_image = utility.load_image
 load_images = utility.load_images
 csv_read = utility.csv_read
@@ -22,7 +24,7 @@ edit_config = utility.edit_config
 setup_list = utility.setup_list
 clean_group_object = utility.clean_group_object
 
-script_dir = os.path.split(os.path.abspath(__file__))[0] + "\\"
+script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
 
 
 class Battle:
@@ -76,7 +78,7 @@ class Battle:
     setup_battle_ui = empty_method
 
     for folder in ("battle", "ui"):
-        for entry in os.scandir(script_dir + "\\common\\" + folder + "\\"):  # load and replace modules from common
+        for entry in os.scandir(Path(script_dir + "/common/" + folder + "/")):  # load and replace modules from common
             if entry.is_file():
                 if ".pyc" in entry.name:
                     file_name = entry.name[:-4]
@@ -441,7 +443,7 @@ class Battle:
         self.time_number.start_setup(self.weather_playing)
 
         if map_selected is not None:  # Create battle map
-            images = load_images(self.main_dir, (1, 1), ["ruleset", self.ruleset_folder, "map", self.map_selected],
+            images = load_images(self.main_dir, (1, 1), ("ruleset", self.ruleset_folder, "map", self.map_selected),
                                  load_order=False)
             self.battle_map_base.draw_image(images["base"])
             self.battle_map_feature.draw_image(images["feature"])

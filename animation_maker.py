@@ -14,7 +14,7 @@ from gamescript import datastat, menu, battleui, popup
 from gamescript.common import utility
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
-current_dir = main_dir + "\\animation maker"  # animation maker folder
+current_dir = main_dir + "/animation maker"  # animation maker folder
 sys.path.insert(1, current_dir)
 
 from script import colour, listpopup, pool  # keep here as it need to get sys path insert
@@ -206,12 +206,12 @@ gen_body_sprite_pool = {}
 for race in race_list:
     if race != "":
         try:
-            [str(x).split("data\\")[1].split("\\") for x in Path(os.path.join(main_dir, "data", "sprite", "generic", race)).iterdir() if x.is_dir()]  # check if race folder exist
+            [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x in Path(os.path.join(main_dir, "data", "sprite", "generic", race)).iterdir() if x.is_dir()]  # check if race folder exist
             gen_body_sprite_pool[race] = {}
             for direction in direction_list:
                 gen_body_sprite_pool[race][direction] = {}
                 part_folder = Path(os.path.join(main_dir, "data", "sprite", "generic", race, direction))
-                subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
+                subdirectories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x in part_folder.iterdir() if x.is_dir()]
                 for folder in subdirectories:
                     imgs = load_textures(main_dir, folder)
                     gen_body_sprite_pool[race][direction][folder[-1]] = imgs
@@ -226,10 +226,10 @@ for race in race_list:
     for direction in direction_list:
         try:
             part_subfolder = Path(os.path.join(main_dir, "data", "sprite", "generic", race, direction, "armour"))
-            subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_subfolder.iterdir() if x.is_dir()]
+            subdirectories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x in part_subfolder.iterdir() if x.is_dir()]
             for subfolder in subdirectories:
                 part_subsubfolder = Path(os.path.join(main_dir, "data", "sprite", "generic", race, direction, "armour", subfolder[-1]))
-                subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in part_subsubfolder.iterdir() if x.is_dir()]
+                subsubdirectories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x in part_subsubfolder.iterdir() if x.is_dir()]
                 if subfolder[-1] not in gen_armour_sprite_pool[race]:
                     gen_armour_sprite_pool[race][subfolder[-1]] = {}
                 for subsubfolder in subsubdirectories:
@@ -238,7 +238,7 @@ for race in race_list:
                     gen_armour_sprite_pool[race][subfolder[-1]][subsubfolder[-1]][direction] = {}
                     body_subsubfolder = Path(
                         os.path.join(main_dir, "data", "sprite", "generic", race, direction, "armour", subfolder[-1], subsubfolder[-1]))
-                    body_directories = [str(x).split("data\\")[1].split("\\") for x in body_subsubfolder.iterdir() if x.is_dir()]
+                    body_directories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x in body_subsubfolder.iterdir() if x.is_dir()]
                     for body_folder in body_directories:
                         imgs = load_textures(main_dir,
                                              ["sprite", "generic", race, direction, "armour", subfolder[-1], subsubfolder[-1], body_folder[-1]])
@@ -248,11 +248,11 @@ for race in race_list:
 
 gen_weapon_sprite_pool = {}
 part_folder = Path(os.path.join(main_dir, "data", "sprite", "generic", "weapon"))
-subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
+subdirectories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x in part_folder.iterdir() if x.is_dir()]
 for folder in subdirectories:
     gen_weapon_sprite_pool[folder[-1]] = {}
     part_subfolder = Path(os.path.join(main_dir, "data", "sprite", "generic", "weapon", folder[-1]))
-    subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in part_subfolder.iterdir() if x.is_dir()]
+    subsubdirectories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x in part_subfolder.iterdir() if x.is_dir()]
     for direction in direction_list:
         imgs = load_textures(main_dir, ["sprite", "generic", "weapon", folder[-1],
                                         "common", direction])  # use only common weapon
@@ -263,11 +263,11 @@ for folder in subdirectories:
 
 effect_sprite_pool = {}
 part_folder = Path(os.path.join(main_dir, "data", "sprite", "effect"))
-subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
+subdirectories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x in part_folder.iterdir() if x.is_dir()]
 for folder in subdirectories:
     effect_sprite_pool[folder[-1]] = {}
     part_folder = Path(os.path.join(main_dir, "data", "sprite", "effect", folder[-1]))
-    subsubdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir()]
+    subsubdirectories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x in part_folder.iterdir() if x.is_dir()]
     for subfolder in subsubdirectories:
         imgs = load_textures(main_dir, subfolder)
         effect_sprite_pool[folder[-1]][subfolder[-1]] = imgs
@@ -1473,13 +1473,13 @@ showroom_scale_mul = (showroom_scale[0] / default_sprite_size[0], showroom_scale
 showroom = Showroom(showroom_scale)
 ui.add(showroom)
 
-Joint.images = [pygame.transform.scale(load_image(current_dir, screen_scale, "mainjoint.png", ["animation_maker_ui"]),
+Joint.images = [pygame.transform.scale(load_image(current_dir, screen_scale, "mainjoint.png", "animation_maker_ui"),
                                        (int(20 * screen_scale[0]), int(20 * screen_scale[1]))),
-                pygame.transform.scale(load_image(current_dir, screen_scale, "subjoint.png", ["animation_maker_ui"]),
+                pygame.transform.scale(load_image(current_dir, screen_scale, "subjoint.png", "animation_maker_ui"),
                                        (int(20 * screen_scale[0]), int(20 * screen_scale[1])))]
 joints = pygame.sprite.Group()
 
-image = pygame.transform.scale(load_image(current_dir, screen_scale, "film.png", ["animation_maker_ui"]),
+image = pygame.transform.scale(load_image(current_dir, screen_scale, "film.png", "animation_maker_ui"),
                                (int(50 * screen_scale[0]), int(50 * screen_scale[1])))
 
 Filmstrip.image_original = image
@@ -1504,7 +1504,7 @@ filmstrip_list += [Filmstrip((image.get_width() * this_index, 42 * screen_scale[
 
 filmstrips.add(*filmstrip_list)
 
-images = load_images(current_dir, screen_scale, ["animation_maker_ui", "helper_parts"])
+images = load_images(current_dir, screen_scale, ("animation_maker_ui", "helper_parts"))
 body_helper_size = (450 * screen_scale[0], 270 * screen_scale[1])
 effect_helper_size = (450 * screen_scale[0], 270 * screen_scale[1])
 effect_helper = BodyHelper(effect_helper_size, (screen_size[0] / 1.25, screen_size[1] - (body_helper_size[1] / 2)),
@@ -1514,7 +1514,7 @@ p_body_helper = BodyHelper(body_helper_size, (body_helper_size[0] / 2,
                                               screen_size[1] - (body_helper_size[1] / 2)), "p1", list(images.values()))
 helper_list = [p_body_helper, effect_helper]
 
-image = load_image(current_dir, screen_scale, "button.png", ["animation_maker_ui"])
+image = load_image(current_dir, screen_scale, "button.png", "animation_maker_ui")
 image = pygame.transform.scale(image, (int(image.get_width() * screen_scale[1]),
                                        int(image.get_height() * screen_scale[1])))
 
@@ -1655,7 +1655,7 @@ mouth_selector = NameBox((250, image.get_height()), (reset_button.image.get_widt
 # lock_button = SwitchButton(["Lock:OFF","Lock:ON"], image, (reset_button.pos[0] + reset_button.image.get_width() * 2,
 #                                            p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 
-input_ui = menu.InputUI(screen_scale, load_image(main_dir, screen_scale, "input_ui.png", "ui\\mainmenu_ui"),
+input_ui = menu.InputUI(screen_scale, load_image(main_dir, screen_scale, "input_ui.png", ("ui", "mainmenu_ui")),
                         (screen_size[0] / 2, screen_size[1] / 2))  # user text input ui box popup
 
 image_list = load_base_button(main_dir, screen_scale)
@@ -1672,13 +1672,13 @@ input_box = menu.InputBox(screen_scale, input_ui.rect.center, input_ui.image.get
 
 input_ui_popup = (input_ui, input_box, input_ok_button, input_cancel_button)
 
-confirm_ui = menu.InputUI(screen_scale, load_image(main_dir, screen_scale, "input_ui.png", "ui\\mainmenu_ui"),
+confirm_ui = menu.InputUI(screen_scale, load_image(main_dir, screen_scale, "input_ui.png", ("ui", "mainmenu_ui")),
                           (screen_size[0] / 2, screen_size[1] / 2))  # user confirm input ui box popup
 confirm_ui_popup = (confirm_ui, input_ok_button, input_cancel_button)
 
 colour_ui = menu.InputUI(screen_scale, load_image(current_dir, screen_scale, "colour.png", "animation_maker_ui"),
                          (screen_size[0] / 2, screen_size[1] / 2))  # user text input ui box popup
-colour_wheel = ColourWheel(load_image(main_dir, screen_scale, "rgb.png", ["sprite"]), (colour_ui.pos[0], colour_ui.pos[1] / 1.5))
+colour_wheel = ColourWheel(load_image(main_dir, screen_scale, "rgb.png", "sprite"), (colour_ui.pos[0], colour_ui.pos[1] / 1.5))
 colour_input_box = menu.InputBox(screen_scale, (colour_ui.rect.center[0], colour_ui.rect.center[1] * 1.2),
                                  input_ui.image.get_width())  # user text input box
 

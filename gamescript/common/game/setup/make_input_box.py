@@ -6,7 +6,7 @@ load_image = utility.load_image
 
 def make_input_box(main_dir, screen_scale, screen_rect, image_list):
     """Input box popup"""
-    input_ui_image = load_image(main_dir, screen_scale, "input_ui.png", "ui\\mainmenu_ui")
+    input_ui_image = load_image(main_dir, screen_scale, "input_ui.png", ("ui", "mainmenu_ui"))
     input_ui = menu.InputUI(screen_scale, input_ui_image,
                             (screen_rect.width / 2, screen_rect.height / 2))  # user text input ui box popup
     input_ok_button = menu.MenuButton(screen_scale, image_list,

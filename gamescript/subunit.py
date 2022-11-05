@@ -7,6 +7,8 @@ import pygame.freetype
 from gamescript import damagesprite
 from gamescript.common import utility, animation
 
+from pathlib import Path
+
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
@@ -92,7 +94,7 @@ class Subunit(pygame.sprite.Sprite):
     state_reset_logic = empty_method
 
     script_dir = os.path.split(os.path.abspath(__file__))[0]
-    for entry in os.scandir(script_dir + "\\common\\subunit\\"):  # load and replace modules from common.unit
+    for entry in os.scandir(Path(script_dir + "/common/subunit/")):  # load and replace modules from common.unit
         if entry.is_file():
             if ".pyc" in entry.name:
                 file_name = entry.name[:-4]
@@ -309,6 +311,8 @@ class Subunit(pygame.sprite.Sprite):
                                     (self.wisdom * 0.2)) + (grade_stat["Training Score"] * training_scale[1])
 
         self.original_speed = self.agility
+
+        self.shot_per_shoot = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
 
         self.original_crit_effect = 1  # critical extra modifier
 
@@ -655,11 +659,12 @@ class Subunit(pygame.sprite.Sprite):
                     elif self.attack_pos is not None:
                         attack_pos = self.attack_pos
                     if attack_pos is not None or self.attack_target is not None:
-                        damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
-                                                  self.weapon_penetrate[self.equipped_weapon][weapon],
-                                                  self.equipped_weapon_data[weapon],
-                                                  self.shoot_range[weapon], self.zoom, "range",
-                                                  specific_attack_pos=attack_pos)  # Shoot bullet
+                        for _ in range(self.shot_per_shoot[self.equipped_weapon][weapon]):
+                            damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
+                                                      self.weapon_penetrate[self.equipped_weapon][weapon],
+                                                      self.equipped_weapon_data[weapon],
+                                                      self.shoot_range[weapon], self.zoom, "range",
+                                                      specific_attack_pos=attack_pos)  # Shoot ammo
                         self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
                         if self.ammo_now[self.equipped_weapon][weapon] == 0 and \
                                 self.magazine_count[self.equipped_weapon][weapon] == 0:

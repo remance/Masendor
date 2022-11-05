@@ -7,7 +7,7 @@ load_images = utility.load_images
 
 def make_faction_troop_leader_data(main_dir, screen_scale, ruleset, ruleset_folder, language):
     # create troop data storage related object
-    weapon_images = load_images(main_dir, screen_scale, ["ui", "subunit_ui", "weapon"])
+    weapon_images = load_images(main_dir, screen_scale, ("ui", "subunit_ui", "weapon"))
     for image in weapon_images:
         x, y = weapon_images[image].get_width(), weapon_images[image].get_height()
         weapon_images[image] = pygame.transform.scale(weapon_images[image],
@@ -17,7 +17,7 @@ def make_faction_troop_leader_data(main_dir, screen_scale, ruleset, ruleset_fold
     troop_data = datastat.TroopData(main_dir, weapon_images, ruleset, ruleset_folder, language)
 
     # create leader data storage object
-    images = load_images(main_dir, screen_scale, ["ruleset", ruleset_folder, "leader", "portrait"], load_order=False)
+    images = load_images(main_dir, screen_scale, ("ruleset", ruleset_folder, "leader", "portrait"), load_order=False)
     leader_data = datastat.LeaderData(main_dir, images, ruleset, ruleset_folder, language)
 
     # create faction data storage object

@@ -89,8 +89,7 @@ class SliderMenu(pygame.sprite.Sprite):
         self.min_value = self.pos[0] - (self.slider_size / self.value_scale)  # min value position of the scroll bar
         self.max_value = self.pos[0] + (self.slider_size / self.value_scale)  # max value position
         self.value = value
-        self.mouse_value = (
-                                       self.slider_size * value / 100) + self.difference  # mouse position on the scroll bar convert to value
+        self.mouse_value = (self.slider_size * value / 100) + self.difference  # convert mouse pos on scroll to value
         self.image_original = self.image.copy()
         button_rect = self.button_image_list[1].get_rect(center=(self.mouse_value, self.image.get_height() / 2))
         self.image.blit(self.button_image, button_rect)

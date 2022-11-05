@@ -7,6 +7,8 @@ import pygame
 import pygame.freetype
 from gamescript.common import utility
 
+from pathlib import Path
+
 rotation_xy = utility.rotation_xy
 
 team_colour = {0: (200, 200, 200), 1: (144, 167, 255), 2: (255, 114, 114)}  # team colour, Neutral, 1, 2
@@ -57,7 +59,7 @@ class Unit(pygame.sprite.Sprite):
     transfer_leader = empty_method
     unit_ai = empty_method
 
-    for entry in os.scandir(script_dir + "\\common\\unit\\"):  # load and replace modules from common.unit
+    for entry in os.scandir(Path(script_dir + "/common/unit/")):  # load and replace modules from common.unit
         if entry.is_file():
             if ".pyc" in entry.name:
                 file_name = entry.name[:-4]

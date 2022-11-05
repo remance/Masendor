@@ -278,9 +278,9 @@ class TroopData:
             header = rd[0]
             int_column = ("ID", "Strength Bonus Scale", "Dexterity Bonus Scale", "Physical Damage",
                           "Fire Damage", "Water Damage", "Air Damage", "Earth Damage", "Poison Damage", "Magic Damage",
-                          "Armour Penetration", "Defence", "Weight", "Speed", "Ammunition", "Magazine", "Range",
-                          "Travel Speed", "Learning Difficulty", "Mastery Difficulty", "Learning Difficulty", "Cost",
-                          "ImageID", "Speed", "Hand")  # value int only
+                          "Armour Penetration", "Defence", "Weight", "Speed", "Ammunition", "Magazine", "Shot Number",
+                          "Range", "Travel Speed", "Learning Difficulty", "Mastery Difficulty", "Learning Difficulty",
+                          "Cost", "ImageID", "Speed", "Hand")  # value int only
             list_column = ("Skill", "Trait", "Properties")  # value in list only
             tuple_column = ("Bullet", "Ruleset")  # value in tuple only
             percent_column = ("Damage Balance",)
@@ -412,7 +412,8 @@ class TroopData:
         edit_file.close()
 
         self.mount_armour_lore = {}
-        with open(os.path.join(main_dir, "data", "troop", "mount_armour_lore_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
+        with open(os.path.join(main_dir, "data", "troop", "mount_armour_lore_" + language + ".csv"),
+                  encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
             for index, row in enumerate(rd):
@@ -426,11 +427,12 @@ class TroopData:
         # Unit formation dict
         self.default_unit_formation_list = {}
         part_folder = Path(os.path.join(main_dir, "data", "troop", "formation"))
-        subdirectories = [str(x).split("data\\")[1].split("\\") for x in part_folder.iterdir() if x.is_dir() is False]
+        subdirectories = [os.sep.join(os.path.normpath(x).split(os.sep)[-1:]) for x in
+                          part_folder.iterdir() if x.is_dir() is False]
         for folder in subdirectories:
-            formation_name = folder[-1].replace(".csv", "")
+            formation_name = folder.replace(".csv", "")
             self.default_unit_formation_list[formation_name] = []
-            with open(os.path.join(main_dir, "data", "troop", "formation", folder[-1]), encoding="utf-8",
+            with open(os.path.join(main_dir, "data", "troop", "formation", folder), encoding="utf-8",
                       mode="r") as edit_file:
                 rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
                 rd = [row for row in rd]
@@ -648,7 +650,7 @@ class FactionData:
             lore_csv_read(edit_file, self.faction_lore)
             edit_file.close()
 
-        images_old = load_images(main_dir, screen_scale, ["ruleset", ruleset_folder, "faction", "coa"],
+        images_old = load_images(main_dir, screen_scale, ("ruleset", ruleset_folder, "faction", "coa"),
                                  load_order=False)  # coa_list images list
         self.coa_list = []
         for image in images_old:

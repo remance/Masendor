@@ -10,19 +10,19 @@ csv_read = utility.csv_read
 def make_lorebook(main_dir, ruleset_folder, screen_scale, screen_rect):
     """Create Encyclopedia related objects"""
     lorebook.Lorebook.concept_stat = csv_read(main_dir, "concept_stat.csv",
-                                              ["data", "ruleset", ruleset_folder, "lore"], header_key=True)
-    lorebook.Lorebook.concept_lore = csv_read(main_dir, "concept_lore.csv", ["data", "ruleset", ruleset_folder, "lore"])
+                                              ("data", "ruleset", ruleset_folder, "lore"), header_key=True)
+    lorebook.Lorebook.concept_lore = csv_read(main_dir, "concept_lore.csv", ("data", "ruleset", ruleset_folder, "lore"))
     lorebook.Lorebook.history_stat = csv_read(main_dir, "history_stat.csv",
-                                              ["data", "ruleset", ruleset_folder, "lore"], header_key=True)
-    lorebook.Lorebook.history_lore = csv_read(main_dir, "history_lore.csv", ["data", "ruleset", ruleset_folder, "lore"])
+                                              ("data", "ruleset", ruleset_folder, "lore"), header_key=True)
+    lorebook.Lorebook.history_lore = csv_read(main_dir, "history_lore.csv", ("data", "ruleset", ruleset_folder, "lore"))
 
-    encyclopedia_images = load_images(main_dir, screen_scale, ["ui", "lorebook_ui"], load_order=False)
+    encyclopedia_images = load_images(main_dir, screen_scale, ("ui", "lorebook_ui"), load_order=False)
     encyclopedia = lorebook.Lorebook(main_dir, screen_scale, screen_rect,
                                      encyclopedia_images["encyclopedia"])  # encyclopedia sprite
     lore_name_list = lorebook.SubsectionList(encyclopedia.rect.topleft, encyclopedia_images["section_list"])
     lore_name_list.max_row_show = encyclopedia.max_row_show
 
-    lore_button_images = load_images(main_dir, screen_scale, ["ui", "lorebook_ui", "button"], load_order=False)
+    lore_button_images = load_images(main_dir, screen_scale, ("ui", "lorebook_ui", "button"), load_order=False)
     for image in lore_button_images:  # scale button image
         lore_button_images[image] = pygame.transform.scale(lore_button_images[image], (
         int(lore_button_images[image].get_width() * screen_scale[0]),

@@ -44,8 +44,8 @@ make_lorebook = empty_function
 make_option_menu = empty_function
 make_popup_ui = empty_function
 
-script_dir = os.path.split(os.path.abspath(__file__))[0] + "\\"
-for entry in os.scandir(script_dir + "\\common\\game\\setup\\"):  # load and replace modules from common.game.setup
+script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
+for entry in os.scandir(Path(script_dir + "/common/game/setup/")):  # load and replace modules from common.game.setup
     if entry.is_file():
         if ".pyc" in entry.name:
             file_name = entry.name[:-4]
@@ -122,7 +122,7 @@ class Game:
     lorebook_process = lorebook.lorebook_process
 
     script_dir = script_dir
-    for entry in os.scandir(script_dir + "\\common\\game\\"):  # load and replace modules from common.game
+    for entry in os.scandir(Path(script_dir + "/common/game/")):  # load and replace modules from common.game
         if entry.is_file():
             if ".pyc" in entry.name:
                 file_name = entry.name[:-4]
@@ -165,7 +165,7 @@ class Game:
             except FileNotFoundError:  # for release version
                 genre_folder = Path(os.path.join(self.main_dir, "lib", script_folder))
                 genre_folder = [x for x in genre_folder.iterdir() if x.is_dir()]
-            genre_folder = [str(folder_name).split("\\")[-1].capitalize() for folder_name in genre_folder]
+            genre_folder = [str(folder_name).split("/")[-1].capitalize() for folder_name in genre_folder]
             if "__pycache__" in genre_folder:
                 genre_folder.remove("__pycache__")  # just grab the first genre folder as default
 
@@ -211,28 +211,28 @@ class Game:
 
         self.clock = pygame.time.Clock()
 
-        self.loading = load_image(self.main_dir, self.screen_scale, "loading.png", "ui\\mainmenu_ui")
+        self.loading = load_image(self.main_dir, self.screen_scale, "loading.png", ("ui", "mainmenu_ui"))
         self.loading = pygame.transform.scale(self.loading, self.screen_rect.size)
 
-        self.ruleset_list = csv_read(self.main_dir, "ruleset_list.csv", ["data", "ruleset"])  # get ruleset list
-        self.ruleset_folder = str(self.ruleset_list[self.ruleset][1]).strip("/").strip("\\")
+        self.ruleset_list = csv_read(self.main_dir, "ruleset_list.csv", ("data", "ruleset"))  # get ruleset list
+        self.ruleset_folder = str(self.ruleset_list[self.ruleset][1]).strip("/")
 
-        if not os.path.exists("\\profile"):  # make profile folder if not existed
-            os.makedirs("\\profile")
-            os.makedirs("\\profile\\unitpreset")
-        if not os.path.exists("profile\\unitpreset\\" + str(self.ruleset)):  # create unitpreset folder for ruleset
-            os.makedirs("profile\\unitpreset\\" + str(self.ruleset))
+        if not os.path.exists("/profile"):  # make profile folder if not existed
+            os.makedirs("/profile")
+            os.makedirs("/profile/unitpreset")
+        if not os.path.exists("profile/unitpreset/" + str(self.ruleset)):  # create unitpreset folder for ruleset
+            os.makedirs("profile/unitpreset/" + str(self.ruleset))
         try:
             custom_unit_preset_list = csv_read(self.main_dir, "custom_unitpreset.csv",
-                                               ["profile", "unitpreset", str(self.ruleset)])
+                                               ("profile", "unitpreset", str(self.ruleset)))
             del custom_unit_preset_list["presetname"]
             self.custom_unit_preset_list = {"New Preset": 0, **custom_unit_preset_list}
         except Exception:
-            with open("profile\\unitpreset\\" + str(self.ruleset) + "\\custom_unitpreset.csv", "w") as edit_file:
+            with open("profile/unitpreset/" + str(self.ruleset) + "/custom_unitpreset.csv", "w") as edit_file:
                 file_writer = csv.writer(edit_file, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL)
                 file_writer.writerow(
-                    ["presetname", "unitline2", "unitline2", "unitline3", "unitline4", "unitline15", "unitline6",
-                     "unitline7", "unitline8", "leader", "leaderposition", "faction"])  # create header
+                    ("presetname", "unitline2", "unitline2", "unitline3", "unitline4", "unitline15", "unitline6",
+                     "unitline7", "unitline8", "leader", "leaderposition", "faction"))  # create header
                 edit_file.close()
 
             self.custom_unit_preset_list = {}
@@ -371,7 +371,7 @@ class Game:
         leader.Leader.containers = self.leader_updater
 
         # game cursor
-        cursor_images = load_images(self.main_dir, (1, 1), ["ui", "cursor"],
+        cursor_images = load_images(self.main_dir, (1, 1), ("ui", "cursor"),
                                     load_order=False)  # no need to scale cursor
         self.cursor = menu.Cursor(cursor_images)
         self.main_ui_updater.add(self.cursor)
@@ -421,7 +421,7 @@ class Game:
         subunit.Subunit.height_map = self.battle_height_map
 
         # Battle map select menu button
-        battle_select_image = load_images(self.main_dir, self.screen_scale, ["ui", "mapselect_ui"], load_order=False)
+        battle_select_image = load_images(self.main_dir, self.screen_scale, ("ui", "mapselect_ui"), load_order=False)
 
         self.map_title = menu.MapTitle(self.screen_scale, (self.screen_rect.width / 2, 0))
 
@@ -530,18 +530,18 @@ class Game:
         # Genre related stuff
         genre_folder = Path(os.path.join(main_dir, script_folder))  # Load genre list
         subdirectories = [x for x in genre_folder.iterdir() if x.is_dir()]
-        subdirectories = [str(folder_name).split("\\")[-1].capitalize() for folder_name in subdirectories]
+        subdirectories = [os.sep.join(os.path.normpath(folder_name).split(os.sep)[-1:]).capitalize() for folder_name in subdirectories]
         subdirectories.remove("__pycache__")
         subdirectories.remove("Common")
         self.genre_list = subdirectories  # map name list for map selection list
 
-        box_image = load_image(self.main_dir, self.screen_scale, "genre_box.png", "ui\\mainmenu_ui")
+        box_image = load_image(self.main_dir, self.screen_scale, "genre_box.png", ("ui", "mainmenu_ui"))
         self.genre_change_box = menu.TextBox(self.screen_scale, box_image, (box_image.get_width(), 0),
                                              self.genre.capitalize())  # genre box ui
 
         # Profile box
         self.profile_name = self.profile_name
-        profile_box_image = load_image(self.main_dir, self.screen_scale, "profile_box.png", "ui\\mainmenu_ui")
+        profile_box_image = load_image(self.main_dir, self.screen_scale, "profile_box.png", ("ui", "mainmenu_ui"))
         self.profile_box = menu.TextBox(self.screen_scale, profile_box_image, (self.screen_width, 0),
                                         self.profile_name)  # profile name box at top right of screen at start_set menu screen
 
@@ -552,13 +552,13 @@ class Game:
             self.master_volume = float(self.master_volume / 100)
             pygame.mixer.music.set_volume(self.master_volume)
             self.SONG_END = pygame.USEREVENT + 1
-            self.music_list = glob.glob(self.main_dir + "\\data\\sound\\music\\*.ogg")
+            self.music_list = glob.glob(self.main_dir + "/data/sound/music/*.ogg")
             pygame.mixer.music.load(self.music_list[0])
             pygame.mixer.music.play(-1)
         # ^ End Main menu
 
         # v Battle related stuffs
-        subunit_ui_images = load_images(self.main_dir, self.screen_scale, ["ui", "subunit_ui"], load_order=False)
+        subunit_ui_images = load_images(self.main_dir, self.screen_scale, ("ui", "subunit_ui"), load_order=False)
         subunit.Subunit.subunit_ui_images = subunit_ui_images
 
         subunit_icon_image = subunit_ui_images["subunit_player"]
@@ -568,7 +568,7 @@ class Game:
         self.fps_count = battleui.FPScount()  # FPS number counter
         self.battle_ui_updater.add(self.fps_count)
 
-        battle_ui_image = load_images(self.main_dir, self.screen_scale, ["ui", "battle_ui"], load_order=False)
+        battle_ui_image = load_images(self.main_dir, self.screen_scale, ("ui", "battle_ui"), load_order=False)
         battleui.SelectedSquad.image = battle_ui_image[
             "ui_subunit_clicked"]  # subunit border image always the last one
 
@@ -581,7 +581,7 @@ class Game:
         self.mini_map = battleui.MiniMap((self.screen_rect.width, self.screen_rect.height), self.screen_scale)
         self.battle_ui_updater.add(self.mini_map)
 
-        battle_icon_image = load_images(self.main_dir, self.screen_scale, ["ui", "battle_ui", "topbar_icon"],
+        battle_icon_image = load_images(self.main_dir, self.screen_scale, ("ui", "battle_ui", "topbar_icon"),
                                         load_order=False)
         battle_ui_dict = make_battle_ui(battle_ui_image, battle_icon_image, team_colour, self.screen_rect.size)
         self.time_ui = battle_ui_dict["time_ui"]
@@ -598,7 +598,8 @@ class Game:
 
         # Unit editor
         editor_dict = make_editor_ui(self.main_dir, self.screen_scale, self.screen_rect,
-                                     load_image(self.main_dir, self.screen_scale, "name_list.png", "ui\\mapselect_ui"),
+                                     load_image(self.main_dir, self.screen_scale, "name_list.png",
+                                                ("ui", "mapselect_ui")),
                                      load_base_button(self.main_dir, self.screen_scale), self.battle_scale_ui,
                                      team_colour,
                                      self.main_ui_updater)
@@ -648,7 +649,7 @@ class Game:
         self.battle_done_button.change_pos(
             (self.battle_done_box.pos[0], self.battle_done_box.box_image.get_height() * 0.8))
 
-        drama.TextDrama.images = load_images(self.main_dir, self.screen_scale, ["ui", "popup_ui", "drama_text"],
+        drama.TextDrama.images = load_images(self.main_dir, self.screen_scale, ("ui", "popup_ui", "drama_text"),
                                              load_order=False)
         drama.TextDrama.screen_rect = self.screen_rect
         self.drama_text = drama.TextDrama(
@@ -808,14 +809,14 @@ class Game:
 
             for folder in folder_list:
                 try:
-                    for this_file in os.scandir(directory + new_genre + "\\" + folder):
+                    for this_file in os.scandir(Path(directory + new_genre + "/" + folder)):
                         if this_file.is_file():
                             if ".pyc" in this_file.name:
                                 file_name = this_file.name[:-4]
                             elif ".py" in this_file.name:
                                 file_name = this_file.name[:-3]
                             exec(f"from " + script_folder + "." + new_genre + "." +
-                                 folder.replace("\\", ".") + " import " + file_name)
+                                 folder.replace("/", ".") + " import " + file_name)
                             try:
                                 exec(
                                     f"" + change_object.lower() + "." + change_object + "." +
@@ -830,11 +831,11 @@ class Game:
                 # Check whether the old genre method not existed in the new one, replace with empty method
                 if old_genre != new_genre:
                     try:
-                        new_folder = [this_file.name for this_file in os.scandir(directory + new_genre + "\\" + folder)]
+                        new_folder = [this_file.name for this_file in os.scandir(Path(directory + new_genre + "/" + folder))]
                     except FileNotFoundError:
                         new_folder = ()
                     try:
-                        for this_file in os.scandir(directory + old_genre + "\\" + folder):
+                        for this_file in os.scandir(Path(directory + old_genre + "/" + folder)):
                             if this_file.is_file():
                                 if this_file.name not in new_folder:
                                     if ".pyc" in this_file.name:
@@ -863,7 +864,7 @@ class Game:
         # Change genre for other objects
         import_genre_module(self.script_dir, self.genre, new_genre, "Subunit", ("subunit",))
         import_genre_module(self.script_dir, self.genre, new_genre, "Unit", ("unit",))
-        import_genre_module(self.script_dir, self.genre, new_genre, "Battle", ("battle", "battle\\uniteditor", "ui"))
+        import_genre_module(self.script_dir, self.genre, new_genre, "Battle", ("battle", "battle/uniteditor", "ui"))
         import_genre_module(self.script_dir, self.genre, new_genre, "Leader", ("leader",))
 
         for object_key in genre_setting.object_variable:  # add genre-specific variables to appropriate object
@@ -891,11 +892,11 @@ class Game:
         self.genre_change_box.change_text(self.genre.capitalize())
         edit_config("USER", "genre", self.genre, "configuration.ini", self.config)
 
-        genre_battle_ui_image = load_images(self.main_dir, self.screen_scale, [self.genre, "ui", "battle_ui"],
+        genre_battle_ui_image = load_images(self.main_dir, self.screen_scale, (self.genre, "ui", "battle_ui"),
                                             load_order=False)
 
-        genre_icon_image = load_images(self.main_dir, self.screen_scale, [self.genre, "ui", "battle_ui",
-                                                                          "commandbar_icon"], load_order=False)
+        genre_icon_image = load_images(self.main_dir, self.screen_scale, (self.genre, "ui", "battle_ui",
+                                                                          "commandbar_icon"), load_order=False)
 
         self.genre_ui_dict = make_genre_specific_ui(self.main_dir, self.screen_scale, self.genre, self.command_ui_type)
         self.command_ui = self.genre_ui_dict["command_ui"]
@@ -956,9 +957,9 @@ class Game:
 
         # Background image
         try:
-            bgd_tile = load_image(self.main_dir, self.screen_scale, self.genre + ".png", "ui\\mainmenu_ui")
+            bgd_tile = load_image(self.main_dir, self.screen_scale, self.genre + ".png", ("ui", "mainmenu_ui"))
         except FileNotFoundError:
-            bgd_tile = load_image(self.main_dir, self.screen_scale, "default.png", "ui\\mainmenu_ui")
+            bgd_tile = load_image(self.main_dir, self.screen_scale, "default.png", ("ui", "mainmenu_ui"))
         bgd_tile = pygame.transform.scale(bgd_tile, self.screen_rect.size)
         self.background = pygame.Surface(self.screen_rect.size)
         self.background.blit(bgd_tile, (0, 0))

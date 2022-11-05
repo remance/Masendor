@@ -56,7 +56,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.portrait = None
         self.preview_sprite = None
 
-        # some section get stat from multiple list, need to keep track of last item index
+        # some sections get stat from multiple list, need to keep track of last item index
         self.equipment_stat = {}
         self.equipment_lore = {}
         self.skill_stat = {}
@@ -115,7 +115,6 @@ class Lorebook(pygame.sprite.Sprite):
                              (self.leader_data.leader_list, self.leader_data.leader_lore),
                              (self.battle_map_data.feature_mod, self.battle_map_data.feature_mod_lore),
                              (self.battle_map_data.weather_data, self.battle_map_data.weather_lore))
-
 
     def change_page(self, page, page_button, main_ui, portrait=None):
         """Change page of the current subsection, either next or previous page"""
@@ -279,14 +278,14 @@ class Lorebook(pygame.sprite.Sprite):
                             if "FULLIMAGE:" in value:  # full image to whole two pages
                                 filename = value[10:].split("\\")[-1]
                                 text_surface = utility.load_image(self.main_dir, self.screen_scale, filename,
-                                                                  text[10:].replace(filename, ""))
+                                                                  value[10:].replace(filename, ""))
                                 text_surface = pygame.transform.scale(text_surface,
                                                                       (self.image.get_width(), self.image.get_height()))
                                 text_rect = description_surface.get_rect(topleft=(0, 0))
                             else:
                                 filename = value[6:].split("\\")[-1]
                                 text_surface = utility.load_image(self.main_dir, self.screen_scale, filename,
-                                                                  text[6:].replace(filename, ""))
+                                                                  value[6:].replace(filename, ""))
                                 text_rect = description_surface.get_rect(topleft=(col, row))
                         self.image.blit(text_surface, text_rect)
 

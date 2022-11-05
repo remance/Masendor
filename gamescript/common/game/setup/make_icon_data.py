@@ -6,10 +6,10 @@ load_images = utility.load_images
 
 
 def make_icon_data(main_dir, screen_scale):
-    status_images = load_images(main_dir, screen_scale, ["ui", "status_icon"], load_order=False)
-    role_images = load_images(main_dir, screen_scale, ["ui", "role_icon"], load_order=False)
-    trait_images = load_images(main_dir, screen_scale, ["ui", "trait_icon"], load_order=False)
-    skill_images = load_images(main_dir, screen_scale, ["ui", "skill_icon"], load_order=False)
+    status_images = load_images(main_dir, screen_scale, ("ui", "status_icon"), load_order=False)
+    role_images = load_images(main_dir, screen_scale, ("ui", "role_icon"), load_order=False)
+    trait_images = load_images(main_dir, screen_scale, ("ui", "trait_icon"), load_order=False)
+    skill_images = load_images(main_dir, screen_scale, ("ui", "skill_icon"), load_order=False)
 
     cooldown = pygame.Surface((skill_images["0"].get_width(), skill_images["0"].get_height()), pygame.SRCALPHA)
     cooldown.fill((230, 70, 80, 200))  # red colour filter for skill cooldown timer

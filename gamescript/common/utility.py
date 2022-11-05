@@ -46,7 +46,7 @@ def load_image(main_dir, screen_scale, file, subfolder=""):
     :return: Pygame Surface
     """
     new_subfolder = subfolder
-    if isinstance(new_subfolder, list):
+    if isinstance(new_subfolder, list) or isinstance(new_subfolder, tuple):
         new_subfolder = ""
         for folder in subfolder:
             new_subfolder = os.path.join(new_subfolder, folder)
@@ -137,7 +137,7 @@ def csv_read(main_dir, file, subfolder=(), output_type="dict", header_key=False,
     Read csv file
     :param main_dir: Game directory folder path
     :param file: File name
-    :param subfolder: List of subfolder path
+    :param subfolder: Array of subfolder path
     :param output_type: Type of returned object, either dict or list
     :param header_key: Use header as dict key or not
     :param language: File language in acronym such as en for English
@@ -307,8 +307,8 @@ def make_bar_list(main_dir, screen_scale, list_to_do, menu_image, updater):
     :return: List of bar button objects
     """
     bar_list = []
-    image = load_image(main_dir, screen_scale, "bar_normal.jpg", "ui\\mainmenu_ui")
-    image2 = load_image(main_dir, screen_scale, "bar_mouse.jpg", "ui\\mainmenu_ui")
+    image = load_image(main_dir, screen_scale, "bar_normal.jpg", "ui/mainmenu_ui")
+    image2 = load_image(main_dir, screen_scale, "bar_mouse.jpg", "ui/mainmenu_ui")
     image3 = image2
     for index, bar in enumerate(list_to_do):
         bar_image = (image.copy(), image2.copy(), image3.copy())

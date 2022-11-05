@@ -17,7 +17,7 @@ def make_battle_list_data(main_dir, ruleset_folder, language):
     preset_map_folder = []  # folder for reading later
 
     for file_map in subdirectories:
-        preset_map_folder.append(str(file_map).split("\\")[-1])
+        preset_map_folder.append(os.sep.join(os.path.normpath(file_map).split(os.sep)[-1:]))
         with open(os.path.join(str(file_map), "info_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             for row in rd:
@@ -33,7 +33,7 @@ def make_battle_list_data(main_dir, ruleset_folder, language):
     custom_map_folder = []
 
     for file_map in subdirectories:
-        custom_map_folder.append(str(file_map).split("\\")[-1])
+        custom_map_folder.append(os.sep.join(os.path.normpath(file_map).split(os.sep)[-1:]))
         with open(os.path.join(str(file_map), "info_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             for row in rd:

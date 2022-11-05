@@ -34,7 +34,7 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
                                           "Troop Animation", int(36 * screen_scale[1]))
 
     # Volume change scroll bar
-    esc_menu_images = load_images(main_dir, screen_scale, ["ui", "battlemenu_ui", "slider"], load_order=False)
+    esc_menu_images = load_images(main_dir, screen_scale, ("ui", "battlemenu_ui", "slider"), load_order=False)
     volume_slider = menu.SliderMenu([esc_menu_images["scroller_box"], esc_menu_images["scroller"]],
                                     [esc_menu_images["scroll_button_normal"], esc_menu_images["scroll_button_click"]],
                                     (screen_rect.width / 2, screen_rect.height / 2), mixer_volume)
@@ -46,9 +46,9 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
                                     "Master Volume", int(36 * screen_scale[1]))
 
     # Resolution changing bar that fold out the list when clicked
-    image = load_image(main_dir, screen_scale, "drop_normal.jpg", "ui\\mainmenu_ui")
+    image = load_image(main_dir, screen_scale, "drop_normal.jpg", ("ui", "mainmenu_ui"))
     image2 = image
-    image3 = load_image(main_dir, screen_scale, "drop_click.jpg", "ui\\mainmenu_ui")
+    image3 = load_image(main_dir, screen_scale, "drop_click.jpg", ("ui", "mainmenu_ui"))
     image_list = [image, image2, image3]
     resolution_drop = menu.MenuButton(screen_scale, image_list, (screen_rect.width / 2, screen_rect.height / 1.8),
                                       updater, text=str(screen_width) + " x " + str(screen_height),
@@ -57,8 +57,8 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
                        "1600 x 900", "1366 x 768", "1280 x 720", "1024 x 768", "800 x 600")  # add more here
     resolution_bar = make_bar_list(main_dir, screen_scale, resolution_list, resolution_drop, updater)
 
-    resolution_text = menu.OptionMenuText((resolution_drop.pos[0] - (resolution_drop.pos[0] / 4.5), resolution_drop.pos[1]),
-                                    "Display Resolution", int(36 * screen_scale[1]))
+    resolution_text = menu.OptionMenuText((resolution_drop.pos[0] - (resolution_drop.pos[0] / 4.5),
+                                           resolution_drop.pos[1]), "Display Resolution", int(36 * screen_scale[1]))
 
     return {"back_button": back_button, "default_button": default_button, "resolution_drop": resolution_drop,
             "resolution_bar": resolution_bar, "resolution_text": resolution_text, "volume_slider": volume_slider,
