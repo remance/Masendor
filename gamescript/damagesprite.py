@@ -158,6 +158,7 @@ class DamageSprite(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.pos)
 
     def find_random_direction(self):
+        """Find random target direction for the sprite to move to"""
         random_angle = math.radians(random.randint(0, 359))
         target_now = (self.base_pos[0] + 1000) * math.cos(random_angle), \
                      (self.base_pos[1] + 1000) * math.sin(random_angle)
@@ -253,6 +254,9 @@ class DamageSprite(pygame.sprite.Sprite):
                             self.dmg[element] -= 0.05  # dmg and penetration power drop the longer damage sprite travel
                     if self.penetrate > 1:
                         self.penetrate -= 0.002
+                    else:  # no more penetrate power to move on
+                        self.hit_register(self.pass_subunit)
+                        self.kill()  # remove sprite
             else:
                 self.base_pos = self.base_target
                 self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],

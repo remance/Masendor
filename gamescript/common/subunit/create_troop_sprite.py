@@ -61,6 +61,8 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
                         colour = colour[1]
                     else:
                         colour = colour[0]
+            if colour == "":  # no custom colour, use None
+                colour = None
             image_part = generate_body(layer, part[:3], troop_sprite_list, body_sprite_pool,
                                        armour_sprite_pool=armour_sprite_pool, colour=colour,
                                        colour_list=colour_list, armour=this_armour)
@@ -295,11 +297,12 @@ def generate_body(part, body_part_list, troop_sprite_list, sprite_pool, armour_s
         if colour is not None:  # apply skin colour, maybe add for armour colour later
             sprite_image = apply_colour(sprite_image, colour, colour_list, keep_white=False)
 
+
         # add armour if there is one
         if armour is not None and armour != "None":
             part_name = part
             if any(ext in part for ext in ("p1_", "p2_", "p3_", "p4_")):
-                part_name = part[3:]  # remove p1_ or p2_ to get part name
+                part_name = part[3:]  # remove person prefix to get part name
             gear_image = \
             armour_sprite_pool[body_part_list[0]][armour][troop_sprite_list[part]][body_part_list[1]][part_name][
                 body_part_list[2]]
