@@ -217,13 +217,13 @@ class Game:
         self.ruleset_list = csv_read(self.main_dir, "ruleset_list.csv", ("data", "ruleset"))  # get ruleset list
         self.ruleset_folder = str(self.ruleset_list[self.ruleset][1]).strip("/")
 
-        if not os.path.exists("/profile"):  # make profile folder if not existed
+        if not os.path.exists("profile"):  # make profile folder if not existed
             os.umask(0)
-            os.makedirs("/profile", mode=0o777)
-            os.makedirs("/profile/unitpreset", mode=0o777)
+            os.makedirs("profile")
+            os.makedirs("profile/unitpreset")
         if not os.path.exists("profile/unitpreset/" + str(self.ruleset)):  # create unitpreset folder for ruleset
             os.umask(0)
-            os.makedirs("profile/unitpreset/" + str(self.ruleset), mode=0o777)
+            os.makedirs("profile/unitpreset/" + str(self.ruleset))
         try:
             custom_unit_preset_list = csv_read(self.main_dir, "custom_unitpreset.csv",
                                                ("profile", "unitpreset", str(self.ruleset)))
