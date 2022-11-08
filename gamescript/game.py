@@ -168,7 +168,7 @@ class Game:
             genre_folder = [str(folder_name).split("/")[-1].capitalize() for folder_name in genre_folder]
             if "__pycache__" in genre_folder:
                 genre_folder.remove("__pycache__")  # just grab the first genre folder as default
-
+            genre_folder.remove("Common")
             config = configparser.ConfigParser()
 
             screen = screeninfo.get_monitors()[0]
@@ -533,7 +533,8 @@ class Game:
         genre_folder = Path(os.path.join(main_dir, script_folder))  # Load genre list
         subdirectories = [x for x in genre_folder.iterdir() if x.is_dir()]
         subdirectories = [os.sep.join(os.path.normpath(folder_name).split(os.sep)[-1:]).capitalize() for folder_name in subdirectories]
-        subdirectories.remove("__pycache__")
+        if "__pycache__" in subdirectories:
+            subdirectories.remove("__pycache__")
         subdirectories.remove("Common")
         self.genre_list = subdirectories  # map name list for map selection list
 
