@@ -4,8 +4,8 @@ import csv
 import pygame
 
 current_dir = os.path.split(os.path.abspath(__file__))[0]
-main_dir = current_dir[:current_dir.rfind("\\")+1].split("\\")
-main_dir = ''.join(stuff + "\\" for stuff in main_dir[:-2])  # one folder further back, comment out if data in same folder as animation maker
+
+main_dir = os.sep.join(os.path.normpath(current_dir).split(os.sep)[:-2])  # two folder further back, comment out if data in same folder as animation maker
 sys.path.insert(1, main_dir)
 
 from gamescript import datastat
