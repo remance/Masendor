@@ -297,9 +297,7 @@ def generate_body(part, body_part_list, troop_sprite_list, sprite_pool, armour_s
         if colour is not None:  # apply skin colour, maybe add for armour colour later
             sprite_image = apply_colour(sprite_image, colour, colour_list, keep_white=False)
 
-
-        # add armour if there is one
-        if armour is not None and armour != "None":
+        if armour is not None and armour != "None":  # add armour if there is one
             part_name = part
             if any(ext in part for ext in ("p1_", "p2_", "p3_", "p4_")):
                 part_name = part[3:]  # remove person prefix to get part name

@@ -40,12 +40,38 @@ If anyone is interested in another similar game like this, there is an interesti
 If you want to download the release version to test the game, go to [Release](https://github.com/remance/Masendor/releases) tags and [**download**](https://github.com/remance/Masendor/releases/download/0.6.2.3/Dream.Decision.zip) the zip file. <br>
 
 ## Run
-To start testing the game run `main.py` for the source code or `main.exe` for the release version. <br>
+To start testing the game run `main.py` via Python interpreter for the source code or `main` file directly for the release version. <br>
+
+## System Requirements
+
+### MINIMUM:
+
+OS: Windows 7 (Haven't tested on Windows XP or Vista but may work), Ubuntu 12.04
+
+Memory: 2GB RAM (Only if troop animation is disabled)
+
+Processor: Need more testing
+
+Graphics: Need more testing
+
+Storage: Currently 400 MB but likely around 1 GB available space in finished version.
+
+### RECOMMEND:
+
+OS: Windows 8, Ubuntu 22.04
+
+Memory: 4GB RAM
+
+Processor: Need more testing
+
+Graphics: Need more testing
+
+Storage: 1GB available space
 
 ## Compile
-To compile the source code into an executable program, recommend using pyinstaller and `main.spec` to compile the game. <br>
+To compile the source code into an executable program, recommend using pyinstaller and `main.spec`. <br>
 The `main.spec` compile only `main.py`, so you will need to copy gamescript, data, profile folder manually to the dist folder after.
-Additionally, the spec file also include animation maker but you will also need to copy animation maker folder to the dist folder to make it functional.
+Additionally, the spec file also include animation maker, but you will also need to copy animation maker folder to the dist folder to make it functional.
 
 Check the [`requirements.txt`](requirements.txt) file for dependency requirements if running with the python source code.<br>
 Also, the game is now optimised based on the pygame 2.1.2 module and python 3.10. (may have to use cython later for a huge size battle)
@@ -75,7 +101,7 @@ Well in this game, all versions of the story are accepted and represented. Every
 
 ## Army is led by more than just a king
 
-So many historical wargames have only one leader per army. Not here. Every unit has a leadership structure and every historical battle will have all the named people that participated in the battle.
+So many historical war games have only one leader per army. Not here. Every unit has a leadership structure and every historical battle will have all the named people that participated in the battle.
 
 ![alt text](https://github.com/remance/preview/blob/main/leader.gif?raw=true)
 
@@ -114,7 +140,7 @@ This function is going to be a headache to write and research. But hopefully, it
 
 **0.6.8 and 0.6.9:** multiple unit selection/move, also add a border to a selected unit on army selector UI
 
-**Ver 0.7 Future Visionary:** in-game custom sub-unit editor, queue command, unit form, Dismount/discard, hidden stat, line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus, day-night, Battle of Walaja, Battle of Dorylaeum
+**Ver 0.7 Future Visionary:** in-game custom subunit editor, queue command, unit form, Dismount/discard, hidden stat, line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus, day-night, Battle of Walaja, Battle of Dorylaeum
 
 **Ver 0.8 Authentic Attraction:** In-game art, better-looking UI (All hand (and mouse) drawn except for historical image), add intro screen, Battle of Isandlwana, Battle of Hwangsanbeol
 
