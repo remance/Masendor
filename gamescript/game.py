@@ -157,7 +157,7 @@ class Game:
         # Read config file
         config = configparser.ConfigParser()
         try:
-            config.read_file(open("configuration.ini"))  # read config file
+            config.read_file(open(os.path.join(self.main_dir, "configuration.ini")))  # read config file
         except FileNotFoundError:  # Create config file if not found with the default
             try:  # for repo version
                 genre_folder = Path(os.path.join(self.main_dir, script_folder))
@@ -183,7 +183,7 @@ class Game:
             config["USER"] = {key: value for key, value in config["DEFAULT"].items()}
             with open("configuration.ini", "w") as cf:
                 config.write(cf)
-            config.read_file(open("configuration.ini"))
+            config.read_file(open(os.path.join(self.main_dir, "configuration.ini")))
 
         self.config = config
         self.screen_width = int(self.config["USER"]["screen_width"])
