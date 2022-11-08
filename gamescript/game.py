@@ -181,7 +181,7 @@ class Game:
                                  "voice_volume": "0.0", "max_fps": "60", "ruleset": "1", "genre": genre_folder[-1],
                                  "language": "en", "play_troop_animation": "1"}
             config["USER"] = {key: value for key, value in config["DEFAULT"].items()}
-            with open("configuration.ini", "w") as cf:
+            with open(os.path.join(self.main_dir, "configuration.ini"), "w") as cf:
                 config.write(cf)
             config.read_file(open(os.path.join(self.main_dir, "configuration.ini")))
 
