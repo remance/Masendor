@@ -33,13 +33,13 @@ def change_to_source_selection_menu(self):
                 menu.ArmyStat(self.screen_scale,
                               (team.rect.bottomleft[0], self.screen_rect.height / 1.5),
                               load_image(self.main_dir, self.screen_scale, "stat.png",
-                                         "ui\\mapselect_ui")))  # left army stat
+                                         ("ui", "mapselect_ui"))))  # left army stat
         else:
             self.army_stat.add(
                 menu.ArmyStat(self.screen_scale,
                               (team.rect.bottomright[0], self.screen_rect.height / 1.5),
                               load_image(self.main_dir, self.screen_scale, "stat.png",
-                                         "ui\\mapselect_ui")))  # right army stat
+                                         ("ui", "mapselect_ui"))))  # right army stat
 
     team_army, team_leader = self.read_battle_source(
         [self.source_scale_text[self.map_source], self.source_text[self.map_source]])

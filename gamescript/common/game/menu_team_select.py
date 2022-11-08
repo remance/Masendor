@@ -95,11 +95,11 @@ def menu_team_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
         self.char_stat["char"] = menu.ArmyStat(self.screen_scale,
                                                (self.screen_rect.center[0] / 2.5, self.screen_rect.height / 2.5),
                                                load_image(self.main_dir, self.screen_scale,
-                                                          "char_stat.png", "ui\\mapselect_ui"))  # char stat
+                                                          "char_stat.png", ("ui", "mapselect_ui")))  # char stat
         self.char_stat["troop"] = menu.ArmyStat(self.screen_scale,
                                                 (self.screen_rect.center[0] * 1.6, self.screen_rect.height / 2.5),
                                                 load_image(self.main_dir, self.screen_scale,
-                                                           "char_stat.png", "ui\\mapselect_ui"))  # troop stat
+                                                           "char_stat.png", ("ui", "mapselect_ui")))  # troop stat
 
         team_selected = self.team_selected
         if self.enactment:
