@@ -23,10 +23,6 @@ def make_lorebook(main_dir, ruleset_folder, screen_scale, screen_rect):
     lore_name_list.max_row_show = encyclopedia.max_row_show
 
     lore_button_images = load_images(main_dir, screen_scale, ("ui", "lorebook_ui", "button"), load_order=False)
-    for image in lore_button_images:  # scale button image
-        lore_button_images[image] = pygame.transform.scale(lore_button_images[image], (
-        int(lore_button_images[image].get_width() * screen_scale[0]),
-        int(lore_button_images[image].get_height() * screen_scale[1])))
     lore_button_ui = [battleui.UIButton(lore_button_images["concept"], 0, 13),  # concept section button
                       battleui.UIButton(lore_button_images["history"], 1, 13),  # history section button
                       battleui.UIButton(lore_button_images["faction"], 2, 13),  # faction section button
@@ -45,38 +41,38 @@ def make_lorebook(main_dir, ruleset_folder, screen_scale, screen_rect):
     lore_button_ui[0].change_pos((encyclopedia.rect.topleft[0] + (lore_button_images["concept"].get_width() / 2),
                                   encyclopedia.rect.topleft[1] - (lore_button_images["concept"].get_height() / 2)))
     lore_button_ui[1].change_pos(
-        (encyclopedia.rect.topleft[0] + (lore_button_images["concept"].get_width() * 1.1) * 1.5,
-         encyclopedia.rect.topleft[1] - (lore_button_images["concept"].get_height() / 2)))
+        (encyclopedia.rect.topleft[0] + (encyclopedia.image.get_width() / 8.5),
+         encyclopedia.rect.topleft[1] - (lore_button_images["history"].get_height() / 2)))
     lore_button_ui[2].change_pos(
-        (encyclopedia.rect.topleft[0] + (lore_button_images["concept"].get_width() * 1.1) * 2.5,
-         encyclopedia.rect.topleft[1] - (lore_button_images["concept"].get_height() / 2)))
+        (encyclopedia.rect.topleft[0] + (encyclopedia.image.get_width() / 5),
+         encyclopedia.rect.topleft[1] - (lore_button_images["faction"].get_height() / 2)))
     lore_button_ui[3].change_pos(
-        (encyclopedia.rect.topleft[0] + (lore_button_images["concept"].get_width() * 1.1) * 3.5,
-         encyclopedia.rect.topleft[1] - (lore_button_images["concept"].get_height() / 2)))
+        (encyclopedia.rect.topleft[0] + (encyclopedia.image.get_width() / 3.5),
+         encyclopedia.rect.topleft[1] - (lore_button_images["troop"].get_height() / 2)))
     lore_button_ui[4].change_pos(
-        (encyclopedia.rect.topleft[0] + (lore_button_images["concept"].get_width() * 1.1) * 4.5,
-         encyclopedia.rect.topleft[1] - (lore_button_images["concept"].get_height() / 2)))
+        (encyclopedia.rect.topleft[0] + (encyclopedia.image.get_width() / 2.7),
+         encyclopedia.rect.topleft[1] - (lore_button_images["equipment"].get_height() / 2)))
     lore_button_ui[5].change_pos(
-        (encyclopedia.rect.topleft[0] + (lore_button_images["concept"].get_width() * 1.1) * 5.5,
-         encyclopedia.rect.topleft[1] - (lore_button_images["concept"].get_height() / 2)))
+        (encyclopedia.rect.topleft[0] + (encyclopedia.image.get_width() / 2.2),
+         encyclopedia.rect.topleft[1] - (lore_button_images["status"].get_height() / 2)))
     lore_button_ui[6].change_pos(
-        (encyclopedia.rect.topleft[0] + (lore_button_images["concept"].get_width() * 1.1) * 6.5,
-         encyclopedia.rect.topleft[1] - (lore_button_images["concept"].get_height() / 2)))
+        (encyclopedia.rect.topleft[0] + (encyclopedia.image.get_width() / 1.85),
+         encyclopedia.rect.topleft[1] - (lore_button_images["skill"].get_height() / 2)))
     lore_button_ui[7].change_pos(
-        (encyclopedia.rect.topleft[0] + (lore_button_images["concept"].get_width() * 1.1) * 7.5,
-         encyclopedia.rect.topleft[1] - (lore_button_images["concept"].get_height() / 2)))
+        (encyclopedia.rect.topleft[0] + (encyclopedia.image.get_width() / 1.6),
+         encyclopedia.rect.topleft[1] - (lore_button_images["property"].get_height() / 2)))
     lore_button_ui[8].change_pos(
-        (encyclopedia.rect.topleft[0] + (lore_button_images["concept"].get_width() * 1.1) * 8.5,
-         encyclopedia.rect.topleft[1] - (lore_button_images["concept"].get_height() / 2)))
+        (encyclopedia.rect.topleft[0] + (encyclopedia.image.get_width() / 1.41),
+         encyclopedia.rect.topleft[1] - (lore_button_images["leader"].get_height() / 2)))
     lore_button_ui[9].change_pos(
-        (encyclopedia.rect.topleft[0] + (lore_button_images["concept"].get_width() * 1.1) * 9.5,
-         encyclopedia.rect.topleft[1] - (lore_button_images["concept"].get_height() / 2)))
+        (encyclopedia.rect.topleft[0] + (encyclopedia.image.get_width() / 1.26),
+         encyclopedia.rect.topleft[1] - (lore_button_images["terrain"].get_height() / 2)))
     lore_button_ui[10].change_pos(
-        (encyclopedia.rect.topleft[0] + (lore_button_images["concept"].get_width() * 1.1) * 10.5,
-         encyclopedia.rect.topleft[1] - (lore_button_images["concept"].get_height() / 2)))
+        (encyclopedia.rect.topleft[0] + (encyclopedia.image.get_width() / 1.14),
+         encyclopedia.rect.topleft[1] - (lore_button_images["weather"].get_height() / 2)))
     lore_button_ui[11].change_pos(
-        (encyclopedia.rect.topleft[0] + (lore_button_images["concept"].get_width() * 1.1) * 11.5,
-         encyclopedia.rect.topleft[1] - (lore_button_images["concept"].get_height() / 2)))
+        (encyclopedia.rect.topleft[0] + (encyclopedia.image.get_width() / 1.04),
+         encyclopedia.rect.topleft[1] - (lore_button_images["close"].get_height() / 2)))
     lore_button_ui[12].change_pos((encyclopedia.rect.bottomleft[0] + (lore_button_images["previous"].get_width()),
                                    encyclopedia.rect.bottomleft[1] - lore_button_images["previous"].get_height()))
     lore_button_ui[13].change_pos((encyclopedia.rect.bottomright[0] - (lore_button_images["next"].get_width()),
