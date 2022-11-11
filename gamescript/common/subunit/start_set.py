@@ -5,6 +5,7 @@ def start_set(self, zoom, animation_pool):
     self.make_pos_range()
     self.zoom_scale()
     self.find_nearby_subunit()
+    self.swap_weapon()
 
     try:
         self.terrain, self.feature = self.get_feature(self.base_pos,

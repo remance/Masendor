@@ -730,7 +730,6 @@ class Game:
         subunit.Subunit.leader_data = self.leader_data
         subunit.Subunit.troop_sprite_list = self.troop_data.troop_sprite_list
         subunit.Subunit.leader_sprite_list = self.leader_data.leader_sprite_list
-        subunit.Subunit.common_leader_sprite_list = self.leader_data.common_leader_sprite_list
         subunit.Subunit.status_list = self.troop_data.status_list
         subunit.Subunit.subunit_state = self.subunit_state
 
@@ -755,7 +754,7 @@ class Game:
 
         self.command_ui.weapon_sprite_pool = self.gen_weapon_sprite_pool
 
-        # flip (covert for ingame angle) and reduce bullet sprite size by half
+        # flip (covert for ingame angle)
         bullet_sprite_pool = {}
         for key, value in self.effect_sprite_data.effect_sprite_pool.items():
             bullet_sprite_pool[key] = {}
@@ -763,7 +762,6 @@ class Game:
                 bullet_sprite_pool[key][key2] = {}
                 for key3, value3 in value2.items():
                     image = pygame.transform.flip(value3, False, True)
-                    # image = pygame.transform.scale(image, (int(image.get_width() / 2), int(image.get_height() / 2)))
                     bullet_sprite_pool[key][key2][key3] = image
         bullet_weapon_sprite_pool = {}
         for key, value in self.gen_weapon_sprite_pool.items():

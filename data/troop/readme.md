@@ -140,3 +140,12 @@ mount_preset: list of all sub-units' mounts. The data structure of mount is as f
 mount_grade: list of mount grade with modifier to mount stat similar to unit_grade
 
 mount_armour: list of mount armour with modifier to mount stat similar to unit_armour. The data structure is slightly different than unit armour, mount armour provide additional health instead of armour stat.
+
+Spell Preset
+
+Concept:
+Intensity affect Penetration power and duration
+Quality affect damage
+Quantity affect number of damage sprite per spell cast
+Precision affect how accurate the spell will travel to location or occur from targeted area
+Type Instant, Channelling

@@ -472,7 +472,7 @@ class Battle:
         if self.mode == "battle":
             self.camera_zoom = self.start_zoom  # Camera zoom
             self.camera_mode = self.start_zoom_mode
-            self.setup_battle_unit(self.all_team_unit, self.troop_data.troop_list)
+            self.setup_battle_unit(self.all_team_unit, self.troop_data.troop_list, self.leader_data.leader_list)
             self.team_troop_number = [1 for _ in self.all_team_unit]  # reset list of troop number in each team
             self.battle_scale = [(value / sum(self.team_troop_number) * 100) for value in self.team_troop_number]
             self.start_troop_number = [0 for _ in self.all_team_unit]

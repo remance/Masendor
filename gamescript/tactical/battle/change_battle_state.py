@@ -40,10 +40,10 @@ def change_battle_state(self):
         # Run starting method
         for this_unit in self.unit_updater:
             this_unit.start_set()
-        for this_subunit in self.subunit_updater:
-            this_subunit.start_set(self.camera_zoom, self.subunit_animation_pool)
         for this_leader in self.leader_updater:
             this_leader.start_set()
+        for this_subunit in self.subunit_updater:
+            this_subunit.start_set(self.camera_zoom, self.subunit_animation_pool)
 
     elif self.game_state == "editor":  # change to editor state
         self.camera_mode = "Free"

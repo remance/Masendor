@@ -7,26 +7,29 @@ def skill_check_logic(self):
         if self.command_action:  # no current action and has skill command waiting
             command_action = self.command_action["name"]
             if "Skill" in command_action:  # use skill and convert command action into skill action name
-                if ("Troop" in command_action and self.unit_leader is False) or (
+                if ("Troop" in command_action and self.leader is not None) or (
                         "Leader" in command_action and self.unit_leader):
                     skill = int(self.command_action["name"][-1])
                     skill_command = None
+                    action = None
                     if "Weapon" in command_action:  # weapon skill
-                        skill = self.weapon_skill[self.equipped_weapon][skill]
-                        skill_command = skill
-                        action = self.skill[skill]["Action"].copy() + [skill]
-                        action[0] += " " + command_action[-1]
+                        skill = self.weapon_skill[self.equipped_weapon][skill]  # TODO check if this work properly for leader
+                        if skill != 0:
+                            skill_command = skill
+                            action = self.skill[skill]["Action"].copy() + [skill]
+                            action[0] += " " + command_action[-1]
                     else:  # troop or leader skill
-                        if ("Troop" in command_action and self.unit_leader is False) and len(self.troop_skill) > skill:
+                        if "Troop" in command_action and self.leader is None and len(self.troop_skill) > skill:
                             skill = self.troop_skill[skill]
-                        elif ("Leader" in command_action and self.unit_leader) and len(self.leader.skill) > skill:
+                            action = self.skill[skill]["Action"].copy() + [skill]
+                        elif "Leader" in command_action and self.leader is not None and len(self.leader.leader_skill) > skill:
                             skill = self.leader.leader_skill[skill]
-
-                        action = self.leader.skill[skill]["Action"].copy() + [skill]
-                        if "Action" in action[0]:
-                            action[0] += " 0"  # use main hand by default for Action type animation skill
-                        else:
-                            action[0] = "_Skill_" + action[0]
+                            action = self.leader.skill[skill]["Action"].copy() + [skill]
+                        if action is not None:
+                            if "Action" in action[0]:
+                                action[0] += " 0"  # use main hand by default for Action type animation skill
+                            else:
+                                action[0] = "_Skill_" + action[0]
 
                     if skill != 0 and skill in self.available_skill:
                         self.skill_effect = {}  # arcade mode allows only 1 skill active at a time

@@ -17,8 +17,8 @@ def make_faction_troop_leader_data(main_dir, screen_scale, ruleset, ruleset_fold
     troop_data = datastat.TroopData(main_dir, weapon_images, ruleset, ruleset_folder, language)
 
     # create leader data storage object
-    images = load_images(main_dir, screen_scale, ("ruleset", ruleset_folder, "leader", "portrait"), load_order=False)
-    leader_data = datastat.LeaderData(main_dir, images, ruleset, ruleset_folder, language)
+    portrait_images = load_images(main_dir, screen_scale, ("ruleset", ruleset_folder, "leader", "portrait"), load_order=False)
+    leader_data = datastat.LeaderData(main_dir, portrait_images, troop_data, ruleset, ruleset_folder, language)
 
     # create faction data storage object
     faction_data = datastat.FactionData(main_dir, ruleset_folder, screen_scale, language)

@@ -28,8 +28,9 @@ def skill_convert(self, skill_list, add_charge_skill=False):
                   (skill != 0 and (self.troop_data.skill_list[skill]["Troop Type"] == 0 or
                                    self.troop_data.skill_list[skill]["Troop Type"] == self.subunit_type + 1))}
 
-    leader_skill_dict = {x: self.leader_data.skill_list[x].copy() for x in skill_dict if
-                         x != 0 and x in self.leader_data.skill_list}
-    skill_dict = skill_dict | leader_skill_dict
+    if self.leader is not None:
+        leader_skill_dict = {key: value.copy() for key, value in self.leader.skill.items() if
+                             key != 0}
+        skill_dict = skill_dict | leader_skill_dict
 
     return skill_dict

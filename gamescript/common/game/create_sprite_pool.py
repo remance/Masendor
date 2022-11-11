@@ -18,10 +18,7 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
         if subunit_id not in (0, "h1") and this_subunit["Sprite ID"] != "":  # skip None troop
             sprite_id = str(this_subunit["Sprite ID"])
             race = self.troop_data.race_list[this_subunit["Race"]]["Name"]
-            mount_race = self.troop_data.mount_list[this_subunit["Mount"][0]]["Race"]
-            this_subunit["Size"] = self.troop_data.race_list[this_subunit["Race"]]["Size"] / 10
-            if mount_race != 0:
-                this_subunit["Size"] = self.troop_data.race_list[mount_race]["Size"] / 10
+            mount_race = self.troop_data.mount_list[this_subunit["Mount"][0]]["Race"]  # get mount id
             mount_race = self.troop_data.race_list[mount_race]["Name"]  # replace id with name
             mount_race_name = mount_race
             if mount_race != "None":
@@ -186,10 +183,8 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                                 sprite_data = self.troop_data.troop_sprite_list[sprite_id]
                                             else:
                                                 leader_id = int(subunit_id.replace("h", ""))
-                                                if leader_id < 10000:
-                                                    sprite_data = self.leader_data.leader_sprite_list[sprite_id]
-                                                else:  # common leader
-                                                    sprite_data = self.leader_data.common_leader_sprite_list[sprite_id]
+                                                sprite_data = self.leader_data.leader_sprite_list[sprite_id]
+
                                             sprite_dict = create_troop_sprite(animation, this_subunit["Size"], frame_data,
                                                                               sprite_data, self.gen_body_sprite_pool,
                                                                               self.gen_weapon_sprite_pool,

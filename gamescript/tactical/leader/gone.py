@@ -49,6 +49,7 @@ def gone(self, event_text={96: "retreating", 97: "captured", 98: "missing", 99: 
 
             self.unit.leader_subunit = leader.subunit
             leader.subunit.unit_leader = True
+            subunit.leader = leader
 
         leader.image_position = leader.leader_pos[leader.role]
         leader.rect = leader.image.get_rect(center=leader.image_position)

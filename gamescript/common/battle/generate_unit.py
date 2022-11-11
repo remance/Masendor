@@ -13,7 +13,8 @@ for dd in number_board:
         board_pos.append(ll + dd)
 
 
-def generate_unit(self, which_team, setup_data, control, command, colour, coa, subunit_game_id, troop_list):
+def generate_unit(self, which_team, setup_data, control, command, colour, coa, subunit_game_id, troop_list,
+                  leader_list):
     """
     generate unit and their subunits
     :param self: Battle object
@@ -25,6 +26,7 @@ def generate_unit(self, which_team, setup_data, control, command, colour, coa, s
     :param coa: Coat of arm image
     :param subunit_game_id: Starting game id for subunits
     :param troop_list: Troop data, use for checking troop size
+    :param leader_list: Leader data, use for checking hero size
     :return: Latest subunit game id for other unit generation
     """
     from gamescript import battleui, subunit, unit, leader
@@ -52,16 +54,20 @@ def generate_unit(self, which_team, setup_data, control, command, colour, coa, s
     unit_array = np.array(
         [[0] * self.unit_size[0]] * self.unit_size[1])  # for unit size overlap check if genre has setting
     new_subunit_list = np.array([[0] * len(this_unit.subunit_id_array[0])] * len(this_unit.subunit_id_array))
+    already_add_hero = False
     for row_index, row in enumerate(this_unit.subunit_id_array):
         for col_index, col in enumerate(row):
             if col != "0" and (self.troop_size_adjustable is False or unit_array[row_index][col_index] == 0):
                 this_subunit_number = col
                 size = 1
                 if this_subunit_number == "h":  # Leader, only need in genre with leader as subunit itself
-                    this_subunit_number = this_subunit_number + str(setup_data["Leader"][0])
-                    size = 1  # TODO change when there is way to check leader size
+                    if already_add_hero is False:
+                        this_subunit_number = this_subunit_number + str(setup_data["Leader"][0])
+                        size = int(leader_list[setup_data["Leader"][0]]["Size"])
+                    else:  # skip duplicate hero
+                        break
                 elif this_subunit_number != "0":
-                    size = int(round(int(troop_list[int(col)]["Size"]) / 10, 0))
+                    size = int(troop_list[int(col)]["Size"] / 10)
                     if size == 0:
                         size = 1
                     elif size > 5:

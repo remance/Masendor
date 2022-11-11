@@ -485,10 +485,10 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                             self.battle_ui_updater.remove(self.unit_setup_stuff, self.leader_now)
                             for this_unit in self.battle.all_team_unit["alive"]:
                                 this_unit.start_set(self.subunit)
-                            for this_subunit in self.subunit:
-                                this_subunit.start_set(self.camera_zoom, self.subunit_animation_pool)
                             for this_leader in self.leader_updater:
                                 this_leader.start_set()
+                            for this_subunit in self.subunit:
+                                this_subunit.start_set(self.camera_zoom, self.subunit_animation_pool)
 
                             for this_unit in self.battle.all_team_unit["alive"]:
                                 this_unit.player_input(self.command_mouse_pos, other_command=1)

@@ -24,52 +24,6 @@ class TroopData:
         """
         self.weapon_icon = tuple(weapon_icon_images.values())
 
-        # Troop stat dict
-        self.troop_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "troop_preset.csv"),
-                  encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
-            header = rd[0]
-            int_column = (
-            "ID", "Grade", "Race", "Cost", "Upkeep", "Troop", "Troop Class", "Sprite ID")  # value int only
-            list_column = ("Trait", "Skill",)  # value in list only
-            tuple_column = ("Armour", "Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon",
-                            "Secondary Sub Weapon", "Mount", "Role", "Ruleset")  # value in tuple only
-            percent_column = ("Ammunition Modifier",)
-            int_column = [index for index, item in enumerate(header) if item in int_column]
-            list_column = [index for index, item in enumerate(header) if item in list_column]
-            tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
-            percent_column = [index for index, item in enumerate(header) if item in percent_column]
-            for row_index, row in enumerate(rd):
-                if row_index > 0:  # skip convert header row
-                    for n, i in enumerate(row):
-                        row = stat_convert(row, n, i, percent_column=percent_column, list_column=list_column,
-                                           tuple_column=tuple_column, int_column=int_column)
-                    self.troop_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
-            edit_file.close()
-
-        # Lore of the troop
-        self.troop_lore = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop",
-                               "troop_lore" + "_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
-            lore_csv_read(edit_file, self.troop_lore)
-            edit_file.close()
-
-        # Troop sprite
-        self.troop_sprite_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "troop_sprite.csv"),
-                  encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
-            header = rd[0]
-            for row_index, row in enumerate(rd):
-                for n, i in enumerate(row):
-                    if "," in i:
-                        row[n] = i.split(",")
-                self.troop_sprite_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
-            edit_file.close()
-
         # Troop status effect dict
         self.status_list = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_status.csv"), encoding="utf-8", mode="r") as edit_file:
@@ -184,7 +138,7 @@ class TroopData:
             tuple_column = ("Status", "Restriction", "Condition", "Enemy Status", "Ruleset")  # value in tuple only
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
                           "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect",
-                          "Critical Effect", "Damage Effect")
+                          "Critical Effect", "Physical Damage Effect")
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
@@ -424,6 +378,67 @@ class TroopData:
                     self.mount_armour_lore[row[0]] = [stuff for index, stuff in enumerate(row[1:])]
         edit_file.close()
 
+        # Troop stat dict
+        self.troop_list = {}
+        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "troop_preset.csv"),
+                  encoding="utf-8", mode="r") as edit_file:
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+            rd = [row for row in rd]
+            header = rd[0]
+            int_column = (
+                "ID", "Grade", "Race", "Cost", "Upkeep", "Troop", "Troop Class", "Sprite ID")  # value int only
+            list_column = ("Trait", "Skill",)  # value in list only
+            tuple_column = ("Armour", "Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon",
+                            "Secondary Sub Weapon", "Mount", "Role", "Ruleset")  # value in tuple only
+            percent_column = ("Ammunition Modifier",)
+            int_column = [index for index, item in enumerate(header) if item in int_column]
+            list_column = [index for index, item in enumerate(header) if item in list_column]
+            tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
+            percent_column = [index for index, item in enumerate(header) if item in percent_column]
+            for row_index, row in enumerate(rd):
+                if row_index > 0:  # skip convert header row
+                    for n, i in enumerate(row):
+                        row = stat_convert(row, n, i, percent_column=percent_column, list_column=list_column,
+                                           tuple_column=tuple_column, int_column=int_column)
+                    self.troop_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
+
+            edit_file.close()
+
+            # Add troop size to data
+            for key in self.troop_list:
+                self.troop_list[key]["Size"] = 1
+                try:
+                    mount_race = self.mount_list[self.troop_list[key]["Mount"][0]]["Race"]
+                    if mount_race != 0:
+                        self.troop_list[key]["Size"] = self.race_list[mount_race]["Size"] / 10
+                    else:
+                        self.troop_list[key]["size"] = self.race_list[self.troop_list[key]["Race"]]["Size"] / 10
+                except IndexError as notfound:
+                    print(key, "Troop does not have mount data")
+                    print(notfound)
+
+
+        # Lore of the troop
+        self.troop_lore = {}
+        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop",
+                               "troop_lore" + "_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
+            lore_csv_read(edit_file, self.troop_lore)
+            edit_file.close()
+
+        # Troop sprite
+        self.troop_sprite_list = {}
+        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "troop_sprite.csv"),
+                  encoding="utf-8", mode="r") as edit_file:
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+            rd = [row for row in rd]
+            header = rd[0]
+            for row_index, row in enumerate(rd):
+                for n, i in enumerate(row):
+                    if "," in i:
+                        row[n] = i.split(",")
+                self.troop_sprite_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
+            edit_file.close()
+
         # Unit formation dict
         self.default_unit_formation_list = {}
         part_folder = Path(os.path.join(main_dir, "data", "troop", "formation"))
@@ -449,12 +464,15 @@ class TroopData:
 
 
 class LeaderData:
-    def __init__(self, main_dir, images, ruleset, ruleset_folder, language):
+    def __init__(self, main_dir, images, troop_data, ruleset, ruleset_folder, language):
         """
         For keeping all data related to leader.
         :param main_dir: Game folder direction
         :param images: Portrait images of leaders
+        :param troop_data: Troop data dict
+        :param ruleset: Selected ruleset
         :param ruleset_folder: Folder name of the ruleset
+        :param language: Current game language acronym
         """
         self.images = images
         self.leader_list = {}
@@ -492,6 +510,19 @@ class LeaderData:
                 self.leader_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
+        # Add leader race size to data
+        for key in self.leader_list:
+            self.leader_list[key]["Size"] = 1
+            try:
+                mount_race = troop_data.mount_list[self.leader_list[key]["Mount"][0]]["Race"]
+                if mount_race != 0:
+                    self.leader_list[key]["Size"] = troop_data.race_list[mount_race]["Size"] / 10
+                else:
+                    self.leader_list[key]["size"] = troop_data.race_list[self.leader_list[key]["Race"]]["Size"] / 10
+            except IndexError as notfound:
+                print(key, "Leader does not have mount data")
+                print(notfound)
+
         self.skill_list = {}
         with open(os.path.join(main_dir, "data", "leader", "leader_skill.csv"), encoding="utf-8",
                   mode="r") as edit_file:
@@ -503,7 +534,7 @@ class LeaderData:
             tuple_column = ("Status", "Restriction", "Condition", "Enemy Status", "Ruleset")  # value in tuple only
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
                           "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect",
-                          "Critical Effect", "Damage Effect")
+                          "Critical Effect", "Physical Damage Effect")
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
@@ -545,7 +576,7 @@ class LeaderData:
             tuple_column = ("Status", "Restriction", "Condition", "Enemy Status", "Ruleset")  # value in tuple only
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
                           "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect",
-                          "Critical Effect", "Damage Effect")
+                          "Critical Effect", "Physical Damage Effect")
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
@@ -587,7 +618,6 @@ class LeaderData:
                 self.leader_sprite_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
 
-        self.common_leader_sprite_list = {}
         with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "leader", "common_leader_sprite.csv"),
                   encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
@@ -597,8 +627,8 @@ class LeaderData:
                 for n, i in enumerate(row):
                     if "," in i:
                         row[n] = i.split(",")
-                self.common_leader_sprite_list[row[0]] = {header[index + 1]: stuff for index, stuff in
-                                                          enumerate(row[1:])}
+                self.leader_sprite_list[row[0]] = {header[index + 1]: stuff for index, stuff in
+                                                   enumerate(row[1:])}
             edit_file.close()
 
         # Leader class dict

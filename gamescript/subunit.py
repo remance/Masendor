@@ -32,7 +32,6 @@ class Subunit(pygame.sprite.Sprite):
     leader_data = None
     troop_sprite_list = None
     leader_sprite_list = None
-    common_leader_sprite_list = None
     status_list = None
     animation_sprite_pool = None
     subunit_state = None
@@ -132,7 +131,7 @@ class Subunit(pygame.sprite.Sprite):
         self.walk = False  # currently walking
         self.run = False  # currently running
         self.frontline = False  # on front line of unit or not
-        self.unit_leader = False  # contain the general or not, making it leader subunit
+        self.unit_leader = False  # contain the leader of unit or not, making it leader subunit
         self.attack_target = None  # target for attacking
         self.melee_target = None  # current target of melee combat
         self.close_target = None  # closet target to move to in melee
@@ -243,8 +242,6 @@ class Subunit(pygame.sprite.Sprite):
         else:  # leader character, for game mode that replace subunit with leader
             self.troop_id = troop_id
             sprite_list = self.leader_sprite_list
-            if int(troop_id.replace("h", "")) >= 10000:
-                sprite_list = self.common_leader_sprite_list
             stat = self.leader_data.leader_list[int(troop_id.replace("h", ""))].copy()
             lore = self.leader_data.leader_lore[int(troop_id.replace("h", ""))].copy()
             self.grade = 12  # leader grade by default
@@ -441,7 +438,6 @@ class Subunit(pygame.sprite.Sprite):
         self.add_weapon_stat()
         self.action_list = {}  # get added in change_equipment
 
-        self.swap_weapon()
         self.last_health_state = 0  # state start at full
         self.last_stamina_state = 0
 

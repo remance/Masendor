@@ -716,6 +716,7 @@ class Model:
             self.default_part_name = {key: None for key in self.mask_part_list}
 
     def get_face(self):
+        """Grab face parts"""
         for p in range(1, max_person + 1):
             this_p = "p" + str(p)
             self.p_eyebrow = self.p_eyebrow | {this_p: "normal"}
@@ -845,6 +846,46 @@ class Model:
                    anim_prop_list_box, ui, screen_scale, layer=9, old_list=anim_property_select)
         setup_list(menu.NameList, current_frame_row, frame_prop_list_box.namelist[current_frame], frame_prop_namegroup,
                    frame_prop_list_box, ui, screen_scale, layer=9, old_list=frame_property_select[current_frame])
+
+    def change_size(self):
+        """Scale position of all parts when change animation size"""
+        frame_size = self.frame_list[0]["size"]
+        old_size = self.frame_list[1]["size"]
+        for direction in range(5):
+            for frame_index, this_frame in enumerate(current_pool[direction][animation_name]):
+                min_x = 9999999
+                min_y = 9999999
+                max_x = 0
+                max_y = 0
+                for key, value in this_frame.items():
+                    if type(value) == list and len(value) > 3:
+                        pos_index = (3, 4)
+                        if "weapon" in key:
+                            pos_index = (2, 3)
+                        x = value[pos_index[0]]
+                        y = value[pos_index[1]]
+                        if min_x > x:
+                            min_x = x
+                        if max_x < x:
+                            max_x = x
+                        if min_y > y:
+                            min_y = y
+                        if max_y < y:
+                            max_y = y
+                center_x = (min_x + max_x) / 2  # find center of all parts
+                center_y = (min_y + max_y) / 2
+                new_center = ((center_x / old_size) * frame_size, (center_y / old_size) * frame_size)
+
+                for key, value in this_frame.items():
+                    if type(value) == list and len(value) > 3:
+                        pos_index = (3, 4)
+                        if "weapon" in key:
+                            pos_index = (2, 3)
+                        x = value[pos_index[0]]
+                        y = value[pos_index[1]]
+                        diff_center = (x - center_x, y - center_y)
+                        current_pool[direction][animation_name][frame_index][key][pos_index[0]] = new_center[0] + diff_center[0]
+                        current_pool[direction][animation_name][frame_index][key][pos_index[1]] = new_center[1] + diff_center[1]
 
     def create_animation_film(self, pose_layer_list, frame, empty=False):
         image = pygame.Surface((default_sprite_size[0] * self.size, default_sprite_size[1] * self.size),
@@ -2679,9 +2720,11 @@ while True:
                         break
 
             elif text_input_popup[1] == "change_size" and input_box.text.isdigit():
-                model.frame_list[0]["size"] = int(input_box.text)
-                model.read_animation(animation_name, old=True)
-                reload_animation(anim, model)
+                if int(input_box.text) != model.frame_list[0]["size"]:
+                    model.frame_list[0]["size"] = int(input_box.text)
+                    model.change_size()
+                    model.read_animation(animation_name, old=True)
+                    reload_animation(anim, model)
 
             elif text_input_popup[1] == "filter":
                 animation_filter = input_box.text.split(",")

@@ -7,7 +7,6 @@ def read_battle_source(self, description_text):
     if self.last_select == "custom":
         openfolder = self.custom_map_folder
     unit_info = self.read_selected_map_data(openfolder, "unit_pos.csv", source=True)
-
     self.team_pos = {row["Team"]: [] for row in list(unit_info.values())}
     for row in list(unit_info.values()):
         self.team_pos[row["Team"]].append([int(item) for item in row["POS"].split(",")])

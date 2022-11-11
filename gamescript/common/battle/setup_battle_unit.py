@@ -15,7 +15,7 @@ for dd in number_board:
         board_pos.append(ll + dd)
 
 
-def setup_battle_unit(self, team_unit_list, troop_list, specific_team=None):
+def setup_battle_unit(self, team_unit_list, troop_list, leader_list, specific_team=None):
     """
     Read unit battle data from unit_pos file
     :param self: Battle or Game object
@@ -69,7 +69,7 @@ def setup_battle_unit(self, team_unit_list, troop_list, specific_team=None):
                 coa = pygame.transform.scale(self.faction_data.coa_list[this_unit["Faction"]],
                                              (60, 60))  # get coa_list image and scale smaller to fit ui
                 subunit_game_id = self.generate_unit(which_team, this_unit, control, command, colour, coa,
-                                                     subunit_game_id, troop_list)
+                                                     subunit_game_id, troop_list, leader_list)
                 # ^ End subunit setup
 
     unit_file.close()
