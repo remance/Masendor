@@ -90,7 +90,7 @@ class Leader(pygame.sprite.Sprite):
                             self.skill[key] = value2
 
     def start_set(self):
-        self.subunit = self.unit.subunit_list[self.subunit_pos]  # setup subunit that leader belong
+        self.subunit = self.unit.subunit_object_array.flat[self.subunit_pos]  # setup subunit that leader belong
         self.subunit.leader = self  # put in leader to subunit with the set pos
         if self.role == 0:  # unit leader
             self.unit.leader_subunit = self.subunit

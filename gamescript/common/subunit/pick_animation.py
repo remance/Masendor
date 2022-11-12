@@ -40,7 +40,7 @@ def pick_animation(self):
 
     except IndexError:  # animation not found, use default
         self.current_animation = self.animation_pool[self.animation_race_name + "_Default/0"]
-    #     print(animation_name)
-    #     print(self.animation_pool)
+        print(animation_name)
+        print(self.animation_pool)
     #     print(self.current_animation)
     #     asdf

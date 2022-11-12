@@ -853,11 +853,12 @@ class Model:
         old_size = self.frame_list[1]["size"]
         for direction in range(5):
             for frame_index, this_frame in enumerate(current_pool[direction][animation_name]):
+                current_pool[direction][animation_name][frame_index]["size"] = frame_size
                 min_x = 9999999
                 min_y = 9999999
                 max_x = 0
                 max_y = 0
-                for key, value in this_frame.items():
+                for key, value in this_frame.items():  # loop to find min and max point for center
                     if type(value) == list and len(value) > 3:
                         pos_index = (3, 4)
                         if "weapon" in key:

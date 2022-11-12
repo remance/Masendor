@@ -67,18 +67,17 @@ def generate_unit(self, which_team, setup_data, control, command, colour, coa, s
                     else:  # skip duplicate hero
                         break
                 elif this_subunit_number != "0":
-                    size = int(troop_list[int(col)]["Size"] / 10)
-                    if size == 0:
-                        size = 1
-                    elif size > 5:
-                        size = 5
+                    size = int(troop_list[int(col)]["Size"])
+                if size == 0:
+                    size = 1
+                elif size > 5:
+                    size = 5
 
                 if self.troop_size_adjustable is False or (
-                        row_index + size <= 5 and col_index + size <= 5):  # skip if subunit exceed unit size array
+                        row_index + size <= self.unit_size[1] and col_index + size <= self.unit_size[0]):  # skip if subunit exceed unit size
                     for row_number in range(row_index, row_index + size):
                         for col_number in range(col_index, col_index + size):
                             unit_array[row_number][col_number] = 1
-
                     add_subunit = subunit.Subunit(this_subunit_number, subunit_game_id, this_unit,
                                                   this_unit.subunit_position_list[row_index][col_index],
                                                   this_unit.start_hp, this_unit.start_stamina, self.unit_scale)

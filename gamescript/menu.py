@@ -483,7 +483,6 @@ class ArmyStat(pygame.sprite.Sprite):
         """For character select screen"""
         self.image = self.image_original.copy()
         stat = leader_data.leader_list[leader.leader_id]
-
         leader_name = leader.name
         leader_image = leader.full_image
         leader_skill = ""

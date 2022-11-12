@@ -1,6 +1,7 @@
 """For keeping variable related to genre specific"""
 
 unit_size = (5, 5)
+troop_size_adjustable = True  # troop can be in various size, which affect subunit size in unit too
 
 unit_behaviour_wheel = {"Main": {"Skill": "Skill", "Shift Line": "Shift Line", "Range Attack": "Range Attack",
                                  "Behaviour": "Behaviour", "Command": "Command", "Formation": "Formation",
@@ -39,14 +40,14 @@ object_variable = {("self", "object"): {"add_troop_number_sprite": False,  # tro
                                         "char_select": True,  # include character specific screen,
                                         "leader_sprite": True,  # leader has its own animation sprite
                                         "troop_sprite_size": (250, 250),  # troop animation sprite size
+                                        "troop_size_adjustable": troop_size_adjustable,
                                         "unit_size": unit_size,  # maximum array size unit can contain subunits
                                         "command_ui_type": "hero",  # type of command bar, either hero or rts command
                                         },
                    ("battle_game", "self-object"): {"start_zoom_mode": "Follow",  # one character control camera
                                                     "start_zoom": 10,  # start with the closest zoom
                                                     "max_zoom": 10,  # maximum zoom level
-                                                    "troop_size_adjustable": True,
-                                                    # troop can be different size and affect sprite size
+                                                    "troop_size_adjustable": troop_size_adjustable,
                                                     "time_speed_scale": 30,  # how fast time fly in battle
                                                     "unit_behaviour_wheel": unit_behaviour_wheel
                                                     # player unit behaviour control via wheel ui

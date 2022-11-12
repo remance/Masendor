@@ -144,8 +144,16 @@ mount_armour: list of mount armour with modifier to mount stat similar to unit_a
 Spell Preset
 
 Concept:
-Intensity affect Penetration power and duration
+Intensity affect Penetration power that affect range and duration
 Quality affect damage
 Quantity affect number of damage sprite per spell cast
 Precision affect how accurate the spell will travel to location or occur from targeted area
-Type Instant, Channelling
+
+cast time depends on total mana cost
+
+Type 
+
+Instant = instant mana use, no cast time, high mana cost
+Casting = instant mana use, cast time depends on mana cost, normal mana cost
+Multi-casting = instant mana use, cast time depends on mana cost, cast same magic multiple times at once, exponential increase mana cost per number of multi cast, use less mana than quantity of same number (e.g., fireball casting type spell with 2 quantity use more mana but less cast time than fireball multi-casting of 2 times)
+Channelling = intensity degradation resistance while cast, drain mana per second
