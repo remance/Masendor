@@ -46,7 +46,7 @@ To start testing the game run `main.py` via Python interpreter for the source co
 
 ### MINIMUM:
 
-OS: Windows 7 (Haven't tested on Windows XP or Vista but may work), Ubuntu 12.04
+OS: Windows 7 (Haven't tested on Windows XP or Vista but may work), Ubuntu ad macOS need further testing
 
 Memory: 2GB RAM (Only if troop animation is disabled)
 
@@ -58,7 +58,7 @@ Storage: Currently 400 MB but likely around 1 GB available space in finished ver
 
 ### RECOMMEND:
 
-OS: Windows 8, Ubuntu 22.04
+OS: Windows 8, Ubuntu 22.04, macOS Monterey
 
 Memory: 4GB RAM
 

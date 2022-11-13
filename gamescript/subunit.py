@@ -635,7 +635,7 @@ class Subunit(pygame.sprite.Sprite):
 
         # animation and sprite system
 
-        done = self.play_animation(0.15, dt, replace_image=self.use_animation_sprite)
+        done = self.play_animation(0.1, dt, replace_image=self.use_animation_sprite)
         # Pick new animation, condition to stop animation: get interrupt,
         # low level animation got replace with more important one, finish playing, skill animation and its effect end
         if self.state != 100 and \

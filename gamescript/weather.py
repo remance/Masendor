@@ -3,48 +3,50 @@ import pygame.freetype
 
 
 class Weather:
-    icons = []
+    weather_icons = {}
 
-    def __init__(self, timeui, weather_type, level, weather_list):
+    def __init__(self, time_ui, weather_type, level, weather_data):
         self.weather_type = weather_type
-        stat = weather_list[weather_type]
-        self.level = level  # weather level 0 = Light, 1 = Normal, 2 = Strong
-        if self.level > 2:  # in case adding higher level number by mistake
-            self.level = 2
+        if weather_data is not None:
+            stat = weather_data[weather_type]
+            self.name = stat["Name"]
+            self.level = level  # weather level 0 = Light, 1 = Normal, 2 = Strong
+            if self.level > 2:  # in case adding higher level number by mistake
+                self.level = 2
+            elif self.level < 0:  # can not be negative level
+                self.level = 0
+            cal_level = self.level + 1
 
-        self.melee_atk_buff = stat["Melee Attack Bonus"] * (self.level + 1)
-        self.melee_def_buff = stat["Melee Defense Bonus"] * (self.level + 1)
-        self.range_def_buff = stat["Range Defense Bonus"] * (self.level + 1)
-        self.speed_buff = stat["Speed Bonus"] * (self.level + 1)
-        self.accuracy_buff = stat["Accuracy Bonus"] * (self.level + 1)
-        self.range_buff = stat["Range Bonus"] * (self.level + 1)
-        self.reload_buff = stat["Reload Bonus"] * (self.level + 1)
-        self.charge_buff = stat["Charge Bonus"] * (self.level + 1)
-        self.charge_def_buff = stat["Charge Defense Bonus"] * (self.level + 1)
-        self.hp_regen_buff = stat["HP Regeneration Bonus"] * (self.level + 1)
-        self.stamina_regen_buff = stat["Stamina Regeneration Bonus"] * (self.level + 1)
-        self.morale_buff = stat["Morale Bonus"] * (self.level + 1)
-        self.discipline_buff = stat["Discipline Bonus"] * (self.level + 1)
-        # self.sight_buff = stat["Sight Bonus"] * (self.level+1)
-        # self.hidden_buff = stat["Hide Bonus"] * (self.level+1)
-        self.temperature = stat["Temperature"] * (self.level + 1)
-        self.element = tuple([(element, (self.level + 1)) for element in stat["Element"] if element != ""])
-        self.status_effect = stat["Status"]
-        self.spawn_rate = stat["Spawn Rate"] / (self.level + 1)  # divide to make spawn increase with strength
-        self.spawn_angle = stat["Travel Angle"]
-        self.speed = stat["Travel Speed"] * (self.level + 1)
-        image = self.icons[(self.weather_type * 3) + self.level]
-        cropped = pygame.Surface((image.get_width(), image.get_height()))
-        cropped.blit(timeui.image_original, (0, 0), (0, 0, 80, 80))
-        crop_rect = cropped.get_rect(topleft=(0, 0))
-        cropped.blit(image, crop_rect)
-        image = cropped
+            self.melee_atk_buff = stat["Melee Attack Bonus"] * cal_level
+            self.melee_def_buff = stat["Melee Defense Bonus"] * cal_level
+            self.range_def_buff = stat["Range Defense Bonus"] * cal_level
+            self.speed_buff = stat["Speed Bonus"] * cal_level
+            self.accuracy_buff = stat["Accuracy Bonus"] * cal_level
+            self.range_buff = stat["Range Bonus"] * cal_level
+            self.reload_buff = stat["Reload Bonus"] * cal_level
+            self.charge_buff = stat["Charge Bonus"] * cal_level
+            self.charge_def_buff = stat["Charge Defense Bonus"] * cal_level
+            self.hp_regen_buff = stat["HP Regeneration Bonus"] * cal_level
+            self.stamina_regen_buff = stat["Stamina Regeneration Bonus"] * cal_level
+            self.morale_buff = stat["Morale Bonus"] * cal_level
+            self.discipline_buff = stat["Discipline Bonus"] * cal_level
+            self.sight_buff = stat["Sight Bonus"] * cal_level
+            self.hidden_buff = stat["Hide Bonus"] * cal_level
+            self.temperature = stat["Temperature"] * cal_level
+            self.element = tuple([(element, cal_level) for element in stat["Element"] if element != ""])
+            self.status_effect = stat["Status"]
+            self.spawn_rate = stat["Spawn Rate"] / cal_level  # divide to make spawn increase with strength
+            self.spawn_angle = stat["Travel Angle"]
+            self.speed = stat["Travel Speed"] * cal_level
+            image = self.weather_icons[self.name + "_" + str(self.level)]
+            cropped = pygame.Surface((image.get_width(), image.get_height()))
+            cropped.blit(time_ui.image_original, (0, 0), (0, 0, 80, 80))
+            crop_rect = cropped.get_rect(topleft=(0, 0))
+            cropped.blit(image, crop_rect)
+            image = cropped
 
-        rect = image.get_rect(topright=(timeui.image.get_width() - 5, 0))
-        timeui.image.blit(image, rect)
-
-    # def weatherchange(self, level):
-    #     self.level = level
+            rect = image.get_rect(topright=(time_ui.image.get_width() - 5, 0))
+            time_ui.image.blit(image, rect)
 
 
 class MatterSprite(pygame.sprite.Sprite):

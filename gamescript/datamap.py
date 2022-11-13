@@ -12,7 +12,7 @@ lore_csv_read = utility.lore_csv_read
 
 
 class BattleMapData:
-    def __init__(self, main_dir, screen_scale, language):
+    def __init__(self, main_dir, screen_scale, ruleset, language):
         self.feature_list = []
         with open(os.path.join(main_dir, "data", "map", "terrain_effect.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
@@ -79,10 +79,16 @@ class BattleMapData:
             tuple_column = ("Element", "Status", "Spell", "Ruleset")
             int_column = [index for index, item in enumerate(header) if item in int_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
-            for row in rd[1:]:  # skip convert header row
-                for n, i in enumerate(row):
-                    row = stat_convert(row, n, i, tuple_column=tuple_column, int_column=int_column)
-                self.weather_data[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
+            for index, row in enumerate(rd[1:]):
+                if "," in row[-1]:  # make str with , into list
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-1].split(",")]
+                else:
+                    this_ruleset = [row[-1]]
+                if any(rule in ("0", str(ruleset), "Ruleset") for rule in
+                       this_ruleset):  # only grab weather that existed in the ruleset and first row
+                    for n, i in enumerate(row):
+                        row = stat_convert(row, n, i, tuple_column=tuple_column, int_column=int_column)
+                    self.weather_data[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
         weather_list = [item["Name"] for item in self.weather_data.values()]
         strength_list = ["Light ", "Normal ", "Strong "]
@@ -91,13 +97,6 @@ class BattleMapData:
             for strength in strength_list:
                 self.weather_list.append(strength + item)
         edit_file.close()
-
-        weather_list = [item["Name"] for item in self.weather_data.values()]
-        strength_list = ["Light ", "Normal ", "Strong "]
-        self.weather_list = []
-        for item in weather_list:  # list of weather with different strength
-            for strength in strength_list:
-                self.weather_list.append(strength + item)
 
         self.weather_lore = {}
         with open(os.path.join(main_dir, "data", "map", "weather", "weather_lore_" + language + ".csv"),
@@ -105,33 +104,33 @@ class BattleMapData:
             lore_csv_read(edit_file, self.weather_lore)
         edit_file.close()
 
-        self.weather_matter_images = []
-        for weather_sprite in weather_list:  # Load weather matter sprite image
+        self.weather_matter_images = {}
+        for this_weather in weather_list:  # Load weather matter sprite image
             try:
-                images = load_images(main_dir, screen_scale, ("map", "weather", "matter", weather_sprite),
+                images = load_images(main_dir, screen_scale, ("map", "weather", "matter", this_weather),
                                      load_order=False)
-                self.weather_matter_images.append(list(images.values()))
+                self.weather_matter_images[this_weather] = tuple(images.values())
             except FileNotFoundError:
-                self.weather_matter_images.append([])
+                self.weather_matter_images[this_weather] = ()
 
-        self.weather_effect_images = []
-        for weather_effect in weather_list:  # Load weather effect sprite image
+        self.weather_effect_images = {}
+        for this_weather in weather_list:  # Load weather effect sprite image
             try:
-                images = load_images(main_dir, screen_scale, ("map", "weather", "effect", weather_effect),
+                images = load_images(main_dir, screen_scale, ("map", "weather", "effect", this_weather),
                                      load_order=False)
-                self.weather_effect_images.append(list(images.values()))
+                self.weather_effect_images[this_weather] = tuple(images.values())
             except FileNotFoundError:
-                self.weather_effect_images.append([])
+                self.weather_effect_images[this_weather] = ()
 
         weather_icon_list = load_images(main_dir, screen_scale, ("map", "weather", "icon"),
                                         load_order=False)  # Load weather icon
-        new_weather_icon = []
+        new_weather_icon = {}
         for weather_icon in weather_list:
             for strength in range(0, 3):
                 new_name = weather_icon + "_" + str(strength)
                 for item in weather_icon_list:
                     if new_name == item:
-                        new_weather_icon.append(weather_icon_list[item])
+                        new_weather_icon[new_name] = weather_icon_list[item]
                         break
 
-        weather.Weather.icons = new_weather_icon
+        weather.Weather.weather_icons = new_weather_icon

@@ -179,9 +179,8 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                 self.weather_type = int(index / 3)
                                 self.weather_strength = index - (self.weather_type * 3)
                                 self.weather_change_button.change_text(self.weather_list[index])
-                                del self.current_weather
-                                self.current_weather = weather.Weather(self.time_ui, self.weather_type + 1,
-                                                                       self.weather_strength, self.weather_data)
+                                self.current_weather.__init__(self.time_ui, self.weather_type + 1,
+                                                              self.weather_strength, self.weather_data)
 
                             if self.subunit_in_card is not None:  # reset subunit card as well
                                 self.command_ui.value_input(who=self.subunit_in_card)

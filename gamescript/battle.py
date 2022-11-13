@@ -202,14 +202,6 @@ class Battle:
         self.subsection_name = main.subsection_name
         self.page_button = main.page_button
 
-        self.weather_data = main.battle_map_data.weather_data
-        self.weather_matter_images = main.battle_map_data.weather_matter_images
-        self.weather_effect_images = main.battle_map_data.weather_effect_images
-        self.day_effect_images = main.battle_map_data.day_effect_images
-        self.weather_list = main.battle_map_data.weather_list
-
-        self.feature_mod = main.battle_map_data.feature_mod
-
         self.status_images = main.status_images
         self.role_images = main.role_images
         self.trait_images = main.trait_images
@@ -268,6 +260,16 @@ class Battle:
 
         self.troop_data = None
         self.leader_data = None
+
+        self.battle_map_data = None
+        self.weather_data = None
+        self.weather_matter_images = None
+        self.weather_effect_images = None
+        self.day_effect_images = None
+        self.weather_list = None
+        self.feature_mod = None
+
+        self.current_weather = weather.Weather(self.time_ui, 0, 0, self.weather_data)
 
         self.generic_animation_pool = None
         self.gen_body_sprite_pool = None
@@ -510,13 +512,12 @@ class Battle:
                 this_leader.change_preview_leader(this_leader.leader_id, self.leader_data)
 
     def run_game(self):
-        # v Create Starting Values
+        # Create Starting Values
         self.game_state = "battle"  # battle mode
         self.current_unit_row = 0  # custom unit preset current row in editor
         self.current_troop_row = 0  # troop selection current row in editor
         self.input_popup = (None, None)  # no popup asking for user text input state
         self.leader_now = []  # list of showing leader in command ui
-        self.current_weather = None
         self.current_selected = None  # Which unit is currently selected
         self.drama_text.queue = []  # reset drama text popup queue
 
@@ -545,8 +546,7 @@ class Battle:
             self.feature_terrain = 0
             self.weather_type = 4
             self.weather_strength = 0
-            self.current_weather = weather.Weather(self.time_ui, self.weather_type, self.weather_strength,
-                                                   self.weather_data)
+            self.current_weather.__init__(self.time_ui, self.weather_type, self.weather_strength, self.weather_data)
             self.subunit_in_card = None  # current sub-subunit showing in subunit card
 
             self.main.create_team_coa([0], ui_class=self.battle_ui_updater, one_team=True,
@@ -799,23 +799,26 @@ class Battle:
 
                         # Weather system
                         if self.weather_playing is not None and self.time_number.time_number >= self.weather_playing:
-                            del self.current_weather
                             this_weather = self.weather_event[0]
 
-                            if this_weather[0] != 0:
-                                self.current_weather = weather.Weather(self.time_ui, this_weather[0], this_weather[2],
-                                                                       self.weather_data)
-                            else:  # Random weather
-                                self.current_weather = weather.Weather(self.time_ui, random.randint(0, 11),
-                                                                       random.randint(0, 2),
-                                                                       self.weather_data)
+                            if this_weather[0] != 0 and this_weather[0] in self.weather_data:
+                                self.current_weather.__init__(self.time_ui, this_weather[0], this_weather[2],
+                                                              self.weather_data)
+                            else:  # Random weather, also use this when input weather not in ruleset
+                                self.current_weather.__init__(self.time_ui,
+                                                              random.choice(tuple(self.weather_data.keys())),
+                                                              random.randint(0, 2), self.weather_data)
                             self.weather_event.pop(0)
-                            self.battle_map.add_effect(self.battle_map_height,
-                                                       effect_image=
-                                                       self.weather_effect_images[self.current_weather.weather_type][
-                                                           self.current_weather.level],
-                                                       time_image=self.day_effect_images[self.day_time])
-                            self.battle_map.change_scale(self.camera_zoom)
+                            print(self.current_weather.name, self.weather_effect_images[self.current_weather.name])
+                            try:
+                                self.battle_map.add_effect(self.battle_map_height,
+                                                           effect_image=
+                                                           self.weather_effect_images[self.current_weather.name][
+                                                               self.current_weather.level],
+                                                           time_image=self.day_effect_images[self.day_time])
+                                self.battle_map.change_scale(self.camera_zoom)
+                            except IndexError:  # weather does not have effect
+                                pass
 
                             if len(self.weather_event) > 0:  # Get end time of next event which is now index 0
                                 self.weather_playing = self.weather_event[0][1]
@@ -847,11 +850,11 @@ class Battle:
                                     target = (true_pos[1] - (self.screen_rect.width / 1.5), true_pos[1])
 
                                 random_pic = random.randint(0, len(
-                                    self.weather_matter_images[self.current_weather.weather_type]) - 1)
+                                    self.weather_matter_images[self.current_weather.name]) - 1)
                                 self.weather_matter.add(weather.MatterSprite(true_pos, target,
                                                                              self.current_weather.speed,
                                                                              self.weather_matter_images[
-                                                                                 self.current_weather.weather_type][
+                                                                                 self.current_weather.name][
                                                                                  random_pic]))
 
                         # Music System
@@ -1154,8 +1157,6 @@ class Battle:
             for this_leader in self.preview_leader:
                 this_leader.change_subunit(None)  # remove subunit link in leader
                 this_leader.change_preview_leader(1, self.leader_data)
-
-            del self.current_weather
 
             self.faction_pick = 0
             self.filter_troop = [True, True, True, True]

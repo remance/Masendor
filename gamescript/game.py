@@ -685,8 +685,6 @@ class Game:
 
         self.encyclopedia, self.lore_name_list, self.lore_button_ui, self.page_button = make_lorebook(self.main_dir, self.ruleset_folder, self.screen_scale, self.screen_rect)
 
-        self.battle_map_data = datamap.BattleMapData(self.main_dir, self.screen_scale, self.language)
-
         self.battle_game = battle.Battle(self, self.window_style)
         self.battle_game.generate_unit = self.generate_unit
 
@@ -726,6 +724,17 @@ class Game:
                                                                                               self.ruleset,
                                                                                               self.ruleset_folder,
                                                                                               self.language)
+
+        self.battle_map_data = datamap.BattleMapData(self.main_dir, self.screen_scale, self.ruleset, self.language)
+
+        self.battle_game.battle_map_data = self.battle_map_data
+        self.battle_game.weather_data = self.battle_map_data.weather_data
+        self.battle_game.weather_matter_images = self.battle_map_data.weather_matter_images
+        self.battle_game.weather_effect_images = self.battle_map_data.weather_effect_images
+        self.battle_game.day_effect_images = self.battle_map_data.day_effect_images
+        self.battle_game.weather_list = self.battle_map_data.weather_list
+        self.battle_game.feature_mod = self.battle_map_data.feature_mod
+
         subunit.Subunit.troop_data = self.troop_data
         subunit.Subunit.leader_data = self.leader_data
         subunit.Subunit.troop_sprite_list = self.troop_data.troop_sprite_list
