@@ -995,12 +995,16 @@ class Model:
                         if any(ext in stuff for ext in p_list) and self.armour[stuff[0:2] + "_armour"] != "None":
                             try:
                                 armour = self.armour[stuff[0:2] + "_armour"].split("/")
-                                gear_image = \
-                                gen_armour_sprite_pool[bodypart_list[stuff][0]][armour[0]][armour[1]][bodypart_list[stuff][1]][part_name][
-                                    bodypart_list[stuff][2]].copy()
-                                rect = gear_image.get_rect(
-                                    center=(self.sprite_image[stuff].get_width() / 2, self.sprite_image[stuff].get_height() / 2))
-                                self.sprite_image[stuff].blit(gear_image, rect)
+                                gear_image = gen_armour_sprite_pool[bodypart_list[stuff][0]][armour[0]][armour[1]][
+                                    bodypart_list[stuff][1]][part_name][bodypart_list[stuff][2]].copy()
+                                gear_surface = pygame.Surface(gear_image.get_size(), pygame.SRCALPHA)
+                                rect = self.sprite_image[stuff].get_rect(
+                                    center=(gear_surface.get_width() / 2, gear_surface.get_height() / 2))
+                                gear_surface.blit(self.sprite_image[stuff], rect)
+                                rect = gear_image.get_rect(center=(gear_surface.get_width() / 2,
+                                                                   gear_surface.get_height() / 2))
+                                gear_surface.blit(gear_image, rect)
+                                self.sprite_image[stuff] = gear_surface
                             except KeyError:  # skip part that not exist
                                 pass
                             except UnboundLocalError:  # for when change animation
@@ -1945,8 +1949,8 @@ while True:
                     if animation_filter[0] != "":
                         for key_filter in animation_filter:
                             if len(key_filter) > 0:
-                                if key_filter[0] == "-":  # exclude
-                                    animation_list = [item for item in animation_list if key_filter[1:] not in item]
+                                if key_filter[:2] == "--":  # exclude
+                                    animation_list = [item for item in animation_list if key_filter[2:] not in item]
                                 else:
                                     animation_list = [item for item in animation_list if key_filter in item]
                     try:
@@ -2457,8 +2461,8 @@ while True:
                         if animation_filter[0] != "":
                             for key_filter in animation_filter:
                                 if len(key_filter) > 0:
-                                    if key_filter[0] == "-":  # exclude
-                                        animation_list = [item for item in animation_list if key_filter[1:] not in item]
+                                    if key_filter[:2] == "--":  # exclude
+                                        animation_list = [item for item in animation_list if key_filter[2:] not in item]
                                     else:
                                         animation_list = [item for item in animation_list if key_filter in item]
                         current_popup_row = 0  # move current selected animation to top if not in filtered list
