@@ -1,20 +1,20 @@
-"ID","Name","Date","Where","Notable Person","Result","Importance","Description"
+"ID","Name","Date","Where","Notable Person","Result","Importance","Tag"
 1,"Birth of Mother Earth",,"Earth, Milky Way Galaxy","None",,,
 2,"Dawn of World Conquest",,"Earth, Milky Way Galaxy","Homo sapiens",,,
-3,"Welcome to The Stone Age",,"Earth, Milky Way Galaxy","Cave People",,,"Invention of Stone Tool"
+3,"Welcome to The Stone Age",,"Earth, Milky Way Galaxy","Cave People",,,
 4,"Tribal “Warfare” ",,,"Tribal People",,,
 5,,,,,,,
-6,"Ingredient of Society",,"Middle East","Farmers",,,"Agriculture"
+6,"Ingredient of Society",,"Middle East","Farmers",,,
 7,,,,,,,
 8,"Cradle of Civilisation",,,,,,
 9,,,,,,,
-10,"The New Era of Metallurgy",,,"Smiths",,,"Bronze age"
+10,"The New Era of Metallurgy",,,"Smiths",,,
 11,"The First God King","2900 BC","Uruk, Sumer","Gilgamesh",,,
 12,,,,,,,
 13,"The First Eastern Dragon","2698 BC","China","The Yellow Emperor",,,
 14,"Greatness of the Great Ancestor",,"Egypt","Ozymandias",,,
 15,,,,,,,
-16,"Battle of Megiddo","16th April 1457 BC","Megiddo, Canaan","Thutmose III",,,"The first ever major battle recorded in history."
+16,"Battle of Megiddo","16th April 1457 BC","Megiddo, Canaan","Thutmose III",,,
 17,,,,,,,
 18,,,,,,,
 19,"Sea Peoples Invasion",,,"Sea Peoples",,,
@@ -31,7 +31,7 @@
 30,,,,,,,
 31,"Rise of the Middle Kingdom",,,"Qin Shi Huang",,,
 32,,,,,,,
-33,"Spark of Warfare","142 AD","China","Wei Boyang",,,"Discovery of Gunpowder"
+33,"Spark of Warfare","142 AD","China","Wei Boyang",,,
 34,,,,,,,
 35,,,,,,,
 36,"Blue Sky Already Dead, The Yellow Sky Arises","March 184 AD","China","Zhang Jue",,,
@@ -89,7 +89,7 @@
 88,,,,,,,
 89,"Renaissance Enlightenment",,,,,,
 90,,,,,,,
-91,"The New Rome","29th May 1453 AD","Constantinople, Ottoman Empire","Mehmed II, Constantine XI",,,"Fall of Constantinople"
+91,"The New Rome","29th May 1453 AD","Constantinople, Ottoman Empire","Mehmed II, Constantine XI",,,
 92,,,,,,,
 93,,,,,,,
 94,,,,,,,
@@ -97,7 +97,7 @@
 96,,,,,,,
 97,,,,,,,
 98,,,,,,,
-99,"Information Revolution",,,,,,"Printing press invention"
+99,"Information Revolution",,,,,,
 100,,,,,,,
 101,,,,,,,
 102,,,,,,,
@@ -133,7 +133,7 @@
 132,,,,,,,
 133,,,,,,,
 134,,,,,,,
-135,"Achieving the Impossible","16th July 1945 AD","New Mexico, United States",,,,"Manhattan Project"
+135,"Achieving the Impossible","16th July 1945 AD","New Mexico, United States",,,,
 136,,,,,,,
 137,,,,,,,
 138,,,,,,,
@@ -147,7 +147,7 @@
 146,,,,,,,
 147,,,,,,,
 148,,,,,,,
-149,"Ascending Pass Heaven","16th July 1969 AD","Cape Canaveral, United States",,,,"Apollo 11"
+149,"Ascending Pass Heaven","16th July 1969 AD","Cape Canaveral, United States",,,,
 150,,,,,,,
 151,,,,,,,
 152,,,,,,,

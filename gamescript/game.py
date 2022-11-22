@@ -300,7 +300,6 @@ class Game:
 
         # battle object group
         self.battle_camera = pygame.sprite.LayeredUpdates()  # layer drawer self camera, all image pos should be based on the map not screen
-        unit.Unit.battle_camera = self.battle_camera
         self.battle_ui_updater = pygame.sprite.LayeredUpdates()  # this is layer drawer for ui, all image pos should be based on the screen
 
         self.unit_updater = pygame.sprite.Group()  # updater for unit objects, only for in battle not editor or preview
@@ -683,7 +682,7 @@ class Game:
         self.ui_updater.add(self.troop_card_ui)
         self.button_ui.add(self.troop_card_button)
 
-        self.encyclopedia, self.lore_name_list, self.lore_button_ui, self.page_button = make_lorebook(self.main_dir, self.ruleset_folder, self.screen_scale, self.screen_rect)
+        self.encyclopedia, self.lore_name_list, self.lore_button_ui, self.page_button = make_lorebook(self.main_dir, self.screen_scale, self.screen_rect)
 
         self.battle_game = battle.Battle(self, self.window_style)
         self.battle_game.generate_unit = self.generate_unit
@@ -792,6 +791,15 @@ class Game:
                                                            who_todo, preview=True)
 
         # Encyclopedia
+        lorebook.Lorebook.concept_stat = csv_read(self.main_dir, "concept_stat.csv",
+                                                  ("data", "ruleset", self.ruleset_folder, "lore"), header_key=True)
+        lorebook.Lorebook.concept_lore = csv_read(self.main_dir, "concept_lore" + "_" + self.language + ".csv",
+                                                  ("data", "ruleset", self.ruleset_folder, "lore"))
+        lorebook.Lorebook.history_stat = csv_read(self.main_dir, "history_stat.csv",
+                                                  ("data", "ruleset", self.ruleset_folder, "lore"), header_key=True)
+        lorebook.Lorebook.history_lore = csv_read(self.main_dir, "history_lore" + "_" + self.language + ".csv",
+                                                  ("data", "ruleset", self.ruleset_folder, "lore"))
+
         lorebook.Lorebook.faction_data = self.faction_data
         lorebook.Lorebook.troop_data = self.troop_data
         lorebook.Lorebook.leader_data = self.leader_data

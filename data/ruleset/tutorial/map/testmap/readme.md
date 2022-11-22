@@ -32,7 +32,7 @@ POS: starting position in map of the unit, int,int
 
 Leader: Number or list of leader id number depending on genre setting, int or int,int,int,int. In case of list 0 means empty.
 
-Leader Position: Mean different thing depending on genre mode, army position of leader. Or position of subunit that leader is attached to, do not put multiple leader into same subunit except empty leader. Leader position does not count 0 subunit in position row, for example row 1 of 1,2,5,1,0,9 position 5 will attach leader to the sixth subunit 9. 
+Leader Position: Mean different thing depending on genre mode, army position of leader. Or position of subunit that leader is attached to, do not put multiple leader into same subunit except empty (None) leader. 
 
 Faction: Faction ID (not team), int number 
 

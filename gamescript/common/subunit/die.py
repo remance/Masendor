@@ -33,3 +33,6 @@ def die(self):
                                    + " in " + self.unit.leader[0].name
                                    + "'s unit is destroyed"],
                                   [3])  # add log to say this subunit is destroyed in subunit tab
+
+    if self.unit.player_control:
+        self.battle.camera_mode = "Free"  # camera become free when player char die so can look over the battle

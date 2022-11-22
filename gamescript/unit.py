@@ -22,7 +22,6 @@ class Unit(pygame.sprite.Sprite):
     battle = None
     form_change_timer = 10
     image_size = None
-    battle_camera = None
 
     set_rotate = utility.set_rotate
 
@@ -262,7 +261,7 @@ class Unit(pygame.sprite.Sprite):
             self.change_pos_scale()  # update position according to new scale
             if self.last_zoom == 1:  # revert to default layer at further zoom
                 for subunit in self.alive_subunit_list:
-                    self.battle_camera.change_layer(subunit, 4)
+                    self.battle.battle_camera.change_layer(subunit, 4)
             self.last_zoom = zoom
 
         if self.dead_change:  # setup frontline again when any subunit destroyed

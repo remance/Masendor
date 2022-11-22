@@ -809,7 +809,6 @@ class Battle:
                                                               random.choice(tuple(self.weather_data.keys())),
                                                               random.randint(0, 2), self.weather_data)
                             self.weather_event.pop(0)
-                            print(self.current_weather.name, self.weather_effect_images[self.current_weather.name])
                             try:
                                 self.battle_map.add_effect(self.battle_map_height,
                                                            effect_image=

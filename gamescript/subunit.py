@@ -4,7 +4,6 @@ import random
 
 import pygame
 import pygame.freetype
-from gamescript import damagesprite
 from gamescript.common import utility, animation
 
 from pathlib import Path
@@ -51,6 +50,7 @@ class Subunit(pygame.sprite.Sprite):
     add_weapon_stat = empty_method
     apply_map_status = empty_method
     apply_status_to_friend = empty_method
+    attack = empty_method
     combat_pathfind = empty_method
     create_inspect_sprite = empty_method
     die = empty_method
@@ -634,8 +634,11 @@ class Subunit(pygame.sprite.Sprite):
             recreate_rect = True
 
         # animation and sprite system
+        play_speed = 0.1
+        if "_Idle" in self.current_animation["name"]:  # idle animation use a bit slower speed
+            play_speed = 0.15
 
-        done = self.play_animation(0.1, dt, replace_image=self.use_animation_sprite)
+        done = self.play_animation(play_speed, dt, replace_image=self.use_animation_sprite)
         # Pick new animation, condition to stop animation: get interrupt,
         # low level animation got replace with more important one, finish playing, skill animation and its effect end
         if self.state != 100 and \
@@ -646,30 +649,10 @@ class Subunit(pygame.sprite.Sprite):
                  (self.idle_action and self.idle_action != self.command_action) or
                  self.current_action != self.last_current_action):
             if done:  # finish animation, perform something
-                if self.current_action and "Action" in self.current_action["name"] and \
-                        "range attack" in self.current_action:  # shoot bullet
-                    weapon = int(self.current_action["name"][-1])
-                    attack_pos = None
-                    if "pos" in self.current_action:  # manual attack position
-                        attack_pos = self.current_action["pos"]
-                    elif self.attack_pos is not None:
-                        attack_pos = self.attack_pos
-                    if attack_pos is not None or self.attack_target is not None:
-                        for _ in range(self.shot_per_shoot[self.equipped_weapon][weapon]):
-                            damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
-                                                      self.weapon_penetrate[self.equipped_weapon][weapon],
-                                                      self.equipped_weapon_data[weapon],
-                                                      self.shoot_range[weapon], self.zoom, "range",
-                                                      specific_attack_pos=attack_pos)  # Shoot ammo
-                        self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
-                        if self.ammo_now[self.equipped_weapon][weapon] == 0 and \
-                                self.magazine_count[self.equipped_weapon][weapon] == 0:
-                            self.ammo_now[self.equipped_weapon].pop(weapon)  # remove weapon with no ammo
-                            self.magazine_count[self.equipped_weapon].pop(weapon)
-                            if len(self.ammo_now[self.equipped_weapon]) == 0:  # remove entire set if no ammo at all
-                                self.ammo_now.pop(self.equipped_weapon)
-                                self.magazine_count.pop(self.equipped_weapon)
-                        self.stamina -= self.weapon_weight[self.equipped_weapon][weapon]
+                if "melee attack" in self.current_action:  # shoot bullet
+                    self.attack("melee")
+                elif "range attack" in self.current_action:  # shoot bullet
+                    self.attack("range")
 
             if self.current_action != self.last_current_action:
                 self.last_current_action = self.current_action

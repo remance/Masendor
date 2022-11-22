@@ -50,6 +50,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.subsection = 1  # subsection of that section e.g. swordmen subunit in subunit section
         self.stat_data = None  # for getting the section stat data
         self.lore_data = None  # for getting the section lore data
+        self.index_data = None  # for getting old and new subsection index reference
         self.current_subsection = None  # Subsection stat currently viewing
         self.current_subsection2 = None  # Subsection lore currently viewing
         self.subsection_list = None
@@ -61,6 +62,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.equipment_lore = {}
         self.skill_stat = {}
         self.skill_lore = {}
+        self.skill_id_reindex = {}
         self.section_list = ()
 
         self.current_subsection_row = 0
@@ -77,41 +79,41 @@ class Lorebook(pygame.sprite.Sprite):
         for stat_list in (self.troop_data.weapon_list, self.troop_data.armour_list, self.troop_data.mount_list,
                           self.troop_data.mount_armour_list):
             for index in stat_list:
-                if index != "ID":
-                    self.equipment_stat[run] = stat_list[index]
-                    run += 1
+                self.equipment_stat[run] = stat_list[index]
+                run += 1
 
         self.equipment_lore = {}
         run = 1
         for stat_list in (self.troop_data.weapon_lore, self.troop_data.armour_lore, self.troop_data.mount_lore,
                           self.troop_data.mount_armour_lore):
             for index in stat_list:
-                if index != "ID":
-                    self.equipment_lore[run] = stat_list[index]
-                    run += 1
+                self.equipment_lore[run] = stat_list[index]
+                run += 1
 
         # Make new skill list that contain all troop and leader skills
         self.skill_stat = {}
+        self.skill_id_reindex = {}
         run = 1
-        for stat_list in (self.troop_data.skill_list, self.leader_data.skill_list):
+        for stat_list in (self.troop_data.skill_list, self.leader_data.skill_list, self.leader_data.commander_skill_list):
             for index in stat_list:
-                if index != "ID":
-                    self.skill_stat[run] = stat_list[index]
-                    run += 1
+                self.skill_stat[run] = stat_list[index]
+                self.skill_id_reindex[index] = run
+                run += 1
 
         self.skill_lore = {}
         run = 1
-        for stat_list in (self.troop_data.skill_lore, self.leader_data.skill_lore):
+        for stat_list in (self.troop_data.skill_lore, self.leader_data.skill_lore, self.leader_data.commander_skill_lore):
             for index in stat_list:
-                if index != "ID":
-                    self.skill_lore[run] = stat_list[index]
-                    run += 1
+                self.skill_lore[run] = stat_list[index]
+                run += 1
 
         self.section_list = ((self.concept_stat, self.concept_lore), (self.history_stat, self.history_lore),
                              (self.faction_data.faction_list, self.faction_data.faction_lore),
-                             (self.troop_data.troop_list, self.troop_data.troop_lore), (self.equipment_stat, self.equipment_lore),
+                             (self.troop_data.troop_list, self.troop_data.troop_lore),
+                             (self.equipment_stat, self.equipment_lore),
                              (self.troop_data.status_list, self.troop_data.status_lore),
-                             (self.skill_stat, self.skill_lore), (self.troop_data.trait_list, self.troop_data.trait_lore),
+                             (self.skill_stat, self.skill_lore, self.skill_id_reindex),
+                             (self.troop_data.trait_list, self.troop_data.trait_lore),
                              (self.leader_data.leader_list, self.leader_data.leader_lore),
                              (self.battle_map_data.feature_mod, self.battle_map_data.feature_mod_lore),
                              (self.battle_map_data.weather_data, self.battle_map_data.weather_lore))
@@ -141,6 +143,9 @@ class Lorebook(pygame.sprite.Sprite):
         self.subsection = 1  # reset subsection to the first one
         self.stat_data = self.section_list[self.section][0]  # get new stat data of the new section
         self.lore_data = self.section_list[self.section][1]  # get new lore data of the new section
+        self.index_data = None
+        if len(self.section_list[self.section]) > 2:  # section has new subsection index data
+            self.index_data = self.section_list[self.section][2]
         self.max_page = 0  # reset max page
         self.current_subsection_row = 0  # reset subsection scroll to the top one
         this_list = list(self.stat_data.values())  # get list of subsection
@@ -159,6 +164,8 @@ class Lorebook(pygame.sprite.Sprite):
 
     def change_subsection(self, subsection, page_button, main_ui):
         self.subsection = subsection
+        if type(subsection) == str and self.subsection in self.index_data:  # use new subsection index instead of old one
+            self.subsection = self.index_data[self.subsection]
         self.page = 0  # reset page to the first one
         self.image = self.image_original.copy()
         self.portrait = None  # reset portrait, possible for subsection to not have portrait
@@ -232,29 +239,30 @@ class Lorebook(pygame.sprite.Sprite):
         lore = self.lore_data[self.subsection]
 
         name = lore[0]
-        description = lore[1]
-
         text_surface = self.font_header.render(str(name), True, (0, 0, 0))
         text_rect = text_surface.get_rect(topleft=(int(28 * self.screen_scale[0]), int(20 * self.screen_scale[1])))
         self.image.blit(text_surface, text_rect)  # add name of item to the top of page
 
-        description_pos = (int(20 * self.screen_scale[1]), int(100 * self.screen_scale[0]))
-
-        if self.portrait is not None:
-            description_pos = (int(20 * self.screen_scale[1]), int(300 * self.screen_scale[0]))
-
-            portrait_rect = self.portrait.get_rect(
-                center=(int(300 * self.screen_scale[0]), int(200 * self.screen_scale[1])))
-            self.image.blit(self.portrait, portrait_rect)
-
-        description_surface = pygame.Surface((int(550 * self.screen_scale[0]), int(400 * self.screen_scale[1])),
-                                             pygame.SRCALPHA)
-        description_rect = description_surface.get_rect(topleft=description_pos)
-        make_long_text(description_surface, description, (int(5 * self.screen_scale[1]), int(5 * self.screen_scale[0])),
-                       self.font)
-        self.image.blit(description_surface, description_rect)
-
         if self.page == 0:
+            description = lore[1]
+
+            description_pos = (int(20 * self.screen_scale[1]), int(100 * self.screen_scale[0]))
+
+            if self.portrait is not None:
+                description_pos = (int(20 * self.screen_scale[1]), int(300 * self.screen_scale[0]))
+
+                portrait_rect = self.portrait.get_rect(
+                    center=(int(300 * self.screen_scale[0]), int(200 * self.screen_scale[1])))
+                self.image.blit(self.portrait, portrait_rect)
+
+            description_surface = pygame.Surface((int(550 * self.screen_scale[0]), int(400 * self.screen_scale[1])),
+                                                 pygame.SRCALPHA)
+            description_rect = description_surface.get_rect(topleft=description_pos)
+            make_long_text(description_surface, description,
+                           (int(5 * self.screen_scale[1]), int(5 * self.screen_scale[0])),
+                           self.font)
+            self.image.blit(description_surface, description_rect)
+
             row = 350 * self.screen_scale[1]
             col = 60 * self.screen_scale[0]
             if self.portrait is not None:
@@ -473,17 +481,18 @@ class Lorebook(pygame.sprite.Sprite):
                     lore = self.lore_data[self.subsection][2:]
                 else:
                     lore = self.lore_data[self.subsection][(self.page * 4) + 2:]
-                row = 420 * self.screen_scale[1]
-                col = 60 * self.screen_scale[0]
+
+                row = int(80 * self.screen_scale[1])
+                col = int(100 * self.screen_scale[0])
                 for index, text in enumerate(lore):
                     if text != "":
                         # blit paragraph of text
                         if "IMAGE:" not in text:
-                            text_surface = pygame.Surface((500 * self.screen_scale[0], 300 * self.screen_scale[1]),
+                            text_surface = pygame.Surface((500 * self.screen_scale[0], 310 * self.screen_scale[1]),
                                                           pygame.SRCALPHA)
                             make_long_text(text_surface, text, (5 * self.screen_scale[0], 5 * self.screen_scale[1]),
                                            self.font)
-                            text_rect = description_surface.get_rect(topleft=(col, row))
+                            text_rect = text_surface.get_rect(topleft=(col, row))
 
                         # blit image
                         else:
@@ -493,15 +502,15 @@ class Lorebook(pygame.sprite.Sprite):
                                                                   text[10:].replace(filename, ""))
                                 text_surface = pygame.transform.scale(text_surface,
                                                                       (self.image.get_width(), self.image.get_height()))
-                                text_rect = description_surface.get_rect(topleft=(0, 0))
+                                text_rect = text_surface.get_rect(topleft=(0, 0))
                             else:
                                 filename = text[6:].split("\\")[-1]
                                 text_surface = utility.load_image(self.main_dir, self.screen_scale, filename,
                                                                   text[6:].replace(filename, ""))
-                                text_rect = description_surface.get_rect(topleft=(col, row))
+                                text_rect = text_surface.get_rect(topleft=(col, row))
                         self.image.blit(text_surface, text_rect)
 
-                        row += (280 * self.screen_scale[1])
+                        row += (330 * self.screen_scale[1])
                         if row >= 600 * self.screen_scale[1]:
                             if col == 650 * self.screen_scale[0]:
                                 break

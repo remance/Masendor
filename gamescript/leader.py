@@ -90,17 +90,18 @@ class Leader(pygame.sprite.Sprite):
                             self.skill[key] = value2
 
     def start_set(self):
-        self.subunit = self.unit.subunit_object_array.flat[self.subunit_pos]  # setup subunit that leader belong
-        self.subunit.leader = self  # put in leader to subunit with the set pos
-        if self.role == 0:  # unit leader
-            self.unit.leader_subunit = self.subunit
-            # self.unit.leader_subunit - self.unit.base_pos
-            self.subunit.unit_leader = True
+        if self.name != "None":
+            self.subunit = self.unit.subunit_object_array.flat[self.subunit_pos]  # setup subunit that leader belong
+            self.subunit.leader = self  # put in leader to subunit with the set pos
+            if self.role == 0:  # unit leader
+                self.unit.leader_subunit = self.subunit
+                # self.unit.leader_subunit - self.unit.base_pos
+                self.subunit.unit_leader = True
 
-            squad_penal = int(
-                (self.subunit_pos / len(self.unit.subunit_id_array[
-                                            0])) * 10)  # Authority get reduced the further leader stay in the back line
-            self.authority = self.authority - ((self.authority * squad_penal / 100) / 2)
+                squad_penal = int(
+                    (self.subunit_pos / len(self.unit.subunit_id_array[
+                                                0])) * 10)  # Authority get reduced the further leader stay in the back line
+                self.authority = self.authority - ((self.authority * squad_penal / 100) / 2)
 
     def update(self):
         if self.state not in (96, 97, 98, 99, 100):

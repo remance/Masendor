@@ -171,8 +171,8 @@ def status_update(self, weather=None):
             if 0 not in cal_effect["Status"]:  # apply status to friendly if there is one in skill effect
                 for status in cal_effect["Status"]:
                     self.status_effect[status] = self.status_list[status].copy()
-                    if self.status_effect[status][2] > 1:
-                        self.apply_status_to_friend(self.status_effect[status][2], status, self.status_list)
+                    if cal_effect["Area of Effect"] > 1:
+                        self.apply_status_to_friend(cal_effect["Area of Effect"], status, self.status_list[status].copy())
 
             self.morale_dmg_bonus += cal_effect["Morale Damage Bonus"]
             self.stamina_dmg_bonus += cal_effect["Stamina Damage Bonus"]

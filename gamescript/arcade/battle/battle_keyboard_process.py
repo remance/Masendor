@@ -27,7 +27,7 @@ def battle_keyboard_process(self, key_press):
     # elif key_press == pygame.K_SPACE and self.current_selected is not None:
     #     self.current_selected.user_input(self.command_mouse_pos, False, False, False, self.last_mouseover, None, other_command=2)
 
-    # vv FOR DEVELOPMENT DELETE LATER
+    # FOR DEVELOPMENT DELETE LATER
     elif key_press == pygame.K_F1:
         self.drama_text.queue.append("Hello and Welcome to update video")
     elif key_press == pygame.K_F2:
@@ -51,7 +51,7 @@ def battle_keyboard_process(self, key_press):
     elif key_press == pygame.K_k and self.current_selected is not None:
         # for index, subunit in enumerate(self.current_selected.subunit_sprite):
         #     subunit.unit_health -= subunit.unit_health
-        self.current_selected.leader_subunit.subunit_health -= self.current_selected.leader_subunit.subunit_health
+        self.current_selected.leader_subunit.subunit_health = 0
     # elif key_press == pygame.K_m and self.current_selected is not None:
     #     # self.current_selected.leader[0].health -= 1000
     #     self.subunit_selected.self.leader.health -= 1000
@@ -61,5 +61,3 @@ def battle_keyboard_process(self, key_press):
     # elif key_press == pygame.K_COMMA and self.current_selected is not None:
     #     for index, subunit in enumerate(self.current_selected.subunit_sprite):
     #         subunit.stamina -= subunit.stamina
-    # ^^ End For development test
-    # ^ End register input
