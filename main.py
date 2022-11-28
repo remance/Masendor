@@ -9,7 +9,7 @@ main_dir = os.path.split(os.path.abspath(__file__))[0]
 if __name__ == "__main__":
     error_log = open(os.path.join(main_dir + "/error_report.txt"), "w")
     try:  # for printing error log when error exception happen
-        runmenu = game.Game(main_dir, error_log)
+        game.Game(main_dir, error_log)
     except Exception:  # Save error output to txt file for any exception
         traceback.print_exc()
         sys.stdout = error_log

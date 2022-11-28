@@ -4,6 +4,9 @@ import pygame
 
 
 def start_battle(self, char_selected=None):
+    self.error_log.write("\n")  # next line
+    self.error_log.write("Map: " + str(self.map_selected) + ", Source: " + str(self.map_source) +
+                         ", Character: " + str(char_selected) + "\n")
     self.battle_game.prepare_new_game(self.ruleset, self.ruleset_folder, self.team_selected,
                                       self.enactment, self.map_selected,
                                       self.map_source, self.source_scale[self.map_source], "battle",

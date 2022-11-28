@@ -810,6 +810,9 @@ class Game:
 
         self.encyclopedia.change_ruleset()
 
+        # Error log for selected genre, ruleset
+        self.error_log.write("Ruleset: " + self.ruleset_list[self.ruleset][0] + ", Mode: " + self.genre)
+
     def change_game_genre(self, genre):
         """Add new genre module here"""
 
