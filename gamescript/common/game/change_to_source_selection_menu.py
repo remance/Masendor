@@ -22,6 +22,7 @@ def change_to_source_selection_menu(self):
                              for value in list(self.source_list.values())]
         self.source_text = [value["Description"] for value in list(self.source_list.values())]
     except FileNotFoundError:  # no source file, crash game
+        self.error_log.write("\n No source for map: " + str(self.map_title.name))
         no_source
 
     setup_list(self.screen_scale, menu.NameList, self.current_source_row, self.source_name_list,

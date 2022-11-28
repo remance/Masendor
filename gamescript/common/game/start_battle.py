@@ -4,9 +4,8 @@ import pygame
 
 
 def start_battle(self, char_selected=None):
-    self.error_log.write("\n")  # next line
-    self.error_log.write("Map: " + str(self.map_selected) + ", Source: " + str(self.map_source) +
-                         ", Character: " + str(char_selected) + "\n")
+    self.error_log.write("\n Map: " + str(self.map_title.name) + ", Source: " +
+                         str(self.source_name_list[self.map_source]) + ", Character: " + str(char_selected) + "\n")
     self.battle_game.prepare_new_game(self.ruleset, self.ruleset_folder, self.team_selected,
                                       self.enactment, self.map_selected,
                                       self.map_source, self.source_scale[self.map_source], "battle",
@@ -17,8 +16,6 @@ def start_battle(self, char_selected=None):
     pygame.mixer.music.load(self.music_list[0])
     pygame.mixer.music.play(-1)
     gc.collect()  # collect no longer used object in previous battle from memory
-    # print(vars(self))
-    # print(vars(self.battle_game))
 
     # for when memory leak checking
     # print(gc.get_objects())

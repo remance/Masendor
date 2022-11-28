@@ -204,7 +204,7 @@ def status_update(self, weather=None):
             for element in self.element_resistance:  # Weather can cause elemental effect such as wet
                 self.element_resistance[element] += cal_effect[element + " Resistance Bonus"]
             for effect in cal_effect["Special Effect"]:
-                self.special_effect[effect][0][1] = True
+                self.special_effect[tuple(self.special_effect.keys())[effect]][0][1] = True
 
     # Day time effect sight and hidden stat
     if self.battle.day_time == "Twilight":

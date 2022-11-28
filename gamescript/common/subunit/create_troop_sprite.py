@@ -23,7 +23,7 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
     surface = pygame.Surface((default_sprite_size[0] * size, default_sprite_size[1] * size),
                              pygame.SRCALPHA)  # default size will scale down later
 
-    except_list = ["eye", "mouth", "size", "property"]
+    except_list = ("eye", "mouth", "size", "property")
     pose_layer_list = {k: v[7] for k, v in animation_part_list.items() if v != [0] and v != "" and v != [""] and
                        any(ext in k for ext in except_list) is False and "weapon" not in k}  # layer list
     pose_layer_list.update({k: v[6] for k, v in animation_part_list.items() if v != [0] and v != "" and v != [""]

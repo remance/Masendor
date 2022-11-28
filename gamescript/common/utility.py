@@ -307,8 +307,8 @@ def make_bar_list(main_dir, screen_scale, list_to_do, menu_image, updater):
     :return: List of bar button objects
     """
     bar_list = []
-    image = load_image(main_dir, screen_scale, "bar_normal.jpg", "ui/mainmenu_ui")
-    image2 = load_image(main_dir, screen_scale, "bar_mouse.jpg", "ui/mainmenu_ui")
+    image = load_image(main_dir, screen_scale, "bar_normal.jpg", ("ui", "mainmenu_ui"))
+    image2 = load_image(main_dir, screen_scale, "bar_mouse.jpg", ("ui", "mainmenu_ui"))
     image3 = image2
     for index, bar in enumerate(list_to_do):
         bar_image = (image.copy(), image2.copy(), image3.copy())
@@ -320,9 +320,9 @@ def make_bar_list(main_dir, screen_scale, list_to_do, menu_image, updater):
 
 
 def load_base_button(main_dir, screen_scale):
-    image = load_image(main_dir, screen_scale, "idle_button.png", ["ui", "mainmenu_ui"])
-    image2 = load_image(main_dir, screen_scale, "mouse_button.png", ["ui", "mainmenu_ui"])
-    image3 = load_image(main_dir, screen_scale, "click_button.png", ["ui", "mainmenu_ui"])
+    image = load_image(main_dir, screen_scale, "idle_button.png", ("ui", "mainmenu_ui"))
+    image2 = load_image(main_dir, screen_scale, "mouse_button.png", ("ui", "mainmenu_ui"))
+    image3 = load_image(main_dir, screen_scale, "click_button.png", ("ui", "mainmenu_ui"))
     return [image, image2, image3]
 
 

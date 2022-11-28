@@ -207,6 +207,7 @@ class Battle:
         self.trait_images = main.trait_images
         self.skill_images = main.skill_images
 
+        self.map_corner = (999, 999)
         self.max_camera = (999 * self.screen_scale[0], 999 * self.screen_scale[1])
         self.icon_sprite_width = main.icon_sprite_width
         self.icon_sprite_height = main.icon_sprite_height
@@ -384,8 +385,8 @@ class Battle:
         # Load weather schedule
         try:
             self.weather_event = csv_read(self.main_dir, "weather.csv",
-                                          ["data", "ruleset", self.ruleset_folder, "map", self.map_selected,
-                                           self.map_source], output_type="list")
+                                          ("data", "ruleset", self.ruleset_folder, "map", self.map_selected,
+                                           self.map_source), output_type="list")
             self.weather_event = self.weather_event[1:]
             utility.convert_str_time(self.weather_event)
         except FileNotFoundError:  # If no weather found use default light sunny weather start at 9.00
@@ -401,7 +402,7 @@ class Battle:
             self.musiclist = glob.glob(os.path.join(self.main_dir, "data", "sound", "music", "*.ogg"))
             try:
                 self.music_event = csv_read(self.main_dir, "musicevent.csv",
-                                            ["data", "ruleset", self.ruleset_folder, "map", self.map_selected],
+                                            ("data", "ruleset", self.ruleset_folder, "map", self.map_selected),
                                             output_type="list")
                 self.music_event = self.music_event[1:]
                 if len(self.music_event) > 0:
@@ -424,7 +425,7 @@ class Battle:
 
         try:  # get new map event for event log
             map_event = csv_read(self.main_dir, "eventlog.csv",
-                                 ["data", "ruleset", self.ruleset_folder, "map", self.map_selected, self.map_source])
+                                 ("data", "ruleset", self.ruleset_folder, "map", self.map_selected, self.map_source))
             battleui.EventLog.map_event = map_event
         except Exception:  # can't find any event file
             map_event = {}  # create empty list
@@ -461,6 +462,12 @@ class Battle:
             self.editor_map_change(self.battle_map_base.terria_colour["Temperate"],
                                    self.battle_map_feature.feature_colour["Plain"])
 
+        self.map_corner = self.battle_map_base.image.get_size()  # get map size that troop can move
+
+        self.max_camera = ((self.battle_map_base.image.get_width() - 1) * self.screen_scale[0],
+                           (self.battle_map_base.image.get_height() - 1) * self.screen_scale[1])  # reset max camera to new map size
+
+
         self.alive_subunit_list = []
         self.visible_subunit_list = {}
 
@@ -485,10 +492,9 @@ class Battle:
             self.team_pos_list = {key: {} for key in self.all_team_unit.keys()}
             self.visible_subunit_list = {key: {} for key in self.all_team_unit.keys() if key != "alive"}
 
-            self.battle_scale_ui.change_fight_scale(
-                self.battle_scale)
+            self.battle_scale_ui.change_fight_scale(self.battle_scale)
 
-            subunit_to_make = list(set([this_subunit.troop_id for this_subunit in self.subunit_updater]))
+            subunit_to_make = tuple(set([this_subunit.troop_id for this_subunit in self.subunit_updater]))
             who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key in subunit_to_make}
             if self.main.leader_sprite:
                 for this_unit in self.unit_updater:
@@ -532,7 +538,7 @@ class Battle:
                                1:]  # generate leader name list
 
             setup_list(self.screen_scale, menu.NameList, self.current_unit_row,
-                       list(self.custom_unit_preset_list.keys()),
+                       tuple(self.custom_unit_preset_list.keys()),
                        self.unitpreset_namegroup, self.unit_preset_list_box,
                        self.battle_ui_updater)  # setup preset army list
             setup_list(self.screen_scale, menu.NameList, self.current_troop_row, self.troop_list,
@@ -567,7 +573,7 @@ class Battle:
                         del border
                     self.unit_edit_border.add(battleui.SelectedSquad(slot.inspect_pos))
                     self.battle_ui_updater.add(*self.unit_edit_border)
-                else:  # reset all other slot
+                else:  # reset all other slots
                     slot.selected = False
 
             self.base_camera_pos = pygame.Vector2(500 * self.screen_scale[0],
@@ -923,7 +929,6 @@ class Battle:
                                             sprite_one.same_front.append(sprite_two)
                                     if sprite_two.front_pos.distance_to(
                                             sprite_one.base_pos) < self.front_distance:  # second subunit
-                                        # if sprite_one.frontline:
                                         if sprite_one.state in (2, 4, 6, 10, 11, 12, 13, 99) or \
                                                 sprite_two.state in (2, 4, 6, 10, 11, 12, 13):
                                             sprite_two.same_front.append(sprite_one)
@@ -1007,9 +1012,9 @@ class Battle:
                                 for index, coa in enumerate(self.team_coa):
                                     coa_list[index] = coa.image
                                 self.battle_done_box.show_result(coa_list[0], coa_list[1],
-                                                                 [self.start_troop_number, self.team_troop_number,
+                                                                 (self.start_troop_number, self.team_troop_number,
                                                                   self.wound_troop_number, self.death_troop_number,
-                                                                  self.flee_troop_number, self.capture_troop_number])
+                                                                  self.flee_troop_number, self.capture_troop_number))
                                 self.battle_done_button.rect = self.battle_done_button.image.get_rect(
                                     center=(self.battle_done_box.rect.midbottom[0],
                                             self.battle_done_box.rect.midbottom[
@@ -1037,7 +1042,7 @@ class Battle:
 
                             self.unit_preset_name = self.input_box.text
                             setup_list(self.screen_scale, menu.NameList, self.current_unit_row,
-                                       list(self.custom_unit_preset_list.keys()),
+                                       tuple(self.custom_unit_preset_list.keys()),
                                        self.unitpreset_namegroup, self.unit_preset_list_box,
                                        self.battle_ui_updater)  # setup preset unit list
                             for name in self.unitpreset_namegroup:  # loop to change selected border position to the last in preset list
@@ -1054,7 +1059,7 @@ class Battle:
                         del self.custom_unit_preset_list[self.unit_preset_name]
                         self.unit_preset_name = ""
                         setup_list(self.screen_scale, menu.NameList, self.current_unit_row,
-                                   list(self.custom_unit_preset_list.keys()),
+                                   tuple(self.custom_unit_preset_list.keys()),
                                    self.unitpreset_namegroup, self.unit_preset_list_box,
                                    self.battle_ui_updater)  # setup preset unit list
                         for name in self.unitpreset_namegroup:  # loop to change selected border position to the first in preset list
@@ -1148,7 +1153,7 @@ class Battle:
 
             for slot in self.subunit_build:  # reset all sub-subunit slot
                 slot.kill()
-                slot.__init__(0, slot.game_id, self.unit_build_slot, slot.pos, 100, 100, [1, 1], self.genre, "edit")
+                slot.__init__(0, slot.game_id, self.unit_build_slot, slot.pos, 100, 100, (1, 1), self.genre, "edit")
                 slot.kill()
                 self.subunit_build.add(slot)
                 slot.leader = None  # remove leader link in

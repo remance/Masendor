@@ -396,7 +396,7 @@ class Subunit(pygame.sprite.Sprite):
         self.trait["Original"] += self.troop_data.armour_list[self.armour_gear[0]][
             "Trait"]  # add armour trait to subunit
 
-        self.trait["Original"] = list(
+        self.trait["Original"] = tuple(
             set([trait for trait in self.trait["Original"] if trait != 0]))  # remove empty and duplicate traits
         self.trait["Original"] = {x: self.troop_data.trait_list[x] for x in self.trait["Original"] if
                                   x in self.troop_data.trait_list}  # replace trait index with data
@@ -516,16 +516,16 @@ class Subunit(pygame.sprite.Sprite):
         sprite_dict = self.create_inspect_sprite()
         self.inspect_image = sprite_dict["image"]
         self.image = self.inspect_image.copy()
-        self.inspect_image_original = sprite_dict["original"]
+        self.inspect_image_original = sprite_dict["original"]  # after zoom scale
         self.inspect_image_original2 = sprite_dict["original2"]
-        self.inspect_image_original3 = sprite_dict["original3"]
+        self.inspect_image_original3 = sprite_dict["original3"]  # true original
         self.block = sprite_dict["block"]
         self.block_original = sprite_dict["block_original"]
         self.selected_inspect_image = sprite_dict["selected"]
         self.selected_inspect_image_rect = sprite_dict["selected_rect"]
         self.selected_inspect_image_original = sprite_dict["selected_original"]
         self.selected_inspect_image_original2 = sprite_dict["selected_original2"]
-        self.far_image = sprite_dict["far"]
+        self.far_image = sprite_dict["far"]  # sprite when furthest zoom
         self.far_selected_image = sprite_dict["far_selected"]
         self.health_image_rect = sprite_dict["health_rect"]
         self.health_block_rect = sprite_dict["health_block_rect"]
@@ -605,9 +605,9 @@ class Subunit(pygame.sprite.Sprite):
 
                 self.health_stamina_logic(dt)
 
-                if self.state in (98, 99) and (self.base_pos[0] <= 1 or self.base_pos[0] >= 999 or
+                if self.state in (98, 99) and (self.base_pos[0] <= 1 or self.base_pos[0] >= self.battle.map_corner[0] or
                                                self.base_pos[1] <= 1 or self.base_pos[
-                                                   1] >= 999):  # remove when unit move pass map border
+                                                   1] >= self.battle.map_corner[1]):  # remove troop pass map border
                     self.state = 100  # enter dead state
                     self.battle.flee_troop_number[
                         self.team] += self.troop_number  # add number of troop retreat from battle
