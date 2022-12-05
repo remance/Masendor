@@ -192,7 +192,7 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
                 animation_property.remove(prop)
 
     # change to whatever genre's specific size
-    surface = pygame.transform.scale(surface, (
+    surface = pygame.transform.smoothscale(surface, (
     genre_sprite_size[0] * size * screen_scale[0], genre_sprite_size[1] * size * screen_scale[1]))
 
     return {"sprite": surface, "animation_property": tuple(animation_property), "frame_property": tuple(frame_property)}

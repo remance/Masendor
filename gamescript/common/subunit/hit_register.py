@@ -10,11 +10,11 @@ def hit_register(self, weapon, target, attacker_side, hit_side, status_list):
     target_luck = random.randint(-20, 30)  # defender luck
     attacker_side_mod = combat_side_cal[attacker_side]  # attacker attack side modifier
 
-    if self.special_effect_check("All Side Full Attack"):
+    if self.check_special_effect("All Side Full Attack"):
         attacker_side_mod = 1
 
     hit_side_mod = combat_side_cal[hit_side]  # defender defend side
-    if self.special_effect_check("All Side Full Defence", weapon=weapon):
+    if self.check_special_effect("All Side Full Defence", weapon=weapon):
         hit_side_mod = 1
 
     if attacker_side != 0 and attacker_side_mod != 1:  # if attack or defend from side will use discipline to help reduce penalty a bit
@@ -30,9 +30,9 @@ def hit_register(self, weapon, target, attacker_side, hit_side, status_list):
     attacker_hit = float(self.melee_attack * attacker_side_mod) + attacker_luck
     target_defence = float(target.melee_def * hit_side_mod) + target_luck
 
-    if (self.special_effect_check("Rear Attack Bonus") and hit_side == 2) or \
-            (self.special_effect_check("No Rear Defence") and hit_side == 2) or \
-            (self.special_effect_check("Flank Attack Bonus") and attacker_side in (1, 3)):  # apply only for attacker
+    if (self.check_special_effect("Rear Attack Bonus") and hit_side == 2) or \
+            (self.check_special_effect("No Rear Defence") and hit_side == 2) or \
+            (self.check_special_effect("Flank Attack Bonus") and attacker_side in (1, 3)):  # apply only for attacker
         target_defence = 0
 
     attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect = self.dmg_cal(target, attacker_hit,
@@ -46,7 +46,7 @@ def hit_register(self, weapon, target, attacker_side, hit_side, status_list):
     if self.inflict_status != {}:  # inflict status based on aoe 1 = front only 2 = all 4 side, 3 corner enemy subunit, 4 entire unit
         apply_status_to_enemy(status_list, self.inflict_status, target, attacker_side, hit_side)
 
-    if self.special_effect_check("Reflect Damage"):
+    if self.check_special_effect("Reflect Damage"):
         target_dmg = attacker_dmg / 10
         target_morale_dmg = attacker_dmg / 50
         if target.full_reflect:

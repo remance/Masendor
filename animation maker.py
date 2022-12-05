@@ -328,7 +328,7 @@ class Filmstrip(pygame.sprite.Sprite):
         if change:
             self.image = self.image_original.copy()
             if image is not None:
-                self.blit_image = pygame.transform.scale(image.copy(), (int(100 * self.image_scale[0]), int(100 * self.image_scale[1])))
+                self.blit_image = pygame.transform.smoothscale(image.copy(), (int(100 * self.image_scale[0]), int(100 * self.image_scale[1])))
                 self.strip_rect = self.blit_image.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
                 self.image.blit(self.blit_image, self.strip_rect)
             self.image_original2 = self.image.copy()
@@ -1249,8 +1249,8 @@ class Model:
 
                         elif edit_type == "rotate":  # mouse rotate
                             base_pos = self.animation_part_list[edit_frame][part_index][2]
-                            myradians = math.atan2(mouse_pos[1] - base_pos[1], mouse_pos[0] - base_pos[0])
-                            new_angle = math.degrees(myradians)
+                            radians = math.atan2(mouse_pos[1] - base_pos[1], mouse_pos[0] - base_pos[0])
+                            new_angle = math.degrees(radians)
                             # """upper left -"""
                             if -180 <= new_angle <= -90:
                                 new_angle = -new_angle - 90
@@ -1376,7 +1376,7 @@ class Model:
         """Find body part's new center point from main_joint_pos with new angle, then create rotated part and blit to sprite"""
         part_rotated = part.copy()
         if scale != 1:
-            part_rotated = pygame.transform.scale(part_rotated, (part_rotated.get_width() * scale,
+            part_rotated = pygame.transform.smoothscale(part_rotated, (part_rotated.get_width() * scale,
                                                                  part_rotated.get_height() * scale))
         if flip != 0:
             if flip == 1:  # horizontal only
@@ -1519,13 +1519,13 @@ showroom_scale_mul = (showroom_scale[0] / default_sprite_size[0], showroom_scale
 showroom = Showroom(showroom_scale)
 ui.add(showroom)
 
-Joint.images = [pygame.transform.scale(load_image(current_dir, screen_scale, "mainjoint.png", "animation_maker_ui"),
+Joint.images = [pygame.transform.smoothscale(load_image(current_dir, screen_scale, "mainjoint.png", "animation_maker_ui"),
                                        (int(20 * screen_scale[0]), int(20 * screen_scale[1]))),
-                pygame.transform.scale(load_image(current_dir, screen_scale, "subjoint.png", "animation_maker_ui"),
+                pygame.transform.smoothscale(load_image(current_dir, screen_scale, "subjoint.png", "animation_maker_ui"),
                                        (int(20 * screen_scale[0]), int(20 * screen_scale[1])))]
 joints = pygame.sprite.Group()
 
-image = pygame.transform.scale(load_image(current_dir, screen_scale, "film.png", "animation_maker_ui"),
+image = pygame.transform.smoothscale(load_image(current_dir, screen_scale, "film.png", "animation_maker_ui"),
                                (int(50 * screen_scale[0]), int(50 * screen_scale[1])))
 
 Filmstrip.image_original = image
@@ -1561,7 +1561,7 @@ p_body_helper = BodyHelper(body_helper_size, (body_helper_size[0] / 2,
 helper_list = [p_body_helper, effect_helper]
 
 image = load_image(current_dir, screen_scale, "button.png", "animation_maker_ui")
-image = pygame.transform.scale(image, (int(image.get_width() * screen_scale[1]),
+image = pygame.transform.smoothscale(image, (int(image.get_width() * screen_scale[1]),
                                        int(image.get_height() * screen_scale[1])))
 
 text_popup = popup.TextPopup(screen_scale, screen_size)

@@ -262,12 +262,12 @@ class BeautifulMap(pygame.sprite.Sprite):
                         rect = this_texture.get_rect(center=random_pos)
                         self.image.blit(this_texture, rect)
 
-        self.image = pygame.transform.scale(self.image, (self.image.get_width() * self.screen_scale[0],
+        self.image = pygame.transform.smoothscale(self.image, (self.image.get_width() * self.screen_scale[0],
                                                          self.image.get_height() * self.screen_scale[1]))
         self.true_image = self.image.copy()  # image before adding effect and place name
 
         # Save place name image as variable
-        self.place_name = pygame.transform.scale(place_name, (place_name.get_width() * self.screen_scale[0],
+        self.place_name = pygame.transform.smoothscale(place_name, (place_name.get_width() * self.screen_scale[0],
                                                               place_name.get_height() * self.screen_scale[1]))
 
         self.add_effect(height_map)
@@ -310,7 +310,7 @@ class BeautifulMap(pygame.sprite.Sprite):
             self.image = self.image_topology_original.copy()
         elif self.mode == 2:  # with height map
             self.image = self.image_height_original.copy()
-        self.image = pygame.transform.scale(self.image, (int(self.dim[0]), int(self.dim[1])))
+        self.image = pygame.transform.smoothscale(self.image, (int(self.dim[0]), int(self.dim[1])))
 
     def clear_image(self):
         self.image = None

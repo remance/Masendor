@@ -8,6 +8,15 @@ text_render = utility.text_render
 
 apply_colour = animation.apply_colour
 
+
+def change_number(number):
+    """Change number more than a thousand to K digit e.g. 1k = 1000"""
+    if number >= 1000000:
+        return str(round(number / 1000000, 1)) + "m"
+    elif number >= 1000:
+        return str(round(number / 1000, 1)) + "k"
+
+
 class UIButton(pygame.sprite.Sprite):
     def __init__(self, image, event=None, layer=11):
         self._layer = layer
@@ -488,10 +497,6 @@ class SkillCardIcon(pygame.sprite.Sprite):
         self.image_original = self.image.copy()  # keep original image without number
         self.cooldown_rect = self.image.get_rect(topleft=(0, 0))
 
-    def change_number(self, number):
-        """Change number more than a thousand to K digit e.g. 1k = 1000"""
-        return str(round(number / 1000, 1)) + "K"
-
     def icon_change(self, cooldown, active_timer):
         """Show active effect timer first if none show cooldown"""
         if active_timer != self.active_check:
@@ -502,7 +507,7 @@ class SkillCardIcon(pygame.sprite.Sprite):
                 self.image.blit(self.active_skill, rect)
                 output_number = str(self.active_check)
                 if self.active_check >= 1000:
-                    output_number = self.change_number(output_number)
+                    output_number = change_number(output_number)
                 text_surface = self.font.render(output_number, 1, (0, 0, 0))  # timer number
                 text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
                 self.image.blit(text_surface, text_rect)
@@ -514,7 +519,7 @@ class SkillCardIcon(pygame.sprite.Sprite):
                 self.image.blit(self.cooldown, self.cooldown_rect)
                 output_number = str(self.cooldown_check)
                 if self.cooldown_check >= 1000:  # change a thousand number into k (1k,2k)
-                    output_number = self.change_number(output_number)
+                    output_number = change_number(output_number)
                 text_surface = self.font.render(output_number, 1, (0, 0, 0))
                 text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
                 self.image.blit(text_surface, text_rect)

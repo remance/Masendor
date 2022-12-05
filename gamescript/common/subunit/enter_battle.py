@@ -1,4 +1,4 @@
-def start_set(self, zoom, animation_pool):
+def enter_battle(self, zoom, animation_pool):
     """run once when battle start or subunit just get created"""
     self.zoom = zoom
     self.front_pos = self.make_front_pos()
@@ -20,7 +20,7 @@ def start_set(self, zoom, animation_pool):
     self.grade_social_effect = self.unit.leader_social[self.grade_name]
     self.status_update()
 
-    self.battle.alive_subunit_list.append(self)
+    self.battle.battle_subunit_list.append(self)
 
     # Add troop number to counter how many troop join battle
     self.battle.team_troop_number[self.team] += self.troop_number

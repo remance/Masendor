@@ -308,7 +308,7 @@ class Battle:
         self.all_team_unit = {"alive": pygame.sprite.Group()}  # all unit in each team and alive
         self.team_pos_list = {}  # all alive team unit position
 
-        self.alive_subunit_list = []  # list of all subunit alive in self, need to be in list for collision check
+        self.battle_subunit_list = []  # list of all subunit alive in battle, need to be in list for collision check
         self.visible_subunit_list = {}  # list of subunit visible to the team
 
         self.unit_setup_stuff = (self.subunit_build, self.unit_edit_border, self.command_ui, self.troop_card_ui,
@@ -468,7 +468,7 @@ class Battle:
                            (self.battle_map_base.image.get_height() - 1) * self.screen_scale[1])  # reset max camera to new map size
 
 
-        self.alive_subunit_list = []
+        self.battle_subunit_list = []
         self.visible_subunit_list = {}
 
         # initialise starting subunit sprites
@@ -876,14 +876,14 @@ class Battle:
                         for this_unit in self.all_team_unit["alive"]:  # reset collide
                             this_unit.collide = False
 
-                        if len(self.alive_subunit_list) > 1:
+                        if len(self.battle_subunit_list) > 1:
                             tree = KDTree(
                                 [sprite.base_pos for sprite in
-                                 self.alive_subunit_list])  # collision loop check, much faster than pygame collide check
+                                 self.battle_subunit_list])  # collision loop check, much faster than pygame collide check
                             collisions = tree.query_pairs(self.collide_distance)
                             for one, two in collisions:
-                                sprite_one = self.alive_subunit_list[one]
-                                sprite_two = self.alive_subunit_list[two]
+                                sprite_one = self.battle_subunit_list[one]
+                                sprite_two = self.battle_subunit_list[two]
                                 if sprite_one.unit != sprite_two.unit:  # collide with subunit in other unit
                                     if sprite_one.base_pos.distance_to(sprite_one.base_pos) < self.full_distance:
                                         sprite_one.full_merge.append(sprite_two)
@@ -934,7 +934,7 @@ class Battle:
                                             sprite_two.same_front.append(sprite_one)
 
                         self.subunit_pos_array = self.map_move_array.copy()
-                        for this_subunit in self.alive_subunit_list:
+                        for this_subunit in self.battle_subunit_list:
                             for y in this_subunit.pos_range[0]:
                                 for x in this_subunit.pos_range[1]:
                                     self.subunit_pos_array[x][y] = 0
@@ -1121,7 +1121,7 @@ class Battle:
         self.remove_unit_ui()
 
         self.combat_path_queue = []
-        self.alive_subunit_list = []
+        self.battle_subunit_list = []
         self.map_move_array = []
         self.subunit_pos_array = []
         self.map_def_array = []

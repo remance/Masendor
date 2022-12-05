@@ -16,7 +16,7 @@ def die(self):
 
     if self in self.battle.battle_camera:
         self.battle.battle_camera.change_layer(sprite=self, new_layer=1)
-    self.battle.alive_subunit_list.remove(self)
+    self.battle.battle_subunit_list.remove(self)
     self.unit.alive_subunit_list.remove(self)
 
     self.command_action = {"name": "Die", "uninterruptible": True}

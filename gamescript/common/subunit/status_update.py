@@ -208,11 +208,11 @@ def status_update(self, weather=None):
 
     # Day time effect sight and hidden stat
     if self.battle.day_time == "Twilight":
-        if self.special_effect_check("Night Vision") is False:
+        if self.check_special_effect("Night Vision") is False:
             sight_bonus -= 10
         hidden_bonus += 10
     elif self.battle.day_time == "Night":
-        if self.special_effect_check("Night Vision") is False:
+        if self.check_special_effect("Night Vision") is False:
             sight_bonus -= 30
         hidden_bonus += 30
 

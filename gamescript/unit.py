@@ -207,7 +207,7 @@ class Unit(pygame.sprite.Sprite):
 
         self.setup_subunit_position_list()  # Set up subunit position list for subunit positioning
 
-    def start_set(self):
+    def enter_battle(self):
         """Setup various variables at the start of battle or when new unit spawn/split"""
         self.alive_subunit_list = [item for item in self.subunit_list]
         self.setup_stat(battle_start=True)
@@ -348,7 +348,7 @@ class Unit(pygame.sprite.Sprite):
     def process_retreat(self, pos):
         self.state = 96  # controlled retreat state (not same as 98)
         self.command_state = self.state  # command retreat
-        self.leader[0].authority -= self.auth_penalty  # retreat reduce start_set leader authority
+        self.leader[0].authority -= self.auth_penalty  # retreat reduce enter_battle leader authority
         if self.charging:  # change order when attacking will cause authority penalty
             self.leader[0].authority -= self.auth_penalty
         self.authority_recalculation()

@@ -40,7 +40,7 @@ def combat_logic(self, dt, unit_state):
 
                         else:  # no target to fight move back to command pos first
                             self.base_target = self.attack_target.base_pos
-                            self.new_angle = self.set_rotate()
+                            self.new_angle = self.set_rotate(self.base_target)
 
                     if self.melee_target.unit.state != 100:
                         if self.move_timer == 0:
@@ -61,7 +61,7 @@ def combat_logic(self, dt, unit_state):
 
                             elif len(self.combat_move_queue) > 0:  # no collide move to enemy
                                 self.base_target = pygame.Vector2(self.combat_move_queue[0])
-                                self.new_angle = self.set_rotate()
+                                self.new_angle = self.set_rotate(self.base_target)
 
                     else:  # whole targeted enemy unit destroyed, reset target and state
                         self.melee_target = None
@@ -86,7 +86,7 @@ def combat_logic(self, dt, unit_state):
             self.state = 0
 
         if self.state != 10 and self.magazine_count[self.equipped_weapon][0] > 0 and self.unit.fire_at_will == 0 and \
-                (self.special_effect_check("Arc Shot", weapon=0) or self.frontline) and \
+                (self.check_special_effect("Arc Shot", weapon=0) or self.frontline) and \
                 self.charge_momentum == 1:  # Range attack when unit in melee state with arc_shot
             self.state = 11
             if self.unit.nearby_enemy != {} and (self.attack_target is None or self.attack_pos is None):
@@ -110,7 +110,7 @@ def combat_logic(self, dt, unit_state):
 
             elif self.unit.fire_at_will == 0 and (self.state == 0 or
                                                   (self.state in (1, 2, 3, 4, 5, 6, 7) and
-                                                   self.special_effect_check("Shoot While Moving"))):  # Fire at will
+                                                   self.check_special_effect("Shoot While Moving"))):  # Fire at will
                 if self.unit.nearby_enemy != {} and self.attack_target is None:
                     self.find_shooting_target(unit_state)  # shoot the nearest target
 
@@ -163,7 +163,7 @@ def combat_logic(self, dt, unit_state):
             for weapon in self.ammo_now[self.equipped_weapon]:  # TODO add line of sight for range attack
                 # can shoot if reload finish and base_target existed and not dead. Non arc_shot cannot shoot if forbid
                 if self.ammo_now[self.equipped_weapon][weapon] > 0 and \
-                        (self.special_effect_check("Arc Shot", weapon=weapon) or self.unit.shoot_mode != 1):
+                        (self.check_special_effect("Arc Shot", weapon=weapon) or self.unit.shoot_mode != 1):
                     self.command_action = {"name": "Action " + str(weapon), "range attack": True}
                     break
 
@@ -171,7 +171,7 @@ def combat_logic(self, dt, unit_state):
         if self.base_target != self.command_target:
             self.base_target = self.command_target
             if unit_state == 0:
-                self.new_angle = self.set_rotate()
+                self.new_angle = self.set_rotate(self.base_target)
         elif self.angle != self.unit.angle:  # reset angle
             self.new_angle = self.unit.angle
 

@@ -26,7 +26,7 @@ def unit_ai(self):
                         self.set_target(self.attack_target.base_pos)
                     self.state = 0
                     self.base_attack_pos = self.base_target
-                    self.new_angle = self.set_rotate()  # keep rotating while chasing
+                    self.new_angle = self.set_rotate(self.base_target)  # keep rotating while chasing
         else:  # enemy dead stop chasing
             self.attack_target = None
             self.base_attack_pos = None

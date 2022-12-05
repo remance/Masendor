@@ -20,8 +20,7 @@ class TroopAnimationData:
         """
         with open(os.path.join(main_dir, "data", "sprite", "generic", "skin_colour_rgb.csv"), encoding="utf-8",
                   mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             self.skin_colour_list = {}
             int_column = ["red", "green", "blue"]  # value in list only
@@ -36,8 +35,7 @@ class TroopAnimationData:
 
         with open(os.path.join(main_dir, "data", "sprite", "generic", "hair_colour_rgb.csv"), encoding="utf-8",
                   mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             self.hair_colour_list = {}
             int_column = ["red", "green", "blue"]  # value in list only
@@ -54,8 +52,7 @@ class TroopAnimationData:
         for direction in direction_list:
             with open(os.path.join(main_dir, "data", "animation", "generic", direction + ".csv"), encoding="utf-8",
                       mode="r") as edit_file:
-                rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-                rd = [row for row in rd]
+                rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
                 part_name_header = rd[0]
                 list_column = ["head", "body", "r_arm_up", "r_arm_low", "r_hand", "l_arm_up",
                                "l_arm_low", "l_hand", "r_leg", "r_foot", "l_leg", "l_foot", "main_weapon", "sub_weapon",
@@ -90,8 +87,7 @@ class TroopAnimationData:
         #         for direction in direction_list:
         #             with open(os.path.join(main_dir, "data", "sprite", "generic", race, direction, "skeleton_link.csv"), encoding="utf-8",
         #                       mode="r") as edit_file:
-        #                 rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-        #                 rd = [row for row in rd]
+        #                 rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
         #                 header = rd[0]
         #                 list_column = ("Position", )  # value in list only
         #                 list_column = [index for index, item in enumerate(header) if item in list_column]
@@ -115,8 +111,7 @@ class TroopAnimationData:
             self.weapon_joint_list[direction] = {}
             with open(os.path.join(main_dir, "data", "sprite", "generic", "weapon", "joint.csv"), encoding="utf-8",
                       mode="r") as edit_file:
-                rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-                rd = [row for row in rd]
+                rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
                 header = rd[0]
                 list_column = direction_list  # value in list only
                 list_column = [index for index, item in enumerate(header) if item in list_column]
@@ -178,8 +173,8 @@ class TroopAnimationData:
                                                 in body_subsubfolder.iterdir() if x.is_dir()]
                             for body_folder in body_directories:
                                 imgs = load_textures(main_dir,
-                                                     ["sprite", "generic", race, direction, "armour", subfolder[-1],
-                                                      subsubfolder[-1], body_folder[-1]])
+                                                     ("sprite", "generic", race, direction, "armour", subfolder[-1],
+                                                      subsubfolder[-1], body_folder[-1]))
                                 self.gen_armour_sprite_pool[race][subfolder[-1]][subsubfolder[-1]][direction][
                                     body_folder[-1]] = imgs
                 except FileNotFoundError:
@@ -196,11 +191,11 @@ class TroopAnimationData:
                                  in part_subfolder.iterdir() if x.is_dir()]
             for subfolder in subsubdirectories:
                 self.gen_weapon_sprite_pool[folder[-1]][subfolder[-1]] = {}
-                icon_imgs = load_textures(main_dir, ["sprite", "generic", "weapon", folder[-1], subfolder[-1]])
+                icon_imgs = load_textures(main_dir, ("sprite", "generic", "weapon", folder[-1], subfolder[-1]))
                 self.gen_weapon_sprite_pool[folder[-1]][subfolder[-1]]["icon"] = icon_imgs
                 for direction in direction_list:
                     imgs = load_textures(main_dir,
-                                         ["sprite", "generic", "weapon", folder[-1], subfolder[-1], direction])
+                                         ("sprite", "generic", "weapon", folder[-1], subfolder[-1], direction))
                     if direction not in self.gen_weapon_sprite_pool[folder[-1]]:
                         self.gen_weapon_sprite_pool[folder[-1]][subfolder[-1]][direction] = imgs
                     else:

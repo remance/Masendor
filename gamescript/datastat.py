@@ -27,8 +27,7 @@ class TroopData:
         # Troop status effect dict
         self.status_list = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_status.csv"), encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             int_column = ["ID", "Max Stack", "Temperature Change", "Physical Resistance Bonus",
                           "Fire Resistance Bonus", "Water Resistance Bonus",
@@ -64,8 +63,7 @@ class TroopData:
         self.special_effect_list = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_special_effect.csv"), encoding="utf-8",
                   mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             int_column = ["ID"]  # value int only
             tuple_column = ["Status"]  # value in tuple only
@@ -80,8 +78,7 @@ class TroopData:
         # Race dict
         self.race_list = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_race.csv"), encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             int_column = ("Strength", "Dexterity", "Agility", "Constitution", "Intelligence", "Wisdom",
                           "Physical Resistance", "Fire Resistance", "Water Resistance", " Air Resistance",
@@ -107,8 +104,7 @@ class TroopData:
         # Troop grade dict
         self.grade_list = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_grade.csv"), encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             int_column = ("ID",)  # value int only
             list_column = ("Trait",)  # value in list only
@@ -127,8 +123,7 @@ class TroopData:
         # Troop skill dict
         self.skill_list = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_skill.csv"), encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             int_column = ("ID", "Troop Type", "Type", "Area of Effect", "Cost", "Charge Skill")  # value int only
             list_column = ("Action",)
@@ -162,8 +157,7 @@ class TroopData:
         # Troop trait dict
         self.trait_list = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_trait.csv"), encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             int_column = ("ID", "Buff Range", "Race", "Cost", "Element")  # value int only
             tuple_column = ("Status", "Special Effect", "Enemy Status", "Ruleset")  # value in tuple only
@@ -197,7 +191,7 @@ class TroopData:
         # Troop role dict
         self.role = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_class_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             for row in rd:
                 for n, i in enumerate(row):
                     if i.isdigit():
@@ -209,8 +203,7 @@ class TroopData:
         self.equipment_grade_list = {}
         with open(os.path.join(main_dir, "data", "troop", "equipment_grade.csv"), encoding="utf-8",
                   mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             int_column = ("ID",)  # value int only
             int_column = [index for index, item in enumerate(header) if item in int_column]
@@ -223,8 +216,7 @@ class TroopData:
         # Weapon dict
         self.weapon_list = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_weapon.csv"), encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             int_column = ("ID", "Strength Bonus Scale", "Dexterity Bonus Scale", "Physical Damage",
                           "Fire Damage", "Water Damage", "Air Damage", "Earth Damage", "Poison Damage", "Magic Damage",
@@ -260,8 +252,7 @@ class TroopData:
         # Armour dict
         self.armour_list = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_armour.csv"), encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             int_column = ("ID", "Cost")  # value int only
             list_column = ("Trait",)  # value in list only
@@ -291,8 +282,7 @@ class TroopData:
         # Mount dict
         self.mount_list = {}
         with open(os.path.join(main_dir, "data", "troop", "mount_preset.csv"), encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             int_column = ("ID", "Cost")  # value int only
             list_column = ("Trait",)  # value in list only
@@ -322,8 +312,7 @@ class TroopData:
         # Mount grade dict
         self.mount_grade_list = {}
         with open(os.path.join(main_dir, "data", "troop", "mount_grade.csv"), encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             int_column = ("ID",)  # value int only
             list_column = ("Trait",)  # value in list only
@@ -338,8 +327,7 @@ class TroopData:
         # Mount armour dict
         self.mount_armour_list = {}
         with open(os.path.join(main_dir, "data", "troop", "mount_armour.csv"), encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             int_column = ("ID", "Cost")  # value int only
             tuple_column = ("Ruleset")  # value in list only
@@ -372,8 +360,7 @@ class TroopData:
         self.troop_list = {}
         with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "troop_preset.csv"),
                   encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             int_column = (
                 "ID", "Grade", "Race", "Cost", "Upkeep", "Troop", "Troop Class", "Sprite ID")  # value int only
@@ -418,8 +405,7 @@ class TroopData:
         self.troop_sprite_list = {}
         with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "troop_sprite.csv"),
                   encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             for row_index, row in enumerate(rd[1:]):
                 for n, i in enumerate(row):
@@ -438,8 +424,8 @@ class TroopData:
             self.default_unit_formation_list[formation_name] = []
             with open(os.path.join(main_dir, "data", "troop", "formation", folder), encoding="utf-8",
                       mode="r") as edit_file:
-                rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-                rd = [row for row in rd]
+                rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
+                
                 for row_index, row in enumerate(rd[1:]):
                     if any(re.search("[a-zA-Z]", i) is not None for i in
                            row) is False:  # row does not contain any text, not header
@@ -467,8 +453,7 @@ class LeaderData:
         self.leader_list = {}
         with open(os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader", "leader.csv"),
                   encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             int_column = ("ID", "Race", "Strength", "Dexterity", "Agility", "Constitution", "Intelligence",
                           "Wisdom", "Charisma", "Melee Speciality", "Range Speciality", "Cavalry Speciality",
@@ -489,8 +474,7 @@ class LeaderData:
         # Add common leader to the leader list with game_id 10000+
         with open(os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader", "common_leader.csv"),
                   encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             for row in rd[1:]:  # skip convert header row
                 for n, i in enumerate(row):
@@ -515,8 +499,7 @@ class LeaderData:
         self.skill_list = {}
         with open(os.path.join(main_dir, "data", "leader", "leader_skill.csv"), encoding="utf-8",
                   mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             int_column = ("Troop Type", "Type", "Range", "Area of Effect", "Element", "Cost")  # value int only
             list_column = ("Action",)
@@ -550,8 +533,7 @@ class LeaderData:
         self.commander_skill_list = {}
         with open(os.path.join(main_dir, "data", "leader", "commander_skill.csv"), encoding="utf-8",
                   mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             int_column = ("Troop Type", "Type", "Area of Effect", "Element", "Cost")  # value int only
             list_column = ("Action", "Replace")
@@ -590,8 +572,7 @@ class LeaderData:
         self.leader_sprite_list = {}
         with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "leader", "leader_sprite.csv"),
                   encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             for row_index, row in enumerate(rd[1:]):
                 for n, i in enumerate(row):
@@ -602,8 +583,7 @@ class LeaderData:
 
         with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "leader", "common_leader_sprite.csv"),
                   encoding="utf-8", mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             for row_index, row in enumerate(rd[1:]):
                 for n, i in enumerate(row):
@@ -617,8 +597,7 @@ class LeaderData:
         self.leader_class = {}
         with open(os.path.join(main_dir, "data", "leader", "leader_class.csv"), encoding="utf-8",
                   mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             for row in rd:
                 for n, i in enumerate(row):
@@ -641,8 +620,7 @@ class FactionData:
         self.faction_list = {}
         with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "faction", "faction.csv"), encoding="utf-8",
                   mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             for row in rd:
                 for n, i in enumerate(row):

@@ -13,6 +13,7 @@ board_pos = []
 for dd in number_board:
     for ll in letter_board:
         board_pos.append(ll + dd)
+board_pos = tuple(board_pos)
 
 
 def setup_battle_unit(self, team_unit_list, troop_list, leader_list, specific_team=None):
@@ -31,13 +32,12 @@ def setup_battle_unit(self, team_unit_list, troop_list, leader_list, specific_te
     with open(os.path.join(main_dir, "data", "ruleset", self.ruleset_folder, "map",
                            self.map_selected, str(self.map_source),
                            self.genre, "unit_pos.csv"), encoding="utf-8", mode="r") as unit_file:
-        rd = csv.reader(unit_file, quoting=csv.QUOTE_ALL)
-        rd = [row for row in rd]
+        rd = tuple(csv.reader(unit_file, quoting=csv.QUOTE_ALL))
         header = rd[0]
-        int_column = ["ID", "Faction", "Team"]  # value int only
+        int_column = ("ID", "Faction", "Team")  # value int only
         list_column = [item for item in header if "Row " in item] + ["POS", "Leader",
                                                                      "Leader Position"]  # value in list only
-        float_column = ["Angle", "Start Health", "Start Stamina"]  # value in float
+        float_column = ("Angle", "Start Health", "Start Stamina")  # value in float
         int_column = [index for index, item in enumerate(header) if item in int_column]
         list_column = [index for index, item in enumerate(header) if item in list_column]
         float_column = [index for index, item in enumerate(header) if item in float_column]
@@ -70,6 +70,5 @@ def setup_battle_unit(self, team_unit_list, troop_list, leader_list, specific_te
                                              (60, 60))  # get coa_list image and scale smaller to fit ui
                 subunit_game_id = self.generate_unit(which_team, this_unit, control, command, colour, coa,
                                                      subunit_game_id, troop_list, leader_list)
-                # ^ End subunit setup
 
     unit_file.close()

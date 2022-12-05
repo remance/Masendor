@@ -27,7 +27,7 @@ def issue_order(self, target_pos, run_command=False, revert_move=False, enemy=No
         self.command_state = self.state
 
         self.command_target = self.base_target
-        self.new_angle = self.set_rotate()
+        self.new_angle = self.set_rotate(self.base_target)
 
         if revert_move:  # revert subunit without rotate, cannot run in this state
             self.revert_move()
@@ -46,4 +46,4 @@ def issue_order(self, target_pos, run_command=False, revert_move=False, enemy=No
         self.command_state = self.state  # reset command state
         self.set_target(self.front_pos)  # set base_target at front of unit
         self.command_target = self.base_target  # reset command base_target
-        self.new_angle = self.set_rotate()  # set rotation base_target
+        self.new_angle = self.set_rotate(self.base_target)  # set rotation base_target

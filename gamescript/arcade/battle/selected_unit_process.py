@@ -5,6 +5,7 @@ from gamescript.common import utility
 
 list_scroll = utility.list_scroll
 setup_list = utility.setup_list
+clean_object = utility.clean_object
 
 team_colour = unit.team_colour
 
@@ -48,22 +49,14 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
             if key_state[pygame.K_DELETE]:
                 for this_unit in self.troop_number_sprite:
                     if this_unit.who == self.current_selected:
-                        this_unit.delete()
-                        this_unit.kill()
-                        del this_unit
+                        clean_object(this_unit)
                 for this_subunit in self.current_selected.subunit_list:
-                    this_subunit.delete()
-                    self.alive_subunit_list.remove(this_subunit)
-                    this_subunit.kill()
-                    del this_subunit
+                    clean_object(this_subunit)
                 for this_leader in self.current_selected.leader:
-                    this_leader.delete()
-                    this_leader.kill()
-                    del this_leader
+                    clean_object(this_leader)
                 del self.team_pos_list[self.current_selected.team][self.current_selected]
-                self.current_selected.delete()
-                self.current_selected.kill()
-                self.battle.all_team_unit["alive"].remove(self.current_selected)
+                self.all_team_unit["alive"].remove(self.current_selected)
+                clean_object(self.current_selected)
                 self.unit_selector.setup_unit_icon(self.unit_icon, self.all_team_unit[self.team_selected])
                 self.current_selected = None
 

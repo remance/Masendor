@@ -22,7 +22,6 @@ infinity = float("inf")
 class Subunit(pygame.sprite.Sprite):
     empty_method = utility.empty_method
 
-    unit_ui_images = []
     battle = None
     base_map = None  # base map
     feature_map = None  # feature map
@@ -71,7 +70,7 @@ class Subunit(pygame.sprite.Sprite):
     range_weapon_selection = empty_method
     rotate = empty_method
     special_effect_check = empty_method
-    start_set = empty_method
+    enter_battle = empty_method
     status_update = empty_method
     swap_weapon = empty_method
     temperature_cal = empty_method
@@ -104,7 +103,7 @@ class Subunit(pygame.sprite.Sprite):
 
     # genre specific variables
     dmg_include_leader = True
-    stat_use_troop_number = True
+    hero_health_scale = 1
 
     def __init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale, animation_pool=None):
         """
@@ -126,7 +125,7 @@ class Subunit(pygame.sprite.Sprite):
         self.get_feature = self.feature_map.get_feature
         self.get_height = self.height_map.get_height
 
-        self.leader = None  # leader in the sub-subunit if there is one, got add in leader start_set
+        self.leader = None  # leader in the sub-subunit if there is one, got add in leader enter_battle
         self.board_pos = None  # used for event log position of subunit (Assigned in battle subunit setup)
         self.walk = False  # currently walking
         self.run = False  # currently running
@@ -234,12 +233,11 @@ class Subunit(pygame.sprite.Sprite):
                 "Discipline Bonus"]  # discipline with grade bonus
             self.original_mental = stat["Mental"] + grade_stat[
                 "Mental Bonus"]  # mental resistance from morale melee_dmg and mental status effect
-            if self.stat_use_troop_number:
-                self.troop_number = stat["Troop"] * unit_scale[
-                    self.team] * start_hp / 100  # number of starting troop, team -1 to become list index
+            self.troop_number = stat["Troop"] * unit_scale[
+                self.team] * start_hp / 100  # number of starting troop, team -1 to become list index
             self.subunit_type = stat["Troop Class"] - 1  # 0 is melee infantry and 1 is range for command buff
 
-        else:  # leader character, for game mode that replace subunit with leader
+        else:  # leader/hero character, for game mode that replace subunit with leader
             self.troop_id = troop_id
             sprite_list = self.leader_sprite_list
             stat = self.leader_data.leader_list[int(troop_id.replace("h", ""))].copy()
@@ -257,6 +255,8 @@ class Subunit(pygame.sprite.Sprite):
             self.original_mental = 50 + grade_stat[
                 "Mental Bonus"]  # mental resistance from morale melee_dmg and mental status effect
             self.subunit_type = 0
+
+            self.troop_number = self.hero_health_scale
 
             self.special_effect["Shoot While Moving"][0][0] = True  # allow shoot while moving for hero
 
@@ -343,7 +343,7 @@ class Subunit(pygame.sprite.Sprite):
         self.range_weapon_set = {}
         self.weapon_type = {}
         self.weapon_set = ((self.primary_main_weapon, self.primary_sub_weapon),
-                          (self.secondary_main_weapon, self.secondary_sub_weapon))
+                           (self.secondary_main_weapon, self.secondary_sub_weapon))
         self.weapon_id = ((self.primary_main_weapon[0], self.primary_sub_weapon[0]),
                           (self.secondary_main_weapon[0], self.secondary_sub_weapon[0]))
         self.weapon_data = ((self.troop_data.weapon_list[self.primary_main_weapon[0]],
@@ -513,12 +513,12 @@ class Subunit(pygame.sprite.Sprite):
         self.corner_atk = False  # cannot melee_attack corner enemy by default
 
         # sprite for inspection or far view
-        sprite_dict = self.create_inspect_sprite()
+        sprite_dict = self.create_inspect_sprite(self.troop_size)
         self.inspect_image = sprite_dict["image"]
         self.image = self.inspect_image.copy()
-        self.inspect_image_original = sprite_dict["original"]  # after zoom scale
+        self.inspect_image_original = sprite_dict["original"]
         self.inspect_image_original2 = sprite_dict["original2"]
-        self.inspect_image_original3 = sprite_dict["original3"]  # true original
+        self.inspect_image_original3 = sprite_dict["original3"]
         self.block = sprite_dict["block"]
         self.block_original = sprite_dict["block_original"]
         self.selected_inspect_image = sprite_dict["selected"]
@@ -535,7 +535,14 @@ class Subunit(pygame.sprite.Sprite):
         self.health_image_list = sprite_dict["health_list"]
         self.stamina_image_list = sprite_dict["stamina_list"]
 
+        self.icon_sprite_width = self.inspect_image_original3.get_width()
+        self.icon_sprite_height = self.inspect_image_original3.get_height()
+        self.collide_distance = self.icon_sprite_height / 10  # distance to check collision
+        self.front_distance = self.icon_sprite_height / 20  # distance from front side
+        self.full_distance = self.front_distance / 2  # distance for sprite merge check
+
         self.unit_position = (start_pos[0] / 10, start_pos[1] / 10)  # position in unit sprite
+
         try:
             unit_top_left = pygame.Vector2(self.unit.base_pos[0] - self.unit.base_width_box / 2,
                                            self.unit.base_pos[
@@ -604,6 +611,8 @@ class Subunit(pygame.sprite.Sprite):
                 self.morale_logic(dt, unit_state)
 
                 self.health_stamina_logic(dt)
+                if type(self.base_pos) != pygame.Vector2:
+                    print(self.base_pos, type(self.base_pos), self.game_id)
 
                 if self.state in (98, 99) and (self.base_pos[0] <= 1 or self.base_pos[0] >= self.battle.map_corner[0] or
                                                self.base_pos[1] <= 1 or self.base_pos[

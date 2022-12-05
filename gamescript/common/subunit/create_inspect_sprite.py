@@ -3,10 +3,11 @@ import math
 import pygame
 
 
-def create_inspect_sprite(self):
+def create_inspect_sprite(self, troop_size):
     """
     Create subunit sprite for furthest zoom and inspect ui
     :param self: Subunit object
+    :param troop_size: Size of troop that may affect sprite size
     :return: Dict with sprites
     """
     # Subunit image sprite in inspect ui and far zoom
@@ -49,8 +50,8 @@ def create_inspect_sprite(self):
                        far_selected_image.get_width() / 2, 4)
 
     dim = pygame.Vector2(image.get_width() * 1 / self.max_zoom, image.get_height() * 1 / self.max_zoom)
-    far_image = pygame.transform.scale(far_image, (int(dim[0]), int(dim[1])))
-    far_selected_image = pygame.transform.scale(far_selected_image, (int(dim[0]), int(dim[1])))
+    far_image = pygame.transform.smoothscale(far_image, (int(dim[0]), int(dim[1])))
+    far_selected_image = pygame.transform.smoothscale(far_selected_image, (int(dim[0]), int(dim[1])))
 
     block = ui_image.copy()  # image shown in inspect ui as square instead of circle
 
@@ -82,7 +83,7 @@ def create_inspect_sprite(self):
             image1 = self.leader_data.images[self.troop_id.replace("h", "") + ""].copy()
         except KeyError:
             image1 = self.leader_data.images["9999999"].copy()
-        image1 = pygame.transform.scale(image1.copy(), stamina_image.get_size())
+        image1 = pygame.transform.smoothscale(image1.copy(), stamina_image.get_size())
     image_rect = image1.get_rect(center=image.get_rect().center)
     image.blit(image1, image_rect)
 

@@ -50,7 +50,7 @@ def combat_logic(self, dt, unit_state):
 
                 elif self.unit.fire_at_will == 0 and (self.state == 0 or
                                                       (self.state in (1, 2, 3, 4, 5, 6, 7) and
-                                                       self.special_effect_check("Shoot While Moving"))):  # Fire at will
+                                                       self.check_special_effect("Shoot While Moving"))):  # Fire at will
                     if self.unit.nearby_enemy != {} and self.attack_target is None:
                         self.find_shooting_target(unit_state)  # shoot the nearest target
 
@@ -89,7 +89,7 @@ def combat_logic(self, dt, unit_state):
                 for weapon in self.ammo_now[self.equipped_weapon]:  # TODO add line of sight for range attack
                     # can shoot if reload finish and base_target existed and not dead. Non arc_shot cannot shoot if forbid
                     if self.ammo_now[self.equipped_weapon][weapon] > 0 and \
-                            (self.special_effect_check("Arc Shot", weapon=weapon) or self.unit.shoot_mode != 1):
+                            (self.check_special_effect("Arc Shot", weapon=weapon) or self.unit.shoot_mode != 1):
                         self.command_action = {"name": "Action " + str(weapon), "range attack": True}
                         if self.state in (12, 13):  # shoot while moving
                             self.command_action = {"name": "Action " + str(weapon), "range attack": True,

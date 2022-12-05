@@ -50,7 +50,7 @@ def add_original_trait(self):
         for effect in trait["Special Effect"]:  # trait from sources other than weapon activate permanent special status
             self.special_effect[self.troop_data.special_effect_list[effect]["Name"]][0][0] = True
 
-    if self.special_effect_check("Varied Training"):  # Varied training
+    if self.check_special_effect("Varied Training"):  # Varied training
         self.original_melee_attack *= (random.randint(70, 120) / 100)
         self.original_melee_def *= (random.randint(70, 120) / 100)
         self.original_range_def *= (random.randint(70, 120) / 100)

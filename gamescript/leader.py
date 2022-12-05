@@ -52,7 +52,7 @@ class Leader(pygame.sprite.Sprite):
 
         self.unit = unit
         self.team = self.unit.team
-        self.subunit = None  # get assigned in start_set
+        self.subunit = None  # get assigned in enter_battle
         # self.mana = stat["Mana"]
         self.role = role  # role in the unit (i.e. general (0) or sub-general (1, 2) or advisor (3))
         self.image_position = self.leader_pos[self.role]  # image position based on role in command ui
@@ -89,7 +89,7 @@ class Leader(pygame.sprite.Sprite):
                         if key in value2["Replace"]:
                             self.skill[key] = value2
 
-    def start_set(self):
+    def enter_battle(self):
         if self.name != "None":
             self.subunit = self.unit.subunit_object_array.flat[self.subunit_pos]  # setup subunit that leader belong
             self.subunit.leader = self  # put in leader to subunit with the set pos

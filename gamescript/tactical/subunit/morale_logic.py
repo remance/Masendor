@@ -30,7 +30,7 @@ def morale_logic(self, dt, parent_state):
                         found_corner = which_corner.index(min(which_corner))
                         self.base_target = pygame.Vector2(corner_list[found_corner])
                         self.command_target = self.base_target
-                        self.new_angle = self.set_rotate()
+                        self.new_angle = self.set_rotate(self.base_target)
 
                     for subunit in self.unit.subunit_list:
                         subunit.base_morale -= (

@@ -23,7 +23,7 @@ def dmg_cal(self, target, hit, defence, weapon, dmg_object, hit_side=None):
         height_advantage = int(height_advantage / 2)  # Range attack use less height advantage
     hit += height_advantage
 
-    if defence < 0 or self.special_effect_check("Ignore Defence", weapon=weapon):  # Ignore def trait
+    if defence < 0 or self.check_special_effect("Ignore Defence", weapon=weapon):  # Ignore def trait
         defence = 0
 
     hit_chance = hit - defence
@@ -57,10 +57,10 @@ def dmg_cal(self, target, hit, defence, weapon, dmg_object, hit_side=None):
                    self.weapon_dmg[dmg_object].items()}
             dmg_sum = sum(dmg.values())
             if 0 in self.skill_effect:  # Include charge in dmg if charging
-                if self.special_effect_check("Ignore Charge Defence",
+                if self.check_special_effect("Ignore Charge Defence",
                                              weapon=weapon) is False:  # ignore charge defence if have trait
                     side_cal = combat_side_cal[hit_side]
-                    if target.special_effect_check("All Side Full Defence"):  # defence all side
+                    if target.check_special_effect("All Side Full Defence"):  # defence all side
                         side_cal = 1
                     dmg_sum = dmg_sum + ((self.charge_power - (target.charge_def_power * side_cal)) * 2)
                     if (target.charge_def * side_cal) >= self.charge_power / 2:
@@ -72,7 +72,7 @@ def dmg_cal(self, target, hit, defence, weapon, dmg_object, hit_side=None):
                     self.charge_momentum -= 1 / self.charge_power
 
             if 0 in target.skill_effect:  # also include its own charge defence in dmg if enemy also charging
-                if self.special_effect_check("Ignore Charge Defence") is False:
+                if self.check_special_effect("Ignore Charge Defence") is False:
                     charge_def_cal = self.charge_def_power - target.charge_power
                     if charge_def_cal < 0:
                         charge_def_cal = 0
@@ -91,8 +91,8 @@ def dmg_cal(self, target, hit, defence, weapon, dmg_object, hit_side=None):
         leader_dmg = dmg_sum
         troop_dmg = (
                                 dmg_sum * self.troop_number) + leader_dmg_bonus  # dmg on subunit is dmg multiply by troop number with addition from leader combat
-        if (self.special_effect_check("Anti Infantry", weapon=weapon) and target.subunit_type in (1, 2)) or \
-                (self.special_effect_check("Anti Cavalry", weapon=weapon) and target.subunit_type in (4, 5, 6, 7)):
+        if (self.check_special_effect("Anti Infantry", weapon=weapon) and target.subunit_type in (1, 2)) or \
+                (self.check_special_effect("Anti Cavalry", weapon=weapon) and target.subunit_type in (4, 5, 6, 7)):
             troop_dmg = troop_dmg * 1.25  # Anti trait dmg bonus
 
         element_effect = {key: value / troop_dmg for key, value in dmg.items() if troop_dmg > 0}

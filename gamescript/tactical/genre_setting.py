@@ -26,7 +26,6 @@ object_variable = {("self", "object"): {"add_troop_number_sprite": True,  # troo
                    ("unit", "class"): {"unit_size": unit_size,  # maximum array size unit can contain subunits
                                        },
                    ("subunit", "class"): {"dmg_include_leader": True,  # include leader in damage calculation
-                                          "stat_use_troop_number": True,  # calculate troop number in damage calculation
                                           }
                    }
 

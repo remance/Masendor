@@ -3,7 +3,7 @@ import random
 
 import pygame
 import pygame.freetype
-from gamescript.common import animation
+from gamescript.common import utility, animation
 
 
 class DamageSprite(pygame.sprite.Sprite):
@@ -12,6 +12,7 @@ class DamageSprite(pygame.sprite.Sprite):
     screen_scale = (1, 1)
     height_map = None
 
+    set_rotate = utility.set_rotate
     play_animation = animation.play_animation
 
     def __init__(self, attacker, weapon, dmg, penetrate, weapon_stat, max_range, camera_zoom,
@@ -62,7 +63,7 @@ class DamageSprite(pygame.sprite.Sprite):
                     image_name = "base_sub"
                 self.image = self.bullet_weapon_sprite_pool[weapon_stat["Name"]][
                     attacker.weapon_version[attacker.equipped_weapon][weapon]][direction][image_name]
-            if attacker.special_effect_check("Arc Shot", weapon=0) and self.attacker.unit.shoot_mode != 2:
+            if attacker.check_special_effect("Arc Shot", weapon=0) and self.attacker.unit.shoot_mode != 2:
                 self.arc_shot = True  # arc shot will go pass unit to land at final base_target
             if (self.attacker.walk or self.attacker.run) and True in self.attacker.special_effect["Agile Aim"] is False:
                 self.accuracy -= 10  # accuracy penalty for shoot while moving
@@ -134,25 +135,16 @@ class DamageSprite(pygame.sprite.Sprite):
         self.target_height = self.height_map.get_height(self.base_target)  # get the height at base_target
 
         # Rotate damage sprite sprite
-        radians = math.atan2(self.base_target[1] - self.attacker.unit.base_pos[1],
-                             self.base_target[0] - self.attacker.unit.base_pos[0])
-        self.angle = math.degrees(radians)
-
-        if -180 <= self.angle <= 0:  # upper left and upper right
-            self.angle = -self.angle - 90
-        elif 0 < self.angle <= 90:  # lower right -"
-            self.angle = -(self.angle + 90)
-        elif 90 < self.angle <= 180:  # lower left +
-            self.angle = 270 - self.angle
+        self.angle = self.set_rotate(self.base_target)
 
         self.image_original = self.image.copy()
         self.image_scale = (11 - self.camera_zoom) / 4
         if self.image_scale <= 1:
             self.image_scale = 1
         else:
-            self.image = pygame.transform.scale(self.image_original,
-                                                (int(self.image_original.get_width() / self.image_scale),
-                                                 int(self.image_original.get_height() / self.image_scale)))
+            self.image = pygame.transform.smoothscale(self.image_original,
+                                                      (int(self.image_original.get_width() / self.image_scale),
+                                                       int(self.image_original.get_height() / self.image_scale)))
         self.image = pygame.transform.rotate(self.image, self.angle)
 
         self.rect = self.image.get_rect(center=self.pos)
@@ -170,7 +162,7 @@ class DamageSprite(pygame.sprite.Sprite):
         target_luck = random.randint(-20, 20)  # luck of the defender subunit
 
         target_percent = side_percent[target_side]  # side penalty
-        if target.special_effect_check("All Side Full Defence"):
+        if target.check_special_effect("All Side Full Defence"):
             target_percent = 1  # no side penalty for all round defend
         attacker_hit = float(self.accuracy) + attacker_luck  # calculate hit chance
         if attacker_hit < 0:
@@ -211,9 +203,9 @@ class DamageSprite(pygame.sprite.Sprite):
             if self.image_scale <= 1:
                 self.image_scale = 1
             else:
-                self.image = pygame.transform.scale(self.image_original,
-                                                    (int(self.image_original.get_width() / self.image_scale),
-                                                     int(self.image_original.get_height() / self.image_scale)))
+                self.image = pygame.transform.smoothscale(self.image_original,
+                                                          (int(self.image_original.get_width() / self.image_scale),
+                                                           int(self.image_original.get_height() / self.image_scale)))
             self.image = pygame.transform.rotate(self.image, self.angle)
             self.rect = self.image.get_rect(center=self.pos)
             self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],

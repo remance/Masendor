@@ -53,7 +53,8 @@ def load_image(main_dir, screen_scale, file, subfolder=""):
     this_file = os.path.join(main_dir, "data", new_subfolder, file)
     surface = pygame.image.load(this_file).convert_alpha()
     surface = pygame.transform.scale(surface,
-                                     (surface.get_width() * screen_scale[0], surface.get_height() * screen_scale[1]))
+                                     (surface.get_width() * screen_scale[0],
+                                      surface.get_height() * screen_scale[1]))
     return surface
 
 
@@ -346,17 +347,14 @@ def rotation_xy(origin, point, angle):
     return pygame.Vector2(x, y)
 
 
-def set_rotate(self, set_target=None):
+def set_rotate(self, base_target):
     """
     set base_target and new angle for sprite rotation
-    :param self: sprite object
-    :param set_target: pos for target position to rotate to
+    :param self: any object
+    :param base_target: pos for target position to rotate to
     :return: new angle
     """
-    if set_target is None:  # Use base target variable
-        my_radians = math.atan2(self.base_target[1] - self.base_pos[1], self.base_target[0] - self.base_pos[0])
-    else:  # use set_target parameter
-        my_radians = math.atan2(set_target[1] - self.base_pos[1], set_target[0] - self.base_pos[0])
+    my_radians = math.atan2(base_target[1] - self.base_pos[1], base_target[0] - self.base_pos[0])
     new_angle = math.degrees(my_radians)
 
     # """upper left -"""
@@ -557,18 +555,20 @@ def clean_group_object(groups):
         if len(group) > 0:
             if type(group) == pygame.sprite.Group or type(group) == list or type(group) == tuple:
                 for stuff in group:
-                    stuff.kill()
-                    for attribute in tuple(stuff.__dict__.keys()):
-                        stuff.__delattr__(attribute)
-                    del stuff
+                    clean_object(stuff)
             elif type(group) == dict:
                 for stuff in group.values():
                     for item in stuff:
-                        item.kill()
-                        for attribute in tuple(stuff.__dict__.keys()):
-                            stuff.__delattr__(attribute)
-                        del item
+                        clean_object(item)
             else:
                 group.kill()
                 group.delete()
                 del group
+
+
+def clean_object(this_object):
+    """Clean all attributes of the object and delete it"""
+    this_object.kill()
+    for attribute in tuple(this_object.__dict__.keys()):
+        this_object.__delattr__(attribute)
+    del this_object

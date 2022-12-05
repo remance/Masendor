@@ -93,7 +93,7 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                     str_action_num = "1"
                 if self.leader_subunit.equipped_weapon in self.leader_subunit.ammo_now and \
                         action_num in self.leader_subunit.ammo_now[self.leader_subunit.equipped_weapon] and \
-                        self.leader_subunit.special_effect_check("Shoot While Moving"):  # range weapon
+                        self.leader_subunit.check_special_effect("Shoot While Moving"):  # range weapon
                     if "range attack" not in self.leader_subunit.current_action:
                         self.leader_subunit.command_action = {"name": "Action " + str_action_num, "range attack": True,
                                                               "pos": cursor_pos, "move attack": True, "movable": True}

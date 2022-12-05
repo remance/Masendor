@@ -56,7 +56,7 @@ object_variable = {("self", "object"): {"add_troop_number_sprite": False,  # tro
                                        },
                    ("subunit", "class"): {"dmg_include_leader": False,
                                           # not include leader in damage calculation, leader is subunit
-                                          "stat_use_troop_number": False,  # arcade mode count one subunit as one troop
+                                          "hero_health_scale": 10
                                           }
                    }
 

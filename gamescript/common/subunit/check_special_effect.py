@@ -1,4 +1,4 @@
-def special_effect_check(self, effect, weapon=None):
+def check_special_effect(self, effect, weapon=None):
     """
     :param self: Subunit object
     :param effect: Effect name

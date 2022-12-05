@@ -492,11 +492,11 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                             self.unit_selector.setup_unit_icon(self.unit_icon, self.all_team_unit[self.team_selected])
                             self.battle_ui_updater.remove(self.unit_setup_stuff, self.leader_now)
                             for this_unit in self.unit_updater:
-                                this_unit.start_set(self.subunit)
+                                this_unit.enter_battle(self.subunit)
                             for this_leader in self.leader_updater:
-                                this_leader.start_set()
+                                this_leader.enter_battle()
                             for this_subunit in self.subunit_updater:
-                                this_subunit.start_set(self.camera_zoom, self.subunit_animation_pool)
+                                this_subunit.enter_battle(self.camera_zoom, self.subunit_animation_pool)
                             for this_unit in self.unit_updater:
                                 this_unit.player_input(self.command_mouse_pos, False, False, False, self.last_mouseover,
                                                        None,
