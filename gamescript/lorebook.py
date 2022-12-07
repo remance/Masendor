@@ -3,7 +3,7 @@ import pygame.freetype
 
 from gamescript.common import utility
 
-from PIL import Image
+# TODO Subsection tag, paragraph syntax,
 
 
 class Lorebook(pygame.sprite.Sprite):
@@ -487,27 +487,40 @@ class Lorebook(pygame.sprite.Sprite):
                 for index, text in enumerate(lore):
                     if text != "":
                         # blit paragraph of text
-                        if "IMAGE:" not in text:
-                            text_surface = pygame.Surface((500 * self.screen_scale[0], 310 * self.screen_scale[1]),
-                                                          pygame.SRCALPHA)
-                            make_long_text(text_surface, text, (5 * self.screen_scale[0], 5 * self.screen_scale[1]),
-                                           self.font)
-                            text_rect = text_surface.get_rect(topleft=(col, row))
+                        text_surface = pygame.Surface((500 * self.screen_scale[0], 310 * self.screen_scale[1]),
+                                                      pygame.SRCALPHA)
+                        paragraph_font = self.font
+                        if "{" in text and "}" in text:
+                            syntax = text.split("}")[0][1:]
+                            syntax = syntax.split(",")
+                            text = text.split("}")[1]
+                            for this_syntax in syntax:
+                                if "FULLIMAGE:" in this_syntax:  # blit image to whole lore book image
+                                    filename = this_syntax[10:].split("\\")[-1]
+                                    image_surface = utility.load_image(self.main_dir, self.screen_scale, filename,
+                                                                       this_syntax[10:].replace(filename, ""))
+                                    image_surface = pygame.transform.scale(image_surface, (self.image.get_width(),
+                                                                           self.image.get_height()))
+                                    rect = image_surface.get_rect(topleft=(0, 0))
+                                    self.image.blit(image_surface, rect)
+                                elif "IMAGE:" in this_syntax:  # blit image to paragraph
+                                    filename = this_syntax[6:].split("\\")[-1]
+                                    image_surface = utility.load_image(self.main_dir, self.screen_scale, filename,
+                                                                       this_syntax[6:].replace(filename, ""))
+                                    rect = image_surface.get_rect(topleft=(0, 0))
+                                    text_surface.blit(image_surface, rect)
+                                elif "FONT:" in this_syntax:
+                                    new_font = this_syntax[4:].split("\\")[0]
+                                    new_font_size = self.font.get_height()
+                                    if "\\" in this_syntax:
+                                        new_font_size = this_syntax[4:].split("\\")[1]
+                                    paragraph_font = pygame.font.SysFont(new_font,
+                                                                         int(new_font_size * self.screen_scale[1]))
 
-                        # blit image
-                        else:
-                            if "FULLIMAGE:" in text:
-                                filename = text[10:].split("\\")[-1]
-                                text_surface = utility.load_image(self.main_dir, self.screen_scale, filename,
-                                                                  text[10:].replace(filename, ""))
-                                text_surface = pygame.transform.scale(text_surface,
-                                                                      (self.image.get_width(), self.image.get_height()))
-                                text_rect = text_surface.get_rect(topleft=(0, 0))
-                            else:
-                                filename = text[6:].split("\\")[-1]
-                                text_surface = utility.load_image(self.main_dir, self.screen_scale, filename,
-                                                                  text[6:].replace(filename, ""))
-                                text_rect = text_surface.get_rect(topleft=(col, row))
+                        make_long_text(text_surface, text, (5 * self.screen_scale[0], 5 * self.screen_scale[1]),
+                                       paragraph_font)
+                        text_rect = text_surface.get_rect(topleft=(col, row))
+
                         self.image.blit(text_surface, text_rect)
 
                         row += (330 * self.screen_scale[1])

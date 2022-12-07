@@ -6,8 +6,8 @@ load_images = utility.load_images
 
 def make_popup_ui(main_dir, screen_rect, screen_scale, battle_ui_image):
     """Create Popup Ui"""
-    popup.TerrainPopup.images = list(
-        load_images(main_dir, screen_scale, ("ui", "popup_ui", "terrain_check"), load_order=False).values())
+    popup.TerrainPopup.images = \
+        load_images(main_dir, screen_scale, ("ui", "popup_ui", "terrain_check"), load_order=False)
     popup.TerrainPopup.screen_rect = screen_rect
 
     troop_card_ui = battleui.TroopCard(battle_ui_image["troop_card"])

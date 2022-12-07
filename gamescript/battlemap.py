@@ -3,25 +3,19 @@ import csv
 import os
 import random
 
+import numpy as np
 import pygame
 import pygame.freetype
 from PIL import Image, ImageFilter, ImageOps
 
-# Terrain base colour, change these when add new terrain
-
-default_map_width = 1000  # map default size is 1000 x 1000
-default_map_height = 1000
-
 
 class BaseMap(pygame.sprite.Sprite):
-    max_zoom = 10
-
     def __init__(self, main_dir):
-        """image file of map should be at size 1000x1000 then it will be scaled in self"""
         self._layer = 0
         pygame.sprite.Sprite.__init__(self)
         self.main_dir = main_dir
 
+        self.map_array = ()
         self.terrain_colour = {}
         with open(os.path.join(self.main_dir, "data", "map", "terrain.csv"), encoding="utf-8",
                   mode="r") as edit_file:
@@ -38,7 +32,7 @@ class BaseMap(pygame.sprite.Sprite):
         self.terrain_colour = tuple([value[0] for value in self.terrain_colour.values()])
 
     def draw_image(self, image):
-        self.image = image.copy()
+        self.map_array = [[tuple(col) for col in row] for row in pygame.surfarray.array3d(image).tolist()]
 
     def get_terrain(self, pos):
         """get the base terrain at that exact position"""
@@ -53,16 +47,15 @@ class BaseMap(pygame.sprite.Sprite):
         elif new_pos[1] > 999:
             new_pos[1] = 999
 
-        terrain = self.image.get_at((int(new_pos[0]), int(new_pos[1])))
+        terrain = self.map_array[int(new_pos[0])][int(new_pos[1])]
         terrain_index = self.terrain_colour.index(terrain)
         return terrain_index
 
     def clear_image(self):
-        self.image = None
+        self.map_array = ()
 
 
 class FeatureMap(pygame.sprite.Sprite):
-    max_zoom = 10
     main_dir = None
     feature_mod = None
 
@@ -71,6 +64,7 @@ class FeatureMap(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.main_dir = main_dir
 
+        self.map_array = ()
         self.feature_colour = {}
         with open(os.path.join(self.main_dir, "data", "map", "feature.csv"), encoding="utf-8",
                   mode="r") as edit_file:
@@ -88,7 +82,7 @@ class FeatureMap(pygame.sprite.Sprite):
         self.feature_colour = tuple([value[0] for value in self.feature_colour.values()])
 
     def draw_image(self, image):
-        self.image = image.copy()
+        self.map_array = [[tuple(col) for col in row] for row in pygame.surfarray.array3d(image).tolist()]
 
     def get_feature(self, pos, base_map):
         """get the terrain feature at that exact position"""
@@ -104,19 +98,16 @@ class FeatureMap(pygame.sprite.Sprite):
         elif new_pos[1] > 999:
             new_pos[1] = 999
 
-        feature = self.image.get_at((int(new_pos[0]), int(new_pos[1])))  # get colour at pos to obtain the terrain type
-        feature_index = None
-        if feature in self.feature_colour:
-            feature_index = self.feature_colour.index(feature)
-            feature_index = (terrain_index * len(self.feature_colour)) + feature_index
+        feature = self.map_array[int(new_pos[0])][int(new_pos[1])]  # get colour at pos to obtain the terrain type
+        feature_index = self.feature_colour.index(feature)
+        feature_index = (terrain_index * len(self.feature_colour)) + feature_index
         return terrain_index, feature_index
 
     def clear_image(self):
-        self.image = None
+        self.map_array = ()
 
 
 class HeightMap(pygame.sprite.Sprite):
-    max_zoom = 10
     poster_level = 4
 
     def __init__(self):
@@ -129,7 +120,7 @@ class HeightMap(pygame.sprite.Sprite):
         self.image = image.copy()
         if self.topology:
             data = pygame.image.tostring(self.image.copy(), "RGB")  # convert image to string data for filtering effect
-            img = Image.frombytes("RGB", (default_map_width, default_map_height), data)  # use PIL to get image data
+            img = Image.frombytes("RGB", (self.image.get_width(), self.image.get_height()), data)  # use PIL to get image data
             img = ImageOps.grayscale(img)  # grey scale the image
             img = img.filter(ImageFilter.GaussianBlur(radius=2))  # blur Image
             img = ImageOps.posterize(img, self.poster_level)  # posterise
@@ -150,7 +141,7 @@ class HeightMap(pygame.sprite.Sprite):
             img.putdata(new_data)
 
             img = img.tobytes()
-            self.topology_image = pygame.image.fromstring(img, (default_map_width, default_map_height),
+            self.topology_image = pygame.image.fromstring(img, (self.image.get_width(), self.image.get_height()),
                                                           "RGBA")  # convert image back to a pygame surface
 
     def get_height(self, pos):
@@ -205,7 +196,7 @@ class BeautifulMap(pygame.sprite.Sprite):
                     self.battle_map_colour[row[0]] = row[1:]
 
     def draw_image(self, base_map, feature_map, height_map, place_name, battle, editor_map):
-        self.image = pygame.Surface((default_map_width, default_map_height))
+        self.image = pygame.Surface((len(base_map.map_array[0]), len(base_map.map_array)))
         self.rect = self.image.get_rect(topleft=(0, 0))
 
         if editor_map:
@@ -214,11 +205,11 @@ class BeautifulMap(pygame.sprite.Sprite):
             self.image.fill(new_colour)
             map_feature_mod = feature_map.feature_mod[feature]
             speed_mod = int(map_feature_mod["Infantry Speed/Charge Effect"] * 100)
-            battle.map_move_array = [[speed_mod] * default_map_width] * default_map_height
+            battle.map_move_array = [[speed_mod] * self.image.get_width()] * self.image.get_height()
         else:
-            for row_pos in range(0, default_map_width):  # recolour the map
+            for row_pos in range(0, self.image.get_width()):  # recolour the map
                 speed_array = []
-                for col_pos in range(0, default_map_height):
+                for col_pos in range(0, self.image.get_height()):
                     terrain, feature = feature_map.get_feature((row_pos, col_pos), base_map)
                     new_colour = self.battle_map_colour[feature][1]
                     rect = pygame.Rect(row_pos, col_pos, 1, 1)
@@ -233,14 +224,14 @@ class BeautifulMap(pygame.sprite.Sprite):
 
         # Comment out this part and import PIL above if not want to use blur filtering
         data = pygame.image.tostring(self.image, "RGB")  # convert image to string data for filtering effect
-        img = Image.frombytes("RGB", (default_map_width, default_map_height), data)  # use PIL to get image data
+        img = Image.frombytes("RGB", (self.image.get_width(), self.image.get_height()), data)  # use PIL to get image data
         img = img.filter(ImageFilter.GaussianBlur(radius=2))  # blur Image (or apply other filter in future)
         img = img.tobytes()
-        img = pygame.image.fromstring(img, (default_map_width, default_map_height),
+        img = pygame.image.fromstring(img, (self.image.get_width(), self.image.get_height()),
                                       "RGB")  # convert image back to a pygame surface
         self.image = pygame.Surface(
-            (default_map_width,
-             default_map_height))  # for unknown reason using the above surface cause a lot of fps drop so make a new one and blit the above here
+            (self.image.get_width(),
+             self.image.get_height()))  # using the above surface cause a lot of fps drop so make a new one and blit the above here
         rect = self.image.get_rect(topleft=(0, 0))
         self.image.blit(img, rect)
         # End PIL module code

@@ -3,7 +3,7 @@ import pygame.freetype
 
 
 class TerrainPopup(pygame.sprite.Sprite):
-    images = []
+    images = {}
     screen_rect = None
 
     def __init__(self):
@@ -12,8 +12,9 @@ class TerrainPopup(pygame.sprite.Sprite):
         self.scale_adjust = (
                 self.screen_rect.width * self.screen_rect.height / (
                 1366 * 768))  # For adjusting the image and text according to screen size
-        self.image = pygame.transform.scale(self.images[0], (int(self.images[0].get_width() * self.scale_adjust),
-                                                             int(self.images[0].get_height() * self.scale_adjust)))
+        self.image = self.images["base"].copy()
+        self.image_original = self.image.copy()
+
         self.font = pygame.font.SysFont("helvetica", int(24 * self.scale_adjust))
         self.height_font = pygame.font.SysFont("helvetica", int(18 * self.scale_adjust))
         self.img_pos = (
@@ -25,65 +26,46 @@ class TerrainPopup(pygame.sprite.Sprite):
         # cav atk, cav def
         (90 * self.scale_adjust, 34 * self.scale_adjust),
         (90 * self.scale_adjust, 53 * self.scale_adjust))  # range def, discipline
-        self.mod_list = (
-        1.5, 1.2, 1, 0.7, 0.5, 0)  # Stat effect level from terrain, used for select what mod image to use
-        self.bonus_list = (
-        40, 20, 10, -20, -50, -2000)  # Stat bonus level from terrain, used for select what mod image to use
-
-        self.image_original = self.image.copy()
+        self.mod_list = {0.5: "best", 0.3: "better", 0.1: "good", 0: "none", -0.1: "bad", -0.3: "worse", -1000: "worst"}  # Stat effect level from terrain
+        self.bonus_list = {40: "best", 20: "better", 1: "good", 0: "none",  -1: "bad", -50: "worse", -2000: "worst"}  # Stat bonus level from terrain
 
     def pop(self, pos, feature, height):
         """pop out into screen, blit input into the image"""
         self.image = self.image_original.copy()  # reset image to default empty one
         self.pos = pos  # position to draw the image on screen
 
-        # v Terrain feature name
+        # Terrain feature name
         text_surface = self.font.render(feature["Name"], True, (0, 0, 0))
         text_rect = text_surface.get_rect(topleft=(5, 5))
         self.image.blit(text_surface, text_rect)
-        # ^ End terrain feature
 
-        # v Height number
+        # Height number
         text_surface = self.height_font.render(str(height), True, (0, 0, 0))
         text_rect = text_surface.get_rect(topleft=(self.image.get_width() - (self.image.get_width() / 5), 5))
         self.image.blit(text_surface, text_rect)
-        # End height
 
-        for index, img_pos in enumerate(self.img_pos[0:6]):  # text for each stat modifier
-            if tuple(feature.values())[index + 1] == 1:  # draw circle if modifier is 1 (no effect to stat)
-                image_rect = self.images[7].get_rect(center=img_pos)  # images[7] is circle icon image
-                self.image.blit(self.images[7], image_rect)
-            else:  # upper or lower (^v) arrow icon to indicate modifier level
-                for mod_index, mod in enumerate(self.mod_list):  # loop to find ^v arrow icon for the modifier
-                    if tuple(feature.values())[
-                        index + 1] >= mod:  # draw appropriate icon if modifier is higher than the number of list item
-                        image_rect = self.images[mod_index + 1].get_rect(center=img_pos)
-                        self.image.blit(self.images[mod_index + 1], image_rect)
-                        break  # found arrow image to blit end loop
+        # Text for each stat modifier
+        for index, img_pos in enumerate(self.img_pos[:6]):
+            for mod in self.mod_list:  # loop to find ^v arrow icon for the modifier
+                if tuple(feature.values())[
+                    index + 1] >= mod:  # draw appropriate icon if modifier is higher than the number of list item
+                    image_rect = self.images[self.mod_list[mod]].get_rect(center=img_pos)
+                    self.image.blit(self.images[self.mod_list[mod]], image_rect)
+                    break  # found arrow image to blit end loop
 
-        # v range def modifier for both infantry and cavalry
-        if feature["Range Defense Bonus"] == 0:  # no bonus, draw circle
-            image_rect = self.images[7].get_rect(center=self.img_pos[6])
-            self.image.blit(self.images[7], image_rect)
-        else:
-            for mod_index, mod in enumerate(self.bonus_list):
-                if feature["Range Defense Bonus"] >= mod:
-                    image_rect = self.images[mod_index + 1].get_rect(center=self.img_pos[6])
-                    self.image.blit(self.images[mod_index + 1], image_rect)
-                    break
-        # ^ End range def modifier
+        # Range def modifier for both infantry and cavalry
+        for mod in self.bonus_list:
+            if feature["Range Defense Bonus"] >= mod:
+                image_rect = self.images[self.bonus_list[mod]].get_rect(center=self.img_pos[6])
+                self.image.blit(self.images[self.bonus_list[mod]], image_rect)
+                break
 
-        # v discipline modifier for both infantry and cavalry
-        if feature["Discipline Bonus"] == 0:
-            image_rect = self.images[7].get_rect(center=self.img_pos[7])
-            self.image.blit(self.images[7], image_rect)
-        else:
-            for mod_index, mod in enumerate(self.bonus_list):
-                if feature["Discipline Bonus"] >= mod:
-                    image_rect = self.images[mod_index + 1].get_rect(center=self.img_pos[7])
-                    self.image.blit(self.images[mod_index + 1], image_rect)
-                    break
-        # ^ End discipline modifier
+        # Discipline modifier for both infantry and cavalry
+        for mod_index, mod in enumerate(self.bonus_list):
+            if feature["Discipline Bonus"] >= mod:
+                image_rect = self.images[self.bonus_list[mod]].get_rect(center=self.img_pos[7])
+                self.image.blit(self.images[self.bonus_list[mod]], image_rect)
+                break
 
         self.rect = self.image.get_rect(bottomleft=self.pos)
 

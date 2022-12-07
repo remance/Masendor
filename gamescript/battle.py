@@ -462,10 +462,10 @@ class Battle:
             self.editor_map_change(self.battle_map_base.terria_colour["Temperate"],
                                    self.battle_map_feature.feature_colour["Plain"])
 
-        self.map_corner = self.battle_map_base.image.get_size()  # get map size that troop can move
+        self.map_corner = self.battle_map_height.image.get_size()  # get map size that troop can move
 
-        self.max_camera = ((self.battle_map_base.image.get_width() - 1) * self.screen_scale[0],
-                           (self.battle_map_base.image.get_height() - 1) * self.screen_scale[1])  # reset max camera to new map size
+        self.max_camera = ((self.battle_map_height.image.get_width() - 1) * self.screen_scale[0],
+                           (self.battle_map_height.image.get_height() - 1) * self.screen_scale[1])  # reset max camera to new map size
 
 
         self.battle_subunit_list = []
