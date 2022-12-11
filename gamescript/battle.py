@@ -198,9 +198,13 @@ class Battle:
 
         self.encyclopedia = main.encyclopedia
         self.lore_name_list = main.lore_name_list
+        self.filter_tag_list = main.filter_tag_list
         self.lore_button_ui = main.lore_button_ui
         self.subsection_name = main.subsection_name
+        self.tag_filter_name = main.tag_filter_name
         self.page_button = main.page_button
+
+        self.encyclopedia_stuff = main.encyclopedia_stuff
 
         self.status_images = main.status_images
         self.role_images = main.role_images

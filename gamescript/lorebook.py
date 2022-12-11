@@ -5,6 +5,14 @@ from gamescript.common import utility
 
 # TODO Subsection tag, paragraph syntax,
 
+subsection_tag_colour = [(128, 255, 128), (237, 128, 128), (255, 255, 128), (128, 255, 255),
+                         (128, 128, 255), (255, 128, 255), (220, 158, 233), (191, 191, 191), (255, 140, 85)]
+
+subsection_tag_colour = ([(255, 255, 255)] + subsection_tag_colour +
+                         [(item, item2) for item in subsection_tag_colour for item2 in subsection_tag_colour if item != item2] +
+                         [(item, item2, item3) for item in subsection_tag_colour for item2 in subsection_tag_colour for
+                          item3 in subsection_tag_colour if len(set((item, item2, item3))) > 1])
+
 
 class Lorebook(pygame.sprite.Sprite):
     concept_stat = None
@@ -66,11 +74,13 @@ class Lorebook(pygame.sprite.Sprite):
         self.section_list = ()
 
         self.current_subsection_row = 0
+        self.current_filter_row = 0
         self.max_row_show = 19
         self.row_size = 0
+        self.filter_size = 0
         self.page = 0
         self.max_page = 0
-        self.rect = self.image.get_rect(center=(self.screen_rect.width / 1.9, self.screen_rect.height / 1.9))
+        self.rect = self.image.get_rect(center=(self.screen_rect.width / 2, self.screen_rect.height / 2))
 
     def change_ruleset(self):
         # Make new equipment list that contain all type weapon, armour, mount
@@ -107,6 +117,28 @@ class Lorebook(pygame.sprite.Sprite):
                 self.skill_lore[run] = stat_list[index]
                 run += 1
 
+        self.section_tag_header = ("Tag", "Tag", "Type", "Troop Class", "Type", "Type", "Type", "Type", "Type",
+                                   "Type", "Type",)
+
+        self.tag_list = [{stuff["Tag"]: True for stuff in self.concept_stat.values() if stuff["Tag"] != ""},
+                         {stuff["Tag"]: True for stuff in self.history_stat.values() if stuff["Tag"] != ""},
+                         {stuff["Type"]: True for stuff in self.faction_data.faction_list.values() if stuff["Type"] != ""},
+                         {stuff["Troop Class"]: True for stuff in self.troop_data.troop_list.values() if
+                                stuff["Troop Class"] != ""},
+                         {stuff["Type"]: True for stuff in self.equipment_stat.values() if stuff["Type"] != ""},
+                         {stuff["Type"]: True for stuff in self.troop_data.status_list.values() if stuff["Type"] != ""},
+                         {stuff["Type"]: True for stuff in self.skill_stat.values() if stuff["Type"] != ""},
+                         {stuff["Type"]: True for stuff in self.troop_data.trait_list.values() if stuff["Type"] != ""},
+                         {stuff["Type"]: True for stuff in self.leader_data.leader_list.values() if
+                                stuff["Type"] != ""},
+                         {stuff["Type"]: True for stuff in self.battle_map_data.feature_mod.values() if
+                                stuff["Type"] != ""},
+                         {stuff["Type"]: True for stuff in self.battle_map_data.weather_data.values() if
+                                stuff["Type"] != ""}]
+        for index, tag_list in enumerate(self.tag_list):
+            tag_list["No Tag"] = True
+            self.tag_list[index] = {"No Tag": self.tag_list[index].pop("No Tag"), **self.tag_list[index]}
+
         self.section_list = ((self.concept_stat, self.concept_lore), (self.history_stat, self.history_lore),
                              (self.faction_data.faction_list, self.faction_data.faction_lore),
                              (self.troop_data.troop_list, self.troop_data.troop_lore),
@@ -136,7 +168,8 @@ class Lorebook(pygame.sprite.Sprite):
             main_ui.remove(page_button[0])
         # ^ End page button
 
-    def change_section(self, section, list_surface, list_group, lore_scroll, page_button, main_ui):
+    def change_section(self, section, subsection_list_box, subsection_name_group, tag_filter_group,
+                       subsection_list_scroll, filter_list_box, filter_list_scroll, page_button, main_ui):
         """Change to new section either by open encyclopedia or click section button"""
         self.portrait = None
         self.section = section  # get new section
@@ -148,6 +181,7 @@ class Lorebook(pygame.sprite.Sprite):
             self.index_data = self.section_list[self.section][2]
         self.max_page = 0  # reset max page
         self.current_subsection_row = 0  # reset subsection scroll to the top one
+        self.current_filter_row = 0
         this_list = tuple(self.stat_data.values())  # get list of subsection
         self.subsection_list = [name[0] if
                                 type(name) is list and "Name" != name[0] else name["Name"] for name in
@@ -155,12 +189,17 @@ class Lorebook(pygame.sprite.Sprite):
         if "Name" in self.subsection_list:
             self.subsection_list.remove("Name")
         self.row_size = len(self.subsection_list)  # get size of subsection list
+        self.filter_size = len(self.tag_list[self.section])
 
         self.change_subsection(self.subsection, page_button, main_ui)
-        self.setup_subsection_list(list_surface, list_group)
+        self.setup_subsection_list(subsection_list_box, subsection_name_group, "subsection")
 
-        lore_scroll.change_image(row_size=self.row_size)
-        lore_scroll.change_image(new_row=self.current_subsection_row)
+        subsection_list_scroll.change_image(row_size=self.row_size)
+        subsection_list_scroll.change_image(new_row=self.current_subsection_row)
+
+        self.setup_subsection_list(filter_list_box, tag_filter_group, "tag")
+        filter_list_scroll.change_image(row_size=self.filter_size)
+        filter_list_scroll.change_image(new_row=self.current_filter_row)
 
     def change_subsection(self, subsection, page_button, main_ui):
         self.subsection = subsection
@@ -208,10 +247,9 @@ class Lorebook(pygame.sprite.Sprite):
 
         self.page_design()
 
-    def setup_subsection_list(self, list_surface, list_group):
+    def setup_subsection_list(self, list_surface, list_group, list_type):
         """generate list of subsection of the left side of encyclopedia"""
-        row = 15 * self.screen_scale[1]
-        column = 15 * self.screen_scale[0]
+        row = 0
         pos = list_surface.rect.topleft
         if self.current_subsection_row > self.row_size - self.max_row_show:
             self.current_subsection_row = self.row_size - self.max_row_show
@@ -221,12 +259,28 @@ class Lorebook(pygame.sprite.Sprite):
                 stuff.kill()
                 del stuff
 
-        loop_list = [item for item in self.stat_data.keys() if type(item) != str]
-        for index, item in enumerate(self.subsection_list):
-            if index >= self.current_subsection_row:
-                list_group.add(
-                    SubsectionName(self.screen_scale, (pos[0] + column, pos[1] + row), item,
-                                   loop_list[index]))  # add new subsection sprite to group
+        if list_type == "subsection":  # subsection list
+            stat_key = tuple(self.stat_data.keys())
+            loop_list = [item for item in stat_key if type(item) != str]
+            for index, item in enumerate(self.subsection_list):
+                if index >= self.current_subsection_row:
+                    tag = "No Tag"  # white colour
+                    tag_index = 0
+                    if self.stat_data[stat_key[index]][self.section_tag_header[self.section]] != "":
+                        tag = self.stat_data[stat_key[index]][self.section_tag_header[self.section]]
+                        tag_index = tuple(self.tag_list[self.section].keys()).index(tag)
+                    if self.tag_list[self.section][tag]:  # not creating subsection with disabled tag
+                        list_group.add(SubsectionName(self.screen_scale, (pos[0], pos[1] + row), item,
+                                                      loop_list[index], tag_index))  # add new subsection sprite to group
+                        row += (41 * self.screen_scale[1])  # next row
+                        if len(list_group) > self.max_row_show:
+                            break  # will not generate more than space allowed
+        elif list_type == "tag":  # tag filter list
+            loop_list = self.tag_list[self.section]
+            for index, item in enumerate(loop_list):
+                tag = tuple(self.tag_list[self.section].keys()).index(item)
+                list_group.add(SubsectionName(self.screen_scale, (pos[0], pos[1] + row), item,
+                                              item, tag, selected=True))  # add new subsection sprite to group
                 row += (41 * self.screen_scale[1])  # next row
                 if len(list_group) > self.max_row_show:
                     break  # will not generate more than space allowed
@@ -272,39 +326,38 @@ class Lorebook(pygame.sprite.Sprite):
             # concept, history, faction section is simply for processed and does not need specific column read
             if self.section in (self.concept_section, self.history_section, self.faction_section):
                 for key, value in stat.items():
-                    if key != "Description":
-                        # blit text
-                        if "IMAGE:" not in value:
-                            text_surface = pygame.Surface(
-                                (int(480 * self.screen_scale[1]), int(300 * self.screen_scale[0])), pygame.SRCALPHA)
-                            text_rect = description_surface.get_rect(topleft=(col, row))
-                            make_long_text(text_surface, str(value),
-                                           (int(8 * self.screen_scale[1]), int(8 * self.screen_scale[0])), self.font)
+                    # blit text
+                    if "IMAGE:" not in value:
+                        text_surface = pygame.Surface(
+                            (int(480 * self.screen_scale[1]), int(300 * self.screen_scale[0])), pygame.SRCALPHA)
+                        text_rect = description_surface.get_rect(topleft=(col, row))
+                        make_long_text(text_surface, (key + ": " + str(value)),
+                                       (int(8 * self.screen_scale[1]), int(8 * self.screen_scale[0])), self.font)
 
-                        # blit image instead of text
+                    # blit image instead of text
+                    else:
+                        if "FULLIMAGE:" in value:  # full image to whole two pages
+                            filename = value[10:].split("\\")[-1]
+                            text_surface = utility.load_image(self.main_dir, self.screen_scale, filename,
+                                                              value[10:].replace(filename, ""))
+                            text_surface = pygame.transform.scale(text_surface,
+                                                                  (self.image.get_width(), self.image.get_height()))
+                            text_rect = description_surface.get_rect(topleft=(0, 0))
                         else:
-                            if "FULLIMAGE:" in value:  # full image to whole two pages
-                                filename = value[10:].split("\\")[-1]
-                                text_surface = utility.load_image(self.main_dir, self.screen_scale, filename,
-                                                                  value[10:].replace(filename, ""))
-                                text_surface = pygame.transform.scale(text_surface,
-                                                                      (self.image.get_width(), self.image.get_height()))
-                                text_rect = description_surface.get_rect(topleft=(0, 0))
-                            else:
-                                filename = value[6:].split("\\")[-1]
-                                text_surface = utility.load_image(self.main_dir, self.screen_scale, filename,
-                                                                  value[6:].replace(filename, ""))
-                                text_rect = description_surface.get_rect(topleft=(col, row))
-                        self.image.blit(text_surface, text_rect)
+                            filename = value[6:].split("\\")[-1]
+                            text_surface = utility.load_image(self.main_dir, self.screen_scale, filename,
+                                                              value[6:].replace(filename, ""))
+                            text_rect = description_surface.get_rect(topleft=(col, row))
+                    self.image.blit(text_surface, text_rect)
 
-                        row += (200 * self.screen_scale[1])
-                        if row >= 750 * self.screen_scale[
-                            1]:  # continue drawing on the right page after reaching the end of left page
-                            if col == 520 * self.screen_scale[0]:  # already on the right page
-                                break
-                            else:
-                                col = 650 * self.screen_scale[0]
-                                row = 50 * self.screen_scale[1]
+                    row += (200 * self.screen_scale[1])
+                    if row >= 750 * self.screen_scale[
+                        1]:  # continue drawing on the right page after reaching the end of left page
+                        if col == 520 * self.screen_scale[0]:  # already on the right page
+                            break
+                        else:
+                            col = 650 * self.screen_scale[0]
+                            row = 50 * self.screen_scale[1]
 
             # more complex section
             elif self.section in (
@@ -535,37 +588,64 @@ class Lorebook(pygame.sprite.Sprite):
 class SubsectionList(pygame.sprite.Sprite):
     def __init__(self, pos, image):
         self._layer = 23
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.image = image
         self.rect = self.image.get_rect(topright=pos)
         self.max_row_show = 19
 
 
 class SubsectionName(pygame.sprite.Sprite):
-    def __init__(self, screen_scale, pos, name, subsection, text_size=28):
+    def __init__(self, screen_scale, pos, name, subsection, tag, selected=False, text_size=28):
         self._layer = 24
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", int(text_size * screen_scale[1]))
-        self.image = pygame.Surface((int(240 * screen_scale[0]), int(40 * screen_scale[1])))  # black corner
-        self.image.fill((0, 0, 0))
+        self.selected = False
+        self.name = str(name)
 
-        # v White body square
-        small_image = pygame.Surface((int(230 * screen_scale[0]), int(34 * screen_scale[1])))
-        small_image.fill((255, 255, 255))
-        small_rect = small_image.get_rect(topleft=(int(1 * screen_scale[0]), int(1 * screen_scale[1])))
-        self.image.blit(small_image, small_rect)
-        # ^ End white body
+        # Border
+        self.image = pygame.Surface((int(300 * screen_scale[0]), int(40 * screen_scale[1])))
+        self.image.fill((0, 0, 0))  # black corner
 
-        # v Subsection name text
-        text_surface = self.font.render(str(name), True, (0, 0, 0))
-        text_rect = text_surface.get_rect(midleft=(int(3 * screen_scale[0]), self.image.get_height() / 2))
-        self.image.blit(text_surface, text_rect)
-        # ^ End subsection name
+        # Body square
+        self.small_image = pygame.Surface((int(290 * screen_scale[0]), int(34 * screen_scale[1])))
+        colour = subsection_tag_colour[tag]
+        if type(colour[0]) == int:
+            self.small_image.fill(colour)
+        else:  # multiple colour
+            starting_pos = 0
+            colour_size = self.small_image.get_width() / len(colour)
+            for this_colour in colour:
+                colour_1_surface = pygame.Surface((colour_size, self.small_image.get_height()))
+                rect = colour_1_surface.get_rect(topleft=(starting_pos, 0))
+                colour_1_surface.fill(this_colour)
+                self.small_image.blit(colour_1_surface, rect)
+                starting_pos += colour_size
+        self.small_rect = self.small_image.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
+        self.image.blit(self.small_image, self.small_rect)
+
+        # Subsection name text
+        self.text_surface = self.font.render(self.name, True, (0, 0, 0))
+        self.text_rect = self.text_surface.get_rect(midleft=(int(5 * screen_scale[0]), self.image.get_height() / 2))
+        self.image.blit(self.text_surface, self.text_rect)
 
         self.subsection = subsection
         self.pos = pos
         self.rect = self.image.get_rect(topleft=self.pos)
 
+        if selected:
+            self.selection()
+
+    def selection(self):
+        if self.selected:
+            self.selected = False
+        else:
+            self.selected = True
+        if self.selected:
+            self.image.fill((233, 214, 82))
+        else:
+            self.image.fill((0, 0, 0))
+        self.image.blit(self.small_image, self.small_rect)
+        self.image.blit(self.text_surface, self.text_rect)
 
 # class Selectionbox(pygame.sprite.Sprite):
 #     def __init__(self, pos, lorebook):
@@ -598,7 +678,8 @@ def lorebook_process(self, ui, mouse_up, mouse_down, mouse_scroll_up, mouse_scro
                 if button in ui and button.rect.collidepoint(self.mouse_pos):  # click button
                     if button.event in range(0, 11):  # section button
                         self.encyclopedia.change_section(button.event, self.lore_name_list, self.subsection_name,
-                                                         self.lore_name_list.scroll,
+                                                         self.tag_filter_name, self.lore_name_list.scroll,
+                                                         self.filter_tag_list, self.filter_tag_list.scroll,
                                                          self.page_button, ui)  # change to section of that button
 
                     elif button.event == "close" or esc_press:  # Close button
@@ -618,12 +699,24 @@ def lorebook_process(self, ui, mouse_up, mouse_down, mouse_scroll_up, mouse_scro
             self.encyclopedia.current_subsection_row = self.lore_name_list.scroll.player_input(
                 self.mouse_pos)  # update the scroll and get new current subsection
             self.encyclopedia.setup_subsection_list(self.lore_name_list,
-                                                    self.subsection_name)  # update subsection name list
+                                                    self.subsection_name, "subsection")  # update subsection name list
+        elif self.filter_tag_list.scroll.rect.collidepoint(self.mouse_pos):  # click on filter list scroll
+            self.encyclopedia.current_filter_row = self.filter_tag_list.scroll.player_input(
+                self.mouse_pos)  # update the scroll and get new current subsection
+            self.encyclopedia.setup_subsection_list(self.filter_tag_list,
+                                                    self.tag_filter_name, "tag")  # update subsection name list
         else:
             if mouse_up:
                 for name in self.subsection_name:
                     if name.rect.collidepoint(self.mouse_pos):  # click on subsection name
                         self.encyclopedia.change_subsection(name.subsection, self.page_button, ui)  # change subsection
+                        break  # found clicked subsection, break loop
+                for name in self.tag_filter_name:
+                    if name.rect.collidepoint(self.mouse_pos):  # click on subsection name
+                        name.selection()
+                        self.encyclopedia.tag_list[self.encyclopedia.section][name.name] = name.selected
+                        self.encyclopedia.setup_subsection_list(self.lore_name_list, self.subsection_name,
+                                                                "subsection")  # update subsection name list
                         break  # found clicked subsection, break loop
 
     elif mouse_scroll_up:
@@ -632,21 +725,34 @@ def lorebook_process(self, ui, mouse_up, mouse_down, mouse_scroll_up, mouse_scro
             if self.encyclopedia.current_subsection_row < 0:
                 self.encyclopedia.current_subsection_row = 0
             else:
-                self.encyclopedia.setup_subsection_list(self.lore_name_list, self.subsection_name)
+                self.encyclopedia.setup_subsection_list(self.lore_name_list, self.subsection_name, "subsection")
                 self.lore_name_list.scroll.change_image(new_row=self.encyclopedia.current_subsection_row)
+        elif self.filter_tag_list.rect.collidepoint(self.mouse_pos):  # Scrolling at lore book subsection list
+            self.encyclopedia.current_filter_row -= 1
+            if self.encyclopedia.current_filter_row < 0:
+                self.encyclopedia.current_filter_row = 0
+            else:
+                self.encyclopedia.setup_subsection_list(self.filter_tag_list, self.tag_filter_name, "tag")
+                self.filter_tag_list.scroll.change_image(new_row=self.encyclopedia.current_filter_row)
 
     elif mouse_scroll_down:
         if self.lore_name_list.rect.collidepoint(self.mouse_pos):  # Scrolling at lore book subsection list
             self.encyclopedia.current_subsection_row += 1
             if self.encyclopedia.current_subsection_row + self.encyclopedia.max_row_show - 1 < self.encyclopedia.row_size:
-                self.encyclopedia.setup_subsection_list(self.lore_name_list, self.subsection_name)
+                self.encyclopedia.setup_subsection_list(self.lore_name_list, self.subsection_name, "subsection")
                 self.lore_name_list.scroll.change_image(new_row=self.encyclopedia.current_subsection_row)
             else:
                 self.encyclopedia.current_subsection_row -= 1
+        elif self.filter_tag_list.rect.collidepoint(self.mouse_pos):  # Scrolling at lore book subsection list
+            self.encyclopedia.current_filter_row += 1
+            if self.encyclopedia.current_filter_row + self.encyclopedia.max_row_show - 1 < self.encyclopedia.row_size:
+                self.encyclopedia.setup_subsection_list(self.filter_tag_list, self.tag_filter_name, "tag")
+                self.filter_tag_list.scroll.change_image(new_row=self.encyclopedia.current_filter_row)
+            else:
+                self.encyclopedia.current_filter_row -= 1
 
     if close or esc_press:
-        ui.remove(self.encyclopedia, *self.lore_button_ui, self.lore_name_list.scroll,
-                  self.lore_name_list)  # remove encyclopedia related sprites
+        ui.remove(self.encyclopedia_stuff)  # remove encyclopedia related sprites
         for name in self.subsection_name:  # remove subsection name
             name.kill()
             del name

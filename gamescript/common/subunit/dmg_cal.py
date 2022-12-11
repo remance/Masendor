@@ -91,8 +91,8 @@ def dmg_cal(self, target, hit, defence, weapon, dmg_object, hit_side=None):
         leader_dmg = dmg_sum
         troop_dmg = (
                                 dmg_sum * self.troop_number) + leader_dmg_bonus  # dmg on subunit is dmg multiply by troop number with addition from leader combat
-        if (self.check_special_effect("Anti Infantry", weapon=weapon) and target.subunit_type in (1, 2)) or \
-                (self.check_special_effect("Anti Cavalry", weapon=weapon) and target.subunit_type in (4, 5, 6, 7)):
+        if (self.check_special_effect("Anti Infantry", weapon=weapon) and target.subunit_type in (0, 1)) or \
+                (self.check_special_effect("Anti Cavalry", weapon=weapon) and target.subunit_type in (3, 4, 5, 6)):
             troop_dmg = troop_dmg * 1.25  # Anti trait dmg bonus
 
         element_effect = {key: value / troop_dmg for key, value in dmg.items() if troop_dmg > 0}

@@ -69,9 +69,9 @@ def main_menu_process(self, mouse_left_up):
     elif self.lore_button.event:  # open encyclopedia
         self.before_lore_state = self.menu_state
         self.menu_state = "encyclopedia"
-        self.main_ui_updater.add(self.encyclopedia, self.lore_name_list, *self.lore_button_ui,
-                                 self.lore_name_list.scroll)  # add sprite related to encyclopedia
-        self.encyclopedia.change_section(0, self.lore_name_list, self.subsection_name, self.lore_name_list.scroll,
+        self.main_ui_updater.add(self.encyclopedia_stuff)  # add sprite related to encyclopedia
+        self.encyclopedia.change_section(0, self.lore_name_list, self.subsection_name, self.tag_filter_name,
+                                         self.lore_name_list.scroll, self.filter_tag_list, self.filter_tag_list.scroll,
                                          self.page_button, self.main_ui_updater)
         self.lore_button.event = False
 

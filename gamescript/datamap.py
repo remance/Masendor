@@ -39,9 +39,9 @@ class BattleMapData:
             int_column = ("ID", "Range Defense Bonus", "Hide Bonus", "Discipline Bonus",
                           "Day Temperature", "Night Temperature", "Dust")  # value int only
             tuple_column = ("Status",)
-            mod_column = *(index for index, item in enumerate(header) if item in mod_column),
-            int_column = *(index for index, item in enumerate(header) if item in int_column),
-            tuple_column = *(index for index, item in enumerate(header) if item in tuple_column),
+            mod_column = [index for index, item in enumerate(header) if item in mod_column]
+            int_column = [index for index, item in enumerate(header) if item in int_column]
+            tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
             for row in rd[1:]:  # skip convert header row
                 for n, i in enumerate(row):
                     row = stat_convert(row, n, i, mod_column=mod_column, tuple_column=tuple_column,
@@ -75,11 +75,11 @@ class BattleMapData:
             header = rd[0]
             int_column = ("ID",)  # value int only
             tuple_column = ("Element", "Status", "Spell", "Ruleset")
-            int_column = *(index for index, item in enumerate(header) if item in int_column),
-            tuple_column = *(index for index, item in enumerate(header) if item in tuple_column),
+            int_column = [index for index, item in enumerate(header) if item in int_column]
+            tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
             for index, row in enumerate(rd[1:]):
                 if "," in row[-1]:  # make str with , into list
-                    this_ruleset = *(int(item) if item.isdigit() else item for item in row[-1].split(",")),
+                    this_ruleset = [int(item) if item.isdigit() else item for item in row[-1].split(",")]
                 else:
                     this_ruleset = (row[-1],)
                 if any(rule in ("0", str(ruleset), "Ruleset") for rule in
@@ -88,7 +88,8 @@ class BattleMapData:
                         row = stat_convert(row, n, i, tuple_column=tuple_column, int_column=int_column)
                     self.weather_data[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
-        weather_list = *(item["Name"] for item in self.weather_data.values()),
+
+        weather_list = [item["Name"] for item in self.weather_data.values()]
         strength_list = ["Light ", "Normal ", "Strong "]
         self.weather_list = []
         for item in weather_list:  # list of weather with different strength

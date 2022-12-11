@@ -105,21 +105,21 @@ def formation_style_check(self, this_subunit, priority_subunit_place, side):
             if "Infantry" in self.formation_style:
                 if this_subunit.subunit_type < 2:  # infantry
                     priority_subunit_place["inner-" + side].append(this_subunit)
-                elif this_subunit.subunit_type >= 2:  # cavalry
+                elif this_subunit.subunit_type == 2:  # cavalry
                     priority_subunit_place["outer-" + side].append(this_subunit)
             elif "Cavalry" in self.formation_style:
                 if this_subunit.subunit_type < 2:  # infantry
                     priority_subunit_place["outer-" + side].append(this_subunit)
-                elif this_subunit.subunit_type >= 2:  # cavalry
+                elif this_subunit.subunit_type == 2:  # cavalry
                     priority_subunit_place["inner-" + side].append(this_subunit)
         elif "Flank" in self.formation_style:
             if "Infantry" in self.formation_style:
                 if this_subunit.subunit_type < 2:  # infantry
                     priority_subunit_place["flank-" + side].append(this_subunit)
-                elif this_subunit.subunit_type >= 2:  # cavalry
+                elif this_subunit.subunit_type == 2:  # cavalry
                     priority_subunit_place["center-" + side].append(this_subunit)
             elif "Cavalry" in self.formation_style:
                 if this_subunit.subunit_type < 2:  # infantry
                     priority_subunit_place["center-" + side].append(this_subunit)
-                elif this_subunit.subunit_type >= 2:  # cavalry
+                elif this_subunit.subunit_type == 2:  # cavalry
                     priority_subunit_place["flank-" + side].append(this_subunit)

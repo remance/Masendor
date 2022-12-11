@@ -276,8 +276,8 @@ class Game:
 
         # encyclopedia
         self.lore_button_ui = pygame.sprite.Group()  # buttons for encyclopedia group
-        self.lore_name_list = pygame.sprite.Group()  # box sprite for showing subsection name list in encyclopedia
         self.subsection_name = pygame.sprite.Group()  # subsection name objects group in encyclopedia blit on lore_name_list
+        self.tag_filter_name = pygame.sprite.Group()  # tag filter objects group in encyclopedia blit on filter_name_list
 
         # battle select menu
         self.map_namegroup = pygame.sprite.Group()  # map name list group
@@ -345,8 +345,7 @@ class Game:
 
         menu.TickBox.containers = self.tick_box
 
-        lorebook.SubsectionList.containers = self.lore_name_list
-        lorebook.SubsectionName.containers = self.subsection_name, self.main_ui_updater, self.battle_ui_updater
+        lorebook.SubsectionName.containers = self.main_ui_updater, self.battle_ui_updater
 
         uniteditor.PreviewBox.effect_image = load_image(self.main_dir, self.screen_scale, "effect.png",
                                                         "map")  # map special effect image
@@ -682,8 +681,10 @@ class Game:
         self.ui_updater.add(self.troop_card_ui)
         self.button_ui.add(self.troop_card_button)
 
-        self.encyclopedia, self.lore_name_list, self.lore_button_ui, self.page_button = make_lorebook(self.main_dir, self.screen_scale, self.screen_rect)
+        self.encyclopedia, self.lore_name_list, self.filter_tag_list, self.lore_button_ui, self.page_button = make_lorebook(self.main_dir, self.screen_scale, self.screen_rect)
 
+        self.encyclopedia_stuff = (self.encyclopedia, self.lore_name_list, self.filter_tag_list,
+                                   self.lore_name_list.scroll, self.filter_tag_list.scroll, *self.lore_button_ui)
         self.battle_game = battle.Battle(self, self.window_style)
         self.battle_game.generate_unit = self.generate_unit
 

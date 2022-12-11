@@ -13,6 +13,9 @@ def make_lorebook(main_dir, screen_scale, screen_rect):
     encyclopedia = lorebook.Lorebook(main_dir, screen_scale, screen_rect,
                                      encyclopedia_images["encyclopedia"])  # encyclopedia sprite
     lore_name_list = lorebook.SubsectionList(encyclopedia.rect.topleft, encyclopedia_images["section_list"])
+    filter_tag_list = lorebook.SubsectionList((encyclopedia.rect.topright[0] + encyclopedia_images["section_list"].get_width(),
+                                               encyclopedia.rect.topright[1]),
+                                              pygame.transform.flip(encyclopedia_images["section_list"], True, False))
     lore_name_list.max_row_show = encyclopedia.max_row_show
 
     lore_button_images = load_images(main_dir, screen_scale, ("ui", "lorebook_ui", "button"), load_order=False)
@@ -72,5 +75,6 @@ def make_lorebook(main_dir, screen_scale, screen_rect):
                                    encyclopedia.rect.bottomright[1] - lore_button_images["next"].get_height()))
     page_button = (lore_button_ui[12], lore_button_ui[13])
     battleui.UIScroll(lore_name_list, lore_name_list.rect.topright)  # add subsection list scroll
+    battleui.UIScroll(filter_tag_list, filter_tag_list.rect.topright)  # add filter list scroll
 
-    return encyclopedia, lore_name_list, lore_button_ui, page_button
+    return encyclopedia, lore_name_list, filter_tag_list, lore_button_ui, page_button

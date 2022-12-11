@@ -18,6 +18,10 @@ rotation_dict = {key: rotation_name[index] for index, key in enumerate(rotation_
 
 infinity = float("inf")
 
+troop_class_index = {"Melee Infantry": 0, "Range Infantry": 1, "Flying Cavalry": 2, "Range Cavalry": 3,
+                     "Light Cavalry": 4, "Heavy Cavalry": 5, "Chariot": 6, "Mage": 7, "Siege Machine": 8,
+                     "War Beast": 9, "Titan": 10}
+
 
 class Subunit(pygame.sprite.Sprite):
     empty_method = utility.empty_method
@@ -235,7 +239,7 @@ class Subunit(pygame.sprite.Sprite):
                 "Mental Bonus"]  # mental resistance from morale melee_dmg and mental status effect
             self.troop_number = stat["Troop"] * unit_scale[
                 self.team] * start_hp / 100  # number of starting troop, team -1 to become list index
-            self.subunit_type = stat["Troop Class"] - 1  # 0 is melee infantry and 1 is range for command buff
+            self.subunit_type = troop_class_index[stat["Troop Class"]]  # 0 is melee infantry and 1 is range for command buff
 
         else:  # leader/hero character, for game mode that replace subunit with leader
             self.troop_id = troop_id
@@ -423,7 +427,7 @@ class Subunit(pygame.sprite.Sprite):
                             (type(skill) == str or (skill in self.troop_data.skill_list and
                                                     self.troop_data.skill_list[skill]["Troop Type"] == 0 or
                                                     self.troop_data.skill_list[skill][
-                                                        "Troop Type"] == self.subunit_type + 1))]  # keep matched
+                                                        "Troop Type"] == self.subunit_type))]  # keep matched
         self.base_mana = self.original_mana
         self.base_morale = self.original_morale
         self.base_discipline = self.original_discipline

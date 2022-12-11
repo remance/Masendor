@@ -159,7 +159,12 @@ class TroopData:
         with open(os.path.join(main_dir, "data", "troop", "troop_trait.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
-            int_column = ("ID", "Buff Range", "Race", "Cost", "Element")  # value int only
+            int_column = ("ID", "Buff Range", "Race", "Cost", "Upkeep", "Element", "Charge Defence Bonus",
+                          "HP Regeneration Bonus", "Stamina Regeneration Bonus", "Morale Bonus", "Discipline Bonus",
+                          "Critical Bonus", "Sight Bonus", "Hidden Bonus", "Physical Resistance Bonus",
+                          "Fire Resistance Bonus", "Water Resistance Bonus", "Air Resistance Bonus",
+                          "Earth Resistance Bonus", "Poison Resistance Bonus", "Magic Resistance Bonus",
+                          "Heat Resistance Bonus", "Cold Resistance Bonus")  # value int only
             tuple_column = ("Status", "Special Effect", "Enemy Status", "Ruleset")  # value in tuple only
             percent_column = ("Buff Modifier",)
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect",
@@ -363,7 +368,7 @@ class TroopData:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             int_column = (
-                "ID", "Grade", "Race", "Cost", "Upkeep", "Troop", "Troop Class", "Sprite ID")  # value int only
+                "ID", "Grade", "Race", "Cost", "Upkeep", "Troop", "Sprite ID")  # value int only
             list_column = ("Trait", "Skill",)  # value in list only
             tuple_column = ("Armour", "Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon",
                             "Secondary Sub Weapon", "Mount", "Role", "Ruleset")  # value in tuple only
