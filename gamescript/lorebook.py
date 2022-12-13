@@ -3,7 +3,7 @@ import pygame.freetype
 
 from gamescript.common import utility
 
-# TODO Subsection tag, paragraph syntax,
+# TODO paragraph syntax,
 
 subsection_tag_colour = [(128, 255, 128), (237, 128, 128), (255, 255, 128), (128, 255, 255),
                          (128, 128, 255), (255, 128, 255), (220, 158, 233), (191, 191, 191), (255, 140, 85)]

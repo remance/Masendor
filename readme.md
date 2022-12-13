@@ -128,6 +128,20 @@ This function is going to be a headache to write and research. But hopefully, it
 
 ---------------
 
+# Credit
+
+## Ukrainian Translation:
+
+- JerryXd
+
+## Help with game coding and bugs fixed:
+
+- shawarmaje
+- legotrainkid
+- Hamster_Lord
+
+---------------
+
 # Future Plan
 
 **Ver 0.6 Dream Decision:** multiple unit selection/move logic, Battle selection(with different estimation source), preparation and result screen, custom battle, custom unit editor, improve the main menu, Battle of Megiddo, Battle of Mohács
@@ -174,6 +188,7 @@ This function is going to be a headache to write and research. But hopefully, it
 
 For those who have read this far, thank you for your interest in the game. To be honest, every single update begins with how do I even start with this.<br>
 I start developing this game with zero knowledge in video game development let alone how to use pygame. I start learning how to use pygame by tinkering with alien.py in pygame examples folder and keep testing/changing it until it becomes what you can see right now (I keep most video updates on youtube which show the progress of improvement almost from the start). All of the plan I list for the future is the same. I have no idea how to do it, the only thing I have is the picture of what I want to make it look like. Nevertheless, it is fun figuring stuff out and don't let the lack of knowledge stop you from making your own game :P. 
+
 
 
 [1]: https://discord.gg/q7yxz4netf
