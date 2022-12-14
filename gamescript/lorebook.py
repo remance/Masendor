@@ -753,9 +753,10 @@ def lorebook_process(self, ui, mouse_up, mouse_down, mouse_scroll_up, mouse_scro
 
     if close or esc_press:
         ui.remove(self.encyclopedia_stuff)  # remove encyclopedia related sprites
-        for name in self.subsection_name:  # remove subsection name
-            name.kill()
-            del name
+        for group in (self.subsection_name, self.tag_filter_name):
+            for name in group:  # remove subsection name
+                name.kill()
+                del name
         command = "exit"
 
     return command
