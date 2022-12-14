@@ -35,10 +35,10 @@ def hit_register(self, weapon, target, attacker_side, hit_side, status_list):
             (self.check_special_effect("Flank Attack Bonus") and attacker_side in (1, 3)):  # apply only for attacker
         target_defence = 0
 
-    attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect = self.dmg_cal(target, attacker_hit,
-                                                                                          target_defence, weapon,
-                                                                                          weapon,
-                                                                                          hit_side)  # get dmg by attacker
+    attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, \
+        element_effect, _ = self.dmg_cal(target, attacker_hit, target_defence, weapon,
+                                         self.weapon_penetrate[self.equipped_weapon][weapon], weapon,
+                                         hit_side)  # get dmg by attacker
 
     self.loss_cal(target, attacker_dmg, attacker_morale_dmg, attacker_leader_dmg,
                   element_effect)  # inflict dmg to defender
@@ -64,10 +64,10 @@ def hit_register(self, weapon, target, attacker_side, hit_side, status_list):
             if this_subunit != 0 and this_subunit.state != 100:
                 target_hit, target_defence = float(self.melee_attack * hit_side_mod) + target_luck, float(
                     this_subunit.melee_def * hit_side_mod) + target_luck
-                attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect = self.dmg_cal(this_subunit,
-                                                                                                      attacker_hit,
-                                                                                                      target_defence,
-                                                                                                      weapon, "melee")
+                attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, \
+                    element_effect, _ = self.dmg_cal(this_subunit, attacker_hit, target_defence, weapon,
+                                                     self.weapon_penetrate[self.equipped_weapon][weapon], "melee")
+
                 self.loss_cal(this_subunit, attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect)
                 if self.inflict_status != {}:
                     apply_status_to_enemy(status_list, self.inflict_status, this_subunit, attacker_side, hit_side)

@@ -1,4 +1,6 @@
 import random
+import numpy as np
+from PIL import Image
 
 import pygame
 from gamescript.common.subunit import create_troop_sprite
@@ -201,6 +203,17 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                             sprite_pic = sprite_dict["sprite"]
                                             if self.play_troop_animation == 0 and "_Default" not in animation:  # replace sprite with default if disable animation
                                                 sprite_pic = current_in_pool[tuple(current_in_pool.keys())[0]][new_direction][0]["sprite"]
+
+                                            # Crop transparent area only of surface, only do for battle sprite
+                                            size = sprite_pic.get_size()
+                                            sprite_pic = pygame.image.tostring(sprite_pic,
+                                                                         "RGBA")  # convert image to string data for filtering effect
+                                            sprite_pic = Image.frombytes("RGBA", size, sprite_pic)  # use PIL to get image data
+                                            sprite_pic = sprite_pic.crop(sprite_pic.getbbox())
+                                            size = sprite_pic.size
+                                            sprite_pic = sprite_pic.tobytes()
+                                            sprite_pic = pygame.image.fromstring(sprite_pic, size, "RGBA")  # convert image back to a pygame surface
+
                                             current_in_pool[name_input][new_direction][frame_num] = \
                                                 {"sprite": sprite_pic,
                                                  "animation_property": sprite_dict["animation_property"],

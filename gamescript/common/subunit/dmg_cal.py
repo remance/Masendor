@@ -6,7 +6,7 @@ combat_side_cal = hit_register.combat_side_cal
 infinity = float("inf")
 
 
-def dmg_cal(self, target, hit, defence, weapon, dmg_object, hit_side=None):
+def dmg_cal(self, target, hit, defence, weapon, penetrate, dmg_object, hit_side=None):
     """
     Calculate dmg, melee attack will use attacker subunit stat,
     other types will use the type object stat instead (mostly used for range attack)
@@ -43,6 +43,8 @@ def dmg_cal(self, target, hit, defence, weapon, dmg_object, hit_side=None):
     troop_dmg = 0
     leader_dmg = 0
     morale_dmg = 0
+    remain_penetrate = penetrate
+
     element_effect = {}
 
     if combat_score > 0:
@@ -51,10 +53,10 @@ def dmg_cal(self, target, hit, defence, weapon, dmg_object, hit_side=None):
             leader_dmg_bonus = self.leader.combat  # Get extra dmg from leader combat stat
 
         if type(dmg_object) == int:  # Melee dmg
-            dmg = {key: random.uniform(value[0], value[1]) * self.weapon_penetrate[self.equipped_weapon][dmg_object] /
-                        target.element_resistance[key] if target.element_resistance[key] > 0 else random.uniform(
-                value[0], value[1]) for key, value in
-                   self.weapon_dmg[dmg_object].items()}
+            dmg = {key: random.uniform(value[0], value[1]) * penetrate / target.element_resistance[key]
+                   if target.element_resistance[key] > 0 else random.uniform(value[0], value[1]) for key, value in
+                   self.weapon_dmg[dmg_object].items()}  # dict comprehension here to save element key
+
             dmg_sum = sum(dmg.values())
             if 0 in self.skill_effect:  # Include charge in dmg if charging
                 if self.check_special_effect("Ignore Charge Defence",
@@ -82,20 +84,25 @@ def dmg_cal(self, target, hit, defence, weapon, dmg_object, hit_side=None):
             dmg_sum = dmg_sum * combat_score
 
         else:  # Range or other type of damage
-            dmg = {key: value * (dmg_object.penetrate - target.element_resistance[key])
-            if dmg_object.penetrate - target.element_resistance[key] <= 1 else value for key, value in
-                   dmg_object.dmg.items()}
+            dmg = {key: value * penetrate / target.element_resistance[key] if target.element_resistance[key] > 0
+                   else value for key, value in dmg_object.dmg.items()}
             dmg_sum = sum(dmg.values())
             dmg_sum = dmg_sum * combat_score
 
+        for value in target.element_resistance.values():
+            remain_penetrate -= value
+
         leader_dmg = dmg_sum
-        troop_dmg = (
-                                dmg_sum * self.troop_number) + leader_dmg_bonus  # dmg on subunit is dmg multiply by troop number with addition from leader combat
+
+        # troop_dmg on subunit is dmg multiply by troop number with addition from leader combat
+        troop_dmg = (dmg_sum * self.troop_number) + leader_dmg_bonus
         if (self.check_special_effect("Anti Infantry", weapon=weapon) and target.subunit_type in (0, 1)) or \
                 (self.check_special_effect("Anti Cavalry", weapon=weapon) and target.subunit_type in (3, 4, 5, 6)):
             troop_dmg = troop_dmg * 1.25  # Anti trait dmg bonus
 
-        element_effect = {key: value / troop_dmg for key, value in dmg.items() if troop_dmg > 0}
+        element_effect = {}
+        if troop_dmg > 0:
+            element_effect = {key: value / troop_dmg for key, value in dmg.items()}
         morale_dmg = dmg_sum / 1000
 
         # Damage cannot be negative (it would heal instead), same for morale and leader dmg
@@ -106,4 +113,4 @@ def dmg_cal(self, target, hit, defence, weapon, dmg_object, hit_side=None):
         if morale_dmg < 0:
             morale_dmg = 0
 
-    return troop_dmg, morale_dmg, leader_dmg, element_effect
+    return troop_dmg, morale_dmg, leader_dmg, element_effect, remain_penetrate

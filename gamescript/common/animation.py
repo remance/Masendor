@@ -31,6 +31,7 @@ def play_animation(self, speed, dt, scale=1, replace_image=True):
                     done = True
     if replace_image:  # replace sprite image
         self.image = current_animation[self.show_frame]["sprite"]
+        self.rect = self.image.get_rect(center=self.pos)
     return done
 
 

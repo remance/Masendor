@@ -86,5 +86,11 @@ def battle_keyboard_process(self, key_press):
     # elif key_press == pygame.K_COMMA and self.last_selected is not None:
     #     for index, subunit in enumerate(self.last_selected.subunit_sprite):
     #         subunit.stamina -= subunit.stamina
+    elif key_press == pygame.K_F8:
+        self.screen_shake_value = 10
+    elif key_press == pygame.K_F9:
+        self.screen_shake_value = 20
+    elif key_press == pygame.K_F10:
+        self.screen_shake_value = 50
     # ^^ End For development test
     # ^ End register input

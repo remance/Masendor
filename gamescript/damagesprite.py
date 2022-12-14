@@ -172,9 +172,10 @@ class DamageSprite(pygame.sprite.Sprite):
         if target_def < 0:
             target_def = 0  # defence cannot be negative
 
-        attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect = attacker.dmg_cal(target, attacker_hit,
-                                                                                                  target_def,
-                                                                                                  self.weapon, self)
+        attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, \
+            element_effect, self.penetrate = attacker.dmg_cal(target, attacker_hit, target_def, self.weapon,
+                                                              self.penetrate, self)
+
         self.attacker.loss_cal(target, attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect)
 
     def hit_register(self, subunit=None):
@@ -217,7 +218,7 @@ class DamageSprite(pygame.sprite.Sprite):
                 if self.attack_type == "range":
                     if self.arc_shot is False:  # direct shot
                         self.hit_register(subunit)
-                        if self.aoe is False:
+                        if self.aoe is False and self.penetrate <= 0:
                             self.kill()
                             break
                     else:

@@ -254,18 +254,18 @@ def status_update(self, weather=None):
     self.charge += (self.charge * discipline_cal)
 
     # Apply bonus and modifier to stat
-    self.morale = (self.morale + morale_bonus) * morale_modifier
+    self.morale = (self.morale * morale_modifier) + morale_bonus
     self.discipline = self.discipline + discipline_bonus
-    self.melee_attack = (self.melee_attack + melee_attack_bonus) * melee_attack_modifier
-    self.shoot_range = {key: (shoot_range + shoot_range_bonus) * shoot_range_modifier for key, shoot_range in
+    self.melee_attack = (self.melee_attack * melee_attack_modifier) + melee_attack_bonus
+    self.shoot_range = {key: (shoot_range * shoot_range_modifier) + shoot_range_bonus for key, shoot_range in
                         self.shoot_range.items()}
-    self.melee_def = (self.melee_def + melee_def_bonus) * melee_def_modifier
-    self.range_def = (self.range_def + range_def_bonus) * range_def_modifier
-    self.accuracy = (self.accuracy + accuracy_bonus) * accuracy_modifier
-    self.reload = (self.reload + reload_bonus) * reload_modifier
-    self.charge_def = (self.charge_def + charge_def_bonus) * charge_def_modifier
-    self.speed = (self.speed + speed_bonus) * speed_modifier
-    self.charge = (self.charge + charge_bonus) * charge_modifier
+    self.melee_def = (self.melee_def * melee_def_modifier) + melee_def_bonus
+    self.range_def = (self.range_def * range_def_modifier) + range_def_bonus
+    self.accuracy = (self.accuracy * accuracy_modifier) + accuracy_bonus
+    self.reload = (self.reload * reload_modifier) + reload_bonus
+    self.charge_def = (self.charge_def * charge_def_modifier) + charge_def_bonus
+    self.speed = (self.speed * speed_modifier) + speed_bonus
+    self.charge = (self.charge * charge_modifier) + charge_bonus
     self.sight = self.sight + sight_bonus
     self.hidden = self.hidden + hidden_bonus
     self.crit_effect = self.crit_effect * crit_effect_modifier

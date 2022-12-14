@@ -163,6 +163,7 @@ def combat_logic(self, dt, unit_state):
             for weapon in self.ammo_now[self.equipped_weapon]:  # TODO add line of sight for range attack
                 # can shoot if reload finish and base_target existed and not dead. Non arc_shot cannot shoot if forbid
                 if self.ammo_now[self.equipped_weapon][weapon] > 0 and \
+                        self.shoot_range[weapon] >= self.attack_pos.distance_to(self.base_pos) and \
                         (self.check_special_effect("Arc Shot", weapon=weapon) or self.unit.shoot_mode != 1):
                     self.command_action = {"name": "Action " + str(weapon), "range attack": True}
                     break

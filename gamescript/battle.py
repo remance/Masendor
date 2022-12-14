@@ -341,13 +341,16 @@ class Battle:
                                               500 * self.screen_scale[
                                                   1])  # Camera pos at furthest zoom for recalculate sprite pos after zoom
         self.camera_pos = self.base_camera_pos * self.camera_zoom  # Camera pos at the current zoom, start at center of map
+        self.shown_camera_pos = self.camera_pos  # pos of camera shown to player, in case of screen shaking or other effects
+
+        self.screen_shake_value = 0  # count for how long to shake camera
 
         self.camera_topleft_corner = (self.camera_pos[0] - self.center_screen[0],
                                       self.camera_pos[1] - self.center_screen[
                                           1])  # calculate top left corner of camera position
 
         camera.Camera.screen_rect = self.screen_rect
-        self.camera = camera.Camera(self.camera_pos, self.camera_zoom)
+        self.camera = camera.Camera(self.shown_camera_pos, self.camera_zoom)
 
         self.clock = pygame.time.Clock()  # Game clock to keep track of realtime pass
 
@@ -584,6 +587,7 @@ class Battle:
                                                   500 * self.screen_scale[1])
             self.camera_pos = self.base_camera_pos * self.camera_zoom
             self.camera_fix()
+            self.shown_camera_pos = self.camera_pos
 
             self.weather_playing = None  # remove weather schedule from editor test
 
@@ -616,9 +620,12 @@ class Battle:
                 self.camera_pos = self.base_camera_pos * self.camera_zoom
                 self.camera_fix()
 
+            self.shown_camera_pos = self.camera_pos
+
         self.map_scale_delay = 0  # delay for map zoom input
         self.text_delay = 0
         self.mouse_timer = 0  # This is timer for checking double mouse click, use realtime
+        self.screen_shake_value = 0
         self.ui_timer = 0  # This is timer for ui update function, use realtime
         self.drama_timer = 0  # This is timer for combat related function, use self time (realtime * game_speed)
         self.dt = 0  # Realtime used for time calculation
@@ -866,6 +873,14 @@ class Battle:
                                                                                  self.current_weather.name][
                                                                                  random_pic]))
 
+                        # Screen shaking
+                        self.shown_camera_pos = self.camera_pos  # reset camera pos first
+                        if self.screen_shake_value > 0:
+                            self.screen_shake_value -= 1
+                            self.shake_camera()
+                            if self.screen_shake_value < 0:
+                                self.screen_shake_value = 0
+
                         # Music System
                         if len(self.music_schedule) > 0 and self.time_number.time_number >= self.music_schedule[0]:
                             pygame.mixer.music.unload()
@@ -973,7 +988,8 @@ class Battle:
                                          self.team_pos_list)
 
                     self.ui_updater.update()  # update ui
-                    self.camera.update(self.camera_pos, self.battle_camera, self.camera_zoom)
+
+                    self.camera.update(self.shown_camera_pos, self.battle_camera, self.camera_zoom)
 
                     # Update game time
                     self.dt = self.true_dt * self.game_speed  # apply dt with game_speed for calculation
