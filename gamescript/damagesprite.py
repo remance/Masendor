@@ -203,6 +203,7 @@ class DamageSprite(pygame.sprite.Sprite):
             self.image_scale = (11 - self.camera_zoom) / 4
             if self.image_scale <= 1:
                 self.image_scale = 1
+                self.image = self.image_original.copy()
             else:
                 self.image = pygame.transform.smoothscale(self.image_original,
                                                           (int(self.image_original.get_width() / self.image_scale),

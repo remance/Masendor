@@ -95,8 +95,8 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
                                       animation_part_list[p + "body"][4])  # put on back
                             use_center = True
                     elif p + "sub_weapon" in layer:  # sub weapon
-                        if part[1] != "sheath":  # change main weapon pos to hand, if part is not sheath
-                            if "_Sub_" in animation_name and weapon[2][1] == 2:  # two-handed sub weapon use same animation as main for attack, remove if different
+                        if part[1] != "sheath":  # change weapon pos to hand, if part is not sheath
+                            if "_Sub_" in animation_name and weapon[2][1] == 2:  # two-handed sub weapon use same animation as main for attack so put sub weapon in man hand, remove code if different
                                 target = (animation_part_list[p + "r_hand"][3], animation_part_list[p + "r_hand"][4])
                             else:
                                 target = (animation_part_list[p + "l_hand"][3], animation_part_list[p + "l_hand"][4])

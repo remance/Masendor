@@ -350,7 +350,7 @@ def rotation_xy(origin, point, angle):
 def set_rotate(self, base_target):
     """
     set base_target and new angle for sprite rotation
-    :param self: any object
+    :param self: any object with base_pos as position attribute
     :param base_target: pos for target position to rotate to
     :return: new angle
     """

@@ -1124,7 +1124,8 @@ class Model:
                     except KeyError:  # change side and not found part with same name
                         self.bodypart_list[edit_frame][part_index][2] = None
                         self.part_name_list[edit_frame][part_index][2] = None
-                        self.animation_part_list[edit_frame][part_index][0] = None
+                        if len(self.animation_part_list[edit_frame][part_index]) > 0:
+                            self.animation_part_list[edit_frame][part_index][0] = None
 
         elif edit_type == "undo" or edit_type == "redo":
             for frame_num, _ in enumerate(self.animation_part_list):
