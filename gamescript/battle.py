@@ -213,10 +213,10 @@ class Battle:
 
         self.map_corner = (999, 999)
         self.max_camera = (999 * self.screen_scale[0], 999 * self.screen_scale[1])
-        self.icon_sprite_width = main.icon_sprite_width
-        self.icon_sprite_height = main.icon_sprite_height
-        self.collide_distance = self.icon_sprite_height / 10  # distance to check collision
-        self.front_distance = self.icon_sprite_height / 20  # distance from front side
+        self.subunit_hitbox_size = main.subunit_hitbox_size
+        self.subunit_inspect_sprite_size = main.subunit_inspect_sprite_size
+        self.collide_distance = self.subunit_hitbox_size / 10  # distance to check collision
+        self.front_distance = self.subunit_hitbox_size / 20  # distance from front side
         self.full_distance = self.front_distance / 2  # distance for sprite merge check
 
         self.inspect_subunit = []  # list of subunit shown in inspect ui
@@ -311,6 +311,7 @@ class Battle:
 
         self.all_team_unit = {"alive": pygame.sprite.Group()}  # all unit in each team and alive
         self.team_pos_list = {}  # all alive team unit position
+        self.subunit_pos_list = []
 
         self.battle_subunit_list = []  # list of all subunit alive in battle, need to be in list for collision check
         self.visible_subunit_list = {}  # list of subunit visible to the team
@@ -329,7 +330,7 @@ class Battle:
 
         # v Assign default variable to some class
         unit.Unit.battle = self
-        unit.Unit.image_size = (self.icon_sprite_width, self.icon_sprite_height)
+        unit.Unit.image_size = self.subunit_inspect_sprite_size
         subunit.Subunit.battle = self
         leader.Leader.battle = self
         # ^ End assign default
@@ -474,7 +475,6 @@ class Battle:
         self.max_camera = ((self.battle_map_height.image.get_width() - 1) * self.screen_scale[0],
                            (self.battle_map_height.image.get_height() - 1) * self.screen_scale[1])  # reset max camera to new map size
 
-
         self.battle_subunit_list = []
         self.visible_subunit_list = {}
 
@@ -497,6 +497,7 @@ class Battle:
             self.flee_troop_number = [0 for _ in self.all_team_unit]
             self.capture_troop_number = [0 for _ in self.all_team_unit]
             self.team_pos_list = {key: {} for key in self.all_team_unit.keys()}
+            self.subunit_pos_list = []
             self.visible_subunit_list = {key: {} for key in self.all_team_unit.keys() if key != "alive"}
 
             self.battle_scale_ui.change_fight_scale(self.battle_scale)
@@ -896,9 +897,7 @@ class Battle:
                             this_unit.collide = False
 
                         if len(self.battle_subunit_list) > 1:
-                            tree = KDTree(
-                                [sprite.base_pos for sprite in
-                                 self.battle_subunit_list])  # collision loop check, much faster than pygame collide check
+                            tree = KDTree(self.subunit_pos_list)  # collision loop check, much faster than pygame collide check
                             collisions = tree.query_pairs(self.collide_distance)
                             for one, two in collisions:
                                 sprite_one = self.battle_subunit_list[one]
@@ -1146,6 +1145,7 @@ class Battle:
         self.subunit_pos_array = []
         self.map_def_array = []
         self.team_pos_list = {key: {} for key in self.team_pos_list.keys()}
+        self.subunit_pos_list = []
         self.current_selected = None
         self.before_selected = None
         self.last_mouseover = None

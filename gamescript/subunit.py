@@ -55,7 +55,8 @@ class Subunit(pygame.sprite.Sprite):
     apply_status_to_friend = empty_method
     attack = empty_method
     combat_pathfind = empty_method
-    create_inspect_sprite = empty_method
+    create_subunit_sprite = empty_method
+    create_troop_sprite = empty_method
     die = empty_method
     dmg_cal = empty_method
     element_effect_count = empty_method
@@ -67,7 +68,6 @@ class Subunit(pygame.sprite.Sprite):
     loss_cal = empty_method
     make_front_pos = empty_method
     make_pos_range = empty_method
-    create_troop_sprite = empty_method
     pick_animation = empty_method
     player_weapon_selection = empty_method
     process_trait_skill = empty_method
@@ -109,7 +109,7 @@ class Subunit(pygame.sprite.Sprite):
     dmg_include_leader = True
     hero_health_scale = 1
 
-    def __init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale, animation_pool=None):
+    def __init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale):
         """
         Subunit object represent a group of troop or leader
         Subunit has three different stage of stat;
@@ -317,7 +317,7 @@ class Subunit(pygame.sprite.Sprite):
 
         self.original_crit_effect = 1  # critical extra modifier
 
-        self.trait = {"Original": stat["Trait"] + race_stat["Trait"] + \
+        self.trait = {"Original": stat["Trait"] + race_stat["Trait"] +
                                   self.troop_data.grade_list[self.grade]["Trait"],
                       "Weapon": {0: {0: [], 1: []}, 1: {0: [], 1: []}}}  # trait from preset, race and grade
 
@@ -395,7 +395,9 @@ class Subunit(pygame.sprite.Sprite):
         if self.mount_gear[0] != 1:  # have a mount, add mount stat with its grade to subunit stat
             self.add_mount_stat()
 
-        self.original_hidden = 1000 / self.troop_size  # hidden based on size, use size after add mount
+        self.troop_mass = self.troop_size
+
+        self.original_hidden = 1000 / self.troop_mass  # hidden based on size, use size after add mount
 
         self.trait["Original"] += self.troop_data.armour_list[self.armour_gear[0]][
             "Trait"]  # add armour trait to subunit
@@ -485,9 +487,9 @@ class Subunit(pygame.sprite.Sprite):
         self.morale = self.base_morale
         self.discipline = self.base_discipline
         self.charge = self.base_charge
-        self.charge_power = self.charge * self.speed / 2 * self.troop_size
+        self.charge_power = self.charge * self.speed / 2 * self.troop_mass
         self.charge_def = self.base_charge_def
-        self.charge_def_power = self.charge_def * self.troop_size
+        self.charge_def_power = self.charge_def * self.troop_mass
         self.auth_penalty = self.base_auth_penalty
         self.hp_regen = self.base_hp_regen
         self.stamina_regen = self.base_stamina_regen
@@ -517,7 +519,7 @@ class Subunit(pygame.sprite.Sprite):
         self.corner_atk = False  # cannot melee_attack corner enemy by default
 
         # sprite for inspection or far view
-        sprite_dict = self.create_inspect_sprite(self.troop_size)
+        sprite_dict = self.create_subunit_sprite(self.battle.subunit_inspect_sprite_size, self.troop_size)
         self.inspect_image = sprite_dict["image"]
         self.image = self.inspect_image.copy()
         self.inspect_image_original = sprite_dict["original"]
@@ -615,8 +617,6 @@ class Subunit(pygame.sprite.Sprite):
                 self.morale_logic(dt, unit_state)
 
                 self.health_stamina_logic(dt)
-                if type(self.base_pos) != pygame.Vector2:
-                    print(self.base_pos, type(self.base_pos), self.game_id)
 
                 if self.state in (98, 99) and (self.base_pos[0] <= 1 or self.base_pos[0] >= self.battle.map_corner[0] or
                                                self.base_pos[1] <= 1 or self.base_pos[
@@ -683,7 +683,7 @@ class Subunit(pygame.sprite.Sprite):
         if recreate_rect:
             self.rect = self.image.get_rect(center=self.pos)
         if self.player_equipped_weapon != self.equipped_weapon and self.state == 0:  # reset equipped weapon to player chose
-            self.player_weapon_selection
+            self.player_weapon_selection()
 
 
 class EditorSubunit(Subunit):

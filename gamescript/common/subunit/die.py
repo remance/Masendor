@@ -16,6 +16,7 @@ def die(self):
 
     if self in self.battle.battle_camera:
         self.battle.battle_camera.change_layer(sprite=self, new_layer=1)
+    self.battle.subunit_pos_list.pop(self.battle.battle_subunit_list.index(self))
     self.battle.battle_subunit_list.remove(self)
     self.unit.alive_subunit_list.remove(self)
 

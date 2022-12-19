@@ -31,8 +31,8 @@ def loss_cal(self, target, final_dmg, final_morale_dmg, leader_dmg, element_effe
     target.base_morale -= (final_morale_dmg + self.morale_dmg_bonus) * target.mental * health_check
     target.stamina -= self.stamina_dmg_bonus
 
-    if target.red_border is False:  # add red corner to indicate combat
-        target.block.blit(target.subunit_ui_images["subunit_combat"], target.corner_image_rect)
+    if target.red_border is False:  # add red colour to indicate taking damage
+        target.block.fill((200, 50, 50))
         target.red_border = True
 
     for key, value in element_effect.items():

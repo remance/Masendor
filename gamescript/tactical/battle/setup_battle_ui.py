@@ -94,18 +94,16 @@ def setup_battle_ui(self, change):
             (self.event_log_button[0].pos[0] + (self.event_log_button[0].image.get_width() * 6),
              self.event_log_button[0].pos[1]))  # delete all log button
 
-        inspect_ui_pos = [self.unitstat_ui.rect.bottomleft[0] - self.icon_sprite_width / 1.25,
-                          self.unitstat_ui.rect.bottomleft[1]]
-        width, height = inspect_ui_pos[0], inspect_ui_pos[1]
+        width = self.unitstat_ui.rect.bottomleft[0] - self.subunit_inspect_sprite_size[0] / 1.25
+        height = self.unitstat_ui.rect.bottomleft[1]
         sub_unit_number = 0  # Number of subunit based on the position in row and column
-        imgsize = (self.icon_sprite_width, self.icon_sprite_height)
-        for _ in list(range(0, 64)):
-            width += imgsize[0]
+        for _ in list(range(0, self.main.unit_size[0] * self.main.unit_size[1])):
+            width += self.subunit_inspect_sprite_size[0]
             self.inspect_subunit.append(battleui.InspectSubunit((width, height)))
             sub_unit_number += 1
-            if sub_unit_number == 8:  # Reach the last subunit in the row, go to the next one
-                width = inspect_ui_pos[0]
-                height += imgsize[1]
+            if sub_unit_number == self.main.unit_size[0]:  # Reach the last subunit in the row, go to the next one
+                width = self.unitstat_ui.rect.bottomleft[0] - self.subunit_inspect_sprite_size[0] / 1.25
+                height += self.subunit_inspect_sprite_size[1]
                 sub_unit_number = 0
 
     change_group(self.unit_selector, self.battle_ui_updater, change)

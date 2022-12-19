@@ -5,7 +5,7 @@ setup_list = utility.setup_list
 list_scroll = utility.list_scroll
 
 
-def main_menu_process(self, mouse_left_up):
+def menu_main(self, mouse_left_up):
     if self.preset_map_button.event:  # preset map list menu
         self.menu_state = "preset_map"
         self.last_select = self.menu_state

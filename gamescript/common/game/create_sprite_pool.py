@@ -99,6 +99,11 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                                      "frame_property": sprite_dict[
                                                          "frame_property"]}  # preview pool use subunit_id only
             else:
+                low_x0 = float("inf")  # lowest x0
+                low_y0 = float("inf")  # lowest y0
+                high_x1 = 0  # highest x1
+                high_y1 = 0  # highest y1
+
                 if sprite_id not in animation_sprite_pool:  # troop can share sprite preset id but different gear
                     animation_sprite_pool[sprite_id] = {}
 
@@ -184,7 +189,6 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                             if type(subunit_id) == int:
                                                 sprite_data = self.troop_data.troop_sprite_list[sprite_id]
                                             else:
-                                                leader_id = int(subunit_id.replace("h", ""))
                                                 sprite_data = self.leader_data.leader_sprite_list[sprite_id]
 
                                             sprite_dict = create_troop_sprite(animation, this_subunit["Size"], frame_data,
@@ -204,15 +208,20 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                             if self.play_troop_animation == 0 and "_Default" not in animation:  # replace sprite with default if disable animation
                                                 sprite_pic = current_in_pool[tuple(current_in_pool.keys())[0]][new_direction][0]["sprite"]
 
-                                            # Crop transparent area only of surface, only do for battle sprite
+                                            # Find optimal cropped sprite size that all animation will share exact same center point
                                             size = sprite_pic.get_size()
-                                            sprite_pic = pygame.image.tostring(sprite_pic,
-                                                                         "RGBA")  # convert image to string data for filtering effect
-                                            sprite_pic = Image.frombytes("RGBA", size, sprite_pic)  # use PIL to get image data
-                                            sprite_pic = sprite_pic.crop(sprite_pic.getbbox())
-                                            size = sprite_pic.size
-                                            sprite_pic = sprite_pic.tobytes()
-                                            sprite_pic = pygame.image.fromstring(sprite_pic, size, "RGBA")  # convert image back to a pygame surface
+                                            data = pygame.image.tostring(sprite_pic,
+                                                "RGBA")  # convert image to string data for filtering effect
+                                            data = Image.frombytes("RGBA", size, data)  # use PIL to get image data
+                                            bbox = data.getbbox()
+                                            if low_x0 > bbox[0]:
+                                                low_x0 = bbox[0]
+                                            if low_y0 > bbox[1]:
+                                                low_y0 = bbox[1]
+                                            if high_x1 < bbox[2]:
+                                                high_x1 = bbox[2]
+                                            if high_y1 < bbox[3]:
+                                                high_y1 = bbox[3]
 
                                             current_in_pool[name_input][new_direction][frame_num] = \
                                                 {"sprite": sprite_pic,
@@ -230,6 +239,22 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                                         "sprite": current_in_pool[tuple(current_in_pool.keys())[0]][opposite_direction][0]["sprite"],
                                                         "animation_property": sprite_dict["animation_property"],
                                                         "frame_property": sprite_dict["frame_property"]}
+
+                for animation in current_in_pool:
+                    for direction in current_in_pool[animation]:
+                        for frame in current_in_pool[animation][direction]:
+                            # Crop transparent area only of surface, only do for battle sprite
+                            sprite_pic = current_in_pool[animation][direction][frame]["sprite"]
+                            size = sprite_pic.get_size()
+                            sprite_pic = pygame.image.tostring(sprite_pic,
+                                                         "RGBA")  # convert image to string data for filtering effect
+                            sprite_pic = Image.frombytes("RGBA", size, sprite_pic)  # use PIL to get image data
+                            sprite_pic = sprite_pic.crop((low_x0, low_y0, high_x1, high_y1))
+                            size = sprite_pic.size
+                            sprite_pic = sprite_pic.tobytes()
+                            sprite_pic = pygame.image.fromstring(sprite_pic, size, "RGBA")  # convert image back to a pygame surface
+                            current_in_pool[animation][direction][frame]["sprite"] = sprite_pic
+
     # except KeyError:  # any key error will return nothing
     #     pass
     return animation_sprite_pool

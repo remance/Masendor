@@ -32,7 +32,7 @@ class BaseMap(pygame.sprite.Sprite):
         self.terrain_colour = tuple([value[0] for value in self.terrain_colour.values()])
 
     def draw_image(self, image):
-        self.map_array = [[tuple(col) for col in row] for row in pygame.surfarray.array3d(image).tolist()]
+        self.map_array = tuple([[tuple(col) for col in row] for row in pygame.surfarray.array3d(image).tolist()])
 
     def get_terrain(self, pos):
         """get the base terrain at that exact position"""
@@ -82,7 +82,7 @@ class FeatureMap(pygame.sprite.Sprite):
         self.feature_colour = tuple([value[0] for value in self.feature_colour.values()])
 
     def draw_image(self, image):
-        self.map_array = [[tuple(col) for col in row] for row in pygame.surfarray.array3d(image).tolist()]
+        self.map_array = tuple([[tuple(col) for col in row] for row in pygame.surfarray.array3d(image).tolist()])
 
     def get_feature(self, pos, base_map):
         """get the terrain feature at that exact position"""

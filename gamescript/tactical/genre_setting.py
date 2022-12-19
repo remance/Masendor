@@ -20,8 +20,9 @@ object_variable = {("self", "object"): {"add_troop_number_sprite": True,  # troo
                                                     "max_zoom": 10,  # maximum zoom level
                                                     "troop_size_adjustable": troop_size_adjustable,
                                                     "time_speed_scale": 10,  # how fast time fly in battle
-                                                    "unit_behaviour_wheel": unit_behaviour_wheel
+                                                    "unit_behaviour_wheel": unit_behaviour_wheel,
                                                     # player unit behaviour control via wheel ui
+                                                    "unit_size": unit_size,  # maximum array size unit can contain subunits
                                                     },
                    ("unit", "class"): {"unit_size": unit_size,  # maximum array size unit can contain subunits
                                        },

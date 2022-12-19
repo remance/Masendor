@@ -70,7 +70,7 @@ def split_unit(self, how):
 
     self.setup_subunit_position_list()
 
-    # v Sort so the new leader subunit position match what set before
+    # Sort so the new leader subunit position match what set before
     subunit_sprite = [this_subunit for this_subunit in self.subunit_list if
                       this_subunit.game_id in new_army_subunit.flat]  # new list of sprite not sorted yet
     new_subunit_sprite = []
@@ -86,28 +86,26 @@ def split_unit(self, how):
         for this_subunit in subunit_sprite:
             if this_id == this_subunit.game_id:
                 self.subunit_list.append(this_subunit)
-    # ^ End sort
 
-    # v Reset position of subunit in inspect_ui for both old and new unit
+    # Reset position of subunit in inspect_ui for both old and new unit
     for sprite in (self.subunit_list, new_subunit_sprite):
         width, height = 0, 0
         subunit_number = 0
         for this_subunit in sprite:
-            width += self.battle.icon_sprite_width
+            width += self.battle.subunit_inspect_sprite_size[0]
 
             if subunit_number >= len(self.subunit_id_array[0]):
                 width = 0
-                width += self.battle.icon_sprite_width
-                height += self.battle.icon_sprite_height
+                width += self.battle.subunit_inspect_sprite_size[0]
+                height += self.battle.subunit_inspect_sprite_size[1]
                 subunit_number = 0
 
             this_subunit.inspect_pos = (width + self.battle.inspect_ui_pos[0], height + self.battle.inspect_ui_pos[1])
             this_subunit.rect = this_subunit.image.get_rect(topleft=this_subunit.inspect_pos)
             this_subunit.pos = pygame.Vector2(this_subunit.rect.centerx, this_subunit.rect.centery)
             subunit_number += 1
-    # ^ End reset position
 
-    # v Change the original unit stat and sprite
+    # Change the original unit stat and sprite
     original_leader = [self.leader[0], self.leader[2], self.leader[3],
                        leader.Leader(1, 0, 3, self, self.battle.leader_data)]
     for index, this_leader in enumerate(original_leader):  # Also change army position of all leader in that unit

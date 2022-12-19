@@ -102,8 +102,8 @@ class Game:
     create_unit_slot = empty_method
     loading_screen = empty_method
     menu_game_editor = empty_method
-    main_menu_process = empty_method
     menu_char_select = empty_method
+    menu_main = empty_method
     menu_map_select = empty_method
     menu_option = empty_method
     menu_team_select = empty_method
@@ -135,13 +135,16 @@ class Game:
     char_select = False
     leader_sprite = False
     troop_sprite_size = (200, 200)
-    unit_size = (8, 8)
     start_zoom = 1
     start_zoom_mode = "Follow"
     time_speed_scale = 1
     troop_size_adjustable = False
+    unit_size = (8, 8)
     add_troop_number_sprite = False
     command_ui_type = "command"
+
+    # Static variable
+    subunit_hitbox_size = 62  # full square hitbox height and width size, this also affect subunit sprite size
 
     def __init__(self, main_dir, error_log):
         pygame.init()  # Initialize pygame
@@ -560,12 +563,30 @@ class Game:
         # ^ End Main menu
 
         # v Battle related stuffs
-        subunit_ui_images = load_images(self.main_dir, self.screen_scale, ("ui", "subunit_ui"), load_order=False)
-        subunit.Subunit.subunit_ui_images = subunit_ui_images
+        subunit_ui_images = load_images(self.main_dir, (1, 1), ("ui", "subunit_ui"), load_order=False)  # no scaling when loaded for subunit sprite yet
+        new_subunit_ui_images = {}
+        for this_size in range(2, 11):  # create hp and stamina ring for 10 possible subunit sizes
+            new_subunit_ui_images["health" + str(this_size)] = \
+                {key: pygame.transform.smoothscale(value, (value.get_width() * this_size, value.get_height() * this_size))
+                 for key, value in subunit_ui_images.items() if "health" in key}
+            new_subunit_ui_images["stamina" + str(this_size)] = \
+                {key: pygame.transform.smoothscale(value, (value.get_width() * this_size, value.get_height() * this_size))
+                 for key, value in subunit_ui_images.items() if "stamina" in key}
 
-        subunit_icon_image = subunit_ui_images["subunit_player"]
-        self.icon_sprite_width = subunit_icon_image.get_width()
-        self.icon_sprite_height = subunit_icon_image.get_height()
+        subunit_ui_images |= new_subunit_ui_images
+
+        for stuff in subunit_ui_images:  # scale images with screen scale
+            if type(subunit_ui_images[stuff]) != dict:
+                subunit_ui_images[stuff] = pygame.transform.smoothscale(subunit_ui_images[stuff], (
+                    subunit_ui_images[stuff].get_width() * self.screen_scale[0],
+                    subunit_ui_images[stuff].get_height() * self.screen_scale[1]))
+            else:
+                for stuff2 in subunit_ui_images[stuff]:
+                    subunit_ui_images[stuff][stuff2] = pygame.transform.smoothscale(subunit_ui_images[stuff][stuff2], (
+                        subunit_ui_images[stuff][stuff2].get_width() * self.screen_scale[0],
+                        subunit_ui_images[stuff][stuff2].get_height() * self.screen_scale[1]))
+
+        subunit.Subunit.subunit_ui_images = subunit_ui_images
 
         self.fps_count = battleui.FPScount()  # FPS number counter
         self.battle_ui_updater.add(self.fps_count)
@@ -685,6 +706,10 @@ class Game:
 
         self.encyclopedia_stuff = (self.encyclopedia, self.lore_name_list, self.filter_tag_list,
                                    self.lore_name_list.scroll, self.filter_tag_list.scroll, *self.lore_button_ui)
+
+        self.subunit_inspect_sprite_size = (self.subunit_hitbox_size * self.screen_scale[0],
+                                            self.subunit_hitbox_size * self.screen_scale[1])
+
         self.battle_game = battle.Battle(self, self.window_style)
         self.battle_game.generate_unit = self.generate_unit
 
@@ -697,12 +722,12 @@ class Game:
 
         subunit.Subunit.battle = self.battle_game
         leader.Leader.battle = self.battle_game
-        start_pos = [(self.screen_rect.width / 2) - (self.icon_sprite_width * 5),
-                     (self.screen_rect.height / 2) - (self.icon_sprite_height * 4)]
-        self.create_unit_slot(0, 0, range(0, 64), start_pos)  # make player custom unit slot
-        # ^ End battle related stuffs
 
-        # starting script
+        start_pos = [(self.screen_rect.width / 2) - (self.subunit_inspect_sprite_size[0] * 5),
+                     (self.screen_rect.height / 2) - (self.subunit_inspect_sprite_size[1] * 4)]
+        self.create_unit_slot(0, 0, range(0, 64), start_pos)  # make player custom unit slot
+
+        # Starting script
         self.main_ui_updater.remove(*self.menu_button)  # remove all button from drawing
         self.menu_button.remove(
             *self.menu_button)  # remove all button at the start and add later depending on menu_state
@@ -1108,7 +1133,7 @@ class Game:
             elif self.input_popup == (None, None):
                 self.menu_button.update(self.mouse_pos, mouse_left_up, mouse_left_down)
                 if self.menu_state == "main_menu":
-                    self.main_menu_process(mouse_left_up)
+                    self.menu_main(mouse_left_up)
 
                 elif self.menu_state == "preset_map" or self.menu_state == "custom_map":
                     self.menu_map_select(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press)

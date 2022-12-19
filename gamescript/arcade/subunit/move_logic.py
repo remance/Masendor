@@ -64,7 +64,7 @@ def move_logic(self, dt, unit_state, collide_list):
                                                              (0 < new_pos[0] < 1000 and 0 < new_pos[1] < 1000))):
                     # cannot go pass map unless in retreat state
                     if new_move_length <= move_length:  # move normally according to move speed
-                        self.base_pos = new_pos
+                        self.base_pos += move
                         self.pos = self.base_pos * self.zoom
                         self.rect.center = list(
                             int(v) for v in self.pos)  # list rect so the sprite gradually move to position

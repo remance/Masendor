@@ -21,6 +21,7 @@ def enter_battle(self, zoom, animation_pool):
     self.status_update()
 
     self.battle.battle_subunit_list.append(self)
+    self.battle.subunit_pos_list.append(self.base_pos)
 
     # Add troop number to counter how many troop join battle
     self.battle.team_troop_number[self.team] += self.troop_number
