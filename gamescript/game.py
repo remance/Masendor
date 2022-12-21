@@ -231,14 +231,14 @@ class Game:
         try:
             custom_unit_preset_list = csv_read(self.main_dir, "custom_unitpreset.csv",
                                                ("profile", "unitpreset", str(self.ruleset)))
-            del custom_unit_preset_list["presetname"]
+            del custom_unit_preset_list["Name"]
             self.custom_unit_preset_list = {"New Preset": 0, **custom_unit_preset_list}
         except FileNotFoundError:
             with open("profile/unitpreset/" + str(self.ruleset) + "/custom_unitpreset.csv", "w") as edit_file:
                 file_writer = csv.writer(edit_file, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL)
                 file_writer.writerow(
-                    ("presetname", "unitline2", "unitline2", "unitline3", "unitline4", "unitline15", "unitline6",
-                     "unitline7", "unitline8", "leader", "leaderposition", "faction"))  # create header
+                    ("Name", "Row 1", "Row 2", "Row 3", "Row 4", "Row 5", "Row 6",
+                     "Row 7", "Row 8", "Leader", "Leader POS", "Faction"))  # create header
                 edit_file.close()
 
             self.custom_unit_preset_list = {}
@@ -313,10 +313,6 @@ class Game:
         self.effect_updater = pygame.sprite.Group()  # updater for effect objects (e.g. range melee_attack sprite)
 
         self.preview_char = pygame.sprite.Group()  # group for char list in char select screen
-
-        self.subunit_group = pygame.sprite.Group()  # all subunits group
-
-        self.leader_group = pygame.sprite.Group()  # all leaders group
 
         self.damage_sprites = pygame.sprite.Group()  # all damage sprite group and maybe other range effect stuff later
         self.direction_arrows = pygame.sprite.Group()
@@ -499,7 +495,7 @@ class Game:
         self.unit_edit_button = menu.MenuButton(self.screen_scale, image_list,
                                                 (self.screen_rect.width / 2,
                                                  self.screen_rect.height - (image_list[0].get_height() * 4)),
-                                                self.main_ui_updater, text="Army Editor")
+                                                self.main_ui_updater, text="Unit Editor")
         self.subunit_create_button = menu.MenuButton(self.screen_scale, image_list,
                                                      (self.screen_rect.width / 2,
                                                       self.screen_rect.height - (image_list[0].get_height() * 2.5)),
@@ -647,12 +643,6 @@ class Game:
 
         self.tick_box.add(*self.filter_tick_box)
 
-        self.preview_leader = [uniteditor.PreviewLeader(1, 0, 0),
-                               uniteditor.PreviewLeader(1, 0, 1),
-                               uniteditor.PreviewLeader(1, 0, 2),
-                               uniteditor.PreviewLeader(1, 0, 3)]  # list of preview leader for unit editor
-        self.leader_updater.remove(*self.preview_leader)  # remove preview leader from updater since not use in battle
-
         # user input popup ui
         input_ui_dict = make_input_box(self.main_dir, self.screen_scale, self.screen_rect,
                                        load_base_button(self.main_dir, self.screen_scale))
@@ -712,6 +702,7 @@ class Game:
 
         self.battle_game = battle.Battle(self, self.window_style)
         self.battle_game.generate_unit = self.generate_unit
+        self.battle_game.leader_position_check = self.leader_position_check
 
         self.change_game_genre(self.genre)
 
@@ -839,6 +830,15 @@ class Game:
         # Error log for selected genre, ruleset
         self.error_log.write("Ruleset: " + self.ruleset_list[self.ruleset][0] + ", Mode: " + self.genre)
 
+        self.preview_leader = (leader.Leader(1, 0, 0, None, self.leader_data, layer=11),
+                               leader.Leader(1, 0, 1, None, self.leader_data, layer=11),
+                               leader.Leader(1, 0, 2, None, self.leader_data, layer=11),
+                               leader.Leader(1, 0, 3, None, self.leader_data, layer=11))  # list of preview leader for unit editor
+        for this_leader in self.preview_leader:
+            self.leader_updater.remove(this_leader)
+        self.battle_game.preview_leader = self.preview_leader
+        self.leader_updater.remove(*self.preview_leader)  # remove preview leader from updater since not use in battle
+
     def change_game_genre(self, genre):
         """Add new genre module here"""
 
@@ -859,10 +859,11 @@ class Game:
                 try:
                     for this_file in os.scandir(Path(directory + new_genre + "/" + folder)):
                         if this_file.is_file():
-                            if ".pyc" in this_file.name:
-                                file_name = this_file.name[:-4]
-                            elif ".py" in this_file.name:
+                            if ".py" in this_file.name:
                                 file_name = this_file.name[:-3]
+                            elif ".pyc" in this_file.name:
+                                file_name = this_file.name[:-4]
+
                             exec(f"from " + script_folder + "." + new_genre + "." +
                                  folder.replace("/", ".") + " import " + file_name)
                             try:
@@ -909,10 +910,11 @@ class Game:
         import_genre_module(self.script_dir, self.genre, new_genre, "Game", ("game",))
 
         genre_setting = importlib.import_module("gamescript." + new_genre + ".genre_setting")
+
         # Change genre for other objects
         import_genre_module(self.script_dir, self.genre, new_genre, "Subunit", ("subunit",))
         import_genre_module(self.script_dir, self.genre, new_genre, "Unit", ("unit",))
-        import_genre_module(self.script_dir, self.genre, new_genre, "Battle", ("battle", "battle/uniteditor", "ui"))
+        import_genre_module(self.script_dir, self.genre, new_genre, "Battle", ("battle", "ui"))
         import_genre_module(self.script_dir, self.genre, new_genre, "Leader", ("leader",))
 
         for object_key in genre_setting.object_variable:  # add genre-specific variables to appropriate object
@@ -928,7 +930,6 @@ class Game:
                 else:  # any other type value
                     exec(f"" + how + "." + key + " = " + str(value))
 
-        # calculate order placement from unit size setting
         self.genre = new_genre
         self.battle_game.genre = self.genre
 
@@ -949,7 +950,6 @@ class Game:
         self.genre_ui_dict = make_genre_specific_ui(self.main_dir, self.screen_scale, self.genre, self.command_ui_type)
         self.command_ui = self.genre_ui_dict["command_ui"]
         self.ui_updater.add(self.command_ui)
-        uniteditor.PreviewLeader.leader_pos = self.command_ui.leader_pos
         leader.Leader.leader_pos = self.command_ui.leader_pos
 
         self.col_split_button = self.genre_ui_dict["col_split_button"]
@@ -975,6 +975,7 @@ class Game:
             self.command_ui.load_sprite(genre_battle_ui_image["command_box"], genre_icon_image)
         else:
             self.command_ui.load_sprite(None, None)
+
         self.genre_ui_dict["col_split_button"].image = genre_battle_ui_image["colsplit_button"]
         self.genre_ui_dict["row_split_button"].image = genre_battle_ui_image["rowsplit_button"]
 

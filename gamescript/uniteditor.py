@@ -53,55 +53,6 @@ class PreviewBox(pygame.sprite.Sprite):
         self.image.blit(text_surface, text_rect)
 
 
-class PreviewLeader(pygame.sprite.Sprite):
-    leader_pos = None
-
-    def __init__(self, leader_id, subunit_pos, army_position):
-        self._layer = 11
-        pygame.sprite.Sprite.__init__(self)
-
-        self.state = 0
-        self.subunit = None
-
-        self.leader_id = leader_id
-
-        self.subunit_pos = subunit_pos  # Squad position is the index of subunit in subunit sprite loop
-        self.army_position = army_position  # position in the unit (e.g. general or sub-general)
-        self.image = pygame.Surface((50, 50), pygame.SRCALPHA)
-
-    def change_preview_leader(self, leader_id, leader_data):
-        self.leader_id = leader_id  # leader_id is only used as reference to the leader data
-
-        stat = leader_data.leader_list[leader_id]
-
-        self.name = stat["Name"]
-        self.authority = stat["Authority"]
-        self.social = leader_data.leader_class[stat["Social Class"]]
-        self.description = stat["Description"]
-
-        try:  # Put leader image into leader slot
-            image_name = str(leader_id) + ".png"
-            self.full_image = leader_data.images[image_name].copy()
-        except:  # Use Unknown leader image if there is none in list
-            self.full_image = leader_data.images["9999999.png"].copy()
-
-        self.image = pygame.transform.scale(self.full_image, (50, 50))  # TODO change scale number
-        self.img_position = self.leader_pos[self.army_position]  # image position based on army_position
-
-        self.rect = self.image.get_rect(midbottom=self.img_position)
-        self.image_original = self.image.copy()
-
-        self.commander = False  # army commander
-        self.originalcommander = False  # the first army commander at the start of battle
-
-    def change_subunit(self, subunit):
-        self.subunit = subunit
-        if subunit is None:
-            self.subunit_pos = 0
-        else:
-            self.subunit_pos = subunit.game_id
-
-
 class SelectedPresetBorder(pygame.sprite.Sprite):
     def __init__(self, size):
         self._layer = 16

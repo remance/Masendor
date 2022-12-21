@@ -210,11 +210,17 @@ def status_update(self, weather=None):
     if self.battle.day_time == "Twilight":
         if self.check_special_effect("Night Vision") is False:
             sight_bonus -= 10
+            accuracy_bonus -= 5
         hidden_bonus += 10
     elif self.battle.day_time == "Night":
         if self.check_special_effect("Night Vision") is False:
             sight_bonus -= 30
+            accuracy_bonus -= 20
         hidden_bonus += 30
+    else:  # day
+        if self.check_special_effect("Day Blindness"):
+            sight_bonus -= 30
+            accuracy_bonus -= 20
 
     self.temperature_cal(temp_reach)  # calculate temperature and its effect
 
@@ -270,8 +276,11 @@ def status_update(self, weather=None):
     self.hidden = self.hidden + hidden_bonus
     self.crit_effect = self.crit_effect * crit_effect_modifier
 
-    self.charge_power = ((self.charge * self.speed) / 2) * self.troop_mass
-    self.charge_def_power = self.charge_def * self.troop_mass
+    troop_mass = self.troop_mass
+    if self.current_action and self.current_action["Name"] == "KnockDown":  # knockdown reduce mass
+        troop_mass = int(self.troop_mass / 2)
+    self.charge_power = ((self.charge * self.speed) / 2) * troop_mass
+    self.charge_def_power = self.charge_def * troop_mass
 
     full_merge_len = len(self.full_merge) + 1
     if full_merge_len > 1:  # reduce discipline if there are overlap subunit

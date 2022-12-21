@@ -33,12 +33,11 @@ def generate_unit(self, which_team, setup_data, control, command, colour, coa, s
     row_header = [header for header in setup_data if "Row " in header]
     subunit_array = np.array([setup_data[header] for header in row_header])
     leader_position = self.leader_position_check(subunit_array)
-    if leader_position is None:
+    if leader_position is None:  # None from empty method
         leader_position = setup_data["Leader Position"]
 
     old_subunit_list = subunit_array[~np.all(subunit_array == "0", axis=1)]  # remove whole empty column in subunit list
-    subunit_array = old_subunit_list[:,
-                    ~np.all(old_subunit_list == "0", axis=0)]  # remove whole empty row in subunit list
+    subunit_array = old_subunit_list[:, ~np.all(old_subunit_list == "0", axis=0)]  # remove whole empty row in subunit list
     this_unit = unit.Unit(setup_data["ID"], setup_data["POS"], subunit_array, colour, control, coa, command,
                           abs(360 - setup_data["Angle"]), setup_data["Start Health"], setup_data["Start Stamina"],
                           setup_data["Team"])

@@ -1209,6 +1209,29 @@ class Model:
             self.part_selected = []
 
         elif self.part_selected:
+            if edit_type == "place":  # find center point of all selected parts
+                min_x = 9999999
+                min_y = 9999999
+                max_x = 0
+                max_y = 0
+                for part in self.part_selected:  # loop to find min and max point for center
+                    if part < len(key_list):  # skip part that not exist
+                        part_index = key_list[part]
+                        if self.animation_part_list[edit_frame][part_index] is not None and \
+                                len(self.animation_part_list[edit_frame][part_index]) > 3:
+                            value = self.animation_part_list[edit_frame][part_index][2]
+                            x = value[0]
+                            y = value[1]
+                            if min_x > x:
+                                min_x = x
+                            if max_x < x:
+                                max_x = x
+                            if min_y > y:
+                                min_y = y
+                            if max_y < y:
+                                max_y = y
+                center = ((min_x + max_x) / 2, (min_y + max_y) / 2)  # find center of all parts
+
             for part in self.part_selected:
                 if part < len(key_list):  # can't edit part that not exist
                     part_index = key_list[part]
@@ -1216,12 +1239,15 @@ class Model:
                             len(self.animation_part_list[edit_frame][part_index]) > 3:
                         if edit_type == "place":  # mouse place
                             new_point = mouse_pos
+                            offset = (self.animation_part_list[edit_frame][part_index][2][0] - center[0],
+                                      self.animation_part_list[edit_frame][part_index][2][1] - center[1])
                             if point_edit == 1:  # use joint
                                 part_image = self.sprite_image[part_index]
                                 center = pygame.Vector2(part_image.get_width() / 2, part_image.get_height() / 2)
                                 pos_different = center - self.animation_part_list[edit_frame][part_index][
                                     1]  # find distance between image center and connect point main_joint_pos
                                 new_point = new_point + pos_different
+                            new_point = new_point + offset
                             self.animation_part_list[edit_frame][part_index][2] = new_point
 
                         elif "move_" in edit_type:  # keyboard move
@@ -1932,11 +1958,11 @@ while True:
                 keypress_delay = 0.1
                 if model.part_selected:
                     model.edit_part(mouse_pos, "delete")
-            elif key_press[pygame.K_PAGEUP]:
+            elif key_press[pygame.K_PAGEUP] or key_press[pygame.K_KP_PLUS]:
                 keypress_delay = 0.1
                 if model.part_selected:
                     model.edit_part(mouse_pos, "layer_up")
-            elif key_press[pygame.K_PAGEDOWN]:
+            elif key_press[pygame.K_PAGEDOWN] or key_press[pygame.K_KP_MINUS]:
                 keypress_delay = 0.1
                 if model.part_selected:
                     model.edit_part(mouse_pos, "layer_down")

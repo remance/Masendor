@@ -20,28 +20,27 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                     if self.subunit_in_card.leader is not None and \
                             self.leader_now[
                                 self.subunit_in_card.leader.role].name != "None":  # remove old leader
-                        self.leader_now[self.subunit_in_card.leader.role].change_preview_leader(1,
-                                                                                                self.leader_data)
+                        self.leader_now[self.subunit_in_card.leader.role].change_preview_leader(1)
                         self.leader_now[self.subunit_in_card.leader.role].change_subunit(None)
 
                     true_index = [index for index, value in
                                   enumerate(list(self.leader_data.leader_list.values())) if value["Name"] == name.name][
                         0]
                     true_index = list(self.leader_data.leader_list.keys())[true_index]
-                    self.leader_now[self.selected_leader].change_preview_leader(true_index, self.leader_data)
-                    self.leader_now[self.selected_leader].change_subunit(self.subunit_in_card)
+                    self.leader_now[self.selected_leader].change_preview_leader(true_index)
+                    self.leader_now[self.selected_leader].change_editor_subunit(self.subunit_in_card)
                     self.subunit_in_card.leader = self.leader_now[self.selected_leader]
                     self.preview_authority(self.leader_now)
                     self.troop_card_ui.value_input(who=self.subunit_in_card, change_option=1)
                     unit_dict = self.convert_unit_slot_to_dict("test")
                     if unit_dict is not None:
                         warn_list = []
-                        leader_list = [int(item) for item in unit_dict['test'][-3].split(",")]
+                        leader_list = [int(item) for item in unit_dict['test']["Leader"]]
                         leader_list = [item for item in leader_list if 1 < item < 10000]
                         leader_list_set = set(leader_list)
                         if len(leader_list) != len(leader_list_set):  # unit has duplicate unique leader
                             warn_list.append(self.warning_msg.duplicate_leader_warn)
-                        if unit_dict['test'][-1] == "0":  # unit has leader/unit of multi faction
+                        if unit_dict['test']["Faction"] == "0":  # unit has leader/unit of multi faction
                             warn_list.append(self.warning_msg.multi_faction_warn)
                         if len(warn_list) > 0:
                             self.warning_msg.warning(warn_list)
@@ -72,7 +71,7 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                             self.subunit_build):  # change all slot to whatever save in the selected preset
                         slot.kill()
                         slot.__init__(unit_list[slot_index], slot.game_id, self.unit_build_slot, slot.pos,
-                                      100, 100, [1, 1], self.genre, "edit")  # TODO init cause issue
+                                      100, 100, (1, 1))  # TODO init cause issue
                         slot.kill()
                         self.subunit_build.add(slot)
                         self.battle_ui_updater.add(slot)
@@ -82,22 +81,21 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                         if self.preview_leader[leader_index].subunit is not None:
                             self.preview_leader[leader_index].subunit.leader = None
 
-                        self.preview_leader[leader_index].change_preview_leader(item, self.leader_data)
+                        self.preview_leader[leader_index].change_preview_leader(item)
 
                         pos_index = 0
                         for slot in self.subunit_build:  # can't use game_id here as none subunit not count in position check
                             if pos_index == leader_pos_list[leader_index]:
-                                self.preview_leader[leader_index].change_subunit(slot)
+                                self.preview_leader[leader_index].change_editor_subunit(slot)
                                 slot.leader = self.preview_leader[leader_index]
                                 break
                             else:
-                                if slot.name != "None":
-                                    pos_index += 1
+                                pos_index += 1
 
                     self.leader_now = [this_leader for this_leader in self.preview_leader]
                     self.battle_ui_updater.add(*self.leader_now)  # add leader portrait to draw
                     self.subunit_in_card = slot
-                    self.command_ui.value_input(who=self.subunit_in_card)
+                    self.command_ui.value_input(who=self.subunit_in_card.unit)
                     self.troop_card_ui.value_input(who=self.subunit_in_card)  # update subunit card on selected subunit
                     if self.troop_card_ui.option == 2:
                         self.trait_skill_icon_blit()
@@ -109,16 +107,15 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                     self.unit_preset_name = ""
                     for slot in self.subunit_build:  # reset all sub-subunit slot
                         slot.kill()
-                        slot.__init__(0, slot.game_id, self.unit_build_slot, slot.pos, 100, 100, [1, 1], self.genre,
-                                      "edit")
+                        slot.__init__(0, slot.game_id, self.unit_build_slot, slot.pos, 100, 100, (1, 1))
                         slot.kill()
                         self.subunit_build.add(slot)
                         self.battle_ui_updater.add(slot)
                         slot.leader = None  # remove leader link in
 
                     for this_leader in self.preview_leader:
-                        this_leader.change_subunit(None)  # remove subunit link in leader
-                        this_leader.change_preview_leader(1, self.leader_data)
+                        this_leader.change_editor_subunit(None)  # remove subunit link in leader
+                        this_leader.change_preview_leader(1)
 
                     self.leader_now = [this_leader for this_leader in self.preview_leader]
                     self.battle_ui_updater.add(*self.leader_now)  # add leader portrait to draw
@@ -301,11 +298,8 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                         self.battle_ui_updater.add(*self.unit_edit_border)
 
                         if clicked_slot.name != "None":
-                            self.battle_ui_updater.remove(*self.leader_now)
-                            self.leader_now = [this_leader for this_leader in self.preview_leader]
-                            self.battle_ui_updater.add(*self.leader_now)  # add leader portrait to draw
                             self.subunit_in_card = slot
-                            self.command_ui.value_input(who=self.subunit_in_card)
+                            self.command_ui.value_input(who=self.subunit_in_card.unit)
                             self.troop_card_ui.value_input(
                                 who=self.subunit_in_card)  # update subunit card on selected subunit
                             if self.troop_card_ui.option == 2:
@@ -367,7 +361,7 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                                 slot.kill()
                                                 slot.__init__(self.troop_index_list[index + self.current_troop_row],
                                                               new_slot.game_id, self.unit_build_slot, slot.pos,
-                                                              100, 100, [1, 1], self.genre, "edit")
+                                                              100, 100, (1, 1))
                                                 slot.kill()
                                                 self.subunit_build.add(slot)
                                                 self.battle_ui_updater.add(slot)
@@ -375,7 +369,7 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                             slot.kill()
                                             slot.__init__(self.troop_index_list[index + self.current_troop_row],
                                                           slot.game_id, self.unit_build_slot, slot.pos,
-                                                          100, 100, [1, 1], self.genre, "edit")
+                                                          100, 100, (1, 1))
                                             slot.kill()
                                             self.subunit_build.add(slot)
                                             self.battle_ui_updater.add(slot)
@@ -386,20 +380,18 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                             self.battle_ui_updater.add(*self.leader_now)  # add leader portrait to draw
                                             self.subunit_in_card = slot
                                             self.preview_authority(self.leader_now)
-                                            self.troop_card_ui.value_input(who=self.subunit_in_card,
-                                                                           weapon_data=self.weapon_data,
-                                                                           armour_data=self.armour_data)  # update subunit card on selected subunit
+                                            self.troop_card_ui.value_input(who=self.subunit_in_card)  # update subunit card on selected subunit
                                             if self.troop_card_ui.option == 2:
                                                 self.trait_skill_icon_blit()
                                                 self.effect_icon_blit()
                                                 self.countdown_skill_icon()
                                         elif slot.name == "None" and slot.leader is not None:  # remove leader from none subunit if any
-                                            slot.leader.change_preview_leader(1, self.leader_data)
-                                            slot.leader.change_subunit(None)  # remove subunit link in leader
+                                            slot.leader.change_preview_leader(1)
+                                            slot.leader.change_editor_subunit(None)  # remove subunit link in leader
                                             slot.leader = None  # remove leader link in subunit
                                             self.preview_authority(self.leader_now)
                                 unit_dict = self.convert_unit_slot_to_dict("test")
-                                if unit_dict is not None and unit_dict['test'][-1] == "0":
+                                if unit_dict is not None and unit_dict['test']["Faction"] == "0":
                                     self.warning_msg.warning([self.warning_msg.multi_faction_warn])
                                     self.battle_ui_updater.add(self.warning_msg)
 
@@ -425,7 +417,7 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                 show = True
                             slot.kill()
                             slot.__init__(slot.troop_id, slot.game_id, self.unit_build_slot, slot.pos,
-                                          100, 100, self.unit_scale, self.genre, "edit")
+                                          100, 100, self.unit_scale)
                             slot.kill()
                             self.subunit_build.add(slot)
                             if show:  # currently has ui showing
@@ -436,12 +428,12 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                     elif self.slot_display_button.rect.collidepoint(self.mouse_pos):
                         if self.slot_display_button.event == 0:  # hide
                             self.slot_display_button.event = 1
-                            self.battle_ui_updater.remove(self.unit_setup_stuff, self.leader_now)
+                            self.battle_ui_updater.remove(self.unit_editor_stuff, *self.leader_now)
                             self.kill_effect_icon()
 
                         elif self.slot_display_button.event == 1:  # show
                             self.slot_display_button.event = 0
-                            self.battle_ui_updater.add(self.unit_setup_stuff, self.leader_now)
+                            self.battle_ui_updater.add(self.unit_editor_stuff, *self.leader_now)
 
                     elif self.deploy_button.rect.collidepoint(
                             self.mouse_pos) and self.subunit_build in self.battle_ui_updater:
@@ -472,8 +464,8 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                                                                     self.screen_scale[
                                                                                         1]))], unit_game_id)
                             subunit_game_id = 0
-                            if len(self.subunit) > 0:
-                                for this_subunit in self.subunit:
+                            if len(self.subunit_updater) > 0:
+                                for this_subunit in self.subunit_updater:
                                     subunit_game_id = this_subunit.game_id
                                 subunit_game_id = subunit_game_id + 1
                             for slot in self.subunit_build:  # just for grabbing current selected team
@@ -481,18 +473,18 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                 current_preset[self.unit_preset_name]["Start Health"] = 100
                                 current_preset[self.unit_preset_name]["Start Stamina"] = 100
                                 current_preset[self.unit_preset_name]["Team"] = slot.team
-                                self.unit_editor_convert(self.all_team_unit[slot.team],
-                                                         current_preset[self.unit_preset_name], team_colour[slot.team],
-                                                         pygame.transform.scale(self.coa_list[int(
+                                self.unit_editor_deploy(self.all_team_unit[slot.team],
+                                                        current_preset[self.unit_preset_name], team_colour[slot.team],
+                                                        pygame.transform.scale(self.coa_list[int(
                                                              current_preset[self.unit_preset_name]["Team"])], (60, 60)),
-                                                         subunit_game_id)
+                                                        subunit_game_id)
                                 break
                             self.slot_display_button.event = 1
                             self.kill_effect_icon()
                             self.unit_selector.setup_unit_icon(self.unit_icon, self.all_team_unit[self.team_selected])
-                            self.battle_ui_updater.remove(self.unit_setup_stuff, self.leader_now)
+                            self.battle_ui_updater.remove(self.unit_editor_stuff, self.leader_now)
                             for this_unit in self.unit_updater:
-                                this_unit.enter_battle(self.subunit)
+                                this_unit.enter_battle()
                             for this_leader in self.leader_updater:
                                 this_leader.enter_battle()
                             for this_subunit in self.subunit_updater:

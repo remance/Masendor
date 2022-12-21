@@ -119,7 +119,7 @@ class HeightMap(pygame.sprite.Sprite):
     def draw_image(self, image):
         self.image = image.copy()
         if self.topology:
-            data = pygame.image.tostring(self.image.copy(), "RGB")  # convert image to string data for filtering effect
+            data = pygame.image.tostring(self.image, "RGB")  # convert image to string data for filtering effect
             img = Image.frombytes("RGB", (self.image.get_width(), self.image.get_height()), data)  # use PIL to get image data
             img = ImageOps.grayscale(img)  # grey scale the image
             img = img.filter(ImageFilter.GaussianBlur(radius=2))  # blur Image
@@ -258,8 +258,11 @@ class BeautifulMap(pygame.sprite.Sprite):
         self.true_image = self.image.copy()  # image before adding effect and place name
 
         # Save place name image as variable
-        self.place_name = pygame.transform.smoothscale(place_name, (place_name.get_width() * self.screen_scale[0],
-                                                              place_name.get_height() * self.screen_scale[1]))
+        if place_name is not None:
+            self.place_name = pygame.transform.smoothscale(place_name, (place_name.get_width() * self.screen_scale[0],
+                                                                  place_name.get_height() * self.screen_scale[1]))
+        else:
+            self.place_name = pygame.Surface((0, 0))
 
         self.add_effect(height_map)
 

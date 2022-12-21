@@ -363,6 +363,7 @@ class CommandUI(pygame.sprite.Sprite):
                                (self.inspect_pos[2][0], self.inspect_pos[2][1]),
                                (self.inspect_pos[3][0], self.inspect_pos[3][1]))
             self.image_original = self.image.copy()
+            self.image_original2 = self.image.copy()
         else:
             self.image = self.image_original.copy()
             self.image.blit(self.health_bar, self.health_bar_rect)
@@ -383,7 +384,7 @@ class CommandUI(pygame.sprite.Sprite):
             for this_button in button:
                 this_button.draw(self.image)
 
-            if who != self.last_who or split:  # only redraw leader circle when change subunit
+            if (who != self.last_who or split) and who.leader is not None:  # only redraw leader circle when change unit
                 use_colour = self.white  # colour of the chess icon for leader, white for team 1
                 if who.team == 2:  # black for team 2
                     use_colour = self.black
@@ -614,10 +615,11 @@ class MiniMap(pygame.sprite.Sprite):
         """update unit dot on map"""
         self.camera_pos = camera_pos
         self.image = self.image_original.copy()
-        for unit, pos in team_pos_list["alive"].items():
-            scaled_pos = (pos[0] / self.map_scale_width, pos[1] / self.map_scale_height)
-            rect = self.dot_images[unit.team].get_rect(center=scaled_pos)
-            self.image.blit(self.dot_images[unit.team], rect)
+        if "alive" in team_pos_list:
+            for unit, pos in team_pos_list["alive"].items():
+                scaled_pos = (pos[0] / self.map_scale_width, pos[1] / self.map_scale_height)
+                rect = self.dot_images[unit.team].get_rect(center=scaled_pos)
+                self.image.blit(self.dot_images[unit.team], rect)
         pygame.draw.rect(self.image, (0, 0, 0),
                          ((camera_pos[1][0] / self.screen_scale[0] / (self.map_scale_width)) / view_mode,
                           (camera_pos[1][1] / self.screen_scale[1] / (self.map_scale_height)) / view_mode,
@@ -844,27 +846,27 @@ class UnitSelector(pygame.sprite.Sprite):
 
     def setup_unit_icon(self, unit_icon_group, unit_list):
         """Setup unit selection list in unit selector ui top left of screen"""
-        for this_unit in unit_list:
-            max_column_show = int(
-                self.image.get_width() / ((this_unit.leader[0].full_image.get_width() * self.icon_scale * 1.5)))
-            break
-        current_index = int(self.current_row * max_column_show)  # the first index of current row
-        self.row_size = len(unit_list) / max_column_show
-
-        if self.row_size.is_integer() is False:
-            self.row_size = int(self.row_size) + 1
-
-        if self.current_row > self.row_size - 1:
-            self.current_row = self.row_size - 1
-            current_index = int(self.current_row * max_column_show)
-            self.scroll.change_image(new_row=self.current_row)
-
         if len(unit_icon_group) > 0:  # remove all old icon first before making new list
             for icon in unit_icon_group:
                 icon.kill()
                 del icon
 
         if len(unit_list) > 0:
+            for this_unit in unit_list:
+                max_column_show = int(
+                    self.image.get_width() / ((this_unit.leader[0].full_image.get_width() * self.icon_scale * 1.5)))
+                break
+            current_index = int(self.current_row * max_column_show)  # the first index of current row
+            self.row_size = len(unit_list) / max_column_show
+
+            if self.row_size.is_integer() is False:
+                self.row_size = int(self.row_size) + 1
+
+            if self.current_row > self.row_size - 1:
+                self.current_row = self.row_size - 1
+                current_index = int(self.current_row * max_column_show)
+                self.scroll.change_image(new_row=self.current_row)
+
             for index, this_unit in enumerate(
                     unit_list):  # add unit icon for drawing according to appropriated current row
                 if index == 0:

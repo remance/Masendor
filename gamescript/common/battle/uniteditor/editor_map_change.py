@@ -1,5 +1,7 @@
 import pygame
 
+# TODO add function to select map from preset/custom layout
+
 
 def editor_map_change(self, base_colour, feature_colour):
     map_images = (

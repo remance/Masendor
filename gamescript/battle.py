@@ -60,9 +60,7 @@ class Battle:
     filter_troop_list = empty_method
     preview_authority = empty_method
     save_custom_unit_preset = empty_method
-
-    # import from *genre*.battle.uniteditor
-    unit_editor_convert = empty_method
+    unit_editor_deploy = empty_method
 
     # import from *genre*.battle
     add_behaviour_ui = empty_method
@@ -77,14 +75,14 @@ class Battle:
     selected_unit_process = empty_method
     setup_battle_ui = empty_method
 
-    for folder in ("battle", "ui"):
+    for folder in ("battle", "battle/uniteditor", "ui"):
         for entry in os.scandir(Path(script_dir + "/common/" + folder + "/")):  # load and replace modules from common
             if entry.is_file():
                 if ".pyc" in entry.name:
                     file_name = entry.name[:-4]
                 elif ".py" in entry.name:
                     file_name = entry.name[:-3]
-                exec(f"from gamescript.common." + folder + " import " + file_name)
+                exec(f"from gamescript.common." + folder.replace("/", ".") + " import " + file_name)
                 exec(f"" + file_name + " = " + file_name + "." + file_name)
 
     # variable that get changed based on genre
@@ -126,7 +124,7 @@ class Battle:
         self.battle_map_height = main.battle_height_map
         self.battle_map = main.battle_map
 
-        self.range_attacks = main.damage_sprites
+        self.damage_sprites = main.damage_sprites
         self.direction_arrows = main.direction_arrows
         self.troop_number_sprite = main.troop_number_sprite
 
@@ -166,7 +164,6 @@ class Battle:
         self.unit_build_slot = main.unit_build_slot
         self.subunit_build = main.subunit_build
         self.unit_edit_border = main.unit_edit_border
-        self.preview_leader = main.preview_leader
         self.unitpreset_namegroup = main.unitpreset_namegroup
         self.preset_select_border = main.preset_select_border
         self.custom_unit_preset_list = main.custom_unit_preset_list
@@ -219,6 +216,7 @@ class Battle:
         self.front_distance = self.subunit_hitbox_size / 20  # distance from front side
         self.full_distance = self.front_distance / 2  # distance for sprite merge check
 
+        self.preview_leader = []
         self.inspect_subunit = []  # list of subunit shown in inspect ui
 
         self.combat_path_queue = []  # queue of sub-unit to run melee combat pathfiding
@@ -303,23 +301,21 @@ class Battle:
         self.flee_troop_number = []
         self.capture_troop_number = []
         self.faction_pick = 0
+        self.current_pop_up_row = 0
         self.filter_troop = [True, True, True,
                              True]  # filter in this order: melee infantry, range inf, melee cavalry, range cav
         self.current_selected = None
         self.before_selected = None
         self.player_input_state = None  # specific player command input and ui
 
-        self.all_team_unit = {"alive": pygame.sprite.Group()}  # all unit in each team and alive
-        self.team_pos_list = {}  # all alive team unit position
+        self.all_team_unit = {1: pygame.sprite.Group(),
+                              2: pygame.sprite.Group(), "alive": pygame.sprite.Group()}  # more team can be added later
+        self.team_pos_list = {key: {} for key in self.all_team_unit.keys()}  # all alive team unit position
         self.subunit_pos_list = []
 
         self.battle_subunit_list = []  # list of all subunit alive in battle, need to be in list for collision check
         self.visible_subunit_list = {}  # list of subunit visible to the team
 
-        self.unit_setup_stuff = (self.subunit_build, self.unit_edit_border, self.command_ui, self.troop_card_ui,
-                                 self.team_coa, self.troop_card_button, self.editor_troop_list_box,
-                                 self.troop_namegroup, self.unit_preset_list_box, self.preset_select_border,
-                                 self.unitpreset_namegroup, self.unit_save_button, self.unit_delete_button)
         self.filter_stuff = (self.filter_box, self.slot_display_button, self.team_change_button, self.deploy_button,
                              self.terrain_change_button,
                              self.feature_change_button, self.weather_change_button, self.filter_tick_box)
@@ -328,12 +324,11 @@ class Battle:
         self.screen = pygame.display.set_mode(self.screen_rect.size, window_style | pygame.RESIZABLE,
                                               self.best_depth)  # set up self screen
 
-        # v Assign default variable to some class
+        # Assign battle variable to some classes
         unit.Unit.battle = self
         unit.Unit.image_size = self.subunit_inspect_sprite_size
         subunit.Subunit.battle = self
         leader.Leader.battle = self
-        # ^ End assign default
 
         # Create the game camera
         self.camera_zoom = 1  # camera zoom level, starting at the furthest zoom
@@ -390,6 +385,11 @@ class Battle:
         self.hair_colour_list = self.main.hair_colour_list
         self.skin_colour_list = self.main.skin_colour_list
 
+        self.unit_editor_stuff = (self.subunit_build, self.unit_edit_border, self.command_ui, self.troop_card_ui,
+                                  self.team_coa, self.troop_card_button, self.editor_troop_list_box,
+                                  self.troop_namegroup, self.unit_preset_list_box, self.preset_select_border,
+                                  self.unitpreset_namegroup, self.unit_save_button, self.unit_delete_button)
+
         # Load weather schedule
         try:
             self.weather_event = csv_read(self.main_dir, "weather.csv",
@@ -397,7 +397,7 @@ class Battle:
                                            self.map_source), output_type="list")
             self.weather_event = self.weather_event[1:]
             utility.convert_str_time(self.weather_event)
-        except FileNotFoundError:  # If no weather found use default light sunny weather start at 9.00
+        except (FileNotFoundError, TypeError):  # If no weather found or no map use default light sunny weather start at 9:00
             new_time = datetime.datetime.strptime("09:00:00", "%H:%M:%S").time()
             new_time = datetime.timedelta(hours=new_time.hour, minutes=new_time.minute, seconds=new_time.second)
             self.weather_event = [[4, new_time, 0]]  # default weather light sunny all day
@@ -467,10 +467,10 @@ class Battle:
             self.battle_map.draw_image(self.battle_map_base, self.battle_map_feature, self.battle_map_height,
                                        place_name_map, self, False)
         else:
-            self.editor_map_change(self.battle_map_base.terria_colour["Temperate"],
-                                   self.battle_map_feature.feature_colour["Plain"])
+            self.editor_map_change(self.battle_map_base.terrain_colour[0],  # temperate
+                                   self.battle_map_feature.feature_colour[0])  # plain
 
-        self.map_corner = self.battle_map_height.image.get_size()  # get map size that troop can move
+        self.map_corner = (len(self.battle_map_base.map_array[0]), len(self.battle_map_base.map_array))  # get map size that troop can move
 
         self.max_camera = ((self.battle_map_height.image.get_width() - 1) * self.screen_scale[0],
                            (self.battle_map_height.image.get_height() - 1) * self.screen_scale[1])  # reset max camera to new map size
@@ -482,7 +482,6 @@ class Battle:
         self.mode = mode
 
         self.setup_battle_ui("add")
-        uniteditor.PreviewLeader.leader_pos = self.command_ui.leader_pos
         leader.Leader.leader_pos = self.command_ui.leader_pos
 
         if self.mode == "battle":
@@ -517,19 +516,20 @@ class Battle:
             self.camera_zoom = 1  # always start at furthest zoom for editor
             self.camera_mode = "Free"  # start with free camera mode
 
-            who_todo = {key: value for key, value in
-                        self.troop_data.troop_list.items()}  # TODO change to depend on subunit add
-            self.subunit_animation_pool = self.main.create_sprite_pool(direction_list, self.main.troop_sprite_size,
-                                                                       self.screen_scale, who_todo)
+            # who_todo = {key: value for key, value in
+            #             self.troop_data.troop_list.items()}  # TODO change to depend on subunit add
+            # self.subunit_animation_pool = self.main.create_sprite_pool(direction_list, self.main.troop_sprite_size,
+            #                                                            self.screen_scale, who_todo)
 
             for this_leader in self.preview_leader:
-                this_leader.change_preview_leader(this_leader.leader_id, self.leader_data)
+                this_leader.change_preview_leader(this_leader.leader_id)
 
     def run_game(self):
         # Create Starting Values
         self.game_state = "battle"  # battle mode
         self.current_unit_row = 0  # custom unit preset current row in editor
         self.current_troop_row = 0  # troop selection current row in editor
+        self.current_pop_up_row = 0
         self.input_popup = (None, None)  # no popup asking for user text input state
         self.leader_now = []  # list of showing leader in command ui
         self.current_selected = None  # Which unit is currently selected
@@ -1129,10 +1129,14 @@ class Battle:
 
         # remove all reference from battle object
         self.player_char = None
-        for value in self.all_team_unit.values():  # empty all group in dict
+        for value in self.all_team_unit.values():  # remove unit from group first
             value.empty()
+        self.all_team_unit = {1: pygame.sprite.Group(),
+                              2: pygame.sprite.Group(), "alive": pygame.sprite.Group()}  # reset dict
+        self.team_pos_list = {key: {} for key in self.team_pos_list.keys()}
+
         clean_group_object((self.subunit_updater, self.leader_updater, self.unit_updater, self.unit_icon,
-                            self.troop_number_sprite, self.range_attacks, self.weather_matter))
+                            self.troop_number_sprite, self.damage_sprites, self.weather_matter))
 
         self.subunit_animation_pool = None
         self.generic_action_data = None
@@ -1144,7 +1148,6 @@ class Battle:
         self.map_move_array = []
         self.subunit_pos_array = []
         self.map_def_array = []
-        self.team_pos_list = {key: {} for key in self.team_pos_list.keys()}
         self.subunit_pos_list = []
         self.current_selected = None
         self.before_selected = None
@@ -1163,8 +1166,8 @@ class Battle:
         if self.mode == "unit_editor":
             self.subunit_in_card = None
 
-            self.battle_ui_updater.remove(self.unit_setup_stuff, self.filter_stuff, self.leader_now,
-                                          self.popup_list_box, self.popup_listbox_scroll, *self.popup_namegroup)
+            self.battle_ui_updater.remove(self.unit_editor_stuff, self.filter_stuff,
+                                          self.popup_list_box, self.popup_list_box.scroll, *self.popup_namegroup)
 
             for group in self.troop_namegroup, self.unit_edit_border, self.unitpreset_namegroup:
                 for item in group:  # remove name list
@@ -1179,8 +1182,8 @@ class Battle:
                 slot.leader = None  # remove leader link in
 
             for this_leader in self.preview_leader:
-                this_leader.change_subunit(None)  # remove subunit link in leader
-                this_leader.change_preview_leader(1, self.leader_data)
+                this_leader.change_editor_subunit(None)  # remove subunit link in leader
+                this_leader.change_preview_leader(1)
 
             self.faction_pick = 0
             self.filter_troop = [True, True, True, True]
@@ -1191,4 +1194,4 @@ class Battle:
             self.leader_list = [item["Name"] for item in self.leader_data.leader_list.values()][
                                1:]  # generate leader name list)
 
-            self.leader_now = []
+        self.leader_now = []

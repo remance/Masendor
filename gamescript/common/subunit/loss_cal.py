@@ -15,14 +15,18 @@ def loss_cal(self, target, final_dmg, final_morale_dmg, leader_dmg, element_effe
     if final_dmg > target.subunit_health:  # dmg cannot be higher than remaining health
         final_dmg = target.subunit_health
 
-    if final_dmg > target.max_health5:  # play damaged animation
+    if final_dmg > target.max_health15:
+       target.interrupt_animation = True
+       target.command_action = {"name": "KnockDown", "uninterruptible": True,
+                                "next action": {"name": "StandUp", "uninterruptible": True}}
+
+    elif final_dmg > target.max_health10:
+        target.interrupt_animation = True
+        target.command_action = {"name": "HeavyDamaged", "uninterruptible": True}
+
+    elif final_dmg > target.max_health5:  # play damaged animation
         target.interrupt_animation = True
         target.command_action = {"name": "Damaged", "uninterruptible": True}
-        if final_dmg > target.max_health10:
-            target.command_action = {"name": "HeavyDamaged", "uninterruptible": True}
-            if random.randint(1, 10) == 10:  # chance to use knockdown animation instead
-                target.command_action = {"name": "KnockDown", "uninterruptible": True,
-                                         "next action": {"name": "StandUp", "uninterruptible": True}}
 
     target.subunit_health -= final_dmg
     health_check = 0.1

@@ -26,8 +26,8 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                   enumerate(list(self.leader_data.leader_list.values())) if value["Name"] == name.name][
                         0]
                     true_index = list(self.leader_data.leader_list.keys())[true_index]
-                    self.leader_now[self.selected_leader].change_preview_leader(true_index, self.leader_data)
-                    self.leader_now[self.selected_leader].change_subunit(self.subunit_in_card)
+                    self.leader_now[self.selected_leader].change_preview_leader(true_index)
+                    self.leader_now[self.selected_leader].change_editor_subunit(self.subunit_in_card)
                     self.subunit_in_card.leader = self.leader_now[self.selected_leader]
                     self.preview_authority(self.leader_now)
                     self.troop_card_ui.value_input(who=self.subunit_in_card, change_option=1)
@@ -80,12 +80,12 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                         if self.preview_leader[leader_index].subunit is not None:
                             self.preview_leader[leader_index].subunit.leader = None
 
-                        self.preview_leader[leader_index].change_preview_leader(item, self.leader_data)
+                        self.preview_leader[leader_index].change_preview_leader(item)
 
                         pos_index = 0
                         for slot in self.subunit_build:  # can't use game_id here as none subunit not count in position check
                             if pos_index == leader_pos_list[leader_index]:
-                                self.preview_leader[leader_index].change_subunit(slot)
+                                self.preview_leader[leader_index].change_editor_subunit(slot)
                                 slot.leader = self.preview_leader[leader_index]
                                 break
                             else:
@@ -114,8 +114,8 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                         slot.leader = None  # remove leader link in
 
                     for this_leader in self.preview_leader:
-                        this_leader.change_subunit(None)  # remove subunit link in leader
-                        this_leader.change_preview_leader(1, self.leader_data)
+                        this_leader.change_editor_subunit(None)  # remove subunit link in leader
+                        this_leader.change_preview_leader(1)
 
                     self.leader_now = [this_leader for this_leader in self.preview_leader]
                     self.battle_ui_updater.add(*self.leader_now)  # add leader portrait to draw
@@ -390,8 +390,8 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                                 self.effect_icon_blit()
                                                 self.countdown_skill_icon()
                                         elif slot.name == "None" and slot.leader is not None:  # remove leader from none subunit if any
-                                            slot.leader.change_preview_leader(1, self.leader_data)
-                                            slot.leader.change_subunit(None)  # remove subunit link in leader
+                                            slot.leader.change_preview_leader(1)
+                                            slot.leader.change_editor_subunit(None)  # remove subunit link in leader
                                             slot.leader = None  # remove leader link in subunit
                                             self.preview_authority(self.leader_now)
                                 unit_dict = self.convert_unit_slot_to_dict("test")
@@ -432,12 +432,12 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                     elif self.slot_display_button.rect.collidepoint(self.mouse_pos):
                         if self.slot_display_button.event == 0:  # hide
                             self.slot_display_button.event = 1
-                            self.battle_ui_updater.remove(self.unit_setup_stuff, self.leader_now)
+                            self.battle_ui_updater.remove(self.unit_editor_stuff, self.leader_now)
                             self.kill_effect_icon()
 
                         elif self.slot_display_button.event == 1:  # show
                             self.slot_display_button.event = 0
-                            self.battle_ui_updater.add(self.unit_setup_stuff, self.leader_now)
+                            self.battle_ui_updater.add(self.unit_editor_stuff, self.leader_now)
 
                     elif self.deploy_button.rect.collidepoint(
                             self.mouse_pos) and self.subunit_build in self.battle_ui_updater:
@@ -471,9 +471,9 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                 subunit_game_id = subunit_game_id + 1
                             for slot in self.subunit_build:  # just for grabbing current selected team
                                 current_preset[self.unit_preset_name] += (0, 100, 100, slot.team)
-                                self.unit_editor_convert(self.all_team_unit[slot.team],
-                                                         current_preset[self.unit_preset_name], team_colour[slot.team],
-                                                         pygame.transform.scale(
+                                self.unit_editor_deploy(self.all_team_unit[slot.team],
+                                                        current_preset[self.unit_preset_name], team_colour[slot.team],
+                                                        pygame.transform.scale(
                                                              self.coa_list[
                                                                  int(current_preset[self.unit_preset_name][-1])],
                                                              (60, 60)), subunit_game_id)
@@ -481,7 +481,7 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                             self.slot_display_button.event = 1
                             self.kill_effect_icon()
                             self.unit_selector.setup_unit_icon(self.unit_icon, self.all_team_unit[self.team_selected])
-                            self.battle_ui_updater.remove(self.unit_setup_stuff, self.leader_now)
+                            self.battle_ui_updater.remove(self.unit_editor_stuff, self.leader_now)
                             for this_unit in self.battle.all_team_unit["alive"]:
                                 this_unit.enter_battle(self.subunit)
                             for this_leader in self.leader_updater:

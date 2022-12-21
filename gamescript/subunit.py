@@ -459,6 +459,7 @@ class Subunit(pygame.sprite.Sprite):
         self.max_health = self.subunit_health  # health percentage
         self.max_health5 = self.max_health * 0.05
         self.max_health10 = self.max_health * 0.1
+        self.max_health15 = self.max_health * 0.15
         self.health_list = (self.subunit_health * 0.75, self.subunit_health * 0.5, self.subunit_health * 0.25, 0)
 
         self.old_last_health, self.old_last_stamina = self.subunit_health, self.stamina  # save previous health and stamina in previous update

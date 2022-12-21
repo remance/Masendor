@@ -29,7 +29,7 @@ def change_battle_state(self):
                     self.troop_card_ui.rect.topleft[1] + (
                                 self.troop_card_button[2].image.get_width() * 4)))  # equipment button
 
-        self.battle_ui_updater.remove(self.filter_stuff, self.unit_setup_stuff, self.leader_now, self.button_ui,
+        self.battle_ui_updater.remove(self.filter_stuff, self.unit_editor_stuff, self.leader_now, self.button_ui,
                                       self.warning_msg)
         self.battle_ui_updater.add(self.event_log, self.event_log.scroll)
 
@@ -79,7 +79,7 @@ def change_battle_state(self):
                                       self.inspect_selected_border, self.inspect_button, self.behaviour_switch_button)
 
         self.leader_now = [this_leader for this_leader in self.preview_leader]  # reset leader in command ui
-        self.battle_ui_updater.add(self.filter_stuff, self.unit_setup_stuff, self.test_button, self.command_ui,
+        self.battle_ui_updater.add(self.filter_stuff, self.unit_editor_stuff, self.test_button, self.command_ui,
                                    self.troop_card_ui, self.leader_now,
                                    self.time_button)
         self.slot_display_button.event = 0  # reset display editor ui button to show

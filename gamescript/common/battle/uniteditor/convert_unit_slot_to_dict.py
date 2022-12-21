@@ -15,17 +15,11 @@ def convert_unit_slot_to_dict(self, name, pos=None, add_id=None):
         leader_list = []
         leader_pos_list = []
         for this_leader in self.preview_leader:  # add leader id
-            count_zero = 0
             if this_leader.leader_id != 1:
                 subunit_count += 1
-                for slot_index, slot in enumerate(self.subunit_build):  # add subunit troop id
-                    if slot.troop_id == 0:
-                        count_zero += 1
-                    if slot_index == this_leader.subunit_pos:
-                        break
-
             leader_list.append(str(this_leader.leader_id))
-            leader_pos_list.append(str(this_leader.subunit_pos - count_zero))
+            leader_pos_list.append(str(this_leader.subunit_pos))
+
         current_preset["Leader"] = leader_list
         current_preset["Leader Position"] = leader_pos_list
 
@@ -45,7 +39,7 @@ def convert_unit_slot_to_dict(self, name, pos=None, add_id=None):
                     for faction_item in faction_list.items():
                         if int(this_item) < 10000 and int(this_item) in faction_item[1]["Leader"]:
                             faction_count[faction_item[0]] += 1
-                        elif int(this_item) >= 10000:
+                        elif int(this_item) >= 10000:  # check faction data in common leader
                             if faction_item[0] == self.leader_data.leader_list[int(this_item)]["Faction"] or \
                                     self.leader_data.leader_list[int(this_item)]["Faction"] == 0:
                                 faction_count[faction_item[0]] += 1
