@@ -9,7 +9,7 @@ csv_read = utility.csv_read
 
 def make_lorebook(main_dir, screen_scale, screen_rect):
     """Create Encyclopedia related objects"""
-    encyclopedia_images = load_images(main_dir, screen_scale, ("ui", "lorebook_ui"), load_order=False)
+    encyclopedia_images = load_images(main_dir, screen_scale=screen_scale, subfolder=("ui", "lorebook_ui"))
     encyclopedia = lorebook.Lorebook(main_dir, screen_scale, screen_rect,
                                      encyclopedia_images["encyclopedia"])  # encyclopedia sprite
     lore_name_list = lorebook.SubsectionList(encyclopedia.rect.topleft, encyclopedia_images["section_list"])
@@ -18,7 +18,7 @@ def make_lorebook(main_dir, screen_scale, screen_rect):
                                               pygame.transform.flip(encyclopedia_images["section_list"], True, False))
     lore_name_list.max_row_show = encyclopedia.max_row_show
 
-    lore_button_images = load_images(main_dir, screen_scale, ("ui", "lorebook_ui", "button"), load_order=False)
+    lore_button_images = load_images(main_dir, screen_scale=screen_scale, subfolder=("ui", "lorebook_ui", "button"))
     lore_button_ui = [battleui.UIButton(lore_button_images["concept"], 0, 13),  # concept section button
                       battleui.UIButton(lore_button_images["history"], 1, 13),  # history section button
                       battleui.UIButton(lore_button_images["faction"], 2, 13),  # faction section button

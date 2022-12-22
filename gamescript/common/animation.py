@@ -3,22 +3,20 @@ import pygame
 from PIL import Image, ImageOps
 
 
-def play_animation(self, speed, dt, scale=1, replace_image=True):
+def play_animation(self, speed, dt, hold_check, scale=1, replace_image=True):
     """
     Play sprite animation
     :param self: Object of the animation sprite
     :param speed: Play speed
     :param dt: Time
+    :param hold_check: Check if holding frame or not
     :param scale: Sprite scale
     :param replace_image: Further zoom level does not show sprite animation even when it play
     :return: Boolean of animation finish playing or not
     """
     done = False
     current_animation = self.current_animation[self.sprite_direction]
-    if not self.current_action or (
-            "hold" in self.current_action and "hold" in current_animation[self.show_frame]["frame_property"] and
-            "hold" in self.action_list[int(self.current_action["name"][-1])][
-                "Properties"]) is False:  # not holding current frame
+    if not self.current_action or hold_check is False:  # not holding current frame
         self.animation_timer += dt
         if self.animation_timer >= speed:
             self.animation_timer = 0
@@ -61,7 +59,7 @@ def reset_animation(self):
     self.interrupt_animation = True
 
 
-def apply_colour(surface, colour, colour_list, keep_white=True):
+def apply_colour(surface, colour, colour_list, keep_white=True, keep_old_colour=False):
     """Colorise body part sprite"""
     if colour is not None and colour != "none":
         if colour_list is None:
@@ -81,6 +79,7 @@ def apply_colour(surface, colour, colour_list, keep_white=True):
         alpha = surface.split()[-1]  # save alpha
         surface = surface.convert("L")  # convert to grey scale for colourise
         surface = ImageOps.colorize(surface, black="black", mid=mid_colour, white=white_colour).convert("RGB")
+        # if any abs(mean(colour[0], colour[1], colour[2]) > 10) is False:
         surface.putalpha(alpha)  # put back alpha
         surface = surface.tobytes()
         surface = pygame.image.fromstring(surface, size, "RGBA")  # convert image back to a pygame surface

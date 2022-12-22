@@ -454,8 +454,7 @@ class Battle:
         self.time_number.start_setup(self.weather_playing)
 
         if map_selected is not None:  # Create battle map
-            images = load_images(self.main_dir, (1, 1), ("ruleset", self.ruleset_folder, "map", self.map_selected),
-                                 load_order=False)
+            images = load_images(self.main_dir, subfolder=("ruleset", self.ruleset_folder, "map", self.map_selected))
             self.battle_map_base.draw_image(images["base"])
             self.battle_map_feature.draw_image(images["feature"])
             self.battle_map_height.draw_image(images["height"])

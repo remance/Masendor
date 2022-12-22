@@ -5,7 +5,7 @@ from pathlib import Path
 import pygame
 from gamescript.common import utility
 
-load_textures = utility.load_textures
+load_images = utility.load_images
 stat_convert = utility.stat_convert
 
 direction_list = ("front", "side", "back", "sideup", "sidedown")
@@ -140,7 +140,7 @@ class TroopAnimationData:
                     self.gen_body_sprite_pool[race][direction] = {}
 
                     for folder in subdirectories:
-                        imgs = load_textures(main_dir, folder)
+                        imgs = load_images(main_dir, subfolder=folder)
                         self.gen_body_sprite_pool[race][direction][folder[-1]] = imgs
                 except FileNotFoundError:
                     pass
@@ -172,9 +172,9 @@ class TroopAnimationData:
                             body_directories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x
                                                 in body_subsubfolder.iterdir() if x.is_dir()]
                             for body_folder in body_directories:
-                                imgs = load_textures(main_dir,
-                                                     ("sprite", "generic", race, direction, "armour", subfolder[-1],
-                                                      subsubfolder[-1], body_folder[-1]))
+                                imgs = load_images(main_dir,
+                                                     subfolder=("sprite", "generic", race, direction, "armour",
+                                                                subfolder[-1], subsubfolder[-1], body_folder[-1]))
                                 self.gen_armour_sprite_pool[race][subfolder[-1]][subsubfolder[-1]][direction][
                                     body_folder[-1]] = imgs
                 except FileNotFoundError:
@@ -191,11 +191,11 @@ class TroopAnimationData:
                                  in part_subfolder.iterdir() if x.is_dir()]
             for subfolder in subsubdirectories:
                 self.gen_weapon_sprite_pool[folder[-1]][subfolder[-1]] = {}
-                icon_imgs = load_textures(main_dir, ("sprite", "generic", "weapon", folder[-1], subfolder[-1]))
+                icon_imgs = load_images(main_dir, subfolder=("sprite", "generic", "weapon", folder[-1], subfolder[-1]))
                 self.gen_weapon_sprite_pool[folder[-1]][subfolder[-1]]["icon"] = icon_imgs
                 for direction in direction_list:
-                    imgs = load_textures(main_dir,
-                                         ("sprite", "generic", "weapon", folder[-1], subfolder[-1], direction))
+                    imgs = load_images(main_dir, subfolder=("sprite", "generic", "weapon",
+                                                            folder[-1], subfolder[-1], direction))
                     if direction not in self.gen_weapon_sprite_pool[folder[-1]]:
                         self.gen_weapon_sprite_pool[folder[-1]][subfolder[-1]][direction] = imgs
                     else:
@@ -214,5 +214,5 @@ class EffectSpriteData:
             subsubdirectories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x
                                  in part_folder.iterdir() if x.is_dir()]
             for subfolder in subsubdirectories:
-                images = load_textures(main_dir, subfolder)
+                images = load_images(main_dir, subfolder=subfolder)
                 self.effect_sprite_pool[folder[-1]][subfolder[-1]] = images

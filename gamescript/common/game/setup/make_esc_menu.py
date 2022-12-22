@@ -6,12 +6,11 @@ load_images = utility.load_images
 
 def make_esc_menu(main_dir, screen_rect, screen_scale, mixer_volume):
     """create Esc menu related objects"""
-    menu.EscBox.images = load_images(main_dir, screen_scale, ("ui", "battlemenu_ui"),
-                                     load_order=False)  # Create ESC Menu box
+    menu.EscBox.images = load_images(main_dir, screen_scale=screen_scale, subfolder=("ui", "battlemenu_ui"))
     menu.EscBox.screen_rect = screen_rect
-    battle_menu = menu.EscBox()
+    battle_menu = menu.EscBox()  # Create ESC Menu box
 
-    button_image = load_images(main_dir, screen_scale, ("ui", "battlemenu_ui", "button"), load_order=False)
+    button_image = load_images(main_dir, screen_scale=screen_scale, subfolder=("ui", "battlemenu_ui", "button"))
     menu_rect_center0 = battle_menu.rect.center[0]
     menu_rect_center1 = battle_menu.rect.center[1]
 
@@ -37,7 +36,7 @@ def make_esc_menu(main_dir, screen_rect, screen_scale, mixer_volume):
         menu.EscButton(button_image, (menu_rect_center0 + button_image["0"].get_width() * 1.5, menu_rect_center1 * 1.3),
                        text="Cancel", text_size=esc_button_text_size)]
 
-    esc_menu_images = load_images(main_dir, screen_scale, ("ui", "battlemenu_ui", "slider"), load_order=False)
+    esc_menu_images = load_images(main_dir, screen_scale=screen_scale, subfolder=("ui", "battlemenu_ui", "slider"))
     esc_slider_menu = [menu.SliderMenu([esc_menu_images["scroller_box"], esc_menu_images["scroller"]],
                                        [esc_menu_images["scroll_button_normal"],
                                         esc_menu_images["scroll_button_click"]],

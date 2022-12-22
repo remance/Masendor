@@ -58,7 +58,7 @@ def load_image(main_dir, screen_scale, file, subfolder=""):
     return surface
 
 
-def load_images(main_dir, screen_scale, subfolder=(), load_order=True, return_order=False):
+def load_images(main_dir, screen_scale=(1, 1), subfolder=(), load_order=False, return_order=False):
     """
     loads all images(only png files) in folder
     :param main_dir: Game directory folder path
@@ -73,51 +73,32 @@ def load_images(main_dir, screen_scale, subfolder=(), load_order=True, return_or
     for folder in subfolder:
         dir_path = os.path.join(dir_path, folder)
 
-    if load_order:  # load in the order of load_order file
-        load_order_file = open(os.path.join(dir_path, "load_order.txt"), "r")
-        load_order_file = ast.literal_eval(load_order_file.read())
-    else:  # load every file
-        load_order_file = [f for f in os.listdir(dir_path) if f.endswith(".png")]  # read all file
-        try:  # sort file name if all in number only
-            load_order_file.sort(
-                key=lambda var: [int(x) if x.isdigit() else x for x in re.findall(r"[^0-9]|[0-9]+", var)])
-        except TypeError:  # has character in file name
-            pass
-    for file in load_order_file:
-        file_name = file
-        if "." in file_name:  # remove extension from name
-            file_name = file.split(".")[:-1]
-            file_name = "".join(file_name)
-        images[file_name] = load_image(main_dir, screen_scale, file, dir_path)
-
-    if return_order is False:
-        return images
-    else:  # return order of the file as list
-        load_order_file = [int(name.replace(".png", "")) for name in load_order_file]
-        return images, load_order_file
-
-
-def load_textures(main_dir, subfolder=()):
-    """
-    Loads troop body sprite part image, a bit different from load_images that it ignore empty folder
-    :param main_dir: Game directory folder path
-    :param subfolder: List of subfolder path
-    :return: Dict of loaded and scaled images as Pygame Surface
-    """
-    imgs = {}
-    dir_path = os.path.join(main_dir, "data")
-    for folder in subfolder:
-        dir_path = os.path.join(dir_path, folder)
     try:
-        load_order_file = [f for f in os.listdir(dir_path) if f.endswith("." + "png")]  # read all file
-        load_order_file.sort(key=lambda var: [int(x) if x.isdigit() else x for x in re.findall(r"[^0-9]|[0-9]+", var)])
+        if load_order:  # load in the order of load_order file
+            load_order_file = open(os.path.join(dir_path, "load_order.txt"), "r")
+            load_order_file = ast.literal_eval(load_order_file.read())
+        else:  # load every file
+            load_order_file = [f for f in os.listdir(dir_path) if f.endswith(".png")]  # read all file
+            try:  # sort file name if all in number only
+                load_order_file.sort(
+                    key=lambda var: [int(x) if x.isdigit() else x for x in re.findall(r"[^0-9]|[0-9]+", var)])
+            except TypeError:  # has character in file name
+                pass
         for file in load_order_file:
-            imgs[file.split(".")[0]] = load_image(main_dir, (1, 1), file,
-                                                  dir_path)  # no need to scale at this point, will scale later when in complete sprite
-    except FileNotFoundError:
-        pass
+            file_name = file
+            if "." in file_name:  # remove extension from name
+                file_name = file.split(".")[:-1]
+                file_name = "".join(file_name)
+            images[file_name] = load_image(main_dir, screen_scale, file, dir_path)
 
-    return imgs
+        if return_order is False:
+            return images
+        else:  # return order of the file as list
+            load_order_file = [int(name.replace(".png", "")) for name in load_order_file]
+            return images, load_order_file
+    except FileNotFoundError as b:
+        print(b)
+        return images
 
 
 def convert_str_time(event):

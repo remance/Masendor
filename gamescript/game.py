@@ -371,8 +371,7 @@ class Game:
         leader.Leader.containers = self.leader_updater
 
         # game cursor
-        cursor_images = load_images(self.main_dir, (1, 1), ("ui", "cursor"),
-                                    load_order=False)  # no need to scale cursor
+        cursor_images = load_images(self.main_dir, subfolder=("ui", "cursor"))  # no need to scale cursor
         self.cursor = menu.Cursor(cursor_images)
         self.main_ui_updater.add(self.cursor)
         self.battle_ui_updater.add(self.cursor)
@@ -421,7 +420,8 @@ class Game:
         subunit.Subunit.height_map = self.battle_height_map
 
         # Battle map select menu button
-        battle_select_image = load_images(self.main_dir, self.screen_scale, ("ui", "mapselect_ui"), load_order=False)
+        battle_select_image = load_images(self.main_dir, screen_scale=self.screen_scale,
+                                          subfolder=("ui", "mapselect_ui"))
 
         self.map_title = menu.MapTitle(self.screen_scale, (self.screen_rect.width / 2, 0))
 
@@ -559,7 +559,7 @@ class Game:
         # ^ End Main menu
 
         # v Battle related stuffs
-        subunit_ui_images = load_images(self.main_dir, (1, 1), ("ui", "subunit_ui"), load_order=False)  # no scaling when loaded for subunit sprite yet
+        subunit_ui_images = load_images(self.main_dir, subfolder=("ui", "subunit_ui"))  # no scaling when loaded for subunit sprite yet
         new_subunit_ui_images = {}
         for this_size in range(2, 11):  # create hp and stamina ring for 10 possible subunit sizes
             new_subunit_ui_images["health" + str(this_size)] = \
@@ -587,7 +587,7 @@ class Game:
         self.fps_count = battleui.FPScount()  # FPS number counter
         self.battle_ui_updater.add(self.fps_count)
 
-        battle_ui_image = load_images(self.main_dir, self.screen_scale, ("ui", "battle_ui"), load_order=False)
+        battle_ui_image = load_images(self.main_dir, screen_scale=self.screen_scale, subfolder=("ui", "battle_ui"))
         battleui.SelectedSquad.image = battle_ui_image[
             "ui_subunit_clicked"]  # subunit border image always the last one
 
@@ -600,8 +600,8 @@ class Game:
         self.mini_map = battleui.MiniMap((self.screen_rect.width, self.screen_rect.height), self.screen_scale)
         self.battle_ui_updater.add(self.mini_map)
 
-        battle_icon_image = load_images(self.main_dir, self.screen_scale, ("ui", "battle_ui", "topbar_icon"),
-                                        load_order=False)
+        battle_icon_image = load_images(self.main_dir, screen_scale=self.screen_scale,
+                                        subfolder=("ui", "battle_ui", "topbar_icon"))
         battle_ui_dict = make_battle_ui(battle_ui_image, battle_icon_image, team_colour, self.screen_rect.size)
         self.time_ui = battle_ui_dict["time_ui"]
         self.time_number = battle_ui_dict["time_number"]
@@ -662,8 +662,8 @@ class Game:
         self.battle_done_button.change_pos(
             (self.battle_done_box.pos[0], self.battle_done_box.box_image.get_height() * 0.8))
 
-        drama.TextDrama.images = load_images(self.main_dir, self.screen_scale, ("ui", "popup_ui", "drama_text"),
-                                             load_order=False)
+        drama.TextDrama.images = load_images(self.main_dir, screen_scale=self.screen_scale,
+                                             subfolder=("ui", "popup_ui", "drama_text"))
         drama.TextDrama.screen_rect = self.screen_rect
         self.drama_text = drama.TextDrama(
             self.screen_scale)  # message at the top of screen that show up for important event
@@ -941,11 +941,11 @@ class Game:
         self.genre_change_box.change_text(self.genre.capitalize())
         edit_config("USER", "genre", self.genre, "configuration.ini", self.config)
 
-        genre_battle_ui_image = load_images(self.main_dir, self.screen_scale, (self.genre, "ui", "battle_ui"),
-                                            load_order=False)
+        genre_battle_ui_image = load_images(self.main_dir, screen_scale=self.screen_scale,
+                                            subfolder=(self.genre, "ui", "battle_ui"))
 
-        genre_icon_image = load_images(self.main_dir, self.screen_scale, (self.genre, "ui", "battle_ui",
-                                                                          "commandbar_icon"), load_order=False)
+        genre_icon_image = load_images(self.main_dir, screen_scale=self.screen_scale,
+                                       subfolder=(self.genre, "ui", "battle_ui", "commandbar_icon"))
 
         self.genre_ui_dict = make_genre_specific_ui(self.main_dir, self.screen_scale, self.genre, self.command_ui_type)
         self.command_ui = self.genre_ui_dict["command_ui"]

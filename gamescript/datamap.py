@@ -26,7 +26,7 @@ class BattleMapData:
         texture_folder = [item for item in self.feature_list if
                           item != ""]  # For now remove terrain with no planned name/folder yet
         for index, folder in enumerate(texture_folder):
-            images = load_images(main_dir, (1, 1), ("map", "texture", folder), load_order=False)
+            images = load_images(main_dir, subfolder=("map", "texture", folder))
             map_texture.append(list(images.values()))
 
         # read terrain feature mode
@@ -59,7 +59,7 @@ class BattleMapData:
             lore_csv_read(edit_file, self.feature_mod_lore)
         edit_file.close()
 
-        self.day_effect_images = load_images(main_dir, screen_scale, ("map", "day"), load_order=False)
+        self.day_effect_images = load_images(main_dir, screen_scale=screen_scale, subfolder=("map", "day"))
 
         # set up default
         battlemap.FeatureMap.feature_mod = self.feature_mod
@@ -106,8 +106,8 @@ class BattleMapData:
         self.weather_matter_images = {}
         for this_weather in weather_list:  # Load weather matter sprite image
             try:
-                images = load_images(main_dir, screen_scale, ("map", "weather", "matter", this_weather),
-                                     load_order=False)
+                images = load_images(main_dir, screen_scale=screen_scale,
+                                     subfolder=("map", "weather", "matter", this_weather))
                 self.weather_matter_images[this_weather] = tuple(images.values())
             except FileNotFoundError:
                 self.weather_matter_images[this_weather] = ()
@@ -115,14 +115,14 @@ class BattleMapData:
         self.weather_effect_images = {}
         for this_weather in weather_list:  # Load weather effect sprite image
             try:
-                images = load_images(main_dir, screen_scale, ("map", "weather", "effect", this_weather),
-                                     load_order=False)
+                images = load_images(main_dir, screen_scale=screen_scale,
+                                     subfolder=("map", "weather", "effect", this_weather))
                 self.weather_effect_images[this_weather] = tuple(images.values())
             except FileNotFoundError:
                 self.weather_effect_images[this_weather] = ()
 
-        weather_icon_list = load_images(main_dir, screen_scale, ("map", "weather", "icon"),
-                                        load_order=False)  # Load weather icon
+        weather_icon_list = load_images(main_dir, screen_scale=screen_scale,
+                                        subfolder=("map", "weather", "icon"))  # Load weather icon
         new_weather_icon = {}
         for weather_icon in weather_list:
             for strength in range(0, 3):

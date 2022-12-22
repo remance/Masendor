@@ -17,13 +17,14 @@ main_dir = os.path.split(os.path.abspath(__file__))[0]
 current_dir = main_dir + "/animation maker"  # animation maker folder
 sys.path.insert(1, current_dir)
 
+#TODO check bug that cause size to not match for all direction and cause corrupt save
+
 from script import colour, listpopup, pool  # keep here as it need to get sys path insert
 
 rotation_xy = utility.rotation_xy
 load_image = utility.load_image
 load_images = utility.load_images
 load_base_button = utility.load_base_button
-load_textures = utility.load_textures
 stat_convert = datastat.stat_convert
 
 apply_colour = colour.apply_colour
@@ -213,7 +214,7 @@ for race in race_list:
                 part_folder = Path(os.path.join(main_dir, "data", "sprite", "generic", race, direction))
                 subdirectories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x in part_folder.iterdir() if x.is_dir()]
                 for folder in subdirectories:
-                    imgs = load_textures(main_dir, folder)
+                    imgs = load_images(main_dir, screen_scale=screen_scale, subfolder=folder)
                     gen_body_sprite_pool[race][direction][folder[-1]] = imgs
         except FileNotFoundError:
             pass
@@ -240,8 +241,9 @@ for race in race_list:
                         os.path.join(main_dir, "data", "sprite", "generic", race, direction, "armour", subfolder[-1], subsubfolder[-1]))
                     body_directories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x in body_subsubfolder.iterdir() if x.is_dir()]
                     for body_folder in body_directories:
-                        imgs = load_textures(main_dir,
-                                             ["sprite", "generic", race, direction, "armour", subfolder[-1], subsubfolder[-1], body_folder[-1]])
+                        imgs = load_images(main_dir, screen_scale=screen_scale,
+                                           subfolder=("sprite", "generic", race, direction, "armour",
+                                                      subfolder[-1], subsubfolder[-1], body_folder[-1]))
                         gen_armour_sprite_pool[race][subfolder[-1]][subsubfolder[-1]][direction][body_folder[-1]] = imgs
         except FileNotFoundError:
             pass
@@ -254,8 +256,9 @@ for folder in subdirectories:
     part_subfolder = Path(os.path.join(main_dir, "data", "sprite", "generic", "weapon", folder[-1]))
     subsubdirectories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x in part_subfolder.iterdir() if x.is_dir()]
     for direction in direction_list:
-        imgs = load_textures(main_dir, ["sprite", "generic", "weapon", folder[-1],
-                                        "common", direction])  # use only common weapon
+        imgs = load_images(main_dir, screen_scale=screen_scale,
+                           subfolder=("sprite", "generic", "weapon", folder[-1],
+                                      "common", direction))  # use only common weapon
         if direction not in gen_weapon_sprite_pool[folder[-1]]:
             gen_weapon_sprite_pool[folder[-1]][direction] = imgs
         else:
@@ -269,7 +272,7 @@ for folder in subdirectories:
     part_folder = Path(os.path.join(main_dir, "data", "sprite", "effect", folder[-1]))
     subsubdirectories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x in part_folder.iterdir() if x.is_dir()]
     for subfolder in subsubdirectories:
-        imgs = load_textures(main_dir, subfolder)
+        imgs = load_images(main_dir, screen_scale=screen_scale, subfolder=subfolder)
         effect_sprite_pool[folder[-1]][subfolder[-1]] = imgs
 
 
@@ -1577,7 +1580,8 @@ filmstrip_list += [Filmstrip((image.get_width() * this_index, 42 * screen_scale[
 
 filmstrips.add(*filmstrip_list)
 
-images = load_images(current_dir, screen_scale, ("animation_maker_ui", "helper_parts"))
+images = load_images(current_dir, screen_scale=screen_scale, subfolder=("animation_maker_ui", "helper_parts"),
+                     load_order=True)
 body_helper_size = (450 * screen_scale[0], 270 * screen_scale[1])
 effect_helper_size = (450 * screen_scale[0], 270 * screen_scale[1])
 effect_helper = BodyHelper(effect_helper_size, (screen_size[0] / 1.25, screen_size[1] - (body_helper_size[1] / 2)),
@@ -1987,6 +1991,19 @@ while True:
                         if len(animation_list) > 0:
                             new_animation = animation_list[0]
                             change_animation(new_animation)
+            elif key_press[pygame.K_MINUS] or key_press[pygame.K_EQUALS]:
+                if keypress_delay == 0:
+                    keypress_delay = 0.1
+                    if key_press[pygame.K_MINUS]:
+                        current_frame -= 1
+                        if current_frame < 0:
+                            current_frame = max_frame
+                    elif key_press[pygame.K_EQUALS]:
+                        current_frame += 1
+                        if current_frame > max_frame:
+                            current_frame = 0
+                    anim.show_frame = current_frame
+                    model.edit_part(mouse_pos, "change")
 
         if mouse_timer != 0:  # player click mouse once before
             mouse_timer += ui_dt  # increase timer for mouse click using real time

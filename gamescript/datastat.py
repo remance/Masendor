@@ -646,8 +646,8 @@ class FactionData:
         self.faction_lore = {key: value for key, value in self.faction_lore.items() if key in self.faction_list}
         edit_file.close()
 
-        images_old = load_images(main_dir, screen_scale, ("ruleset", ruleset_folder, "faction", "coa"),
-                                 load_order=False)  # coa_list images list
+        images_old = load_images(main_dir, screen_scale=screen_scale,
+                                 subfolder=("ruleset", ruleset_folder, "faction", "coa"))  # coa_list images list
         self.coa_list = []
         for image in images_old:
             self.coa_list.append(images_old[image])

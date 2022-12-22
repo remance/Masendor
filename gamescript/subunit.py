@@ -392,6 +392,10 @@ class Subunit(pygame.sprite.Sprite):
         self.skill_effect = {}  # activate skill effect
         self.base_inflict_status = {}  # status that this subunit will inflict to enemy when melee_attack
 
+        self.one_activity_timer = 0  # timer for activities that can be only perform when no others occur like knock down
+        self.countup_timer = 0  # timer that count up to specific threshold to start event like charge attack timing
+        self.countup_trigger_time = 0  # time that indicate when trigger happen
+
         if self.mount_gear[0] != 1:  # have a mount, add mount stat with its grade to subunit stat
             self.add_mount_stat()
 
@@ -652,7 +656,17 @@ class Subunit(pygame.sprite.Sprite):
         if "_Idle" in self.current_animation["name"]:  # idle animation use a bit slower speed
             play_speed = 0.15
 
-        done = self.play_animation(play_speed, dt, replace_image=self.use_animation_sprite)
+        hold_check = False
+        if "hold" in self.current_action and "hold" in self.current_animation[self.show_frame]["frame_property"] and \
+                "hold" in self.action_list[int(self.current_action["name"][-1])]["Properties"]:
+            hold_check = True
+        #     if 0 < self.countup_timer < self.countup_trigger_time:
+        #         self.countup_timer += dt
+        # elif self.countup_timer > 0:
+        #     self.countup_timer = 0
+        #     self.countup_trigger_time = 0
+
+        done = self.play_animation(play_speed, dt, hold_check, replace_image=self.use_animation_sprite)
         # Pick new animation, condition to stop animation: get interrupt,
         # low level animation got replace with more important one, finish playing, skill animation and its effect end
         if self.state != 100 and \
@@ -662,11 +676,10 @@ class Subunit(pygame.sprite.Sprite):
                  ("skill" in self.current_action and self.current_action["skill"] not in self.skill_effect) or
                  (self.idle_action and self.idle_action != self.command_action) or
                  self.current_action != self.last_current_action):
-            if done:  # finish animation, perform something
-                if "melee attack" in self.current_action:  # shoot bullet
-                    self.attack("melee")
-                elif "range attack" in self.current_action:  # shoot bullet
-                    self.attack("range")
+            if "melee attack" in self.current_action:  # shoot bullet
+                self.attack("melee")
+            elif "range attack" in self.current_action:  # shoot bullet
+                self.attack("range")
 
             if self.current_action != self.last_current_action:
                 self.last_current_action = self.current_action

@@ -34,7 +34,7 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
                                           "Troop Animation", int(36 * screen_scale[1]))
 
     # Volume change scroll bar
-    esc_menu_images = load_images(main_dir, screen_scale, ("ui", "battlemenu_ui", "slider"), load_order=False)
+    esc_menu_images = load_images(main_dir, screen_scale=screen_scale, subfolder=("ui", "battlemenu_ui", "slider"))
     volume_slider = menu.SliderMenu([esc_menu_images["scroller_box"], esc_menu_images["scroller"]],
                                     [esc_menu_images["scroll_button_normal"], esc_menu_images["scroll_button_click"]],
                                     (screen_rect.width / 2, screen_rect.height / 2), mixer_volume)
