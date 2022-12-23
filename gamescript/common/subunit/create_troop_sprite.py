@@ -279,8 +279,11 @@ def generate_body(part, body_part_list, troop_sprite_list, sprite_pool, armour_s
             if "sub" in part:
                 part_name = weapon[1][1]  # sub weapon
             if part_name is not None and part_name != "Unarmed":
-                sprite_image = sprite_pool[part_name][troop_sprite_list[weapon_part]][body_part_list[0]][
-                    body_part_list[1]].copy()
+                try:
+                    sprite_image = sprite_pool[part_name][troop_sprite_list[weapon_part]][body_part_list[0]][
+                        body_part_list[1]].copy()
+                except KeyError:  # use common variant if specified not found
+                    sprite_image = sprite_pool[part_name]["Common"][body_part_list[0]][body_part_list[1]].copy()
         else:
             new_part_name = part
             part_name = part

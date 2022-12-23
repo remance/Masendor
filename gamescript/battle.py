@@ -821,10 +821,8 @@ class Battle:
                             if this_weather[0] != 0 and this_weather[0] in self.weather_data:
                                 self.current_weather.__init__(self.time_ui, this_weather[0], this_weather[2],
                                                               self.weather_data)
-                            else:  # Random weather, also use this when input weather not in ruleset
-                                self.current_weather.__init__(self.time_ui,
-                                                              random.choice(tuple(self.weather_data.keys())),
-                                                              random.randint(0, 2), self.weather_data)
+                            else:  # Clear weather when no weather found, also for when input weather not in ruleset
+                                self.current_weather.__init__(self.time_ui, 0, 0, self.weather_data)
                             self.weather_event.pop(0)
                             try:
                                 self.battle_map.add_effect(self.battle_map_height,

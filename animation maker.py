@@ -2212,7 +2212,9 @@ while True:
                             frame_property_select = [[] for _ in range(max_frame)]
                             anim_property_select = []
                             for frame_index, frame in enumerate(copy_list):
+                                old_size = model.frame_list[frame_index]["size"]
                                 model.frame_list[frame_index] = {key: value.copy() if type(value) == list else value for key, value in frame.items()}
+                                model.frame_list[frame_index]["size"] = old_size
                             model.read_animation(animation_name, old=True)
                             reload_animation(anim, model)
 

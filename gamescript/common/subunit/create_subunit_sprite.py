@@ -98,7 +98,6 @@ def create_subunit_sprite(self, inspect_subunit_size, troop_size):
     stamina_image_rect = stamina_image.get_rect(center=image.get_rect().center)  # for battle sprite
     stamina_block_rect = stamina_image.get_rect(center=block.get_rect().center)  # for ui sprite
 
-
     # Weapon class icon in middle circle or leader (hero) portrait
     image1 = self.troop_data.weapon_icon[
         self.troop_data.weapon_list[self.primary_main_weapon[0]]["ImageID"]]  # image on subunit sprite

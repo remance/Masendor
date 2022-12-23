@@ -277,7 +277,7 @@ def status_update(self, weather=None):
     self.crit_effect = self.crit_effect * crit_effect_modifier
 
     troop_mass = self.troop_mass
-    if self.current_action and self.current_action["Name"] == "KnockDown":  # knockdown reduce mass
+    if self.current_action and self.current_action["name"] == "KnockDown":  # knockdown reduce mass
         troop_mass = int(self.troop_mass / 2)
     self.charge_power = ((self.charge * self.speed) / 2) * troop_mass
     self.charge_def_power = self.charge_def * troop_mass
