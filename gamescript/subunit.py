@@ -98,10 +98,10 @@ class Subunit(pygame.sprite.Sprite):
     script_dir = os.path.split(os.path.abspath(__file__))[0]
     for entry in os.scandir(Path(script_dir + "/common/subunit/")):  # load and replace modules from common.unit
         if entry.is_file():
-            if ".pyc" in entry.name:
-                file_name = entry.name[:-4]
-            elif ".py" in entry.name:
+            if ".py" in entry.name:
                 file_name = entry.name[:-3]
+            elif ".pyc" in entry.name:
+                file_name = entry.name[:-4]
             exec(f"from gamescript.common.subunit import " + file_name)
             exec(f"" + file_name + " = " + file_name + "." + file_name)
 
@@ -656,17 +656,15 @@ class Subunit(pygame.sprite.Sprite):
         if "_Idle" in self.current_animation["name"]:  # idle animation use a bit slower speed
             play_speed = 0.15
 
-        hold_check = False
-        if "hold" in self.current_action and "hold" in self.current_animation[self.show_frame]["frame_property"] and \
-                "hold" in self.action_list[int(self.current_action["name"][-1])]["Properties"]:
-            hold_check = True
         #     if 0 < self.countup_timer < self.countup_trigger_time:
         #         self.countup_timer += dt
         # elif self.countup_timer > 0:
         #     self.countup_timer = 0
         #     self.countup_trigger_time = 0
 
-        done = self.play_animation(play_speed, dt, hold_check, replace_image=self.use_animation_sprite)
+        done, just_start, hold_check = self.play_animation(play_speed, dt, replace_image=self.use_animation_sprite)
+        # if "melee attack" in self.current_action and just_start:  # make attack if frame
+        #     self.attack("melee")
         # Pick new animation, condition to stop animation: get interrupt,
         # low level animation got replace with more important one, finish playing, skill animation and its effect end
         if self.state != 100 and \
@@ -676,9 +674,7 @@ class Subunit(pygame.sprite.Sprite):
                  ("skill" in self.current_action and self.current_action["skill"] not in self.skill_effect) or
                  (self.idle_action and self.idle_action != self.command_action) or
                  self.current_action != self.last_current_action):
-            if "melee attack" in self.current_action:  # shoot bullet
-                self.attack("melee")
-            elif "range attack" in self.current_action:  # shoot bullet
+            if "range attack" in self.current_action:  # shoot bullet
                 self.attack("range")
 
             if self.current_action != self.last_current_action:

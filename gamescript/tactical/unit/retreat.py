@@ -29,7 +29,7 @@ def retreat(self):
         self.retreat_way = [rotation_xy(self.base_pos, self.retreat_way, self.radians_angle), this_index]
         base_target = self.base_pos + ((self.retreat_way[0] - self.base_pos) * 1000)
 
-        self.process_retreat(base_target)
+        self.start_retreat(base_target)
         # if random.randint(0, 100) > 99:  # change side via surrender or betrayal
         #     if self.team == 1:
         #         self.battle.allunitindex = self.switchfaction(self.battle.team1_unit, self.battle.team2_unit,

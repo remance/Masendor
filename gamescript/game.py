@@ -47,10 +47,10 @@ make_popup_ui = empty_function
 script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
 for entry in os.scandir(Path(script_dir + "/common/game/setup/")):  # load and replace modules from common.game.setup
     if entry.is_file():
-        if ".pyc" in entry.name:
-            file_name = entry.name[:-4]
-        elif ".py" in entry.name:
+        if ".py" in entry.name:
             file_name = entry.name[:-3]
+        elif ".pyc" in entry.name:
+            file_name = entry.name[:-4]
         exec(f"from gamescript.common.game.setup import " + file_name)
         exec(f"" + file_name + " = " + file_name + "." + file_name)
 
@@ -692,7 +692,7 @@ class Game:
         self.ui_updater.add(self.troop_card_ui)
         self.button_ui.add(self.troop_card_button)
 
-        self.encyclopedia, self.lore_name_list, self.filter_tag_list, self.lore_button_ui, self.page_button = make_lorebook(self.main_dir, self.screen_scale, self.screen_rect)
+        self.encyclopedia, self.lore_name_list, self.filter_tag_list, self.lore_button_ui, self.page_button = make_lorebook(self, self.main_dir, self.screen_scale, self.screen_rect)
 
         self.encyclopedia_stuff = (self.encyclopedia, self.lore_name_list, self.filter_tag_list,
                                    self.lore_name_list.scroll, self.filter_tag_list.scroll, *self.lore_button_ui)
@@ -772,8 +772,7 @@ class Game:
         self.gen_weapon_sprite_pool = self.troop_animation.gen_weapon_sprite_pool  # weapon sprite pool
         self.gen_armour_sprite_pool = self.troop_animation.gen_armour_sprite_pool  # armour sprite pool
         self.weapon_joint_list = self.troop_animation.weapon_joint_list  # weapon joint data
-        self.hair_colour_list = self.troop_animation.hair_colour_list  # hair colour list
-        self.skin_colour_list = self.troop_animation.skin_colour_list  # skin colour list
+        self.colour_list = self.troop_animation.colour_list  # skin colour list
 
         self.effect_sprite_data = datasprite.EffectSpriteData(self.main_dir)
 
@@ -803,10 +802,6 @@ class Game:
         damagesprite.DamageSprite.bullet_sprite_pool = bullet_sprite_pool
         damagesprite.DamageSprite.bullet_weapon_sprite_pool = bullet_weapon_sprite_pool
 
-        who_todo = {key: value for key, value in self.troop_data.troop_list.items()}
-        self.preview_sprite_pool = self.create_sprite_pool(direction_list, self.troop_sprite_size, self.screen_scale,
-                                                           who_todo, preview=True)
-
         # Encyclopedia
         lorebook.Lorebook.concept_stat = csv_read(self.main_dir, "concept_stat.csv",
                                                   ("data", "ruleset", self.ruleset_folder, "lore"), header_key=True)
@@ -823,7 +818,6 @@ class Game:
         lorebook.Lorebook.battle_map_data = self.battle_map_data
         lorebook.Lorebook.screen_rect = self.screen_rect
         lorebook.Lorebook.unit_state_text = self.unit_state_text
-        lorebook.Lorebook.preview_sprite_pool = self.preview_sprite_pool
 
         self.encyclopedia.change_ruleset()
 

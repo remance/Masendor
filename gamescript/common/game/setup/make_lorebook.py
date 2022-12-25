@@ -7,11 +7,10 @@ load_images = utility.load_images
 csv_read = utility.csv_read
 
 
-def make_lorebook(main_dir, screen_scale, screen_rect):
+def make_lorebook(self, main_dir, screen_scale, screen_rect):
     """Create Encyclopedia related objects"""
     encyclopedia_images = load_images(main_dir, screen_scale=screen_scale, subfolder=("ui", "lorebook_ui"))
-    encyclopedia = lorebook.Lorebook(main_dir, screen_scale, screen_rect,
-                                     encyclopedia_images["encyclopedia"])  # encyclopedia sprite
+    encyclopedia = lorebook.Lorebook(self, encyclopedia_images["encyclopedia"])  # encyclopedia sprite
     lore_name_list = lorebook.SubsectionList(encyclopedia.rect.topleft, encyclopedia_images["section_list"])
     filter_tag_list = lorebook.SubsectionList((encyclopedia.rect.topright[0] + encyclopedia_images["section_list"].get_width(),
                                                encyclopedia.rect.topright[1]),

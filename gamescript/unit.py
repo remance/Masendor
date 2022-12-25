@@ -29,11 +29,14 @@ class Unit(pygame.sprite.Sprite):
     assign_commander = empty_method
     cal_unit_stat = empty_method
     change_formation = empty_method
+    enter_battle = empty_method
+    placement = empty_method
     selection = empty_method
     set_target = empty_method
     setup_frontline = empty_method
-    shift_line = empty_method
     setup_subunit_position_list = empty_method
+    shift_line = empty_method
+    start_retreat = empty_method
     subunit_formation_change = empty_method
 
     # Import from *genre*.unit
@@ -60,10 +63,10 @@ class Unit(pygame.sprite.Sprite):
 
     for entry in os.scandir(Path(script_dir + "/common/unit/")):  # load and replace modules from common.unit
         if entry.is_file():
-            if ".pyc" in entry.name:
-                file_name = entry.name[:-4]
-            elif ".py" in entry.name:
+            if ".py" in entry.name:
                 file_name = entry.name[:-3]
+            elif ".pyc" in entry.name:
+                file_name = entry.name[:-4]
             exec(f"from gamescript.common.unit import " + file_name)
             exec(f"" + file_name + " = " + file_name + "." + file_name)
 
@@ -207,53 +210,6 @@ class Unit(pygame.sprite.Sprite):
 
         self.setup_subunit_position_list()  # Set up subunit position list for subunit positioning
 
-    def enter_battle(self):
-        """Setup various variables at the start of battle or when new unit spawn/split"""
-        self.alive_subunit_list = [item for item in self.subunit_list]
-        self.setup_stat(battle_start=True)
-        self.setup_frontline()
-        self.old_troop_health, self.old_troop_stamina = self.troop_number, self.stamina
-        self.leader_social = self.leader[0].social
-        self.authority = self.leader[0].authority  # will be recalculated again later
-
-        if self.commander:  # assign team leader commander to every unit in team if this is commander unit
-            for this_unit in self.battle.all_team_unit[self.team]:
-                this_unit.team_commander = self.leader[0]
-
-        self.battle.all_team_unit["alive"].add(self)
-        self.ally_pos_list = self.battle.team_pos_list[self.team]
-        self.enemy_pos_list = {key: value for key, value in self.battle.team_pos_list.items() if
-                               key != self.team and key != "alive"}
-
-        self.authority_recalculation()
-        self.command_buff = [(self.leader[0].melee_command - 5) * 0.1, (self.leader[0].range_command - 5) * 0.1,
-                             (self.leader[0].cav_command - 5) * 0.1]  # unit leader command buff
-
-        self.subunit_id_array = self.subunit_id_array.astype(int)
-
-        unit_top_left = pygame.Vector2(self.base_pos[0] - self.base_width_box,
-                                       self.base_pos[
-                                           1] - self.base_height_box)  # get the top left corner of sprite to generate subunit position
-        for subunit in self.subunit_list:  # generate start position of each subunit
-            subunit.base_pos = unit_top_left + subunit.unit_position
-            subunit.base_pos = pygame.Vector2(rotation_xy(self.base_pos, subunit.base_pos, self.radians_angle))
-            subunit.zoom_scale()
-            subunit.base_target = subunit.base_pos
-            subunit.command_target = subunit.base_pos  # rotate according to sprite current rotation
-            subunit.make_front_pos()
-
-        self.change_pos_scale()
-
-        # create unit original formation positioning score
-        new_formation = np.where(self.subunit_object_array == None, 99,  # Do not use is for where None, not work
-                                 self.subunit_object_array)  # change empty to the least important
-        new_formation = np.where(self.subunit_object_array != None, 1,
-                                 new_formation)  # change all occupied to most important
-        self.original_formation = {key: value * new_formation for key, value in
-                                   self.battle.troop_data.unit_formation_list["Original"].items()}
-
-        self.original_subunit_id_array = self.subunit_id_array.copy()
-
     def update(self, weather, squad_group, dt, zoom, mouse_pos, mouse_up):
         if self.last_zoom != zoom:  # camera zoom change
             self.zoom_change = True
@@ -344,51 +300,3 @@ class Unit(pygame.sprite.Sprite):
                 self.destroyed(self.battle)
                 self.battle.event_log.add_log([0, str(self.leader[0].name) + "'s unit is destroyed"],
                                               [0, 1])  # put destroyed event in troop and army log
-
-    def process_retreat(self, pos):
-        self.state = 96  # controlled retreat state (not same as 98)
-        self.command_state = self.state  # command retreat
-        self.leader[0].authority -= self.auth_penalty  # retreat reduce enter_battle leader authority
-        if self.charging:  # change order when attacking will cause authority penalty
-            self.leader[0].authority -= self.auth_penalty
-        self.authority_recalculation()
-        self.retreat_start = True  # start retreat process
-        self.set_target(pos)
-        self.revert_move()
-        self.command_target = self.base_target
-
-    def placement(self, mouse_pos, mouse_right, mouse_rightdown, double_mouse_right):
-        if double_mouse_right:  # move unit to new pos
-            self.base_pos = mouse_pos
-            self.last_base_pos = self.base_pos
-
-        elif mouse_right or mouse_rightdown:  # rotate unit
-            self.angle = self.set_rotate(mouse_pos)
-            self.new_angle = self.angle
-            self.radians_angle = math.radians(360 - self.angle)  # for subunit rotate
-            if self.angle < 0:  # negative angle (rotate to left side)
-                self.radians_angle = math.radians(-self.angle)
-
-        front_pos = (self.base_pos[0], (self.base_pos[1] - self.base_height_box))  # find front position of unit
-        self.front_pos = rotation_xy(self.base_pos, front_pos, self.radians_angle)
-        number_pos = (self.base_pos[0] - self.base_width_box,
-                      (self.base_pos[1] + self.base_height_box))  # find position for number text
-        self.base_number_pos = rotation_xy(self.base_pos, number_pos, self.radians_angle)
-        self.change_pos_scale()
-
-        self.base_target = self.base_pos
-        self.command_target = self.base_target  # reset command base_target
-        unit_topleft = pygame.Vector2(self.base_pos[0] - self.base_width_box,
-                                      # get the top left corner of sprite to generate subunit position
-                                      self.base_pos[1] - self.base_height_box)
-
-        for subunit in self.subunit_list:  # generate position of each subunit
-            new_target = unit_topleft + subunit.unit_position
-            subunit.base_pos = pygame.Vector2(
-                rotation_xy(self.base_pos, new_target,
-                            self.radians_angle))  # rotate according to sprite current rotation
-            subunit.zoom_scale()
-            subunit.angle = self.angle
-            subunit.rotate()
-
-        self.issue_order(self.base_pos, double_mouse_right, self.revert, self.base_target, 1)

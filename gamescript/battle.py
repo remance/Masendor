@@ -281,8 +281,8 @@ class Battle:
         self.effect_sprite_pool = None
         self.weapon_joint_list = None
 
-        self.hair_colour_list = None
-        self.skin_colour_list = None
+        self.colour_list = None
+        self.colour_list = None
 
         self.generic_action_data = None
         self.subunit_animation_pool = None
@@ -382,10 +382,9 @@ class Battle:
         self.effect_sprite_data = self.main.effect_sprite_data
         self.weapon_joint_list = self.main.weapon_joint_list
 
-        self.hair_colour_list = self.main.hair_colour_list
-        self.skin_colour_list = self.main.skin_colour_list
+        self.colour_list = self.main.colour_list
 
-        self.unit_editor_stuff = (self.subunit_build, self.unit_edit_border, self.command_ui, self.troop_card_ui,
+        self.unit_editor_stuff = (self.subunit_build, self.unit_edit_border, self.troop_card_ui,
                                   self.team_coa, self.troop_card_button, self.editor_troop_list_box,
                                   self.troop_namegroup, self.unit_preset_list_box, self.preset_select_border,
                                   self.unitpreset_namegroup, self.unit_save_button, self.unit_delete_button)
@@ -514,6 +513,10 @@ class Battle:
         else:
             self.camera_zoom = 1  # always start at furthest zoom for editor
             self.camera_mode = "Free"  # start with free camera mode
+
+            self.team_troop_number = [1, 1, 1]  # reset list of troop number in each team
+            self.battle_scale = [(value / sum(self.team_troop_number) * 100) for value in self.team_troop_number]
+            self.start_troop_number = [0, 0, 0]
 
             # who_todo = {key: value for key, value in
             #             self.troop_data.troop_list.items()}  # TODO change to depend on subunit add

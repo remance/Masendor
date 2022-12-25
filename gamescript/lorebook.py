@@ -41,12 +41,13 @@ class Lorebook(pygame.sprite.Sprite):
     leader_text = ("Detrimental", "Incompetent", "Inferior", "Unskilled", "Dull", "Average", "Decent", "Skilled",
                    "Master", "Genius", "Unmatched")
 
-    def __init__(self, main_dir, screen_scale, screen_rect, image, textsize=24):
+    def __init__(self, main, image, textsize=24):
         """ Lorebook section: 0 = welcome/concept, 1 world history, 2 = faction, 3 = subunit, 4 = equipment, 5 = subunit status, 6 = subunit skill,
         7 = subunit trait, 8 = leader, 9 terrain, 10 = landmark"""
-        self.main_dir = main_dir
-        self.screen_rect = screen_rect
-        self.screen_scale = screen_scale
+        self.main = main
+        self.main_dir = main.main_dir
+        self.screen_rect = main.screen_rect
+        self.screen_scale = main.screen_scale
 
         self._layer = 23
         pygame.sprite.Sprite.__init__(self)
@@ -221,7 +222,7 @@ class Lorebook(pygame.sprite.Sprite):
             try:
                 image_name = str(self.subsection)
                 self.portrait = self.leader_data.images[
-                    image_name].copy()  # get leader portrait based on subsection number
+                    image_name]  # get leader portrait based on subsection number
             except KeyError:
                 self.portrait = self.leader_data.images[
                     "9999999"].copy()  # Use Unknown leader image if there is none in list
@@ -237,7 +238,10 @@ class Lorebook(pygame.sprite.Sprite):
 
         elif self.section == self.troop_section:
             try:
-                self.portrait = self.preview_sprite_pool[self.subsection]["sprite"].copy()
+                who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key == self.subsection}
+                preview_sprite_pool = self.main.create_sprite_pool(("side", ), self.main.troop_sprite_size,
+                                                                   self.screen_scale, who_todo, preview=True)
+                self.portrait = preview_sprite_pool[self.subsection]["sprite"]
 
                 self.portrait = pygame.transform.scale(self.portrait, (int(250 * self.screen_scale[0]),
                                                                        int(250 * self.screen_scale[
@@ -752,6 +756,7 @@ def lorebook_process(self, ui, mouse_up, mouse_down, mouse_scroll_up, mouse_scro
                 self.encyclopedia.current_filter_row -= 1
 
     if close or esc_press:
+        self.portrait = None
         ui.remove(self.encyclopedia_stuff)  # remove encyclopedia related sprites
         for group in (self.subsection_name, self.tag_filter_name):
             for name in group:  # remove subsection name

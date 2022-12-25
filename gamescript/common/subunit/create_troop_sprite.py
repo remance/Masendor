@@ -11,10 +11,14 @@ default_sprite_size = (200, 200)
 
 def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_list, body_sprite_pool,
                         weapon_sprite_pool, armour_sprite_pool, effect_sprite_pool, animation_property,
-                        weapon_joint_list, weapon, armour, hair_colour_list, skin_colour_list, genre_sprite_size,
+                        weapon_joint_list, weapon, armour, colour_list, genre_sprite_size,
                         screen_scale, race_list):
     apply_colour = animation.apply_colour
-    frame_property = animation_part_list["frame_property"].copy()
+    try:
+        frame_property = animation_part_list["frame_property"].copy()
+    except:
+        print(animation_name)
+        print(animation_part_list)
     animation_property = animation_property.copy()
     check_prop = frame_property + animation_property
     size = int(size)
@@ -43,7 +47,7 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
         if "head" in layer:
             image_part = generate_head(layer[:2], animation_part_list, part[:3], troop_sprite_list, body_sprite_pool,
                                        armour_sprite_pool,
-                                       this_armour, hair_colour_list, skin_colour_list)
+                                       this_armour, colour_list)
         elif "weapon" in layer:
             new_part.insert(2, "Dummy")  # insert dummy value for weapon list so can use indexing similar as other part
             image_part = generate_body(layer, part[:2], troop_sprite_list, weapon_sprite_pool, weapon=weapon)
@@ -51,10 +55,8 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
             if "dmg_" not in layer:
                 image_part = generate_body(layer, part[:3], troop_sprite_list, effect_sprite_pool)
         else:  # other body part
-            colour_list = skin_colour_list
             colour = troop_sprite_list[layer[:2] + "_skin"]
             if any(ext in part[2] for ext in race_list[part_race]["Special Hair Part"]):
-                colour_list = hair_colour_list
                 colour = troop_sprite_list[layer[:2] + "_hair"]
                 if colour != "":
                     if len(colour) == 2:
@@ -217,8 +219,8 @@ def grab_face_part(pool, race, side, part, part_check, part_default=None):
     return surface
 
 
-def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool, armour_pool, armour, hair_colour_list,
-                  skin_colour_list):
+def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool, armour_pool, armour,
+                  colour_list):
     apply_colour = animation.apply_colour
 
     head_sprite_surface = None
@@ -230,7 +232,7 @@ def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool
         head_rect = head.get_rect(topleft=(0, 0))
         head_sprite_surface.blit(head, head_rect)
         if sprite_list[p + "_skin"] not in ("", "none"):
-            head_sprite_surface = apply_colour(head_sprite_surface, sprite_list[p + "_skin"], skin_colour_list, keep_white=False)
+            head_sprite_surface = apply_colour(head_sprite_surface, sprite_list[p + "_skin"], colour_list, keep_white=False)
         face = [grab_face_part(body_pool, head_race, head_side, "eyebrow", sprite_list[p + "_eyebrow"]),
                 grab_face_part(body_pool, head_race, head_side, "eye", animation_part_list[p + "_eye"],
                                part_default=sprite_list[p + "_eye"]),
@@ -240,7 +242,7 @@ def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool
 
         for face_index, face_part in enumerate(("_eyebrow", "_eye", "_beard")):
             if face[face_index] is not None:
-                face[face_index] = apply_colour(face[face_index], sprite_list[p + face_part][1], hair_colour_list)
+                face[face_index] = apply_colour(face[face_index], sprite_list[p + face_part][1], colour_list)
 
         for index, item in enumerate(face):
             if item is not None:

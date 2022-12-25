@@ -18,11 +18,11 @@ class TroopAnimationData:
         :param main_dir: Game folder direction
         :param race_list: List of troop races
         """
-        with open(os.path.join(main_dir, "data", "sprite", "generic", "skin_colour_rgb.csv"), encoding="utf-8",
+        with open(os.path.join(main_dir, "data", "sprite", "colour_rgb.csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
-            self.skin_colour_list = {}
+            self.colour_list = {}
             int_column = ["red", "green", "blue"]  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             for row_index, row in enumerate(rd):
@@ -30,22 +30,7 @@ class TroopAnimationData:
                     for n, i in enumerate(row):
                         row = stat_convert(row, n, i, int_column=int_column)
                         key = row[0].split("/")[0]
-                    self.skin_colour_list[key] = row[1:]
-        edit_file.close()
-
-        with open(os.path.join(main_dir, "data", "sprite", "generic", "hair_colour_rgb.csv"), encoding="utf-8",
-                  mode="r") as edit_file:
-            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
-            header = rd[0]
-            self.hair_colour_list = {}
-            int_column = ["red", "green", "blue"]  # value in list only
-            int_column = [index for index, item in enumerate(header) if item in int_column]
-            for row_index, row in enumerate(rd):
-                if row_index > 0:
-                    for n, i in enumerate(row):
-                        row = stat_convert(row, n, i, int_column=int_column)
-                        key = row[0].split("/")[0]
-                    self.hair_colour_list[key] = row[1:]
+                    self.colour_list[key] = row[1:]
         edit_file.close()
 
         self.generic_animation_pool = []

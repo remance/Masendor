@@ -1,6 +1,6 @@
 "ID","Name","Training Score","Speed Bonus","Health Effect","Stamina Effect","Morale Bonus","Discipline Bonus","Mental Bonus","Trait"
-0,"Novice",100,-10,100,90,-10,-10,-20,"3,5"
-1,"Militant",130,0,105,100,-5,-5,-10,"3"
+0,"Novice",100,-10,100,100,-10,-10,-20,"3,5"
+1,"Militant",130,0,105,105,-5,-5,-10,"3"
 2,"Professional",200,10,110,110,5,0,0,"0"
 3,"Veteran",250,15,110,120,15,10,5,"1"
 4,"Elite",350,20,115,130,20,15,10,"1"

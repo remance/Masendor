@@ -17,7 +17,7 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
         # register user keyboard
         if mouse_right_up and 1 <= cursor_pos[0] < 998 and 1 <= cursor_pos[1] < 998:
             if self.state in (10, 96) and target is None:
-                self.process_retreat(cursor_pos)  # retreat
+                self.start_retreat(cursor_pos)  # retreat
             else:
                 for subunit in self.subunit_list:
                     subunit.attacking = True

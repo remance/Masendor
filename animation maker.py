@@ -126,7 +126,7 @@ def reload_animation(animation, char):
         if char.part_selected:  # not empty
             for part in char.part_selected:
                 part = list(char.mask_part_list.keys())[part]
-                helper.select_part((0, 0), True, False, part)
+                helper.select_part((0, 0), True, False, specific_part=part)
         else:
             helper.select_part(None, shift_press, False)
 
@@ -188,12 +188,12 @@ race_list = race_list[2:]  # remove header and any race
 generic_animation_pool, part_name_header = read_anim_data(direction_list, "generic", anim_column_header)
 weapon_joint_list = read_joint_data(direction_list)
 
-with open(os.path.join(main_dir, "data", "sprite", "generic", "skin_colour_rgb.csv"), encoding="utf-8",
+with open(os.path.join(main_dir, "data", "sprite", "colour_rgb.csv"), encoding="utf-8",
           mode="r") as edit_file:
     rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
     rd = [row for row in rd]
     header = rd[0]
-    skin_colour_list = {}
+    colour_list = {}
     int_column = ["red", "green", "blue"]  # value in list only
     int_column = [index for index, item in enumerate(header) if item in int_column]
     for row_index, row in enumerate(rd):
@@ -201,7 +201,7 @@ with open(os.path.join(main_dir, "data", "sprite", "generic", "skin_colour_rgb.c
             for n, i in enumerate(row):
                 row = stat_convert(row, n, i, int_column=int_column)
                 key = row[0].split("/")[0]
-            skin_colour_list[key] = row[1:]
+            colour_list[key] = row[1:]
 
 gen_body_sprite_pool = {}
 for race in race_list:
@@ -503,10 +503,12 @@ class BodyHelper(pygame.sprite.Sprite):
             if specific_part is False:
                 self.part_selected = []
             elif specific_part in list(self.part_pos.keys()):
-                if shift_press and specific_part not in self.part_selected:
-                    self.part_selected.append(specific_part)
-                elif ctrl_press and specific_part in self.part_selected:
-                    self.part_selected.remove(specific_part)
+                if shift_press:
+                    if specific_part not in self.part_selected:
+                        self.part_selected.append(specific_part)
+                elif ctrl_press:
+                    if specific_part in self.part_selected:
+                        self.part_selected.remove(specific_part)
                 else:
                     self.part_selected = [specific_part]
             self.blit_part()
@@ -694,7 +696,7 @@ class Model:
         self.part_selected = []
         self.head_race = {"p" + str(p): "Human" for p in range(1, max_person + 1)}  # for head generation
         self.body_race = {"p" + str(p): "Human" for p in range(1, max_person + 1)}  # for armour preview
-        skin = list(skin_colour_list.keys())[random.randint(0, len(skin_colour_list) - 1)]
+        skin = list(colour_list.keys())[random.randint(0, len(colour_list) - 1)]
         # skin_colour = skin_colour_list[skin]
         self.p_hair_colour = {"p" + str(p): [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)] for p in
                               range(1, max_person + 1)}
@@ -855,13 +857,13 @@ class Model:
         frame_size = self.frame_list[0]["size"]
         old_size = self.frame_list[1]["size"]
         for direction in range(5):
+            min_x = 9999999
+            min_y = 9999999
+            max_x = 0
+            max_y = 0
             for frame_index, this_frame in enumerate(current_pool[direction][animation_name]):
                 current_pool[direction][animation_name][frame_index]["size"] = frame_size
-                min_x = 9999999
-                min_y = 9999999
-                max_x = 0
-                max_y = 0
-                for key, value in this_frame.items():  # loop to find min and max point for center
+                for key, value in this_frame.items():  # loop to find min and max point for center of all frames to avoid unequal placement
                     if type(value) == list and len(value) > 3:
                         pos_index = (3, 4)
                         if "weapon" in key:
@@ -876,6 +878,8 @@ class Model:
                             min_y = y
                         if max_y < y:
                             max_y = y
+
+            for frame_index, this_frame in enumerate(current_pool[direction][animation_name]):
                 center_x = (min_x + max_x) / 2  # find center of all parts
                 center_y = (min_y + max_y) / 2
                 new_center = ((center_x / old_size) * frame_size, (center_y / old_size) * frame_size)
@@ -1997,10 +2001,10 @@ while True:
                     if key_press[pygame.K_MINUS]:
                         current_frame -= 1
                         if current_frame < 0:
-                            current_frame = max_frame
+                            current_frame = max_frame - 1
                     elif key_press[pygame.K_EQUALS]:
                         current_frame += 1
-                        if current_frame > max_frame:
+                        if current_frame > max_frame - 1:
                             current_frame = 0
                     anim.show_frame = current_frame
                     model.edit_part(mouse_pos, "change")
@@ -2328,7 +2332,8 @@ while True:
                             helper.select_part(None, False, False)  # reset first
                             for part in model.part_selected:
                                 if list(model.mask_part_list.keys())[part] in helper.rect_part_list:
-                                    helper.select_part(mouse_pos, True, False, list(model.mask_part_list.keys())[part])
+                                    helper.select_part(mouse_pos, True, False,
+                                                       specific_part=list(model.mask_part_list.keys())[part])
 
                     elif all_button.rect.collidepoint(mouse_pos):
                         for part in model.mask_part_list:
@@ -2336,10 +2341,12 @@ while True:
                                 model.click_part(mouse_pos, True, ctrl_press, part)
                             else:
                                 model.click_part(mouse_pos, False, ctrl_press, part)
-                        for helper in helper_list:
-                            for part in model.part_selected:
+                        for part in model.part_selected:
+                            for helper in helper_list:
                                 if list(model.mask_part_list.keys())[part] in helper.rect_part_list:
-                                    helper.select_part(mouse_pos, True, False, list(model.mask_part_list.keys())[part])
+                                    helper.select_part(mouse_pos, True, False,
+                                                       specific_part=list(model.mask_part_list.keys())[part])
+                                    break
 
                     elif activate_button.rect.collidepoint(mouse_pos):
                         for strip_index, strip in enumerate(filmstrips):
@@ -2614,7 +2621,8 @@ while True:
                             if model.part_selected:
                                 for part in model.part_selected:
                                     if list(model.mask_part_list.keys())[part] in helper.rect_part_list:
-                                        helper.select_part(mouse_pos, True, False, list(model.mask_part_list.keys())[part])
+                                        helper.select_part(mouse_pos, True, False,
+                                                           specific_part=list(model.mask_part_list.keys())[part])
                     if mouse_wheel_up or mouse_wheel_down:
                         model.edit_part(new_mouse_pos, "rotate")
                     elif mouse_right_up or mouse_right_down:

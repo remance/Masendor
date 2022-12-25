@@ -31,11 +31,11 @@
 29,"New Kingdom Archers",1,1,0,0,0,0,17,23,60,100,19,100,40,100,50,"Range Infantry","32,3","1,3","5,3","1,3","15,1","1,0,1",,"Old Egyptian Range",3
 30,"Egyptian Slingers",1,1,0,0,0,0,17,23,60,100,19,100,50,100,50,"Range Infantry","20,3","1,3","5,3","1,3","15,1","1,0,1",,"Old Egyptian Range",3
 31,"New Kingdom Spearmen",1,1,0,0,0,0,50,50,0,100,21,100,50,100,250,"Melee Infantry","6,3","47,2","1,3","1,3","15,3","1,0,1",,"Old Egyptian Melee",2
-32,"New Kingdom Swordsmen",2,1,0,0,0,0,55,45,0,100,21,100,60,100,250,"Melee Infantry","2,3","1,3","1,3","1,3","15,3","1,0,1",,"Old Egyptian Melee",0
-33,"Egyptian War Chariots",2,1,18,0,0,0,20,35,45,130,21,100,60,100,30,"Chariot","32,4","1,3","6,3","1,3","15,3","100,4,13",,"Old Egyptian Range","1,4"
+32,"New Kingdom Swordsmen",2,1,0,0,0,0,55,45,0,100,21,100,60,100,250,"Melee Infantry","2,3","47,2","1,3","1,3","15,3","1,0,1",,"Old Egyptian Melee",0
+33,"Egyptian War Chariots",2,1,18,0,0,0,20,35,45,130,21,100,60,100,30,"Chariot","32,4","1,3","6,3","47,3","15,3","100,4,13",,"Old Egyptian Range","1,4"
 34,"African Spearmen",10,1,0,0,0,0,60,40,0,100,21,100,30,100,100,"Melee Infantry","6,2","47,2","1,3","1,3","15,3","1,0,1",,"Tribal African Light",2
 35,"Egyptian Pitati",10,1,0,45,0,0,25,15,60,120,21,100,30,100,250,"Melee Infantry","32,4","1,3","14,3","1,3","15,2","1,0,1",,"Old Egyptian Mercenary Archer",3
-36,"Royal War Chariots",11,1,18,44,0,0,25,35,40,150,21,100,90,120,30,"Chariot","32,5","1,3","2,4","1,3","15,4","100,5,13",,"Old Egyptian Noble","1,3,4"
+36,"Royal War Chariots",11,1,18,44,0,0,25,35,40,150,21,100,90,120,30,"Chariot","32,5","1,3","2,4","47,3","15,4","100,5,13",,"Old Egyptian Noble","1,3,4"
 37,"Mycenaean Promachois ",10,1,56,46,0,0,60,55,30,100,21,100,50,100,100,"Melee Infantry","15,3","41,2","1,3","1,3","15,3","1,0,1",,"Old Greek Heavy","1,2,4"
 38,"Canaanite Archers",1,1,0,0,0,0,5,5,45,100,19,100,30,100,50,"Range Infantry","25,3","1,3","5,3","1,3","15,1","1,0,1",,"Old Desert Light",3
 39,"Canaanite Slingers",1,1,0,0,0,0,5,5,45,100,19,100,40,100,50,"Range Infantry","20,3","1,3","5,3","1,3","15,1","1,0,1",,"Old Desert Light",3
