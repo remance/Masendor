@@ -774,13 +774,13 @@ class Game:
         self.weapon_joint_list = self.troop_animation.weapon_joint_list  # weapon joint data
         self.colour_list = self.troop_animation.colour_list  # skin colour list
 
-        self.effect_sprite_data = datasprite.EffectSpriteData(self.main_dir)
+        self.effect_sprite_pool = self.troop_animation.effect_sprite_pool
 
         self.command_ui.weapon_sprite_pool = self.gen_weapon_sprite_pool
 
         # flip (covert for ingame angle)
         bullet_sprite_pool = {}
-        for key, value in self.effect_sprite_data.effect_sprite_pool.items():
+        for key, value in self.effect_sprite_pool.items():
             bullet_sprite_pool[key] = {}
             for key2, value2 in value.items():
                 bullet_sprite_pool[key][key2] = {}
@@ -801,6 +801,7 @@ class Game:
 
         damagesprite.DamageSprite.bullet_sprite_pool = bullet_sprite_pool
         damagesprite.DamageSprite.bullet_weapon_sprite_pool = bullet_weapon_sprite_pool
+        damagesprite.DamageSprite.effect_sprite_pool = self.effect_sprite_pool
 
         # Encyclopedia
         lorebook.Lorebook.concept_stat = csv_read(self.main_dir, "concept_stat.csv",

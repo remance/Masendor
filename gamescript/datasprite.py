@@ -186,9 +186,6 @@ class TroopAnimationData:
                     else:
                         self.gen_weapon_sprite_pool[folder[-1]][subfolder[-1]][direction].update(imgs)
 
-
-class EffectSpriteData:
-    def __init__(self, main_dir):
         self.effect_sprite_pool = {}
         part_folder = Path(os.path.join(main_dir, "data", "sprite", "effect"))
         subdirectories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x

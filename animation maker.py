@@ -17,7 +17,7 @@ main_dir = os.path.split(os.path.abspath(__file__))[0]
 current_dir = main_dir + "/animation maker"  # animation maker folder
 sys.path.insert(1, current_dir)
 
-#TODO check bug that cause size to not match for all direction and cause corrupt save
+# TODO check bug that cause size to not match for all direction and cause corrupt save
 
 from script import colour, listpopup, pool  # keep here as it need to get sys path insert
 
@@ -167,6 +167,15 @@ def change_animation(new_name):
     frame_prop_list_box.scroll.change_image(new_row=0, row_size=len(frame_prop_list_box.namelist[current_frame]))
     model.clear_history()
 
+
+def change_frame_process():
+    global current_frame_row
+    anim.show_frame = current_frame
+    model.edit_part(mouse_pos, "change")
+    current_frame_row = 0
+    setup_list(menu.NameList, current_frame_row, frame_prop_list_box.namelist[current_frame], frame_prop_namegroup,
+               frame_prop_list_box, ui, screen_scale, layer=9,
+               old_list=frame_property_select[current_frame])  # change frame property list
 
 race_list = []
 with open(os.path.join(main_dir, "data", "troop", "troop_race.csv"), encoding="utf-8", mode="r") as edit_file:
@@ -1670,6 +1679,7 @@ help_button = SwitchButton(["Help:ON", "Help:OFF"], image, (play_animation_butto
                            description=("Enable or disable help popup.",
                                         "Control for parts selection:", "Left Click on part = Part selection",
                                         "Shift + Left Click = Add selection", "CTRL + Left Click = Remove selection",
+                                        "- (minus) or = (equal) = Previous or next frame", "[ or ] = Previous or next animation",
                                         "Control with selected parts: ", "W,A,S,D = Move", "Mouse Right = Place",
                                         "Hold mouse wheel or Q,E = Rotate", "DEL = Clear part", "Page Up/Down = Change layer"))
 clear_button = Button("Clear", image, (play_animation_button.pos[0] - play_animation_button.image.get_width() * 3,
@@ -2006,8 +2016,7 @@ while True:
                         current_frame += 1
                         if current_frame > max_frame - 1:
                             current_frame = 0
-                    anim.show_frame = current_frame
-                    model.edit_part(mouse_pos, "change")
+                    change_frame_process()
 
         if mouse_timer != 0:  # player click mouse once before
             mouse_timer += ui_dt  # increase timer for mouse click using real time
@@ -2530,12 +2539,7 @@ while True:
                         for strip_index, strip in enumerate(filmstrips):  # click on frame film list
                             if strip.rect.collidepoint(mouse_pos) and current_frame != strip_index:  # click new frame
                                 current_frame = strip_index
-                                anim.show_frame = current_frame
-                                model.edit_part(mouse_pos, "change")
-                                current_frame_row = 0
-                                setup_list(menu.NameList, current_frame_row, frame_prop_list_box.namelist[current_frame], frame_prop_namegroup,
-                                           frame_prop_list_box, ui, screen_scale, layer=9,
-                                           old_list=frame_property_select[current_frame])  # change frame property list
+                                change_frame_process()
 
                                 if strip.activate:
                                     activate_button.change_option(0)

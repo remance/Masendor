@@ -1,5 +1,7 @@
 def swap_weapon(self):
     """Change weapon, adjust stat, trait and skill"""
+    self.current_action = {"name": "SwapGear"}
+    self.interrupt_animation = True
     self.weapon_cooldown[0] = 0  # reset weapon attack cooldown time
     self.weapon_cooldown[1] = 0
 

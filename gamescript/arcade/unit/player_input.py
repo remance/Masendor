@@ -70,7 +70,7 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                                 self.leader_subunit.command_action = {"name": "Action " + str_action_num,
                                                                       "range attack": True, "pos": cursor_pos}
                         else:  # melee attack
-                            self.leader_subunit.command_action = {"name": "Action " + str_action_num}
+                            self.leader_subunit.command_action = {"name": "Action " + str_action_num, "melee attack": True}
                     elif "Action " + str_action_num in self.leader_subunit.current_action["name"]:  # No new attack command if already doing it
                         if "hold" not in self.leader_subunit.current_action:  # start holding
                             self.leader_subunit.current_action["hold"] = True

@@ -114,10 +114,12 @@ class HeightMap(pygame.sprite.Sprite):
         self._layer = 0
         pygame.sprite.Sprite.__init__(self)
         self.topology = True
-        # self.rect = self.image.get_rect(topleft=(0, 0))
+        self.map_array = ()
+        self.topology_image = None
 
     def draw_image(self, image):
         self.image = image.copy()
+        self.map_array = tuple([[col[2] for col in row] for row in pygame.surfarray.array3d(image).tolist()])
         if self.topology:
             data = pygame.image.tostring(self.image, "RGB")  # convert image to string data for filtering effect
             img = Image.frombytes("RGB", (self.image.get_width(), self.image.get_height()), data)  # use PIL to get image data
@@ -157,7 +159,7 @@ class HeightMap(pygame.sprite.Sprite):
         elif new_pos[1] > 999:
             new_pos[1] = 999
 
-        colour = self.image.get_at((int(new_pos[0]), int(new_pos[1])))[2]
+        colour = self.map_array[int(new_pos[0])][int(new_pos[1])]
 
         if colour == 0:
             colour = 255
@@ -167,6 +169,7 @@ class HeightMap(pygame.sprite.Sprite):
     def clear_image(self):
         self.image = None
         self.topology_image = None
+        self.map_array = ()
 
 
 class BeautifulMap(pygame.sprite.Sprite):
@@ -222,7 +225,7 @@ class BeautifulMap(pygame.sprite.Sprite):
                     speed_array.append(speed_mod)
                 battle.map_move_array.append(speed_array)
 
-        # Comment out this part and import PIL above if not want to use blur filtering
+        # Blur map to make it look older
         data = pygame.image.tostring(self.image, "RGB")  # convert image to string data for filtering effect
         img = Image.frombytes("RGB", (self.image.get_width(), self.image.get_height()), data)  # use PIL to get image data
         img = img.filter(ImageFilter.GaussianBlur(radius=2))  # blur Image (or apply other filter in future)
@@ -234,11 +237,11 @@ class BeautifulMap(pygame.sprite.Sprite):
              self.image.get_height()))  # using the above surface cause a lot of fps drop so make a new one and blit the above here
         rect = self.image.get_rect(topleft=(0, 0))
         self.image.blit(img, rect)
-        # End PIL module code
 
-        if editor_map is False:  # put in terrain feature texture
-            for row_pos in range(0, 1000):
-                for col_pos in range(0, 1000):
+        # Put in terrain feature texture
+        if editor_map is False:
+            for row_pos in range(0, len(base_map.map_array)):
+                for col_pos in range(0, len(base_map.map_array[0])):
                     if row_pos % 20 == 0 and col_pos % 20 == 0:
                         random_pos = (row_pos + random.randint(0, 19), col_pos + random.randint(0, 19))
                         terrain, this_feature = feature_map.get_feature(random_pos, base_map)
@@ -259,17 +262,15 @@ class BeautifulMap(pygame.sprite.Sprite):
 
         # Save place name image as variable
         if place_name is not None:
-            self.place_name = pygame.transform.smoothscale(place_name, (place_name.get_width() * self.screen_scale[0],
-                                                                  place_name.get_height() * self.screen_scale[1]))
+            self.place_name = pygame.transform.smoothscale(place_name,
+                                                           (place_name.get_width() * self.screen_scale[0],
+                                                            place_name.get_height() * self.screen_scale[1]))
         else:
             self.place_name = pygame.Surface((0, 0))
 
-        self.add_effect(height_map)
-
-    def add_effect(self, height_map, effect_image=None, time_image=None):
-        rect = self.image.get_rect(topleft=(0, 0))
+    def add_effect(self, effect_image=None, time_image=None):
         self.image = self.true_image.copy()
-
+        rect = self.image.get_rect(topleft=(0, 0))
         if effect_image is not None:
             self.image.blit(effect_image, rect)  # add weather filter effect
 
@@ -280,16 +281,18 @@ class BeautifulMap(pygame.sprite.Sprite):
             self.image.blit(self.place_name, rect)  # add place_name layer to map
 
         self.image_original = self.image.copy()
-        self.image_height_original = self.image.copy()
-        self.image_height_original.blit(height_map.image, rect)
-        self.image_topology_original = self.image.copy()
-        self.image_topology_original.blit(height_map.topology_image, rect)
-
         self.change_scale(self.scale)
 
-    def change_mode(self, mode):
+    def change_mode(self, height_map, mode):
         """Switch between normal, height normal map, topology map mode"""
         self.mode = mode
+        self.image = self.image_original.copy()
+        if self.mode == 1:  # with topology map
+            rect = self.image.get_rect(topleft=(0, 0))
+            self.image.blit(height_map.topology_image, rect)
+        elif self.mode == 2:  # with height map
+            rect = self.image.get_rect(topleft=(0, 0))
+            self.image.blit(height_map.image, rect)
         self.change_scale(self.scale)
 
     def change_scale(self, scale):
@@ -297,14 +300,7 @@ class BeautifulMap(pygame.sprite.Sprite):
         self.scale = scale
         scale_width = self.image_original.get_width() * self.scale
         scale_height = self.image_original.get_height() * self.scale
-        self.dim = pygame.Vector2(scale_width, scale_height)
-        if self.mode == 0:  # no height map
-            self.image = self.image_original.copy()
-        elif self.mode == 1:  # with topology map
-            self.image = self.image_topology_original.copy()
-        elif self.mode == 2:  # with height map
-            self.image = self.image_height_original.copy()
-        self.image = pygame.transform.smoothscale(self.image, (int(self.dim[0]), int(self.dim[1])))
+        self.image = pygame.transform.smoothscale(self.image, (int(scale_width), int(scale_height)))
 
     def clear_image(self):
         self.image = None

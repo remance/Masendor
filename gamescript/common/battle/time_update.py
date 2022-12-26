@@ -24,6 +24,5 @@ def time_update(self):
                     self.day_time = "Night"
         if self.old_day_time != self.day_time:
             self.old_day_time = self.day_time
-            self.battle_map.add_effect(self.battle_map_height,
-                                       effect_image=self.weather_effect_images[self.current_weather.name][self.current_weather.level],
+            self.battle_map.add_effect(effect_image=self.weather_effect_images[self.current_weather.name][self.current_weather.level],
                                        time_image=self.day_effect_images[self.day_time])

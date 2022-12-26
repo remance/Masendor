@@ -15,8 +15,7 @@ def wheel_ui_process(self, choice):
                 self.map_mode += 1  # change height map mode
                 if self.map_mode > 2:
                     self.map_mode = 0
-                self.battle_map.change_mode(self.map_mode)
-                self.battle_map.change_scale(self.camera_zoom)
+                self.battle_map.change_mode(self.battle_map_height, self.map_mode)
             self.battle_ui_updater.remove(self.wheel_ui)
             self.player_input_state = None
 

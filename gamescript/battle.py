@@ -379,7 +379,7 @@ class Battle:
         self.gen_body_sprite_pool = self.main.gen_body_sprite_pool
         self.gen_weapon_sprite_pool = self.main.gen_weapon_sprite_pool
         self.gen_armour_sprite_pool = self.main.gen_armour_sprite_pool
-        self.effect_sprite_data = self.main.effect_sprite_data
+        self.effect_sprite_pool = self.main.effect_sprite_pool
         self.weapon_joint_list = self.main.weapon_joint_list
 
         self.colour_list = self.main.colour_list
@@ -828,8 +828,7 @@ class Battle:
                                 self.current_weather.__init__(self.time_ui, 0, 0, self.weather_data)
                             self.weather_event.pop(0)
                             try:
-                                self.battle_map.add_effect(self.battle_map_height,
-                                                           effect_image=
+                                self.battle_map.add_effect(effect_image=
                                                            self.weather_effect_images[self.current_weather.name][
                                                                self.current_weather.level],
                                                            time_image=self.day_effect_images[self.day_time])

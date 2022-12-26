@@ -3,21 +3,19 @@ import pygame
 from PIL import Image, ImageOps
 
 
-def play_animation(self, speed, dt, scale=1, replace_image=True):
+def play_animation(self, speed, dt, hold_check, replace_image=True):
     """
     Play sprite animation
     :param self: Object of the animation sprite
     :param speed: Play speed
     :param dt: Time
-    :param scale: Sprite scale
+    :param hold_check: Check if holding animation frame or not
     :param replace_image: Further zoom level does not show sprite animation even when it play
     :return: Boolean of animation finish playing or not
     """
     done = False
     just_start = False  # check if new frame just start playing this call
     current_animation = self.current_animation[self.sprite_direction]
-    hold_check = "hold" in self.current_action and "hold" in current_animation[self.show_frame]["frame_property"] and \
-                 "hold" in self.action_list[int(self.current_action["name"][-1])]["Properties"]
     if not self.current_action or hold_check is False:  # not holding current frame:  # not holding current frame
         self.animation_timer += dt
         if self.animation_timer >= speed:
@@ -33,7 +31,7 @@ def play_animation(self, speed, dt, scale=1, replace_image=True):
     if replace_image:  # replace sprite image
         self.image = current_animation[self.show_frame]["sprite"]
         self.rect = self.image.get_rect(center=self.pos)
-    return done, just_start, hold_check
+    return done, just_start
 
 
 def sprite_fading(self, how, speed=5):
@@ -54,7 +52,7 @@ def sprite_fading(self, how, speed=5):
 
 def reset_animation(self):
     """
-    Reset animation variable
+    Reset animation variable, used for animation that take utmost priority like die
     :param self: Object of the animation sprite
     """
     self.show_frame = 0

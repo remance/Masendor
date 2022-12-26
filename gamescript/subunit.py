@@ -661,10 +661,13 @@ class Subunit(pygame.sprite.Sprite):
         # elif self.countup_timer > 0:
         #     self.countup_timer = 0
         #     self.countup_trigger_time = 0
+        hold_check = self.current_action and "hold" in self.current_action and \
+                     "hold" in self.current_animation[self.sprite_direction][self.show_frame]["frame_property"] and \
+                     "hold" in self.action_list[int(self.current_action["name"][-1])]["Properties"]
 
-        done, just_start, hold_check = self.play_animation(play_speed, dt, replace_image=self.use_animation_sprite)
-        # if "melee attack" in self.current_action and just_start:  # make attack if frame
-        #     self.attack("melee")
+        done, just_start = self.play_animation(play_speed, dt, hold_check, replace_image=self.use_animation_sprite)
+        if "melee attack" in self.current_action and just_start and self.current_animation[self.sprite_direction][self.show_frame]["dmg_sprite"] is not None:  # make attack if frame
+            self.attack(self.current_animation[self.sprite_direction][self.show_frame]["dmg_sprite"])
         # Pick new animation, condition to stop animation: get interrupt,
         # low level animation got replace with more important one, finish playing, skill animation and its effect end
         if self.state != 100 and \
@@ -674,7 +677,7 @@ class Subunit(pygame.sprite.Sprite):
                  ("skill" in self.current_action and self.current_action["skill"] not in self.skill_effect) or
                  (self.idle_action and self.idle_action != self.command_action) or
                  self.current_action != self.last_current_action):
-            if "range attack" in self.current_action:  # shoot bullet
+            if done and "range attack" in self.current_action:  # shoot bullet
                 self.attack("range")
 
             if self.current_action != self.last_current_action:

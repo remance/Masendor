@@ -21,6 +21,7 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
         print(animation_part_list)
     animation_property = animation_property.copy()
     check_prop = frame_property + animation_property
+    dmg_sprite = None
     size = int(size)
     if size > 5:
         size = 5
@@ -54,6 +55,9 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
         elif "effect" in layer:
             if "dmg_" not in layer:
                 image_part = generate_body(layer, part[:3], troop_sprite_list, effect_sprite_pool)
+            else:
+                dmg_sprite = tuple(part)
+
         else:  # other body part
             colour = troop_sprite_list[layer[:2] + "_skin"]
             if any(ext in part[2] for ext in race_list[part_race]["Special Hair Part"]):
@@ -197,7 +201,8 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
     surface = pygame.transform.smoothscale(surface, (
     genre_sprite_size[0] * size * screen_scale[0], genre_sprite_size[1] * size * screen_scale[1]))
 
-    return {"sprite": surface, "animation_property": tuple(animation_property), "frame_property": tuple(frame_property)}
+    return {"sprite": surface, "animation_property": tuple(animation_property), "frame_property": tuple(frame_property),
+            "dmg_sprite": dmg_sprite}
 
 
 def grab_face_part(pool, race, side, part, part_check, part_default=None):

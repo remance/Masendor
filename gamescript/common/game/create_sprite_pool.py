@@ -86,7 +86,7 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                                   sprite_data, self.gen_body_sprite_pool,
                                                   self.gen_weapon_sprite_pool,
                                                   self.gen_armour_sprite_pool,
-                                                  self.effect_sprite_data, animation_property,
+                                                  self.effect_sprite_pool, animation_property,
                                                   self.weapon_joint_list,
                                                   (0, subunit_weapon_list[0],
                                                    (self.troop_data.weapon_list[primary_main_weapon]["Hand"],
@@ -96,8 +96,7 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
 
                 animation_sprite_pool[subunit_id] = {"sprite": sprite_dict["sprite"],
                                                      "animation_property": sprite_dict["animation_property"],
-                                                     "frame_property": sprite_dict[
-                                                         "frame_property"]}  # preview pool use subunit_id only
+                                                     "frame_property": sprite_dict["frame_property"]}  # preview pool use subunit_id only
             else:
                 low_x0 = float("inf")  # lowest x0
                 low_y0 = float("inf")  # lowest y0
@@ -172,15 +171,9 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                     for index, direction in enumerate(direction_list):
                                         new_direction = direction
                                         opposite_direction = None  # no opposite direction for front and back
-                                        if direction == "side":
-                                            new_direction = "r_side"
-                                            opposite_direction = "l_side"
-                                        elif direction == "sideup":
-                                            new_direction = "r_sideup"
-                                            opposite_direction = "l_sideup"
-                                        elif direction == "sidedown":
-                                            new_direction = "r_sidedown"
-                                            opposite_direction = "l_sidedown"
+                                        if "side" in direction:
+                                            new_direction = "r_" + direction
+                                            opposite_direction = "l_" + direction
                                         current_in_pool[name_input][new_direction] = {}
                                         if opposite_direction is not None:
                                             current_in_pool[name_input][opposite_direction] = {}
@@ -195,7 +188,7 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                                                               sprite_data, self.gen_body_sprite_pool,
                                                                               self.gen_weapon_sprite_pool,
                                                                               self.gen_armour_sprite_pool,
-                                                                              self.effect_sprite_data, animation_property,
+                                                                              self.effect_sprite_pool, animation_property,
                                                                               self.weapon_joint_list,
                                                                               (weapon_set_index, weapon_set,
                                                                                (self.troop_data.weapon_list[hand_weapon_list[weapon_set_index][0]]["Hand"],
@@ -225,19 +218,22 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                             current_in_pool[name_input][new_direction][frame_num] = \
                                                 {"sprite": sprite_pic,
                                                  "animation_property": sprite_dict["animation_property"],
-                                                 "frame_property": sprite_dict["frame_property"]}
+                                                 "frame_property": sprite_dict["frame_property"],
+                                                 "dmg_sprite": sprite_dict["dmg_sprite"]}
                                             if opposite_direction is not None:  # flip sprite for opposite direction
                                                 if self.play_troop_animation == 1 or "_Default" in animation:
                                                     current_in_pool[name_input][opposite_direction][frame_num] = {
                                                         "sprite": pygame.transform.flip(sprite_dict["sprite"].copy(),
                                                                                         True, False),
                                                         "animation_property": sprite_dict["animation_property"],
-                                                        "frame_property": sprite_dict["frame_property"]}
+                                                        "frame_property": sprite_dict["frame_property"],
+                                                        "dmg_sprite": sprite_dict["dmg_sprite"]}
                                                 elif self.play_troop_animation == 0:
                                                     current_in_pool[name_input][opposite_direction][frame_num] = {
                                                         "sprite": current_in_pool[tuple(current_in_pool.keys())[0]][opposite_direction][0]["sprite"],
                                                         "animation_property": sprite_dict["animation_property"],
-                                                        "frame_property": sprite_dict["frame_property"]}
+                                                        "frame_property": sprite_dict["frame_property"],
+                                                        "dmg_sprite": sprite_dict["dmg_sprite"]}
 
                 for animation in current_in_pool:
                     for direction in current_in_pool[animation]:
