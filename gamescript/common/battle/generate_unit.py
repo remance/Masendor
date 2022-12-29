@@ -5,7 +5,7 @@ from gamescript.common import utility
 stat_convert = utility.stat_convert
 
 letter_board = (
-"a", "b", "c", "d", "e", "f", "g", "h")  # letter according to subunit position in inspect ui similar to chess board
+    "a", "b", "c", "d", "e", "f", "g", "h")  # letter according to subunit position in inspect ui similar to chess board
 number_board = ("8", "7", "6", "5", "4", "3", "2", "1")  # same as above
 board_pos = []
 for dd in number_board:
@@ -37,7 +37,8 @@ def generate_unit(self, which_team, setup_data, control, command, colour, coa, s
         leader_position = setup_data["Leader Position"]
 
     old_subunit_list = subunit_array[~np.all(subunit_array == "0", axis=1)]  # remove whole empty column in subunit list
-    subunit_array = old_subunit_list[:, ~np.all(old_subunit_list == "0", axis=0)]  # remove whole empty row in subunit list
+    subunit_array = old_subunit_list[:,
+                    ~np.all(old_subunit_list == "0", axis=0)]  # remove whole empty row in subunit list
     this_unit = unit.Unit(setup_data["ID"], setup_data["POS"], subunit_array, colour, control, coa, command,
                           abs(360 - setup_data["Angle"]), setup_data["Start Health"], setup_data["Start Stamina"],
                           setup_data["Team"])
@@ -73,7 +74,8 @@ def generate_unit(self, which_team, setup_data, control, command, colour, coa, s
                     size = 5
 
                 if self.troop_size_adjustable is False or (
-                        row_index + size <= self.unit_size[1] and col_index + size <= self.unit_size[0]):  # skip if subunit exceed unit size
+                        row_index + size <= self.unit_size[1] and col_index + size <= self.unit_size[
+                    0]):  # skip if subunit exceed unit size
                     for row_number in range(row_index, row_index + size):
                         for col_number in range(col_index, col_index + size):
                             unit_array[row_number][col_number] = 1

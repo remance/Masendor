@@ -82,7 +82,8 @@ def battle_mouse_process(self, mouse_left_up, mouse_right_up, double_mouse_right
                     self.inspect = False
                     self.new_unit_click = False
 
-        elif self.command_ui in self.battle_ui_updater and self.command_ui.rect.collidepoint(self.mouse_pos):  # mouse position on command ui
+        elif self.command_ui in self.battle_ui_updater and self.command_ui.rect.collidepoint(
+                self.mouse_pos):  # mouse position on command ui
             if mouse_left_up or mouse_right_up:
                 self.click_any = True
             if self.behaviour_switch_button[0].rect.collidepoint(self.mouse_pos) or key_press == pygame.K_g:

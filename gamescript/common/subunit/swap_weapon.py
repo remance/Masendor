@@ -1,6 +1,9 @@
+swap_weapon_command_action = {"name": "SwapGear"}
+
+
 def swap_weapon(self):
     """Change weapon, adjust stat, trait and skill"""
-    self.current_action = {"name": "SwapGear"}
+    self.current_action = swap_weapon_command_action
     self.interrupt_animation = True
     self.weapon_cooldown[0] = 0  # reset weapon attack cooldown time
     self.weapon_cooldown[1] = 0
@@ -46,4 +49,5 @@ def swap_weapon(self):
 
     self.action_list = []
     for item in self.equipped_weapon_data:
-        self.action_list.append({key: value for key, value in item.items() if key in ("Common", "Attack", "Properties")})
+        self.action_list.append(
+            {key: value for key, value in item.items() if key in ("Common", "Attack", "Properties")})

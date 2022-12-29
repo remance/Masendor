@@ -1,6 +1,6 @@
 Folder containing animation maker script and related ui image data.
 
-# Control Manual 
+# Control Manual
 
 ## Control with selected part(s)
 
@@ -38,13 +38,14 @@ Reset Button = Reset rotate and flip selected parts
 New Button = Create new animation
 Save Button = Save all animation to file (The animation file is in parentfolder/data/animation/generic for now)
 Size Button = Change sprite size
-Side (4th) Button = Change sprite direction 
+Side (4th) Button = Change sprite direction
 Rename Button = Rename animation name
 Duplicate Button = Duplicate current animation to a new one
 Export Button = Export current animation to png files
 Delete Button = Delete current animation
 
 ## Second Row Button UI
+
 CRTL + Z or Undo Button = Undo last change
 CRTL + Y or Redo Button = Redo last change
 Enable Button = Enable or disable the current frame from playing and saving
@@ -54,15 +55,17 @@ Paste A Button = Paste all frames of the current animation
 Speed Button = Change animation preview play speed
 Default Button = Change the current frame to the default frame
 Center/Joint Button = Change position input to use either center of the part sprite or specific joint position
-Joint Button = Show or hide joint 
+Joint Button = Show or hide joint
 Grid Button = Show or hide grid
 Play Button = Preview animation
 
 ## Animation Property List UI
+
 Left Property List = A list of animation property (apply to all frames)
 Right Property List = A list of frame property (apply to only that frame)
 
 ## Body Helper UI
+
 W1 Button = Main Weapon (typically right hand side of the character in sprite)
 W2 Button = Sub Weapon (typically left hand side of the character in sprite)
 S + Number Button = Special parts

@@ -2,11 +2,11 @@ import datetime
 
 import pygame
 import pygame.freetype
-from gamescript.common import utility, animation
+from gamescript.common import utility
 
 text_render = utility.text_render
 
-apply_colour = animation.apply_colour
+apply_sprite_colour = utility.apply_sprite_colour
 
 
 def change_number(number):
@@ -215,7 +215,8 @@ class TroopCard(pygame.sprite.Sprite):
         self.value["Charge Defense: "] = str(int(who.charge_def_power))
         self.value["Mental: "] = str(int(who.mental_text))
 
-        self.value2["trait"] = who.trait["Original"] | who.trait["Weapon"][who.equipped_weapon][0] | who.trait["Weapon"][who.equipped_weapon][1]
+        self.value2["trait"] = who.trait["Original"] | who.trait["Weapon"][who.equipped_weapon][0] | \
+                               who.trait["Weapon"][who.equipped_weapon][1]
         self.value2["skill"] = who.skill
         self.value2["skill cd"] = who.skill_cooldown
         self.value2["skill effect"] = who.skill_effect
@@ -319,13 +320,14 @@ class CommandUI(pygame.sprite.Sprite):
                 bottomleft=(0, self.image.get_height()))
             self.health_bar.fill((200, 0, 0))
 
-            self.weapon_image = pygame.Surface((200 * self.screen_scale[0], 180 * self.screen_scale[1]), pygame.SRCALPHA)
+            self.weapon_image = pygame.Surface((200 * self.screen_scale[0], 180 * self.screen_scale[1]),
+                                               pygame.SRCALPHA)
             self.weapon_image.fill((50, 50, 50))
             self.weapon_image_original = self.weapon_image.copy()
             self.weapon_image_rect = self.weapon_image.get_rect(topright=(self.image.get_width(), 0))
             self.weapon_image_set_pos = (((0, 0), ((80 * self.screen_scale[0]) * self.screen_scale[0], 0)),
                                          ((self.weapon_image.get_width() / 2, self.weapon_image.get_height() / 2.5),
-                                         (self.weapon_image.get_width() / 1.3, self.weapon_image.get_height() / 2.5)))
+                                          (self.weapon_image.get_width() / 1.3, self.weapon_image.get_height() / 2.5)))
 
             self.ammo_text_box = self.font.render("999", 1, (0, 0, 0))  # make text box for ammo
             self.ammo_text_box.fill((0, 0, 0))
@@ -374,10 +376,10 @@ class CommandUI(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.pos)
 
         self.leader_pos = (
-        (self.inspect_pos[0][0] + self.rect.topleft[0], self.inspect_pos[0][1] + self.rect.topleft[1]),
-        (self.inspect_pos[1][0] + self.rect.topleft[0], self.inspect_pos[1][1] + self.rect.topleft[1]),
-        (self.inspect_pos[2][0] + self.rect.topleft[0], self.inspect_pos[2][1] + self.rect.topleft[1]),
-        (self.inspect_pos[3][0] + self.rect.topleft[0], self.inspect_pos[3][1] + self.rect.topleft[1]))
+            (self.inspect_pos[0][0] + self.rect.topleft[0], self.inspect_pos[0][1] + self.rect.topleft[1]),
+            (self.inspect_pos[1][0] + self.rect.topleft[0], self.inspect_pos[1][1] + self.rect.topleft[1]),
+            (self.inspect_pos[2][0] + self.rect.topleft[0], self.inspect_pos[2][1] + self.rect.topleft[1]),
+            (self.inspect_pos[3][0] + self.rect.topleft[0], self.inspect_pos[3][1] + self.rect.topleft[1]))
 
     def value_input(self, who, button="", split=False):
         if self.ui_type == "command":
@@ -418,7 +420,8 @@ class CommandUI(pygame.sprite.Sprite):
                     self.weapon_image = self.weapon_image_original.copy()
                     self.image = self.image_original.copy()
                 weapon_name_set = list(who.weapon_name)
-                weapon_name_set.insert(0, weapon_name_set.pop(weapon_name_set.index(weapon_name_set[self.equipped_weapon])))
+                weapon_name_set.insert(0, weapon_name_set.pop(
+                    weapon_name_set.index(weapon_name_set[self.equipped_weapon])))
                 weapon_set_index = list(range(0, len(who.weapon_name)))
                 weapon_set_index.insert(0, weapon_set_index.pop(weapon_set_index.index(self.equipped_weapon)))
                 for index, this_weapon_set in enumerate(weapon_name_set):
@@ -441,7 +444,7 @@ class CommandUI(pygame.sprite.Sprite):
                                          index2 not in who.magazine_count[true_weapon_set_index]):  # no ammo
                                     ammo_count = 0
                                     text_colour = (200, 100, 100)
-                                    weapon_image = apply_colour(weapon_image, (200, 50, 50), None, keep_white=False)
+                                    weapon_image = apply_sprite_colour(weapon_image, (200, 50, 50), None, keep_white=False)
                                 else:
                                     ammo_count = who.magazine_count[true_weapon_set_index][index2]
                                     text_colour = (255, 255, 255)
@@ -900,7 +903,7 @@ class UnitIcon(pygame.sprite.Sprite):
         self.leader_image = pygame.transform.scale(self.leader_image, size)  # scale leader image to fit the icon
         self.not_selected_image = pygame.Surface((self.leader_image.get_width() + (self.leader_image.get_width() / 7),
                                                   self.leader_image.get_height() + (
-                                                              self.leader_image.get_height() / 7)))  # create image black corner block
+                                                          self.leader_image.get_height() / 7)))  # create image black corner block
         self.selected_image = self.not_selected_image.copy()
         self.selected_image.fill((200, 200, 0))  # fill gold corner
         self.not_selected_image.fill((0, 0, 0))  # fill black corner
@@ -908,7 +911,7 @@ class UnitIcon(pygame.sprite.Sprite):
         for image in (self.not_selected_image, self.selected_image):  # add team colour and leader image
             center_image = pygame.Surface((self.leader_image.get_width() + (self.leader_image.get_width() / 14),
                                            self.leader_image.get_height() + (
-                                                       self.leader_image.get_height() / 14)))  # create image block
+                                                   self.leader_image.get_height() / 14)))  # create image block
             center_image.fill((144, 167, 255))  # fill colour according to team, blue for team 1
             if self.unit.team == 2:
                 center_image.fill((255, 114, 114))  # red colour for team 2
@@ -1037,8 +1040,6 @@ class BattleScaleUI(pygame.sprite.Sprite):
 
 
 class WheelUI(pygame.sprite.Sprite):
-    sprite_fading = animation.sprite_fading
-
     def __init__(self, images, selected_images, pos, screen_size, text_size=20):
         """Wheel choice ui with text or image inside the choice.
         Works similar to Fallout companion wheel and similar system"""
@@ -1081,14 +1082,14 @@ class WheelUI(pygame.sprite.Sprite):
             for image in self.wheel_inactive_image_list:
                 image.fill((50, 50, 50, 150))
             self.wheel_rect = (
-            images[0].get_rect(center=(image_center[0] * 0.7, image_center[1] * 0.36)),  # top upper left
-            images[0].get_rect(center=(image_center[0] * 0.45, image_center[1] * 0.65)),  # top left
-            images[0].get_rect(center=(image_center[0] * 0.7, image_center[1] * 1.64)),  # bottom lower left
-            images[0].get_rect(center=(image_center[0] * 0.45, image_center[1] * 1.3)),  # bottom left
-            images[0].get_rect(center=(image_center[0] * 1.3, image_center[1] * 0.36)),  # top upper right
-            images[0].get_rect(center=(image_center[0] * 1.6, image_center[1] * 0.65)),  # top right
-            images[0].get_rect(center=(image_center[0] * 1.3, image_center[1] * 1.64)),  # bottom lower right
-            images[0].get_rect(center=(image_center[0] * 1.6, image_center[1] * 1.3))  # bottom right
+                images[0].get_rect(center=(image_center[0] * 0.7, image_center[1] * 0.36)),  # top upper left
+                images[0].get_rect(center=(image_center[0] * 0.45, image_center[1] * 0.65)),  # top left
+                images[0].get_rect(center=(image_center[0] * 0.7, image_center[1] * 1.64)),  # bottom lower left
+                images[0].get_rect(center=(image_center[0] * 0.45, image_center[1] * 1.3)),  # bottom left
+                images[0].get_rect(center=(image_center[0] * 1.3, image_center[1] * 0.36)),  # top upper right
+                images[0].get_rect(center=(image_center[0] * 1.6, image_center[1] * 0.65)),  # top right
+                images[0].get_rect(center=(image_center[0] * 1.3, image_center[1] * 1.64)),  # bottom lower right
+                images[0].get_rect(center=(image_center[0] * 1.6, image_center[1] * 1.3))  # bottom right
             )
 
         elif len(images) == 1:  # create 4 direction wheel ui
@@ -1265,7 +1266,7 @@ class BattleDone(pygame.sprite.Sprite):
                     text_surface = self.font.render(text_header[stat_index] + str(this_stat[team]), True, (0, 0, 0))
                 text_rect = text_surface.get_rect(center=(team_coa_rect[index].midbottom[0],
                                                           team_coa_rect[index].midbottom[1] + (
-                                                                      int(self.height_adjust * 25) * row_number)))
+                                                                  int(self.height_adjust * 25) * row_number)))
                 self.image.blit(text_surface, text_rect)
                 row_number += 1
 

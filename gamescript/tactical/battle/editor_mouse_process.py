@@ -1,6 +1,6 @@
 import pygame
 
-from gamescript import weather, menu, battleui, unit, battlemap
+from gamescript import menu, battleui, unit, battlemap
 from gamescript.common import utility
 
 list_scroll = utility.list_scroll
@@ -129,7 +129,7 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                 army_position = self.leader_level[this_leader.role + 4]
 
                 self.single_text_popup.pop(self.mouse_pos,
-                                      army_position + ": " + this_leader.name)  # popup leader name when mouse over
+                                           army_position + ": " + this_leader.name)  # popup leader name when mouse over
                 self.battle_ui_updater.add(self.single_text_popup)
 
                 if mouse_left_up:  # open list of leader to change leader in that slot
@@ -380,7 +380,8 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                             self.battle_ui_updater.add(*self.leader_now)  # add leader portrait to draw
                                             self.subunit_in_card = slot
                                             self.preview_authority(self.leader_now)
-                                            self.troop_card_ui.value_input(who=self.subunit_in_card)  # update subunit card on selected subunit
+                                            self.troop_card_ui.value_input(
+                                                who=self.subunit_in_card)  # update subunit card on selected subunit
                                             if self.troop_card_ui.option == 2:
                                                 self.trait_skill_icon_blit()
                                                 self.effect_icon_blit()
@@ -476,7 +477,7 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                 self.unit_editor_deploy(self.all_team_unit[slot.team],
                                                         current_preset[self.unit_preset_name], team_colour[slot.team],
                                                         pygame.transform.scale(self.coa_list[int(
-                                                             current_preset[self.unit_preset_name]["Team"])], (60, 60)),
+                                                            current_preset[self.unit_preset_name]["Team"])], (60, 60)),
                                                         subunit_game_id)
                                 break
                             self.slot_display_button.event = 1
@@ -523,13 +524,13 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                     self.mouse_pos) and mouse_left_up:  # change map terrain button
                 self.click_any = True
                 self.popup_list_open(self.terrain_change_button.rect.midtop, self.battle_map_base.terrain_list,
-                                         "terrain", "midbottom", self.battle_ui_updater)
+                                     "terrain", "midbottom", self.battle_ui_updater)
 
             elif self.feature_change_button.rect.collidepoint(
                     self.mouse_pos) and mouse_left_up:  # change map feature button
                 self.click_any = True
                 self.popup_list_open(self.feature_change_button.rect.midtop, self.battle_map_feature.feature_list,
-                                         "feature", "midbottom", self.battle_ui_updater)
+                                     "feature", "midbottom", self.battle_ui_updater)
 
             elif self.weather_change_button.rect.collidepoint(
                     self.mouse_pos) and mouse_left_up:  # change map weather button

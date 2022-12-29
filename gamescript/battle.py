@@ -6,7 +6,7 @@ import sys
 
 import pygame
 import pygame.freetype
-from gamescript import camera, weather, battleui, menu, subunit, unit, leader, uniteditor, datasprite
+from gamescript import camera, weather, battleui, menu, subunit, unit, leader, datasprite
 from gamescript.common import utility
 
 direction_list = datasprite.direction_list
@@ -279,6 +279,7 @@ class Battle:
         self.gen_weapon_sprite_pool = None
         self.gen_armour_sprite_pool = None
         self.effect_sprite_pool = None
+        self.effect_animation_pool = None
         self.weapon_joint_list = None
 
         self.colour_list = None
@@ -380,6 +381,7 @@ class Battle:
         self.gen_weapon_sprite_pool = self.main.gen_weapon_sprite_pool
         self.gen_armour_sprite_pool = self.main.gen_armour_sprite_pool
         self.effect_sprite_pool = self.main.effect_sprite_pool
+        self.effect_animation_pool = self.main.effect_animation_pool
         self.weapon_joint_list = self.main.weapon_joint_list
 
         self.colour_list = self.main.colour_list
@@ -396,7 +398,8 @@ class Battle:
                                            self.map_source), output_type="list")
             self.weather_event = self.weather_event[1:]
             utility.convert_str_time(self.weather_event)
-        except (FileNotFoundError, TypeError):  # If no weather found or no map use default light sunny weather start at 9:00
+        except (
+        FileNotFoundError, TypeError):  # If no weather found or no map use default light sunny weather start at 9:00
             new_time = datetime.datetime.strptime("09:00:00", "%H:%M:%S").time()
             new_time = datetime.timedelta(hours=new_time.hour, minutes=new_time.minute, seconds=new_time.second)
             self.weather_event = [[4, new_time, 0]]  # default weather light sunny all day
@@ -468,10 +471,12 @@ class Battle:
             self.editor_map_change(self.battle_map_base.terrain_colour[0],  # temperate
                                    self.battle_map_feature.feature_colour[0])  # plain
 
-        self.map_corner = (len(self.battle_map_base.map_array[0]), len(self.battle_map_base.map_array))  # get map size that troop can move
+        self.map_corner = (
+        len(self.battle_map_base.map_array[0]), len(self.battle_map_base.map_array))  # get map size that troop can move
 
         self.max_camera = ((self.battle_map_height.image.get_width() - 1) * self.screen_scale[0],
-                           (self.battle_map_height.image.get_height() - 1) * self.screen_scale[1])  # reset max camera to new map size
+                           (self.battle_map_height.image.get_height() - 1) * self.screen_scale[
+                               1])  # reset max camera to new map size
 
         self.battle_subunit_list = []
         self.visible_subunit_list = {}
@@ -896,7 +901,8 @@ class Battle:
                             this_unit.collide = False
 
                         if len(self.battle_subunit_list) > 1:
-                            tree = KDTree(self.subunit_pos_list)  # collision loop check, much faster than pygame collide check
+                            tree = KDTree(
+                                self.subunit_pos_list)  # collision loop check, much faster than pygame collide check
                             collisions = tree.query_pairs(self.collide_distance)
                             for one, two in collisions:
                                 sprite_one = self.battle_subunit_list[one]
@@ -913,7 +919,8 @@ class Battle:
                                             sprite_one.unit.collide = True
                                         elif sprite_one.state in (2, 4, 6, 10, 11, 13) or \
                                                 sprite_two.state in (
-                                        2, 4, 6, 10, 11, 13):  # cannot run pass other unit if either run or in combat
+                                                2, 4, 6, 10, 11,
+                                                13):  # cannot run pass other unit if either run or in combat
                                             sprite_one.friend_front.append(sprite_two)
                                             sprite_one.unit.collide = True
                                         sprite_one.collide_penalty = True
@@ -1046,7 +1053,7 @@ class Battle:
                         return
 
             elif self.input_popup != (
-            None, None):  # currently, have input text pop up on screen, stop everything else until done
+                    None, None):  # currently, have input text pop up on screen, stop everything else until done
                 for button in self.input_button:
                     button.update(self.mouse_pos, mouse_left_up, mouse_left_down)
 
@@ -1124,7 +1131,8 @@ class Battle:
         self.setup_battle_ui("remove")  # remove ui from group
 
         self.battle_ui_updater.remove(self.battle_menu, *self.battle_menu_button, *self.esc_slider_menu,
-                                      *self.esc_value_boxes, self.battle_done_box, self.battle_done_button)  # remove menu
+                                      *self.esc_value_boxes, self.battle_done_box,
+                                      self.battle_done_button)  # remove menu
 
         # remove all reference from battle object
         self.player_char = None

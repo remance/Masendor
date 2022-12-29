@@ -1,5 +1,10 @@
 import pygame
 
+melee_attack_command_action = ({"name": "Action 0", "melee attack": True}, {"name": "Action 1", "melee attack": True})
+range_attack_command_action = ({"name": "Action 0", "range attack": True}, {"name": "Action 1", "range attack": True})
+range_move_attack_command_action = ({"name": "Action 0", "range attack": True, "move attack": True, "movable": True},
+                                    {"name": "Action 1", "range attack": True, "move attack": True, "movable": True})
+
 
 def combat_logic(self, dt, unit_state):
     collide_list = []
@@ -141,7 +146,7 @@ def combat_logic(self, dt, unit_state):
                     else:  # rear
                         hit_side = 2
                     self.hit_register(weapon, subunit, 0, hit_side, self.battle.troop_data.status_list)
-                    self.command_action = {"name": "Action " + str(weapon)}
+                    self.command_action = melee_attack_command_action[weapon]
                     self.stamina -= self.weapon_weight[self.equipped_weapon][weapon]
                     self.weapon_cooldown[weapon] -= self.weapon_speed[weapon]
                 break
@@ -165,7 +170,9 @@ def combat_logic(self, dt, unit_state):
                 if self.ammo_now[self.equipped_weapon][weapon] > 0 and \
                         self.shoot_range[weapon] >= self.attack_pos.distance_to(self.base_pos) and \
                         (self.check_special_effect("Arc Shot", weapon=weapon) or self.unit.shoot_mode != 1):
-                    self.command_action = {"name": "Action " + str(weapon), "range attack": True}
+                    self.command_action = range_attack_command_action[weapon]
+                    if self.state in (12, 13):  # shoot while moving
+                        self.command_action = range_move_attack_command_action[weapon]
                     break
 
     else:  # reset base_target every update to command base_target outside of combat

@@ -36,9 +36,9 @@ def hit_register(self, weapon, target, attacker_side, hit_side, status_list):
         target_defence = 0
 
     attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, \
-        element_effect, _ = self.dmg_cal(target, attacker_hit, target_defence, weapon,
-                                         self.weapon_penetrate[self.equipped_weapon][weapon], weapon,
-                                         hit_side)  # get dmg by attacker
+    element_effect, _ = self.dmg_cal(target, attacker_hit, target_defence, weapon,
+                                     self.weapon_penetrate[self.equipped_weapon][weapon], weapon,
+                                     hit_side)  # get dmg by attacker
 
     self.loss_cal(target, attacker_dmg, attacker_morale_dmg, attacker_leader_dmg,
                   element_effect)  # inflict dmg to defender
@@ -65,8 +65,8 @@ def hit_register(self, weapon, target, attacker_side, hit_side, status_list):
                 target_hit, target_defence = float(self.melee_attack * hit_side_mod) + target_luck, float(
                     this_subunit.melee_def * hit_side_mod) + target_luck
                 attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, \
-                    element_effect, _ = self.dmg_cal(this_subunit, attacker_hit, target_defence, weapon,
-                                                     self.weapon_penetrate[self.equipped_weapon][weapon], "melee")
+                element_effect, _ = self.dmg_cal(this_subunit, attacker_hit, target_defence, weapon,
+                                                 self.weapon_penetrate[self.equipped_weapon][weapon], "melee")
 
                 self.loss_cal(this_subunit, attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect)
                 if self.inflict_status != {}:
@@ -83,7 +83,8 @@ def apply_status_to_enemy(status_list, inflict_status, target, attacker_side, re
             if status[1] == 3:  # apply to corner enemy subunit (left and right of self front enemy subunit)
                 corner_enemy_apply = target.nearby_subunit_list[0:2]
                 if receiver_side in (
-                1, 2):  # attack on left/right side means corner enemy would be from front and rear side of the enemy
+                        1,
+                        2):  # attack on left/right side means corner enemy would be from front and rear side of the enemy
                     corner_enemy_apply = [target.nearby_subunit_list[2], target.nearby_subunit_list[5]]
                 for this_subunit in corner_enemy_apply:
                     if this_subunit != 0:

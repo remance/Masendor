@@ -1,11 +1,13 @@
+import csv
 import os
 import sys
-import csv
+
 import pygame
 
 current_dir = os.path.split(os.path.abspath(__file__))[0]
 
-main_dir = os.sep.join(os.path.normpath(current_dir).split(os.sep)[:-2])  # two folder further back, comment out if data in same folder as animation maker
+main_dir = os.sep.join(os.path.normpath(current_dir).split(os.sep)[
+                       :-2])  # two folder further back, comment out if data in same folder as animation maker
 sys.path.insert(1, main_dir)
 
 from gamescript import datastat
@@ -23,7 +25,8 @@ def read_anim_data(direction_list, pool_type, anim_column_header):
             part_name_header = rd[0]
             list_column = anim_column_header  # value in list only
             list_exclude = ["Name", "size", "eye", "mouth"]
-            list_column = [item for item in list_column if item not in list_exclude and any(ext in item for ext in list_exclude) is False]
+            list_column = [item for item in list_column if
+                           item not in list_exclude and any(ext in item for ext in list_exclude) is False]
             list_column = [index for index, item in enumerate(part_name_header) if item in list_column]
             part_name_header = part_name_header[1:]  # keep only part name for list ref later
             animation_pool = {}
@@ -83,22 +86,27 @@ def anim_to_pool(animation_name, pool, char, activate_list, new=False, replace=N
             pool[direction][animation_name] = pool[direction].pop(replace)
     elif duplicate is not None:
         for direction in range(0, 5):
-            pool[direction][animation_name] = [{key: [small_value for small_value in value] if type(value) == list else value for key, value in this_duplicate.items()} for this_duplicate in pool[direction][duplicate]]
+            pool[direction][animation_name] = [
+                {key: [small_value for small_value in value] if type(value) == list else value for key, value in
+                 this_duplicate.items()} for this_duplicate in pool[direction][duplicate]]
     else:
         if animation_name not in pool[0]:
             for direction in range(0, 5):
                 pool[direction][animation_name] = []
         if new:
             for direction in range(0, 5):
-                pool[direction][animation_name] = [frame for index, frame in enumerate(char.frame_list) if frame != {} and activate_list[index]]
+                pool[direction][animation_name] = [frame for index, frame in enumerate(char.frame_list) if
+                                                   frame != {} and activate_list[index]]
         else:
-            pool[char.side][animation_name] = [frame for index, frame in enumerate(char.frame_list) if frame != {} and activate_list[index]]
+            pool[char.side][animation_name] = [frame for index, frame in enumerate(char.frame_list) if
+                                               frame != {} and activate_list[index]]
 
 
 def anim_save_pool(pool, pool_name, direction_list, anim_column_header):
     """Save animation pool data"""
     for index, direction in enumerate(direction_list):
-        with open(os.path.join(main_dir, "data", "animation", pool_name, direction + ".csv"), mode="w", encoding='utf-8', newline="") as edit_file:
+        with open(os.path.join(main_dir, "data", "animation", pool_name, direction + ".csv"), mode="w",
+                  encoding='utf-8', newline="") as edit_file:
             filewriter = csv.writer(edit_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_ALL)
             save_list = pool[index]
             final_save = [[item for item in anim_column_header]]
@@ -107,7 +115,8 @@ def anim_save_pool(pool, pool_name, direction_list, anim_column_header):
                     subitem = [tiny_item for tiny_item in list(frame.values())]
                     for item_index, min_item in enumerate(subitem):
                         if type(min_item) == list:
-                            min_item = [this_item if type(this_item) != float else round(this_item, 1) for this_item in min_item]
+                            min_item = [this_item if type(this_item) != float else round(this_item, 1) for this_item in
+                                        min_item]
                             new_item = str(min_item)
                             for character in "'[]":
                                 new_item = new_item.replace(character, "")

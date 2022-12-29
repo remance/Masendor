@@ -1,7 +1,7 @@
 def unit_ai(self):
     # Chase unit in base_target and rotate accordingly
     if self.state in (3, 4, 5, 6, 10, 11) and self.command_state in (
-    3, 4, 5, 6) and self.attack_target is not None and self.hold == 0:
+            3, 4, 5, 6) and self.attack_target is not None and self.hold == 0:
         if self.attack_target.state != 100:
             if self.collide is False:
                 shoot_range = self.max_range
@@ -42,7 +42,7 @@ def unit_ai(self):
                 self.base_pos) <= min_range:  # if there is any enemy in minimum range
             self.state = 96  # retreating
             base_target = self.base_pos - (
-                        (list(self.nearby_enemy.values())[0] - self.base_pos) / 5)  # generate base_target to run away
+                    (list(self.nearby_enemy.values())[0] - self.base_pos) / 5)  # generate base_target to run away
 
             if base_target[0] < 1:  # can't run away when reach corner of map same for below if elif
                 base_target[0] = 1

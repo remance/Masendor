@@ -172,7 +172,8 @@ def status_update(self, weather=None):
                 for status in cal_effect["Status"]:
                     self.status_effect[status] = self.status_list[status].copy()
                     if cal_effect["Area of Effect"] > 1:
-                        self.apply_status_to_friend(cal_effect["Area of Effect"], status, self.status_list[status].copy())
+                        self.apply_status_to_friend(cal_effect["Area of Effect"], status,
+                                                    self.status_list[status].copy())
 
             self.morale_dmg_bonus += cal_effect["Morale Damage Bonus"]
             self.stamina_dmg_bonus += cal_effect["Stamina Damage Bonus"]
@@ -246,7 +247,8 @@ def status_update(self, weather=None):
     self.reload = self.reload * (2 - self.stamina_state_cal)  # the less stamina, the higher reload time
     self.charge_def = (self.charge_def * (
             self.morale_state + 0.1)) * self.stamina_state_cal + self.command_buff  # use morale, stamina and command buff
-    height_diff = (self.height / self.front_height) ** 2  # walking down hill increase speed while walking up hill reduce speed
+    height_diff = (
+                              self.height / self.front_height) ** 2  # walking down hill increase speed while walking up hill reduce speed
     self.speed = self.speed * self.stamina_state_cal * height_diff
     self.charge = (self.charge + self.speed) * (self.morale_state + 0.1) * self.stamina_state_cal + self.command_buff
 
@@ -288,7 +290,7 @@ def status_update(self, weather=None):
 
     # include all penalties to morale like remaining health, battle situation scale
     self.morale -= (((40 - (40 * self.subunit_health / self.max_health)) +
-                    (20 - (20 * self.battle.battle_scale[self.team] / 100))) * self.mental)
+                     (20 - (20 * self.battle.battle_scale[self.team] / 100))) * self.mental)
 
     if self.melee_attack < 0:  # seem like using if 0 is faster than max(0,)
         self.melee_attack = 0

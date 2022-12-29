@@ -1,12 +1,14 @@
 import csv
 import os
-import sys
 import re
+import sys
+
 import pandas as pd
+
 import pool
 
 current_dir = os.path.split(os.path.abspath(__file__))[0]
-main_dir = current_dir[:current_dir.rfind("\\")+1].split("\\")
+main_dir = current_dir[:current_dir.rfind("\\") + 1].split("\\")
 main_dir = ''.join(stuff + "\\" for stuff in main_dir[:-2])  # one folder further back
 sys.path.insert(1, main_dir)
 
@@ -72,7 +74,8 @@ def sort_animation(pool, pool_name, header, sort_by):
         new_pool.append(animation_pool)
 
     for index, direction in enumerate(direction_list):
-        with open(os.path.join(main_dir, "data", "animation", pool_name, direction + ".csv"), mode="w", encoding='utf-8',
+        with open(os.path.join(main_dir, "data", "animation", pool_name, direction + ".csv"), mode="w",
+                  encoding='utf-8',
                   newline="") as edit_file:
             filewriter = csv.writer(edit_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_ALL)
             save_list = new_pool[index]

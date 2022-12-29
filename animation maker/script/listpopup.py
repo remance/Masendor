@@ -2,7 +2,7 @@ import os
 import sys
 
 current_dir = os.path.split(os.path.abspath(__file__))[0]
-main_dir = current_dir[:current_dir.rfind("\\")+1].split("\\")
+main_dir = current_dir[:current_dir.rfind("\\") + 1].split("\\")
 main_dir = ''.join(stuff + "\\" for stuff in main_dir[:-2])  # one folder further back
 sys.path.insert(1, main_dir)
 

@@ -1,13 +1,12 @@
 import math
 import os
 import random
+from pathlib import Path
 
 import numpy as np
 import pygame
 import pygame.freetype
 from gamescript.common import utility
-
-from pathlib import Path
 
 rotation_xy = utility.rotation_xy
 
@@ -298,5 +297,5 @@ class Unit(pygame.sprite.Sprite):
         else:  # destroyed unit
             if self.got_killed is False:
                 self.destroyed(self.battle)
-                self.battle.event_log.add_log([0, str(self.leader[0].name) + "'s unit is destroyed"],
-                                              [0, 1])  # put destroyed event in troop and army log
+                self.battle.event_log.add_log((0, str(self.leader[0].name) + "'s unit is destroyed"),
+                                              (0, 1))  # put destroyed event in troop and army log

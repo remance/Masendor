@@ -46,7 +46,8 @@ class TroopAnimationData:
                     p_name = "p" + str(p) + "_"
                     list_column += [p_name + item for item in list_column]
                 list_column += ["effect_1", "effect_2", "effect_3", "effect_4", "dmg_effect_1", "dmg_effect_2",
-                                "dmg_effect_3", "dmg_effect_4", "frame_property", "animation_property"]  # value in list only
+                                "dmg_effect_3", "dmg_effect_4", "frame_property",
+                                "animation_property"]  # value in list only
                 list_column = [index for index, item in enumerate(part_name_header) if item in list_column]
                 part_name_header = part_name_header[1:]  # keep only part name for list ref later
                 animation_pool = {}
@@ -120,7 +121,8 @@ class TroopAnimationData:
             for direction in direction_list:
                 part_folder = Path(os.path.join(main_dir, "data", "sprite", "generic", race, direction))
                 try:
-                    subdirectories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x
+                    subdirectories = [os.path.split(os.sep.join(
+                        os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x
                                       in part_folder.iterdir() if x.is_dir()]  # assuming
                     self.gen_body_sprite_pool[race][direction] = {}
 
@@ -137,13 +139,16 @@ class TroopAnimationData:
                 try:
                     part_subfolder = Path(
                         os.path.join(main_dir, "data", "sprite", "generic", race, direction, "armour"))
-                    subdirectories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x
+                    subdirectories = [os.path.split(os.sep.join(
+                        os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x
                                       in part_subfolder.iterdir() if x.is_dir()]
                     for subfolder in subdirectories:
                         part_subsubfolder = Path(
                             os.path.join(main_dir, "data", "sprite", "generic", race, direction, "armour",
                                          subfolder[-1]))
-                        subsubdirectories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x
+                        subsubdirectories = [os.path.split(os.sep.join(
+                            os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for
+                                             x
                                              in part_subsubfolder.iterdir() if x.is_dir()]
                         if subfolder[-1] not in self.gen_armour_sprite_pool[race]:
                             self.gen_armour_sprite_pool[race][subfolder[-1]] = {}
@@ -154,12 +159,14 @@ class TroopAnimationData:
                             body_subsubfolder = Path(
                                 os.path.join(main_dir, "data", "sprite", "generic", race, direction, "armour",
                                              subfolder[-1], subsubfolder[-1]))
-                            body_directories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x
+                            body_directories = [os.path.split(os.sep.join(
+                                os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):]))
+                                                for x
                                                 in body_subsubfolder.iterdir() if x.is_dir()]
                             for body_folder in body_directories:
                                 imgs = load_images(main_dir,
-                                                     subfolder=("sprite", "generic", race, direction, "armour",
-                                                                subfolder[-1], subsubfolder[-1], body_folder[-1]))
+                                                   subfolder=("sprite", "generic", race, direction, "armour",
+                                                              subfolder[-1], subsubfolder[-1], body_folder[-1]))
                                 self.gen_armour_sprite_pool[race][subfolder[-1]][subsubfolder[-1]][direction][
                                     body_folder[-1]] = imgs
                 except FileNotFoundError:
@@ -167,12 +174,15 @@ class TroopAnimationData:
 
         self.gen_weapon_sprite_pool = {}
         part_folder = Path(os.path.join(main_dir, "data", "sprite", "generic", "weapon"))
-        subdirectories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x
+        subdirectories = [os.path.split(
+            os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x
                           in part_folder.iterdir() if x.is_dir()]
         for folder in subdirectories:
             self.gen_weapon_sprite_pool[folder[-1]] = {}
             part_subfolder = Path(os.path.join(main_dir, "data", "sprite", "generic", "weapon", folder[-1]))
-            subsubdirectories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x
+            subsubdirectories = [os.path.split(
+                os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for
+                                 x
                                  in part_subfolder.iterdir() if x.is_dir()]
             for subfolder in subsubdirectories:
                 self.gen_weapon_sprite_pool[folder[-1]][subfolder[-1]] = {}
@@ -187,14 +197,37 @@ class TroopAnimationData:
                         self.gen_weapon_sprite_pool[folder[-1]][subfolder[-1]][direction].update(imgs)
 
         self.effect_sprite_pool = {}
+        self.effect_animation_pool = {}
         part_folder = Path(os.path.join(main_dir, "data", "sprite", "effect"))
-        subdirectories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x
+        subdirectories = [os.path.split(
+            os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x
                           in part_folder.iterdir() if x.is_dir()]
         for folder in subdirectories:
             self.effect_sprite_pool[folder[-1]] = {}
+            self.effect_animation_pool[folder[-1]] = {}
             part_folder = Path(os.path.join(main_dir, "data", "sprite", "effect", folder[-1]))
-            subsubdirectories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x
+            subsubdirectories = [os.path.split(
+                os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for
+                                 x
                                  in part_folder.iterdir() if x.is_dir()]
             for subfolder in subsubdirectories:
                 images = load_images(main_dir, subfolder=subfolder)
                 self.effect_sprite_pool[folder[-1]][subfolder[-1]] = images
+                self.effect_animation_pool[folder[-1]][subfolder[-1]] = {}
+
+                true_name_list = []
+                for key, value in images.items():
+                    if key.split("_")[-1].isdigit():
+                        true_name = "".join([string + "_" for string in key.split("_")[:-1]]) + "#"
+                    else:
+                        true_name = key
+                    true_name_list.append(true_name)
+
+                for true_name in set(true_name_list):
+                    if "#" in true_name:
+                        animation_list = tuple([value for key, value in images.items() if true_name[:-2] ==
+                                                "".join([string + "_" for string in key.split("_")[:-1]])[:-1]])
+                        self.effect_animation_pool[folder[-1]][subfolder[-1]][true_name[:-2]] = animation_list
+                    else:
+                        animation_list = tuple([value for key, value in images.items() if true_name == key])
+                        self.effect_animation_pool[folder[-1]][subfolder[-1]][true_name] = animation_list

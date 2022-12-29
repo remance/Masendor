@@ -213,7 +213,8 @@ class InputBox(pygame.sprite.Sprite):
                 self.current_pos -= 1
                 if self.current_pos < 0:
                     self.current_pos = 0
-            elif key_press[pygame.K_LCTRL] or key_press[pygame.K_RCTRL]:  # use keypress for ctrl as it has no effect on its own
+            elif key_press[pygame.K_LCTRL] or key_press[
+                pygame.K_RCTRL]:  # use keypress for ctrl as it has no effect on its own
                 if event_key == pygame.K_c:
                     pyperclip.copy(self.text)
                 elif event_key == pygame.K_v:

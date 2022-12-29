@@ -2,9 +2,10 @@ import math
 
 import pygame
 from PIL import Image, ImageFilter, ImageEnhance
-from gamescript.common import utility, animation
+from gamescript.common import utility
 
 rotation_xy = utility.rotation_xy
+apply_sprite_colour = utility.apply_sprite_colour
 
 default_sprite_size = (200, 200)
 
@@ -13,12 +14,7 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
                         weapon_sprite_pool, armour_sprite_pool, effect_sprite_pool, animation_property,
                         weapon_joint_list, weapon, armour, colour_list, genre_sprite_size,
                         screen_scale, race_list):
-    apply_colour = animation.apply_colour
-    try:
-        frame_property = animation_part_list["frame_property"].copy()
-    except:
-        print(animation_name)
-        print(animation_part_list)
+    frame_property = animation_part_list["frame_property"].copy()
     animation_property = animation_property.copy()
     check_prop = frame_property + animation_property
     dmg_sprite = None
@@ -28,12 +24,13 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
     surface = pygame.Surface((default_sprite_size[0] * size, default_sprite_size[1] * size),
                              pygame.SRCALPHA)  # default size will scale down later
 
-    except_list = ("eye", "mouth", "size", "property")
+    except_list = ("eye", "mouth", "dmg_effect", "size", "property")
     pose_layer_list = {k: v[7] for k, v in animation_part_list.items() if v != [0] and v != "" and v != [""] and
                        any(ext in k for ext in except_list) is False and "weapon" not in k}  # layer list
     pose_layer_list.update({k: v[6] for k, v in animation_part_list.items() if v != [0] and v != "" and v != [""]
                             and "weapon" in k})
     pose_layer_list = dict(sorted(pose_layer_list.items(), key=lambda item: item[1], reverse=True))
+
     for index, layer in enumerate(pose_layer_list):
         part = animation_part_list[layer]
         new_part = part.copy()
@@ -72,6 +69,7 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
             image_part = generate_body(layer, part[:3], troop_sprite_list, body_sprite_pool,
                                        armour_sprite_pool=armour_sprite_pool, colour=colour,
                                        colour_list=colour_list, armour=this_armour)
+
         if image_part is not None:  # skip for empty image
             target = (new_part[3], new_part[4])
             flip = new_part[6]
@@ -102,7 +100,8 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
                             use_center = True
                     elif p + "sub_weapon" in layer:  # sub weapon
                         if part[1] != "sheath":  # change weapon pos to hand, if part is not sheath
-                            if "_Sub_" in animation_name and weapon[2][1] == 2:  # two-handed sub weapon use same animation as main for attack so put sub weapon in man hand, remove code if different
+                            if "_Sub_" in animation_name and weapon[2][
+                                1] == 2:  # two-handed sub weapon use same animation as main for attack so put sub weapon in man hand, remove code if different
                                 target = (animation_part_list[p + "r_hand"][3], animation_part_list[p + "r_hand"][4])
                             else:
                                 target = (animation_part_list[p + "l_hand"][3], animation_part_list[p + "l_hand"][4])
@@ -190,7 +189,7 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
             if "colour" in prop:
                 colour = prop[prop.rfind("_") + 1:]
                 colour = [int(this_colour) for this_colour in colour.split(".")]
-                surface = apply_colour(surface, colour)
+                surface = apply_sprite_colour(surface, colour)
 
             if prop in frame_property:
                 frame_property.remove(prop)
@@ -199,7 +198,7 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
 
     # change to whatever genre's specific size
     surface = pygame.transform.smoothscale(surface, (
-    genre_sprite_size[0] * size * screen_scale[0], genre_sprite_size[1] * size * screen_scale[1]))
+        genre_sprite_size[0] * size * screen_scale[0], genre_sprite_size[1] * size * screen_scale[1]))
 
     return {"sprite": surface, "animation_property": tuple(animation_property), "frame_property": tuple(frame_property),
             "dmg_sprite": dmg_sprite}
@@ -226,8 +225,6 @@ def grab_face_part(pool, race, side, part, part_check, part_default=None):
 
 def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool, armour_pool, armour,
                   colour_list):
-    apply_colour = animation.apply_colour
-
     head_sprite_surface = None
     try:
         head_race = body_part_list[0]
@@ -237,7 +234,8 @@ def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool
         head_rect = head.get_rect(topleft=(0, 0))
         head_sprite_surface.blit(head, head_rect)
         if sprite_list[p + "_skin"] not in ("", "none"):
-            head_sprite_surface = apply_colour(head_sprite_surface, sprite_list[p + "_skin"], colour_list, keep_white=False)
+            head_sprite_surface = apply_sprite_colour(head_sprite_surface, sprite_list[p + "_skin"], colour_list,
+                                               keep_white=False)
         face = [grab_face_part(body_pool, head_race, head_side, "eyebrow", sprite_list[p + "_eyebrow"]),
                 grab_face_part(body_pool, head_race, head_side, "eye", animation_part_list[p + "_eye"],
                                part_default=sprite_list[p + "_eye"]),
@@ -247,7 +245,7 @@ def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool
 
         for face_index, face_part in enumerate(("_eyebrow", "_eye", "_beard")):
             if face[face_index] is not None:
-                face[face_index] = apply_colour(face[face_index], sprite_list[p + face_part][1], colour_list)
+                face[face_index] = apply_sprite_colour(face[face_index], sprite_list[p + face_part][1], colour_list)
 
         for index, item in enumerate(face):
             if item is not None:
@@ -273,8 +271,6 @@ def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool
 
 def generate_body(part, body_part_list, troop_sprite_list, sprite_pool, armour_sprite_pool=None, colour=None,
                   weapon=None, armour=None, colour_list=None):
-    apply_colour = animation.apply_colour
-
     # main/body first
     sprite_image = None
     try:
@@ -301,19 +297,22 @@ def generate_body(part, body_part_list, troop_sprite_list, sprite_pool, armour_s
                 new_part_name = "special"
             if "r_" in part_name[:2] or "l_" in part_name[:2]:
                 new_part_name = part_name[2:]  # remove side
-            sprite_image = sprite_pool[body_part_list[0]][body_part_list[1]][new_part_name][body_part_list[2]].copy()
+            if "effect_" not in part:
+                sprite_image = sprite_pool[body_part_list[0]][body_part_list[1]][new_part_name][body_part_list[2]].copy()
+            else:
+                sprite_image = sprite_pool[body_part_list[0]][body_part_list[1]][body_part_list[2]].copy()
             # if sprite_list[p + "_skin"] != "none":
-            #     head_sprite_surface = apply_colour(head_sprite_surface, sprite_list[p + "_skin"], hair_colour_list)
+            #     head_sprite_surface = apply_sprite_colour(head_sprite_surface, sprite_list[p + "_skin"], hair_colour_list)
         if colour is not None:  # apply skin colour, maybe add for armour colour later
-            sprite_image = apply_colour(sprite_image, colour, colour_list, keep_white=False)
+            sprite_image = apply_sprite_colour(sprite_image, colour, colour_list, keep_white=False)
 
         if armour is not None and armour != "None":  # add armour if there is one
             part_name = part
             if any(ext in part for ext in ("p1_", "p2_", "p3_", "p4_")):
                 part_name = part[3:]  # remove person prefix to get part name
             gear_image = \
-            armour_sprite_pool[body_part_list[0]][armour][troop_sprite_list[part]][body_part_list[1]][part_name][
-                body_part_list[2]]
+                armour_sprite_pool[body_part_list[0]][armour][troop_sprite_list[part]][body_part_list[1]][part_name][
+                    body_part_list[2]]
             new_sprite_image = pygame.Surface(gear_image.get_size(),
                                               pygame.SRCALPHA)  # create sprite based on armour size since it can be larger than body part
             rect = sprite_image.get_rect(center=(new_sprite_image.get_width() / 2, new_sprite_image.get_height() / 2))

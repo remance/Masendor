@@ -4,7 +4,7 @@ import sys
 import pool
 
 current_dir = os.path.split(os.path.abspath(__file__))[0]
-main_dir = current_dir[:current_dir.rfind("\\")+1].split("\\")
+main_dir = current_dir[:current_dir.rfind("\\") + 1].split("\\")
 main_dir = ''.join(stuff + "\\" for stuff in main_dir[:-2])  # one folder further back
 sys.path.insert(1, main_dir)
 
@@ -22,7 +22,8 @@ def check_pool():
         for animation, value in animation_pool[index].items():
             if animation not in warning_list:
                 warning_list[animation] = {}
-                stat_list[animation] = {this_direction: {"frames": 0, "frame properties": {}, } for this_direction in direction_list}
+                stat_list[animation] = {this_direction: {"frames": 0, "frame properties": {}, } for this_direction in
+                                        direction_list}
             stat_list[animation][direction]["frames"] = len(value)
             action = animation.split("_")[-1]
             race = animation.split("_")[0]

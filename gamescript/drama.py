@@ -13,7 +13,7 @@ class TextDrama(pygame.sprite.Sprite):
         self.left_corner = self.images["start"]
         self.right_corner = self.images["end"]
         self.pos = (
-        self.screen_rect.width / 2, self.screen_rect.height / 4)  # the center pos of the drama popup on screen
+            self.screen_rect.width / 2, self.screen_rect.height / 4)  # the center pos of the drama popup on screen
         self.font = pygame.font.SysFont("helvetica", int(70 * screen_scale[1]))
         self.queue = []  # text list to popup
         self.blit_text = False

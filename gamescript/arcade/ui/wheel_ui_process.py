@@ -1,3 +1,6 @@
+leader_skill_command_action = ({"name": "Leader Skill 0"}, {"name": "Leader Skill 1"})
+
+
 def wheel_ui_process(self, choice):
     if choice in self.unit_behaviour_wheel:  # click choice that has children choice
         renew_wheel(self, choice)
@@ -6,7 +9,7 @@ def wheel_ui_process(self, choice):
             if "Troop" in choice:
                 self.current_selected.issue_order(None, other_command="Troop Skill " + str(int(choice[-1]) - 1))
             elif "Leader" in choice:
-                self.player_char.command_action = {"name": "Leader Skill " + str(int(choice[-1]) - 1)}
+                self.player_char.command_action = leader_skill_command_action[int(choice[-1]) - 1]
             self.battle_ui_updater.remove(self.wheel_ui)
             self.player_input_state = None
 

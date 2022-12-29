@@ -1,5 +1,3 @@
-import pygame
-
 from gamescript import menu
 from gamescript.common import utility
 
@@ -21,17 +19,18 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
     if full_screen == 1:
         fullscreen_box.change_tick(True)
 
-    fullscreen_text = menu.OptionMenuText((fullscreen_box.pos[0] - (fullscreen_box.pos[0] / 4.5), fullscreen_box.pos[1]),
-                                          "Full Screen", int(36 * screen_scale[1]))
+    fullscreen_text = menu.OptionMenuText(
+        (fullscreen_box.pos[0] - (fullscreen_box.pos[0] / 4.5), fullscreen_box.pos[1]),
+        "Full Screen", int(36 * screen_scale[1]))
 
     animation_box = menu.TickBox(screen_scale, (screen_rect.width / 2, screen_rect.height / 3),
-                                  battle_select_image["untick"], battle_select_image["tick"], "fullscreen")
+                                 battle_select_image["untick"], battle_select_image["tick"], "fullscreen")
 
     if play_troop_animation == 1:
         animation_box.change_tick(True)
 
     animation_text = menu.OptionMenuText((animation_box.pos[0] - (animation_box.pos[0] / 4.5), animation_box.pos[1]),
-                                          "Troop Animation", int(36 * screen_scale[1]))
+                                         "Troop Animation", int(36 * screen_scale[1]))
 
     # Volume change scroll bar
     esc_menu_images = load_images(main_dir, screen_scale=screen_scale, subfolder=("ui", "battlemenu_ui", "slider"))
@@ -43,7 +42,7 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
                                mixer_volume, int(26 * screen_scale[1]))]
 
     volume_text = menu.OptionMenuText((volume_slider.pos[0] - (volume_slider.pos[0] / 4.5), volume_slider.pos[1]),
-                                    "Master Volume", int(36 * screen_scale[1]))
+                                      "Master Volume", int(36 * screen_scale[1]))
 
     # Resolution changing bar that fold out the list when clicked
     image = load_image(main_dir, screen_scale, "drop_normal.jpg", ("ui", "mainmenu_ui"))

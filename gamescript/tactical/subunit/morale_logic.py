@@ -39,9 +39,9 @@ def morale_logic(self, dt, parent_state):
                     self.morale = 0  # morale cannot be lower than 0
 
             if self.state not in (95, 99) and parent_state not in (
-            10, 99):  # If not missing start_set leader can replenish morale
+                    10, 99):  # If not missing start_set leader can replenish morale
                 self.base_morale += (
-                            dt * self.stamina_state_cal * self.morale_regen)  # Morale replenish based on stamina
+                        dt * self.stamina_state_cal * self.morale_regen)  # Morale replenish based on stamina
 
             if self.base_morale < 0:  # morale cannot be negative
                 self.base_morale = 0
@@ -55,6 +55,6 @@ def morale_logic(self, dt, parent_state):
         elif self.state == 98:
             if parent_state not in (98, 99):
                 self.subunit_health -= (
-                            dt * 100)  # Unit begin to desert (die) if retreating but unit not retreat/broken
+                        dt * 100)  # Unit begin to desert (die) if retreating but unit not retreat/broken
                 if self.morale_state > 0.2:
                     self.state = 0  # Reset state to 0 when exit retreat state

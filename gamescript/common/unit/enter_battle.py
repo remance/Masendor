@@ -40,7 +40,7 @@ def enter_battle(self):
         subunit.zoom_scale()
         subunit.base_target = subunit.base_pos
         subunit.command_target = subunit.base_pos  # rotate according to sprite current rotation
-        subunit.make_front_pos()
+        subunit.front_pos = subunit.make_front_pos()
 
     self.change_pos_scale()
 

@@ -83,7 +83,7 @@ def move_logic(self, dt, unit_state, collide_list):
                         self.combat_move_queue = self.combat_move_queue[1:]
 
                     self.change_pos_scale()
-                    self.make_front_pos()
+                    self.front_pos = self.make_front_pos()
                     self.make_pos_range()
 
                     self.terrain, self.feature = self.get_feature(self.base_pos,

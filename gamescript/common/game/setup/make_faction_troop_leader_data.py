@@ -1,4 +1,3 @@
-import pygame
 from gamescript import datastat
 from gamescript.common import utility
 

@@ -18,16 +18,18 @@ class TerrainPopup(pygame.sprite.Sprite):
         self.font = pygame.font.SysFont("helvetica", int(24 * self.scale_adjust))
         self.height_font = pygame.font.SysFont("helvetica", int(18 * self.scale_adjust))
         self.img_pos = (
-        (24 * self.scale_adjust, 34 * self.scale_adjust), (24 * self.scale_adjust, 53 * self.scale_adjust),
-        # inf speed, inf atk
-        (24 * self.scale_adjust, 70 * self.scale_adjust), (58 * self.scale_adjust, 34 * self.scale_adjust),
-        # inf def, cav speed
-        (58 * self.scale_adjust, 53 * self.scale_adjust), (58 * self.scale_adjust, 70 * self.scale_adjust),
-        # cav atk, cav def
-        (90 * self.scale_adjust, 34 * self.scale_adjust),
-        (90 * self.scale_adjust, 53 * self.scale_adjust))  # range def, discipline
-        self.mod_list = {0.5: "best", 0.3: "better", 0.1: "good", 0: "none", -0.1: "bad", -0.3: "worse", -1000: "worst"}  # Stat effect level from terrain
-        self.bonus_list = {40: "best", 20: "better", 1: "good", 0: "none",  -1: "bad", -50: "worse", -2000: "worst"}  # Stat bonus level from terrain
+            (24 * self.scale_adjust, 34 * self.scale_adjust), (24 * self.scale_adjust, 53 * self.scale_adjust),
+            # inf speed, inf atk
+            (24 * self.scale_adjust, 70 * self.scale_adjust), (58 * self.scale_adjust, 34 * self.scale_adjust),
+            # inf def, cav speed
+            (58 * self.scale_adjust, 53 * self.scale_adjust), (58 * self.scale_adjust, 70 * self.scale_adjust),
+            # cav atk, cav def
+            (90 * self.scale_adjust, 34 * self.scale_adjust),
+            (90 * self.scale_adjust, 53 * self.scale_adjust))  # range def, discipline
+        self.mod_list = {0.5: "best", 0.3: "better", 0.1: "good", 0: "none", -0.1: "bad", -0.3: "worse",
+                         -1000: "worst"}  # Stat effect level from terrain
+        self.bonus_list = {40: "best", 20: "better", 1: "good", 0: "none", -1: "bad", -50: "worse",
+                           -2000: "worst"}  # Stat bonus level from terrain
 
     def pop(self, pos, feature, height):
         """pop out into screen, blit input into the image"""

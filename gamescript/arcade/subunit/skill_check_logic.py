@@ -13,7 +13,8 @@ def skill_check_logic(self):
                     skill_command = None
                     action = None
                     if "Weapon" in command_action:  # weapon skill
-                        skill = self.weapon_skill[self.equipped_weapon][skill]  # TODO check if this work properly for leader
+                        skill = self.weapon_skill[self.equipped_weapon][
+                            skill]  # TODO check if this work properly for leader
                         if skill != 0:
                             skill_command = skill
                             action = self.skill[skill]["Action"].copy() + [skill]
@@ -22,7 +23,8 @@ def skill_check_logic(self):
                         if "Troop" in command_action and self.leader is None and len(self.troop_skill) > skill:
                             skill = self.troop_skill[skill]
                             action = self.skill[skill]["Action"].copy() + [skill]
-                        elif "Leader" in command_action and self.leader is not None and len(self.leader.leader_skill) > skill:
+                        elif "Leader" in command_action and self.leader is not None and len(
+                                self.leader.leader_skill) > skill:
                             skill = self.leader.leader_skill[skill]
                             action = self.leader.skill[skill]["Action"].copy() + [skill]
                         if action is not None:

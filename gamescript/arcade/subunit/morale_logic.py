@@ -7,7 +7,7 @@ def morale_logic(self, dt, parent_state):
         if self.base_morale < self.max_morale:
             if self.state != 99:  # If not missing start_set leader can replenish morale
                 self.base_morale += (
-                            dt * self.stamina_state_cal * self.morale_regen)  # Morale replenish based on stamina
+                        dt * self.stamina_state_cal * self.morale_regen)  # Morale replenish based on stamina
 
             if self.base_morale < 0:  # morale cannot be negative
                 self.base_morale = 0

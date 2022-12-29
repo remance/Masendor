@@ -122,8 +122,9 @@ def menu_team_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
                 get_unit = unit
             for subunit in unit.subunit_list:  # change subunit pos to preview box
                 subunit.pos = (
-                self.char_stat["troop"].rect.topleft[0] + (subunit.unit_position[0] * subunit.image.get_width() / 5),
-                self.char_stat["troop"].rect.topleft[1] + (
+                    self.char_stat["troop"].rect.topleft[0] + (
+                                subunit.unit_position[0] * subunit.image.get_width() / 5),
+                    self.char_stat["troop"].rect.topleft[1] + (
                             (subunit.unit_position[1] + 4) * subunit.image.get_height() / 5))
                 subunit.rect = subunit.image.get_rect(center=subunit.pos)
 

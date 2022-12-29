@@ -3,7 +3,6 @@ import csv
 import os
 import random
 
-import numpy as np
 import pygame
 import pygame.freetype
 from PIL import Image, ImageFilter, ImageOps
@@ -122,7 +121,8 @@ class HeightMap(pygame.sprite.Sprite):
         self.map_array = tuple([[col[2] for col in row] for row in pygame.surfarray.array3d(image).tolist()])
         if self.topology:
             data = pygame.image.tostring(self.image, "RGB")  # convert image to string data for filtering effect
-            img = Image.frombytes("RGB", (self.image.get_width(), self.image.get_height()), data)  # use PIL to get image data
+            img = Image.frombytes("RGB", (self.image.get_width(), self.image.get_height()),
+                                  data)  # use PIL to get image data
             img = ImageOps.grayscale(img)  # grey scale the image
             img = img.filter(ImageFilter.GaussianBlur(radius=2))  # blur Image
             img = ImageOps.posterize(img, self.poster_level)  # posterise
@@ -227,7 +227,8 @@ class BeautifulMap(pygame.sprite.Sprite):
 
         # Blur map to make it look older
         data = pygame.image.tostring(self.image, "RGB")  # convert image to string data for filtering effect
-        img = Image.frombytes("RGB", (self.image.get_width(), self.image.get_height()), data)  # use PIL to get image data
+        img = Image.frombytes("RGB", (self.image.get_width(), self.image.get_height()),
+                              data)  # use PIL to get image data
         img = img.filter(ImageFilter.GaussianBlur(radius=2))  # blur Image (or apply other filter in future)
         img = img.tobytes()
         img = pygame.image.fromstring(img, (self.image.get_width(), self.image.get_height()),
@@ -257,7 +258,7 @@ class BeautifulMap(pygame.sprite.Sprite):
                         self.image.blit(this_texture, rect)
 
         self.image = pygame.transform.smoothscale(self.image, (self.image.get_width() * self.screen_scale[0],
-                                                         self.image.get_height() * self.screen_scale[1]))
+                                                               self.image.get_height() * self.screen_scale[1]))
         self.true_image = self.image.copy()  # image before adding effect and place name
 
         # Save place name image as variable

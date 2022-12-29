@@ -15,11 +15,13 @@ def manual_aim(self, key_press, mouse_left_up, mouse_right_up, mouse_scroll_up, 
             for weapon in self.player_char.ammo_now[self.player_char.equipped_weapon]:
                 shoot_distance = self.player_char.base_pos.distance_to(self.command_mouse_pos)
                 shoot_range = self.player_char.shoot_range[weapon]
-                if (self.player_char.ammo_now[self.player_char.equipped_weapon][weapon]) > 0 and shoot_range >= shoot_distance:
+                if (self.player_char.ammo_now[self.player_char.equipped_weapon][
+                    weapon]) > 0 and shoot_range >= shoot_distance:
                     shoot_ready_list[weapon].append(self.player_char)
                     shoot_ready[weapon] += 1
                 shoot_text += str(self.player_char.ammo_now[self.player_char.equipped_weapon][weapon]) + "/" + \
-                              str(self.player_char.magazine_count[self.player_char.equipped_weapon][weapon]) + " Range " + \
+                              str(self.player_char.magazine_count[self.player_char.equipped_weapon][
+                                      weapon]) + " Range " + \
                               str(int(shoot_distance)) + "/" + str(int(shoot_range)) + ", "
             shoot_text = shoot_text[:-2]
 

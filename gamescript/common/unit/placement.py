@@ -1,4 +1,5 @@
 import math
+
 import pygame
 from gamescript.common import utility
 

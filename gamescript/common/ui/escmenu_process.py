@@ -46,7 +46,8 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                     elif button.text == "Encyclopedia":  # open encyclopedia
                         self.battle_menu.change_mode("encyclopedia")  # change to enclycopedia mode
                         self.battle_ui_updater.add(self.encyclopedia_stuff)  # add sprite related to encyclopedia
-                        self.encyclopedia.change_section(0,self.lore_name_list, self.subsection_name, self.tag_filter_name,
+                        self.encyclopedia.change_section(0, self.lore_name_list, self.subsection_name,
+                                                         self.tag_filter_name,
                                                          self.lore_name_list.scroll, self.filter_tag_list,
                                                          self.filter_tag_list.scroll, self.page_button,
                                                          self.battle_ui_updater)
@@ -109,7 +110,8 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
 
         for slider in self.esc_slider_menu:
             if slider.rect.collidepoint(self.mouse_pos) and (mouse_leftdown or mouse_up):  # mouse click on slider bar
-                slider.player_input(self.mouse_pos, self.esc_value_boxes[0])  # update slider button based on mouse value
+                slider.player_input(self.mouse_pos,
+                                    self.esc_value_boxes[0])  # update slider button based on mouse value
                 self.master_volume = float(slider.value / 100)  # for now only music volume slider exist
 
     elif self.battle_menu.mode == "encyclopedia":  # Encyclopedia mode

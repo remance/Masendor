@@ -1,11 +1,12 @@
 import pygame
 
+
 # TODO add function to select map from preset/custom layout
 
 
 def editor_map_change(self, base_colour, feature_colour):
     map_images = (
-    pygame.Surface((1000, 1000)), pygame.Surface((1000, 1000)), pygame.Surface((1000, 1000), pygame.SRCALPHA), None)
+        pygame.Surface((1000, 1000)), pygame.Surface((1000, 1000)), pygame.Surface((1000, 1000), pygame.SRCALPHA), None)
     map_images[0].fill(base_colour)  # start with temperate terrain
     map_images[1].fill(feature_colour)  # start with plain feature
     map_images[2].fill((255, 100, 100, 125))  # start with height 100 plain

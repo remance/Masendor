@@ -55,7 +55,8 @@ class BattleMapData:
         edit_file.close()
 
         self.feature_mod_lore = {}
-        with open(os.path.join(main_dir, "data", "map", "terrain_effect_lore_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
+        with open(os.path.join(main_dir, "data", "map", "terrain_effect_lore_" + language + ".csv"), encoding="utf-8",
+                  mode="r") as edit_file:
             lore_csv_read(edit_file, self.feature_mod_lore)
         edit_file.close()
 

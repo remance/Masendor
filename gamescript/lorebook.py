@@ -9,7 +9,8 @@ subsection_tag_colour = [(128, 255, 128), (237, 128, 128), (255, 255, 128), (128
                          (128, 128, 255), (255, 128, 255), (220, 158, 233), (191, 191, 191), (255, 140, 85)]
 
 subsection_tag_colour = ([(255, 255, 255)] + subsection_tag_colour +
-                         [(item, item2) for item in subsection_tag_colour for item2 in subsection_tag_colour if item != item2] +
+                         [(item, item2) for item in subsection_tag_colour for item2 in subsection_tag_colour if
+                          item != item2] +
                          [(item, item2, item3) for item in subsection_tag_colour for item2 in subsection_tag_colour for
                           item3 in subsection_tag_colour if len(set((item, item2, item3))) > 1])
 
@@ -105,7 +106,8 @@ class Lorebook(pygame.sprite.Sprite):
         self.skill_stat = {}
         self.skill_id_reindex = {}
         run = 1
-        for stat_list in (self.troop_data.skill_list, self.leader_data.skill_list, self.leader_data.commander_skill_list):
+        for stat_list in (
+        self.troop_data.skill_list, self.leader_data.skill_list, self.leader_data.commander_skill_list):
             for index in stat_list:
                 self.skill_stat[run] = stat_list[index]
                 self.skill_id_reindex[index] = run
@@ -113,7 +115,8 @@ class Lorebook(pygame.sprite.Sprite):
 
         self.skill_lore = {}
         run = 1
-        for stat_list in (self.troop_data.skill_lore, self.leader_data.skill_lore, self.leader_data.commander_skill_lore):
+        for stat_list in (
+        self.troop_data.skill_lore, self.leader_data.skill_lore, self.leader_data.commander_skill_lore):
             for index in stat_list:
                 self.skill_lore[run] = stat_list[index]
                 run += 1
@@ -123,19 +126,20 @@ class Lorebook(pygame.sprite.Sprite):
 
         self.tag_list = [{stuff["Tag"]: True for stuff in self.concept_stat.values() if stuff["Tag"] != ""},
                          {stuff["Tag"]: True for stuff in self.history_stat.values() if stuff["Tag"] != ""},
-                         {stuff["Type"]: True for stuff in self.faction_data.faction_list.values() if stuff["Type"] != ""},
+                         {stuff["Type"]: True for stuff in self.faction_data.faction_list.values() if
+                          stuff["Type"] != ""},
                          {stuff["Troop Class"]: True for stuff in self.troop_data.troop_list.values() if
-                                stuff["Troop Class"] != ""},
+                          stuff["Troop Class"] != ""},
                          {stuff["Type"]: True for stuff in self.equipment_stat.values() if stuff["Type"] != ""},
                          {stuff["Type"]: True for stuff in self.troop_data.status_list.values() if stuff["Type"] != ""},
                          {stuff["Type"]: True for stuff in self.skill_stat.values() if stuff["Type"] != ""},
                          {stuff["Type"]: True for stuff in self.troop_data.trait_list.values() if stuff["Type"] != ""},
                          {stuff["Type"]: True for stuff in self.leader_data.leader_list.values() if
-                                stuff["Type"] != ""},
+                          stuff["Type"] != ""},
                          {stuff["Type"]: True for stuff in self.battle_map_data.feature_mod.values() if
-                                stuff["Type"] != ""},
+                          stuff["Type"] != ""},
                          {stuff["Type"]: True for stuff in self.battle_map_data.weather_data.values() if
-                                stuff["Type"] != ""}]
+                          stuff["Type"] != ""}]
         for index, tag_list in enumerate(self.tag_list):
             tag_list["No Tag"] = True
             self.tag_list[index] = {"No Tag": self.tag_list[index].pop("No Tag"), **self.tag_list[index]}
@@ -239,7 +243,7 @@ class Lorebook(pygame.sprite.Sprite):
         elif self.section == self.troop_section:
             try:
                 who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key == self.subsection}
-                preview_sprite_pool = self.main.create_sprite_pool(("side", ), self.main.troop_sprite_size,
+                preview_sprite_pool = self.main.create_sprite_pool(("side",), self.main.troop_sprite_size,
                                                                    self.screen_scale, who_todo, preview=True)
                 self.portrait = preview_sprite_pool[self.subsection]["sprite"]
 
@@ -275,7 +279,8 @@ class Lorebook(pygame.sprite.Sprite):
                         tag_index = tuple(self.tag_list[self.section].keys()).index(tag)
                     if self.tag_list[self.section][tag]:  # not creating subsection with disabled tag
                         list_group.add(SubsectionName(self.screen_scale, (pos[0], pos[1] + row), item,
-                                                      loop_list[index], tag_index))  # add new subsection sprite to group
+                                                      loop_list[index],
+                                                      tag_index))  # add new subsection sprite to group
                         row += (41 * self.screen_scale[1])  # next row
                         if len(list_group) > self.max_row_show:
                             break  # will not generate more than space allowed
@@ -365,8 +370,9 @@ class Lorebook(pygame.sprite.Sprite):
 
             # more complex section
             elif self.section in (
-            self.troop_section, self.equipment_section, self.status_section, self.skill_section, self.trait_section,
-            self.leader_section, self.terrain_section, self.weather_section):
+                    self.troop_section, self.equipment_section, self.status_section, self.skill_section,
+                    self.trait_section,
+                    self.leader_section, self.terrain_section, self.weather_section):
                 front_text = {key: value for key, value in stat.items() if
                               key not in ("Name", "Description", "Forcedimageid")}
                 for key, value in front_text.items():
@@ -557,7 +563,7 @@ class Lorebook(pygame.sprite.Sprite):
                                     image_surface = utility.load_image(self.main_dir, self.screen_scale, filename,
                                                                        this_syntax[10:].replace(filename, ""))
                                     image_surface = pygame.transform.scale(image_surface, (self.image.get_width(),
-                                                                           self.image.get_height()))
+                                                                                           self.image.get_height()))
                                     rect = image_surface.get_rect(topleft=(0, 0))
                                     self.image.blit(image_surface, rect)
                                 elif "IMAGE:" in this_syntax:  # blit image to paragraph
@@ -650,6 +656,7 @@ class SubsectionName(pygame.sprite.Sprite):
             self.image.fill((0, 0, 0))
         self.image.blit(self.small_image, self.small_rect)
         self.image.blit(self.text_surface, self.text_rect)
+
 
 # class Selectionbox(pygame.sprite.Sprite):
 #     def __init__(self, pos, lorebook):

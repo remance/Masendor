@@ -18,7 +18,7 @@ def change_battle_state(self):
         self.troop_card_button[0].rect = self.troop_card_button[0].image.get_rect(
             center=(self.troop_card_ui.rect.topleft[0] + (self.troop_card_button[0].image.get_width() / 2),
                     self.troop_card_ui.rect.topleft[1] + (
-                                self.troop_card_button[2].image.get_width() * 3)))  # description button
+                            self.troop_card_button[2].image.get_width() * 3)))  # description button
         self.troop_card_button[1].rect = self.troop_card_button[1].image.get_rect(
             center=(self.troop_card_ui.rect.topleft[0] + (self.troop_card_button[1].image.get_width() / 2),
                     self.troop_card_ui.rect.topleft[1] + (self.troop_card_button[2].image.get_width())))  # stat button
@@ -29,7 +29,7 @@ def change_battle_state(self):
         self.troop_card_button[3].rect = self.troop_card_button[3].image.get_rect(
             center=(self.troop_card_ui.rect.topleft[0] + (self.troop_card_button[3].image.get_width() / 2),
                     self.troop_card_ui.rect.topleft[1] + (
-                                self.troop_card_button[2].image.get_width() * 4)))  # equipment button
+                            self.troop_card_button[2].image.get_width() * 4)))  # equipment button
 
         self.battle_ui_updater.remove(self.filter_stuff, self.unit_editor_stuff, self.leader_now, self.button_ui,
                                       self.warning_msg)
@@ -62,7 +62,7 @@ def change_battle_state(self):
         self.troop_card_button[0].rect = self.troop_card_button[0].image.get_rect(
             center=(self.troop_card_ui.rect.topleft[0] + (self.troop_card_button[0].image.get_width() / 2),
                     self.troop_card_ui.rect.topleft[1] + (
-                                self.troop_card_button[2].image.get_width() * 3)))  # description button
+                            self.troop_card_button[2].image.get_width() * 3)))  # description button
         self.troop_card_button[1].rect = self.troop_card_button[1].image.get_rect(
             center=(self.troop_card_ui.rect.topleft[0] + (self.troop_card_button[1].image.get_width() / 2),
                     self.troop_card_ui.rect.topleft[1] + (self.troop_card_button[2].image.get_width())))  # stat button
@@ -73,7 +73,7 @@ def change_battle_state(self):
         self.troop_card_button[3].rect = self.troop_card_button[3].image.get_rect(
             center=(self.troop_card_ui.rect.topleft[0] + (self.troop_card_button[3].image.get_width() / 2),
                     self.troop_card_ui.rect.topleft[1] + (
-                                self.troop_card_button[2].image.get_width() * 4)))  # equipment button
+                            self.troop_card_button[2].image.get_width() * 4)))  # equipment button
 
         self.battle_ui_updater.remove(self.event_log, self.event_log.scroll, self.troop_card_button,
                                       self.col_split_button, self.row_split_button,

@@ -9,7 +9,7 @@ from pathlib import Path
 import pygame
 import pygame.freetype
 import screeninfo
-from gamescript import battlemap, weather, lorebook, drama, battleui, popup, menu, damagesprite, uniteditor, \
+from gamescript import battlemap, weather, lorebook, drama, battleui, menu, damagesprite, uniteditor, \
     battle, leader, unit, subunit, datasprite, datamap
 from gamescript.common import utility
 from gamescript.common.battle import setup_battle_unit, generate_unit
@@ -28,7 +28,6 @@ text_objects = utility.text_objects
 setup_list = utility.setup_list
 list_scroll = utility.list_scroll
 empty_function = utility.empty_function
-
 
 # Module that get loads with import in common.game.setup after
 make_battle_list_data = empty_function
@@ -168,7 +167,8 @@ class Game:
             except FileNotFoundError:  # for release version
                 genre_folder = Path(os.path.join(self.main_dir, "lib", script_folder))
                 genre_folder = [x for x in genre_folder.iterdir() if x.is_dir()]
-            genre_folder = [os.sep.join(os.path.normpath(folder_name).split(os.sep)[-1:]).capitalize() for folder_name in genre_folder]
+            genre_folder = [os.sep.join(os.path.normpath(folder_name).split(os.sep)[-1:]).capitalize() for folder_name
+                            in genre_folder]
             if "__pycache__" in genre_folder:
                 genre_folder.remove("__pycache__")  # just grab the first genre folder as default
             if "Common" in genre_folder:
@@ -448,12 +448,12 @@ class Game:
                                             self.main_ui_updater, text="Start")
         self.map_back_button = menu.MenuButton(self.screen_scale, image_list,
                                                (self.screen_rect.width - (
-                                                           self.screen_rect.width - image_list[0].get_width()),
+                                                       self.screen_rect.width - image_list[0].get_width()),
                                                 bottom_height),
                                                self.main_ui_updater, text="Back")
         self.char_back_button = menu.MenuButton(self.screen_scale, image_list,
                                                 (self.screen_rect.width - (
-                                                            self.screen_rect.width - image_list[0].get_width()),
+                                                        self.screen_rect.width - image_list[0].get_width()),
                                                  bottom_height),
                                                 self.main_ui_updater, text="Back")
         self.map_select_button = (self.select_button, self.map_back_button)
@@ -524,13 +524,15 @@ class Game:
         self.animation_text = option_menu_dict["animation_text"]
 
         self.option_text_list = (self.resolution_text, self.volume_text, self.fullscreen_text, self.animation_text)
-        self.option_menu_button = (self.back_button, self.default_button, self.resolution_drop, self.fullscreen_box, self.animation_box)
+        self.option_menu_button = (
+        self.back_button, self.default_button, self.resolution_drop, self.fullscreen_box, self.animation_box)
         self.option_menu_slider = self.volume_slider
 
         # Genre related stuff
         genre_folder = Path(os.path.join(main_dir, script_folder))  # Load genre list
         subdirectories = [x for x in genre_folder.iterdir() if x.is_dir()]
-        subdirectories = [os.sep.join(os.path.normpath(folder_name).split(os.sep)[-1:]).capitalize() for folder_name in subdirectories]
+        subdirectories = [os.sep.join(os.path.normpath(folder_name).split(os.sep)[-1:]).capitalize() for folder_name in
+                          subdirectories]
         if "__pycache__" in subdirectories:
             subdirectories.remove("__pycache__")
         subdirectories.remove("Common")
@@ -559,14 +561,17 @@ class Game:
         # ^ End Main menu
 
         # v Battle related stuffs
-        subunit_ui_images = load_images(self.main_dir, subfolder=("ui", "subunit_ui"))  # no scaling when loaded for subunit sprite yet
+        subunit_ui_images = load_images(self.main_dir,
+                                        subfolder=("ui", "subunit_ui"))  # no scaling when loaded for subunit sprite yet
         new_subunit_ui_images = {}
         for this_size in range(2, 11):  # create hp and stamina ring for 10 possible subunit sizes
             new_subunit_ui_images["health" + str(this_size)] = \
-                {key: pygame.transform.smoothscale(value, (value.get_width() * this_size, value.get_height() * this_size))
+                {key: pygame.transform.smoothscale(value,
+                                                   (value.get_width() * this_size, value.get_height() * this_size))
                  for key, value in subunit_ui_images.items() if "health" in key}
             new_subunit_ui_images["stamina" + str(this_size)] = \
-                {key: pygame.transform.smoothscale(value, (value.get_width() * this_size, value.get_height() * this_size))
+                {key: pygame.transform.smoothscale(value,
+                                                   (value.get_width() * this_size, value.get_height() * this_size))
                  for key, value in subunit_ui_images.items() if "stamina" in key}
 
         subunit_ui_images |= new_subunit_ui_images
@@ -692,7 +697,8 @@ class Game:
         self.ui_updater.add(self.troop_card_ui)
         self.button_ui.add(self.troop_card_button)
 
-        self.encyclopedia, self.lore_name_list, self.filter_tag_list, self.lore_button_ui, self.page_button = make_lorebook(self, self.main_dir, self.screen_scale, self.screen_rect)
+        self.encyclopedia, self.lore_name_list, self.filter_tag_list, self.lore_button_ui, self.page_button = make_lorebook(
+            self, self.main_dir, self.screen_scale, self.screen_rect)
 
         self.encyclopedia_stuff = (self.encyclopedia, self.lore_name_list, self.filter_tag_list,
                                    self.lore_name_list.scroll, self.filter_tag_list.scroll, *self.lore_button_ui)
@@ -775,6 +781,7 @@ class Game:
         self.colour_list = self.troop_animation.colour_list  # skin colour list
 
         self.effect_sprite_pool = self.troop_animation.effect_sprite_pool
+        self.effect_animation_pool = self.troop_animation.effect_animation_pool
 
         self.command_ui.weapon_sprite_pool = self.gen_weapon_sprite_pool
 
@@ -802,6 +809,7 @@ class Game:
         damagesprite.DamageSprite.bullet_sprite_pool = bullet_sprite_pool
         damagesprite.DamageSprite.bullet_weapon_sprite_pool = bullet_weapon_sprite_pool
         damagesprite.DamageSprite.effect_sprite_pool = self.effect_sprite_pool
+        damagesprite.DamageSprite.effect_animation_pool = self.effect_animation_pool
 
         # Encyclopedia
         lorebook.Lorebook.concept_stat = csv_read(self.main_dir, "concept_stat.csv",
@@ -828,7 +836,8 @@ class Game:
         self.preview_leader = (leader.Leader(1, 0, 0, None, self.leader_data, layer=11),
                                leader.Leader(1, 0, 1, None, self.leader_data, layer=11),
                                leader.Leader(1, 0, 2, None, self.leader_data, layer=11),
-                               leader.Leader(1, 0, 3, None, self.leader_data, layer=11))  # list of preview leader for unit editor
+                               leader.Leader(1, 0, 3, None, self.leader_data,
+                                             layer=11))  # list of preview leader for unit editor
         for this_leader in self.preview_leader:
             self.leader_updater.remove(this_leader)
         self.battle_game.preview_leader = self.preview_leader
@@ -875,7 +884,8 @@ class Game:
                 # Check whether the old genre method not existed in the new one, replace with empty method
                 if old_genre != new_genre:
                     try:
-                        new_folder = [this_file.name for this_file in os.scandir(Path(directory + new_genre + "/" + folder))]
+                        new_folder = [this_file.name for this_file in
+                                      os.scandir(Path(directory + new_genre + "/" + folder))]
                     except FileNotFoundError:
                         new_folder = ()
                     try:

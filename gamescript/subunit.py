@@ -1,12 +1,11 @@
 import math
 import os
 import random
+from pathlib import Path
 
 import pygame
 import pygame.freetype
-from gamescript.common import utility, animation
-
-from pathlib import Path
+from gamescript.common import utility
 
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
@@ -38,8 +37,6 @@ class Subunit(pygame.sprite.Sprite):
     animation_sprite_pool = None
     subunit_state = None
 
-    play_animation = animation.play_animation
-    reset_animation = animation.reset_animation
     set_rotate = utility.set_rotate
 
     DiagonalMovement = DiagonalMovement
@@ -69,9 +66,11 @@ class Subunit(pygame.sprite.Sprite):
     make_front_pos = empty_method
     make_pos_range = empty_method
     pick_animation = empty_method
+    play_animation = empty_method
     player_weapon_selection = empty_method
     process_trait_skill = empty_method
     range_weapon_selection = empty_method
+    reset_animation = empty_method
     rotate = empty_method
     special_effect_check = empty_method
     enter_battle = empty_method
@@ -239,7 +238,8 @@ class Subunit(pygame.sprite.Sprite):
                 "Mental Bonus"]  # mental resistance from morale melee_dmg and mental status effect
             self.troop_number = stat["Troop"] * unit_scale[
                 self.team] * start_hp / 100  # number of starting troop, team -1 to become list index
-            self.subunit_type = troop_class_index[stat["Troop Class"]]  # 0 is melee infantry and 1 is range for command buff
+            self.subunit_type = troop_class_index[
+                stat["Troop Class"]]  # 0 is melee infantry and 1 is range for command buff
 
         else:  # leader/hero character, for game mode that replace subunit with leader
             self.troop_id = troop_id
@@ -393,6 +393,7 @@ class Subunit(pygame.sprite.Sprite):
         self.base_inflict_status = {}  # status that this subunit will inflict to enemy when melee_attack
 
         self.one_activity_timer = 0  # timer for activities that can be only perform when no others occur like knock down
+        self.one_activity_limit = 0
         self.countup_timer = 0  # timer that count up to specific threshold to start event like charge attack timing
         self.countup_trigger_time = 0  # time that indicate when trigger happen
 
@@ -661,22 +662,33 @@ class Subunit(pygame.sprite.Sprite):
         # elif self.countup_timer > 0:
         #     self.countup_timer = 0
         #     self.countup_trigger_time = 0
-        hold_check = self.current_action and "hold" in self.current_action and \
-                     "hold" in self.current_animation[self.sprite_direction][self.show_frame]["frame_property"] and \
-                     "hold" in self.action_list[int(self.current_action["name"][-1])]["Properties"]
+
+        hold_check = False
+        if self.current_action and "hold" in self.current_action and \
+                "hold" in self.current_animation[self.sprite_direction][self.show_frame]["frame_property"] and \
+                "hold" in self.action_list[int(self.current_action["name"][-1])]["Properties"]:
+            hold_check = True
 
         done, just_start = self.play_animation(play_speed, dt, hold_check, replace_image=self.use_animation_sprite)
-        if "melee attack" in self.current_action and just_start and self.current_animation[self.sprite_direction][self.show_frame]["dmg_sprite"] is not None:  # make attack if frame
+
+        if self.one_activity_limit > 0:
+            self.one_activity_timer += dt
+            if self.one_activity_timer >= self.one_activity_limit:
+                self.one_activity_limit = 0
+                self.one_activity_timer = 0
+
+        if "melee attack" in self.current_action and just_start and \
+                self.current_animation[self.sprite_direction][self.show_frame][
+                    "dmg_sprite"] is not None:  # make attack if frame
             self.attack(self.current_animation[self.sprite_direction][self.show_frame]["dmg_sprite"])
         # Pick new animation, condition to stop animation: get interrupt,
         # low level animation got replace with more important one, finish playing, skill animation and its effect end
         if self.state != 100 and \
                 ((self.interrupt_animation and "uninterruptible" not in self.current_action) or
-                 (not self.current_action and self.command_action) or
-                 (done and "repeat" not in self.current_action) or
-                 ("skill" in self.current_action and self.current_action["skill"] not in self.skill_effect) or
-                 (self.idle_action and self.idle_action != self.command_action) or
-                 self.current_action != self.last_current_action):
+                 (self.one_activity_timer == 0 and (not self.current_action and self.command_action) or done or
+                  ("skill" in self.current_action and self.current_action["skill"] not in self.skill_effect) or
+                  (self.idle_action and self.idle_action != self.command_action) or
+                  self.current_action != self.last_current_action)):
             if done and "range attack" in self.current_action:  # shoot bullet
                 self.attack("range")
 

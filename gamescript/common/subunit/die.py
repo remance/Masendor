@@ -1,5 +1,7 @@
 import numpy as np
 
+die_command_action = {"name": "Die", "uninterruptible": True}
+
 
 def die(self):
     self.inspect_image_original3.blit(self.health_image_list[4], self.health_image_rect)  # blit white hp bar
@@ -20,7 +22,7 @@ def die(self):
     self.battle.battle_subunit_list.remove(self)
     self.unit.alive_subunit_list.remove(self)
 
-    self.command_action = {"name": "Die", "uninterruptible": True}
+    self.command_action = die_command_action
     self.reset_animation()
     self.current_action = self.command_action  # replace any current action
     self.pick_animation()
@@ -30,9 +32,9 @@ def die(self):
 
     self.gone_leader_process("Destroyed")
 
-    self.battle.event_log.add_log([0, str(self.board_pos) + " " + str(self.name)
+    self.battle.event_log.add_log((0, str(self.board_pos) + " " + str(self.name)
                                    + " in " + self.unit.leader[0].name
-                                   + "'s unit is destroyed"],
+                                   + "'s unit is destroyed"),
                                   [3])  # add log to say this subunit is destroyed in subunit tab
 
     if self.unit.player_control:

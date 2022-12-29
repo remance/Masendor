@@ -1,7 +1,6 @@
 import math
 
 import pygame
-
 from gamescript import unit
 
 team_colour = unit.team_colour

@@ -1,8 +1,7 @@
 import random
-import numpy as np
-from PIL import Image
 
 import pygame
+from PIL import Image
 from gamescript.common.subunit import create_troop_sprite
 
 create_troop_sprite = create_troop_sprite.create_troop_sprite
@@ -30,7 +29,8 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
             primary_sub_weapon = this_subunit["Primary Sub Weapon"][0]
             secondary_main_weapon = this_subunit["Secondary Main Weapon"][0]
             secondary_sub_weapon = this_subunit["Secondary Sub Weapon"][0]
-            hand_weapon_list = ((primary_main_weapon, primary_sub_weapon), (secondary_main_weapon, secondary_sub_weapon))
+            hand_weapon_list = (
+            (primary_main_weapon, primary_sub_weapon), (secondary_main_weapon, secondary_sub_weapon))
             armour = (self.troop_data.armour_list[this_subunit["Armour"][0]]["Name"],
                       self.troop_data.mount_armour_list[this_subunit["Mount"][2]]["Name"])
             weapon_key = (str(primary_main_weapon) + "," + str(primary_sub_weapon),
@@ -68,10 +68,11 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                              if (any(ext in this_animation for ext in weapon_common_type_list) is False or
                                  weapon_common_action[0][0] in this_animation) and
                              (any(ext in this_animation for ext in weapon_attack_type_list) is False or
-                              (weapon_attack_action[0][0] in this_animation and "_Main_" in this_animation))]
+                              (weapon_attack_action[0][0] in this_animation and "_Main_" in this_animation)) and "Slash_1" in this_animation]
                 # remove animation not suitable for preview
                 animation = [this_animation for this_animation in animation if
-                             any(ext in this_animation for ext in ("_Default", "_Die", "_Flee", "_Damaged")) is False and
+                             any(ext in this_animation for ext in
+                                 ("_Default", "_Die", "_Flee", "_Damaged")) is False and
                              "_Sub_" not in this_animation]
                 if len(animation) > 0:
                     animation = random.choice(animation)  # random animation
@@ -96,7 +97,8 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
 
                 animation_sprite_pool[subunit_id] = {"sprite": sprite_dict["sprite"],
                                                      "animation_property": sprite_dict["animation_property"],
-                                                     "frame_property": sprite_dict["frame_property"]}  # preview pool use subunit_id only
+                                                     "frame_property": sprite_dict[
+                                                         "frame_property"]}  # preview pool use subunit_id only
             else:
                 low_x0 = float("inf")  # lowest x0
                 low_y0 = float("inf")  # lowest y0
@@ -184,26 +186,34 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                             else:
                                                 sprite_data = self.leader_data.leader_sprite_list[sprite_id]
 
-                                            sprite_dict = create_troop_sprite(animation, this_subunit["Size"], frame_data,
+                                            sprite_dict = create_troop_sprite(animation, this_subunit["Size"],
+                                                                              frame_data,
                                                                               sprite_data, self.gen_body_sprite_pool,
                                                                               self.gen_weapon_sprite_pool,
                                                                               self.gen_armour_sprite_pool,
-                                                                              self.effect_sprite_pool, animation_property,
+                                                                              self.effect_sprite_pool,
+                                                                              animation_property,
                                                                               self.weapon_joint_list,
                                                                               (weapon_set_index, weapon_set,
-                                                                               (self.troop_data.weapon_list[hand_weapon_list[weapon_set_index][0]]["Hand"],
-                                                                                self.troop_data.weapon_list[hand_weapon_list[weapon_set_index][1]]["Hand"])),
+                                                                               (self.troop_data.weapon_list[
+                                                                                    hand_weapon_list[weapon_set_index][
+                                                                                        0]]["Hand"],
+                                                                                self.troop_data.weapon_list[
+                                                                                    hand_weapon_list[weapon_set_index][
+                                                                                        1]]["Hand"])),
                                                                               armour, self.colour_list,
                                                                               genre_sprite_size, screen_scale,
                                                                               self.troop_data.race_list)
                                             sprite_pic = sprite_dict["sprite"]
                                             if self.play_troop_animation == 0 and "_Default" not in animation:  # replace sprite with default if disable animation
-                                                sprite_pic = current_in_pool[tuple(current_in_pool.keys())[0]][new_direction][0]["sprite"]
+                                                sprite_pic = \
+                                                current_in_pool[tuple(current_in_pool.keys())[0]][new_direction][0][
+                                                    "sprite"]
 
                                             # Find optimal cropped sprite size that all animation will share exact same center point
                                             size = sprite_pic.get_size()
                                             data = pygame.image.tostring(sprite_pic,
-                                                "RGBA")  # convert image to string data for filtering effect
+                                                                         "RGBA")  # convert image to string data for filtering effect
                                             data = Image.frombytes("RGBA", size, data)  # use PIL to get image data
                                             bbox = data.getbbox()
                                             if low_x0 > bbox[0]:
@@ -230,7 +240,8 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                                         "dmg_sprite": sprite_dict["dmg_sprite"]}
                                                 elif self.play_troop_animation == 0:
                                                     current_in_pool[name_input][opposite_direction][frame_num] = {
-                                                        "sprite": current_in_pool[tuple(current_in_pool.keys())[0]][opposite_direction][0]["sprite"],
+                                                        "sprite": current_in_pool[tuple(current_in_pool.keys())[0]][
+                                                            opposite_direction][0]["sprite"],
                                                         "animation_property": sprite_dict["animation_property"],
                                                         "frame_property": sprite_dict["frame_property"],
                                                         "dmg_sprite": sprite_dict["dmg_sprite"]}
@@ -242,12 +253,13 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                             sprite_pic = current_in_pool[animation][direction][frame]["sprite"]
                             size = sprite_pic.get_size()
                             sprite_pic = pygame.image.tostring(sprite_pic,
-                                                         "RGBA")  # convert image to string data for filtering effect
+                                                               "RGBA")  # convert image to string data for filtering effect
                             sprite_pic = Image.frombytes("RGBA", size, sprite_pic)  # use PIL to get image data
                             sprite_pic = sprite_pic.crop((low_x0, low_y0, high_x1, high_y1))
                             size = sprite_pic.size
                             sprite_pic = sprite_pic.tobytes()
-                            sprite_pic = pygame.image.fromstring(sprite_pic, size, "RGBA")  # convert image back to a pygame surface
+                            sprite_pic = pygame.image.fromstring(sprite_pic, size,
+                                                                 "RGBA")  # convert image back to a pygame surface
                             current_in_pool[animation][direction][frame]["sprite"] = sprite_pic
 
     # except KeyError:  # any key error will return nothing

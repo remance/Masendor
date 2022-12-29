@@ -2,7 +2,7 @@ import pygame
 from PIL import Image, ImageOps
 
 
-def apply_colour(surface, colour=None, white_colour=True):
+def apply_sprite_colour(surface, colour=None, white_colour=True):
     """Colorise body part sprite"""
     if surface is not None:
         size = surface.get_size()

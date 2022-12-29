@@ -7,7 +7,7 @@ from gamescript.common import utility
 stat_convert = utility.stat_convert
 
 letter_board = (
-"a", "b", "c", "d", "e", "f", "g", "h")  # letter according to subunit position in inspect ui similar to chess board
+    "a", "b", "c", "d", "e", "f", "g", "h")  # letter according to subunit position in inspect ui similar to chess board
 number_board = ("8", "7", "6", "5", "4", "3", "2", "1")  # same as above
 board_pos = []
 for dd in number_board:

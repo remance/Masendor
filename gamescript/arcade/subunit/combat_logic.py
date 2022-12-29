@@ -1,3 +1,9 @@
+melee_attack_command_action = ({"name": "Action 0", "melee attack": True}, {"name": "Action 1", "melee attack": True})
+range_attack_command_action = ({"name": "Action 0", "range attack": True}, {"name": "Action 1", "range attack": True})
+range_move_attack_command_action = ({"name": "Action 0", "range attack": True, "move attack": True, "movable": True},
+                                    {"name": "Action 1", "range attack": True, "move attack": True, "movable": True})
+
+
 def combat_logic(self, dt, unit_state):
     self.melee_target = None
     collide_list = self.enemy_front + self.enemy_side
@@ -7,11 +13,11 @@ def combat_logic(self, dt, unit_state):
             self.weapon_cooldown[weapon] += dt
         if self.equipped_weapon in self.ammo_now and weapon in self.ammo_now[self.equipped_weapon] and \
                 self.ammo_now[self.equipped_weapon][weapon] < 1:  # reloading magazine
-            if type(self.troop_id) == str or self.weapon_cooldown[weapon] >= self.weapon_speed[weapon]:  # finish reload, add ammo. hero char reload instantly for gameplay effect
+            if type(self.troop_id) == str or self.weapon_cooldown[weapon] >= self.weapon_speed[
+                weapon]:  # finish reload, add ammo. hero char reload instantly for gameplay effect
                 self.ammo_now[self.equipped_weapon][weapon] = self.magazine_size[self.equipped_weapon][weapon]
                 self.magazine_count[self.equipped_weapon][weapon] -= 1
                 self.weapon_cooldown[weapon] = 0
-
 
     if self.player_manual_control is False:
         if collide_list:  # Check if in combat or not with enemy collision
@@ -50,7 +56,8 @@ def combat_logic(self, dt, unit_state):
 
                 elif self.unit.fire_at_will == 0 and (self.state == 0 or
                                                       (self.state in (1, 2, 3, 4, 5, 6, 7) and
-                                                       self.check_special_effect("Shoot While Moving"))):  # Fire at will
+                                                       self.check_special_effect(
+                                                           "Shoot While Moving"))):  # Fire at will
                     if self.unit.nearby_enemy != {} and self.attack_target is None:
                         self.find_shooting_target(unit_state)  # shoot the nearest target
 
@@ -67,7 +74,7 @@ def combat_logic(self, dt, unit_state):
                         else:  # rear
                             hit_side = 2
                         self.hit_register(weapon, subunit, 0, hit_side, self.battle.troop_data.status_list)
-                        self.command_action = {"name": "Action " + str(weapon), "melee attack": True}
+                        self.command_action = melee_attack_command_action[weapon]
                         self.stamina -= self.weapon_weight[self.equipped_weapon][weapon]
                         self.weapon_cooldown[weapon] -= self.weapon_speed[weapon]
                     break
@@ -85,15 +92,15 @@ def combat_logic(self, dt, unit_state):
                 self.attack_target = self.unit.attack_target
                 if self.attack_target is not None:
                     self.attack_pos = self.attack_target.base_pos
-            if (self.attack_target is not None or self.attack_pos is not None) and not self.command_action and not self.current_action:
+            if (
+                    self.attack_target is not None or self.attack_pos is not None) and not self.command_action and not self.current_action:
                 for weapon in self.ammo_now[self.equipped_weapon]:  # TODO add line of sight for range attack
                     # can shoot if reload finish and base_target existed and not dead. Non arc_shot cannot shoot if forbid
                     if self.ammo_now[self.equipped_weapon][weapon] > 0 and \
                             (self.check_special_effect("Arc Shot", weapon=weapon) or self.unit.shoot_mode != 1):
-                        self.command_action = {"name": "Action " + str(weapon), "range attack": True}
+                        self.command_action = range_attack_command_action[weapon]
                         if self.state in (12, 13):  # shoot while moving
-                            self.command_action = {"name": "Action " + str(weapon), "range attack": True,
-                                                   "move attack": True, "movable": True}
+                            self.command_action = range_move_attack_command_action[weapon]
                         break
 
     return unit_state, collide_list

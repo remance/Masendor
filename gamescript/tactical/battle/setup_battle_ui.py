@@ -30,7 +30,7 @@ def setup_battle_ui(self, change):
         self.battle_scale_ui.change_pos(self.time_ui.rect.bottomleft)
         self.test_button.change_pos((self.battle_scale_ui.rect.bottomleft[0] + (self.test_button.image.get_width() / 2),
                                      self.battle_scale_ui.rect.bottomleft[1] + (
-                                                 self.test_button.image.get_height() / 2)))
+                                             self.test_button.image.get_height() / 2)))
         self.warning_msg.change_pos(self.test_button.rect.bottomleft)
 
         self.command_ui.change_pos((self.command_ui.image.get_size()[0] / 2,
@@ -49,35 +49,35 @@ def setup_battle_ui(self, change):
         self.behaviour_switch_button[0].change_pos(
             (self.command_ui.rect.bottomleft[0] + (self.behaviour_switch_button[0].image.get_width()),
              self.command_ui.rect.bottomleft[1] - (
-                         self.behaviour_switch_button[0].image.get_height() / 2)))  # skill condition button
+                     self.behaviour_switch_button[0].image.get_height() / 2)))  # skill condition button
         self.behaviour_switch_button[1].change_pos(
             (self.command_ui.rect.bottomleft[0] + (self.behaviour_switch_button[1].image.get_width() * 2),
              self.command_ui.rect.bottomleft[1] - (
-                         self.behaviour_switch_button[1].image.get_height() / 2)))  # fire at will button
+                     self.behaviour_switch_button[1].image.get_height() / 2)))  # fire at will button
         self.behaviour_switch_button[2].change_pos(
             (self.command_ui.rect.bottomleft[0] + (self.behaviour_switch_button[2].image.get_width() * 3),
              self.command_ui.rect.bottomleft[1] - (
-                         self.behaviour_switch_button[2].image.get_height() / 2)))  # behaviour button
+                     self.behaviour_switch_button[2].image.get_height() / 2)))  # behaviour button
         self.behaviour_switch_button[3].change_pos(
             (self.command_ui.rect.bottomleft[0] + (self.behaviour_switch_button[3].image.get_width() * 4),
              self.command_ui.rect.bottomleft[1] - (
-                         self.behaviour_switch_button[3].image.get_height() / 2)))  # shoot range button
+                     self.behaviour_switch_button[3].image.get_height() / 2)))  # shoot range button
         self.behaviour_switch_button[4].change_pos(
             (self.command_ui.rect.bottomleft[0] + (self.behaviour_switch_button[4].image.get_width() * 5),
              self.command_ui.rect.bottomleft[1] - (
-                         self.behaviour_switch_button[4].image.get_height() / 2)))  # arc_shot button
+                     self.behaviour_switch_button[4].image.get_height() / 2)))  # arc_shot button
         self.behaviour_switch_button[5].change_pos(
             (self.command_ui.rect.bottomleft[0] + (self.behaviour_switch_button[5].image.get_width() * 6),
              self.command_ui.rect.bottomleft[1] - (
-                         self.behaviour_switch_button[5].image.get_height() / 2)))  # toggle run button
+                     self.behaviour_switch_button[5].image.get_height() / 2)))  # toggle run button
         self.behaviour_switch_button[6].change_pos(
             (self.command_ui.rect.bottomleft[0] + (self.behaviour_switch_button[6].image.get_width() * 7),
              self.command_ui.rect.bottomleft[1] - (
-                         self.behaviour_switch_button[6].image.get_height() / 2)))  # toggle melee mode
+                     self.behaviour_switch_button[6].image.get_height() / 2)))  # toggle melee mode
 
         self.event_log_button[0].change_pos((self.event_log.pos[0] + (self.event_log_button[0].image.get_width() / 2),
                                              self.event_log.pos[1] - self.event_log.image.get_height() - (
-                                                         self.event_log_button[0].image.get_height() / 2)))
+                                                     self.event_log_button[0].image.get_height() / 2)))
         self.event_log_button[1].change_pos(
             (self.event_log_button[0].pos[0] + self.event_log_button[0].image.get_width(),
              self.event_log_button[0].pos[1]))  # army tab log button

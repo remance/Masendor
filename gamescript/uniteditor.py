@@ -4,7 +4,6 @@ import os
 
 import pygame
 import pygame.freetype
-from pygame.transform import scale
 
 
 class PreviewBox(pygame.sprite.Sprite):

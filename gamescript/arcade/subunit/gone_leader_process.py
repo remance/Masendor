@@ -17,4 +17,3 @@ def gone_leader_process(self, *args):
             subunit.base_target = pygame.Vector2(corner_list[found_corner])
             subunit.command_target = subunit.base_target
             subunit.new_angle = subunit.set_rotate(subunit.base_target)
-

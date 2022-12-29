@@ -13,8 +13,8 @@ def combat_pathfind(self):
             move_array[x][y] = 100  # reset path for subunit sprite position
 
     start_point = (
-    min([max(0, int_base_pos[0] - 5), max(0, int_base_target[0] - 5)]),  # start point of new smaller array
-    min([max(0, int_base_pos[1] - 5), max(0, int_base_target[1] - 5)]))
+        min([max(0, int_base_pos[0] - 5), max(0, int_base_target[0] - 5)]),  # start point of new smaller array
+        min([max(0, int_base_pos[1] - 5), max(0, int_base_target[1] - 5)]))
     end_point = (max([min(999, int_base_pos[0] + 5), min(999, int_base_target[0] + 5)]),  # end point of new array
                  max([min(999, int_base_pos[1] + 5), min(999, int_base_target[1] + 5)]))
 

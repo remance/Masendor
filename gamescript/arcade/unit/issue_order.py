@@ -19,10 +19,13 @@ def issue_order(self, target_pos, run_command=False, revert_move=False, enemy=No
                     self.set_target(target_pos)
                     for this_subunit in self.alive_subunit_list:
                         if "uninterruptible" not in this_subunit.command_action:
-                            if this_subunit.weapon_type[this_subunit.equipped_weapon][int(other_command[-1])] == "ranged" and \
-                                    this_subunit.weapon_type[this_subunit.swap_weapon_list[this_subunit.equipped_weapon]][
+                            if this_subunit.weapon_type[this_subunit.equipped_weapon][
+                                int(other_command[-1])] == "ranged" and \
+                                    this_subunit.weapon_type[
+                                        this_subunit.swap_weapon_list[this_subunit.equipped_weapon]][
                                         int(other_command[-1])] == "melee":
-                                this_subunit.equipped_weapon = this_subunit.swap_weapon_list[this_subunit.equipped_weapon]
+                                this_subunit.equipped_weapon = this_subunit.swap_weapon_list[
+                                    this_subunit.equipped_weapon]
                                 this_subunit.swap_weapon()  # swap to melee weapon for charge
                             this_subunit.command_action = {"name": other_command}
                             this_subunit.state = 4

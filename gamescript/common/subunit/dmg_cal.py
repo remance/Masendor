@@ -54,7 +54,7 @@ def dmg_cal(self, target, hit, defence, weapon, penetrate, dmg_object, hit_side=
 
         if type(dmg_object) == int:  # Melee dmg
             dmg = {key: random.uniform(value[0], value[1]) * penetrate / target.element_resistance[key]
-                   if target.element_resistance[key] > 0 else random.uniform(value[0], value[1]) for key, value in
+            if target.element_resistance[key] > 0 else random.uniform(value[0], value[1]) for key, value in
                    self.weapon_dmg[dmg_object].items()}  # dict comprehension here to save element key
 
             dmg_sum = sum(dmg.values())
@@ -79,13 +79,13 @@ def dmg_cal(self, target, hit, defence, weapon, penetrate, dmg_object, hit_side=
                     if charge_def_cal < 0:
                         charge_def_cal = 0
                     dmg_sum = dmg_sum + (
-                                charge_def_cal * 2)  # if charge def is higher than enemy charge then deal back additional melee_dmg
+                            charge_def_cal * 2)  # if charge def is higher than enemy charge then deal back additional melee_dmg
 
             dmg_sum = dmg_sum * combat_score
 
         else:  # Range or other type of damage
             dmg = {key: value * penetrate / target.element_resistance[key] if target.element_resistance[key] > 0
-                   else value for key, value in dmg_object.dmg.items()}
+            else value for key, value in dmg_object.dmg.items()}
             dmg_sum = sum(dmg.values())
             dmg_sum = dmg_sum * combat_score
 

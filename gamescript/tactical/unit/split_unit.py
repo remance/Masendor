@@ -54,7 +54,8 @@ def split_unit(self, how):
 
     already_pick = []
     for this_leader in (
-    self.leader[0], self.leader[2], self.leader[3]):  # move other leader subunit to original one if they are in new one
+            self.leader[0], self.leader[2],
+            self.leader[3]):  # move other leader subunit to original one if they are in new one
         if this_leader.subunit.game_id not in self.subunit_id_array:
             new_army_subunit, self.subunit_id_array, new_position = move_leader_subunit(this_leader, new_army_subunit,
                                                                                         self.subunit_id_array,

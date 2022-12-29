@@ -9,7 +9,7 @@ def leader_command_ui_mouse_over(self, mouse_right):
                 army_position = self.leader_level[this_leader.role + 4]
 
             self.single_text_popup.pop(self.mouse_pos,
-                                  army_position + ": " + this_leader.name)  # popup leader name when mouse over
+                                       army_position + ": " + this_leader.name)  # popup leader name when mouse over
             self.battle_ui_updater.add(self.single_text_popup)
             leader_mouse_over = True
 
