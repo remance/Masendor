@@ -23,7 +23,7 @@ def die(self):
     self.unit.alive_subunit_list.remove(self)
 
     self.command_action = die_command_action
-    self.reset_animation()
+    self.interrupt_animation = True
     self.current_action = self.command_action  # replace any current action
     self.pick_animation()
 

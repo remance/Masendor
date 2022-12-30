@@ -1,3 +1,5 @@
+import random
+
 import pygame
 import pygame.freetype
 
@@ -5,8 +7,10 @@ import pygame.freetype
 class Weather:
     weather_icons = {}
 
-    def __init__(self, time_ui, weather_type, level, weather_data):
+    def __init__(self, time_ui, weather_type, wind_direction, level, weather_data):
         self.weather_type = weather_type
+        if self.weather_type == 0:
+            self.weather_type = random.randint(1, len(weather_data) - 1)
         if weather_data is not None:
             stat = weather_data[weather_type]
             self.name = stat["Name"]
@@ -36,8 +40,20 @@ class Weather:
             self.element = tuple([(element, cal_level) for element in stat["Element"] if element != ""])
             self.status_effect = stat["Status"]
             self.spawn_rate = stat["Spawn Rate"] / cal_level  # divide to make spawn increase with strength
-            self.spawn_angle = stat["Travel Angle"]
-            self.speed = stat["Travel Speed"] * cal_level
+            self.wind_strength = stat["Wind Strength"] * cal_level
+            self.speed = stat["Travel Speed"] * self.wind_strength
+
+            self.travel_angle = wind_direction
+            if self.travel_angle > 255:
+                self.travel_angle = 510 - self.travel_angle
+            elif 0 <= self.travel_angle < 90:
+                self.travel_angle = 180 - self.travel_angle
+            elif 90 < self.travel_angle < 105:
+                self.travel_angle = 210 - self.travel_angle
+
+            self.travel_angle = (self.travel_angle - (abs(180 - self.travel_angle) / 3),
+                                 self.travel_angle + (abs(180 - self.travel_angle) / 3), 255)
+
             image = self.weather_icons[self.name + "_" + str(self.level)]
             cropped = pygame.Surface((image.get_width(), image.get_height()))
             cropped.blit(time_ui.image_original, (0, 0), (0, 0, 80, 80))
@@ -50,13 +66,16 @@ class Weather:
 
 
 class MatterSprite(pygame.sprite.Sprite):
-    def __init__(self, pos, target, speed, image):
+    def __init__(self, pos, target, speed, travel_angle, image, screen_rect_size):
         self._layer = 9
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.speed = speed
         self.pos = pygame.Vector2(pos)  # should be at the end corner of screen
         self.target = pygame.Vector2(target)  # should be at another end corner of screen
-        self.image = image
+        self.image = pygame.transform.rotate(image, travel_angle)  # no need to copy since rotate only once
+        self.screen_start = (-self.image.get_width(), -self.image.get_height())
+        self.screen_end = (self.image.get_width() + screen_rect_size[0],
+                           self.image.get_height() + screen_rect_size[1])
         self.rect = self.image.get_rect(center=self.pos)
 
     def update(self, dt, timer):
@@ -72,8 +91,15 @@ class MatterSprite(pygame.sprite.Sprite):
             else:
                 self.pos = self.target
                 self.rect.center = self.target
+
+            if self.screen_end[0] <= self.pos[0] <= self.screen_start[0] or \
+                    self.screen_end[1] <= self.pos[1] <= self.screen_start[0]:  # pass through screen border
+                self.kill()
+
         else:  # kill when it reach the end of screen
             self.kill()
+
+
 
 
 class SpecialEffect(pygame.sprite.Sprite):

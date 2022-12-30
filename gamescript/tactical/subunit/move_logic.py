@@ -12,12 +12,12 @@ def move_logic(self, dt, unit_state, collide_list):
     if unit_state == 0 or self.unit.revert or (self.angle != self.unit.angle and self.unit.move_rotate is False):
         revert_move = False
 
-    if (self.base_pos != self.base_target or self.charge_momentum > 1) and \
+    if (self.base_pos != self.base_target or self.momentum > 1) and \
             (revert_move or self.angle == self.new_angle):  # cannot move if unit still need to rotate
         no_collide_check = False  # can move if front of unit not collided
         if (((self.unit.collide is False or self.frontline is False) or unit_state == 99)
                 or (unit_state == 10 and ((self.frontline or self.unit.attack_mode == 2) and self.unit.attack_mode != 1)
-                    or self.charge_momentum > 1)):
+                    or self.momentum > 1)):
             no_collide_check = True
 
         enemy_collide_check = False  # for chance to move or charge through enemy
@@ -43,19 +43,17 @@ def move_logic(self, dt, unit_state, collide_list):
                 move.normalize_ip()
 
                 if unit_state in (1, 3, 5, 7):  # walking
-                    speed = self.unit.walk_speed / 10  # use walk speed
+                    speed = self.unit.walk_speed  # use walk speed
                     self.walk = True
                 elif unit_state in (10, 99):  # run with its own speed instead of uniformed run
-                    speed = self.speed / 15  # use its own speed when broken
+                    speed = self.speed * self.momentum  # use its own speed when broken
                     self.run = True
                 else:  # self.state in (2, 4, 6, 10, 96, 98, 99), running
-                    speed = self.unit.run_speed / 10  # use run speed
+                    speed = self.unit.run_speed * self.momentum  # use run speed
                     self.run = True
-                if 0 in self.skill_effect:  # speed gradually decrease with momentum during charge
-                    speed = speed * self.charge_momentum / 8
                 if self.collide_penalty:  # reduce speed during moving through another unit
-                    speed = speed / 2
-                move = move * speed * dt
+                    speed /= 2
+                move *= speed * dt
                 new_move_length = move.length()
                 new_pos = self.base_pos + move
 
@@ -103,6 +101,21 @@ def move_logic(self, dt, unit_state, collide_list):
                                       (self.unit.base_pos[1] + self.unit.base_height_box))
                         self.unit.base_number_pos = rotation_xy(self.unit.base_pos, number_pos, self.unit.radians_angle)
                         self.unit.change_pos_scale()
+
+                    if self.run:  # charge skill only when running to melee
+                        if self.momentum < 1:
+                            self.momentum += dt * self.acceleration / 100
+                        elif self.momentum >= 1 and self.state == 4 and self.attacking and self.unit.move_rotate is False:
+                            self.use_skill(self.charge_skill)  # Use charge skill
+                            self.unit.charging = True
+                            self.momentum = 1
+
+                    elif self.momentum > 0.1:  # reset charge momentum if charge skill not active
+                        self.momentum -= dt
+                        if self.momentum <= 0.5:
+                            self.unit.charging = False
+                            if self.momentum <= 0.1:
+                                self.momentum = 0.1
 
             else:  # Stopping subunit when reach base_target
                 self.state = 0  # idle

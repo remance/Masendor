@@ -40,6 +40,7 @@ class Battle:
     remove_unit_ui = empty_method
     setup_battle_unit = empty_method
     time_update = empty_method
+    weather_matter_spawn = empty_method
 
     # Import common.ui
     change_inspect_subunit = empty_method
@@ -272,7 +273,7 @@ class Battle:
         self.weather_list = None
         self.feature_mod = None
 
-        self.current_weather = weather.Weather(self.time_ui, 0, 0, self.weather_data)
+        self.current_weather = weather.Weather(self.time_ui, 4, 0, 0, self.weather_data)
 
         self.generic_animation_pool = None
         self.gen_body_sprite_pool = None
@@ -398,13 +399,11 @@ class Battle:
                                            self.map_source), output_type="list")
             self.weather_event = self.weather_event[1:]
             utility.convert_str_time(self.weather_event)
-        except (
-        FileNotFoundError, TypeError):  # If no weather found or no map use default light sunny weather start at 9:00
+        except (FileNotFoundError, TypeError):  # If no weather found or no map use light sunny weather start at 9:00 and wind direction at 0 angle
             new_time = datetime.datetime.strptime("09:00:00", "%H:%M:%S").time()
             new_time = datetime.timedelta(hours=new_time.hour, minutes=new_time.minute, seconds=new_time.second)
-            self.weather_event = [[4, new_time, 0]]  # default weather light sunny all day
-        self.weather_playing = self.weather_event[0][
-            1]  # weather_current here is used as the reference for map starting time
+            self.weather_event = ((4, new_time, 0, 0))  # default weather light sunny all day
+        self.weather_playing = self.weather_event[0][1]  # used as the reference for map starting time
 
         # Random music played from list
         if pygame.mixer:
@@ -828,9 +827,9 @@ class Battle:
 
                             if this_weather[0] != 0 and this_weather[0] in self.weather_data:
                                 self.current_weather.__init__(self.time_ui, this_weather[0], this_weather[2],
-                                                              self.weather_data)
+                                                              this_weather[3], self.weather_data)
                             else:  # Clear weather when no weather found, also for when input weather not in ruleset
-                                self.current_weather.__init__(self.time_ui, 0, 0, self.weather_data)
+                                self.current_weather.__init__(self.time_ui, 4, 0, 0, self.weather_data)
                             self.weather_event.pop(0)
                             try:
                                 self.battle_map.add_effect(effect_image=
@@ -850,33 +849,7 @@ class Battle:
                             self.weather_spawn_timer += self.dt
                             if self.weather_spawn_timer >= self.current_weather.spawn_rate:
                                 self.weather_spawn_timer = 0
-                                true_pos = (random.randint(10, self.screen_rect.width), 0)  # starting pos
-                                target = (true_pos[0], self.screen_rect.height)  # final base_target pos
-
-                                if self.current_weather.spawn_angle == 225:  # top right to bottom left movement
-                                    start_pos = random.randint(10,
-                                                               self.screen_rect.width * 2)  # starting x pos that can be higher than screen width
-                                    true_pos = (start_pos, 0)
-                                    if start_pos >= self.screen_rect.width:  # x higher than screen width will spawn on the right corner of screen but not at top
-                                        start_pos = self.screen_rect.width  # revert x back to screen width
-                                        true_pos = (start_pos, random.randint(0, self.screen_rect.height))
-
-                                    if true_pos[1] > 0:  # start position simulate from beyond top right of screen
-                                        target = (true_pos[1] * self.weather_screen_adjust, self.screen_rect.height)
-                                    elif true_pos[0] < self.screen_rect.width:  # start position inside screen width
-                                        target = (0, true_pos[0] / self.weather_screen_adjust)
-
-                                elif self.current_weather.spawn_angle == 270:  # right to left movement
-                                    true_pos = (self.screen_rect.width, random.randint(0, self.screen_rect.height))
-                                    target = (true_pos[1] - (self.screen_rect.width / 1.5), true_pos[1])
-
-                                random_pic = random.randint(0, len(
-                                    self.weather_matter_images[self.current_weather.name]) - 1)
-                                self.weather_matter.add(weather.MatterSprite(true_pos, target,
-                                                                             self.current_weather.speed,
-                                                                             self.weather_matter_images[
-                                                                                 self.current_weather.name][
-                                                                                 random_pic]))
+                                self.weather_matter_spawn()
 
                         # Screen shaking
                         self.shown_camera_pos = self.camera_pos  # reset camera pos first

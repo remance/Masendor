@@ -66,12 +66,11 @@ def dmg_cal(self, target, hit, defence, weapon, penetrate, dmg_object, hit_side=
                         side_cal = 1
                     dmg_sum = dmg_sum + ((self.charge_power - (target.charge_def_power * side_cal)) * 2)
                     if (target.charge_def * side_cal) >= self.charge_power / 2:
-                        self.charge_momentum = 1  # charge get stopped by charge def
+                        self.momentum = 1  # charge get stopped by charge def
                     else:
-                        self.charge_momentum -= (target.charge_def_power * side_cal) / self.charge_power
+                        self.momentum -= (target.charge_def_power * side_cal) / self.charge_power
                 else:
                     dmg_sum = dmg_sum + (self.charge_power * 2)
-                    self.charge_momentum -= 1 / self.charge_power
 
             if 0 in target.skill_effect:  # also include its own charge defence in dmg if enemy also charging
                 if self.check_special_effect("Ignore Charge Defence") is False:

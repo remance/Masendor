@@ -211,7 +211,7 @@ class TroopCard(pygame.sprite.Sprite):
                                           who.magazine_count.items()
                                           for key2, value2 in
                                           value.items()]).replace("'", "").replace("[", "").replace("]", "")
-        self.value["Charge Power: "] = str(int(who.charge_power))
+        self.value["Charge: "] = str(int(who.charge))
         self.value["Charge Defense: "] = str(int(who.charge_def_power))
         self.value["Mental: "] = str(int(who.mental_text))
 

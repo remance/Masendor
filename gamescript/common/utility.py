@@ -112,9 +112,8 @@ def convert_str_time(event):
     for index, item in enumerate(event):
         new_time = datetime.datetime.strptime(item[1], "%H:%M:%S").time()
         new_time = datetime.timedelta(hours=new_time.hour, minutes=new_time.minute, seconds=new_time.second)
-        event[index] = [item[0], new_time]
-        if len(item) == 3:  # weather strength
-            event[index].append(item[2])
+        event[index][1] = new_time
+        event[index] = tuple(event[index])
 
 
 def csv_read(main_dir, file, subfolder=(), output_type="dict", header_key=False, language=None):

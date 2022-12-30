@@ -82,7 +82,6 @@ class Subunit(pygame.sprite.Sprite):
     zoom_scale = empty_method
 
     # Import from *genre*.subunit
-    charge_logic = empty_method
     combat_logic = empty_method
     fatigue = empty_method
     gone_leader_process = empty_method
@@ -168,7 +167,7 @@ class Subunit(pygame.sprite.Sprite):
         self.state = 0  # current subunit state, similar to unit state
         self.timer = random.random()  # may need to use random.random()
         self.move_timer = 0  # timer for moving to front position before attacking nearest enemy
-        self.charge_momentum = 1  # charging momentum to reach target before choosing the nearest enemy
+        self.momentum = 0.1  # charging momentum to reach target before choosing the nearest enemy
 
         self.zoom = 1
         self.max_zoom = self.battle.max_zoom  # closest zoom allowed
@@ -311,7 +310,7 @@ class Subunit(pygame.sprite.Sprite):
         self.original_charge_def = ((self.dexterity * 0.4) + (self.agility * 0.1) + (self.constitution * 0.3) +
                                     (self.wisdom * 0.2)) + (grade_stat["Training Score"] * training_scale[1])
 
-        self.original_speed = self.agility
+        self.original_speed = self.agility / 10
 
         self.shot_per_shoot = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
 
@@ -479,6 +478,7 @@ class Subunit(pygame.sprite.Sprite):
 
         self.base_speed = (self.base_speed * ((100 - self.weight) / 100)) + grade_stat[
             "Speed Bonus"]  # finalise base speed with weight and grade bonus
+        self.acceleration = self.base_speed / 2  # determine how long it takes to reach full speed when run
         self.description = lore[1]  # subunit description for inspect ui
 
         # Reset stat variable for receiving modifier effect from various sources, used for activity and effect calculation
@@ -603,11 +603,6 @@ class Subunit(pygame.sprite.Sprite):
 
                 unit_state = self.unit.state
 
-                if self.timer > 1:  # Update status and skill use around every 1 second
-                    self.status_update(weather=weather)
-                    self.charge_logic(unit_state)
-                    self.timer -= 1
-
                 self.state_reset_logic(unit_state)
 
                 unit_state, collide_list = self.combat_logic(dt, unit_state)
@@ -617,16 +612,19 @@ class Subunit(pygame.sprite.Sprite):
 
                 self.move_logic(dt, unit_state, collide_list)  # Move function
 
-                self.available_skill = []
-                self.skill_check_logic()
-
                 self.morale_logic(dt, unit_state)
 
                 self.health_stamina_logic(dt)
 
-                if self.state in (98, 99) and (self.base_pos[0] <= 1 or self.base_pos[0] >= self.battle.map_corner[0] or
-                                               self.base_pos[1] <= 1 or self.base_pos[
-                                                   1] >= self.battle.map_corner[1]):  # remove troop pass map border
+                self.available_skill = []
+                self.skill_check_logic()
+
+                if self.timer > 1:  # Update status and skill use around every 1 second
+                    self.status_update(weather=weather)
+                    self.timer -= 1
+
+                if self.state in (98, 99) and (self.battle.map_corner[0] <= self.base_pos[0] <= 1 or
+                                               self.battle.map_corner[1] <= self.base_pos[1] <= 1):  # remove troop pass map border
                     self.state = 100  # enter dead state
                     self.battle.flee_troop_number[
                         self.team] += self.troop_number  # add number of troop retreat from battle
@@ -702,7 +700,9 @@ class Subunit(pygame.sprite.Sprite):
                     self.current_action = self.command_action  # continue next action when animation finish
                     self.command_action = self.idle_action
 
-            self.interrupt_animation = False
+            if self.interrupt_animation:
+                self.reset_animation()
+                self.interrupt_animation = False
             self.pick_animation()
 
         if recreate_rect:

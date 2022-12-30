@@ -30,7 +30,7 @@ def combat_logic(self, dt, unit_state):
 
     elif unit_state == 10:  # no collide enemy while parent unit in fight state
         if self.attacking and self.unit.collide:
-            if self.charge_momentum == 1 and (
+            if self.momentum == 1 and (
                     self.frontline or self.unit.attack_mode == 2) and self.unit.attack_mode != 1:  # attack to the nearest target instead
                 if self.melee_target is None and self.unit.attack_target is not None:
                     self.melee_target = self.unit.attack_target.subunit_list[0]
@@ -92,7 +92,7 @@ def combat_logic(self, dt, unit_state):
 
         if self.state != 10 and self.magazine_count[self.equipped_weapon][0] > 0 and self.unit.fire_at_will == 0 and \
                 (self.check_special_effect("Arc Shot", weapon=0) or self.frontline) and \
-                self.charge_momentum == 1:  # Range attack when unit in melee state with arc_shot
+                self.momentum == 1:  # Range attack when unit in melee state with arc_shot
             self.state = 11
             if self.unit.nearby_enemy != {} and (self.attack_target is None or self.attack_pos is None):
                 self.find_shooting_target(unit_state)

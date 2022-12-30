@@ -24,7 +24,7 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
     surface = pygame.Surface((default_sprite_size[0] * size, default_sprite_size[1] * size),
                              pygame.SRCALPHA)  # default size will scale down later
 
-    except_list = ("eye", "mouth", "dmg_effect", "size", "property")
+    except_list = ("eye", "mouth", "size", "property")
     pose_layer_list = {k: v[7] for k, v in animation_part_list.items() if v != [0] and v != "" and v != [""] and
                        any(ext in k for ext in except_list) is False and "weapon" not in k}  # layer list
     pose_layer_list.update({k: v[6] for k, v in animation_part_list.items() if v != [0] and v != "" and v != [""]
@@ -35,6 +35,7 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
         part = animation_part_list[layer]
         new_part = part.copy()
         this_armour = None
+        image_part = None
         if any(ext in layer for ext in ("p1_", "p2_", "p3_", "p4_")) and "weapon" not in layer:
             part_race = [value["Name"] for value in race_list.values()].index(new_part[0])
             part_race = tuple(race_list.keys())[part_race]
@@ -42,6 +43,7 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
                 this_armour = armour[0]
             else:
                 this_armour = armour[1]
+
         if "head" in layer:
             image_part = generate_head(layer[:2], animation_part_list, part[:3], troop_sprite_list, body_sprite_pool,
                                        armour_sprite_pool,

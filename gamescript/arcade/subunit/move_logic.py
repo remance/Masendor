@@ -13,7 +13,7 @@ def move_logic(self, dt, unit_state, collide_list):
         no_collide_check = False  # can move if front of unit not collided
         if (((self.unit.collide is False or self.frontline is False) or unit_state == 99)
                 or (unit_state == 10 and ((self.frontline or self.unit.attack_mode == 2) and self.unit.attack_mode != 1)
-                    or self.charge_momentum > 1)):
+                    or self.momentum > 1)):
             no_collide_check = True
 
         enemy_collide_check = False  # for chance to move or charge through enemy
@@ -27,12 +27,7 @@ def move_logic(self, dt, unit_state, collide_list):
                 enemy_collide_check = False
 
         if no_collide_check and enemy_collide_check is False and \
-                (len(self.same_front) == 0 and len(self.friend_front) == 0 or self.state in (96, 98, 99)):
-            if 0 in self.skill_effect and self.base_pos == self.base_target and unit_state == 10:
-                new_target = self.front_pos - self.base_pos  # keep charging pass original target until momentum run out
-                self.base_target = self.base_target + new_target
-                self.command_target = self.base_target
-
+                (len(self.friend_front) == 0 or self.state in (96, 98, 99)):
             move = self.base_target - self.base_pos
             move_length = move.length()  # convert length
             if move_length > 0:  # movement length longer than 0.1, not reach base_target yet
@@ -41,22 +36,19 @@ def move_logic(self, dt, unit_state, collide_list):
                 if move_length > 10 or unit_state == 99:  # use its own speed when catch up or broken
                     if unit_state != 99:
                         self.state = 2
-                    speed = self.speed / 2
+                    speed = self.speed * self.momentum
                     self.run = True
                 elif unit_state in (1, 3, 5, 7):  # walking
                     speed = self.unit.walk_speed  # use walk speed
                     self.walk = True
                 else:  # self.state in (2, 4, 6, 10, 96, 98, 99), running
-                    speed = self.unit.run_speed  # use run speed
+                    speed = self.unit.run_speed * self.momentum  # use run speed
                     self.run = True
                     if unit_state == 0:
                         self.state = 2
-                if 0 in self.skill_effect:  # speed gradually decrease with momentum during charge
-                    self.state = 4
-                    speed = speed * self.charge_momentum / 8
                 if self.collide_penalty:  # reduce speed during moving through another unit
-                    speed = speed / 2
-                move = move * speed * dt
+                    speed /= 2
+                move *= speed * dt
                 new_move_length = move.length()
                 new_pos = self.base_pos + move
 
@@ -106,3 +98,17 @@ def move_logic(self, dt, unit_state, collide_list):
                         self.unit.number_pos = rotation_xy(self.unit.base_pos, number_pos, self.unit.radians_angle)
                         self.unit.true_number_pos = self.unit.number_pos * (
                                 11 - self.unit.zoom)  # find new position for troop number text
+
+                    # momentum calculation
+                    if self.run:
+                        # if self.leader is not None:
+                        #     print(self.momentum, self.acceleration, dt)
+                        if self.momentum < 1:
+                            self.momentum += dt * self.acceleration / 100
+                            if self.momentum > 1:
+                                self.momentum = 1
+
+                    elif self.momentum > 0.1:  # reset charge momentum if charge skill not active
+                        self.momentum -= dt
+                        if self.momentum <= 0.1:
+                            self.momentum = 0.1

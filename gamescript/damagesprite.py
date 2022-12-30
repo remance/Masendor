@@ -1,11 +1,16 @@
 import os
 import random
+import math
 
 import pygame
 import pygame.freetype
 from pathlib import Path
 
 from gamescript.common import utility
+
+direction_angle = {"r_side": math.radians(90), "l_side": math.radians(270), "back": math.radians(180),
+                   "front": math.radians(0), "r_sidedown": math.radians(135), "l_sidedown": math.radians(225),
+                   "r_sideup": math.radians(45), "l_sideup": math.radians(315)}
 
 
 class DamageSprite(pygame.sprite.Sprite):
@@ -178,7 +183,9 @@ class DamageSprite(pygame.sprite.Sprite):
 
             self.image = self.current_animation[self.show_frame]
 
-            self.base_pos = pygame.Vector2(self.attacker.front_pos)  # TODO change to cal distance?
+            self.base_pos = pygame.Vector2(self.attacker.front_pos[0] + (weapon_stat["Range"] * math.sin(direction_angle[self.attacker_sprite_direction])),
+                                           self.attacker.front_pos[1] - (weapon_stat["Range"] * math.cos(direction_angle[self.attacker_sprite_direction])))
+
             self.base_target = self.base_pos
 
         self.target_height = self.height_map.get_height(self.base_target)  # get the height at base_target
