@@ -899,8 +899,7 @@ class UnitIcon(pygame.sprite.Sprite):
         self.pos = pos  # position on unit selector ui
         self.selected = False
 
-        self.leader_image = self.unit.leader[0].image.copy()  # get leader image
-        self.leader_image = pygame.transform.scale(self.leader_image, size)  # scale leader image to fit the icon
+        self.leader_image = pygame.transform.scale(self.unit.leader[0].full_image, size)  # scale leader image to fit the icon
         self.not_selected_image = pygame.Surface((self.leader_image.get_width() + (self.leader_image.get_width() / 7),
                                                   self.leader_image.get_height() + (
                                                           self.leader_image.get_height() / 7)))  # create image black corner block
@@ -971,7 +970,7 @@ class Timer(pygame.sprite.Sprite):
         self.image = self.image_original.copy()
         self.time_number = time_start  # datetime.timedelta(seconds=self.timer)
         self.timer_surface = self.font.render(str(self.timer), True, (0, 0, 0))
-        self.timer_rect = self.timer_surface.get_rect(topleft=(5, 5))
+        self.timer_rect = self.timer_surface.get_rect(topleft=(5, 10))
         self.image.blit(self.timer_surface, self.timer_rect)
 
     def timer_update(self, dt):
@@ -1006,6 +1005,14 @@ class TimeUI(pygame.sprite.Sprite):
         time_number.change_pos(self.rect.topleft)
         if speed_number is not None:
             speed_number.change_pos((self.rect.center[0] + int(self.rect.center[0] / 10), self.rect.center[1]))
+
+        if time_button is not None:
+            time_button[0].change_pos((self.rect.center[0] * 0.885,
+                                       self.rect.center[1]))  # time pause button
+            time_button[1].change_pos((self.rect.center[0] * 0.95,
+                                       self.rect.center[1]))  # time decrease button
+            time_button[2].change_pos((self.rect.center[0] * 1.03,
+                                       self.rect.center[1]))  # time increase button
 
 
 class BattleScaleUI(pygame.sprite.Sprite):

@@ -320,7 +320,7 @@ def rotation_xy(origin, point, angle):
     Rotate point to the new pos
     :param origin: origin pos
     :param point: target point pos
-    :param angle: angle of rotation
+    :param angle: angle of rotation in radians
     :return:
     """
     ox, oy = origin
@@ -340,13 +340,9 @@ def set_rotate(self, base_target):
     my_radians = math.atan2(base_target[1] - self.base_pos[1], base_target[0] - self.base_pos[0])
     new_angle = math.degrees(my_radians)
 
-    # """upper left -"""
-    if -180 <= new_angle <= -90:
+    # """upper left and upper right"""
+    if -180 <= new_angle < 0:
         new_angle = -new_angle - 90
-
-    # """upper right +"""
-    elif -90 < new_angle < 0:
-        new_angle = (-new_angle) - 90
 
     # """lower right -"""
     elif 0 <= new_angle <= 90:
@@ -356,6 +352,17 @@ def set_rotate(self, base_target):
     elif 90 < new_angle <= 180:
         new_angle = 270 - new_angle
     return round(new_angle)
+
+
+def convert_degree_to_360(angle):
+    """Convert math.degrees to 360 degree with 0 at the top"""
+    if angle > 0:
+        angle += 90
+    elif -180 <= angle < -90:
+        angle = 360 + angle
+    else:
+        angle = 90 + angle
+    return angle
 
 
 def apply_sprite_colour(surface, colour, colour_list, keep_white=True, keep_old_colour=False):

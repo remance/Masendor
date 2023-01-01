@@ -620,6 +620,9 @@ class Game:
         self.eight_wheel_ui = battle_ui_dict["eight_wheel_ui"]
         self.four_wheel_ui = battle_ui_dict["four_wheel_ui"]
 
+        weather.Weather.wind_compass_images = {"wind_compass": battle_ui_image["wind_compass"],
+                                               "wind_arrow": battle_ui_image["wind_arrow"]}
+
         # Unit editor
         editor_dict = make_editor_ui(self.main_dir, self.screen_scale, self.screen_rect,
                                      load_image(self.main_dir, self.screen_scale, "name_list.png",

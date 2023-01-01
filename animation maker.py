@@ -558,6 +558,7 @@ class BodyHelper(pygame.sprite.Sprite):
             self.rect_part_list[this_key] = rect
 
     def select_part(self, check_mouse_pos, shift_press, ctrl_press, specific_part=None):
+        return_selected_part = None
         if specific_part is not None:
             if specific_part is False:
                 self.part_selected = []
@@ -571,27 +572,30 @@ class BodyHelper(pygame.sprite.Sprite):
                 else:
                     self.part_selected = [specific_part]
             self.blit_part()
-        else:
+        else:  # click on helper ui
             click_any = False
             if check_mouse_pos is not None:
                 for index, rect in enumerate(self.rect_part_list):
                     this_rect = self.rect_part_list[rect]
                     if this_rect is not None and this_rect.collidepoint(check_mouse_pos):
                         click_any = True
+                        return_selected_part = tuple(self.part_pos.keys())[index]
                         if shift_press:
-                            if list(self.part_pos.keys())[index] not in self.part_selected:
-                                self.part_selected.append(list(self.part_pos.keys())[index])
+                            if tuple(self.part_pos.keys())[index] not in self.part_selected:
+                                self.part_selected.append(tuple(self.part_pos.keys())[index])
                         elif ctrl_press:
-                            if list(self.part_pos.keys())[index] in self.part_selected:
-                                self.part_selected.remove(list(self.part_pos.keys())[index])
+                            if tuple(self.part_pos.keys())[index] in self.part_selected:
+                                self.part_selected.remove(tuple(self.part_pos.keys())[index])
                         else:
-                            self.part_selected = [list(self.part_pos.keys())[index]]
+                            self.part_selected = [tuple(self.part_pos.keys())[index]]
                             break
             if check_mouse_pos is None or (
                     click_any is False and (shift_press is False and ctrl_press is False)):  # click at empty space
                 self.part_selected = []
             self.blit_part()
         self.add_stat()
+
+        return return_selected_part
 
     def add_stat(self):
         for index, part in enumerate(self.rect_part_list):
@@ -1219,8 +1223,9 @@ class Model:
         elif edit_type == "paste part stat":  # paste copy stat
             for part in copy_part_stat:
                 new_part = part
-                if any(ext in part for ext in ("effect", "special")) is False:
+                if any(ext in part for ext in ("effect", )) is False:
                     new_part = p_body_helper.ui_type + part[2:]
+                print(new_part, part)
                 if copy_part_stat[part] is not None:
                     self.bodypart_list[edit_frame][new_part] = copy_part_stat[part].copy()
                     self.animation_part_list[edit_frame][new_part] = copy_animation_stat[part].copy()
@@ -1656,7 +1661,6 @@ current_frame = 0
 copy_animation_frame = None
 copy_part = None
 copy_name_frame = None
-copy_stat = None
 copy_animation_stat = None
 current_popup_row = 0
 keypress_delay = 0
@@ -2726,13 +2730,15 @@ while True:
                             mouse_pos = pygame.Vector2(
                                 (mouse_pos[0] - helper_click.rect.topleft[0]) / screen_size[0] * 1000,
                                 (mouse_pos[1] - helper_click.rect.topleft[1]) / screen_size[1] * 1000)
-                            helper_click.select_part(mouse_pos, shift_press, ctrl_press)
+                            this_part = helper_click.select_part(mouse_pos, shift_press, ctrl_press)
                             if shift_press is False and ctrl_press is False:  # remove selected part in other helpers
                                 model.part_selected = []  # clear old list first
                                 for index, helper in enumerate(helper_list):
                                     if helper != helper_click:
                                         helper.select_part(None, False, True)
-                            for index, helper in enumerate(helper_list):
+                            elif ctrl_press and tuple(model.mask_part_list.keys()).index(this_part) in model.part_selected:
+                                model.part_selected.remove(tuple(model.mask_part_list.keys()).index(this_part))  # clear old list first
+                            for index, helper in enumerate(helper_list):  # add selected part to model selected
                                 if helper.part_selected:
                                     for part in helper.part_selected:
                                         model.click_part(mouse_pos, True, False, part)

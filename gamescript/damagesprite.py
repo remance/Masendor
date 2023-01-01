@@ -8,6 +8,8 @@ from pathlib import Path
 
 from gamescript.common import utility
 
+convert_degree_to_360 = utility.convert_degree_to_360
+
 direction_angle = {"r_side": math.radians(90), "l_side": math.radians(270), "back": math.radians(180),
                    "front": math.radians(0), "r_sidedown": math.radians(135), "l_sidedown": math.radians(225),
                    "r_sideup": math.radians(45), "l_sideup": math.radians(315)}
@@ -101,19 +103,29 @@ class DamageSprite(pygame.sprite.Sprite):
             if (self.attacker.walk or self.attacker.run) and True in self.attacker.special_effect["Agile Aim"] is False:
                 self.accuracy -= 10  # accuracy penalty for shoot while moving
 
-            random_pos1 = random.randint(0, 1)  # for left or right random
-            random_pos2 = random.randint(0, 1)  # for up or down random
-
-            # Calculate hit_chance and final base_target where damage sprite will land
-            # The further hit_chance from 0 the further damage sprite will land from base_target
-            sight_penalty = 1
-
             if specific_attack_pos is not None:
                 target_now = specific_attack_pos
             elif self.random_direction:
                 target_now = self.find_random_direction()
             else:
                 target_now = self.attacker.attack_target.base_pos
+
+            # Wind affect accuracy, higher different in direction cause more accuracy loss
+            base_angle = self.set_rotate(target_now)
+            base_angle = convert_degree_to_360(base_angle)
+            angel_dif = (abs(base_angle - self.battle.current_weather.wind_direction) / 100) * self.battle.current_weather.wind_strength
+            self.accuracy -= round(angel_dif)
+
+            if self.accuracy < 0:
+                self.accuracy = 0
+
+            # Calculate hit_chance and final base_target where damage sprite will land
+            # The further hit_chance from 0 the further damage sprite will land from base_target
+            random_pos1 = random.randint(0, 1)  # for left or right random
+            random_pos2 = random.randint(0, 1)  # for up or down random
+
+            sight_penalty = 1
+
             attack_range = self.attacker.base_pos.distance_to(target_now)
             if True in self.attacker.special_effect["No Range Penalty"]:
                 hit_chance = self.accuracy
@@ -202,6 +214,7 @@ class DamageSprite(pygame.sprite.Sprite):
         if self.scale_size > 1:
             self.image = pygame.transform.smoothscale(self.image, (self.image.get_width() * self.scale_size,
                                                                    self.image.get_height() * self.scale_size))
+        self.image = pygame.transform.rotate(self.image, self.angle)
         self.image_original = self.image.copy()
 
     def update(self, unit_list, dt, camera_scale):

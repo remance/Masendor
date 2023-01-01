@@ -1,4 +1,5 @@
 import random
+import math
 
 import pygame
 import pygame.freetype
@@ -6,6 +7,7 @@ import pygame.freetype
 
 class Weather:
     weather_icons = {}
+    wind_compass_images = {}
 
     def __init__(self, time_ui, weather_type, wind_direction, level, weather_data):
         self.weather_type = weather_type
@@ -40,9 +42,10 @@ class Weather:
             self.element = tuple([(element, cal_level) for element in stat["Element"] if element != ""])
             self.status_effect = stat["Status"]
             self.spawn_rate = stat["Spawn Rate"] / cal_level  # divide to make spawn increase with strength
-            self.wind_strength = stat["Wind Strength"] * cal_level
+            self.wind_strength = int(stat["Wind Strength"] * cal_level)
             self.speed = stat["Travel Speed"] * self.wind_strength
 
+            self.wind_direction = wind_direction
             self.travel_angle = wind_direction
             if self.travel_angle > 255:
                 self.travel_angle = 510 - self.travel_angle
@@ -54,14 +57,31 @@ class Weather:
             self.travel_angle = (self.travel_angle - (abs(180 - self.travel_angle) / 3),
                                  self.travel_angle + (abs(180 - self.travel_angle) / 3), 255)
 
-            image = self.weather_icons[self.name + "_" + str(self.level)]
-            cropped = pygame.Surface((image.get_width(), image.get_height()))
-            cropped.blit(time_ui.image_original, (0, 0), (0, 0, 80, 80))
-            crop_rect = cropped.get_rect(topleft=(0, 0))
-            cropped.blit(image, crop_rect)
-            image = cropped
+            image = pygame.Surface((self.wind_compass_images["wind_compass"].get_width() * 2,
+                                    self.wind_compass_images["wind_compass"].get_height()), pygame.SRCALPHA)
 
-            rect = image.get_rect(topright=(time_ui.image.get_width() - 5, 0))
+            wind_compass_image = self.wind_compass_images["wind_compass"].copy()
+            wind_compass_rect = wind_compass_image.get_rect(topleft=(0, 0))
+            wind_arrow = self.wind_compass_images["wind_arrow"]
+            angle = abs(360 - wind_direction)  # angle for arrow rotation
+            wind_arrow = pygame.transform.rotate(wind_arrow, angle)
+            wind_arrow_rect = wind_arrow.get_rect(center=(wind_compass_image.get_width() / 2,
+                                                          wind_compass_image.get_height() / 2))
+            wind_compass_image.blit(wind_arrow, wind_arrow_rect)
+            font = pygame.font.SysFont("helvetica", int(wind_compass_image.get_height() / 2))
+            text_surface = font.render(str(self.wind_strength), True, (0, 0, 0))
+            text_rect = text_surface.get_rect(
+                center=(wind_compass_image.get_width() / 2, wind_compass_image.get_height() / 2))
+            wind_compass_image.blit(text_surface, text_rect)
+
+            image.blit(wind_compass_image, wind_compass_rect)
+
+            weather_image = self.weather_icons[self.name + "_" + str(self.level)]
+            weather_image_rect = weather_image.get_rect(topright=(image.get_width(), 0))
+            image.blit(weather_image, weather_image_rect)
+
+            time_ui.image = time_ui.image_original.copy()  # reset time ui image
+            rect = image.get_rect(topright=(time_ui.image.get_width(), 0))
             time_ui.image.blit(image, rect)
 
 

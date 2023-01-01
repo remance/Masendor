@@ -22,6 +22,7 @@ class EffectSprite(pygame.sprite.Sprite):
         self.show_frame = 0
         self.animation_timer = 0
         self.angle = angle
+        self.rotate = False
 
         self.base_pos = start_pos
         self.base_target = target

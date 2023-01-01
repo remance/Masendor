@@ -10,9 +10,9 @@ def make_battle_ui(battle_ui_image, battle_icon_image, team_colour, screen_size)
     image = pygame.Surface((battle_ui_image["timebar"].get_width(), 15))
     battle_scale_ui = battleui.BattleScaleUI(image, team_colour)
 
-    time_button = [battleui.UIButton(battle_ui_image["pause"], "pause"),  # time pause button
+    time_button = (battleui.UIButton(battle_ui_image["pause"], "pause"),  # time pause button
                    battleui.UIButton(battle_ui_image["timedec"], "decrease"),  # time decrease button
-                   battleui.UIButton(battle_ui_image["timeinc"], "increase")]  # time increase button
+                   battleui.UIButton(battle_ui_image["timeinc"], "increase"))  # time increase button
 
     # Army select list ui
     unit_selector = battleui.UnitSelector((0, 0), battle_ui_image["unit_select_box"], icon_scale=0.25)

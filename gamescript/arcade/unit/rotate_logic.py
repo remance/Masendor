@@ -4,6 +4,7 @@ from gamescript.common import utility
 
 rotation_xy = utility.rotation_xy
 
+# "l_side", "l_sidedown", "l_sideup", "front", "r_side", "r_sideup", "r_sidedown", "back", "back"
 rotation_list = (-90, -120, -45, 0, 90, 45, 120, 180)
 
 
