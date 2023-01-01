@@ -40,7 +40,7 @@ class Battle:
     remove_unit_ui = empty_method
     setup_battle_unit = empty_method
     time_update = empty_method
-    weather_matter_spawn = empty_method
+    spawn_weather_matter = empty_method
 
     # Import common.ui
     change_inspect_subunit = empty_method
@@ -849,7 +849,7 @@ class Battle:
                             self.weather_spawn_timer += self.dt
                             if self.weather_spawn_timer >= self.current_weather.spawn_rate:
                                 self.weather_spawn_timer = 0
-                                self.weather_matter_spawn()
+                                self.spawn_weather_matter()
 
                         # Screen shaking
                         self.shown_camera_pos = self.camera_pos  # reset camera pos first

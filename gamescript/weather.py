@@ -1,8 +1,9 @@
 import random
-import math
 
 import pygame
 import pygame.freetype
+
+from gamescript.common import utility
 
 
 class Weather:
@@ -51,7 +52,7 @@ class Weather:
                 self.travel_angle = 510 - self.travel_angle
             elif 0 <= self.travel_angle < 90:
                 self.travel_angle = 180 - self.travel_angle
-            elif 90 < self.travel_angle < 105:
+            elif 90 <= self.travel_angle < 105:
                 self.travel_angle = 210 - self.travel_angle
 
             self.travel_angle = (self.travel_angle - (abs(180 - self.travel_angle) / 3),
@@ -86,40 +87,41 @@ class Weather:
 
 
 class MatterSprite(pygame.sprite.Sprite):
-    def __init__(self, pos, target, speed, travel_angle, image, screen_rect_size):
+    set_rotate = utility.set_rotate
+
+    def __init__(self, start_pos, target, speed, image, screen_rect_size):
         self._layer = 9
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.speed = speed
-        self.pos = pygame.Vector2(pos)  # should be at the end corner of screen
+        self.base_pos = pygame.Vector2(start_pos)  # should be at the end corner of screen
         self.target = pygame.Vector2(target)  # should be at another end corner of screen
+        travel_angle = self.set_rotate(self.target)  # calculate sprite angle
         self.image = pygame.transform.rotate(image, travel_angle)  # no need to copy since rotate only once
         self.screen_start = (-self.image.get_width(), -self.image.get_height())
         self.screen_end = (self.image.get_width() + screen_rect_size[0],
                            self.image.get_height() + screen_rect_size[1])
-        self.rect = self.image.get_rect(center=self.pos)
+        self.rect = self.image.get_rect(center=self.base_pos)
 
     def update(self, dt, timer):
         """Update sprite position movement"""
-        move = self.target - self.pos
+        move = self.target - self.base_pos
         move_length = move.length()
         if move_length > 0.1:
             move.normalize_ip()
             move = move * self.speed * dt
             if move.length() <= move_length:
-                self.pos += move
-                self.rect.center = list(int(v) for v in self.pos)
+                self.base_pos += move
+                self.rect.center = list(int(v) for v in self.base_pos)
             else:
-                self.pos = self.target
+                self.base_pos = self.target
                 self.rect.center = self.target
 
-            if self.screen_end[0] <= self.pos[0] <= self.screen_start[0] or \
-                    self.screen_end[1] <= self.pos[1] <= self.screen_start[0]:  # pass through screen border
+            if self.screen_end[0] <= self.base_pos[0] <= self.screen_start[0] or \
+                    self.screen_end[1] <= self.base_pos[1] <= self.screen_start[0]:  # pass through screen border
                 self.kill()
 
         else:  # kill when it reach the end of screen
             self.kill()
-
-
 
 
 class SpecialEffect(pygame.sprite.Sprite):
