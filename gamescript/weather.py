@@ -55,8 +55,8 @@ class Weather:
             elif 90 <= self.travel_angle < 105:
                 self.travel_angle = 210 - self.travel_angle
 
-            self.travel_angle = (self.travel_angle - (abs(180 - self.travel_angle) / 3),
-                                 self.travel_angle + (abs(180 - self.travel_angle) / 3), 255)
+            self.travel_angle = (int(self.travel_angle - (abs(180 - self.travel_angle) / 3)),
+                                 int(self.travel_angle + (abs(180 - self.travel_angle) / 3)))
 
             image = pygame.Surface((self.wind_compass_images["wind_compass"].get_width() * 2,
                                     self.wind_compass_images["wind_compass"].get_height()), pygame.SRCALPHA)

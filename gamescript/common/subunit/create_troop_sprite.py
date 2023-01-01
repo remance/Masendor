@@ -209,54 +209,53 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
 def grab_face_part(pool, race, side, part, part_check, part_default=None):
     """For creating body part like eye or mouth in animation that accept any part (1) so use default instead"""
     surface = None
-    if part_check != "":
-        if part_check == 1:  # any part
-            if part_default is not None:
-                default = part_default
-                if type(part_default) != str:
-                    default = part_default[0]
-                surface = pool[race][side][part][default].copy()
-        else:
-            check = part_check
-            if type(part_check) != str:
-                check = part_check[0]
-            if check != "none":
-                surface = pool[race][side][part][check].copy()
+    try:
+        if part_check != "":
+            if part_check == 1:  # any part
+                if part_default is not None:
+                    default = part_default
+                    if type(part_default) != str:
+                        default = part_default[0]
+                    surface = pool[race][side][part][default].copy()
+            else:
+                check = part_check
+                if type(part_check) != str:
+                    check = part_check[0]
+                if check != "none":
+                    surface = pool[race][side][part][check].copy()
+    except KeyError:
+        pass
     return surface
 
 
 def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool, armour_pool, armour,
                   colour_list):
     head_sprite_surface = None
-    try:
-        head_race = body_part_list[0]
-        head_side = body_part_list[1]
-        head = body_pool[head_race][head_side]["head"][body_part_list[2]].copy()
-        head_sprite_surface = pygame.Surface((head.get_width(), head.get_height()), pygame.SRCALPHA)
-        head_rect = head.get_rect(topleft=(0, 0))
-        head_sprite_surface.blit(head, head_rect)
-        if sprite_list[p + "_skin"] not in ("", "none"):
-            head_sprite_surface = apply_sprite_colour(head_sprite_surface, sprite_list[p + "_skin"], colour_list,
-                                               keep_white=False)
-        face = [grab_face_part(body_pool, head_race, head_side, "eyebrow", sprite_list[p + "_eyebrow"]),
-                grab_face_part(body_pool, head_race, head_side, "eye", animation_part_list[p + "_eye"],
-                               part_default=sprite_list[p + "_eye"]),
-                grab_face_part(body_pool, head_race, head_side, "beard", sprite_list[p + "_beard"]),
-                grab_face_part(body_pool, head_race, head_side, "mouth", animation_part_list[p + "_mouth"],
-                               part_default=sprite_list[p + "_mouth"])]
 
-        for face_index, face_part in enumerate(("_eyebrow", "_eye", "_beard")):
-            if face[face_index] is not None:
-                face[face_index] = apply_sprite_colour(face[face_index], sprite_list[p + face_part][1], colour_list)
+    head_race = body_part_list[0]
+    head_side = body_part_list[1]
+    head = body_pool[head_race][head_side]["head"][body_part_list[2]].copy()
+    head_sprite_surface = pygame.Surface((head.get_width(), head.get_height()), pygame.SRCALPHA)
+    head_rect = head.get_rect(topleft=(0, 0))
+    head_sprite_surface.blit(head, head_rect)
+    if sprite_list[p + "_skin"] not in ("", "none"):
+        head_sprite_surface = apply_sprite_colour(head_sprite_surface, sprite_list[p + "_skin"], colour_list,
+                                           keep_white=False)
+    face = [grab_face_part(body_pool, head_race, head_side, "eyebrow", sprite_list[p + "_eyebrow"]),
+            grab_face_part(body_pool, head_race, head_side, "eye", animation_part_list[p + "_eye"],
+                           part_default=sprite_list[p + "_eye"]),
+            grab_face_part(body_pool, head_race, head_side, "beard", sprite_list[p + "_beard"]),
+            grab_face_part(body_pool, head_race, head_side, "mouth", animation_part_list[p + "_mouth"],
+                           part_default=sprite_list[p + "_mouth"])]
 
-        for index, item in enumerate(face):
-            if item is not None:
-                rect = item.get_rect(center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
-                head_sprite_surface.blit(item, rect)
-    except KeyError:  # some head direction show no face
-        pass
-    except TypeError:  # empty
-        pass
+    for face_index, face_part in enumerate(("_eyebrow", "_eye", "_beard")):
+        if face[face_index] is not None:
+            face[face_index] = apply_sprite_colour(face[face_index], sprite_list[p + face_part][1], colour_list)
+
+    for index, item in enumerate(face):
+        if item is not None:
+            rect = item.get_rect(center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
+            head_sprite_surface.blit(item, rect)
 
     if sprite_list[p + "_head"] != "none":
         try:

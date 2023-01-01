@@ -15,6 +15,9 @@ def spawn_weather_matter(self):
     if travel_angle >= 180:
         spawn_angle = travel_angle - 180
         height_cal = spawn_angle / 180
+    elif travel_angle >= 135:
+        spawn_angle = travel_angle * 2
+        height_cal = spawn_angle / 360
     else:
         spawn_angle = 450 - travel_angle
         height_cal = spawn_angle / 360
