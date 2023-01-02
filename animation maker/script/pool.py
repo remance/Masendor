@@ -88,7 +88,7 @@ def anim_to_pool(animation_name, pool, char, activate_list, new=False, replace=N
         for direction in range(0, 5):
             pool[direction][animation_name] = [
                 {key: [small_value for small_value in value] if type(value) == list else value for key, value in
-                 this_duplicate.items()} for this_duplicate in pool[direction][duplicate]]
+                 this_frame.items()} for this_frame in pool[direction][duplicate]]
     else:
         if animation_name not in pool[0]:
             for direction in range(0, 5):

@@ -1225,7 +1225,6 @@ class Model:
                 new_part = part
                 if any(ext in part for ext in ("effect", )) is False:
                     new_part = p_body_helper.ui_type + part[2:]
-                print(new_part, part)
                 if copy_part_stat[part] is not None:
                     self.bodypart_list[edit_frame][new_part] = copy_part_stat[part].copy()
                     self.animation_part_list[edit_frame][new_part] = copy_animation_stat[part].copy()
@@ -2863,7 +2862,7 @@ while True:
                 if input_box.text not in current_pool[0]:  # no existing name already
                     animation_name = input_box.text
                     animation_selector.change_name(animation_name)
-                    anim_to_pool(animation_name, current_pool, model, activate_list, activate_list, replace=old_name)
+                    anim_to_pool(animation_name, current_pool, model, activate_list, replace=old_name)
 
             elif text_input_popup[1] == "export_animation":
                 for index, frame in enumerate(anim.frames):
@@ -2875,7 +2874,8 @@ while True:
                 if input_box.text not in current_pool[0]:  # no existing name already
                     animation_name = input_box.text
                     animation_selector.change_name(animation_name)
-                    anim_to_pool(animation_name, current_pool, model, activate_list, activate_list, duplicate=old_name)
+                    anim_to_pool(animation_name, current_pool, model, activate_list, duplicate=old_name)
+                    model.read_animation(animation_name)
                     model.clear_history()
 
             elif text_input_popup[1] == "del_animation":
