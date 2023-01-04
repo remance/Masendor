@@ -1071,7 +1071,7 @@ class Model:
             if self.armour[key + "_armour"] != "None":
                 try:
                     armour = self.armour[key + "_armour"].split("/")
-                    gear_image = gen_armour_sprite_pool[head_race][armour[0]][armour[1]][head_side]["helmet"][
+                    gear_image = gen_armour_sprite_pool[head_race][armour[0]][armour[1]][head_side]["head"][
                         bodypart_list[key + "_head"][2]].copy()
                     rect = gear_image.get_rect(
                         center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))

@@ -33,6 +33,7 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
             (primary_main_weapon, primary_sub_weapon), (secondary_main_weapon, secondary_sub_weapon))
             armour = (self.troop_data.armour_list[this_subunit["Armour"][0]]["Name"],
                       self.troop_data.mount_armour_list[this_subunit["Mount"][2]]["Name"])
+
             weapon_key = (str(primary_main_weapon) + "," + str(primary_sub_weapon),
                           str(secondary_main_weapon) + "," + str(secondary_sub_weapon))
             skill_list = this_subunit["Skill"] + weapon_list[primary_main_weapon]["Skill"] + \
