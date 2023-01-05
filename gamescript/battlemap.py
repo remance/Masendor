@@ -259,15 +259,17 @@ class BeautifulMap(pygame.sprite.Sprite):
 
         self.image = pygame.transform.smoothscale(self.image, (self.image.get_width() * self.screen_scale[0],
                                                                self.image.get_height() * self.screen_scale[1]))
-        self.true_image = self.image.copy()  # image before adding effect and place name
 
         # Save place name image as variable
         if place_name is not None:
-            self.place_name = pygame.transform.smoothscale(place_name,
-                                                           (place_name.get_width() * self.screen_scale[0],
-                                                            place_name.get_height() * self.screen_scale[1]))
+            place_name_map = pygame.transform.smoothscale(place_name, (self.image.get_size()))
         else:
-            self.place_name = pygame.Surface((0, 0))
+            place_name_map = pygame.Surface((0, 0))
+
+        rect = self.image.get_rect(topleft=(0, 0))
+        self.image.blit(place_name_map, rect)  # add place_name layer to map
+
+        self.true_image = self.image.copy()  # image before adding effect and place name
 
     def add_effect(self, effect_image=None, time_image=None):
         self.image = self.true_image.copy()
@@ -277,9 +279,6 @@ class BeautifulMap(pygame.sprite.Sprite):
 
         if time_image is not None:
             self.image.blit(time_image, rect)  # add day time effect
-
-        if self.place_name is not None:
-            self.image.blit(self.place_name, rect)  # add place_name layer to map
 
         self.image_original = self.image.copy()
         self.change_scale(self.scale)
@@ -299,11 +298,9 @@ class BeautifulMap(pygame.sprite.Sprite):
     def change_scale(self, scale):
         """Change map scale based on current camera zoom"""
         self.scale = scale
-        scale_width = self.image_original.get_width() * self.scale
-        scale_height = self.image_original.get_height() * self.scale
-        self.image = pygame.transform.smoothscale(self.image, (int(scale_width), int(scale_height)))
+        self.image = pygame.transform.smoothscale(self.image, (int(self.image_original.get_width() * self.scale),
+                                                               int(self.image_original.get_height() * self.scale)))
 
     def clear_image(self):
         self.image = None
         self.true_image = None
-        self.place_name = None

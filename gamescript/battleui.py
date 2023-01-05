@@ -180,7 +180,7 @@ class TroopCard(pygame.sprite.Sprite):
         self.font_long = pygame.font.SysFont("helvetica", font_size - 2)
         self.value = {"": "", "Troop: ": 0, "Stamina: ": 0, "Morale: ": 0, "Discipline: ": 0, "Melee Attack: ": 0,
                       "Melee Defense: ": 0, "Range Defense: ": 0, "Speed: ": 0, "Accuracy: ": 0,
-                      "Range: ": 0, "Reload: ": 0, "Ammunition: ": 0, "Weapon CD: ": 0, "Charge Power: ": 0,
+                      "Range: ": 0, "Reload: ": 0, "Ammunition: ": 0, "Weapon CD: ": 0, "Charge: ": 0,
                       "Charge Defense: ": 0, "Mental: ": 0}  # stat
         self.value2 = {"trait": (), "skill": (), "skill cd": (), "skill effect": (), "status": ()}
 
@@ -243,7 +243,8 @@ class TroopCard(pygame.sprite.Sprite):
             if self.option == 1:  # stat card
                 for key, value in self.value.items():
                     if key != "" and value != "":
-                        value = value.replace("inf", "\u221e")  # use infinity sign
+                        if value == "inf":
+                            value = value.replace("inf", "\u221e")  # use infinity sign
                         text_surface = self.font.render(key + value, True, (0, 0, 0))
                         text_rect = text_surface.get_rect(
                             midleft=(self.image.get_rect()[0] + position_x, self.image.get_rect()[1] + position))
