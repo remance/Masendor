@@ -93,7 +93,10 @@ class Leader(pygame.sprite.Sprite):
                 for key, value in self.skill.items():  # replace leader skill with commander skill version
                     for key2, value2 in self.leader_data.commander_skill_list.items():
                         if key in value2["Replace"]:
+                            old_action = self.skill[key]["Action"]
                             self.skill[key] = value2
+                            self.skill[key]["Action"] = old_action  # get action from normal leader skill
+
 
     def enter_battle(self):
         if self.name != "None":

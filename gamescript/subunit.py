@@ -70,7 +70,6 @@ class Subunit(pygame.sprite.Sprite):
     player_weapon_selection = empty_method
     process_trait_skill = empty_method
     range_weapon_selection = empty_method
-    reset_animation = empty_method
     rotate = empty_method
     special_effect_check = empty_method
     enter_battle = empty_method
@@ -178,6 +177,7 @@ class Subunit(pygame.sprite.Sprite):
         self.skill_cond = 0
         self.broken_limit = 0  # morale require for unit to stop broken state, will increase everytime broken state stop
         self.interrupt_animation = False
+        self.top_interrupt_animation = False  # interrupt animation regardless of property
         self.use_animation_sprite = False
         self.play_troop_animation = self.battle.play_troop_animation
 
@@ -682,7 +682,8 @@ class Subunit(pygame.sprite.Sprite):
         # Pick new animation, condition to stop animation: get interrupt,
         # low level animation got replace with more important one, finish playing, skill animation and its effect end
         if self.state != 100 and \
-                ((self.interrupt_animation and "uninterruptible" not in self.current_action) or
+                (self.top_interrupt_animation or
+                 (self.interrupt_animation and "uninterruptible" not in self.current_action) or
                  (self.one_activity_timer == 0 and (not self.current_action and self.command_action) or done or
                   ("skill" in self.current_action and self.current_action["skill"] not in self.skill_effect) or
                   (self.idle_action and self.idle_action != self.command_action) or
@@ -693,16 +694,17 @@ class Subunit(pygame.sprite.Sprite):
             if self.current_action != self.last_current_action:
                 self.last_current_action = self.current_action
             else:
-                self.reset_animation()
                 if "next action" in self.current_action:  # play next action first instead of command
                     self.current_action = self.current_action["next action"]
                 else:
                     self.current_action = self.command_action  # continue next action when animation finish
                     self.command_action = self.idle_action
 
-            if self.interrupt_animation:
-                self.reset_animation()
-                self.interrupt_animation = False
+            self.interrupt_animation = False
+            self.top_interrupt_animation = False
+
+            self.show_frame = 0
+            self.animation_timer = 0
             self.pick_animation()
 
         if recreate_rect:

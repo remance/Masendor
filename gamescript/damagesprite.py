@@ -213,7 +213,9 @@ class DamageSprite(pygame.sprite.Sprite):
             self.image = pygame.transform.smoothscale(self.image, (self.image.get_width() * self.scale_size,
                                                                    self.image.get_height() * self.scale_size))
 
-        if "l_" in self.attacker_sprite_direction:
+        self.image = pygame.transform.rotate(self.image, self.angle)
+
+        if self.attack_type != "range" and "l_" in self.attacker_sprite_direction:
             self.image = pygame.transform.flip(self.image, True, False)
 
         self.image_original = self.image.copy()

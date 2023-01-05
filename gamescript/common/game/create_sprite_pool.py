@@ -22,6 +22,7 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
             mount_race = self.troop_data.mount_list[this_subunit["Mount"][0]]["Race"]  # get mount id
             mount_race = self.troop_data.race_list[mount_race]["Name"]  # replace id with name
             mount_race_name = mount_race
+
             if mount_race != "None":
                 mount_race_name = mount_race_name + "_"
 
@@ -36,11 +37,19 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
 
             weapon_key = (str(primary_main_weapon) + "," + str(primary_sub_weapon),
                           str(secondary_main_weapon) + "," + str(secondary_sub_weapon))
-            skill_list = this_subunit["Skill"] + weapon_list[primary_main_weapon]["Skill"] + \
-                         weapon_list[primary_sub_weapon]["Skill"] + \
-                         weapon_list[secondary_main_weapon]["Skill"] + \
-                         weapon_list[secondary_sub_weapon]["Skill"]
-            skill_list = list(set([item for item in skill_list if item != 0]))
+            if type(subunit_id) == int:
+                skill_data = self.troop_data.skill_list
+            else:
+                skill_data = self.leader_data.skill_list
+            skill_list = [skill_data[skill]["Action"][0] for skill in this_subunit["Skill"] if skill in skill_data]
+
+            weapon_skill_list = weapon_list[primary_main_weapon]["Skill"] + \
+                                weapon_list[primary_sub_weapon]["Skill"] + \
+                                weapon_list[secondary_main_weapon]["Skill"] + \
+                                weapon_list[secondary_sub_weapon]["Skill"]
+            weapon_skill_list = [self.troop_data.skill_list[skill]["Action"][0] for skill in weapon_skill_list if skill in self.troop_data.skill_list]
+            skill_list += weapon_skill_list
+            skill_list = tuple(set([item for item in skill_list if item != "Action"]))
 
             subunit_weapon_list = [(weapon_list[primary_main_weapon]["Name"],
                                     weapon_list[primary_sub_weapon]["Name"])]
@@ -135,7 +144,8 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                  [item for item in animation_list if "Default" not in item]
                 for animation in animation_list:  # use one side in the list for finding animation name
                     if "Preview" not in animation and race in animation and \
-                            ((mount_race_name == "None" and "&" not in animation) or mount_race_name in animation):
+                        ((mount_race_name == "None" and "&" not in animation) or mount_race_name in animation) and \
+                            ("Skill_" not in animation or any(ext in animation for ext in skill_list)):
                         animation_property = self.generic_animation_pool[0][animation][0]["animation_property"].copy()
                         for weapon_set_index, weapon_set in enumerate(
                                 subunit_weapon_list):  # create animation for each weapon set

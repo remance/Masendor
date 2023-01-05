@@ -2,8 +2,8 @@ import random
 
 infinity = float("inf")
 
-knockdown_command_action = {"name": "KnockDown", "uninterruptible": True,
-                            "next action": {"name": "StandUp", "uninterruptible": True}}
+knockdown_command_action = {"name": "Knockdown", "uninterruptible": True,
+                            "next action": {"name": "Standup", "uninterruptible": True}}
 heavy_damaged_command_action = {"name": "HeavyDamaged", "uninterruptible": True}
 damaged_command_action = {"name": "Damaged", "uninterruptible": True}
 

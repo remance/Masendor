@@ -27,13 +27,9 @@ def play_animation(self, speed, dt, hold_check, replace_image=True):
                 else:
                     done = True
     if replace_image:  # replace sprite image
-        try:
-            self.image = current_animation[self.show_frame]["sprite"]
-        except KeyError:
-            print(current_animation, self.current_action)
-            asdasd
-
+        self.image = current_animation[self.show_frame]["sprite"]
         self.rect = self.image.get_rect(center=self.pos)
+
     return done, just_start
 
 

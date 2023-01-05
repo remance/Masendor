@@ -52,12 +52,14 @@ def battle_keyboard_process(self, key_press):
         # for index, subunit in enumerate(self.current_selected.subunit_sprite):
         #     subunit.unit_health -= subunit.unit_health
         self.current_selected.leader_subunit.subunit_health = 0
-    # elif key_press == pygame.K_m and self.current_selected is not None:
-    #     # self.current_selected.leader[0].health -= 1000
-    #     self.subunit_selected.self.leader.health -= 1000
-    #     # self.subunit_selected.self.base_morale -= 1000
-    #     # self.subunit_selected.self.broken_limit = 80
-    #     # self.subunit_selected.self.state = 99
-    # elif key_press == pygame.K_COMMA and self.current_selected is not None:
+    elif key_press == pygame.K_m and self.current_selected is not None:
+        self.current_selected.leader_subunit.interrupt_animation = True
+        self.current_selected.leader_subunit.command_action = {"name": "Knockdown", "uninterruptible": True,
+                            "next action": {"name": "Standup", "uninterruptible": True}}
+        self.current_selected.leader_subunit.one_activity_limit = 5
+    elif key_press == pygame.K_n and self.current_selected is not None:
+        self.current_selected.leader_subunit.interrupt_animation = True
+        self.current_selected.leader_subunit.command_action = {"name": "HeavyDamaged", "uninterruptible": True}
+        # elif key_press == pygame.K_COMMA and self.current_selected is not None:
     #     for index, subunit in enumerate(self.current_selected.subunit_sprite):
     #         subunit.stamina -= subunit.stamina
