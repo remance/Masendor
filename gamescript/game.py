@@ -746,7 +746,6 @@ class Game:
     def change_ruleset(self):
         self.troop_data, self.leader_data, self.faction_data = make_faction_troop_leader_data(self.main_dir,
                                                                                               self.screen_scale,
-                                                                                              self.ruleset,
                                                                                               self.ruleset_folder,
                                                                                               self.language)
 

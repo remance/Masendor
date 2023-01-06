@@ -48,6 +48,7 @@ class Subunit(pygame.sprite.Sprite):
     add_original_trait = empty_method
     add_weapon_trait = empty_method
     add_weapon_stat = empty_method
+    apply_effect = empty_method
     apply_map_status = empty_method
     apply_status_to_friend = empty_method
     attack = empty_method

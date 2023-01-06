@@ -187,21 +187,9 @@ def change_frame_process():
 
 
 race_list = []
-with open(os.path.join(main_dir, "data", "troop", "troop_race.csv"), encoding="utf-8", mode="r") as edit_file:
-    rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-    for row in rd:
-        if "," in row[-2]:  # make str with , into list
-            this_ruleset = [int(item) if item.isdigit() else item for item in row[-2].split(",")]
-        else:
-            this_ruleset = [row[-2]]
-
-        for n, i in enumerate(row):
-            if i.isdigit() or ("." in i and re.search("[a-zA-Z]", i) is None) or i == "inf":
-                row[n] = float(i)
-        race_list.append(row[1])
-edit_file.close()
-
-race_list = race_list[2:]  # remove header and any race
+for x in Path(os.path.join(main_dir, "data", "sprite", "generic")).iterdir():  # grab race with sprite
+    if os.path.normpath(x).split(os.sep)[-1] != "weapon":  # exclude weapon as race
+        race_list.append(os.path.normpath(x).split(os.sep)[-1])
 
 generic_animation_pool, part_name_header = read_anim_data(direction_list, "generic", anim_column_header)
 weapon_joint_list = read_joint_data(direction_list)

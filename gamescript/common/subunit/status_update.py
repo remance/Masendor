@@ -81,7 +81,7 @@ def status_update(self, weather=None):
                 for effect in trait["Status"]:  # apply status effect from trait
                     self.status_effect[effect] = self.status_list[effect].copy()
                     if trait["Buff Range"] > 1:  # status buff range to nearby friend
-                        self.apply_status_to_friend(trait[1], effect, self.status_list[effect].copy())
+                        self.apply_status_to_friend(trait["Buff Range"], effect)
 
     # Apply effect from weather
     weather_temperature = 0
@@ -172,8 +172,7 @@ def status_update(self, weather=None):
                 for status in cal_effect["Status"]:
                     self.status_effect[status] = self.status_list[status].copy()
                     if cal_effect["Area of Effect"] > 1:
-                        self.apply_status_to_friend(cal_effect["Area of Effect"], status,
-                                                    self.status_list[status].copy())
+                        self.apply_status_to_friend(cal_effect["Area of Effect"], status)
 
             self.morale_dmg_bonus += cal_effect["Morale Damage Bonus"]
             self.stamina_dmg_bonus += cal_effect["Stamina Damage Bonus"]

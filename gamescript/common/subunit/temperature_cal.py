@@ -16,12 +16,13 @@ def temperature_cal(self, temp_reach):
 
     # Temperature effect
     if self.temperature_count > 50:  # Hot
-        self.status_effect[96] = self.status_list[96].copy()
-        if self.temperature_count > 100:  # Extremely hot
-            self.status_effect[97] = self.status_list[97].copy()
-            del self.status_effect[96]
-    if self.temperature_count < -50:  # Cold
-        self.status_effect[95] = self.status_list[95].copy()
-        if self.temperature_count < -100:  # Extremely cold
-            self.status_effect[29] = self.status_list[29].copy()
-            del self.status_effect[95]
+        if "Hot" in self.status_list:
+            self.apply_effect(self.status_list["Hot"], self.status_list, self.status_effect)
+        if self.temperature_count > 100 and "Heatstroke" in self.status_list:
+            self.apply_effect(self.status_list["Heatstroke"], self.status_list, self.status_effect)
+    elif self.temperature_count < -50:  # Cold
+        if "Cold" in self.status_list:
+            self.apply_effect(self.status_list["Cold"], self.status_list, self.status_effect)
+        if self.temperature_count < -100 and "Freeze" in self.status_list:  # Extremely cold
+            self.apply_effect(self.status_list["Freeze"], self.status_list, self.status_effect)
+

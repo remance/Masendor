@@ -1,0 +1,41 @@
+"ID","name","Authority Bonus","Health Bonus","HP Regeneration Bonus","Stamina Regeneration Bonus","Melee Attack Effect","Melee Defence Effect","Ranged Defence Effect","Speed Effect","Accuracy Effect","Reload Effect","Charge Effect","Charge Defence Bonus","Morale Bonus","Discipline Bonus","Critical Effect","Personality(Aggro, clever, careful)"
+1,"Immortal",,"inf","inf",,,,,,,,,,,,,"5,0,-10"
+2,"Socially Inept",-50,,,,,,,,,,,,,,,"-4,0,3"
+3,"Forgetful",,,,,,,,,,,,,,,,"-2,-10,0"
+4,"Stutter",-20,,,,,,,,,,,,,,,"-1,0,0"
+5,"Flail",,0.7,0.5,,,,,,,,,,-10,-10,,"-3, 0, 4"
+6,"Strong",,1.3,1.5,,,,,,,,,,10,10,,"3, 0, 3"
+7,"Craven",,,,,,,,,,,,,,,,"-7, 0, 8"
+8,"Brave",,,,,,,,,,,,,,,,"2, 0, -8"
+9,"Ruthless",,,,,,,,,,,,,,,,"5,0,-6"
+10,"Insane",-10,,,,120,90,90,,,,150,,-20,-20,,"10,10,-10"
+11,"Mute",-20,,,,,,,,,,,,,,,"-4,-2,3"
+12,"Deaf",-20,,,,,,,,,,,,-10,,,"1,-2, -2"
+13,"Honourable",,,,,,,,,,,,,,,,"2, -2, 2"
+14,"Dishonourable",,,,,,,,,,,,,,,,"2, 2, -2"
+15,"Dumb",,,,,,,,,,,,,,,,"0, -5, -5"
+16,"Smart",,,,,,,,,,,,,,,,"0, 5, 5"
+17,"Patient",,,,,,,,,,,,,,,,"-3, 2, 5"
+18,"Decisive",,,,,,,,,,,,,,,,"0,0,-4"
+19,"Indecisive",,,,,,,,,,,,,,,,"0,0,4"
+20,"Paranoid",,,,,,,,,,,,,,,,"2,0,10"
+21,"Kind",,,,,,,,,,,,,,,,"-3,0,0"
+22,"Cruel",,,,,,,,,,,,,,,,"3,0,0"
+23,"Genius",10,,,,,,,,,,,,10,,,"0,10,0"
+24,"Blind",,,,,,,,,,,,,,,,
+25,"Infirm",,,,,,,,80,,,,,,,,
+26,"Holy",,,,,,,,,,,,,,,,
+27,"Unholy",,,,,,,,,,,,,,,,
+28,"Greedy",,,,,,,,,,,,,,,,
+29,"Charitable",,,,,,,,,,,,,,,,
+30,,,,,,,,,,,,,,,,,
+31,"Unpredictable",,,,,,,,,,,,,,,,
+32,"Ally Of Humankind",,,,,,,,,,,,,,,,
+33,"Elven Respect",,,,,,,,,,,,,,,,
+34,"Dwarf's Companion",,,,,,,,,,,,,,,,
+35,"Goblin's Minion",,,,,,,,,,,,,,,,
+36,"Orc's Friend",,,,,,,,,,,,,,,,
+37,"Halfling's Trusted Neighbour",,,,,,,,,,,,,,,,
+38,,,,,,,,,,,,,,,,,
+39,,,,,,,,,,,,,,,,,
+40,,,,,,,,,,,,,,,,,

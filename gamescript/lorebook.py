@@ -124,14 +124,15 @@ class Lorebook(pygame.sprite.Sprite):
         self.section_tag_header = ("Tag", "Tag", "Type", "Troop Class", "Type", "Type", "Type", "Type", "Type",
                                    "Type", "Type",)
 
-        self.tag_list = [{stuff["Tag"]: True for stuff in self.concept_stat.values() if stuff["Tag"] != ""},
+        self.tag_list = [{stuff["Tag"]: True for stuff in self. concept_stat.values() if stuff["Tag"] != ""},
                          {stuff["Tag"]: True for stuff in self.history_stat.values() if stuff["Tag"] != ""},
                          {stuff["Type"]: True for stuff in self.faction_data.faction_list.values() if
                           stuff["Type"] != ""},
                          {stuff["Troop Class"]: True for stuff in self.troop_data.troop_list.values() if
                           stuff["Troop Class"] != ""},
                          {stuff["Type"]: True for stuff in self.equipment_stat.values() if stuff["Type"] != ""},
-                         {stuff["Type"]: True for stuff in self.troop_data.status_list.values() if stuff["Type"] != ""},
+                         {stuff["Type"]: True for stuff in self.troop_data.status_list.values() if type(stuff) != int
+                          and stuff["Type"] != ""},
                          {stuff["Type"]: True for stuff in self.skill_stat.values() if stuff["Type"] != ""},
                          {stuff["Type"]: True for stuff in self.troop_data.trait_list.values() if stuff["Type"] != ""},
                          {stuff["Type"]: True for stuff in self.leader_data.leader_list.values() if

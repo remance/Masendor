@@ -10,9 +10,9 @@ create_troop_sprite = create_troop_sprite.create_troop_sprite
 def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, who_todo, preview=False):
     weapon_list = self.troop_data.weapon_list
     animation_sprite_pool = {}  # TODO need to add for subunit creator
-    weapon_common_type_list = list(set(["_" + value["Common"] for key, value in weapon_list.items() if
+    weapon_common_type_list = tuple(set(["_" + value["Common"] for key, value in weapon_list.items() if
                                         key != ""]))  # list of all common type animation set
-    weapon_attack_type_list = list(set(["_" + value["Attack"] for key, value in weapon_list.items() if
+    weapon_attack_type_list = tuple(set(["_" + value["Attack"] for key, value in weapon_list.items() if
                                         key != ""]))  # list of all attack set
     for subunit_id, this_subunit in who_todo.items():
         # try:
