@@ -11,8 +11,8 @@ def morale_check_logic(self):
 
     elif self.retreat_start and self.broken is False and self.morale >= 50:  # quit retreat when morale reach increasing limit
         self.retreat_start = False
-        self.retreat_way = None
+        self.retreat_way = False
         self.issue_order(self.base_pos, False, False, other_command="Stop")
 
     if self.retreat_start and self.state != 96:
-        self.retreat()
+        self.find_retreat_target()

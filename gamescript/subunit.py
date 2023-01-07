@@ -586,7 +586,7 @@ class Subunit(pygame.sprite.Sprite):
             self.front_pos = self.make_front_pos()
 
             self.rect = self.image.get_rect(center=self.pos)  # for blit into screen
-            self.dmg_rect = self.image.get_rect(center=self.pos)  # for checking damage collision
+            self.dmg_rect = self.image.get_rect(center=self.base_pos)  # for checking damage collision
 
             self.sprite_id = str(stat["Sprite ID"])
             self.weapon_version = ((sprite_list[self.sprite_id]["p1_primary_main_weapon"],

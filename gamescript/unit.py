@@ -29,6 +29,7 @@ class Unit(pygame.sprite.Sprite):
     cal_unit_stat = empty_method
     change_formation = empty_method
     enter_battle = empty_method
+    find_retreat_target = empty_method
     placement = empty_method
     retreat_command = empty_method
     selection = empty_method
@@ -46,7 +47,6 @@ class Unit(pygame.sprite.Sprite):
     morale_check_logic = empty_method
     movement_logic = empty_method
     player_input = empty_method
-    retreat = empty_method
     reposition_leader = empty_method
     revert_move = empty_method
     rotate_logic = empty_method
@@ -146,7 +146,7 @@ class Unit(pygame.sprite.Sprite):
         self.forced_melee = False  # Force unit to melee attack
         self.attack_place = False  # attack position instead of enemy
         self.retreat_start = False
-        self.retreat_way = None
+        self.retreat_way = False
         self.broken = False
         self.collide = False  # for checking if subunit collide, if yes then stop moving
         self.attack_target = None  # attack base_target, can be either int or unit object

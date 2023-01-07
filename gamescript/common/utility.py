@@ -5,6 +5,7 @@ import inspect
 import math
 import os
 import re
+import numpy as np
 
 import pygame
 import pygame.freetype
@@ -363,6 +364,36 @@ def convert_degree_to_360(angle):
     else:
         angle = 90 + angle
     return angle
+
+
+def travel_to_map_border(pos, angle, map_size):
+    """
+    Find target at border of map based on angle
+    :param pos: Starting pos
+    :param angle: Angle in radians
+    :param map_size: Size of map (width, height)
+    :return: target on map border
+    """
+    x = pos[0]
+    y = pos[1]
+    cos_angle, sin_angle = math.cos(angle), math.sin(angle)
+    if cos_angle == 0:
+        if sin_angle < 0:
+            distance = y
+        else:
+            distance = map_size[1] - y
+    elif abs(sin_angle) < 1e-12:
+        if cos_angle < 0:
+            distance = x
+        else:
+            distance = map_size[0] - x
+    else:
+        distance_ew = (map_size[0] - x) / cos_angle if cos_angle > 0 else -x / cos_angle
+        distance_ns = (map_size[1] - y) / sin_angle if sin_angle > 0 else -y / sin_angle
+        distance = min(distance_ew, distance_ns)
+
+    target = pygame.Vector2(x + (distance * math.sin(angle)), y - (distance * math.cos(angle)))
+    return target
 
 
 def apply_sprite_colour(surface, colour, colour_list, keep_white=True, keep_old_colour=False):
