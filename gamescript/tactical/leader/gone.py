@@ -15,7 +15,7 @@ def gone(self, event_text={96: "retreating", 97: "captured", 98: "missing", 99: 
     if self.state == 99:  # wounded inflict less morale penalty
         this_bad_morale = self.bad_morale[1]
 
-    for subunit in self.unit.subunit_list:
+    for subunit in self.unit.alive_subunit_list:
         subunit.base_morale -= (
                 this_bad_morale * subunit.mental)  # decrease all subunit morale when leader destroyed depending on position
         subunit.morale_regen -= (0.3 * subunit.mental)  # all subunit morale regen slower per leader dead
@@ -32,14 +32,13 @@ def gone(self, event_text={96: "retreating", 97: "captured", 98: "missing", 99: 
                                           (0, 1, 2))
 
         for unit in self.battle.all_team_unit[self.unit.team]:
-            for subunit in unit.subunit_list:
+            for subunit in unit.alive_subunit_list:
                 subunit.base_morale -= (200 * subunit.mental)  # all subunit morale -100 when commander destroyed
                 subunit.morale_regen -= (1 * subunit.mental)  # all subunit morale regen even slower per commander dead
     else:
         self.battle.event_log.add_log((0, str(self.name) + " is " + event_text[self.state]), (0, 2))
 
-    # v change army position of all leader in that unit
-    for index, leader in enumerate(self.unit.leader):
+    for index, leader in enumerate(self.unit.leader):  # change army position of all leader in that unit
         leader.role = index  # change army position to new one
         if leader.role == 0:  # new start_set general
             self.subunit.unit_leader = False
@@ -48,17 +47,16 @@ def gone(self, event_text={96: "retreating", 97: "captured", 98: "missing", 99: 
 
             self.unit.leader_subunit = leader.subunit
             leader.subunit.unit_leader = True
-            subunit.leader = leader
+            leader.subunit.leader = leader
 
         leader.image_position = leader.leader_pos[leader.role]
         leader.rect = leader.image.get_rect(center=leader.image_position)
         self.leader_role_change(leader)
-    # ^ End change position
 
     self.unit.command_buff = ((self.unit.leader[0].melee_command - 5) * 0.1,
                               (self.unit.leader[0].range_command - 5) * 0.1,
                               (self.unit.leader[0].cav_command - 5) * 0.1)  # reset command buff to new leader
-    for this_subunit in self.unit.subunit_list:
+    for this_subunit in self.unit.alive_subunit_list:
         this_subunit.command_buff = self.unit.command_buff[
                                         this_subunit.subunit_type] * 100  # buff according to subunit type
     self.authority = 0

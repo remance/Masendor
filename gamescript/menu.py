@@ -90,7 +90,7 @@ class SliderMenu(pygame.sprite.Sprite):
         self.max_value = self.pos[0] + (self.slider_size / self.value_scale)  # max value position
         self.value = value
         self.mouse_value = (self.slider_size * value / 100) + self.difference  # convert mouse pos on scroll to value
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
         button_rect = self.button_image_list[1].get_rect(center=(self.mouse_value, self.image.get_height() / 2))
         self.image.blit(self.button_image, button_rect)
         self.rect = self.image.get_rect(center=self.pos)
@@ -113,7 +113,7 @@ class SliderMenu(pygame.sprite.Sprite):
         else:  # for revert, cancel or esc in the option menu
             self.value = mouse_pos
         self.mouse_value = (self.slider_size * self.value / 100) + self.difference
-        self.image = self.image_original.copy()
+        self.image = self.base_image.copy()
         button_rect = self.button_image_list[1].get_rect(center=(self.mouse_value, self.image.get_height() / 2))
         self.image.blit(self.button_image, button_rect)
         value_box.update(self.value)
@@ -127,14 +127,14 @@ class InputUI(pygame.sprite.Sprite):
         self.pos = pos
         self.image = image
 
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
 
         self.font = pygame.font.SysFont("timesnewroman", int(48 * screen_scale[1]))
 
         self.rect = self.image.get_rect(center=self.pos)
 
     def change_instruction(self, text):
-        self.image = self.image_original.copy()
+        self.image = self.base_image.copy()
         self.text = text
         text_surface = self.font.render(text, True, (0, 0, 0))
         text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 4))
@@ -151,7 +151,7 @@ class InputBox(pygame.sprite.Sprite):
         self.max_text = int((self.image.get_width() / int(30 * screen_scale[1])) * 2.2)
         self.image.fill((255, 255, 255))
 
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
 
         self.text = text
         text_surface = self.font.render(text, True, (0, 0, 0))
@@ -172,7 +172,7 @@ class InputBox(pygame.sprite.Sprite):
 
     def text_start(self, text):
         """Add starting text to input box"""
-        self.image = self.image_original.copy()
+        self.image = self.base_image.copy()
         self.text = text
         self.current_pos = len(self.text)  # start input at the end
         show_text = self.text[:self.current_pos] + "|" + self.text[self.current_pos:]
@@ -183,7 +183,7 @@ class InputBox(pygame.sprite.Sprite):
     def player_input(self, input_event, key_press):
         """register user keyboard and mouse input"""
         if self.active:  # text input
-            self.image = self.image_original.copy()
+            self.image = self.base_image.copy()
             event = input_event
             event_key = None
             event_unicode = ""
@@ -245,7 +245,7 @@ class TextBox(pygame.sprite.Sprite):
         self.font = pygame.font.SysFont("helvetica", int(36 * screen_scale[1]))
         self.image = image
 
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
 
         text_surface = self.font.render(text, True, (0, 0, 0))
         text_rect = text_surface.get_rect(center=self.image.get_rect().center)
@@ -254,7 +254,7 @@ class TextBox(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topright=pos)
 
     def change_text(self, text):
-        self.image = self.image_original.copy()
+        self.image = self.base_image.copy()
 
         text_surface = self.font.render(text, True, (0, 0, 0))
         text_rect = text_surface.get_rect(center=self.image.get_rect().center)
@@ -272,9 +272,9 @@ class MenuButton(pygame.sprite.Sprite):
         self.updater = updater
         self.text = text
         self.font = pygame.font.SysFont("timesnewroman", int(size * screen_scale[1]))
-        self.image_original0 = self.button_normal_image.copy()
-        self.image_original1 = self.button_over_image.copy()
-        self.image_original2 = self.button_click_image.copy()
+        self.base_image0 = self.button_normal_image.copy()
+        self.base_image1 = self.button_over_image.copy()
+        self.base_image2 = self.button_click_image.copy()
 
         if text != "":  # draw text into the button images
             text_surface = self.font.render(self.text, True, (0, 0, 0))
@@ -300,9 +300,9 @@ class MenuButton(pygame.sprite.Sprite):
 
     def change_state(self, text):
         if text != "":
-            img0 = self.image_original0.copy()
-            img1 = self.image_original1.copy()
-            img2 = self.image_original2.copy()
+            img0 = self.base_image0.copy()
+            img1 = self.base_image1.copy()
+            img2 = self.base_image2.copy()
             self.images = [img0, img1, img2]
             text_surface = self.font.render(text, True, (0, 0, 0))
             text_rect = text_surface.get_rect(center=self.images[0].get_rect().center)
@@ -334,7 +334,7 @@ class ValueBox(pygame.sprite.Sprite):
         self.font = pygame.font.SysFont("timesnewroman", text_size)
         self.pos = pos
         self.image = image
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
         self.value = value
         text_surface = self.font.render(str(self.value), True, (0, 0, 0))
         text_rect = text_surface.get_rect(center=self.image.get_rect().center)
@@ -343,7 +343,7 @@ class ValueBox(pygame.sprite.Sprite):
 
     def update(self, value):
         self.value = value
-        self.image = self.image_original.copy()
+        self.image = self.base_image.copy()
         text_surface = self.font.render(str(self.value), True, (0, 0, 0))
         text_rect = text_surface.get_rect(center=self.image.get_rect().center)
         self.image.blit(text_surface, text_rect)
@@ -382,12 +382,12 @@ class DescriptionBox(pygame.sprite.Sprite):
         self.text_size = text_size
         self.font = pygame.font.SysFont("timesnewroman", int(self.text_size * self.screen_scale[1]))
         self.image = image
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
         self.rect = self.image.get_rect(center=pos)
 
     def change_text(self, text):
         make_long_text = utility.make_long_text
-        self.image = self.image_original.copy()  # reset self.image to new one from the loaded image
+        self.image = self.base_image.copy()  # reset self.image to new one from the loaded image
         make_long_text(self.image, text,
                        (int(self.text_size * self.screen_scale[0]), int(self.text_size * self.screen_scale[1])),
                        self.font)
@@ -451,8 +451,8 @@ class ArmyStat(pygame.sprite.Sprite):
         self.leader_font = pygame.font.SysFont("helvetica", int(36 * screen_scale[1]))
         self.font = pygame.font.SysFont("helvetica", self.font_size)
 
-        self.image_original = image.copy()
-        self.image = self.image_original.copy()
+        self.base_image = image.copy()
+        self.image = self.base_image.copy()
 
         self.type_number_pos = ((self.image.get_width() / 5, self.image.get_height() / 3),  # infantry melee
                                 (self.image.get_width() / 5, self.image.get_height() / 1.8),  # infantry range
@@ -469,7 +469,7 @@ class ArmyStat(pygame.sprite.Sprite):
     def add_army_stat(self, troop_number, leader_name):
         """troop_number need to be in list format as follows:[total,melee infantry, range infantry,
         cavalry, range cavalry]"""
-        self.image = self.image_original.copy()
+        self.image = self.base_image.copy()
 
         text_surface = self.font.render(str(leader_name), True, (0, 0, 0))
         text_rect = text_surface.get_rect(midleft=(self.image.get_width() / 7, self.image.get_height() / 10))
@@ -482,7 +482,7 @@ class ArmyStat(pygame.sprite.Sprite):
 
     def add_leader_stat(self, leader, leader_data, troop_data):
         """For character select screen"""
-        self.image = self.image_original.copy()
+        self.image = self.base_image.copy()
         stat = leader_data.leader_list[leader.leader_id]
         leader_name = leader.name
         leader_image = leader.full_image
@@ -713,11 +713,11 @@ class MapPreview(pygame.sprite.Sprite):
         map_image = pygame.transform.scale(map_image, (440 * self.screen_scale[0], 440 * self.screen_scale[1]))
         image_rect = map_image.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
         self.image.blit(map_image, image_rect)
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
 
     def change_mode(self, mode, team_pos_list=None, selected=None):
         """map mode: 0 = map without army dot, 1 = with army dot"""
-        self.image = self.image_original.copy()
+        self.image = self.base_image.copy()
         if mode == 1:
             for team, pos_list in team_pos_list.items():
                 for pos in pos_list:

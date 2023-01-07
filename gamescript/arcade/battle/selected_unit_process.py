@@ -50,7 +50,7 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
                 for this_unit in self.troop_number_sprite:
                     if this_unit.who == self.current_selected:
                         clean_object(this_unit)
-                for this_subunit in self.current_selected.subunit_list:
+                for this_subunit in self.current_selected.alive_subunit_list:
                     clean_object(this_subunit)
                 for this_leader in self.current_selected.leader:
                     clean_object(this_leader)

@@ -15,6 +15,7 @@ class BaseMap(pygame.sprite.Sprite):
         self.main_dir = main_dir
 
         self.map_array = ()
+        self.max_map_array = (0, 0)
         self.terrain_colour = {}
         with open(os.path.join(self.main_dir, "data", "map", "terrain.csv"), encoding="utf-8",
                   mode="r") as edit_file:
@@ -32,26 +33,17 @@ class BaseMap(pygame.sprite.Sprite):
 
     def draw_image(self, image):
         self.map_array = tuple([[tuple(col) for col in row] for row in pygame.surfarray.array3d(image).tolist()])
+        self.max_map_array = (len(self.map_array[0]) - 1, len(self.map_array) - 1)
 
     def get_terrain(self, pos):
-        """get the base terrain at that exact position"""
-        new_pos = pos
-        if new_pos[0] < 0:
-            new_pos[0] = 0
-        elif new_pos[0] > 999:
-            new_pos[0] = 999
-
-        if new_pos[1] < 0:
-            new_pos[1] = 0
-        elif new_pos[1] > 999:
-            new_pos[1] = 999
-
-        terrain = self.map_array[int(new_pos[0])][int(new_pos[1])]
+        """get the base terrain at that exact position, typically called in get_feature"""
+        terrain = self.map_array[int(pos[0])][int(pos[1])]  # use already calculated pos from get_feature
         terrain_index = self.terrain_colour.index(terrain)
         return terrain_index
 
     def clear_image(self):
         self.map_array = ()
+        self.max_map_array = (0, 0)
 
 
 class FeatureMap(pygame.sprite.Sprite):
@@ -64,6 +56,7 @@ class FeatureMap(pygame.sprite.Sprite):
         self.main_dir = main_dir
 
         self.map_array = ()
+        self.max_map_array = (0, 0)
         self.feature_colour = {}
         with open(os.path.join(self.main_dir, "data", "map", "feature.csv"), encoding="utf-8",
                   mode="r") as edit_file:
@@ -82,21 +75,22 @@ class FeatureMap(pygame.sprite.Sprite):
 
     def draw_image(self, image):
         self.map_array = tuple([[tuple(col) for col in row] for row in pygame.surfarray.array3d(image).tolist()])
+        self.max_map_array = (len(self.map_array[0]) - 1, len(self.map_array) - 1)
 
     def get_feature(self, pos, base_map):
         """get the terrain feature at that exact position"""
-        terrain_index = base_map.get_terrain(pos)
-        new_pos = pos
+        new_pos = pygame.Vector2(pos)  # create new pos to avoid replacing input one
         if new_pos[0] < 0:
             new_pos[0] = 0
-        elif new_pos[0] > 999:
-            new_pos[0] = 999
+        elif new_pos[0] > self.max_map_array[0]:
+            new_pos[0] = self.max_map_array[0]
 
         if new_pos[1] < 0:
             new_pos[1] = 0
-        elif new_pos[1] > 999:
-            new_pos[1] = 999
+        elif new_pos[1] > self.max_map_array[1]:
+            new_pos[1] = self.max_map_array[1]
 
+        terrain_index = base_map.get_terrain(new_pos)
         feature = self.map_array[int(new_pos[0])][int(new_pos[1])]  # get colour at pos to obtain the terrain type
         feature_index = self.feature_colour.index(feature)
         feature_index = (terrain_index * len(self.feature_colour)) + feature_index
@@ -104,6 +98,7 @@ class FeatureMap(pygame.sprite.Sprite):
 
     def clear_image(self):
         self.map_array = ()
+        self.max_map_array = (0, 0)
 
 
 class HeightMap(pygame.sprite.Sprite):
@@ -114,6 +109,7 @@ class HeightMap(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.topology = True
         self.map_array = ()
+        self.max_map_array = (0, 0)
         self.topology_image = None
 
     def draw_image(self, image):
@@ -148,16 +144,16 @@ class HeightMap(pygame.sprite.Sprite):
 
     def get_height(self, pos):
         """get the terrain height at that exact position"""
-        new_pos = pos
+        new_pos = pygame.Vector2(pos)
         if new_pos[0] < 0:
             new_pos[0] = 0
-        elif new_pos[0] > 999:
-            new_pos[0] = 999
+        elif new_pos[0] > self.max_map_array[0]:
+            new_pos[0] = self.max_map_array[0]
 
         if new_pos[1] < 0:
             new_pos[1] = 0
-        elif new_pos[1] > 999:
-            new_pos[1] = 999
+        elif new_pos[1] > self.max_map_array[1]:
+            new_pos[1] = self.max_map_array[1]
 
         colour = self.map_array[int(new_pos[0])][int(new_pos[1])]
 
@@ -170,6 +166,7 @@ class HeightMap(pygame.sprite.Sprite):
         self.image = None
         self.topology_image = None
         self.map_array = ()
+        self.max_map_array = (0, 0)
 
 
 class BeautifulMap(pygame.sprite.Sprite):
@@ -280,13 +277,13 @@ class BeautifulMap(pygame.sprite.Sprite):
         if time_image is not None:
             self.image.blit(time_image, rect)  # add day time effect
 
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
         self.change_scale(self.scale)
 
     def change_mode(self, height_map, mode):
         """Switch between normal, height normal map, topology map mode"""
         self.mode = mode
-        self.image = self.image_original.copy()
+        self.image = self.base_image.copy()
         if self.mode == 1:  # with topology map
             rect = self.image.get_rect(topleft=(0, 0))
             self.image.blit(height_map.topology_image, rect)
@@ -298,8 +295,8 @@ class BeautifulMap(pygame.sprite.Sprite):
     def change_scale(self, scale):
         """Change map scale based on current camera zoom"""
         self.scale = scale
-        self.image = pygame.transform.smoothscale(self.image, (int(self.image_original.get_width() * self.scale),
-                                                               int(self.image_original.get_height() * self.scale)))
+        self.image = pygame.transform.smoothscale(self.image, (int(self.base_image.get_width() * self.scale),
+                                                               int(self.base_image.get_height() * self.scale)))
 
     def clear_image(self):
         self.image = None

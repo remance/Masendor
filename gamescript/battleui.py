@@ -77,7 +77,7 @@ class InspectUI(pygame.sprite.Sprite):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self)
         self.image = image
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
 
     def change_pos(self, pos):
         """change position of ui to new one"""
@@ -110,7 +110,7 @@ class TopBar(pygame.sprite.Sprite):
             self.image.blit(self.icon[ic], self.icon_rect)
             position += 90
 
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
 
     def change_pos(self, pos):
         """change position of ui to new one"""
@@ -136,7 +136,7 @@ class TopBar(pygame.sprite.Sprite):
             self.value[1] = self.stamina_state_text[self.value[1]]
 
         if self.value != self.last_value or split:  # only blit new text when value change or subunit split
-            self.image = self.image_original.copy()
+            self.image = self.base_image.copy()
             for value in self.value:  # blit value text
                 text_surface = self.font.render(str(value), True, (0, 0, 0))
                 text_rect = text_surface.get_rect(
@@ -173,7 +173,7 @@ class TroopCard(pygame.sprite.Sprite):
         self.last_value = 0
         self.option = 0
 
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
 
         self.font_head = pygame.font.SysFont("curlz", font_size + 4)
         self.font_head.set_italic(True)
@@ -219,14 +219,14 @@ class TroopCard(pygame.sprite.Sprite):
                                who.trait["Weapon"][who.equipped_weapon][1]
         self.value2["skill"] = who.skill
         self.value2["skill cd"] = who.skill_cooldown
-        self.value2["skill effect"] = who.skill_effect
-        self.value2["status"] = who.status_effect
+        self.value2["skill effect"] = who.skill_duration
+        self.value2["status"] = who.status_duration
 
         self.description = who.description
         if type(self.description) == list:
             self.description = self.description[0]
         if self.value.values() != self.last_value or change_option == 1 or who.game_id != self.last_who:
-            self.image = self.image_original.copy()
+            self.image = self.base_image.copy()
             row = 0
             leader_text = ""
             if who.leader is not None and who.leader.name != "None":
@@ -311,7 +311,7 @@ class CommandUI(pygame.sprite.Sprite):
 
         if self.ui_type == "hero":
             self.image = pygame.Surface((400 * self.screen_scale[0], 200 * self.screen_scale[1]), pygame.SRCALPHA)
-            self.image_original = self.image.copy()
+            self.base_image = self.image.copy()
 
             self.health_bar_size = (self.image.get_width(), 20 * self.screen_scale[1])
 
@@ -324,7 +324,7 @@ class CommandUI(pygame.sprite.Sprite):
             self.weapon_image = pygame.Surface((200 * self.screen_scale[0], 180 * self.screen_scale[1]),
                                                pygame.SRCALPHA)
             self.weapon_image.fill((50, 50, 50))
-            self.weapon_image_original = self.weapon_image.copy()
+            self.weapon_base_image = self.weapon_image.copy()
             self.weapon_image_rect = self.weapon_image.get_rect(topright=(self.image.get_width(), 0))
             self.weapon_image_set_pos = (((0, 0), ((80 * self.screen_scale[0]) * self.screen_scale[0], 0)),
                                          ((self.weapon_image.get_width() / 2, self.weapon_image.get_height() / 2.5),
@@ -365,10 +365,10 @@ class CommandUI(pygame.sprite.Sprite):
                                (self.inspect_pos[1][0], self.inspect_pos[1][1]),
                                (self.inspect_pos[2][0], self.inspect_pos[2][1]),
                                (self.inspect_pos[3][0], self.inspect_pos[3][1]))
-            self.image_original = self.image.copy()
-            self.image_original2 = self.image.copy()
+            self.base_image = self.image.copy()
+            self.base_image2 = self.image.copy()
         else:
-            self.image = self.image_original.copy()
+            self.image = self.base_image.copy()
             self.image.blit(self.health_bar, self.health_bar_rect)
 
     def change_pos(self, pos):
@@ -391,7 +391,7 @@ class CommandUI(pygame.sprite.Sprite):
                 use_colour = self.white  # colour of the chess icon for leader, white for team 1
                 if who.team == 2:  # black for team 2
                     use_colour = self.black
-                self.image = self.image_original.copy()
+                self.image = self.base_image.copy()
                 self.image.blit(who.coa, who.coa.get_rect(topleft=self.image.get_rect().topleft))  # blit coa
 
                 pic_list = (0, 3, 4, 5)  # rook, bishop, left knight, right knight
@@ -401,11 +401,11 @@ class CommandUI(pygame.sprite.Sprite):
                     icon_rect = use_colour[pic_list[index]].get_rect(midbottom=self.inspect_pos[index])
                     self.image.blit(use_colour[pic_list[index]], icon_rect)
 
-                self.image_original2 = self.image.copy()
+                self.base_image2 = self.image.copy()
 
             authority = str(who.authority).split(".")[0]
             if self.last_auth != authority or who != self.last_who or split:  # authority number change only when not same as last
-                self.image = self.image_original2.copy()
+                self.image = self.base_image2.copy()
                 text_surface = self.font.render(authority, True, (0, 0, 0))
                 text_rect = text_surface.get_rect(
                     center=(self.image.get_rect()[0] + self.image.get_size()[0] / 1.12, self.image.get_rect()[1] + 83))
@@ -418,8 +418,8 @@ class CommandUI(pygame.sprite.Sprite):
                 if self.equipped_weapon != who.equipped_weapon:
                     change = True
                     self.equipped_weapon = who.equipped_weapon
-                    self.weapon_image = self.weapon_image_original.copy()
-                    self.image = self.image_original.copy()
+                    self.weapon_image = self.weapon_base_image.copy()
+                    self.image = self.base_image.copy()
                 weapon_name_set = list(who.weapon_name)
                 weapon_name_set.insert(0, weapon_name_set.pop(
                     weapon_name_set.index(weapon_name_set[self.equipped_weapon])))
@@ -499,14 +499,14 @@ class SkillCardIcon(pygame.sprite.Sprite):
         self.active_check = 0  # active timer number
         self.image = image
         self.rect = self.image.get_rect(center=pos)
-        self.image_original = self.image.copy()  # keep original image without number
+        self.base_image = self.image.copy()  # keep original image without number
         self.cooldown_rect = self.image.get_rect(topleft=(0, 0))
 
     def icon_change(self, cooldown, active_timer):
         """Show active effect timer first if none show cooldown"""
         if active_timer != self.active_check:
             self.active_check = active_timer  # renew number
-            self.image = self.image_original.copy()
+            self.image = self.base_image.copy()
             if self.active_check > 0:
                 rect = self.image.get_rect(topleft=(0, 0))
                 self.image.blit(self.active_skill, rect)
@@ -519,7 +519,7 @@ class SkillCardIcon(pygame.sprite.Sprite):
 
         elif cooldown != self.cooldown_check and self.active_check == 0:  # Cooldown only get blit when skill is not active
             self.cooldown_check = cooldown
-            self.image = self.image_original.copy()
+            self.image = self.base_image.copy()
             if self.cooldown_check > 0:
                 self.image.blit(self.cooldown, self.cooldown_rect)
                 output_number = str(self.cooldown_check)
@@ -542,7 +542,7 @@ class EffectCardIcon(pygame.sprite.Sprite):
         self.active_check = 0
         self.image = image
         self.rect = self.image.get_rect(center=pos)
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
 
 
 class FPScount(pygame.sprite.Sprite):
@@ -550,7 +550,7 @@ class FPScount(pygame.sprite.Sprite):
         self._layer = 12
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface((50, 50), pygame.SRCALPHA)
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
         self.font = pygame.font.SysFont("Arial", 18)
         self.rect = self.image.get_rect(center=(30, 110))
         fps_text = self.font.render("60", True, pygame.Color("blue"))
@@ -558,7 +558,7 @@ class FPScount(pygame.sprite.Sprite):
 
     def fps_show(self, clock):
         """Update current fps"""
-        self.image = self.image_original.copy()
+        self.image = self.base_image.copy()
         fps = str(int(clock.get_fps()))
         fps_text = self.font.render(fps, True, pygame.Color("blue"))
         text_rect = fps_text.get_rect(center=(25, 25))
@@ -610,7 +610,7 @@ class MiniMap(pygame.sprite.Sprite):
         self.map_scale_height = 1000 / size[1]
         self.dim = pygame.Vector2(size[0], size[1])
         self.image = pygame.transform.scale(self.image, (int(self.dim[0]), int(self.dim[1])))
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
         self.camera_border = [camera.image.get_width(), camera.image.get_height()]
         self.camera_pos = camera.pos
         self.rect = self.image.get_rect(bottomright=self.pos)
@@ -618,7 +618,7 @@ class MiniMap(pygame.sprite.Sprite):
     def update(self, view_mode, camera_pos, team_pos_list):
         """update unit dot on map"""
         self.camera_pos = camera_pos
-        self.image = self.image_original.copy()
+        self.image = self.base_image.copy()
         if "alive" in team_pos_list:
             for unit, pos in team_pos_list["alive"].items():
                 scaled_pos = (pos[0] / self.map_scale_width, pos[1] / self.map_scale_height)
@@ -640,7 +640,7 @@ class EventLog(pygame.sprite.Sprite):
         self.font = pygame.font.SysFont("helvetica", 16)
         self.pos = pos
         self.image = image
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
         self.rect = self.image.get_rect(bottomleft=self.pos)
         self.len_check = 0
         self.current_start_row = 0
@@ -705,7 +705,7 @@ class EventLog(pygame.sprite.Sprite):
 
     def recreate_image(self):
         log = (self.battle_log, self.unit_log, self.leader_log, self.subunit_log)[self.mode]  # log to edit
-        self.image = self.image_original.copy()
+        self.image = self.base_image.copy()
         row = 10
         for index, text in enumerate(log[self.current_start_row:]):
             if index == self.max_row_show:
@@ -789,7 +789,7 @@ class UIScroll(pygame.sprite.Sprite):
         self.pos = pos
         self.image = pygame.Surface((10, self.height_ui))
         self.image.fill((255, 255, 255))
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
         self.button_colour = (100, 100, 100)
         pygame.draw.rect(self.image, self.button_colour, (0, 0, self.image.get_width(), self.height_ui))
         self.rect = self.image.get_rect(topright=self.pos)
@@ -799,7 +799,7 @@ class UIScroll(pygame.sprite.Sprite):
     def create_new_image(self):
         percent_row = 0
         max_row = 100
-        self.image = self.image_original.copy()
+        self.image = self.base_image.copy()
         if self.row_size > 0:
             percent_row = self.current_row * 100 / self.row_size
         if self.row_size > 0:
@@ -957,7 +957,7 @@ class Timer(pygame.sprite.Sprite):
         self.font = pygame.font.SysFont("helvetica", text_size)
         self.pos = pos
         self.image = pygame.Surface((100, 30), pygame.SRCALPHA)
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
         self.rect = self.image.get_rect(topleft=pos)
         self.timer = 0
 
@@ -968,7 +968,7 @@ class Timer(pygame.sprite.Sprite):
     def start_setup(self, time_start):
         self.timer = time_start.total_seconds()
         self.old_timer = self.timer
-        self.image = self.image_original.copy()
+        self.image = self.base_image.copy()
         self.time_number = time_start  # datetime.timedelta(seconds=self.timer)
         self.timer_surface = self.font.render(str(self.timer), True, (0, 0, 0))
         self.timer_rect = self.timer_surface.get_rect(topleft=(5, 10))
@@ -983,7 +983,7 @@ class Timer(pygame.sprite.Sprite):
                 if self.timer >= 86400:  # Time pass midnight
                     self.timer -= 86400  # Restart clock to 0
                     self.old_timer = self.timer
-                self.image = self.image_original.copy()
+                self.image = self.base_image.copy()
                 self.time_number = datetime.timedelta(seconds=self.timer)
                 time_num = str(self.time_number).split(".")[0]
                 self.timer_surface = self.font.render(time_num, True, (0, 0, 0))
@@ -996,7 +996,7 @@ class TimeUI(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.pos = (0, 0)
         self.image = image.copy()
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
         self.rect = self.image.get_rect(topleft=self.pos)
 
     def change_pos(self, pos, time_number, speed_number=None, time_button=None):
@@ -1058,10 +1058,10 @@ class WheelUI(pygame.sprite.Sprite):
         self.screen_size = screen_size
         self.choice_list = ()
 
-        self.image_original2 = pygame.Surface((images[0].get_width() * 3.5,
-                                               images[0].get_height() * 3.5), pygame.SRCALPHA)  # empty image
-        self.rect = self.image_original2.get_rect(center=self.pos)
-        image_center = (self.image_original2.get_width() / 2, self.image_original2.get_height() / 2)
+        self.base_image2 = pygame.Surface((images[0].get_width() * 3.5,
+                                           images[0].get_height() * 3.5), pygame.SRCALPHA)  # empty image
+        self.rect = self.base_image2.get_rect(center=self.pos)
+        image_center = (self.base_image2.get_width() / 2, self.base_image2.get_height() / 2)
         if len(images) == 2:  # create 8 direction wheel ui
             self.wheel_image_list = (images[0].copy(),  # top up left
                                      images[1].copy(),  # top left
@@ -1120,7 +1120,7 @@ class WheelUI(pygame.sprite.Sprite):
         self.wheel_image_with_stuff = [image.copy() for image in self.wheel_image_list]
         self.wheel_selected_image_with_stuff = [image.copy() for image in self.wheel_selected_image_list]
 
-        self.image = self.image_original2.copy()
+        self.image = self.base_image2.copy()
         for index, rect in enumerate(self.wheel_rect):
             self.image.blit(self.wheel_image_with_stuff[index], rect)
 
@@ -1134,7 +1134,7 @@ class WheelUI(pygame.sprite.Sprite):
             if closest_rect_distance is None or distance < closest_rect_distance:
                 closest_rect_index = index
                 closest_rect_distance = distance
-        self.image = self.image_original2.copy()
+        self.image = self.base_image2.copy()
 
         for index, rect in enumerate(self.wheel_rect):
             if index == closest_rect_index:
@@ -1156,7 +1156,7 @@ class WheelUI(pygame.sprite.Sprite):
 
     def change_text_icon(self, blit_list):
         """Add icon or text to the wheel choice"""
-        self.image = self.image_original2.copy()
+        self.image = self.base_image2.copy()
         self.wheel_image_with_stuff = [image.copy() for image in self.wheel_image_list]
         self.wheel_selected_image_with_stuff = [image.copy() for image in self.wheel_selected_image_list]
         self.choice_list = tuple(blit_list.keys())
@@ -1186,7 +1186,7 @@ class TextSprite(pygame.sprite.Sprite):
         self.pos = (0, 0)
         self.value = str(value)
         self.image = pygame.Surface((len(self.value) * (text_size + 4), text_size * 1.5), pygame.SRCALPHA)
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
         text_surface = self.font.render(self.value, True, (0, 0, 0))
         self.text_rect = text_surface.get_rect(topleft=(self.image.get_width() / 10, self.image.get_height() / 10))
         self.image.blit(text_surface, self.text_rect)
@@ -1194,7 +1194,7 @@ class TextSprite(pygame.sprite.Sprite):
 
     def speed_update(self, new_value):
         """change speed number text"""
-        self.image = self.image_original.copy()
+        self.image = self.base_image.copy()
         self.value = new_value
         text_surface = self.font.render(str(self.value), True, (0, 0, 0))
         self.image.blit(text_surface, self.text_rect)
@@ -1211,15 +1211,15 @@ class InspectSubunit(pygame.sprite.Sprite):
         self.pos = pos
         self.who = None
         self.image = pygame.Surface((0, 0))
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
         self.rect = self.image.get_rect(topleft=self.pos)
 
     def add_subunit(self, who):
         if who is not None:
             self.who = who
-            self.image = self.who.block
+            self.image = self.who.block_image
         else:
-            self.image = self.image_original.copy()
+            self.image = self.base_image.copy()
         self.rect = self.image.get_rect(topleft=self.pos)
 
 
@@ -1292,7 +1292,6 @@ class DirectionArrow(pygame.sprite.Sprite):  # TODO make it work so it can be im
         self.previous_length = self.length
         self.image = pygame.Surface((5, self.length), pygame.SRCALPHA)
         self.image.fill((0, 0, 0))
-        # self.image_original = self.image.copy()
         # pygame.draw.line(self.image, (0, 0, 0), (self.image.get_width()/2, 0),(self.image.get_width()/2,self.image.get_height()), 5)
         self.image = pygame.transform.rotate(self.image, self.who.angle)
         self.rect = self.image.get_rect(midbottom=self.who.front_pos)

@@ -12,7 +12,7 @@ def gone_leader_process(self, event):
                 this_subunit.leader = self.leader
                 self.leader.subunit = this_subunit
                 for index, subunit2 in enumerate(
-                        self.unit.subunit_list):  # loop to find new subunit pos based on new subunit_sprite list
+                        self.unit.alive_subunit_list):  # loop to find new subunit
                     if subunit2 == self.leader.subunit:
                         self.leader.subunit_pos = index
                         if self.unit_leader:  # set leader subunit to new one
@@ -25,7 +25,7 @@ def gone_leader_process(self, event):
                 break
 
         if self.leader is not None:  # if can't find near subunit to move leader then find from first subunit to last place in unit
-            for index, this_subunit in enumerate(self.unit.subunit_list):
+            for index, this_subunit in enumerate(self.unit.alive_subunit_list):
                 if this_subunit.state not in check_state and this_subunit.leader is None:
                     this_subunit.leader = self.leader
                     self.leader.subunit = this_subunit

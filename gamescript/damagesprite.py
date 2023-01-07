@@ -173,11 +173,14 @@ class DamageSprite(pygame.sprite.Sprite):
                                                   target_now[1] * hit_chance2 / 100)
             else:  # perfect hit, slightly (randomly) land near base_target
                 self.base_target = target_now * random.uniform(0.999, 1.001)
-            if self.arc_shot is False:  # direct shot move base_target furthest
-                self.base_target += ((self.base_target - self.base_pos).length() * 1000)
 
-            # Rotate damage sprite sprite
             self.angle = self.set_rotate(self.base_target)
+
+            if self.arc_shot is False:  # direct just shoot base on direction of target
+                self.base_target = pygame.Vector2(self.base_pos[0] + (self.battle.map_corner[0] * 2 *
+                                                                      math.sin(math.radians(self.angle))),
+                                                  self.base_pos[1] - (self.battle.map_corner[1] * 2 *
+                                                                      math.cos(math.radians(self.angle))))
 
         else:
             self.sprite_direction = self.attack_type[1]
@@ -218,7 +221,7 @@ class DamageSprite(pygame.sprite.Sprite):
         if self.attack_type != "range" and "l_" in self.attacker_sprite_direction:
             self.image = pygame.transform.flip(self.image, True, False)
 
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
 
     def update(self, unit_list, dt, camera_scale):
         just_start = False

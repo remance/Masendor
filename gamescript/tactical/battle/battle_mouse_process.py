@@ -155,7 +155,7 @@ def battle_mouse_process(self, mouse_left_up, mouse_right_up, double_mouse_right
             elif self.behaviour_switch_button[6].rect.collidepoint(self.mouse_pos):  # or key_press == pygame.K_j
                 if mouse_left_up:  # or key_press == pygame.K_j  # rotate min range condition when clicked
                     self.current_selected.attack_mode += 1
-                    if self.current_selected.attack_mode > 2:
+                    if self.current_selected.attack_mode > 1:
                         self.current_selected.attack_mode = 0
                     self.behaviour_switch_button[6].event = self.current_selected.attack_mode
                 if self.behaviour_switch_button[6].rect.collidepoint(self.mouse_pos):  # popup name when mouse over

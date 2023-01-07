@@ -330,15 +330,15 @@ class Showroom(pygame.sprite.Sprite):
 
 class Filmstrip(pygame.sprite.Sprite):
     """animation sprite filmstrip"""
-    image_original = None
+    base_image = None
 
     def __init__(self, pos):
         self._layer = 5
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
-        self.image = self.image_original.copy()  # original no sprite
-        self.image_original2 = self.image_original.copy()  # after add sprite but before activate or deactivate
-        self.image_original3 = self.image_original2.copy()  # before adding selected corner
+        self.image = self.base_image.copy()  # original no sprite
+        self.base_image2 = self.base_image.copy()  # after add sprite but before activate or deactivate
+        self.base_image3 = self.base_image2.copy()  # before adding selected corner
         self.rect = self.image.get_rect(topleft=self.pos)
         self.image_scale = (self.image.get_width() / 100, self.image.get_height() / 120)
         self.blit_image = None
@@ -346,10 +346,10 @@ class Filmstrip(pygame.sprite.Sprite):
         self.activate = False
 
     def update(self, *args):
-        self.image = self.image_original3.copy()
+        self.image = self.base_image3.copy()
 
     def selected(self, select=False):
-        self.image = self.image_original3.copy()
+        self.image = self.base_image3.copy()
         select_colour = (200, 100, 100)
         if self.activate:
             select_colour = (150, 200, 100)
@@ -359,19 +359,19 @@ class Filmstrip(pygame.sprite.Sprite):
 
     def add_strip(self, image=None, change=True):
         if change:
-            self.image = self.image_original.copy()
+            self.image = self.base_image.copy()
             if image is not None:
                 self.blit_image = pygame.transform.smoothscale(image.copy(), (
                 int(100 * self.image_scale[0]), int(100 * self.image_scale[1])))
                 self.strip_rect = self.blit_image.get_rect(
                     center=(self.image.get_width() / 2, self.image.get_height() / 2))
                 self.image.blit(self.blit_image, self.strip_rect)
-            self.image_original2 = self.image.copy()
+            self.base_image2 = self.image.copy()
         else:
-            self.image = self.image_original2.copy()
-        self.image_original3 = self.image_original2.copy()
+            self.image = self.base_image2.copy()
+        self.base_image3 = self.base_image2.copy()
         if self.activate is False:  # draw black corner and replace film dot
-            pygame.draw.rect(self.image_original3, (0, 0, 0), (0, 0, self.image.get_width(), self.image.get_height()),
+            pygame.draw.rect(self.base_image3, (0, 0, 0), (0, 0, self.image.get_width(), self.image.get_height()),
                              int(self.image.get_width() / 5))
 
 
@@ -383,7 +383,7 @@ class Button(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font = pygame.font.SysFont("helvetica", int(font_size * screen_scale[1]))
         self.image = image.copy()
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
         self.description = description
         self.text = text
         self.pos = pos
@@ -394,7 +394,7 @@ class Button(pygame.sprite.Sprite):
 
     def change_text(self, text):
         if text != self.text:
-            self.image = self.image_original.copy()
+            self.image = self.base_image.copy()
             self.text = text
             text_surface = self.font.render(self.text.capitalize(), True, (0, 0, 0))
             text_rect = text_surface.get_rect(
@@ -419,8 +419,8 @@ class SwitchButton(pygame.sprite.Sprite):
         self.pos = pos
         self.description = description
         self.current_option = 0
-        self.image_original = image
-        self.image = self.image_original.copy()
+        self.base_image = image
+        self.image = self.base_image.copy()
         self.text_list = text_list
         self.text = self.text_list[self.current_option]
         self.change_text(self.text)
@@ -429,7 +429,7 @@ class SwitchButton(pygame.sprite.Sprite):
     def change_option(self, option):
         if self.current_option != option:
             self.current_option = option
-            self.image = self.image_original.copy()
+            self.image = self.base_image.copy()
             self.text = self.text_list[self.current_option]
             self.change_text(self.text)
 
@@ -455,7 +455,7 @@ class BodyHelper(pygame.sprite.Sprite):
         self.image = pygame.Surface(self.size, pygame.SRCALPHA)
         self.image.fill((255, 255, 200))
         pygame.draw.rect(self.image, (100, 150, 150), (0, 0, self.image.get_width(), self.image.get_height()), 3)
-        self.image_original = self.image.copy()  # for original before add part and click
+        self.base_image = self.image.copy()  # for original before add part and click
         self.rect = self.image.get_rect(center=pos)
         self.ui_type = ui_type
         self.part_images_original = [image.copy() for image in part_images]
@@ -533,7 +533,7 @@ class BodyHelper(pygame.sprite.Sprite):
                     self.select_part(mouse_pos, True, False, list(model.mask_part_list.keys())[part])
 
     def blit_part(self):
-        self.image = self.image_original.copy()
+        self.image = self.base_image.copy()
         for index, image in enumerate(self.part_images):
             this_key = list(self.part_pos.keys())[index]
             pos = self.part_pos[this_key]
@@ -678,14 +678,14 @@ class NameBox(pygame.sprite.Sprite):
         self.image = pygame.Surface(self.size)
         self.image.fill((182, 233, 242))
         pygame.draw.rect(self.image, (100, 200, 0), (0, 0, self.image.get_width(), self.image.get_height()), 2)
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
         self.pos = pos
         self.rect = self.image.get_rect(midtop=self.pos)
         self.text = None
 
     def change_name(self, text):
         if text != self.text:
-            self.image = self.image_original.copy()
+            self.image = self.base_image.copy()
             self.text = text
             text_surface = self.font.render(self.text, True, (0, 0, 0))
             text_rect = text_surface.get_rect(
@@ -1681,7 +1681,7 @@ joints = pygame.sprite.Group()
 image = pygame.transform.smoothscale(load_image(current_dir, screen_scale, "film.png", "animation_maker_ui"),
                                      (int(50 * screen_scale[0]), int(50 * screen_scale[1])))
 
-Filmstrip.image_original = image
+Filmstrip.base_image = image
 filmstrips = pygame.sprite.Group()
 
 Button.containers = ui

@@ -81,7 +81,7 @@ class Weather:
             weather_image_rect = weather_image.get_rect(topright=(image.get_width(), 0))
             image.blit(weather_image, weather_image_rect)
 
-            time_ui.image = time_ui.image_original.copy()  # reset time ui image
+            time_ui.image = time_ui.base_image.copy()  # reset time ui image
             rect = image.get_rect(topright=(time_ui.image.get_width(), 0))
             time_ui.image.blit(image, rect)
 

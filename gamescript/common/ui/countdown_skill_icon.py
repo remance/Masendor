@@ -7,7 +7,7 @@ def countdown_skill_icon(self):
             if skill.game_id in self.troop_card_ui.value2["skill cd"]:
                 cd = int(self.troop_card_ui.value2["skill cd"][skill.game_id])
             if skill.game_id in self.troop_card_ui.value2["skill effect"]:
-                active_time = int(self.troop_card_ui.value2["skill effect"][skill.game_id]["Duration"])
+                active_time = int(self.troop_card_ui.value2["skill effect"][skill.game_id])
             skill.icon_change(cd, active_time)
     # for effect in self.effect_icon:
     #     cd = 0

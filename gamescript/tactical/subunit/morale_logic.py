@@ -7,7 +7,7 @@ infinity = float("inf")
 
 def morale_logic(self, dt, parent_state):
     """Morale check"""
-    if self.max_morale != infinity:
+    if self.max_morale != infinity and self.broken is False:
         if self.base_morale < self.max_morale:
             if self.morale <= 10:  # Enter retreat state when morale reach 0
                 if self.state not in (98, 99):
@@ -18,10 +18,11 @@ def morale_logic(self, dt, parent_state):
                     self.morale_regen -= random.uniform(0, max_random)  # morale regen slower per broken state
                     if self.morale_regen < 0:  # begin checking broken state
                         self.state = 99  # Broken state
+                        self.broken = True
                         self.gone_leader_process("Broken")
 
-                        corner_list = [[0, self.base_pos[1]], [1000, self.base_pos[1]], [self.base_pos[0], 0],
-                                       [self.base_pos[0], 1000]]
+                        corner_list = ((0, self.base_pos[1]), (self.map_corner[1], self.base_pos[1]),
+                                       (self.base_pos[0], 0), (self.base_pos[0], self.map_corner[0]))
                         which_corner = [self.base_pos.distance_to(corner_list[0]),
                                         self.base_pos.distance_to(corner_list[1]),
                                         self.base_pos.distance_to(corner_list[2]),
@@ -32,7 +33,7 @@ def morale_logic(self, dt, parent_state):
                         self.command_target = self.base_target
                         self.new_angle = self.set_rotate(self.base_target)
 
-                    for subunit in self.unit.subunit_list:
+                    for subunit in self.unit.alive_subunit_list:
                         subunit.base_morale -= (
                                 15 * subunit.mental)  # reduce morale of other subunit, creating panic when seeing friend panic and may cause mass panic
                 if self.morale < 0:

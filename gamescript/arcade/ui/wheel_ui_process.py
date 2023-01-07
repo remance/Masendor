@@ -64,11 +64,11 @@ def wheel_ui_process(self, choice):
                     self.player_char.range_weapon_selection()
                 elif choice == "Volley Aim":
                     self.player_input_state = "volley aim"
-                    for this_subunit in self.player_char.unit.subunit_list:
+                    for this_subunit in self.player_char.unit.alive_subunit_list:
                         this_subunit.range_weapon_selection()
                 elif choice == "Troop Aim":
                     self.player_input_state = "troop aim"
-                    for this_subunit in self.player_char.unit.subunit_list:
+                    for this_subunit in self.player_char.unit.alive_subunit_list:
                         if this_subunit != self.player_char:
                             this_subunit.range_weapon_selection()
 

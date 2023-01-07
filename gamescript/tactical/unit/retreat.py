@@ -1,35 +1,45 @@
+import math
+
+import pygame
+
 from gamescript.common import utility
 
 rotation_xy = utility.rotation_xy
 
+retreat_angle = (math.radians(90), math.radians(270), math.radians(180), math.radians(0), math.radians(135),
+                 math.radians(225), math.radians(45), math.radians(315))
+
 
 def retreat(self):
     if self.retreat_way is None:  # not yet start retreat or previous retreat way got blocked
-        retreat_side = (
-            sum(subunit.enemy_front != [] or subunit.enemy_side != [] for subunit in self.frontline_object[0] if
-                subunit is not None) + 2,
-            sum(subunit.enemy_front != [] or subunit.enemy_side != [] for subunit in self.frontline_object[1] if
-                subunit is not None) + 1,
-            sum(subunit.enemy_front != [] or subunit.enemy_side != [] for subunit in self.frontline_object[2] if
-                subunit is not None) + 1,
-            sum(subunit.enemy_front != [] or subunit.enemy_side != [] for subunit in self.frontline_object[3] if
-                subunit is not None))
+        retreat_score = [0, 0, 0, 0, 0, 0, 0, 0]  # retreat to path with fewest enemy then closest to border
+        retreat_target = []
 
-        this_index = retreat_side.index(
-            min(retreat_side))  # find side with least subunit fighting to retreat, rear always prioritised
-        if this_index == 0:  # front
-            self.retreat_way = (self.base_pos[0], (self.base_pos[1] - self.base_height_box))  # find position to retreat
-        elif this_index == 1:  # left
-            self.retreat_way = (self.base_pos[0] - self.base_width_box, self.base_pos[1])  # find position to retreat
-        elif this_index == 2:  # right
-            self.retreat_way = (self.base_pos[0] + self.base_width_box, self.base_pos[1])  # find position to retreat
-        else:  # rear
-            self.retreat_way = (
-                self.base_pos[0], (self.base_pos[1] + self.base_height_box))  # find rear position to retreat
-        self.retreat_way = [rotation_xy(self.base_pos, self.retreat_way, self.radians_angle), this_index]
-        base_target = self.base_pos + ((self.retreat_way[0] - self.base_pos) * 1000)
+        map_distance_score = (self.map_corner[0] + self.map_corner[1]) / 2
 
-        self.start_retreat(base_target)
+        for index, angle in enumerate(retreat_angle):  # find retreat angle from 8 directions
+            base_target = pygame.Vector2(self.base_pos[0] + (self.map_corner[0] * 2 * math.sin(angle)),
+                                         self.base_pos[1] - (self.map_corner[1] * 2 * math.cos(angle)))
+            if base_target[0] < 0:
+                base_target[0] = 0
+            elif base_target[0] > self.map_corner[0]:
+                base_target[0] = self.map_corner[0]
+            if base_target[1] < 0:
+                base_target[1] = 0
+            elif base_target[1] > self.map_corner[1]:
+                base_target[1] = self.map_corner[1]
+
+            retreat_score[index] += (self.base_pos.distance_to(base_target) / map_distance_score)  # keep distance score as decimal
+            retreat_target.append(base_target)
+            for this_subunit in self.battle.battle_subunit_list:
+                if this_subunit.team != self.team:
+                    clip = this_subunit.rect.clipline(base_target, self.base_pos)
+                    if len(clip) > 0:
+                        retreat_score[index] += 1
+
+        base_target = retreat_target[retreat_score.index(min(retreat_score))]  # pick lowest score direction
+        self.retreat_command(base_target, self.state)
+
         # if random.randint(0, 100) > 99:  # change side via surrender or betrayal
         #     if self.team == 1:
         #         self.battle.allunitindex = self.switchfaction(self.battle.team1_unit, self.battle.team2_unit,

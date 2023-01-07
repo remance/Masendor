@@ -11,10 +11,11 @@ def enter_battle(self):
     """Setup various variables at the start of battle or when new unit spawn/split"""
     self.alive_subunit_list = [item for item in self.subunit_list]
     self.setup_stat(battle_start=True)
-    self.setup_frontline()
     self.old_troop_health, self.old_troop_stamina = self.troop_number, self.stamina
     self.leader_social = self.leader[0].social
     self.authority = self.leader[0].authority  # will be recalculated again later
+
+    self.map_corner = self.battle.map_corner
 
     if self.commander:  # assign team leader commander to every unit in team if this is commander unit
         for this_unit in self.battle.all_team_unit[self.team]:

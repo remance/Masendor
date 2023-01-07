@@ -7,13 +7,40 @@ def status_update(self, weather=None):
     """Calculate stat from stamina, morale state, skill, status, terrain"""
 
     if self.red_border and self.unit.selected:  # have red border (taking melee_dmg) on inspect ui, reset image
-        self.block.blit(self.block_original, self.corner_image_rect)
+        self.block_image.blit(self.block_base_image, self.corner_image_rect)
         self.red_border = False
 
     for effect in self.special_effect:  # reset temporary special effect
         self.special_effect[effect][0][1] = False
 
     self.fatigue()
+
+    # Cooldown, active and effect timer function
+    for key in self.skill_cooldown.copy():  # loop is faster than comprehension here
+        self.skill_cooldown[key] -= self.timer
+        if self.skill_cooldown[key] <= 0:  # remove cooldown if time reach 0
+            self.skill_cooldown.pop(key)
+
+    self.idle_action = {}
+    for key, value in self.skill_effect.items():
+        self.skill_duration[key] -= self.timer
+        if self.skill_duration[key] <= 0:  # skill end
+            self.skill_duration.pop(key)
+        elif "hold" in value["Action"] or "repeat" in value["Action"]:
+            self.idle_action = self.command_action
+
+    self.skill_effect = {key: val for key, val in self.skill_effect.items() if
+                         key in self.skill_duration and (len(val["Restriction"]) == 0 or self.state in val[
+                             "Restriction"])}  # remove effect if time reach 0 or restriction state is not met
+
+    for key in self.status_duration.copy():  # loop is faster than comprehension here
+        self.status_duration[key] -= self.timer
+        if self.status_duration[key] <= 0:
+            self.status_duration.pop(key)
+
+    # Remove status that reach 0 duration or status with conflict to the other status
+    self.status_effect = {key: val for key, val in self.status_effect.items() if key in self.status_duration and
+                          any(ext in self.status_effect for ext in val["Status Conflict"]) is False}
 
     # Reset to base stat
     self.morale = self.base_morale
@@ -72,14 +99,12 @@ def status_update(self, weather=None):
     crit_effect_modifier = 1
 
     # Apply status effect from trait
-    trait_list = list(self.trait["Original"].values()) + list(
-        self.trait["Weapon"][self.equipped_weapon][0].values()) + list(
-        self.trait["Weapon"][self.equipped_weapon][1].values())
-    if len(trait_list) > 1:
+    for trait_list in (self.trait["Original"].values(), self.trait["Weapon"][self.equipped_weapon][0].values(),
+        self.trait["Weapon"][self.equipped_weapon][1].values()):
         for trait in trait_list:
             if 0 not in trait["Status"]:
                 for effect in trait["Status"]:  # apply status effect from trait
-                    self.status_effect[effect] = self.status_list[effect].copy()
+                    self.apply_effect(effect, self.status_list, self.status_effect, self.status_duration)
                     if trait["Buff Range"] > 1:  # status buff range to nearby friend
                         self.apply_status_to_friend(trait["Buff Range"], effect)
 
@@ -318,24 +343,3 @@ def status_update(self, weather=None):
     self.rotate_speed = self.unit.rotate_speed * 2  # rotate speed for subunit only use for self rotate not subunit rotate related
     if self.state in (0, 99):
         self.rotate_speed = self.speed
-
-    # Cooldown, active and effect timer function
-    self.skill_cooldown = {key: val - self.timer for key, val in
-                           self.skill_cooldown.items()}  # cooldown decrease overtime
-    self.skill_cooldown = {key: val for key, val in self.skill_cooldown.items() if
-                           val > 0}  # remove cooldown if time reach 0
-    self.idle_action = {}
-    for key, value in self.skill_effect.items():  # Can't use dict comprehension here since value include all other skill stat
-        value["Duration"] -= self.timer
-        if key != 0 and ("hold" in value["Action"] or "repeat" in value["Action"]):
-            self.idle_action = self.command_action
-
-    self.skill_effect = {key: val for key, val in self.skill_effect.items() if
-                         val["Duration"] > 0 and len(val["Restriction"]) > 0 and self.state in val[
-                             "Restriction"]}  # remove effect if time reach 0 or restriction state is not met
-    for a, b in self.status_effect.items():
-        b["Duration"] -= self.timer
-
-    # Remove status that reach 0 duration or status with conflict to the other status
-    self.status_effect = {key: val for key, val in self.status_effect.items() if val["Duration"] > 0 or
-                          any(ext in self.status_effect for ext in val["Status Conflict"]) is False}

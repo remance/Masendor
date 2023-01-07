@@ -42,7 +42,7 @@ def loss_cal(self, target, final_dmg, final_morale_dmg, leader_dmg, element_effe
     target.stamina -= self.stamina_dmg_bonus
 
     if target.red_border is False:  # add red colour to indicate taking damage
-        target.block.fill((200, 50, 50))
+        target.block_image.fill((200, 50, 50))
         target.red_border = True
 
     for key, value in element_effect.items():

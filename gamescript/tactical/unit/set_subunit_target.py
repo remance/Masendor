@@ -16,7 +16,7 @@ def set_subunit_target(self, target="rotate", reset_path=False, *args):
                                       # get the top left corner of sprite to generate subunit position
                                       self.base_pos[1] - self.base_height_box)
 
-        for subunit in self.subunit_list:  # generate position of each subunit
+        for subunit in self.alive_subunit_list:  # generate position of each subunit
             if subunit.state != 99 or (subunit.state == 99 and self.retreat_start):
                 new_target = unit_topleft + subunit.unit_position
                 if reset_path:
@@ -32,8 +32,8 @@ def set_subunit_target(self, target="rotate", reset_path=False, *args):
         unit_topleft = pygame.Vector2(target[0] - self.base_width_box,
                                       target[1])  # get the top left corner of sprite to generate subunit position
 
-        for subunit in self.subunit_list:  # generate position of each subunit
-            if subunit.state != 99 or (subunit.state == 99 and self.retreat_start):
+        for subunit in self.alive_subunit_list:  # generate position of each subunit
+            if subunit.broken is False or (subunit.broken and self.retreat_start):
                 subunit.new_angle = self.new_angle
                 new_target = unit_topleft + subunit.unit_position
                 if reset_path:

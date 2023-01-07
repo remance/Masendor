@@ -131,7 +131,6 @@ class Subunit(pygame.sprite.Sprite):
         self.board_pos = None  # used for event log position of subunit (Assigned in battle subunit setup)
         self.walk = False  # currently walking
         self.run = False  # currently running
-        self.frontline = False  # on front line of unit or not
         self.unit_leader = False  # contain the leader of unit or not, making it leader subunit
         self.attack_target = None  # target for attacking
         self.melee_target = None  # current target of melee combat
@@ -175,8 +174,11 @@ class Subunit(pygame.sprite.Sprite):
 
         self.screen_scale = self.battle.screen_scale
 
+        self.map_corner = self.battle.map_corner
+
         self.skill_cond = 0
         self.broken_limit = 0  # morale require for unit to stop broken state, will increase everytime broken state stop
+        self.broken = False  # completely broken means no more chance of leaving broken state and morale is not check
         self.interrupt_animation = False
         self.top_interrupt_animation = False  # interrupt animation regardless of property
         self.use_animation_sprite = False
@@ -389,7 +391,9 @@ class Subunit(pygame.sprite.Sprite):
         self.original_morale_regen = 2  # morale regeneration modifier
         self.available_skill = []  # list of skills that subunit can currently use
         self.status_effect = {}  # current status effect
+        self.status_duration = {}  # current status duration
         self.skill_effect = {}  # activate skill effect
+        self.skill_duration = {}  # current active skill duration
         self.base_inflict_status = {}  # status that this subunit will inflict to enemy when melee_attack
 
         self.one_activity_timer = 0  # timer for activities that can be only perform when no others occur like knock down
@@ -529,15 +533,15 @@ class Subunit(pygame.sprite.Sprite):
         sprite_dict = self.create_subunit_sprite(self.battle.subunit_inspect_sprite_size, self.troop_size)
         self.inspect_image = sprite_dict["image"]
         self.image = self.inspect_image.copy()
-        self.inspect_image_original = sprite_dict["original"]
-        self.inspect_image_original2 = sprite_dict["original2"]
-        self.inspect_image_original3 = sprite_dict["original3"]
-        self.block = sprite_dict["block"]
-        self.block_original = sprite_dict["block_original"]
+        self.inspect_base_image = sprite_dict["original"]
+        self.inspect_base_image2 = sprite_dict["original2"]
+        self.inspect_base_image3 = sprite_dict["original3"]
+        self.block_image = sprite_dict["block"]
+        self.block_base_image = sprite_dict["block_original"]
         self.selected_inspect_image = sprite_dict["selected"]
         self.selected_inspect_image_rect = sprite_dict["selected_rect"]
-        self.selected_inspect_image_original = sprite_dict["selected_original"]
-        self.selected_inspect_image_original2 = sprite_dict["selected_original2"]
+        self.selected_inspect_base_image = sprite_dict["selected_original"]
+        self.selected_inspect_base_image2 = sprite_dict["selected_original2"]
         self.far_image = sprite_dict["far"]  # sprite when furthest zoom
         self.far_selected_image = sprite_dict["far_selected"]
         self.health_image_rect = sprite_dict["health_rect"]
@@ -548,8 +552,8 @@ class Subunit(pygame.sprite.Sprite):
         self.health_image_list = sprite_dict["health_list"]
         self.stamina_image_list = sprite_dict["stamina_list"]
 
-        self.icon_sprite_width = self.inspect_image_original3.get_width()
-        self.icon_sprite_height = self.inspect_image_original3.get_height()
+        self.icon_sprite_width = self.inspect_base_image3.get_width()
+        self.icon_sprite_height = self.inspect_base_image3.get_height()
         self.collide_distance = self.icon_sprite_height / 10  # distance to check collision
         self.front_distance = self.icon_sprite_height / 20  # distance from front side
         self.full_distance = self.front_distance / 2  # distance for sprite merge check
@@ -623,14 +627,11 @@ class Subunit(pygame.sprite.Sprite):
                 if self.timer > 1:  # Update status and skill use around every 1 second
                     self.status_update(weather=weather)
                     self.timer -= 1
-
-                if self.state in (98, 99) and (self.battle.map_corner[0] <= self.base_pos[0] <= 1 or
-                                               self.battle.map_corner[1] <= self.base_pos[1] <= 1):  # remove troop pass map border
-                    self.state = 100  # enter dead state
-                    self.battle.flee_troop_number[
-                        self.team] += self.troop_number  # add number of troop retreat from battle
-                    self.troop_loss(self.troop_number)
-                    self.battle.battle_camera.remove(self)
+                if self.state in (98, 99) and (self.map_corner[0] <= self.base_pos[0] or self.base_pos[0] <= 0 or
+                                               self.map_corner[1] <= self.base_pos[1] or self.base_pos[1] <= 0):
+                    self.state = 100  # # remove troop that pass map border, enter dead state
+                    self.subunit_health = 0
+                    self.die("flee")
 
             self.enemy_front = []  # reset collide
             self.enemy_side = []
@@ -642,7 +643,7 @@ class Subunit(pygame.sprite.Sprite):
         else:  # dead
             if self.state != 100:  # enter dead state
                 self.state = 100  # enter dead state
-                self.die()
+                self.die("dead")
 
         recreate_rect = False
         if self.last_zoom != zoom:  # camera zoom is changed
@@ -719,8 +720,8 @@ class EditorSubunit(Subunit):
         """Create subunit object used for editor only"""
         Subunit.__init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale)
         self.pos = start_pos
-        self.image = self.block
-        self.inspect_image_original = self.block_original
+        self.image = self.block_image
+        self.inspect_image_original = self.block_base_image
         self.inspect_pos = (self.pos[0] - (self.image.get_width() / 2), self.pos[1] - (self.image.get_height() / 2))
         self.commander = True
         self.rect = self.image.get_rect(center=self.pos)

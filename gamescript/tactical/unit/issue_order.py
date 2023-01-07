@@ -1,6 +1,5 @@
 def issue_order(self, target_pos, run_command=False, revert_move=False, enemy=None, other_command=None):
-    """Process input order into state and subunit base_target action
-    other_command parameter 0 is default command, 1 is natural pause, 2 is order pause"""
+    """Process input order into state and subunit base_target action"""
     if other_command is None:  # move or melee_attack command
         self.state = 1
 

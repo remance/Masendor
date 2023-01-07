@@ -47,9 +47,9 @@ def health_stamina_logic(self, dt):
             for index, health in enumerate(self.health_list):
                 if self.subunit_health > health:
                     if self.last_health_state != index:
-                        self.inspect_image_original3.blit(self.health_image_list[index], self.health_image_rect)
-                        self.block_original.blit(self.health_image_list[index], self.health_block_rect)
-                        self.block.blit(self.block_original, self.corner_image_rect)
+                        self.inspect_base_image3.blit(self.health_image_list[index], self.health_image_rect)
+                        self.block_base_image.blit(self.health_image_list[index], self.health_block_rect)
+                        self.block_image.blit(self.block_base_image, self.corner_image_rect)
                         self.last_health_state = index
                         self.zoom_scale()
                     break
@@ -69,10 +69,10 @@ def health_stamina_logic(self, dt):
             for index, stamina in enumerate(self.stamina_list):
                 if self.stamina >= stamina:
                     if self.last_stamina_state != index:
-                        self.inspect_image_original3.blit(self.stamina_image_list[index], self.stamina_image_rect)
+                        self.inspect_base_image3.blit(self.stamina_image_list[index], self.stamina_image_rect)
                         self.zoom_scale()
-                        self.block_original.blit(self.stamina_image_list[index], self.stamina_block_rect)
-                        self.block.blit(self.block_original, self.corner_image_rect)
+                        self.block_base_image.blit(self.stamina_image_list[index], self.stamina_block_rect)
+                        self.block_image.blit(self.block_base_image, self.corner_image_rect)
                         self.last_stamina_state = index
                     break
 

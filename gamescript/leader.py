@@ -60,7 +60,7 @@ class Leader(pygame.sprite.Sprite):
 
         self.image_position = self.leader_pos[self.role]  # image position based on role in command ui
         self.rect = self.image.get_rect(midbottom=self.image_position)
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
 
         self.bad_morale = (20, 30)  # other position morale lost
         self.commander = False  # army commander
@@ -97,9 +97,9 @@ class Leader(pygame.sprite.Sprite):
                             self.skill[key] = value2
                             self.skill[key]["Action"] = old_action  # get action from normal leader skill
 
-
     def enter_battle(self):
         if self.name != "None":
+            self.team = self.unit.team
             self.subunit = self.unit.subunit_object_array.flat[self.subunit_pos]  # setup subunit that leader belong
             self.subunit.leader = self  # put in leader to subunit with the set pos
             if self.role == 0:  # unit leader
@@ -131,7 +131,7 @@ class Leader(pygame.sprite.Sprite):
         self.social = self.leader_data.leader_class[stat["Social Class"]]
 
         self.full_image, self.image = self.create_portrait()
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
 
         self.image_position = self.leader_pos[self.role]  # image position based on role in command ui
         self.rect = self.image.get_rect(midbottom=self.image_position)

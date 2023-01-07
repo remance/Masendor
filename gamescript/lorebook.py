@@ -55,7 +55,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.font = pygame.font.SysFont("helvetica", int(textsize * self.screen_scale[1]))
         self.font_header = pygame.font.SysFont("oldenglishtext", int(52 * self.screen_scale[1]))
         self.image = image
-        self.image_original = self.image.copy()
+        self.base_image = self.image.copy()
         self.section = 0
         self.subsection = 1  # subsection of that section e.g. swordmen subunit in subunit section
         self.stat_data = None  # for getting the section stat data
@@ -159,7 +159,7 @@ class Lorebook(pygame.sprite.Sprite):
     def change_page(self, page, page_button, main_ui, portrait=None):
         """Change page of the current subsection, either next or previous page"""
         self.page = page
-        self.image = self.image_original.copy()  # reset encyclopedia image
+        self.image = self.base_image.copy()  # reset encyclopedia image
         self.page_design()  # draw new pages
 
         # Add or remove next/previous page button
@@ -212,7 +212,7 @@ class Lorebook(pygame.sprite.Sprite):
         if type(subsection) == str and self.subsection in self.index_data:  # use new subsection index instead of old one
             self.subsection = self.index_data[self.subsection]
         self.page = 0  # reset page to the first one
-        self.image = self.image_original.copy()
+        self.image = self.base_image.copy()
         self.portrait = None  # reset portrait, possible for subsection to not have portrait
         main_ui.remove(page_button[0])
         main_ui.remove(page_button[1])

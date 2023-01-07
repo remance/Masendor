@@ -15,9 +15,7 @@ def move_logic(self, dt, unit_state, collide_list):
     if (self.base_pos != self.base_target or self.momentum > 1) and \
             (revert_move or self.angle == self.new_angle):  # cannot move if unit still need to rotate
         no_collide_check = False  # can move if front of unit not collided
-        if (((self.unit.collide is False or self.frontline is False) or unit_state == 99)
-                or (unit_state == 10 and ((self.frontline or self.unit.attack_mode == 2) and self.unit.attack_mode != 1)
-                    or self.momentum > 1)):
+        if self.unit.collide is False or self.broken or unit_state == 10 or self.momentum > 1:
             no_collide_check = True
 
         enemy_collide_check = False  # for chance to move or charge through enemy
@@ -57,8 +55,8 @@ def move_logic(self, dt, unit_state, collide_list):
                 new_move_length = move.length()
                 new_pos = self.base_pos + move
 
-                if speed > 0 and (self.state in (98, 99) or (self.state not in (98, 99) and
-                                                             (0 < new_pos[0] < 1000 and 0 < new_pos[1] < 1000))):
+                if speed > 0 and (self.state in (98, 99) or (0 < new_pos[0] < self.map_corner[0] and
+                                                             0 < new_pos[1] < self.map_corner[1])):
                     # cannot go pass map unless in retreat state
                     if new_move_length <= move_length:  # move normally according to move speed
                         self.base_pos += move
@@ -117,5 +115,5 @@ def move_logic(self, dt, unit_state, collide_list):
                             if self.momentum <= 0.1:
                                 self.momentum = 0.1
 
-            else:  # Stopping subunit when reach base_target
+            elif self.broken is False:  # Stopping subunit when reach base_target
                 self.state = 0  # idle

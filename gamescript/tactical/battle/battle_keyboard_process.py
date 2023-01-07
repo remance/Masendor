@@ -69,19 +69,18 @@ def battle_keyboard_process(self, key_press):
     #         self.last_selected.switchfaction(self.team1_unit, self.team2_unit, self.team1_pos_list, self.enactment)
     #     else:
     #         self.last_selected.switchfaction(self.team2_unit, self.team1_unit, self.team2_pos_list, self.enactment)
-    # elif key_press == pygame.K_l and self.last_selected is not None:
-    #     for subunit in self.last_selected.subunit_sprite:
-    #         subunit.base_morale = 0
-    # elif key_press == pygame.K_k and self.last_selected is not None:
-    #     # for index, subunit in enumerate(self.last_selected.subunit_sprite):
-    #     #     subunit.unit_health -= subunit.unit_health
-    #     self.subunit_selected.self.unit_health -= self.subunit_selected.self.unit_health
-    # elif key_press == pygame.K_m and self.last_selected is not None:
-    #     # self.last_selected.leader[0].health -= 1000
-    #     self.subunit_selected.self.leader.health -= 1000
-    #     # self.subunit_selected.self.base_morale -= 1000
-    #     # self.subunit_selected.self.broken_limit = 80
-    #     # self.subunit_selected.self.state = 99
+    elif key_press == pygame.K_l and self.current_selected is not None:
+        for subunit in self.current_selected.alive_subunit_list:
+            subunit.base_morale -= 10000000
+    elif key_press == pygame.K_k and self.current_selected is not None:
+        for subunit in self.current_selected.alive_subunit_list:
+            subunit.subunit_health -= 10000000
+    # elif key_press == pygame.K_m and self.current_selected is not None:
+        # self.last_selected.leader[0].health -= 1000
+        # self.subunit_selected.self.leader.health -= self.subunit_selected.self.leader.health
+        # self.subunit_selected.self.base_morale -= 1000
+        # self.subunit_selected.self.broken_limit = 80
+        # self.subunit_selected.self.state = 99
     # elif key_press == pygame.K_COMMA and self.last_selected is not None:
     #     for index, subunit in enumerate(self.last_selected.subunit_sprite):
     #         subunit.stamina -= subunit.stamina

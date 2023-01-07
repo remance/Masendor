@@ -4,5 +4,5 @@ def revert_move(self):
     self.move_rotate = False  # will not rotate to move
     self.revert = True
     new_angle = self.set_rotate(self.base_target)
-    for subunit in self.subunit_list:
+    for subunit in self.alive_subunit_list:
         subunit.new_angle = new_angle

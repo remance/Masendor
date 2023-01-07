@@ -15,6 +15,8 @@ def enter_battle(self, zoom, animation_pool):
     except AttributeError:
         pass
 
+    self.map_corner = self.battle.map_corner
+
     self.command_buff = self.unit.command_buff[
                             self.subunit_type] * 100  # Command buff from main leader according to this subunit type
     self.grade_social_effect = self.unit.leader_social[self.grade_name]

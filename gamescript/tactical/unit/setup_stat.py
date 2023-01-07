@@ -8,12 +8,12 @@ def setup_stat(self, battle_start=False):
     how_many = 0
     all_shoot_range = []  # list of shoot range, use to get the shortest and longest one
 
-    # v Grab subunit stat
+    # Grab subunit stat
     not_broken = False
     # if self.zoom == 1:  # closest zoom
 
     # for checking row order and adjusting layer to show subunit closest to bottom of the screen first
-    pos_dict = {sprite: sprite.base_pos for sprite in self.subunit_list}
+    pos_dict = {sprite: sprite.base_pos for sprite in self.alive_subunit_list}
     pos_dict = dict(sorted(pos_dict.items(), key=lambda x: x[1][1]))
 
     for index, subunit in enumerate(pos_dict.keys()):
@@ -41,5 +41,6 @@ def setup_stat(self, battle_start=False):
         self.can_split_row = False  # can not split unit
         self.can_split_col = False
 
-    self.cal_unit_stat(how_many, all_speed, all_shoot_range,
-                       battle_start)  # calculate stat for unit related calculation
+    if how_many > 0:
+        self.cal_unit_stat(how_many, all_speed, all_shoot_range,
+                           battle_start)  # calculate stat for unit related calculation

@@ -30,12 +30,11 @@ class Unit(pygame.sprite.Sprite):
     change_formation = empty_method
     enter_battle = empty_method
     placement = empty_method
+    retreat_command = empty_method
     selection = empty_method
     set_target = empty_method
-    setup_frontline = empty_method
     setup_subunit_position_list = empty_method
     shift_line = empty_method
-    start_retreat = empty_method
     subunit_formation_change = empty_method
 
     # Import from *genre*.unit
@@ -85,6 +84,7 @@ class Unit(pygame.sprite.Sprite):
         self.team_commander = None  # commander leader
         self.start_where = []
         self.subunit_list = []
+        self.alive_subunit_list = []
         self.subunit_object_array = np.full(self.unit_size, None)
         self.subunit_id_array = subunit_list  # troop id array, will be converted to subunit game id array when creating subunit in generate_unit, must not contain empty row or column unlike subunit_object_array
         self.leader = []
@@ -102,6 +102,7 @@ class Unit(pygame.sprite.Sprite):
         self.last_zoom = 1  # zoom level without calculate with 11 - zoom for scale
 
         self.screen_scale = self.battle.screen_scale
+        self.map_corner = self.battle.map_corner
 
         self.base_width_box, self.base_height_box = len(self.subunit_id_array[0]) * (self.image_size[0] + 10) / 20, \
                                                     len(self.subunit_id_array) * (self.image_size[1] + 2) / 20
@@ -146,6 +147,7 @@ class Unit(pygame.sprite.Sprite):
         self.attack_place = False  # attack position instead of enemy
         self.retreat_start = False
         self.retreat_way = None
+        self.broken = False
         self.collide = False  # for checking if subunit collide, if yes then stop moving
         self.attack_target = None  # attack base_target, can be either int or unit object
         self.got_killed = False  # for checking if destroyed() was performed when subunit destroyed yet
@@ -155,7 +157,7 @@ class Unit(pygame.sprite.Sprite):
 
         self.run_toggle = 0  # 0 = double right click to run, 1 = only one right click will make unit run
         self.shoot_mode = 0  # 0 = both arc and non-arc shot, 1 = arc shot only, 2 = forbid arc shot
-        self.attack_mode = 0  # frontline attack, 1 = formation attack, 2 = free for all attack,
+        self.attack_mode = 0  # 10 = formation attack, 1 = free for all attack,
         self.hold = 0  # 0 = not hold, 1 = skirmish/scout/avoid, 2 = hold
         self.fire_at_will = 0  # 0 = fire at will, 1 = no fire
         # ^ End behaviour check
@@ -198,8 +200,6 @@ class Unit(pygame.sprite.Sprite):
         self.team = team  # team
 
         self.subunit_position_list = []
-        self.frontline_object = {0: [], 1: [], 2: [],
-                                 3: []}  # rontline keep list of subunit at the front of each side in combat, order:front, left, right, rear
 
         self.battle.all_team_unit["alive"].add(self)
         self.subunit_type_count = {0: 0, 1: 0,  # melee and range infantry
@@ -220,16 +220,14 @@ class Unit(pygame.sprite.Sprite):
             self.last_zoom = zoom
 
         if self.dead_change:  # setup frontline again when any subunit destroyed
-            if len(self.subunit_id_array) > 0 and (
-                    len(self.subunit_id_array) > 1 or any(subunit != 0 for subunit in self.subunit_id_array[0])):
-                self.setup_frontline()
-
+            if len(self.alive_subunit_list) > 0:
+                self.auth_penalty = 0
                 for subunit in self.alive_subunit_list:
+                    self.auth_penalty += subunit.auth_penalty  # add authority penalty of all alive subunit
                     subunit.base_morale -= (30 * subunit.mental)
                 self.dead_change = False
 
-            # Remove when troop number reach 0
-            else:
+            else:  # Unit enter dead state when no more troop left
                 self.stamina, self.morale, self.speed = 0, 0, 0
 
                 leader_list = [leader for leader in self.leader]  # create temp list to remove leader
