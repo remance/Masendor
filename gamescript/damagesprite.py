@@ -46,14 +46,14 @@ class DamageSprite(pygame.sprite.Sprite):
 
     def __init__(self, attacker, weapon, dmg, penetrate, weapon_stat, max_range, camera_zoom,
                  attack_type, specific_attack_pos=None, height_ignore=False, degrade_when_travel=True,
-                 degrade_when_hit=True, random_direction=False, random_move=False):
+                 degrade_when_hit=True, random_direction=False, random_move=False, arc_shot=False):
         self._layer = 50
         pygame.sprite.Sprite.__init__(self, self.containers)
 
         self.attacker = attacker  # subunit that perform the attack
         self.battle = self.attacker.battle
         self.weapon = weapon  # weapon that use to perform the attack
-        self.arc_shot = False  # arc shot will only hit subunit when it reaches target
+        self.arc_shot = arc_shot  # arc shot will only hit subunit when it reaches target
         self.height = self.attacker.height
         self.accuracy = self.attacker.accuracy
         self.attack_type = attack_type
@@ -98,10 +98,10 @@ class DamageSprite(pygame.sprite.Sprite):
                     image_name = "base_sub"
                 self.image = self.bullet_weapon_sprite_pool[weapon_stat["Name"]][
                     attacker.weapon_version[attacker.equipped_weapon][weapon]][direction][image_name]
-            if attacker.check_special_effect("Arc Shot", weapon=0) and self.attacker.unit.shoot_mode != 2:
-                self.arc_shot = True  # arc shot will go pass unit to land at final base_target
             if (self.attacker.walk or self.attacker.run) and True in self.attacker.special_effect["Agile Aim"] is False:
                 self.accuracy -= 10  # accuracy penalty for shoot while moving
+            if self.arc_shot:  # arc shot incur accuracy penalty:
+                self.accuracy -= 10
 
             if specific_attack_pos is not None:
                 target_now = specific_attack_pos
@@ -139,7 +139,7 @@ class DamageSprite(pygame.sprite.Sprite):
 
             if specific_attack_pos is None and self.attacker.attack_target is not None:
                 if len(self.attacker.attack_target.alive_subunit_list) > 0:
-                    target_hit = self.attacker.find_melee_target(
+                    target_hit = self.attacker.find_attack_target(
                         self.attacker.attack_target.alive_subunit_list)  # find the closest subunit in enemy unit
                     target_now = target_hit.base_pos  # base_target is at the enemy position
                     how_long = attack_range / self.speed  # shooting distance divide damage sprite speed to find travel time

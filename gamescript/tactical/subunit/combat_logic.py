@@ -1,9 +1,21 @@
 import pygame
 
 melee_attack_command_action = ({"name": "Action 0", "melee attack": True}, {"name": "Action 1", "melee attack": True})
-range_attack_command_action = ({"name": "Action 0", "range attack": True}, {"name": "Action 1", "range attack": True})
-range_move_attack_command_action = ({"name": "Action 0", "range attack": True, "move attack": True, "movable": True},
-                                    {"name": "Action 1", "range attack": True, "move attack": True, "movable": True})
+
+range_attack_command_action = {True: ({"name": "Action 0", "range attack": True, "arc shot": True},
+                                      {"name": "Action 1", "range attack": True, "arc shot": True}),
+                               False: ({"name": "Action 0", "range attack": True, "arc shot": False},
+                                       {"name": "Action 1", "range attack": True, "arc shot": False})}
+
+range_move_attack_command_action = {True: ({"name": "Action 0", "range attack": True, "move attack": True,
+                                            "movable": True, "arc shot": True},
+                                           {"name": "Action 1", "range attack": True, "move attack": True,
+                                            "movable": True, "arc shot": True}),
+                                    False: ({"name": "Action 0", "range attack": True, "move attack": True,
+                                            "movable": True, "arc shot": False},
+                                            {"name": "Action 1", "range attack": True, "move attack": True,
+                                            "movable": True, "arc shot": False})}
+range_move_attack_direct_command_action = ()
 
 
 def combat_logic(self, dt, unit_state):
@@ -35,7 +47,7 @@ def combat_logic(self, dt, unit_state):
                     self.melee_target = self.unit.attack_target.alive_subunit_list[0]
                 if self.melee_target is not None:
                     if self.close_target is None:  # movement queue is empty regenerate new one
-                        self.close_target = self.find_melee_target(
+                        self.close_target = self.find_attack_target(
                             self.melee_target.unit.alive_subunit_list)  # find new close target
 
                         if self.close_target is not None:  # found target to fight
@@ -89,8 +101,8 @@ def combat_logic(self, dt, unit_state):
             self.new_angle = self.unit.angle
             self.state = 0
 
-        if self.state != 10 and self.magazine_count[self.equipped_weapon][0] > 0 and self.unit.fire_at_will == 0 and \
-                self.check_special_effect("Arc Shot", weapon=0) and \
+        if self.state != 10 and (self.magazine_count[self.equipped_weapon][0] > 0 or
+                                 self.magazine_count[self.equipped_weapon][1] > 0) and self.unit.fire_at_will == 0 and \
                 self.momentum == 1:  # Range attack when unit in melee state with arc_shot, # TODO add line of sight check instead
             self.state = 11
             if self.unit.nearby_enemy != {} and (self.attack_target is None or self.attack_pos is None):
@@ -167,12 +179,27 @@ def combat_logic(self, dt, unit_state):
             for weapon in self.ammo_now[self.equipped_weapon]:  # TODO add line of sight for range attack
                 # can shoot if reload finish and base_target existed and not dead. Non arc_shot cannot shoot if forbid
                 if self.ammo_now[self.equipped_weapon][weapon] > 0 and \
-                        self.shoot_range[weapon] >= self.attack_pos.distance_to(self.base_pos) and \
-                        (self.check_special_effect("Arc Shot", weapon=weapon) or self.unit.shoot_mode != 1):
-                    self.command_action = range_attack_command_action[weapon]
-                    if self.state in (12, 13):  # shoot while moving
-                        self.command_action = range_move_attack_command_action[weapon]
-                    break
+                        self.shoot_range[weapon] >= self.attack_pos.distance_to(self.base_pos):
+                    can_shoot = False
+                    weapon_arc_shot = self.check_special_effect("Arc Shot", weapon=weapon)
+                    if self.unit.shoot_mode in (0, 2):  # check for direct shot first, find line of sight
+                        if len(self.attack_target.alive_subunit_list) > 0:  # find the closest enemy subunit not block by friend
+                            target_hit = self.find_attack_target(
+                                self.attack_target.alive_subunit_list, check_line_of_sight=True)
+                            if target_hit is not None:
+                                can_shoot = True
+                                arc_shot = False
+
+                    if can_shoot is False and self.unit.shoot_mode in (0, 1) and weapon_arc_shot:  # check for arc shot
+                        can_shoot = True
+                        arc_shot = True
+
+                    if can_shoot:
+                        if self.state in (12, 13):  # shoot while moving
+                            self.command_action = range_move_attack_command_action[arc_shot][weapon]
+                        else:
+                            self.command_action = range_attack_command_action[arc_shot][weapon]
+                        break
 
     else:  # reset base_target every update to command base_target outside of combat
         if self.base_target != self.command_target:

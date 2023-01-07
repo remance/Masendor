@@ -59,7 +59,7 @@ class Subunit(pygame.sprite.Sprite):
     dmg_cal = empty_method
     element_effect_count = empty_method
     element_threshold_count = empty_method
-    find_melee_target = empty_method
+    find_attack_target = empty_method
     find_nearby_subunit = empty_method
     find_shooting_target = empty_method
     hit_register = empty_method

@@ -156,7 +156,7 @@ class Unit(pygame.sprite.Sprite):
         self.input_delay = 0
 
         self.run_toggle = 0  # 0 = double right click to run, 1 = only one right click will make unit run
-        self.shoot_mode = 0  # 0 = both arc and non-arc shot, 1 = arc shot only, 2 = forbid arc shot
+        self.shoot_mode = 0  # 0 = both arc and non-arc shot, 1 = arc shot only, 2 = direct shot only
         self.attack_mode = 0  # 10 = formation attack, 1 = free for all attack,
         self.hold = 0  # 0 = not hold, 1 = skirmish/scout/avoid, 2 = hold
         self.fire_at_will = 0  # 0 = fire at will, 1 = no fire
