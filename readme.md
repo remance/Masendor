@@ -229,11 +229,12 @@ become much larger than just a single battlefield), Queue command
 ---------------
 
 For those who have read this far, thank you for your interest in the game. To be honest, every single update begins with
-how do I even start with this.<br>
+how do I even start with this.
+
 I start developing this game with zero knowledge in video game development let alone how to use pygame. I start learning
-how to use pygame by tinkering with alien.py in pygame examples folder and keep testing/changing it until it becomes
-what you can see right now (I keep most video updates on youtube which show the progress of improvement almost from the
-start). All of the plan I list for the future is the same. I have no idea how to do it, the only thing I have is the
+how to use pygame by tinkering with `alien.py` in the pygame `examples` folder and keep testing/changing it until it became
+what you can see right now (I keep most video updates on YouTube which show the progress of improvement almost from the
+start). All of the plans I list for the future are the same. I have no idea how to do it, the only thing I have is the
 picture of what I want to make it look like. Nevertheless, it is fun figuring stuff out and don't let the lack of
 knowledge stop you from making your own game :P.
 
