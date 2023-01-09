@@ -91,9 +91,9 @@ huge size battle)
 
 # Latest Update
 
-![alt text](https://github.com/remance/preview/blob/main/latest.gif?raw=true)
+![alt text](https://github.com/remance/preview/blob/main/preview.png?raw=true)
 
-Animation maker for arcade mode.
+Animation system and combat system rework.
 
 ---------------
 

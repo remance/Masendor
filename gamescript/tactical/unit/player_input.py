@@ -15,7 +15,7 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
         self.attack_place = False
 
         # register user keyboard
-        if mouse_right_up and 1 <= cursor_pos[0] < 998 and 1 <= cursor_pos[1] < 998:
+        if mouse_right_up and 0 <= cursor_pos[0] < self.map_corner[0] and 0 <= cursor_pos[1] < self.map_corner[1]:
             if self.state in (10, 96) and target is None:
                 self.retreat_command(cursor_pos, 96)  # retreat
             else:
@@ -31,6 +31,7 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                         self.forced_melee = True
                     if key_state[pygame.K_LALT] or key_state[pygame.K_RALT]:
                         self.attack_place = True
-                self.issue_order(cursor_pos, double_mouse_right, self.revert, target)
+                self.issue_order(cursor_pos, run_command=double_mouse_right, revert_move=self.revert, enemy=target)
         elif other_command is not None:
-            self.issue_order(cursor_pos, double_mouse_right, self.revert, target, other_command)
+            self.issue_order(cursor_pos, run_command=double_mouse_right, revert_move=self.revert,
+                             enemy=target, other_command=other_command)

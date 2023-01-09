@@ -1060,11 +1060,18 @@ class Model:
                 try:
                     armour = self.armour[key + "_armour"].split("/")
                     gear_image = gen_armour_sprite_pool[head_race][armour[0]][armour[1]][head_side]["head"][
-                        bodypart_list[key + "_head"][2]].copy()
+                        bodypart_list[key + "_head"][2]]
+
+                    gear_image_sprite = pygame.Surface(gear_image.get_size(), pygame.SRCALPHA)
+                    rect = head_sprite_surface.get_rect(
+                        center=(gear_image_sprite.get_width() / 2, gear_image_sprite.get_height() / 2))
+                    gear_image_sprite.blit(head_sprite_surface, rect)
+
                     rect = gear_image.get_rect(
-                        center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
-                    head_sprite_surface.blit(gear_image, rect)
-                    p_head_sprite_surface[key] = head_sprite_surface
+                        center=(gear_image_sprite.get_width() / 2, gear_image_sprite.get_height() / 2))
+                    gear_image_sprite.blit(gear_image, rect)
+
+                    p_head_sprite_surface[key] = gear_image_sprite
 
                 except KeyError:  # skip part that not exist
                     pass
@@ -2723,7 +2730,7 @@ while True:
                                 for index, helper in enumerate(helper_list):
                                     if helper != helper_click:
                                         helper.select_part(None, False, True)
-                            elif ctrl_press and tuple(model.mask_part_list.keys()).index(this_part) in model.part_selected:
+                            elif this_part is not None and ctrl_press and tuple(model.mask_part_list.keys()).index(this_part) in model.part_selected:
                                 model.part_selected.remove(tuple(model.mask_part_list.keys()).index(this_part))  # clear old list first
                             for index, helper in enumerate(helper_list):  # add selected part to model selected
                                 if helper.part_selected:

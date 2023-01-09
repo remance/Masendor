@@ -242,8 +242,10 @@ def battle_mouse_process(self, mouse_left_up, mouse_right_up, double_mouse_right
             self.kill_effect_icon()
 
         if mouse_right_up and self.click_any is False:  # Unit command
-            self.current_selected.player_input(self.command_mouse_pos, mouse_left_up, mouse_right_up, mouse_left_down,
-                                               mouse_right_down, double_mouse_right, self.last_mouseover, key_state)
+            self.current_selected.player_input(self.command_mouse_pos, mouse_left_up=mouse_left_up,
+                                               mouse_right_up=mouse_right_up, mouse_left_down=mouse_left_down,
+                                               mouse_right_down=mouse_right_down, double_mouse_right=double_mouse_right,
+                                               target=self.last_mouseover, key_state=key_state)
 
     if mouse_right_up and self.current_selected is None and self.click_any is False:  # draw terrain popup ui when right click at map with no selected unit
         if 1 <= self.command_mouse_pos[0] <= 999 and \

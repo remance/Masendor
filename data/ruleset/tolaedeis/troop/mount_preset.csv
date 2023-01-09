@@ -1,108 +1,108 @@
-"ID","Name","Speed","Health Bonus","Charge Bonus","Stamina Bonus","Cost","Trait","Race","Type","Ruleset"
-1,"None",0,0,0,0,0,0,0,"Early Mount",0
-2,"Friesian Horse",70,500,80,50,,0,2,"Early Mount",0
-3,"Mongolian Horse",55,300,40,100,,0,2,"Early Mount",0
-4,"Andalusian Horse",,,,,,,2,"Early Mount",0
-5,"Shire Horse",,,,,,,2,"Early Mount",0
-6,"Arabian Horse",90,400,65,,,,2,"Early Mount",0
-7,"Marwari Horse",,,,,,,2,"Early Mount",0
-8,"Percheron Horse",,,,,,,2,"Early Mount",0
-9,"Thessalian Horse",,,,,,,2,"Early Mount",0
-10,"Turkoman Horse",,,,,,,2,"Early Mount",0
-11,"Fergahana Horse",,,,,,,2,"Early Mount",0
-12,"Caspian Horse",,,,,,,2,"Early Mount",0
-13,"Ardennes Horse",,,,,,,2,"Early Mount",0
-14,"Holsteiner Horse",,,,,,,2,"Early Mount",0
-15,"Akhal-Teke Horse",,,,,,,2,"Early Mount",0
-16,"Nisean Horse",,,,,,,2,"Early Mount",0
-17,"Zemaitukas Horse",,,,,,,2,"Early Mount",0
-18,"Menorquin Horse",,,,,,,2,"Early Mount",0
-19,"Don Horse",,,,,,,2,"Early Mount",0
-20,"Lipizzan Horse",,,,,,,2,"Early Mount",0
-21,"Barber Horse",,,,,,,2,"Early Mount",0
-22,"Lusitano Horse",,,,,,,2,"Early Mount",0
-23,"Murgese Horse",,,,,,,2,"Early Mount",0
-24,"Clydesdale Horse",60,400,30,100,,,2,"Early Mount",0
-25,"Kladruber Horse",,,,,,,2,"Early Mount",0
-26,"Fell Pony Horse",,,,,,,2,"Early Mount",0
-27,"Suffolk Horse",,,,,,,2,"Early Mount",0
-28,"Belgian Horse",,,,,,,2,"Early Mount",0
-29,"Jennet Horse",,,,,,,2,"Early Mount",0
-30,"Tibetan Pony",,,,,,,2,"Early Mount",0
-31,"Ferghana Horse",,,,,,,2,"Early Mount",0
-32,,,,,,,,,,
-33,,,,,,,,,,
-34,,,,,,,,,,
-35,,,,,,,,,,
-36,,,,,,,,,,
-37,,,,,,,,,,
-38,,,,,,,,,,
-39,,,,,,,,,,
-40,,,,,,,,,,
-41,,,,,,,,,,
-42,,,,,,,,,,
-43,,,,,,,,,,
-44,,,,,,,,,,
-45,,,,,,,,,,
-46,"Bactrian Camel",70,600,30,,,265,3,"Early Mount",0
-47,"Arabian Camel",,,,,,265,3,"Early Mount",0
-48,,,,,,,,,,
-49,"African Elephant",60,2000,200,,,0,4,"Early Mount",0
-50,"Asian Elephant",,,,,,0,4,"Early Mount",0
-51,,,,,,,,,,
-52,,,,,,,,,,
-53,,,,,,,,,,
-54,,,,,,,,,,
-55,,,,,,,,,,
-56,,,,,,,,,,
-57,,,,,,,,,,
-58,,,,,,,,,,
-59,,,,,,,,,,
-60,,,,,,,,,,
-61,,,,,,,,,,
-62,,,,,,,,,,
-63,,,,,,,,,,
-64,,,,,,,,,,
-65,,,,,,,,,,
-66,,,,,,,,,,
-67,,,,,,,,,,
-68,,,,,,,,,,
-69,,,,,,,,,,
-70,,,,,,,,,,
-71,,,,,,,,,,
-72,,,,,,,,,,
-73,,,,,,,,,,
-74,,,,,,,,,,
-75,,,,,,,,,,
-76,,,,,,,,,,
-77,,,,,,,,,,
-78,,,,,,,,,,
-79,,,,,,,,,,
-80,,,,,,,,,,
-81,,,,,,,,,,
-82,,,,,,,,,,
-83,,,,,,,,,,
-84,,,,,,,,,,
-85,,,,,,,,,,
-86,,,,,,,,,,
-87,,,,,,,,,,
-88,,,,,,,,,,
-89,,,,,,,,,,
-90,,,,,,,,,,
-91,,,,,,,,,,
-92,,,,,,,,,,
-93,,,,,,,,,,
-94,,,,,,,,,,
-95,,,,,,,,,,
-96,,,,,,,,,,
-97,"Light Chariot",70,1300,100,100,,0,5,"Land",0
-98,"Heavy Chariot",30,2500,80,100,,21,5,"Land",0
-99,"War Chariot",55,2000,90,100,,21,5,"Land",0
-100,"Egyptian War Chariot",60,2000,95,100,,21,5,"Land",0
-101,,,,,,,,,,
-102,,,,,,,,,,
-103,,,,,,,,,,
-104,,,,,,,,,,
-105,,,,,,,,,,
-106,,,,,,,,,,
-107,,,,,,,,,,
+"ID","Name","Speed Bonus","Health Bonus","Charge Bonus","Stamina Bonus","Cost","Trait","Race","Type"
+1,"None",0,0,0,0,0,0,0,"Early Mount"
+2,"Friesian Horse",10,500,80,50,0,0,2,"Early Mount"
+3,"Mongolian Horse",6,300,40,100,0,0,2,"Early Mount"
+4,"Andalusian Horse",,,,,0,,2,"Early Mount"
+5,"Shire Horse",,,,,0,,2,"Early Mount"
+6,"Arabian Horse",17,400,65,35,0,,2,"Early Mount"
+7,"Marwari Horse",,,,,0,,2,"Early Mount"
+8,"Percheron Horse",,,,,0,,2,"Early Mount"
+9,"Thessalian Horse",,,,,0,,2,"Early Mount"
+10,"Turkoman Horse",,,,,0,,2,"Early Mount"
+11,"Fergahana Horse",,,,,0,,2,"Early Mount"
+12,"Caspian Horse",,,,,0,,2,"Early Mount"
+13,"Ardennes Horse",,,,,0,,2,"Early Mount"
+14,"Holsteiner Horse",,,,,0,,2,"Early Mount"
+15,"Akhal-Teke Horse",,,,,0,,2,"Early Mount"
+16,"Nisean Horse",,,,,0,,2,"Early Mount"
+17,"Zemaitukas Horse",,,,,0,,2,"Early Mount"
+18,"Menorquin Horse",,,,,0,,2,"Early Mount"
+19,"Don Horse",,,,,0,,2,"Early Mount"
+20,"Lipizzan Horse",,,,,0,,2,"Early Mount"
+21,"Barber Horse",,,,,0,,2,"Early Mount"
+22,"Lusitano Horse",,,,,0,,2,"Early Mount"
+23,"Murgese Horse",,,,,0,,2,"Early Mount"
+24,"Clydesdale Horse",8,400,30,100,0,,2,"Early Mount"
+25,"Kladruber Horse",,,,,0,,2,"Early Mount"
+26,"Fell Pony Horse",,,,,0,,2,"Early Mount"
+27,"Suffolk Horse",,,,,0,,2,"Early Mount"
+28,"Belgian Horse",,,,,0,,2,"Early Mount"
+29,"Jennet Horse",,,,,0,,2,"Early Mount"
+30,"Tibetan Pony",,,,,0,,2,"Early Mount"
+31,"Ferghana Horse",,,,,0,,2,"Early Mount"
+32,,,,,,,,,
+33,,,,,,,,,
+34,,,,,,,,,
+35,,,,,,,,,
+36,,,,,,,,,
+37,,,,,,,,,
+38,,,,,,,,,
+39,,,,,,,,,
+40,,,,,,,,,
+41,,,,,,,,,
+42,,,,,,,,,
+43,,,,,,,,,
+44,,,,,,,,,
+45,,,,,,,,,
+46,"Bactrian Camel",6,600,30,,,265,3,"Early Mount"
+47,"Arabian Camel",,,,,,265,3,"Early Mount"
+48,,,,,,,,,
+49,"African Elephant",4,2000,200,,,0,4,"Early Mount"
+50,"Asian Elephant",,,,,,0,4,"Early Mount"
+51,,,,,,,,,
+52,,,,,,,,,
+53,,,,,,,,,
+54,,,,,,,,,
+55,,,,,,,,,
+56,,,,,,,,,
+57,,,,,,,,,
+58,,,,,,,,,
+59,,,,,,,,,
+60,,,,,,,,,
+61,,,,,,,,,
+62,,,,,,,,,
+63,,,,,,,,,
+64,,,,,,,,,
+65,,,,,,,,,
+66,,,,,,,,,
+67,,,,,,,,,
+68,,,,,,,,,
+69,,,,,,,,,
+70,,,,,,,,,
+71,,,,,,,,,
+72,,,,,,,,,
+73,,,,,,,,,
+74,,,,,,,,,
+75,,,,,,,,,
+76,,,,,,,,,
+77,,,,,,,,,
+78,,,,,,,,,
+79,,,,,,,,,
+80,,,,,,,,,
+81,,,,,,,,,
+82,,,,,,,,,
+83,,,,,,,,,
+84,,,,,,,,,
+85,,,,,,,,,
+86,,,,,,,,,
+87,,,,,,,,,
+88,,,,,,,,,
+89,,,,,,,,,
+90,,,,,,,,,
+91,,,,,,,,,
+92,,,,,,,,,
+93,,,,,,,,,
+94,,,,,,,,,
+95,,,,,,,,,
+96,,,,,,,,,
+97,"Light Chariot",70,1300,100,100,,0,5,"Land"
+98,"Heavy Chariot",30,2500,80,100,,21,5,"Land"
+99,"War Chariot",55,2000,90,100,,21,5,"Land"
+100,"Egyptian War Chariot",60,2000,95,100,,21,5,"Land"
+101,,,,,,,,,
+102,,,,,,,,,
+103,,,,,,,,,
+104,,,,,,,,,
+105,,,,,,,,,
+106,,,,,,,,,
+107,,,,,,,,,

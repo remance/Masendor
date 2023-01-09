@@ -13,7 +13,7 @@ default_sprite_size = (200, 200)
 def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_list, body_sprite_pool,
                         weapon_sprite_pool, armour_sprite_pool, effect_sprite_pool, animation_property,
                         weapon_joint_list, weapon, armour, colour_list, genre_sprite_size,
-                        screen_scale, race_list):
+                        screen_scale, race_list, idle_animation):
     frame_property = animation_part_list["frame_property"].copy()
     animation_property = animation_property.copy()
     check_prop = frame_property + animation_property
@@ -29,6 +29,25 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
                        any(ext in k for ext in except_list) is False and "weapon" not in k}  # layer list
     pose_layer_list.update({k: v[6] for k, v in animation_part_list.items() if v != [0] and v != "" and v != [""]
                             and "weapon" in k})
+    if "Skill" in animation_name:  # change layer of weapon for skill animation to match whether it is behind hand or not
+        for key, layer in pose_layer_list.items():
+            if "weapon" in key:
+                part = animation_part_list[key]
+                if part[1] != "sheath":
+                    if "main" in key:
+                        hand_layer = pose_layer_list[key[:2] + "_r_hand"]
+                        idle_hand_layer = idle_animation[key[:2] + "_r_hand"]
+                        idle_weapon_layer = idle_animation[key]
+                    else:
+                        hand_layer = pose_layer_list[key[:2] + "_l_hand"]
+                        idle_hand_layer = idle_animation[key[:2] + "_l_hand"]
+                        idle_weapon_layer = idle_animation[key]
+                    if layer != idle_weapon_layer:
+                        if idle_weapon_layer >= idle_hand_layer:  # weapon behind hand
+                            pose_layer_list[key] = hand_layer + 1
+                        else:  # weapon in front of hand
+                            pose_layer_list[key] = hand_layer - 1
+
     pose_layer_list = dict(sorted(pose_layer_list.items(), key=lambda item: item[1], reverse=True))
 
     for index, layer in enumerate(pose_layer_list):
@@ -261,9 +280,16 @@ def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool
         try:
             gear_image = armour_pool[head_race][armour][sprite_list[p + "_head"]][head_side]["head"][
                 body_part_list[2]]
+
+            gear_image_sprite = pygame.Surface(gear_image.get_size(), pygame.SRCALPHA)
+            rect = head_sprite_surface.get_rect(
+                center=(gear_image_sprite.get_width() / 2, gear_image_sprite.get_height() / 2))
+            gear_image_sprite.blit(head_sprite_surface, rect)
+
             rect = gear_image.get_rect(
-                center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
-            head_sprite_surface.blit(gear_image, rect)
+                center=(gear_image_sprite.get_width() / 2, gear_image_sprite.get_height() / 2))
+            gear_image_sprite.blit(gear_image, rect)
+            head_sprite_surface = gear_image_sprite
         except KeyError:  # head armour folder not existed
             pass
 

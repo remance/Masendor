@@ -43,7 +43,7 @@
 41,"Canaanite Swordsmen",1,1,0,0,0,0,30,10,20,100,19,100,40,100,100,"Melee Infantry","2,3","1,3","1,3","1,3","15,3","1,0,1",,"Old Desert Light",0
 42,"Canaanite War Chariots",2,1,11,34,0,0,60,60,40,110,19,100,70,100,30,"Chariot","22,3","1,3","6,3","1,3","15,3","98,2,13",,"Old Desert Light","1,3,4"
 43,"Canaanite Tribal Warriors",1,1,0,0,0,0,30,10,20,100,19,100,30,100,200,"Melee Infantry","14,3","1,3","1,3","1,3","15,3","1,0,1",,"Old Desert Light",0
-44,"Canaanite Maryannu Warriors",11,1,,,,,60,40,0,100,19,,,110,40,"Melee Infantry","2,4","47,3","6,4","1,3","15,3","1,0,1",,"Old Desert Light","1,2,4"
+44,"Canaanite Maryannu Warriors",11,1,26,34,0,0,60,40,0,100,19,115,60,110,40,"Melee Infantry","2,4","47,3","6,4","1,3","15,3","1,0,1",,"Old Desert Light","1,2,4"
 45,"Warrior Monks",8,1,0,69,0,0,35,15,20,100,19,100,50,100,20,"Melee Infantry","8,3","1,3","1,3","1,3","5,3","1,0,1",,"Christian Monk",0
 46,"Landsknecht Pikemen",10,1,,,,,60,20,30,100,19,125,55,130,40,"Melee Infantry","16,3","1,3","4,3","1,3","12,3","1,0,1",,"Landsknecht",
 47,"Landsknecht Heavy Infantries",10,1,,,,,65,65,0,100,19,125,55,130,40,"Melee Infantry","3,3","1,3","5,3","1,3","12,3","1,0,1",,"Landsknecht",

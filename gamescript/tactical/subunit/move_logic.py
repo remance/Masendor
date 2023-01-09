@@ -14,32 +14,26 @@ def move_logic(self, dt, unit_state, collide_list):
 
     if (self.base_pos != self.base_target or self.momentum > 1) and \
             (revert_move or self.angle == self.new_angle):  # cannot move if unit still need to rotate
-        no_collide_check = False  # can move if front of unit not collided
-        if self.unit.collide is False or self.broken or unit_state == 10 or self.momentum > 1:
-            no_collide_check = True
+        no_friend_collide_check = False  # can move if front of unit not collided
+        if self.unit.collide is False or self.broken or unit_state == 10 or self.momentum > 1 or self.unit.move_rotate:
+            no_friend_collide_check = True
 
         enemy_collide_check = False  # for chance to move or charge through enemy
         if len(collide_list) > 0:
             enemy_collide_check = True
             if self.state in (96, 98, 99):  # escape
                 enemy_collide_check = False
-                no_collide_check = True  # bypass collide
+                no_friend_collide_check = True  # bypass collide
             elif 0 in self.skill_effect and random.randint(0, 1) == 0:  # chance to charge through
                 enemy_collide_check = False
 
-        if self.stamina > 0 and no_collide_check and enemy_collide_check is False and \
-                (len(self.same_front) == 0 and len(self.friend_front) == 0 or self.state in (96, 98, 99)):
-            if 0 in self.skill_effect and self.base_pos == self.base_target and unit_state == 10:
-                new_target = self.front_pos - self.base_pos  # keep charging pass original target until momentum run out
-                self.base_target = self.base_target + new_target
-                self.command_target = self.base_target
-
+        if self.stamina > 0 and no_friend_collide_check and enemy_collide_check is False and \
+                (len(self.friend_front) == 0 or self.state in (96, 98, 99)):
             move = self.base_target - self.base_pos
             move_length = move.length()  # convert length
 
             if move_length > 0:  # movement length longer than 0.1, not reach base_target yet
                 move.normalize_ip()
-
                 if unit_state in (1, 3, 5, 7):  # walking
                     speed = self.unit.walk_speed  # use walk speed
                     self.walk = True
@@ -51,6 +45,7 @@ def move_logic(self, dt, unit_state, collide_list):
                     self.run = True
                 if self.collide_penalty:  # reduce speed during moving through another unit
                     speed /= 2
+                speed /= 10
                 move *= speed * dt
                 new_move_length = move.length()
                 new_pos = self.base_pos + move

@@ -921,15 +921,6 @@ class Battle:
                                             sprite_one.full_merge.append(sprite_two)
                                             sprite_two.full_merge.append(sprite_one)
 
-                                        if sprite_one.state in (2, 4, 6, 10, 11, 12, 13, 99) or \
-                                                sprite_two.state in (2, 4, 6, 10, 11, 12, 13):
-                                            sprite_one.same_front.append(sprite_two)
-                                    if sprite_two.front_pos.distance_to(
-                                            sprite_one.base_pos) < self.front_distance:  # second subunit
-                                        if sprite_one.state in (2, 4, 6, 10, 11, 12, 13, 99) or \
-                                                sprite_two.state in (2, 4, 6, 10, 11, 12, 13):
-                                            sprite_two.same_front.append(sprite_one)
-
                         self.subunit_pos_array = self.map_move_array.copy()
                         for this_subunit in self.battle_subunit_list:
                             for y in this_subunit.pos_range[0]:

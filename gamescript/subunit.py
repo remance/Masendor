@@ -152,7 +152,6 @@ class Subunit(pygame.sprite.Sprite):
         self.enemy_front = []  # list of front collide sprite
         self.enemy_side = []  # list of side collide sprite
         self.friend_front = []  # list of friendly front collide sprite
-        self.same_front = []  # list of same unit front collide sprite
         self.full_merge = []  # list of sprite that collide and almost overlap with this sprite
         self.collide_penalty = False
         self.movement_queue = []
@@ -313,7 +312,7 @@ class Subunit(pygame.sprite.Sprite):
         self.original_charge_def = ((self.dexterity * 0.4) + (self.agility * 0.1) + (self.constitution * 0.3) +
                                     (self.wisdom * 0.2)) + (grade_stat["Training Score"] * training_scale[1])
 
-        self.original_speed = self.agility / 10
+        self.original_speed = self.agility / 5  # get replaced with mount agi and speed bonus
 
         self.shot_per_shoot = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
 

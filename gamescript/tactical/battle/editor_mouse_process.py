@@ -491,9 +491,7 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                             for this_subunit in self.subunit_updater:
                                 this_subunit.enter_battle(self.camera_zoom, self.subunit_animation_pool)
                             for this_unit in self.unit_updater:
-                                this_unit.player_input(self.command_mouse_pos, False, False, False, self.last_mouseover,
-                                                       None,
-                                                       other_command="Stop")
+                                this_unit.player_input(self.command_mouse_pos, other_command="Stop")
                         else:
                             self.warning_msg.warning(warning_list)
                             self.battle_ui_updater.add(self.warning_msg)

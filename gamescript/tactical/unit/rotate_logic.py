@@ -32,11 +32,11 @@ def rotate_logic(self, dt):
                 self.angle -= rotate_tiny
                 if self.angle < self.new_angle:
                     self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
-        # ^^ End rotate tiny
         self.set_subunit_target()  # generate new pos related to side
 
-    elif self.move_rotate and abs(self.angle - self.new_angle) < 1:  # Finish
-        self.move_rotate = False
+    elif self.move_rotate and abs(self.angle - self.new_angle) < 1 and \
+            all(this_subunit.base_pos == this_subunit.base_target for this_subunit in self.alive_subunit_list):
+        self.move_rotate = False  # Finish rotating whole unit
         if self.rotate_only is False:  # continue moving to base_target after finish rotate
             self.set_subunit_target(target=self.base_target)
         else:
