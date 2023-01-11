@@ -14,7 +14,7 @@ def setup_stat(self, battle_start=False):
 
     # Grab subunit stat
     for index, subunit in enumerate(pos_dict.keys()):
-        if self.zoom == 1 and subunit in self.battle.battle_camera:
+        if self.camera_zoom == 1 and subunit in self.battle.battle_camera:
             if subunit.unit_leader is False:
                 self.battle.battle_camera.change_layer(subunit, index + 4)
             else:  # use higher layer for leader

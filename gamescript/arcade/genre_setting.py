@@ -12,7 +12,8 @@ unit_behaviour_wheel = {"Main": {"Skill": "Skill", "Shift Line": "Shift Line", "
                                        "Back To Front": "Back To Front", "Right To Left": "Right To Left"},
                         "Range Attack": {"Leader Aim": "Leader Aim", "Fire At Will": "Fire At Will",
                                          "Volley Aim": "Volley Aim", "Volley At Will": "Volley At Will",
-                                         "Troop Aim": "Troop Aim", "Manual Only": "Manual Only"},
+                                         "Troop Aim": "Troop Aim", "Manual Only": "Manual Only",
+                                         "Allow Arc Shot": "Allow Arc Shot", "No Arc Shot": "No Arc Shot"},
                         "Behaviour": {"Hold": "Hold", "Follow": "Follow", "Free": "Free", "Retreat": "Retreat"},
                         "Command": {"Offensive": "Offensive", "Defensive": "Defensive", "Skirmish": "Skirmish",
                                     "Protect Me": "Protect Me", "Follow Unit": "Follow Unit", "Free": "Free",
@@ -45,8 +46,8 @@ object_variable = {("self", "object"): {"add_troop_number_sprite": False,  # tro
                                         "command_ui_type": "hero",  # type of command bar, either hero or rts command
                                         },
                    ("battle_game", "self-object"): {"start_zoom_mode": "Follow",  # one character control camera
-                                                    "start_zoom": 10,  # start with the closest zoom
-                                                    "max_zoom": 10,  # maximum zoom level
+                                                    "start_camera_zoom": 10,  # start with the closest zoom
+                                                    "max_camera_zoom": 10,  # maximum zoom level
                                                     "troop_size_adjustable": troop_size_adjustable,
                                                     "time_speed_scale": 30,  # how fast time fly in battle
                                                     "unit_behaviour_wheel": unit_behaviour_wheel

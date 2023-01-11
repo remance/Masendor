@@ -55,10 +55,10 @@ def move_logic(self, dt, unit_state, collide_list):
                     # cannot go pass map unless in retreat state
                     if new_move_length <= move_length:  # move normally according to move speed
                         self.base_pos += move
-                        self.pos = self.base_pos * self.zoom
+                        self.pos = self.base_pos * self.camera_zoom
                         self.rect.center = tuple(
                             int(v) for v in self.pos)  # list rect so the sprite gradually move to position
-                        self.dmg_rect.center = tuple(int(v) for v in self.base_pos)
+                        self.hitbox_rect.center = tuple(int(v) for v in self.base_pos)
                         if self.stamina != infinity:
                             if self.walk:
                                 self.stamina = self.stamina - (dt * 2)

@@ -51,6 +51,10 @@ def wheel_ui_process(self, choice):
                 self.current_selected.fire_at_will = 1
             elif choice == "Manual Only":
                 self.current_selected.fire_at_will = 1
+            elif choice == "Allow Arc Shot":
+                self.current_selected.shoot_mode = 0
+            elif choice == "No Arc Shot":
+                self.current_selected.shoot_mode = 1
             elif "Aim" in choice:
                 self.battle_ui_updater.remove(self.wheel_ui)
                 self.player_input_state = None

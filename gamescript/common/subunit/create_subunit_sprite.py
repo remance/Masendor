@@ -63,7 +63,7 @@ def create_subunit_sprite(self, inspect_subunit_size, troop_size):
                        (far_selected_image.get_width() / 2, far_selected_image.get_height() / 2),
                        far_selected_image.get_width() / 2, 4)
 
-    dim = pygame.Vector2(image.get_width() * 1 / self.max_zoom, image.get_height() * 1 / self.max_zoom)
+    dim = pygame.Vector2(image.get_width() * 1 / self.max_camera_zoom, image.get_height() * 1 / self.max_camera_zoom)
     far_image = pygame.transform.smoothscale(far_image, (int(dim[0]), int(dim[1])))
     far_selected_image = pygame.transform.smoothscale(far_selected_image, (int(dim[0]), int(dim[1])))
 

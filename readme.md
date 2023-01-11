@@ -156,11 +156,19 @@ historical information to players.
 
 # Credit
 
-## Sprite
+## Game Asset
+
+### Sprite:
 
 - inogNate
 
-## Ukrainian Translation:
+### Sound:
+
+- Musket sound effect by aaronsiler (https://freesound.org/people/aaronsiler/)
+
+## Translation
+
+### Ukrainian Translation:
 
 - JerryXd
 

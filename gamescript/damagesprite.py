@@ -23,6 +23,7 @@ class DamageSprite(pygame.sprite.Sprite):
     effect_sprite_pool = None
     effect_animation_pool = None
     screen_scale = (1, 1)
+    sound_effect_pool = None
     height_map = None
 
     set_rotate = utility.set_rotate
@@ -83,7 +84,7 @@ class DamageSprite(pygame.sprite.Sprite):
         self.camera_zoom = camera_zoom
 
         if self.attack_type == "range":
-            self.base_pos = pygame.Vector2(self.attacker.base_pos)
+            self.base_pos = pygame.Vector2(self.attacker.front_pos)
 
             self.speed = weapon_stat["Travel Speed"]  # bullet travel speed
             if weapon_stat["Damage Sprite"] != "self":
@@ -177,9 +178,9 @@ class DamageSprite(pygame.sprite.Sprite):
             self.angle = self.set_rotate(self.base_target)
 
             if self.arc_shot is False:  # direct just shoot base on direction of target
-                self.base_target = pygame.Vector2(self.base_pos[0] + (self.battle.map_corner[0] * 2 *
+                self.base_target = pygame.Vector2(self.base_pos[0] - (self.battle.map_corner[0] *
                                                                       math.sin(math.radians(self.angle))),
-                                                  self.base_pos[1] - (self.battle.map_corner[1] * 2 *
+                                                  self.base_pos[1] - (self.battle.map_corner[1] *
                                                                       math.cos(math.radians(self.angle))))
 
         else:
@@ -211,6 +212,12 @@ class DamageSprite(pygame.sprite.Sprite):
 
         self.sprite_scaling()
 
+        hitbox_image = pygame.transform.scale(self.base_image,
+                                              (min(1, int(self.base_image.get_width() / self.battle.max_camera_zoom)),
+                                               min(1, int(self.base_image.get_height() / self.battle.max_camera_zoom))))
+
+        self.hitbox_rect = hitbox_image.get_rect(center=self.base_pos)  # hitbox rect based on base pos
+
     def adjust_sprite(self):
         if self.scale_size > 1:
             self.image = pygame.transform.smoothscale(self.image, (self.image.get_width() * self.scale_size,
@@ -223,13 +230,13 @@ class DamageSprite(pygame.sprite.Sprite):
 
         self.base_image = self.image.copy()
 
-    def update(self, unit_list, dt, camera_scale):
+    def update(self, unit_list, dt, camera_zoom):
         just_start = False
 
         if self.deal_dmg:  # sprite can still deal damage
             self.pass_subunit = None  # reset every movement update
-            for subunit in pygame.sprite.spritecollide(self, unit_list, 0):  # collide check while travel
-                if subunit != self.attacker and subunit.dmg_rect.colliderect(self.rect):
+            for subunit in pygame.sprite.spritecollide(self, unit_list, False):  # collide check while travel
+                if subunit != self.attacker and subunit.hitbox_rect.colliderect(self.hitbox_rect):
                     if self.attack_type == "range":
                         if self.arc_shot is False:  # direct shot
                             self.hit_register(subunit)
@@ -255,8 +262,9 @@ class DamageSprite(pygame.sprite.Sprite):
                 if self.arc_shot is False and self.height_ignore is False and \
                         self.height_map.get_height(self.base_pos) > self.height + 20:
                     self.kill()  # direct shot will not be able to shoot pass higher height terrain midway
+                self.hitbox_rect.center = self.base_pos
                 self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
-                                          self.base_pos[1] * self.screen_scale[1]) * camera_scale
+                                          self.base_pos[1] * self.screen_scale[1]) * camera_zoom
                 self.rect.center = list(int(v) for v in self.pos)
 
                 if self.random_move is False and (
@@ -274,8 +282,9 @@ class DamageSprite(pygame.sprite.Sprite):
                         self.kill()  # remove sprite
             else:
                 self.base_pos = self.base_target
+                self.hitbox_rect.center = self.base_pos
                 self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
-                                          self.base_pos[1] * self.screen_scale[1]) * camera_scale
+                                          self.base_pos[1] * self.screen_scale[1]) * camera_zoom
                 self.rect.center = self.pos
 
         elif self.arc_shot:  # reach base_target with arc shot
@@ -290,8 +299,8 @@ class DamageSprite(pygame.sprite.Sprite):
             if done:
                 self.kill()
 
-        if self.camera_zoom != camera_scale:
-            self.camera_zoom = camera_scale
+        if self.camera_zoom != camera_zoom:
+            self.camera_zoom = camera_zoom
             self.camera_scale = (11 - self.camera_zoom) / 4
             self.sprite_scaling()
         elif just_start:

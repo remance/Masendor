@@ -72,7 +72,8 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                             self.leader_subunit.equipped_weapon]:  # range attack
                             if self.leader_subunit.ammo_now[self.leader_subunit.equipped_weapon][action_num] > 0:
                                 self.leader_subunit.command_action = {"name": "Action " + str_action_num,
-                                                                      "range attack": True, "pos": cursor_pos}
+                                                                      "range attack": True, "pos": cursor_pos,
+                                                                      "arc shot": self.leader_subunit.check_special_effect("Arc Shot", weapon=action_num)}
                         else:  # melee attack
                             self.leader_subunit.command_action = {"name": "Action " + str_action_num,
                                                                   "melee attack": True}
@@ -102,7 +103,8 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                         self.leader_subunit.check_special_effect("Shoot While Moving"):  # range weapon
                     if "range attack" not in self.leader_subunit.current_action:
                         self.leader_subunit.command_action = {"name": "Action " + str_action_num, "range attack": True,
-                                                              "pos": cursor_pos, "move attack": True, "movable": True}
+                                                              "pos": cursor_pos, "move attack": True, "movable": True,
+                                                              "arc shot": self.leader_subunit.check_special_effect("Arc Shot", weapon=action_num)}
                         self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True)
                     elif "move attack" not in self.leader_subunit.current_action:
                         if "hold" in self.leader_subunit.current_action:  # cannot hold shoot while moving

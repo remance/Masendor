@@ -39,7 +39,7 @@ def rotate_logic(self, dt):
             if self.angle < self.new_angle:
                 self.angle = self.new_angle  # if rotate pass base_target angle, rotate to base_target angle
 
-    if self.zoom != 10:
+    if self.camera_zoom != 10:
         self.rotate()  # rotate sprite to new angle
     self.sprite_direction = rotation_dict[min(rotation_list,
                                               key=lambda x: abs(

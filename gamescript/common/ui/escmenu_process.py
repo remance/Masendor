@@ -81,7 +81,9 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                     button.image = button.images[2]  # change button image to clicked one
                     if button.text == "Confirm":  # confirm button, save the setting and close option menu
                         self.old_setting = self.master_volume  # save mixer volume
-                        pygame.mixer.music.set_volume(self.master_volume)  # set new music player volume
+
+                        self.change_sound_volume()
+
                         edit_config("USER", "master_volume", self.esc_slider_menu[0].value, "configuration.ini",
                                     self.config)  # save to config file
                         self.battle_menu.change_mode("menu")  # go back to start_set esc menu

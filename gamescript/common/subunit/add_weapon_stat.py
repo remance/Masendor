@@ -9,9 +9,11 @@ def add_weapon_stat(self):
             dmg_scaling = (weapon_stat["Strength Bonus Scale"], weapon_stat["Dexterity Bonus Scale"])
             dmg_scaling = [item / sum(dmg_scaling) if sum(dmg_scaling) > 0 else 0 for item in dmg_scaling]
             for damage in self.original_weapon_dmg[set_index][weapon_index]:
-                damage_with_attribute = weapon_stat[damage + " Damage"] + \
-                                        (weapon_stat[damage + " Damage"] * (self.strength * dmg_scaling[0] / 100) +
-                                         (weapon_stat[damage + " Damage"] * (self.dexterity * dmg_scaling[1] / 100)))
+                damage_name = damage + " Damage"
+                if damage_name in weapon_stat:
+                    damage_with_attribute = weapon_stat[damage_name] + \
+                                            (weapon_stat[damage_name] * (self.strength * dmg_scaling[0] / 100) +
+                                             (weapon_stat[damage_name] * (self.dexterity * dmg_scaling[1] / 100)))
                 self.original_weapon_dmg[set_index][weapon_index][damage] = [
                     damage_with_attribute * weapon_stat["Damage Balance"] *
                     self.troop_data.equipment_grade_list[weapon[1]]["Modifier"],

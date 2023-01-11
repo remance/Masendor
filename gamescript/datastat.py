@@ -420,20 +420,6 @@ class LeaderData:
         :param language: Current game language acronym
         """
         self.images = images
-        self.leader_list = {}
-
-        # Add leader race size to data
-        for key in self.leader_list:
-            self.leader_list[key]["Size"] = 1
-            try:
-                mount_race = troop_data.mount_list[self.leader_list[key]["Mount"][0]]["Race"]
-                if mount_race != 0:
-                    self.leader_list[key]["Size"] = troop_data.race_list[mount_race]["Size"] / 10
-                else:
-                    self.leader_list[key]["size"] = troop_data.race_list[self.leader_list[key]["Race"]]["Size"] / 10
-            except IndexError as notfound:
-                print(key, "Leader does not have mount data")
-                print(notfound)
 
         self.skill_list = {}
         with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "leader", "leader_skill.csv"), encoding="utf-8",
@@ -498,7 +484,7 @@ class LeaderData:
 
         # Leader class dict
         self.leader_class = {}
-        with open(os.path.join(main_dir, "data", "leader", "leader_class.csv"), encoding="utf-8",
+        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "leader", "leader_class.csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -510,6 +496,8 @@ class LeaderData:
         edit_file.close()
 
         # Leader preset
+        self.leader_list = {}
+
         with open(os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader", "preset", "leader.csv"),
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
@@ -541,6 +529,19 @@ class LeaderData:
                                        int_column=int_column, true_empty=True)
                 self.leader_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
+
+        # Add leader race size to data
+        for key in self.leader_list:
+            self.leader_list[key]["Size"] = 1
+            try:
+                mount_race = troop_data.mount_list[self.leader_list[key]["Mount"][0]]["Race"]
+                if mount_race != 0:
+                    self.leader_list[key]["Size"] = troop_data.race_list[mount_race]["Size"] / 10
+                else:
+                    self.leader_list[key]["size"] = troop_data.race_list[self.leader_list[key]["Race"]]["Size"] / 10
+            except IndexError as notfound:
+                print(key, "Leader does not have mount data")
+                print(notfound)
 
         # Lore of the leader dict
         self.leader_lore = {}

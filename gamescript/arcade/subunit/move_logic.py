@@ -55,10 +55,10 @@ def move_logic(self, dt, unit_state, collide_list):
                     # cannot go pass map unless in retreat state
                     if new_move_length <= move_length:  # move normally according to move speed
                         self.base_pos += move
-                        self.pos = self.base_pos * self.zoom
+                        self.pos = self.base_pos * self.camera_zoom
                         self.rect.center = list(
                             int(v) for v in self.pos)  # list rect so the sprite gradually move to position
-                        self.dmg_rect.center = self.base_pos
+                        self.hitbox_rect.center = self.base_pos
                         self.new_angle = self.set_rotate(self.base_target)
                         if self.walk:
                             if self.stamina != infinity:
@@ -95,7 +95,7 @@ def move_logic(self, dt, unit_state, collide_list):
                                       (self.unit.base_pos[1] + self.unit.base_height_box))  # TODO change to flag team
                         self.unit.number_pos = rotation_xy(self.unit.base_pos, number_pos, self.unit.radians_angle)
                         self.unit.true_number_pos = self.unit.number_pos * (
-                                11 - self.unit.zoom)  # find new position for troop number text
+                                11 - self.unit.camera_zoom)  # find new position for troop number text
 
                     # momentum calculation
                     if self.run:

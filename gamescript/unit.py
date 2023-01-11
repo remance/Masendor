@@ -34,6 +34,7 @@ class Unit(pygame.sprite.Sprite):
     retreat_command = empty_method
     selection = empty_method
     set_target = empty_method
+    setup_formation = empty_method
     setup_subunit_position_list = empty_method
     shift_line = empty_method
     subunit_formation_change = empty_method
@@ -97,9 +98,9 @@ class Unit(pygame.sprite.Sprite):
         self.colour = colour  # box colour according to team
         self.commander = commander  # True if commander unit
 
-        self.max_zoom = self.battle.max_zoom  # closest zoom allowed
-        self.zoom = self.max_zoom  # start with the closest zoom
-        self.last_zoom = 1  # zoom level without calculate with 11 - zoom for scale
+        self.max_zoom = self.battle.max_camera_zoom  # closest zoom allowed
+        self.camera_zoom = self.max_zoom  # start with the closest zoom
+        self.last_camera_zoom = 1  # zoom level without calculate with 11 - zoom for scale
 
         self.screen_scale = self.battle.screen_scale
         self.map_corner = self.battle.map_corner
@@ -133,7 +134,7 @@ class Unit(pygame.sprite.Sprite):
         self.next_rotate = False
         self.selected = False  # for checking if it currently selected or not
         self.just_selected = False  # for light up subunit when click
-        self.zoom_change = False
+        self.camera_zoom_change = False
         self.revert = False
         self.move_rotate = False  # for checking if the movement require rotation first or not
         self.rotate_cal = 0  # for calculate how much angle to rotate to the base_target
@@ -156,7 +157,7 @@ class Unit(pygame.sprite.Sprite):
         self.input_delay = 0
 
         self.run_toggle = 0  # 0 = double right click to run, 1 = only one right click will make unit run
-        self.shoot_mode = 0  # 0 = both arc and non-arc shot, 1 = arc shot only, 2 = direct shot only
+        self.shoot_mode = 0  # 0 = direct shot first if not able then try arc shot, 1 = No arc shot
         self.attack_mode = 0  # 10 = formation attack, 1 = free for all attack,
         self.hold = 0  # 0 = not hold, 1 = skirmish/scout/avoid, 2 = hold
         self.fire_at_will = 0  # 0 = fire at will, 1 = no fire
@@ -209,18 +210,19 @@ class Unit(pygame.sprite.Sprite):
 
         self.setup_subunit_position_list()  # Set up subunit position list for subunit positioning
 
-    def update(self, weather, squad_group, dt, zoom, mouse_pos, mouse_up):
-        if self.last_zoom != zoom:  # camera zoom change
-            self.zoom_change = True
-            self.zoom = 11 - zoom  # save scale
+    def update(self, weather, squad_group, dt, camera_zoom, mouse_pos, mouse_up):
+        if self.last_camera_zoom != camera_zoom:  # camera zoom change
+            self.camera_zoom_change = True
+            self.camera_zoom = 11 - camera_zoom  # save scale
             self.change_pos_scale()  # update position according to new scale
-            if self.last_zoom == 1:  # revert to default layer at further zoom
+            if self.last_camera_zoom == 1:  # revert to default layer at further zoom
                 for subunit in self.alive_subunit_list:
                     self.battle.battle_camera.change_layer(subunit, 4)
-            self.last_zoom = zoom
+            self.last_camera_zoom = camera_zoom
 
         if self.dead_change:  # setup frontline again when any subunit destroyed
             if len(self.alive_subunit_list) > 0:
+                self.setup_formation()
                 self.auth_penalty = 0
                 for subunit in self.alive_subunit_list:
                     self.auth_penalty += subunit.auth_penalty  # add authority penalty of all alive subunit

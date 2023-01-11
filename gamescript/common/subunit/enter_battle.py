@@ -1,6 +1,6 @@
 def enter_battle(self, zoom, animation_pool):
     """run once when battle start or subunit just get created"""
-    self.zoom = zoom
+    self.camera_zoom = zoom
     self.front_pos = self.make_front_pos()
     self.make_pos_range()
     self.zoom_scale()

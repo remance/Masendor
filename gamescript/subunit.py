@@ -35,6 +35,7 @@ class Subunit(pygame.sprite.Sprite):
     leader_sprite_list = None
     status_list = None
     animation_sprite_pool = None
+    sound_effect_pool = None
     subunit_state = None
 
     set_rotate = utility.set_rotate
@@ -153,6 +154,7 @@ class Subunit(pygame.sprite.Sprite):
         self.enemy_side = []  # list of side collide sprite
         self.friend_front = []  # list of friendly front collide sprite
         self.full_merge = []  # list of sprite that collide and almost overlap with this sprite
+        self.nearby_subunit_list = []
         self.collide_penalty = False
         self.movement_queue = []
         self.combat_move_queue = []  # movement during melee combat
@@ -167,9 +169,9 @@ class Subunit(pygame.sprite.Sprite):
         self.move_timer = 0  # timer for moving to front position before attacking nearest enemy
         self.momentum = 0.1  # charging momentum to reach target before choosing the nearest enemy
 
-        self.zoom = 1
-        self.max_zoom = self.battle.max_zoom  # closest zoom allowed
-        self.last_zoom = 0
+        self.camera_zoom = 1
+        self.max_camera_zoom = self.battle.max_camera_zoom  # closest zoom allowed
+        self.last_camera_zoom = 0
 
         self.screen_scale = self.battle.screen_scale
 
@@ -253,7 +255,7 @@ class Subunit(pygame.sprite.Sprite):
             training_scale = (stat["Melee Speciality"], stat["Melee Speciality"], stat["Range Speciality"])
 
             self.magazine_count = {0: {0: 2, 1: 2}, 1: {0: 2, 1: 2}}  # leader gets double ammunition
-            self.charge_skill = 25  # use leading charge by default for leader
+            self.charge_skill = stat["Charge Skill"]
             self.original_morale = 100 + grade_stat["Morale Bonus"]  # morale with grade bonus
             self.original_discipline = 100 + grade_stat[
                 "Discipline Bonus"]  # discipline with grade bonus
@@ -577,15 +579,15 @@ class Subunit(pygame.sprite.Sprite):
 
             self.base_target = self.base_pos  # base_target to move
             self.command_target = self.base_pos  # actual base_target outside of combat
-            self.pos = (self.base_pos[0] * self.screen_scale[0] * self.zoom,
-                        self.base_pos[1] * self.screen_scale[1] * self.zoom)  # pos is for showing on screen
+            self.pos = (self.base_pos[0] * self.screen_scale[0] * self.camera_zoom,
+                        self.base_pos[1] * self.screen_scale[1] * self.camera_zoom)  # pos is for showing on screen
 
             self.image_height = (self.image.get_height() - 1) / 20  # get real half height of circle sprite
 
             self.front_pos = self.make_front_pos()
 
             self.rect = self.image.get_rect(center=self.pos)  # for blit into screen
-            self.dmg_rect = self.image.get_rect(center=self.base_pos)  # for checking damage collision
+            self.hitbox_rect = self.image.get_rect(center=self.base_pos)  # for checking damage collision
 
             self.sprite_id = str(stat["Sprite ID"])
             self.weapon_version = ((sprite_list[self.sprite_id]["p1_primary_main_weapon"],
@@ -645,9 +647,9 @@ class Subunit(pygame.sprite.Sprite):
                 self.die("dead")
 
         recreate_rect = False
-        if self.last_zoom != zoom:  # camera zoom is changed
-            self.last_zoom = zoom
-            self.zoom = zoom  # save scale
+        if self.last_camera_zoom != zoom:  # camera zoom is changed
+            self.last_camera_zoom = zoom
+            self.camera_zoom = zoom  # save scale
             self.zoom_scale()  # update unit sprite according to new scale
             recreate_rect = True
 

@@ -9,35 +9,28 @@ def menu_option(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scr
     if self.back_button.event or esc_press:  # back to start_set menu
         self.back_button.event = False
 
-        self.main_ui_updater.remove(*self.option_text_list, self.option_menu_slider, self.value_box)
+        self.main_ui_updater.remove(*self.option_text_list, *self.option_menu_sliders.values(),
+                                    *self.value_boxes.values())
 
         self.back_mainmenu()
 
-    elif self.default_button.event:  # back to start_set menu
-        self.back_button.event = False
+    elif self.default_button.event:  # revert all setting to original
+        self.default_button.event = False
 
-        self.master_volume = float(self.config["DEFAULT"]["master_volume"])
-        self.battle_game.master_volume = self.master_volume
-        edit_config("USER", "master_volume", self.volume_slider.value, "configuration.ini",
-                    self.config)
-        pygame.mixer.music.set_volume(self.master_volume)
+        for setting in self.config["DEFAULT"]:
+            if setting not in ("genre", "language", "player_name"):
+                edit_config("USER", setting, self.config["DEFAULT"][setting], "configuration.ini", self.config)
 
-        if int(self.config["DEFAULT"]["screen_width"]) != self.screen_width or int(
-                self.config["DEFAULT"]["screen_height"]) != self.screen_height:
-            change_resolution(self, (int(self.config["DEFAULT"]["screen_width"]), "",
-                                     int(self.config["DEFAULT"]["screen_height"])))
+        change_resolution(self, (int(self.config["DEFAULT"]["screen_width"]), "",
+                                 int(self.config["DEFAULT"]["screen_height"])))
 
     if mouse_left_up or mouse_left_down:
-        if self.volume_slider.rect.collidepoint(self.mouse_pos) and (
-                mouse_left_down or mouse_left_up):  # mouse click on slider bar
-            self.volume_slider.player_input(self.mouse_pos,
-                                            self.value_box[0])  # update slider button based on mouse value
-            self.master_volume = float(
-                self.volume_slider.value / 100)  # for now only music volume slider exist
-            self.battle_game.master_volume = self.master_volume
-            edit_config("USER", "master_volume", self.volume_slider.value, "configuration.ini",
-                        self.config)
-            pygame.mixer.music.set_volume(self.master_volume)
+        for key, value in self.option_menu_sliders.items():
+            if value.rect.collidepoint(self.mouse_pos) and (mouse_left_down or mouse_left_up):  # click on slider bar
+                value.player_input(self.mouse_pos, self.value_boxes[key])  # update slider button based on mouse value
+                edit_config("USER", key + "_volume", value.value, "configuration.ini",
+                            self.config)
+                self.change_sound_volume()
 
         if mouse_left_up:
             if self.resolution_drop.rect.collidepoint(self.mouse_pos):  # click on resolution bar

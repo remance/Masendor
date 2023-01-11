@@ -330,10 +330,10 @@ class OptionMenuText(pygame.sprite.Sprite):
 class ValueBox(pygame.sprite.Sprite):
     def __init__(self, image, pos, value, text_size):
         self._layer = 26
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.font = pygame.font.SysFont("timesnewroman", text_size)
         self.pos = pos
-        self.image = image
+        self.image = image.copy()
         self.base_image = self.image.copy()
         self.value = value
         text_surface = self.font.render(str(self.value), True, (0, 0, 0))

@@ -180,15 +180,14 @@ def combat_logic(self, dt, unit_state):
                         self.shoot_range[weapon] >= self.attack_pos.distance_to(self.base_pos):
                     can_shoot = False
                     weapon_arc_shot = self.check_special_effect("Arc Shot", weapon=weapon)
-                    if self.unit.shoot_mode in (0, 2):  # check for direct shot first, find line of sight
-                        if len(self.attack_target.alive_subunit_list) > 0:  # find the closest enemy subunit not block by friend
-                            target_hit = self.find_attack_target(
-                                self.attack_target.alive_subunit_list, check_line_of_sight=True)
-                            if target_hit is not None:
-                                can_shoot = True
-                                arc_shot = False
+                    if len(self.attack_target.alive_subunit_list) > 0:  # find the closest enemy subunit not block by friend
+                        target_hit = self.find_attack_target(
+                            self.attack_target.alive_subunit_list, check_line_of_sight=True)
+                        if target_hit is not None:
+                            can_shoot = True
+                            arc_shot = False
 
-                    if can_shoot is False and self.unit.shoot_mode in (0, 1) and weapon_arc_shot:  # check for arc shot
+                    if can_shoot is False and self.unit.shoot_mode == 0 and weapon_arc_shot:  # check for arc shot
                         can_shoot = True
                         arc_shot = True
 

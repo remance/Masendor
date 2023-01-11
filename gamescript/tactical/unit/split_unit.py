@@ -167,7 +167,7 @@ def add_new_unit(self, add_unit_list=True):
         if this_subunit.leader is not None:
             this_subunit.leader.subunit_pos = index
 
-    self.zoom = self.battle.max_camera_zoom_image_scale - self.battle.camera_zoom
+    self.camera_zoom = self.battle.max_camera_zoom_image_scale - self.battle.camera_zoom
     self.new_angle = self.angle
 
     self.enter_battle(self.battle.subunit_updater)
@@ -179,7 +179,7 @@ def add_new_unit(self, add_unit_list=True):
     self.change_pos_scale()  # find new position for troop number text
 
     for this_subunit in self.subunit_list:
-        this_subunit.enter_battle(this_subunit.zoom, self.battle.subunit_animation_pool)
+        this_subunit.enter_battle(this_subunit.camera_zoom, self.battle.subunit_animation_pool)
 
     if add_unit_list:
         self.battle.all_team_unit["alive"].append(self)

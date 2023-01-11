@@ -94,8 +94,10 @@ class Game:
     back_mainmenu = empty_method
     change_battle_source = empty_method
     change_to_source_selection_menu = empty_method
+    change_sound_volume = empty_method
     convert_formation_preset = empty_method
     create_preview_map = empty_method
+    create_sound_effect_pool = empty_method
     create_sprite_pool = empty_method
     create_team_coa = empty_method
     create_unit_slot = empty_method
@@ -181,8 +183,8 @@ class Game:
 
             config["DEFAULT"] = {"screen_width": screen_width, "screen_height": screen_height, "full_screen": "0",
                                  "player_Name": "Noname", "master_volume": "100.0", "music_volume": "0.0",
-                                 "voice_volume": "0.0", "max_fps": "60", "ruleset": "1", "genre": genre_folder[-1],
-                                 "language": "en", "play_troop_animation": "1"}
+                                 "voice_volume": "100.0", "effect_volume": "100.0", "max_fps": "60", "ruleset": "1",
+                                 "genre": genre_folder[-1], "language": "en", "play_troop_animation": "1"}
             config["USER"] = {key: value for key, value in config["DEFAULT"].items()}
             with open(os.path.join(self.main_dir, "configuration.ini"), "w") as cf:
                 config.write(cf)
@@ -193,6 +195,12 @@ class Game:
         self.screen_height = int(self.config["USER"]["screen_height"])
         self.full_screen = int(self.config["USER"]["full_screen"])
         self.master_volume = float(self.config["USER"]["master_volume"])
+        self.music_volume = float(self.config["USER"]["music_volume"])
+        self.play_music_volume = self.master_volume * self.music_volume / 10000
+        self.effect_volume = float(self.config["USER"]["effect_volume"])
+        self.play_effect_volume = self.master_volume * self.effect_volume / 10000
+        self.voice_volume = float(self.config["USER"]["voice_volume"])
+        self.play_voice_volume = self.master_volume * self.voice_volume / 10000
         self.profile_name = str(self.config["USER"]["player_Name"])
         self.genre = str(self.config["USER"]["genre"])
         self.language = str(self.config["USER"]["language"])
@@ -291,9 +299,6 @@ class Game:
         self.tick_box = pygame.sprite.Group()  # option tick box
         # battle related
 
-        # esc option menu
-        self.value_box = pygame.sprite.Group()  # value number and box in esc menu option
-
         # unit editor
         self.troop_namegroup = pygame.sprite.Group()  # troop name list group
         self.popup_namegroup = pygame.sprite.Group()
@@ -337,7 +342,6 @@ class Game:
         menu.MenuButton.containers = self.menu_button
         menu.OptionMenuText.containers = self.menu_icon
         menu.SliderMenu.containers = self.menu_slider, self.slider_menu
-        menu.ValueBox.containers = self.value_box
 
         menu.NameList.containers = self.map_namegroup
         menu.TeamCoa.containers = self.team_coa
@@ -508,25 +512,27 @@ class Game:
 
         # Option menu button
         option_menu_dict = make_option_menu(self.main_dir, self.screen_scale, self.screen_rect, self.screen_width,
-                                            self.screen_height, image_list, self.master_volume, self.full_screen,
-                                            self.play_troop_animation, self.main_ui_updater, battle_select_image)
+                                            self.screen_height, image_list,
+                                            {"master": self.master_volume, "music": self.music_volume,
+                                             "voice": self.voice_volume, "effect": self.effect_volume},
+                                            self.full_screen, self.play_troop_animation, self.main_ui_updater,
+                                            battle_select_image)
         self.back_button = option_menu_dict["back_button"]
         self.default_button = option_menu_dict["default_button"]
         self.resolution_drop = option_menu_dict["resolution_drop"]
         self.resolution_bar = option_menu_dict["resolution_bar"]
         self.resolution_text = option_menu_dict["resolution_text"]
-        self.volume_slider = option_menu_dict["volume_slider"]
-        self.value_box = option_menu_dict["value_box"]
-        self.volume_text = option_menu_dict["volume_text"]
+        self.option_menu_sliders = option_menu_dict["volume_sliders"]
+        self.value_boxes = option_menu_dict["value_boxes"]
+        self.volume_texts = option_menu_dict["volume_texts"]
         self.fullscreen_box = option_menu_dict["fullscreen_box"]
         self.fullscreen_text = option_menu_dict["fullscreen_text"]
         self.animation_box = option_menu_dict["animation_box"]
         self.animation_text = option_menu_dict["animation_text"]
 
-        self.option_text_list = (self.resolution_text, self.volume_text, self.fullscreen_text, self.animation_text)
+        self.option_text_list = tuple([self.resolution_text, self.fullscreen_text, self.animation_text] + [value for value in self.volume_texts.values()])
         self.option_menu_button = (
         self.back_button, self.default_button, self.resolution_drop, self.fullscreen_box, self.animation_box)
-        self.option_menu_slider = self.volume_slider
 
         # Genre related stuff
         genre_folder = Path(os.path.join(main_dir, script_folder))  # Load genre list
@@ -548,19 +554,20 @@ class Game:
         self.profile_box = menu.TextBox(self.screen_scale, profile_box_image, (self.screen_width, 0),
                                         self.profile_name)  # profile name box at top right of screen at start_set menu screen
 
+        # Load sound effect
+        self.sound_effect_pool = self.create_sound_effect_pool()
+
         # Music player
         if pygame.mixer and not pygame.mixer.get_init():
             pygame.mixer = None
         if pygame.mixer:
-            self.master_volume = float(self.master_volume / 100)
             pygame.mixer.music.set_volume(self.master_volume)
             self.SONG_END = pygame.USEREVENT + 1
             self.music_list = glob.glob(self.main_dir + "/data/sound/music/*.ogg")
             pygame.mixer.music.load(self.music_list[0])
             pygame.mixer.music.play(-1)
-        # ^ End Main menu
 
-        # v Battle related stuffs
+        # Battle related stuffs
         subunit_ui_images = load_images(self.main_dir,
                                         subfolder=("ui", "subunit_ui"))  # no scaling when loaded for subunit sprite yet
         new_subunit_ui_images = {}
@@ -976,7 +983,7 @@ class Game:
         self.battle_game.inspect_button = self.inspect_button
         self.battle_game.inspect_ui = self.inspect_ui
         self.battle_game.behaviour_switch_button = self.behaviour_switch_button
-        self.battle_game.max_camera_zoom_image_scale = self.battle_game.max_zoom + 1
+        self.battle_game.max_camera_zoom_image_scale = self.battle_game.max_camera_zoom + 1
 
         if self.command_ui.ui_type == "command":
             self.command_ui.load_sprite(genre_battle_ui_image["command_box"], genre_icon_image)

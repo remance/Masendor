@@ -24,8 +24,8 @@ def find_retreat_target(self):
             retreat_target.append(base_target)
             for this_subunit in self.battle.battle_subunit_list:
                 if this_subunit.team != self.team:
-                    clip = this_subunit.dmg_rect.clipline(base_target, self.base_pos)
-                    if len(clip) > 0:
+                    clip = this_subunit.hitbox_rect.clipline(base_target, self.base_pos)
+                    if clip:
                         retreat_score[index] += 1
 
         base_target = retreat_target[retreat_score.index(min(retreat_score))]  # pick lowest score direction

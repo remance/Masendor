@@ -6,7 +6,7 @@ import sys
 
 import pygame
 import pygame.freetype
-from gamescript import camera, weather, battleui, menu, subunit, unit, leader, datasprite
+from gamescript import camera, weather, battleui, menu, subunit, unit, leader, datasprite, damagesprite
 from gamescript.common import utility
 
 direction_list = datasprite.direction_list
@@ -87,8 +87,8 @@ class Battle:
                 exec(f"" + file_name + " = " + file_name + "." + file_name)
 
     # variable that get changed based on genre
-    start_zoom = 1
-    max_zoom = 10
+    start_camera_zoom = 1
+    max_camera_zoom = 10
     max_camera_zoom_image_scale = 11
     start_zoom_mode = "Free"
     time_speed_scale = 1
@@ -103,6 +103,9 @@ class Battle:
 
         self.config = main.config
         self.master_volume = main.master_volume
+        self.play_music_volume = main.play_music_volume
+        self.play_effect_volume = main.play_effect_volume
+        self.play_voice_volume = main.play_voice_volume
         self.play_troop_animation = main.play_troop_animation
         self.screen_rect = main.screen_rect
         self.main_dir = main.main_dir
@@ -208,6 +211,8 @@ class Battle:
         self.role_images = main.role_images
         self.trait_images = main.trait_images
         self.skill_images = main.skill_images
+
+        self.sound_effect_pool = main.sound_effect_pool
 
         self.map_corner = (999, 999)
         self.max_camera = (999 * self.screen_scale[0], 999 * self.screen_scale[1])
@@ -330,11 +335,14 @@ class Battle:
         unit.Unit.battle = self
         unit.Unit.image_size = self.subunit_inspect_sprite_size
         subunit.Subunit.battle = self
+        subunit.Subunit.sound_effect_pool = self.sound_effect_pool
+        damagesprite.DamageSprite.sound_effect_pool = self.sound_effect_pool
         leader.Leader.battle = self
 
         # Create the game camera
         self.camera_zoom = 1  # camera zoom level, starting at the furthest zoom
         self.camera_mode = "Free"  # mode of game camera
+        self.true_camera_pos = pygame.Vector2(500, 500)  # camera pos on map
         self.base_camera_pos = pygame.Vector2(500 * self.screen_scale[0],
                                               500 * self.screen_scale[
                                                   1])  # Camera pos at furthest zoom for recalculate sprite pos after zoom
@@ -487,7 +495,7 @@ class Battle:
         leader.Leader.leader_pos = self.command_ui.leader_pos
 
         if self.mode == "battle":
-            self.camera_zoom = self.start_zoom  # Camera zoom
+            self.camera_zoom = self.start_camera_zoom  # Camera zoom
             self.camera_mode = self.start_zoom_mode
             self.setup_battle_unit(self.all_team_unit, self.troop_data.troop_list, self.leader_data.leader_list)
             self.team_troop_number = [1 for _ in self.all_team_unit]  # reset list of troop number in each team
@@ -590,6 +598,7 @@ class Battle:
                 else:  # reset all other slots
                     slot.selected = False
 
+            self.true_camera_pos = pygame.Vector2(500, 500)
             self.base_camera_pos = pygame.Vector2(500 * self.screen_scale[0],
                                                   500 * self.screen_scale[1])
             self.camera_pos = self.base_camera_pos * self.camera_zoom
@@ -616,12 +625,14 @@ class Battle:
                         unit.just_selected = True
                         unit.selected = True
                         if self.camera_mode == "Follow":
-                            self.base_camera_pos = pygame.Vector2(self.player_char.base_pos[0] * self.screen_scale[0],
-                                                                  self.player_char.base_pos[1] * self.screen_scale[1])
+                            self.true_camera_pos = pygame.Vector2(self.player_char.base_pos)
+                            self.base_camera_pos = pygame.Vector2(self.true_camera_pos[0] * self.screen_scale[0],
+                                                                  self.true_camera_pos[1] * self.screen_scale[1])
                             self.camera_pos = self.base_camera_pos * self.camera_zoom
                             self.camera_fix()
                         break
             else:
+                self.true_camera_pos = pygame.Vector2(500, 500)
                 self.base_camera_pos = pygame.Vector2(500 * self.screen_scale[0],
                                                       500 * self.screen_scale[1])
                 self.camera_pos = self.base_camera_pos * self.camera_zoom

@@ -8,6 +8,7 @@ def find_nearby_subunit(self):
     index = np.where(self.unit.subunit_id_array == self.game_id)
     row_index = index[0][0]
     column_index = index[1][0]
+    # print(row_index, column_index)
     if column_index > 0:  # get subunit from left if not at first column
         self.nearby_subunit_list.append(self.unit.subunit_object_array[row_index][column_index - 1])  # index 0
     else:  # not exist
