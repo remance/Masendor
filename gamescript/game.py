@@ -144,9 +144,6 @@ class Game:
     add_troop_number_sprite = False
     command_ui_type = "command"
 
-    # Static variable
-    subunit_hitbox_size = 62  # full square hitbox height and width size, this also affect subunit sprite size
-
     def __init__(self, main_dir, error_log):
         pygame.init()  # Initialize pygame
 
@@ -713,8 +710,8 @@ class Game:
         self.encyclopedia_stuff = (self.encyclopedia, self.lore_name_list, self.filter_tag_list,
                                    self.lore_name_list.scroll, self.filter_tag_list.scroll, *self.lore_button_ui)
 
-        self.subunit_inspect_sprite_size = (self.subunit_hitbox_size * self.screen_scale[0],
-                                            self.subunit_hitbox_size * self.screen_scale[1])
+        self.subunit_inspect_sprite_size = (subunit.Subunit.subunit_hitbox_size * self.screen_scale[0],
+                                            subunit.Subunit.subunit_hitbox_size * self.screen_scale[1])
 
         self.battle_game = battle.Battle(self, self.window_style)
         self.battle_game.generate_unit = self.generate_unit

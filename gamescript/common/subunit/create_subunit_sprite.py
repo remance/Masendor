@@ -6,12 +6,12 @@ from gamescript import unit
 team_colour = unit.team_colour
 
 
-def create_subunit_sprite(self, inspect_subunit_size, troop_size):
+def create_subunit_sprite(self, inspect_subunit_size, sprite_troop_size):
     """
     Create subunit sprite for furthest zoom and inspect ui
     :param self: Subunit object
     :param inspect_subunit_size: Size of subunit inspect sprite used to created sprite
-    :param troop_size: Size of troop that may affect sprite size
+    :param sprite_troop_size: Size of troop sprite based on troop size
     :return: Dict with sprites
     """
     # Subunit image sprite in inspect ui and far zoom
@@ -26,7 +26,6 @@ def create_subunit_sprite(self, inspect_subunit_size, troop_size):
                                         ui_image.get_width() - (ui_image.get_width() / 4),
                                         ui_image.get_height() - (ui_image.get_height() / 4)))
 
-    sprite_troop_size = int(troop_size / 10)
     if sprite_troop_size > 1:
         ui_image = pygame.transform.smoothscale(ui_image, (ui_image.get_width() * sprite_troop_size,
                                                            ui_image.get_height() * sprite_troop_size))
@@ -63,7 +62,7 @@ def create_subunit_sprite(self, inspect_subunit_size, troop_size):
                        (far_selected_image.get_width() / 2, far_selected_image.get_height() / 2),
                        far_selected_image.get_width() / 2, 4)
 
-    dim = pygame.Vector2(image.get_width() * 1 / self.max_camera_zoom, image.get_height() * 1 / self.max_camera_zoom)
+    dim = pygame.Vector2(image.get_width() / self.max_camera_zoom, image.get_height() / self.max_camera_zoom)
     far_image = pygame.transform.smoothscale(far_image, (int(dim[0]), int(dim[1])))
     far_selected_image = pygame.transform.smoothscale(far_selected_image, (int(dim[0]), int(dim[1])))
 

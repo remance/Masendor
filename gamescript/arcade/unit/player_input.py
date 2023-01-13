@@ -73,17 +73,16 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                             if self.leader_subunit.ammo_now[self.leader_subunit.equipped_weapon][action_num] > 0:
                                 self.leader_subunit.command_action = {"name": "Action " + str_action_num,
                                                                       "range attack": True, "pos": cursor_pos,
-                                                                      "arc shot": self.leader_subunit.check_special_effect("Arc Shot", weapon=action_num)}
+                                                                      "arc shot": self.leader_subunit.check_special_effect("Arc Shot", weapon=action_num)}  # TODO rework this for player attack
                         else:  # melee attack
                             self.leader_subunit.command_action = {"name": "Action " + str_action_num,
-                                                                  "melee attack": True}
+                                                                  "melee attack": True, "pos": cursor_pos}
                     elif "Action " + str_action_num in self.leader_subunit.current_action[
                         "name"]:  # No new attack command if already doing it
                         if "hold" not in self.leader_subunit.current_action:  # start holding
                             self.leader_subunit.current_action["hold"] = True
-                        else:  # holding
-                            if "range attack" in self.leader_subunit.current_action:  # update new attack pos
-                                self.leader_subunit.current_action["pos"] = cursor_pos
+                        else:  # holding, update new attack pos
+                            self.leader_subunit.current_action["pos"] = cursor_pos
 
                 elif mouse_left_up or mouse_right_up:
                     if "hold" in self.leader_subunit.current_action:  # release holding

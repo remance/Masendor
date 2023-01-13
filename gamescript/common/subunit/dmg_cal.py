@@ -88,8 +88,9 @@ def dmg_cal(self, target, hit, defence, weapon, penetrate, dmg_object, hit_side=
             dmg_sum = sum(dmg.values())
             dmg_sum = dmg_sum * combat_score
 
-        for value in target.element_resistance.values():
-            remain_penetrate -= value
+        for key, value in target.element_resistance.items():
+            if key in dmg:
+                remain_penetrate -= value
 
         leader_dmg = dmg_sum
 

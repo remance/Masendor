@@ -53,6 +53,7 @@ class Subunit(pygame.sprite.Sprite):
     apply_map_status = empty_method
     apply_status_to_friend = empty_method
     attack = empty_method
+    check_special_effect = empty_method
     combat_pathfind = empty_method
     create_subunit_sprite = empty_method
     create_troop_sprite = empty_method
@@ -73,7 +74,6 @@ class Subunit(pygame.sprite.Sprite):
     process_trait_skill = empty_method
     range_weapon_selection = empty_method
     rotate = empty_method
-    special_effect_check = empty_method
     enter_battle = empty_method
     status_update = empty_method
     swap_weapon = empty_method
@@ -107,6 +107,9 @@ class Subunit(pygame.sprite.Sprite):
     # genre specific variables
     dmg_include_leader = True
     hero_health_scale = 1
+
+    # static variable
+    subunit_hitbox_size = 62  # full square hitbox height and width size, this also affect subunit sprite size
 
     def __init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale):
         """
@@ -185,31 +188,6 @@ class Subunit(pygame.sprite.Sprite):
         self.use_animation_sprite = False
         self.play_troop_animation = self.battle.play_troop_animation
 
-        # Default element stat
-        element_dict = {"Physical": 0, "Fire": 0, "Water": 0, "Air": 0, "Earth": 0, "Poison": 0, "Magic": 0}
-        self.element_status_check = element_dict.copy()  # element threshold count
-        self.original_element_resistance = element_dict.copy()
-
-        self.original_heat_resistance = 0  # resistance to heat temperature
-        self.original_cold_resistance = 0  # Resistance to cold temperature
-        self.temperature_count = 0  # temperature threshold count
-
-        # initiate equipment stat
-        self.weight = 0
-        self.original_weapon_dmg = {index: {0: element_dict.copy(), 1: element_dict.copy()} for index in range(0, 2)}
-        self.weapon_penetrate = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
-        self.weapon_weight = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
-        self.range_dmg = {index: {0: element_dict.copy(), 1: element_dict.copy()} for index in range(0, 2)}
-        self.original_range = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
-        self.original_weapon_speed = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
-
-        self.magazine_size = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}  # can shoot how many times before have to reload
-        self.ammo_now = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}  # ammunition count in the current magazine
-        self.weapon_skill = {0: {0: [], 1: []}, 1: {0: [], 1: []}}
-        self.equipped_weapon = 0
-        self.player_equipped_weapon = self.equipped_weapon
-        self.swap_weapon_list = (1, 0)  # for swapping to other set
-
         # Set up special effect variable, first main item is for effect from troop/trait, second main item is for weapon
         # first sub item is permanent effect from trait, second sub item from temporary status or skill
         self.special_effect = {status_name["Name"]: [[False, False], [False, False]]
@@ -272,6 +250,34 @@ class Subunit(pygame.sprite.Sprite):
         race_stat = self.troop_data.race_list[stat["Race"]]
         self.race_name = race_stat["Name"]
         self.grade_name = grade_stat["Name"]
+
+        # Default element stat
+        element_dict = {key.split(" ")[0]: 0 for key in race_stat if " Resistance" in key}  # get only resistance that exist in race data
+        self.element_status_check = element_dict.copy()  # element threshold count
+        self.original_element_resistance = element_dict.copy()
+
+        self.original_heat_resistance = 0  # resistance to heat temperature
+        self.original_cold_resistance = 0  # Resistance to cold temperature
+        self.temperature_count = 0  # temperature threshold count
+
+        # initiate equipment stat
+        self.weight = 0
+        self.original_weapon_dmg = {index: {0: element_dict.copy(), 1: element_dict.copy()} for index in range(0, 2)}
+        self.weapon_penetrate = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
+        self.weapon_weight = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
+        self.range_dmg = {index: {0: element_dict.copy(), 1: element_dict.copy()} for index in range(0, 2)}
+        self.original_range = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
+        self.original_weapon_speed = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
+
+        self.magazine_size = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}  # can shoot how many times before have to reload
+        self.ammo_now = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}  # ammunition count in the current magazine
+        self.weapon_skill = {0: {0: [], 1: []}, 1: {0: [], 1: []}}
+        self.equipped_weapon = 0
+        self.player_equipped_weapon = self.equipped_weapon
+        self.swap_weapon_list = (1, 0)  # for swapping to other set
+
+        # Get troop stat
+
         attribute_stat = race_stat
         if type(troop_id) == str and "h" in troop_id:  # use leader stat for hero (leader) subunit
             attribute_stat = stat
@@ -326,8 +332,11 @@ class Subunit(pygame.sprite.Sprite):
 
         self.skill_cooldown = {}
         self.armour_gear = stat["Armour"]  # armour equipment
-        for element in self.original_element_resistance:  # resistance from race
+        armour_stat = self.troop_data.armour_list[self.armour_gear[0]]
+        armour_grade_mod = self.troop_data.equipment_grade_list[self.armour_gear[1]]["Modifier"]
+        for element in self.original_element_resistance:  # resistance from race and armour
             self.original_element_resistance[element] = race_stat[element + " Resistance"]
+            self.original_element_resistance[element] += (armour_stat[element + " Resistance"] * armour_grade_mod)
 
         self.original_skill = skill.copy()  # Skill that the subunit processes
         if "" in self.original_skill:
@@ -531,7 +540,10 @@ class Subunit(pygame.sprite.Sprite):
         self.corner_atk = False  # cannot melee_attack corner enemy by default
 
         # sprite for inspection or far view
-        sprite_dict = self.create_subunit_sprite(self.battle.subunit_inspect_sprite_size, self.troop_size)
+        self.sprite_troop_size = int(self.troop_size / 10)
+        if self.sprite_troop_size < 1:
+            self.sprite_troop_size = 1
+        sprite_dict = self.create_subunit_sprite(self.battle.subunit_inspect_sprite_size, self.sprite_troop_size)
         self.inspect_image = sprite_dict["image"]
         self.image = self.inspect_image.copy()
         self.inspect_base_image = sprite_dict["original"]
@@ -587,7 +599,12 @@ class Subunit(pygame.sprite.Sprite):
             self.front_pos = self.make_front_pos()
 
             self.rect = self.image.get_rect(center=self.pos)  # for blit into screen
-            self.hitbox_rect = self.image.get_rect(center=self.base_pos)  # for checking damage collision
+
+            if self.sprite_troop_size > 1:
+                self.subunit_hitbox_size *= self.sprite_troop_size
+
+            self.hitbox_rect = pygame.Rect((self.subunit_hitbox_size, self.subunit_hitbox_size),
+                                           self.base_pos)  # hitbox rect based on base pos and furthest image size
 
             self.sprite_id = str(stat["Sprite ID"])
             self.weapon_version = ((sprite_list[self.sprite_id]["p1_primary_main_weapon"],

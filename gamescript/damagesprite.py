@@ -8,8 +8,6 @@ from pathlib import Path
 
 from gamescript.common import utility
 
-convert_degree_to_360 = utility.convert_degree_to_360
-
 direction_angle = {"r_side": math.radians(90), "l_side": math.radians(270), "back": math.radians(180),
                    "front": math.radians(0), "r_sidedown": math.radians(135), "l_sidedown": math.radians(225),
                    "r_sideup": math.radians(45), "l_sideup": math.radians(315)}
@@ -46,7 +44,7 @@ class DamageSprite(pygame.sprite.Sprite):
             exec(f"" + file_name + " = " + file_name + "." + file_name)
 
     def __init__(self, attacker, weapon, dmg, penetrate, weapon_stat, max_range, camera_zoom,
-                 attack_type, specific_attack_pos=None, height_ignore=False, degrade_when_travel=True,
+                 attack_type, base_target, accuracy=None, height_ignore=False, degrade_when_travel=True,
                  degrade_when_hit=True, random_direction=False, random_move=False, arc_shot=False):
         self._layer = 50
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -55,8 +53,8 @@ class DamageSprite(pygame.sprite.Sprite):
         self.battle = self.attacker.battle
         self.weapon = weapon  # weapon that use to perform the attack
         self.arc_shot = arc_shot  # arc shot will only hit subunit when it reaches target
+        self.accuracy = accuracy
         self.height = self.attacker.height
-        self.accuracy = self.attacker.accuracy
         self.attack_type = attack_type
 
         self.height_ignore = height_ignore
@@ -99,89 +97,10 @@ class DamageSprite(pygame.sprite.Sprite):
                     image_name = "base_sub"
                 self.image = self.bullet_weapon_sprite_pool[weapon_stat["Name"]][
                     attacker.weapon_version[attacker.equipped_weapon][weapon]][direction][image_name]
-            if (self.attacker.walk or self.attacker.run) and True in self.attacker.special_effect["Agile Aim"] is False:
-                self.accuracy -= 10  # accuracy penalty for shoot while moving
-            if self.arc_shot:  # arc shot incur accuracy penalty:
-                self.accuracy -= 10
 
-            if specific_attack_pos is not None:
-                target_now = specific_attack_pos
-            elif self.random_direction:
-                target_now = self.find_random_direction()
-            else:
-                target_now = self.attacker.attack_target.base_pos
-
-            # Wind affect accuracy, higher different in direction cause more accuracy loss
-            base_angle = self.set_rotate(target_now)
-            base_angle = convert_degree_to_360(base_angle)
-            angel_dif = (abs(base_angle - self.battle.current_weather.wind_direction) / 100) * self.battle.current_weather.wind_strength
-            self.accuracy -= round(angel_dif)
-
-            if self.accuracy < 0:
-                self.accuracy = 0
-
-            # Calculate hit_chance and final base_target where damage sprite will land
-            # The further hit_chance from 0 the further damage sprite will land from base_target
-            random_pos1 = random.randint(0, 1)  # for left or right random
-            random_pos2 = random.randint(0, 1)  # for up or down random
-
-            sight_penalty = 1
-
-            attack_range = self.attacker.base_pos.distance_to(target_now)
-            if True in self.attacker.special_effect["No Range Penalty"]:
-                hit_chance = self.accuracy
-            elif True in self.attacker.special_effect["Long Range Accurate"]:
-                hit_chance = self.accuracy * (
-                        100 - ((attack_range * 100 / max_range) / 4)) / 100  # range penalty half
-            else:
-                if attack_range > self.attacker.sight:  # penalty for range attack if shoot beyond troop can see
-                    sight_penalty = self.attacker.sight / attack_range
-                hit_chance = self.accuracy * sight_penalty * (100 - ((attack_range * 100 / max_range) / 2)) / 100
-
-            if specific_attack_pos is None and self.attacker.attack_target is not None:
-                if len(self.attacker.attack_target.alive_subunit_list) > 0:
-                    target_hit = self.attacker.find_attack_target(
-                        self.attacker.attack_target.alive_subunit_list)  # find the closest subunit in enemy unit
-                    target_now = target_hit.base_pos  # base_target is at the enemy position
-                    how_long = attack_range / self.speed  # shooting distance divide damage sprite speed to find travel time
-
-                    # Predicatively find position the enemy will be at based on movement speed and sprite travel time
-                    if (target_hit.walk or target_hit.run) and how_long > 0.5:  # target walking
-                        target_move = target_hit.base_target - self.attacker.attack_target.base_pos  # target movement distance
-                        target_now = target_hit.base_pos
-                        if target_move.length() > 1:
-                            target_move.normalize_ip()
-                            move_speed = target_hit.unit.walk_speed
-                            if target_hit.run:
-                                move_speed = target_hit.unit.run_speed
-                            target_now = target_hit.base_pos + (
-                                    (target_move * (move_speed * how_long)) / 11)
-                            if True in self.attacker.special_effect["Agile Aim"] is False:
-                                hit_chance -= 15
-
-            if hit_chance < 100:
-                hit_chance = random.randint(int(hit_chance), 100)  # random hit chance
-            if random.randint(0, 100) > hit_chance:  # miss, not land exactly at base_target
-                if random_pos1 == 0:  # hit_chance convert to percentage from base_target
-                    hit_chance1 = 100 + (hit_chance / 50)
-                else:
-                    hit_chance1 = 100 - (hit_chance / 50)
-                if random_pos2 == 0:
-                    hit_chance2 = 100 + (hit_chance / 50)
-                else:
-                    hit_chance2 = 100 + (hit_chance / 50)
-                self.base_target = pygame.Vector2(target_now[0] * hit_chance1 / 100,
-                                                  target_now[1] * hit_chance2 / 100)
-            else:  # perfect hit, slightly (randomly) land near base_target
-                self.base_target = target_now * random.uniform(0.999, 1.001)
+            self.base_target = base_target
 
             self.angle = self.set_rotate(self.base_target)
-
-            if self.arc_shot is False:  # direct just shoot base on direction of target
-                self.base_target = pygame.Vector2(self.base_pos[0] - (self.battle.map_corner[0] *
-                                                                      math.sin(math.radians(self.angle))),
-                                                  self.base_pos[1] - (self.battle.map_corner[1] *
-                                                                      math.cos(math.radians(self.angle))))
 
         else:
             self.sprite_direction = self.attack_type[1]
@@ -233,24 +152,7 @@ class DamageSprite(pygame.sprite.Sprite):
     def update(self, unit_list, dt, camera_zoom):
         just_start = False
 
-        if self.deal_dmg:  # sprite can still deal damage
-            self.pass_subunit = None  # reset every movement update
-            for subunit in pygame.sprite.spritecollide(self, unit_list, False):  # collide check while travel
-                if subunit != self.attacker and subunit.hitbox_rect.colliderect(self.hitbox_rect):
-                    if self.attack_type == "range":
-                        if self.arc_shot is False:  # direct shot
-                            self.hit_register(subunit)
-                            if self.aoe is False and self.penetrate <= 0:
-                                self.kill()
-                                break
-                        else:
-                            self.pass_subunit = subunit
-
-                    elif self.attack_type == "melee" and subunit.team != self.attacker.team:  # no friendly attack for melee
-                        self.hit_register(subunit)
-                        if self.aoe is False:
-                            self.deal_dmg = False
-                            break
+        self.pass_subunit = None  # reset every movement update
 
         move = self.base_target - self.base_pos
         move_length = move.length()
@@ -272,12 +174,12 @@ class DamageSprite(pygame.sprite.Sprite):
                         self.base_pos[1] <= 0 or self.base_pos[1] >= self.battle.map_corner[1]):  # pass outside of map
                     self.kill()
 
-                if self.degrade_when_travel:
+                if self.degrade_when_travel:  # dmg and penetration power drop the longer damage sprite travel
                     for element in self.dmg:
                         if self.dmg[element] > 1:
-                            self.dmg[element] -= 0.05  # dmg and penetration power drop the longer damage sprite travel
+                            self.dmg[element] -= 0.1
                     if self.penetrate > 1:
-                        self.penetrate -= 0.002
+                        self.penetrate -= 0.2
                     else:  # no more penetrate power to move on
                         self.kill()  # remove sprite
             else:
@@ -287,8 +189,30 @@ class DamageSprite(pygame.sprite.Sprite):
                                           self.base_pos[1] * self.screen_scale[1]) * camera_zoom
                 self.rect.center = self.pos
 
-        elif self.arc_shot:  # reach base_target with arc shot
-            if self.deal_dmg:
+        if self.deal_dmg:  # sprite can still deal damage
+            for subunit in pygame.sprite.spritecollide(self, unit_list, False):  # collide check while travel
+                if subunit != self.attacker and subunit.hitbox_rect.colliderect(self.hitbox_rect):
+                    if self.attack_type == "range":
+                        if self.arc_shot is False:  # direct shot
+                            self.hit_register(subunit)
+                            if self.aoe is False and self.penetrate <= 0:
+                                self.kill()
+                                break
+                        else:
+                            self.pass_subunit = subunit
+
+                    elif self.attack_type == "melee" and subunit.team != self.attacker.team:  # no friendly attack for melee
+                        self.hit_register(subunit)
+                        if self.aoe is False:
+                            self.deal_dmg = False
+                            break
+
+                    if self.arc_shot is False:
+                        print(subunit.base_pos, subunit.game_id, subunit.name, subunit.base_pos,
+                              subunit.hitbox_rect, self.hitbox_rect, self.base_pos, self.penetrate)
+
+        if move_length <= 0:
+            if self.deal_dmg and self.arc_shot:  # arc shot hit enemy it pass last
                 self.hit_register(self.pass_subunit)  # register hit whatever subunit the sprite land at
             self.kill()  # remove sprite
 

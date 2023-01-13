@@ -216,7 +216,7 @@ class Battle:
 
         self.map_corner = (999, 999)
         self.max_camera = (999 * self.screen_scale[0], 999 * self.screen_scale[1])
-        self.subunit_hitbox_size = main.subunit_hitbox_size
+        self.subunit_hitbox_size = subunit.Subunit.subunit_hitbox_size
         self.subunit_inspect_sprite_size = main.subunit_inspect_sprite_size
         self.collide_distance = self.subunit_hitbox_size / 10  # distance to check collision
         self.front_distance = self.subunit_hitbox_size / 20  # distance from front side
