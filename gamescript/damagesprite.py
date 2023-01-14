@@ -26,11 +26,13 @@ class DamageSprite(pygame.sprite.Sprite):
 
     set_rotate = utility.set_rotate
 
-    # Import from common.subunit
+    # Import from common.damagesprite
+    cal_melee_hit = empty_method
+    cal_range_hit = empty_method
     find_random_direction = empty_method
     hit_register = empty_method
     play_animation = empty_method
-    range_dmg_cal = empty_method
+
     sprite_scaling = empty_method
 
     script_dir = os.path.split(os.path.abspath(__file__))[0]
@@ -43,7 +45,7 @@ class DamageSprite(pygame.sprite.Sprite):
             exec(f"from gamescript.common.damagesprite import " + file_name)
             exec(f"" + file_name + " = " + file_name + "." + file_name)
 
-    def __init__(self, attacker, weapon, dmg, penetrate, weapon_stat, max_range, camera_zoom,
+    def __init__(self, attacker, weapon, dmg, penetrate, weapon_stat, camera_zoom,
                  attack_type, base_target, accuracy=None, height_ignore=False, degrade_when_travel=True,
                  degrade_when_hit=True, random_direction=False, random_move=False, arc_shot=False):
         self._layer = 50

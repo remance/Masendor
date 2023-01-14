@@ -195,7 +195,7 @@ def status_update(self, weather=None):
 
             if 0 not in cal_effect["Status"]:  # apply status to friendly if there is one in skill effect
                 for status in cal_effect["Status"]:
-                    self.status_effect[status] = self.status_list[status].copy()
+                    self.apply_effect(status, self.status_list, self.status_effect, self.status_duration)
                     if cal_effect["Area of Effect"] > 1:
                         self.apply_status_to_friend(cal_effect["Area of Effect"], status)
 
@@ -254,6 +254,8 @@ def status_update(self, weather=None):
     self.morale_state = self.morale / self.max_morale  # for using as modifier to stat
     if self.morale_state > 3 or math.isnan(self.morale_state):  # morale state more than 3 give no more benefit
         self.morale_state = 3
+    elif self.morale_state < 0:
+        self.morale_state = 0
 
     self.stamina_state = (self.stamina * 100) / self.max_stamina
     self.stamina_state_cal = 1
@@ -308,7 +310,7 @@ def status_update(self, weather=None):
     self.charge_power = ((self.charge * self.momentum) / 2) * troop_mass
     self.charge_def_power = self.charge_def * troop_mass
 
-    full_merge_len = len(self.full_merge) + 1
+    full_merge_len = len(self.overlap_collide) + 1
     if full_merge_len > 1:  # reduce discipline if there are overlap subunit
         self.discipline = self.discipline / full_merge_len
 
@@ -324,8 +326,6 @@ def status_update(self, weather=None):
         self.range_def = 0
     if self.speed < 1:  # prevent speed to be lower than 1
         self.speed = 1
-        if 105 in self.status_effect:  # collapse state enforce 0 speed
-            self.speed = 0
     if self.accuracy < 0:
         self.accuracy = 0
     if self.reload < 0:
@@ -339,6 +339,8 @@ def status_update(self, weather=None):
     if self.equipped_weapon in self.magazine_count:  # add reload speed skill to reduce ranged weapon cooldown
         for weapon in self.magazine_count[self.equipped_weapon]:
             self.weapon_speed[weapon] += ((100 - self.reload) * self.weapon_speed[weapon] / 100)
+            if self.weapon_speed[weapon] < 1:  # weapon speed can not be less than 0.1 second per hit
+                self.weapon_speed[weapon] = 1
 
     self.rotate_speed = self.unit.rotate_speed * 2  # rotate speed for subunit only use for self rotate not subunit rotate related
     if self.state in (0, 99):

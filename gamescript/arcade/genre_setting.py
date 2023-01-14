@@ -11,9 +11,9 @@ unit_behaviour_wheel = {"Main": {"Skill": "Skill", "Shift Line": "Shift Line", "
                         "Shift Line": {"Front To Back": "Front To Back", "Left To Right": "Left To Right",
                                        "Back To Front": "Back To Front", "Right To Left": "Right To Left"},
                         "Range Attack": {"Leader Aim": "Leader Aim", "Fire At Will": "Fire At Will",
-                                         "Volley Aim": "Volley Aim", "Volley At Will": "Volley At Will",
-                                         "Troop Aim": "Troop Aim", "Manual Only": "Manual Only",
-                                         "Allow Arc Shot": "Allow Arc Shot", "No Arc Shot": "No Arc Shot"},
+                                         "Line Aim": "Line Aim", "Volley At Will": "Volley At Will",
+                                         "Focus Aim": "Focus Aim", "Manual Only": "Manual Only",
+                                         "Allow Arc Shot": "Allow Arc Shot", "No Arc Shot": "No Arc Shot"},  # TODO change button to changable, also wheel with circle button
                         "Behaviour": {"Hold": "Hold", "Follow": "Follow", "Free": "Free", "Retreat": "Retreat"},
                         "Command": {"Offensive": "Offensive", "Defensive": "Defensive", "Skirmish": "Skirmish",
                                     "Protect Me": "Protect Me", "Follow Unit": "Follow Unit", "Free": "Free",

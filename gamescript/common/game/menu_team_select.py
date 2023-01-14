@@ -105,8 +105,7 @@ def menu_team_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
         if self.enactment:
             team_selected = None
 
-        self.setup_battle_unit(self.preview_char, self.troop_data.troop_list,
-                               self.leader_data.leader_list, specific_team=team_selected)
+        self.setup_battle_unit(self.preview_char, specific_team=team_selected)
 
         self.char_selector.setup_unit_icon(self.unit_icon, self.preview_char)
 

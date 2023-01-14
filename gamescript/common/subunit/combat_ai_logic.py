@@ -17,29 +17,15 @@ range_move_attack_command_action = {True: ({"name": "Action 0", "range attack": 
                                             "movable": True, "arc shot": False})}
 
 
-def combat_logic(self, dt, unit_state):
-    collide_list = []
-    if self.enemy_front != [] or self.enemy_side != []:  # Check if in combat or not with collision
-        collide_list = self.enemy_front + self.enemy_side
-        for subunit in collide_list:
-            if self.state not in (96, 98, 99):
-                self.state = 10
-                self.melee_target = subunit
-                if self.enemy_front == []:  # no enemy in front try to rotate to enemy at side
-                    # self.base_target = self.melee_target.base_pos
-                    self.new_angle = self.set_rotate(self.melee_target.base_pos)
-            else:  # no way to retreat, Fight to the death
-                if self.enemy_front != [] and self.enemy_side != []:  # if both front and any side got attacked
-                    if 9 not in self.status_effect:
-                        self.status_effect[9] = self.status_list[9].copy()  # fight to the death status
-            if unit_state not in (10, 96, 98, 99):
-                unit_state = 10
-                self.unit.state = 10
-            if self.melee_target is not None:
-                self.unit.attack_target = self.melee_target.unit
-            break
+def combat_ai_logic(self, dt, unit_state, collide_list):
+    if collide_list:  # Check if in melee combat or not
+        if self.state not in (96, 98, 99):
+            self.state = 10
+            self.melee_target = collide_list[0]
+            self.unit.attack_target = self.melee_target.unit
+            self.new_angle = self.set_rotate(self.melee_target.base_pos)
 
-    elif unit_state == 10:  # no collide enemy while parent unit in fight state
+    elif unit_state == 10:  # no nearby enemy to hit while parent unit in melee fight state
         if self.attacking and self.unit.collide:
             if self.momentum == 1 and self.unit.attack_mode == 1:  # attack to the nearest target instead
                 if self.melee_target is None and self.unit.attack_target is not None:
@@ -64,7 +50,7 @@ def combat_logic(self, dt, unit_state):
                             # self.combat_move_queue = [] # clean queue since the old one no longer without collide
                         else:
                             self.move_timer += dt
-                            if len(self.enemy_front) != 0 or len(self.enemy_side) != 0:  # in fight, stop timer
+                            if len(self.enemy_in_melee_distance) != 0 or len(self.enemy_collide) != 0:  # in fight, stop timer
                                 self.move_timer = 0
 
                             elif self.move_timer > 10 or len(
@@ -128,36 +114,11 @@ def combat_logic(self, dt, unit_state):
                 if self.unit.nearby_enemy != {} and self.attack_target is None:
                     self.find_shooting_target(unit_state)  # shoot the nearest target
 
-    for weapon in self.weapon_cooldown:
-        if self.weapon_cooldown[weapon] < self.weapon_speed[weapon]:
-            if self.equipped_weapon in self.ammo_now and weapon in self.ammo_now[self.equipped_weapon] and \
-                    self.ammo_now[self.equipped_weapon][weapon] == 0:  # reloading magazine
-                if self.state in (11, 12, 13):
-                    self.weapon_cooldown[weapon] += dt
-                if self.weapon_cooldown[weapon] >= self.weapon_speed[weapon]:  # finish reload, add ammo
-                    self.ammo_now[self.equipped_weapon][weapon] = self.magazine_size[self.equipped_weapon][weapon]
-                    self.magazine_count[self.equipped_weapon][weapon] -= 1
-                    self.weapon_cooldown[weapon] = 0
-                break  # reload only one weapon at a time in case both hands use range weapon
-            else:
-                self.weapon_cooldown[weapon] += dt
-
-    if self.state == 10:  # if melee combat (engaging anyone on any side)
+    if self.state == 10 and not self.command_action and not self.current_action:  # if melee combat (engaging anyone on any side)
         for weapon in self.weapon_cooldown:
             if self.weapon_cooldown[weapon] >= self.weapon_speed[weapon]:
-                collide_list = [subunit for subunit in self.enemy_front]
-                for subunit in collide_list:
-                    angle_check = abs(self.angle - subunit.angle)  # calculate which side arrow hit the subunit
-                    if angle_check >= 135:  # front
-                        hit_side = 0
-                    elif angle_check >= 45:  # side
-                        hit_side = 1
-                    else:  # rear
-                        hit_side = 2
-                    self.hit_register(weapon, subunit, 0, hit_side, self.battle.troop_data.status_list)
+                if self.melee_target is not None:
                     self.command_action = melee_attack_command_action[weapon]
-                    self.stamina -= self.weapon_weight[self.equipped_weapon][weapon]
-                    self.weapon_cooldown[weapon] -= self.weapon_speed[weapon]
                 break
 
     elif self.state in (11, 12, 13):  # range combat
@@ -206,4 +167,4 @@ def combat_logic(self, dt, unit_state):
         elif self.angle != self.unit.angle:  # reset angle
             self.new_angle = self.unit.angle
 
-    return unit_state, collide_list
+    return unit_state

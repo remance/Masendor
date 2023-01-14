@@ -1,5 +1,7 @@
 import numpy as np
 
+from gamescript import battleui, subunit, unit, leader
+
 from gamescript.common import utility
 
 stat_convert = utility.stat_convert
@@ -13,8 +15,7 @@ for dd in number_board:
         board_pos.append(ll + dd)
 
 
-def generate_unit(self, which_team, setup_data, control, command, colour, coa, subunit_game_id, troop_list,
-                  leader_list):
+def generate_unit(self, which_team, setup_data, control, command, colour, coa, subunit_game_id):
     """
     generate unit and their subunits
     :param self: Battle object
@@ -25,14 +26,13 @@ def generate_unit(self, which_team, setup_data, control, command, colour, coa, s
     :param colour: Colour for their icon
     :param coa: Coat of arm image
     :param subunit_game_id: Starting game id for subunits
-    :param troop_list: Troop data, use for checking troop size
-    :param leader_list: Leader data, use for checking hero size
     :return: Latest subunit game id for other unit generation
     """
-    from gamescript import battleui, subunit, unit, leader
     row_header = [header for header in setup_data if "Row " in header]
     subunit_array = np.array([setup_data[header] for header in row_header])
     leader_position = self.leader_position_check(subunit_array)
+    troop_list = self.troop_data.troop_list
+    leader_list = self.leader_data.leader_list
     if leader_position is None:  # None from empty method
         leader_position = setup_data["Leader Position"]
 
@@ -87,6 +87,23 @@ def generate_unit(self, which_team, setup_data, control, command, colour, coa, s
                     this_unit.subunit_object_array[row_index][col_index] = add_subunit
                     this_unit.subunit_list.append(add_subunit)
                     subunit_game_id += 1
+
+                    # Recal highest possible distance for battle
+                    if hasattr(self, "front_distance"):
+                        if self.hitbox_distance < add_subunit.subunit_hitbox_size:
+                            self.hitbox_distance = add_subunit.subunit_hitbox_size
+
+                        for weapon in self.troop_data.weapon_list.values():
+                            if self.max_melee_weapon_range < weapon["Range"]:
+                                self.max_melee_weapon_range = weapon["Range"]
+
+                        if self.front_distance < (self.hitbox_distance / 2) + self.max_melee_weapon_range:
+                            self.front_distance = (self.hitbox_distance / 2) + self.max_melee_weapon_range
+
+                        if self.hitbox_distance > self.front_distance:
+                            self.collide_distance = self.hitbox_distance
+                        else:
+                            self.collide_distance = self.front_distance
 
             army_subunit_index += 1
     this_unit.subunit_id_array = new_subunit_list

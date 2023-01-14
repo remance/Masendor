@@ -163,13 +163,13 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                             if self.popup_list_box.type == "terrain":
                                 self.terrain_change_button.change_text(self.battle_map_base.terrain_list[index])
                                 self.base_terrain = index
-                                self.editor_map_change(battlemap.terrain_colour[self.base_terrain],
+                                self.change_editor_map(battlemap.terrain_colour[self.base_terrain],
                                                        battlemap.feature_colour[self.feature_terrain])
 
                             elif self.popup_list_box.type == "feature":
                                 self.feature_change_button.change_text(self.battle_map_feature.feature_list[index])
                                 self.feature_terrain = index
-                                self.editor_map_change(battlemap.terrain_colour[self.base_terrain],
+                                self.change_editor_map(battlemap.terrain_colour[self.base_terrain],
                                                        battlemap.feature_colour[self.feature_terrain])
 
                             elif self.popup_list_box.type == "weather":
@@ -471,7 +471,7 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                 subunit_game_id = subunit_game_id + 1
                             for slot in self.subunit_build:  # just for grabbing current selected team
                                 current_preset[self.unit_preset_name] += (0, 100, 100, slot.team)
-                                self.unit_editor_deploy(self.all_team_unit[slot.team],
+                                self.deploy_unit_editor(self.all_team_unit[slot.team],
                                                         current_preset[self.unit_preset_name], team_colour[slot.team],
                                                         pygame.transform.scale(
                                                             self.coa_list[

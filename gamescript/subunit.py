@@ -54,6 +54,7 @@ class Subunit(pygame.sprite.Sprite):
     apply_status_to_friend = empty_method
     attack = empty_method
     check_special_effect = empty_method
+    combat_ai_logic = empty_method
     combat_pathfind = empty_method
     create_subunit_sprite = empty_method
     create_troop_sprite = empty_method
@@ -64,7 +65,6 @@ class Subunit(pygame.sprite.Sprite):
     find_attack_target = empty_method
     find_nearby_subunit = empty_method
     find_shooting_target = empty_method
-    hit_register = empty_method
     loss_cal = empty_method
     make_front_pos = empty_method
     make_pos_range = empty_method
@@ -83,7 +83,6 @@ class Subunit(pygame.sprite.Sprite):
     zoom_scale = empty_method
 
     # Import from *genre*.subunit
-    combat_logic = empty_method
     fatigue = empty_method
     gone_leader_process = empty_method
     health_stamina_logic = empty_method
@@ -109,7 +108,7 @@ class Subunit(pygame.sprite.Sprite):
     hero_health_scale = 1
 
     # static variable
-    subunit_hitbox_size = 62  # full square hitbox height and width size, this also affect subunit sprite size
+    subunit_hitbox_size = 6  # full square hitbox height and width size, this also affect subunit sprite size
 
     def __init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale):
         """
@@ -153,10 +152,10 @@ class Subunit(pygame.sprite.Sprite):
         self.idle_action = {}  # action that is performed when subunit is idle such as hold spear wall when skill active
         self.last_current_action = {}  # for checking if animation suddenly change
 
-        self.enemy_front = []  # list of front collide sprite
-        self.enemy_side = []  # list of side collide sprite
+        self.enemy_in_melee_distance = []  # list of front collide sprite
+        self.enemy_collide = []  # list of side collide sprite
         self.friend_front = []  # list of friendly front collide sprite
-        self.full_merge = []  # list of sprite that collide and almost overlap with this sprite
+        self.overlap_collide = []  # list of sprite that collide and almost overlap with this sprite
         self.nearby_subunit_list = []
         self.collide_penalty = False
         self.movement_queue = []
@@ -171,6 +170,7 @@ class Subunit(pygame.sprite.Sprite):
         self.timer = random.random()  # may need to use random.random()
         self.move_timer = 0  # timer for moving to front position before attacking nearest enemy
         self.momentum = 0.1  # charging momentum to reach target before choosing the nearest enemy
+        self.max_melee_attack_range = 0
 
         self.camera_zoom = 1
         self.max_camera_zoom = self.battle.max_camera_zoom  # closest zoom allowed
@@ -267,6 +267,7 @@ class Subunit(pygame.sprite.Sprite):
         self.weapon_weight = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
         self.range_dmg = {index: {0: element_dict.copy(), 1: element_dict.copy()} for index in range(0, 2)}
         self.original_range = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
+        self.original_melee_range = {0: {}, 1: {}}
         self.original_weapon_speed = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
 
         self.magazine_size = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}  # can shoot how many times before have to reload
@@ -567,9 +568,6 @@ class Subunit(pygame.sprite.Sprite):
 
         self.icon_sprite_width = self.inspect_base_image3.get_width()
         self.icon_sprite_height = self.inspect_base_image3.get_height()
-        self.collide_distance = self.icon_sprite_height / 10  # distance to check collision
-        self.front_distance = self.icon_sprite_height / 20  # distance from front side
-        self.full_distance = self.front_distance / 2  # distance for sprite merge check
 
         self.unit_position = (start_pos[0] / 10, start_pos[1] / 10)  # position in unit sprite
 
@@ -603,8 +601,13 @@ class Subunit(pygame.sprite.Sprite):
             if self.sprite_troop_size > 1:
                 self.subunit_hitbox_size *= self.sprite_troop_size
 
+            self.full_merge_distance = self.subunit_hitbox_size / 4  # distance to become fully merge with this sprite
+
             self.hitbox_rect = pygame.Rect((self.subunit_hitbox_size, self.subunit_hitbox_size),
                                            self.base_pos)  # hitbox rect based on base pos and furthest image size
+            self.hitbox_front_distance = (self.subunit_hitbox_size / 2)
+
+            self.hitbox_front_melee_distance = self.hitbox_front_distance + self.max_melee_attack_range
 
             self.sprite_id = str(stat["Sprite ID"])
             self.weapon_version = ((sprite_list[self.sprite_id]["p1_primary_main_weapon"],
@@ -625,15 +628,32 @@ class Subunit(pygame.sprite.Sprite):
                 self.run = False  # reset run
 
                 unit_state = self.unit.state
+                if len(self.enemy_in_melee_distance) > 0:
+                    self.enemy_in_melee_distance = {subunit: subunit.base_pos.distance_to(self.base_pos) for
+                                                    subunit in self.enemy_in_melee_distance}
+                    self.enemy_in_melee_distance = [item[0] for item in
+                                                    sorted(self.enemy_in_melee_distance.items(),
+                                                           key=lambda item: item[1])]  # sort collide list by distance
 
                 self.state_reset_logic(unit_state)
 
-                unit_state, collide_list = self.combat_logic(dt, unit_state)
+                for weapon in self.weapon_cooldown:
+                    if self.weapon_cooldown[weapon] < self.weapon_speed[weapon]:
+                        self.weapon_cooldown[weapon] += dt
+                    if self.equipped_weapon in self.ammo_now and weapon in self.ammo_now[self.equipped_weapon] and \
+                            self.ammo_now[self.equipped_weapon][weapon] == 0 and \
+                            self.weapon_cooldown[weapon] >= self.weapon_speed[weapon]:  # finish reload, add ammo
+                        self.ammo_now[self.equipped_weapon][weapon] = self.magazine_size[self.equipped_weapon][weapon]
+                        self.magazine_count[self.equipped_weapon][weapon] -= 1
+                        self.weapon_cooldown[weapon] = 0
+
+                if self.player_manual_control is False:
+                    unit_state = self.combat_ai_logic(dt, unit_state, self.enemy_in_melee_distance)
 
                 if self.angle != self.new_angle:  # Rotate Function
                     self.rotate_logic(dt)
 
-                self.move_logic(dt, unit_state, collide_list)  # Move function
+                self.move_logic(dt, unit_state, self.enemy_in_melee_distance)  # Move function
 
                 self.morale_logic(dt, unit_state)
 
@@ -651,11 +671,11 @@ class Subunit(pygame.sprite.Sprite):
                     self.subunit_health = 0
                     self.die("flee")
 
-            self.enemy_front = []  # reset collide
-            self.enemy_side = []
+            self.enemy_in_melee_distance = []  # reset collide
+            self.enemy_collide = []
             self.friend_front = []
             self.same_front = []
-            self.full_merge = []
+            self.overlap_collide = []
             self.collide_penalty = False
 
         else:  # dead

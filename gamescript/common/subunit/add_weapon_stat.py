@@ -24,6 +24,9 @@ def add_weapon_stat(self):
             if weapon_stat["Magazine"] == 0:  # weapon is melee weapon with no magazine to load ammo
                 self.melee_weapon_set[set_index] += dmg_sum  # add weapon damage for sort
                 self.magazine_count[set_index][weapon_index] = 0  # remove modifier
+                self.original_melee_range[set_index][weapon_index] = weapon_stat["Range"]
+                if weapon_stat["Range"] > self.max_melee_attack_range:
+                    self.max_melee_attack_range = weapon_stat["Range"]
             else:
                 self.weapon_type[set_index][weapon_index] = "ranged"
                 self.magazine_count[set_index][weapon_index] *= weapon_stat["Ammunition"]

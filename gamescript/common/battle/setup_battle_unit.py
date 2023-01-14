@@ -16,12 +16,11 @@ for dd in number_board:
 board_pos = tuple(board_pos)
 
 
-def setup_battle_unit(self, team_unit_list, troop_list, leader_list, specific_team=None):
+def setup_battle_unit(self, team_unit_list, specific_team=None):
     """
     Read unit battle data from unit_pos file
     :param self: Battle or Game object
     :param team_unit_list: List of team unit group, can be list for preview or dict for battle
-    :param troop_list: Troop_list from troop data
     :param specific_team: Assign the unit to which specific team
     """
     from gamescript import unit
@@ -69,6 +68,9 @@ def setup_battle_unit(self, team_unit_list, troop_list, leader_list, specific_te
                 coa = pygame.transform.scale(self.faction_data.coa_list[this_unit["Faction"]],
                                              (60, 60))  # get coa_list image and scale smaller to fit ui
                 subunit_game_id = self.generate_unit(which_team, this_unit, control, command, colour, coa,
-                                                     subunit_game_id, troop_list, leader_list)
+                                                     subunit_game_id)
+
+            self.max_melee_weapon_range = 0
+            self.hitbox_distance = 0  # reset collision distance
 
     unit_file.close()

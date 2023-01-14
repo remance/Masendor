@@ -25,7 +25,7 @@ def attack(self, attack_type):
 
         accuracy = self.accuracy
 
-        if (self.walk or self.run) and True in arc_shot is False:
+        if (self.walk or self.run) and arc_shot is False:
             accuracy -= 10  # accuracy penalty for shoot while moving
         if arc_shot:  # arc shot incur accuracy penalty:
             accuracy -= 10
@@ -97,7 +97,7 @@ def attack(self, attack_type):
 
             damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
                                       self.weapon_penetrate[self.equipped_weapon][weapon],
-                                      equipped_weapon_data, attack_range, self.camera_zoom, attack_type,
+                                      equipped_weapon_data, self.camera_zoom, attack_type,
                                       base_target, accuracy=accuracy, arc_shot=arc_shot)
 
         if equipped_weapon_data["Sound Effect"] in self.sound_effect_pool:
@@ -112,8 +112,8 @@ def attack(self, attack_type):
             effect_volume = sound_distance * (self.camera_zoom / self.max_camera_zoom) * \
                             self.battle.play_effect_volume
 
-            print(effect_volume, equipped_weapon_data["Sound Distance"], self.battle.play_effect_volume,
-                  sound_distance, self.base_pos, self.battle.true_camera_pos, self.camera_zoom)
+            # print(effect_volume, equipped_weapon_data["Sound Distance"], self.battle.play_effect_volume,
+            #       sound_distance, self.base_pos, self.battle.true_camera_pos, self.camera_zoom)
             if effect_volume > 0:
                 if effect_volume > 1:
                     effect_volume = 1
@@ -132,6 +132,7 @@ def attack(self, attack_type):
         damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
                                   self.weapon_penetrate[self.equipped_weapon][weapon],
                                   self.equipped_weapon_data[weapon],
-                                  self.shoot_range[weapon], self.camera_zoom, attack_type)
+                                  self.camera_zoom, attack_type)
+        self.weapon_cooldown[weapon] -= self.weapon_speed[weapon]
 
     self.stamina -= self.weapon_weight[self.equipped_weapon][weapon]

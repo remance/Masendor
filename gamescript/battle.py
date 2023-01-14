@@ -35,6 +35,7 @@ class Battle:
     camera_fix = empty_method
     camera_process = empty_method
     camera_zoom_change = empty_method
+    check_sprite_collision = empty_method
     generate_unit = empty_method
     popout_lorebook = empty_method
     remove_unit_ui = empty_method
@@ -57,11 +58,11 @@ class Battle:
 
     # import from common.battle.uniteditor
     convert_unit_slot_to_dict = empty_method
-    editor_map_change = empty_method
+    change_editor_map = empty_method
+    deploy_unit_editor = empty_method
     filter_troop_list = empty_method
     preview_authority = empty_method
     save_custom_unit_preset = empty_method
-    unit_editor_deploy = empty_method
 
     # import from *genre*.battle
     add_behaviour_ui = empty_method
@@ -218,9 +219,10 @@ class Battle:
         self.max_camera = (999 * self.screen_scale[0], 999 * self.screen_scale[1])
         self.subunit_hitbox_size = subunit.Subunit.subunit_hitbox_size
         self.subunit_inspect_sprite_size = main.subunit_inspect_sprite_size
-        self.collide_distance = self.subunit_hitbox_size / 10  # distance to check collision
-        self.front_distance = self.subunit_hitbox_size / 20  # distance from front side
-        self.full_distance = self.front_distance / 2  # distance for sprite merge check
+        self.max_melee_weapon_range = 0
+        self.collide_distance = self.subunit_hitbox_size  # distance to check collision
+        self.hitbox_distance = self.subunit_hitbox_size
+        self.front_distance = self.subunit_hitbox_size / 2  # distance from front side
 
         self.preview_leader = []
         self.inspect_subunit = []  # list of subunit shown in inspect ui
@@ -475,7 +477,7 @@ class Battle:
             self.battle_map.draw_image(self.battle_map_base, self.battle_map_feature, self.battle_map_height,
                                        place_name_map, self, False)
         else:
-            self.editor_map_change(self.battle_map_base.terrain_colour[0],  # temperate
+            self.change_editor_map(self.battle_map_base.terrain_colour[0],  # temperate
                                    self.battle_map_feature.feature_colour[0])  # plain
 
         self.map_corner = (
@@ -488,7 +490,6 @@ class Battle:
         self.battle_subunit_list = []
         self.visible_subunit_list = {}
 
-        # initialise starting subunit sprites
         self.mode = mode
 
         self.setup_battle_ui("add")
@@ -497,7 +498,7 @@ class Battle:
         if self.mode == "battle":
             self.camera_zoom = self.start_camera_zoom  # Camera zoom
             self.camera_mode = self.start_zoom_mode
-            self.setup_battle_unit(self.all_team_unit, self.troop_data.troop_list, self.leader_data.leader_list)
+            self.setup_battle_unit(self.all_team_unit)
             self.team_troop_number = [1 for _ in self.all_team_unit]  # reset list of troop number in each team
             self.battle_scale = [(value / sum(self.team_troop_number) * 100) for value in self.team_troop_number]
             self.start_troop_number = [0 for _ in self.all_team_unit]
@@ -891,46 +892,21 @@ class Battle:
                             for one, two in collisions:
                                 sprite_one = self.battle_subunit_list[one]
                                 sprite_two = self.battle_subunit_list[two]
-                                if sprite_one.unit != sprite_two.unit:  # collide with subunit in other unit
-                                    if sprite_one.base_pos.distance_to(sprite_one.base_pos) < self.full_distance:
-                                        sprite_one.full_merge.append(sprite_two)
-                                        sprite_two.full_merge.append(sprite_one)
+                                sprite_distance = sprite_one.base_pos.distance_to(sprite_two.base_pos)
+                                if sprite_distance < sprite_one.subunit_hitbox_size or \
+                                        sprite_distance < sprite_two.subunit_hitbox_size:
+                                    sprite_one.collide_penalty = True
+                                    sprite_two.collide_penalty = True
+                                    if sprite_one.team != sprite_two.team:
+                                        sprite_one.enemy_collide.append(sprite_two)
+                                        sprite_two.enemy_collide.append(sprite_one)
+                                    if sprite_distance < sprite_one.full_merge_distance or \
+                                            sprite_distance < sprite_one.full_merge_distance:
+                                        sprite_one.overlap_collide.append(sprite_two)
+                                        sprite_two.overlap_collide.append(sprite_one)
 
-                                    if sprite_one.front_pos.distance_to(
-                                            sprite_two.base_pos) < self.front_distance:  # first subunit collision
-                                        if sprite_one.team != sprite_two.team:  # enemy team
-                                            sprite_one.enemy_front.append(sprite_two)
-                                            sprite_one.unit.collide = True
-                                        elif sprite_one.state in (2, 4, 6, 10, 11, 13) or \
-                                                sprite_two.state in (
-                                                2, 4, 6, 10, 11,
-                                                13):  # cannot run pass other unit if either run or in combat
-                                            sprite_one.friend_front.append(sprite_two)
-                                            sprite_one.unit.collide = True
-                                        sprite_one.collide_penalty = True
-                                    else:
-                                        if sprite_one.team != sprite_two.team:  # enemy team
-                                            sprite_one.enemy_side.append(sprite_two)
-                                    if sprite_two.front_pos.distance_to(
-                                            sprite_one.base_pos) < self.front_distance:  # second subunit
-                                        if sprite_one.team != sprite_two.team:  # enemy team
-                                            sprite_two.enemy_front.append(sprite_one)
-                                            sprite_two.unit.collide = True
-                                        elif sprite_one.state in (2, 4, 6, 10, 11, 13) or \
-                                                sprite_two.state in (2, 4, 6, 10, 11, 13):
-                                            sprite_two.friend_front.append(sprite_one)
-                                            sprite_two.unit.collide = True
-                                        sprite_two.collide_penalty = True
-                                    else:
-                                        if sprite_one.team != sprite_two.team:  # enemy team
-                                            sprite_two.enemy_side.append(sprite_one)
-
-                                else:  # collide with subunit in same unit
-                                    if sprite_one.front_pos.distance_to(
-                                            sprite_two.base_pos) < self.front_distance:  # first subunit collision
-                                        if sprite_one.base_pos.distance_to(sprite_one.base_pos) < self.full_distance:
-                                            sprite_one.full_merge.append(sprite_two)
-                                            sprite_two.full_merge.append(sprite_one)
+                                self.check_sprite_collision(sprite_one, sprite_two)
+                                self.check_sprite_collision(sprite_two, sprite_one)
 
                         self.subunit_pos_array = self.map_move_array.copy()
                         for this_subunit in self.battle_subunit_list:

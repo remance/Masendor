@@ -11,7 +11,7 @@ def move_logic(self, dt, unit_state, collide_list):
     self.base_target = self.command_target  # always attempt to catch up to command target
     if self.base_pos != self.base_target and (not self.current_action or "movable" in self.current_action):
         no_collide_check = False  # can move if front of unit not collided
-        if self.unit.collide is False or self.broken or unit_state == 10 or self.momentum > 1:
+        if self.unit.collide is False or self.broken or unit_state == 10 or self.momentum > 1 or (len(self.friend_front) == 0 and self.state in (96, 98, 99)):
             no_collide_check = True
 
         enemy_collide_check = False  # for chance to move or charge through enemy
@@ -20,18 +20,20 @@ def move_logic(self, dt, unit_state, collide_list):
             if self.state in (96, 98, 99):  # retreat
                 enemy_collide_check = False
                 no_collide_check = True  # bypass collide
-            elif 0 in self.skill_effect and random.randint(0,
-                                                           1) == 0:  # chance to charge through TODO add charge power vs def
+            elif self.momentum > 1:  # Run through enemy if still has momentum
+                enemy_collide_check = False
+            elif random.randint(0, 3) == 0:
                 enemy_collide_check = False
 
-        if no_collide_check and enemy_collide_check is False and \
-                (len(self.friend_front) == 0 or self.state in (96, 98, 99)):
+        print(no_collide_check, enemy_collide_check, len(self.friend_front))
+
+        if no_collide_check and enemy_collide_check is False:
             move = self.base_target - self.base_pos
             move_length = move.length()  # convert length
             if move_length > 0:  # movement length longer than 0.1, not reach base_target yet
                 move.normalize_ip()
                 self.state = unit_state
-                if move_length > 10 or unit_state == 99:  # use its own speed when catch up or broken
+                if move_length > 10 or unit_state == 99:  # use its own speed when catch up or broken TODO ADD condition to check it move toward to unit base pos
                     if unit_state != 99:
                         self.state = 2
                     speed = self.speed * self.momentum

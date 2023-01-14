@@ -1,7 +1,7 @@
 from gamescript.common.battle.generate_unit import generate_unit
 
 
-def unit_editor_deploy(self, which_army, row, colour, coa, subunit_game_id):
+def deploy_unit_editor(self, which_army, row, colour, coa, subunit_game_id):
     for key, value in row.items():  # convert string to number
         if "Row" not in key:  # generate_unit use string item array for subunit data
             if type(value) == str and value.isdigit():

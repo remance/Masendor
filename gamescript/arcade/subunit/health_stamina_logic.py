@@ -28,8 +28,8 @@ def health_stamina_logic(self, dt):
             loss = self.troop_number - remain
             wound = random.randint(0, loss)  # chance to be wounded instead of dead
             self.battle.death_troop_number[self.team] += loss - wound
-            if self.state in (98, 99) and len(self.enemy_front) + len(
-                    self.enemy_side) > 0:  # fleeing or broken got captured instead of wound
+            if self.state in (98, 99) and len(self.enemy_in_melee_distance) + len(
+                    self.enemy_collide) > 0:  # fleeing or broken got captured instead of wound
                 self.battle.capture_troop_number[self.team] += wound
             else:
                 self.battle.wound_troop_number[self.team] += wound
