@@ -8,7 +8,7 @@ heavy_damaged_command_action = {"name": "HeavyDamaged", "uninterruptible": True}
 damaged_command_action = {"name": "Damaged", "uninterruptible": True}
 
 
-def loss_cal(self, target, final_dmg, final_morale_dmg, leader_dmg, element_effect):
+def cal_loss(self, target, final_dmg, final_morale_dmg, leader_dmg, element_effect):
     """
     :param self: Attacker Subunit object
     :param target: Damage receiver Subunit object

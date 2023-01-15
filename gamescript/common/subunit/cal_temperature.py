@@ -1,4 +1,4 @@
-def temperature_cal(self, temp_reach):
+def cal_temperature(self, temp_reach):
     """Temperature mod function from terrain and weather"""
     if temp_reach < 0:  # cold temperature, the lowest temperature the subunit can reach change based on cold resist
         temp_reach = temp_reach * (100 - self.cold_resistance) / 100

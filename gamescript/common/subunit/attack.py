@@ -30,10 +30,10 @@ def attack(self, attack_type):
         if arc_shot:  # arc shot incur accuracy penalty:
             accuracy -= 10
 
-        # Wind affect accuracy, higher different in direction cause more accuracy loss
         base_angle = self.set_rotate(base_target)
-        base_angle = convert_degree_to_360(base_angle)
-        angel_dif = (abs(base_angle - self.battle.current_weather.wind_direction) / 100) * self.battle.current_weather.wind_strength
+        # Wind affect accuracy, higher different in direction cause more accuracy loss
+        angel_dif = (abs(convert_degree_to_360(base_angle) -
+                         self.battle.current_weather.wind_direction) / 100) * self.battle.current_weather.wind_strength
         accuracy -= round(angel_dif)
 
         if accuracy < 0:
@@ -56,7 +56,6 @@ def attack(self, attack_type):
             if len(self.attack_target.alive_subunit_list) > 0:
                 target_hit = self.find_attack_target(
                     self.attack_target.alive_subunit_list)  # find the closest subunit in enemy unit
-                base_target = target_hit.base_pos  # base_target is at the enemy position
                 how_long = attack_range / self.speed  # shooting distance divide damage sprite speed to find travel time
 
                 # Predicatively find position the enemy will be at based on movement speed and sprite travel time
@@ -64,11 +63,8 @@ def attack(self, attack_type):
                     target_move = target_hit.base_target - target_hit.base_pos  # target movement distance
                     if target_move.length() > 1:
                         target_move.normalize_ip()
-                        move_speed = target_hit.unit.walk_speed
-                        if target_hit.run:
-                            move_speed = target_hit.unit.run_speed
                         base_target = target_hit.base_pos + (
-                                (target_move * (move_speed * how_long)) / 11)
+                                (target_move * (target_hit.move_speed * how_long)) / 11)  # recal target base on enemy move target
                         if self.check_special_effect("Agile Aim") is False:
                             accuracy -= 15
 
@@ -91,9 +87,9 @@ def attack(self, attack_type):
 
             if arc_shot is False:  # direct shot just shoot base on direction of target at max range
                 base_target = pygame.Vector2(self.base_pos[0] - (max_range *
-                                                                  math.sin(math.radians(self.angle))),
+                                                                 math.sin(math.radians(base_angle))),
                                              self.base_pos[1] - (max_range *
-                                                                  math.cos(math.radians(self.angle))))
+                                                                 math.cos(math.radians(base_angle))))
 
             damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
                                       self.weapon_penetrate[self.equipped_weapon][weapon],

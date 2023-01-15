@@ -83,6 +83,8 @@ class DamageSprite(pygame.sprite.Sprite):
 
         self.camera_zoom = camera_zoom
 
+        self.base_target = base_target
+
         if self.attack_type == "range":
             self.base_pos = pygame.Vector2(self.attacker.front_pos)
 
@@ -99,8 +101,6 @@ class DamageSprite(pygame.sprite.Sprite):
                     image_name = "base_sub"
                 self.image = self.bullet_weapon_sprite_pool[weapon_stat["Name"]][
                     attacker.weapon_version[attacker.equipped_weapon][weapon]][direction][image_name]
-
-            self.base_target = base_target
 
             self.angle = self.set_rotate(self.base_target)
 
@@ -120,10 +120,7 @@ class DamageSprite(pygame.sprite.Sprite):
 
             self.image = self.current_animation[self.show_frame]
 
-            self.base_pos = pygame.Vector2(self.attacker.front_pos[0] + (weapon_stat["Range"] * math.sin(direction_angle[self.attacker_sprite_direction])),
-                                           self.attacker.front_pos[1] - (weapon_stat["Range"] * math.cos(direction_angle[self.attacker_sprite_direction])))
-
-            self.base_target = self.base_pos
+            self.base_pos = base_target
 
         self.target_height = self.height_map.get_height(self.base_target)  # get the height at base_target
 
@@ -181,7 +178,7 @@ class DamageSprite(pygame.sprite.Sprite):
                         if self.dmg[element] > 1:
                             self.dmg[element] -= 0.1
                     if self.penetrate > 1:
-                        self.penetrate -= 0.2
+                        self.penetrate -= 0.1
                     else:  # no more penetrate power to move on
                         self.kill()  # remove sprite
             else:
@@ -210,8 +207,8 @@ class DamageSprite(pygame.sprite.Sprite):
                             break
 
                     if self.arc_shot is False:
-                        print(subunit.base_pos, subunit.game_id, subunit.name, subunit.base_pos,
-                              subunit.hitbox_rect, self.hitbox_rect, self.base_pos, self.penetrate)
+                        print(subunit.base_pos, subunit.hitbox_rect, subunit.game_id, subunit.name,
+                        self.hitbox_rect, self.base_pos)
 
         if move_length <= 0:
             if self.deal_dmg and self.arc_shot:  # arc shot hit enemy it pass last

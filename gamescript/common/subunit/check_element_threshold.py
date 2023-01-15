@@ -1,4 +1,4 @@
-def element_threshold_count(self, element, tier1status, tier2status):
+def check_element_threshold(self, element, tier1status, tier2status):
     """apply elemental status effect when reach elemental threshold"""
     if element > 50:  # apply tier 1 status
         self.apply_effect(self.status_list[tier1status], self.status_list, self.status_effect, self.status_duration)

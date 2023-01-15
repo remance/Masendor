@@ -3,9 +3,9 @@ import random
 
 def gone_leader_process(self, event):
     """Leader change when subunit or gone/destroyed, event can be "Destroyed" or "Broken" """
-    check_state = [100]
+    check_state = (100,)
     if event == "Broken":
-        check_state = [99, 100]
+        check_state = (99, 100)
     if self.leader is not None and self.leader.state != 100:  # Find new subunit for leader if there is one in this subunit
         for this_subunit in self.nearby_subunit_list:
             if this_subunit is not None and this_subunit.state not in check_state and this_subunit.leader is None:

@@ -247,9 +247,9 @@ def status_update(self, weather=None):
             sight_bonus -= 30
             accuracy_bonus -= 20
 
-    self.temperature_cal(temp_reach)  # calculate temperature and its effect
+    self.cal_temperature(temp_reach)  # calculate temperature and its effect
 
-    self.element_effect_count()  # elemental effect
+    self.check_element_effect()  # elemental effect
 
     self.morale_state = self.morale / self.max_morale  # for using as modifier to stat
     if self.morale_state > 3 or math.isnan(self.morale_state):  # morale state more than 3 give no more benefit

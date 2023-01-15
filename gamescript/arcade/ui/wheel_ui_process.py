@@ -66,12 +66,12 @@ def wheel_ui_process(self, choice):
                 if choice == "Leader Aim":
                     self.player_input_state = "leader aim"
                     self.player_char.range_weapon_selection()
-                elif choice == "Volley Aim":
-                    self.player_input_state = "volley aim"
+                elif choice == "Line Aim":
+                    self.player_input_state = "line aim"
                     for this_subunit in self.player_char.unit.alive_subunit_list:
                         this_subunit.range_weapon_selection()
-                elif choice == "Troop Aim":
-                    self.player_input_state = "troop aim"
+                elif choice == "Focus Aim":
+                    self.player_input_state = "focus aim"
                     for this_subunit in self.player_char.unit.alive_subunit_list:
                         if this_subunit != self.player_char:
                             this_subunit.range_weapon_selection()

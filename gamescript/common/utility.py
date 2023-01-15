@@ -322,7 +322,7 @@ def rotation_xy(origin, point, angle):
     :param origin: origin pos
     :param point: target point pos
     :param angle: angle of rotation in radians
-    :return:
+    :return: Rotated origin pos
     """
     ox, oy = origin
     px, py = point
@@ -331,27 +331,28 @@ def rotation_xy(origin, point, angle):
     return pygame.Vector2(x, y)
 
 
-def set_rotate(self, base_target):
+def set_rotate(self, base_target, convert=True):
     """
-    set base_target and new angle for sprite rotation
+    find angle using starting pos and base_target
     :param self: any object with base_pos as position attribute
     :param base_target: pos for target position to rotate to
+    :param convert: convert degree for rotation
     :return: new angle
     """
     my_radians = math.atan2(base_target[1] - self.base_pos[1], base_target[0] - self.base_pos[0])
     new_angle = math.degrees(my_radians)
+    if convert:
+        # """upper left and upper right"""
+        if -180 <= new_angle < 0:
+            new_angle = -new_angle - 90
 
-    # """upper left and upper right"""
-    if -180 <= new_angle < 0:
-        new_angle = -new_angle - 90
+        # """lower right -"""
+        elif 0 <= new_angle <= 90:
+            new_angle = -(new_angle + 90)
 
-    # """lower right -"""
-    elif 0 <= new_angle <= 90:
-        new_angle = -(new_angle + 90)
-
-    # """lower left +"""
-    elif 90 < new_angle <= 180:
-        new_angle = 270 - new_angle
+        # """lower left +"""
+        elif 90 < new_angle <= 180:
+            new_angle = 270 - new_angle
     return round(new_angle)
 
 
@@ -392,7 +393,7 @@ def travel_to_map_border(pos, angle, map_size):
         distance_ns = (map_size[1] - y) / sin_angle if sin_angle > 0 else -y / sin_angle
         distance = min(distance_ew, distance_ns)
 
-    target = pygame.Vector2(x + (distance * math.sin(angle)), y - (distance * math.cos(angle)))
+    target = find_target(pos, distance, angle)
     return target
 
 

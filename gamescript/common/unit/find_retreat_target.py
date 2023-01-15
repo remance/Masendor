@@ -18,8 +18,6 @@ def find_retreat_target(self):
 
         for index, angle in enumerate(retreat_angle):  # find retreat angle from 8 directions
             base_target = travel_to_map_border(self.base_pos, angle, self.map_corner)
-            # base_target = pygame.Vector2(self.base_pos[0] + (self.map_corner[0] * math.sin(angle)),
-            #                              self.base_pos[1] - (self.map_corner[1] * math.cos(angle)))
             retreat_score[index] += (self.base_pos.distance_to(base_target) / map_distance_score)  # keep distance score as decimal
             retreat_target.append(base_target)
             for this_subunit in self.battle.battle_subunit_list:

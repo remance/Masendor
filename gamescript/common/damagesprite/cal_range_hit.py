@@ -21,4 +21,4 @@ def cal_range_hit(self, attacker, target, target_side, side_percent=(1, 0.3, 0.3
     element_effect, self.penetrate = self.cal_dmg(attacker, target, attacker_hit, target_def, self.weapon,
                                                   self.penetrate, self)
 
-    self.attacker.loss_cal(target, attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect)
+    self.attacker.cal_loss(target, attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect)

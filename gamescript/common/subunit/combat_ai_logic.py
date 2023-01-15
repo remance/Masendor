@@ -65,7 +65,6 @@ def combat_ai_logic(self, dt, unit_state, collide_list):
                                 self.new_angle = self.set_rotate(self.base_target)
 
                     else:  # whole targeted enemy unit destroyed, reset target and state
-                        self.melee_target = None
                         self.close_target = None
                         if self in self.battle.combat_path_queue:
                             self.battle.combat_path_queue.remove(self)
@@ -73,10 +72,8 @@ def combat_ai_logic(self, dt, unit_state, collide_list):
                         self.attack_target = None
                         self.base_target = self.command_target
                         self.new_angle = self.unit.angle
-                        self.state = 0
 
         elif self.attacking is False:  # not in fight anymore, rotate and move back to original position
-            self.melee_target = None
             self.close_target = None
             if self in self.battle.combat_path_queue:
                 self.battle.combat_path_queue.remove(self)
@@ -84,24 +81,21 @@ def combat_ai_logic(self, dt, unit_state, collide_list):
             self.attack_target = None
             self.base_target = self.command_target
             self.new_angle = self.unit.angle
-            self.state = 0
 
-        if self.state != 10 and (self.magazine_count[self.equipped_weapon][0] > 0 or
-                                 self.magazine_count[self.equipped_weapon][1] > 0) and self.unit.fire_at_will == 0 and \
+        if self.state != 10 and self.manual_shoot is False and \
+                (self.magazine_count[self.equipped_weapon][0] > 0 or
+                 self.magazine_count[self.equipped_weapon][1] > 0) and self.unit.fire_at_will == 0 and \
                 self.momentum == 1:  # Range attack when unit in melee state
             self.state = 11
             if self.unit.nearby_enemy != {} and (self.attack_target is None or self.attack_pos is None):
                 self.find_shooting_target(unit_state)
 
     elif self.state < 90:  # range attack
-        self.melee_target = None
         self.close_target = None
         if self in self.battle.combat_path_queue:
             self.battle.combat_path_queue.remove(self)
         self.attack_target = None
         self.combat_move_queue = []
-        if unit_state == 11:
-            self.state = 0  # reset all subunit to idle first if unit in shooting state
         if self.ammo_now:
             if unit_state == 11:  # unit in range attack state
                 if any(weapon_range >= self.attack_pos.distance_to(self.base_pos) for weapon_range in
@@ -121,7 +115,7 @@ def combat_ai_logic(self, dt, unit_state, collide_list):
                     self.command_action = melee_attack_command_action[weapon]
                 break
 
-    elif self.state in (11, 12, 13):  # range combat
+    elif self.state in (11, 12, 13) and self.manual_shoot is False:  # range combat
         if self.attack_target is not None:  # For fire at will
             if self.attack_target.state == 100:  # enemy dead
                 self.attack_pos = None  # reset attack_pos to none
@@ -141,7 +135,8 @@ def combat_ai_logic(self, dt, unit_state, collide_list):
                         self.shoot_range[weapon] >= self.attack_pos.distance_to(self.base_pos):
                     can_shoot = False
                     weapon_arc_shot = self.check_special_effect("Arc Shot", weapon=weapon)
-                    if len(self.attack_target.alive_subunit_list) > 0:  # find the closest enemy subunit not block by friend
+                    if self.check_special_effect("Arc Shot Only", weapon=weapon) is False and \
+                            len(self.attack_target.alive_subunit_list) > 0:  # find the closest enemy subunit not block by friend
                         target_hit = self.find_attack_target(
                             self.attack_target.alive_subunit_list, check_line_of_sight=True)
                         if target_hit is not None:

@@ -36,6 +36,7 @@ def placement(self, mouse_pos, mouse_right, mouse_right_down, double_mouse_right
         subunit.base_pos = pygame.Vector2(
             rotation_xy(self.base_pos, new_target,
                         self.radians_angle))  # rotate according to sprite current rotation
+        subunit.hitbox_rect.center = self.base_pos
         subunit.zoom_scale()
         subunit.angle = self.angle
         subunit.rotate()

@@ -39,6 +39,7 @@ def enter_battle(self):
     for subunit in self.subunit_list:  # generate start position of each subunit
         subunit.base_pos = unit_top_left + subunit.unit_position
         subunit.base_pos = pygame.Vector2(rotation_xy(self.base_pos, subunit.base_pos, self.radians_angle))
+        subunit.hitbox_rect.center = subunit.base_pos
         subunit.zoom_scale()
         subunit.base_target = subunit.base_pos
         subunit.command_target = subunit.base_pos  # rotate according to sprite current rotation

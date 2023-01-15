@@ -48,3 +48,4 @@ def enter_battle(self, zoom, animation_pool):
     #             break
 
     self.pick_animation()
+

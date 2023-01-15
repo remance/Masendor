@@ -1311,6 +1311,16 @@ class DirectionArrow(pygame.sprite.Sprite):  # TODO make it work so it can be im
             self.kill()
 
 
+class ShootLine(pygame.sprite.Sprite):
+    def __init__(self, screen_scale, who):
+        self._layer = 36
+        self.screen_scale = screen_scale
+        self.who = who
+
+    def update(self, target_pos):
+        pass
+
+
 class TroopNumber(pygame.sprite.Sprite):
     def __init__(self, screen_scale, who):
         self._layer = 35

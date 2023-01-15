@@ -40,7 +40,7 @@ def cal_melee_hit(self, attacker, weapon, target, attacker_side, hit_side):
                                          attacker.weapon_penetrate[attacker.equipped_weapon][weapon], weapon,
                                          hit_side)  # get dmg by attacker
 
-    attacker.loss_cal(target, attacker_dmg, attacker_morale_dmg, attacker_leader_dmg,
+    attacker.cal_loss(target, attacker_dmg, attacker_morale_dmg, attacker_leader_dmg,
                       element_effect)  # inflict dmg to defender
 
     if attacker.inflict_status != {}:  # inflict status based on aoe 1 = front only 2 = all 4 side, 3 corner enemy subunit, 4 entire unit
@@ -52,7 +52,7 @@ def cal_melee_hit(self, attacker, weapon, target, attacker_side, hit_side):
         if target.full_reflect:
             target_dmg = attacker_dmg
             target_morale_dmg = attacker_dmg / 10
-        target.loss_cal(attacker, target_dmg, target_morale_dmg, element_effect)  # inflict dmg to attacker
+        target.cal_loss(attacker, target_dmg, target_morale_dmg, element_effect)  # inflict dmg to attacker
 
     # Attack corner (side) of self with aoe attack
     if attacker.corner_atk:
@@ -68,7 +68,7 @@ def cal_melee_hit(self, attacker, weapon, target, attacker_side, hit_side):
                 element_effect, _ = attacker.cal_dmg(this_subunit, attacker_hit, target_defence, weapon,
                                                      attacker.weapon_penetrate[attacker.equipped_weapon][weapon], "melee")
 
-                attacker.loss_cal(this_subunit, attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect)
+                attacker.cal_loss(this_subunit, attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect)
                 if attacker.inflict_status != {}:
                     apply_status_to_enemy(attacker.inflict_status, this_subunit, attacker_side, hit_side)
 

@@ -57,11 +57,11 @@ def add_weapon_stat(self):
                                                  self.trait["Weapon"][key][weapon] if
                                                  x in self.troop_data.trait_list}  # replace trait index with data
 
-    # Remove weapon set with no magazine
-    self.ammo_now = {key: {key2: 0} for key, value in self.magazine_count.items() for
+    # Remove weapon set with no magazine from ammo count
+    self.ammo_now = {key: value for key, value in self.ammo_now.items() for
                      key2, value2 in self.magazine_count[key].items() if value2 > 0}
-    for key in self.ammo_now:  # remove weapon with no magazine
-        for key2 in self.ammo_now[key]:
+    for key in self.ammo_now.copy():  # remove weapon with no magazine
+        for key2 in self.ammo_now[key].copy():
             if self.magazine_count[key][key2] == 0:
                 self.ammo_now[key].pop(key2)
 

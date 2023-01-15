@@ -25,7 +25,7 @@ def move_logic(self, dt, unit_state, collide_list):
             elif random.randint(0, 3) == 0:
                 enemy_collide_check = False
 
-        print(no_collide_check, enemy_collide_check, len(self.friend_front))
+        # print(no_collide_check, enemy_collide_check, len(self.friend_front))
 
         if no_collide_check and enemy_collide_check is False:
             move = self.base_target - self.base_pos
@@ -36,30 +36,30 @@ def move_logic(self, dt, unit_state, collide_list):
                 if move_length > 10 or unit_state == 99:  # use its own speed when catch up or broken TODO ADD condition to check it move toward to unit base pos
                     if unit_state != 99:
                         self.state = 2
-                    speed = self.speed * self.momentum
+                    self.move_speed = self.speed * self.momentum
                     self.run = True
                 elif unit_state in (1, 3, 5, 7):  # walking
-                    speed = self.unit.walk_speed  # use walk speed
+                    self.move_speed = self.unit.walk_speed  # use walk speed
                     self.walk = True
                 else:  # self.state in (2, 4, 6, 10, 96, 98, 99), running
-                    speed = self.unit.run_speed * self.momentum  # use run speed
+                    self.move_speed = self.unit.run_speed * self.momentum  # use run speed
                     self.run = True
                     if unit_state == 0:
                         self.state = 2
                 if self.collide_penalty:  # reduce speed during moving through another unit
-                    speed /= 2
-                move *= speed * dt
+                    self.move_speed /= 2
+                move *= self.move_speed * dt
                 new_move_length = move.length()
                 new_pos = self.base_pos + move
 
-                if speed > 0 and (self.state in (98, 99) or (0 < new_pos[0] < self.map_corner[0] and
-                                                             0 < new_pos[1] < self.map_corner[1])):
+                if self.move_speed > 0 and (self.state in (98, 99) or (0 < new_pos[0] < self.map_corner[0] and
+                                                                       0 < new_pos[1] < self.map_corner[1])):
                     # cannot go pass map unless in retreat state
                     if new_move_length <= move_length:  # move normally according to move speed
                         self.base_pos += move
                         self.pos = self.base_pos * self.camera_zoom
                         self.rect.center = list(
-                            int(v) for v in self.pos)  # list rect so the sprite gradually move to position
+                            int(v) for v in self.pos)  # list rect so the sprite gradually move to position on screen
                         self.hitbox_rect.center = self.base_pos
                         self.new_angle = self.set_rotate(self.base_target)
                         if self.walk:

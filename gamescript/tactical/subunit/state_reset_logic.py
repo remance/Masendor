@@ -8,3 +8,5 @@ def state_reset_logic(self, unit_state):
         self.state = unit_state  # Enforce unit state to subunit when moving and breaking
     self.attack_target = self.unit.attack_target
     self.attack_pos = self.unit.base_attack_pos
+
+    self.melee_target = None

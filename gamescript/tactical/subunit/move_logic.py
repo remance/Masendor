@@ -35,30 +35,30 @@ def move_logic(self, dt, unit_state, collide_list):
             if move_length > 0:  # movement length longer than 0.1, not reach base_target yet
                 move.normalize_ip()
                 if unit_state in (1, 3, 5, 7):  # walking
-                    speed = self.unit.walk_speed  # use walk speed
+                    self.move_speed = self.unit.walk_speed  # use walk speed
                     self.walk = True
                 elif unit_state in (10, 99):  # run with its own speed instead of uniformed run
-                    speed = self.speed * self.momentum  # use its own speed when broken
+                    self.move_speed = self.speed * self.momentum  # use its own speed when broken
                     self.run = True
                 else:  # self.state in (2, 4, 6, 10, 96, 98, 99), running
-                    speed = self.unit.run_speed * self.momentum  # use run speed
+                    self.move_speed = self.unit.run_speed * self.momentum  # use run speed
                     self.run = True
                 if self.collide_penalty:  # reduce speed during moving through another unit
-                    speed /= 2
-                speed /= 10
-                move *= speed * dt
+                    self.move_speed /= 2
+                self.move_speed /= 10
+                move *= self.move_speed * dt
                 new_move_length = move.length()
                 new_pos = self.base_pos + move
 
-                if speed > 0 and (self.state in (98, 99) or (0 < new_pos[0] < self.map_corner[0] and
-                                                             0 < new_pos[1] < self.map_corner[1])):
+                if self.move_speed > 0 and (self.state in (98, 99) or (0 < new_pos[0] < self.map_corner[0] and
+                                                                       0 < new_pos[1] < self.map_corner[1])):
                     # cannot go pass map unless in retreat state
                     if new_move_length <= move_length:  # move normally according to move speed
                         self.base_pos += move
                         self.pos = self.base_pos * self.camera_zoom
                         self.rect.center = tuple(
-                            int(v) for v in self.pos)  # list rect so the sprite gradually move to position
-                        self.hitbox_rect.center = tuple(int(v) for v in self.base_pos)
+                            int(v) for v in self.pos)  # list rect so the sprite gradually move to position on screen
+                        self.hitbox_rect.center = self.base_pos
                         if self.stamina != infinity:
                             if self.walk:
                                 self.stamina = self.stamina - (dt * 2)
@@ -109,6 +109,3 @@ def move_logic(self, dt, unit_state, collide_list):
                             self.unit.charging = False
                             if self.momentum <= 0.1:
                                 self.momentum = 0.1
-
-            elif self.broken is False:  # Stopping subunit when reach base_target
-                self.state = 0  # idle

@@ -53,19 +53,20 @@ class Subunit(pygame.sprite.Sprite):
     apply_map_status = empty_method
     apply_status_to_friend = empty_method
     attack = empty_method
+    cal_loss = empty_method
+    cal_temperature = empty_method
+    check_element_effect = empty_method
+    check_element_threshold = empty_method
     check_special_effect = empty_method
+    check_weapon_cooldown = empty_method
     combat_ai_logic = empty_method
     combat_pathfind = empty_method
     create_subunit_sprite = empty_method
     create_troop_sprite = empty_method
     die = empty_method
-    dmg_cal = empty_method
-    element_effect_count = empty_method
-    element_threshold_count = empty_method
     find_attack_target = empty_method
     find_nearby_subunit = empty_method
     find_shooting_target = empty_method
-    loss_cal = empty_method
     make_front_pos = empty_method
     make_pos_range = empty_method
     pick_animation = empty_method
@@ -77,7 +78,6 @@ class Subunit(pygame.sprite.Sprite):
     enter_battle = empty_method
     status_update = empty_method
     swap_weapon = empty_method
-    temperature_cal = empty_method
     troop_loss = empty_method
     use_skill = empty_method
     zoom_scale = empty_method
@@ -141,6 +141,7 @@ class Subunit(pygame.sprite.Sprite):
         self.attacking = False  # for checking if unit in attacking state or not for using charge skill
         self.control = True  # subunit will obey command input
         self.player_manual_control = False  # for mode that allow player to manually control a subunit
+        self.manual_shoot = False  # currently in manual shoot control, do not automatically shoot by itself
 
         self.animation_pool = {}  # list of animation sprite this subunit can play with its action
         self.current_animation = {}  # list of animation frames playing
@@ -497,7 +498,7 @@ class Subunit(pygame.sprite.Sprite):
         self.acceleration = self.base_speed / 2  # determine how long it takes to reach full speed when run
         self.description = lore[1]  # subunit description for inspect ui
 
-        # Reset stat variable for receiving modifier effect from various sources, used for activity and effect calculation
+        # Final stat after receiving modifier effect from various sources, reset every time status is updated
         self.max_morale = self.base_morale
         self.melee_attack = self.base_melee_attack
         self.melee_def = self.base_melee_def
@@ -525,7 +526,6 @@ class Subunit(pygame.sprite.Sprite):
         self.weapon_dmg = self.original_weapon_dmg[self.equipped_weapon].copy()
         self.weapon_speed = self.original_weapon_speed[self.equipped_weapon].copy()
         self.shoot_range = self.original_range[self.equipped_weapon].copy()
-        # ^^ End stat for status effect
 
         self.morale_state = 1  # turn into percentage
         self.stamina_state = (self.stamina * 100) / self.max_stamina  # turn into percentage
@@ -539,6 +539,8 @@ class Subunit(pygame.sprite.Sprite):
         self.mental = (200 - self.mental) / 100  # convert to percentage
 
         self.corner_atk = False  # cannot melee_attack corner enemy by default
+
+        self.move_speed = 0
 
         # sprite for inspection or far view
         self.sprite_troop_size = int(self.troop_size / 10)
@@ -603,8 +605,9 @@ class Subunit(pygame.sprite.Sprite):
 
             self.full_merge_distance = self.subunit_hitbox_size / 4  # distance to become fully merge with this sprite
 
-            self.hitbox_rect = pygame.Rect((self.subunit_hitbox_size, self.subunit_hitbox_size),
-                                           self.base_pos)  # hitbox rect based on base pos and furthest image size
+            hitbox_image = pygame.Surface((self.subunit_hitbox_size, self.subunit_hitbox_size))
+            self.hitbox_rect = hitbox_image.get_rect(center=self.base_pos)  # hitbox rect based on base pos and furthest image size
+
             self.hitbox_front_distance = (self.subunit_hitbox_size / 2)
 
             self.hitbox_front_melee_distance = self.hitbox_front_distance + self.max_melee_attack_range
@@ -624,10 +627,6 @@ class Subunit(pygame.sprite.Sprite):
             if dt > 0:  # only run these when self not pause
                 self.timer += dt
 
-                self.walk = False  # reset walk
-                self.run = False  # reset run
-
-                unit_state = self.unit.state
                 if len(self.enemy_in_melee_distance) > 0:
                     self.enemy_in_melee_distance = {subunit: subunit.base_pos.distance_to(self.base_pos) for
                                                     subunit in self.enemy_in_melee_distance}
@@ -635,20 +634,18 @@ class Subunit(pygame.sprite.Sprite):
                                                     sorted(self.enemy_in_melee_distance.items(),
                                                            key=lambda item: item[1])]  # sort collide list by distance
 
+                self.walk = False  # reset walk
+                self.run = False  # reset run
+
+                unit_state = self.unit.state
+
                 self.state_reset_logic(unit_state)
 
-                for weapon in self.weapon_cooldown:
-                    if self.weapon_cooldown[weapon] < self.weapon_speed[weapon]:
-                        self.weapon_cooldown[weapon] += dt
-                    if self.equipped_weapon in self.ammo_now and weapon in self.ammo_now[self.equipped_weapon] and \
-                            self.ammo_now[self.equipped_weapon][weapon] == 0 and \
-                            self.weapon_cooldown[weapon] >= self.weapon_speed[weapon]:  # finish reload, add ammo
-                        self.ammo_now[self.equipped_weapon][weapon] = self.magazine_size[self.equipped_weapon][weapon]
-                        self.magazine_count[self.equipped_weapon][weapon] -= 1
-                        self.weapon_cooldown[weapon] = 0
+                self.check_weapon_cooldown(dt)
 
                 if self.player_manual_control is False:
                     unit_state = self.combat_ai_logic(dt, unit_state, self.enemy_in_melee_distance)
+                    self.manual_shoot = False  # reset this every update
 
                 if self.angle != self.new_angle:  # Rotate Function
                     self.rotate_logic(dt)
@@ -665,6 +662,7 @@ class Subunit(pygame.sprite.Sprite):
                 if self.timer > 1:  # Update status and skill use around every 1 second
                     self.status_update(weather=weather)
                     self.timer -= 1
+
                 if self.state in (98, 99) and (self.map_corner[0] <= self.base_pos[0] or self.base_pos[0] <= 0 or
                                                self.map_corner[1] <= self.base_pos[1] or self.base_pos[1] <= 0):
                     self.state = 100  # # remove troop that pass map border, enter dead state
