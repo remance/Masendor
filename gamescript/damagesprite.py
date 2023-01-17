@@ -70,11 +70,14 @@ class DamageSprite(pygame.sprite.Sprite):
 
         self.scale_size = 1
         self.animation_timer = 0
+        self.duration = 0
+        self.timer = 0
         self.show_frame = 0
         self.current_animation = {}
         self.repeat_animation = False
         self.sprite_direction = ""
         self.attacker_sprite_direction = self.attacker.sprite_direction
+        self.already_hit = []  # list of subunit already got hit by sprite for sprite with no duration
 
         self.dmg = {key: random.uniform(value[0], value[1]) for key, value in dmg.items()}
         self.penetrate = penetrate
@@ -151,6 +154,8 @@ class DamageSprite(pygame.sprite.Sprite):
     def update(self, unit_list, dt, camera_zoom):
         just_start = False
 
+        self.timer += dt
+
         self.pass_subunit = None  # reset every movement update
 
         move = self.base_target - self.base_pos
@@ -190,10 +195,11 @@ class DamageSprite(pygame.sprite.Sprite):
 
         if self.deal_dmg:  # sprite can still deal damage
             for subunit in pygame.sprite.spritecollide(self, unit_list, False):  # collide check while travel
-                if subunit != self.attacker and subunit.hitbox_rect.colliderect(self.hitbox_rect):
+                if subunit != self.attacker and subunit.hitbox_rect.colliderect(self.hitbox_rect) and subunit not in self.already_hit:
                     if self.attack_type == "range":
                         if self.arc_shot is False:  # direct shot
                             self.hit_register(subunit)
+                            self.already_hit.append(subunit)
                             if self.aoe is False and self.penetrate <= 0:
                                 self.kill()
                                 break
@@ -207,8 +213,13 @@ class DamageSprite(pygame.sprite.Sprite):
                             break
 
                     if self.arc_shot is False:
-                        print(subunit.base_pos, subunit.hitbox_rect, subunit.game_id, subunit.name,
-                        self.hitbox_rect, self.base_pos)
+                        print(subunit.base_pos, subunit.hitbox_rect, subunit.hitbox_rect.center, subunit.game_id,
+                              subunit.name, self.base_pos, self.hitbox_rect, self.hitbox_rect.center)
+                        print(self.penetrate)
+
+        if self.timer > 1 and self.duration > 0:  # reset timer and list of subunit already hit for duration damage
+            self.timer = 0
+            self.already_hit = []  # sprite can deal dmg to same subunit every 1 second
 
         if move_length <= 0:
             if self.deal_dmg and self.arc_shot:  # arc shot hit enemy it pass last

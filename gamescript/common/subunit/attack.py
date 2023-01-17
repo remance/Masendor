@@ -81,7 +81,7 @@ def attack(self, attack_type):
                 if random.randint(0, 1) == 0:
                     hit_chance2 = 100 + (accuracy / 50)
                 else:
-                    hit_chance2 = 100 + (accuracy / 50)
+                    hit_chance2 = 100 - (accuracy / 50)
                 base_target = pygame.Vector2(base_target[0] * hit_chance1 / 100,
                                              base_target[1] * hit_chance2 / 100)
 
@@ -107,7 +107,7 @@ def attack(self, attack_type):
                 sound_distance = 1
             effect_volume = sound_distance * (self.camera_zoom / self.max_camera_zoom) * \
                             self.battle.play_effect_volume
-
+            self.battle.cal_shake_value(self.base_pos, equipped_weapon_data["Shake Power"])
             # print(effect_volume, equipped_weapon_data["Sound Distance"], self.battle.play_effect_volume,
             #       sound_distance, self.base_pos, self.battle.true_camera_pos, self.camera_zoom)
             if effect_volume > 0:

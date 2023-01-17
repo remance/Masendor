@@ -32,6 +32,7 @@ class Battle:
     popup_list_open = utility.popup_list_open
 
     # Import from common.battle
+    cal_shake_value = empty_method
     camera_fix = empty_method
     camera_process = empty_method
     camera_zoom_change = empty_method
@@ -131,6 +132,7 @@ class Battle:
 
         self.damage_sprites = main.damage_sprites
         self.direction_arrows = main.direction_arrows
+        self.shoot_lines = main.shoot_lines
         self.troop_number_sprite = main.troop_number_sprite
 
         self.mini_map = main.mini_map
@@ -343,6 +345,7 @@ class Battle:
 
         # Create the game camera
         self.camera_zoom = 1  # camera zoom level, starting at the furthest zoom
+        self.camera_zoom_image_scale = self.camera_zoom / self.max_camera_zoom
         self.camera_mode = "Free"  # mode of game camera
         self.true_camera_pos = pygame.Vector2(500, 500)  # camera pos on map
         self.base_camera_pos = pygame.Vector2(500 * self.screen_scale[0],
@@ -364,6 +367,10 @@ class Battle:
 
         self.background = pygame.Surface(self.screen_rect.size)  # Create background image
         self.background.fill((255, 255, 255))  # fill background image with black colour
+
+        self.base_mouse_pos = [0, 0]  # mouse position list in battle map not screen without zoom
+        self.battle_mouse_pos = [0, 0]  # with camera zoom adjust but without screen scale
+        self.command_mouse_pos = [0, 0]  # with zoom and screen scale for unit command
 
     def prepare_new_game(self, ruleset, ruleset_folder, team_selected, enactment, map_selected,
                          map_source, unit_scale, mode, char_selected=None):
@@ -664,8 +671,8 @@ class Battle:
         self.player_input_state = None
 
         self.base_mouse_pos = [0, 0]  # mouse position list in battle map not screen without zoom
-        self.battle_mouse_pos = [0, 0]  # with camera zoom adjust
-        self.command_mouse_pos = [0, 0]  # with zoom but no revert screen scale for unit command
+        self.battle_mouse_pos = [0, 0]  # with camera zoom adjust but without screen scale
+        self.command_mouse_pos = [0, 0]  # with zoom and screen scale for unit command
         self.unit_selector.current_row = 0
 
         self.time_update()
@@ -1093,8 +1100,8 @@ class Battle:
                               2: pygame.sprite.Group(), "alive": pygame.sprite.Group()}  # reset dict
         self.team_pos_list = {key: {} for key in self.team_pos_list.keys()}
 
-        clean_group_object((self.subunit_updater, self.leader_updater, self.unit_updater, self.unit_icon,
-                            self.troop_number_sprite, self.damage_sprites, self.weather_matter))
+        clean_group_object((self.shoot_lines, self.subunit_updater, self.leader_updater, self.unit_updater,
+                            self.unit_icon, self.troop_number_sprite, self.damage_sprites, self.weather_matter))
 
         self.subunit_animation_pool = None
         self.generic_action_data = None

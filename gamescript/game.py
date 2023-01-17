@@ -314,10 +314,12 @@ class Game:
         self.weather_updater = pygame.sprite.Group()  # updater for weather objects
         self.effect_updater = pygame.sprite.Group()  # updater for effect objects (e.g. range melee_attack sprite)
 
+
         self.preview_char = pygame.sprite.Group()  # group for char list in char select screen
 
         self.damage_sprites = pygame.sprite.Group()  # all damage sprite group and maybe other range effect stuff later
         self.direction_arrows = pygame.sprite.Group()
+        self.shoot_lines = pygame.sprite.Group()
         self.troop_number_sprite = pygame.sprite.Group()  # troop text number that appear next to unit sprite
 
         self.button_ui = pygame.sprite.Group()  # ui button group in battle
@@ -359,6 +361,7 @@ class Game:
         battleui.TroopNumber.containers = self.troop_number_sprite, self.effect_updater, self.battle_camera
         battleui.DirectionArrow.containers = self.direction_arrows, self.effect_updater, self.battle_camera
         battleui.WheelUI.containers = self.wheel_ui
+        battleui.ShootLine.containers = self.shoot_lines, self.battle_camera
 
         damagesprite.DamageSprite.containers = self.damage_sprites, self.effect_updater, self.battle_camera
 

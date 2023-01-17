@@ -1,3 +1,5 @@
+from gamescript import battleui
+
 leader_skill_command_action = ({"name": "Leader Skill 0"}, {"name": "Leader Skill 1"})
 
 
@@ -66,15 +68,17 @@ def wheel_ui_process(self, choice):
                 if choice == "Leader Aim":
                     self.player_input_state = "leader aim"
                     self.player_char.range_weapon_selection()
+                    battleui.ShootLine(self.screen_scale, self.player_char)
                 elif choice == "Line Aim":
                     self.player_input_state = "line aim"
                     for this_subunit in self.player_char.unit.alive_subunit_list:
                         this_subunit.range_weapon_selection()
+                        battleui.ShootLine(self.screen_scale, this_subunit)
                 elif choice == "Focus Aim":
                     self.player_input_state = "focus aim"
                     for this_subunit in self.player_char.unit.alive_subunit_list:
-                        if this_subunit != self.player_char:
-                            this_subunit.range_weapon_selection()
+                        this_subunit.range_weapon_selection()
+                        battleui.ShootLine(self.screen_scale, this_subunit)
 
 
 def renew_wheel(self, choice):

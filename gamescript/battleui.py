@@ -1,4 +1,5 @@
 import datetime
+import math
 
 import pygame
 import pygame.freetype
@@ -1312,13 +1313,83 @@ class DirectionArrow(pygame.sprite.Sprite):  # TODO make it work so it can be im
 
 
 class ShootLine(pygame.sprite.Sprite):
+    set_rotate = utility.set_rotate
+
     def __init__(self, screen_scale, who):
-        self._layer = 36
+        self._layer = 40
+        pygame.sprite.Sprite.__init__(self, self.containers)
         self.screen_scale = screen_scale
         self.who = who
+        self.who.shoot_line = self
+        self.clip = (False, False)  # clip for weapon 1 and 2
+        self.base_pos = pygame.Vector2(self.who.pos)
+        self.base_target_pos = None
+        self.target_pos = None
+        self.camera_zoom_scale = 0
+        self.line_size = 100 * self.screen_scale[0]
+        self.can_shoot = [False, False]
+        self.arc_shot = [False, False]
 
-    def update(self, target_pos):
-        pass
+        self.image = pygame.Surface((0, 0))
+        self.rect = self.image.get_rect(center=(0, 0))
+
+    def update(self, base_target_pos, target_pos, clip, can_shoot, camera_zoom_scale, arc_shot):
+        redo = False
+        self.arc_shot = arc_shot
+        if self.target_pos != target_pos:
+            self.base_target_pos = base_target_pos
+            self.target_pos = target_pos
+            redo = True
+        if self.clip != clip:
+            self.clip = clip
+            redo = True
+        if self.can_shoot != can_shoot:
+            self.can_shoot = can_shoot
+            redo = True
+        if self.base_pos != self.who.pos:
+            self.base_pos = pygame.Vector2(self.who.pos)
+            redo = True
+        if self.camera_zoom_scale != camera_zoom_scale:
+            self.camera_zoom_scale = camera_zoom_scale
+            redo = True
+
+        if self.who.state == 100:
+            self.who.shoot_line = None
+            self.kill()
+
+        if redo:
+            angle = self.set_rotate(self.target_pos)
+            length = self.base_pos.distance_to(target_pos)
+            half_length = length / 2
+            self.image = pygame.Surface((self.line_size * self.camera_zoom_scale, length), pygame.SRCALPHA)
+            check_image = pygame.Surface((self.line_size * self.camera_zoom_scale, length / 2))
+            if self.who.state == 10:  # troop busy in melee
+                self.image.fill((255, 127, 39, 50))
+            else:
+                self.image.fill((0, 0, 0, 50))
+                rect_choice = ((0, 0), (check_image.get_width() / 2, 0))
+                for index, this_clip in enumerate(self.clip):
+                    if index == 0:
+                        check_image2 = pygame.Surface((self.image.get_width() / 2, length / 2))
+                    else:  # to make it so the bar fill entire line width
+                        check_image2 = pygame.Surface((self.image.get_width(), length / 2))
+                    if this_clip:  # shoot line block by friend
+                        check_image2.fill((255, 0, 0, 50))
+                    elif self.can_shoot[index]:  # can shoot
+                        check_image2.fill(((100, 100, 255, 50), (100, 255, 100, 50))[index])
+                    else:
+                        check_image2.fill((100, 100, 100, 50))
+                    rect = check_image2.get_rect(topleft=(rect_choice[index]))
+                    check_image.blit(check_image2, rect)
+
+            rect = check_image.get_rect(topleft=(0, 0))
+            self.image.blit(check_image, rect)
+            self.image = pygame.transform.rotate(self.image, angle)
+
+            pos = pygame.Vector2(self.base_pos[0] - (half_length * math.sin(math.radians(angle))),
+                                 self.base_pos[1] - (half_length * math.cos(math.radians(angle))))
+
+            self.rect = self.image.get_rect(center=pos)
 
 
 class TroopNumber(pygame.sprite.Sprite):

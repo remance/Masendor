@@ -162,7 +162,7 @@ historical information to players.
 
 - inogNate
 
-### Sound:
+### Sound (Obtained and edited):
 
 - Musket sound effect by aaronsiler (https://freesound.org/people/aaronsiler/)
 

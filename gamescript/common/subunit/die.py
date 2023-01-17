@@ -38,6 +38,10 @@ def die(self, how):
         self.troop_loss(self.troop_number)
         self.battle.battle_camera.remove(self)
 
+    if self.shoot_line is not None:
+        self.shoot_line.kill()
+        self.shoot_line = None
+
     if self in self.battle.battle_subunit_list:
         self.battle.subunit_pos_list.pop(self.battle.battle_subunit_list.index(self))
         self.battle.battle_subunit_list.remove(self)

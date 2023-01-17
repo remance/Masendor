@@ -8,6 +8,8 @@ def add_weapon_stat(self):
             dmg_sum = 0
             dmg_scaling = (weapon_stat["Strength Bonus Scale"], weapon_stat["Dexterity Bonus Scale"])
             dmg_scaling = [item / sum(dmg_scaling) if sum(dmg_scaling) > 0 else 0 for item in dmg_scaling]
+            speed_scaling = ((((dmg_scaling[0] * self.strength / 100) + (dmg_scaling[1] * self.dexterity / 100)) * 10) +
+                             (self.agility / 5) + (self.wisdom / 10))
             for damage in self.original_weapon_dmg[set_index][weapon_index]:
                 damage_name = damage + " Damage"
                 if damage_name in weapon_stat:
@@ -41,9 +43,11 @@ def add_weapon_stat(self):
 
             self.trait["Weapon"][set_index][weapon_index] += weapon_stat["Trait"]
             if weapon_index == 1 and weapon_stat["Hand"] == 2:  # 2 handed weapon as sub weapon get attack speed penalty
-                self.original_weapon_speed[set_index][weapon_index] = weapon_stat["Cooldown"] * 1.5
+                self.original_weapon_speed[set_index][weapon_index] = (weapon_stat["Cooldown"] - (weapon_stat["Cooldown"] * speed_scaling / 100)) * 1.5
             else:
-                self.original_weapon_speed[set_index][weapon_index] = weapon_stat["Cooldown"]
+                self.original_weapon_speed[set_index][weapon_index] = weapon_stat["Cooldown"] - (weapon_stat["Cooldown"] * speed_scaling / 100)
+            if self.original_weapon_speed[set_index][weapon_index] < 0:
+                self.original_weapon_speed[set_index][weapon_index] = 0
             self.weapon_weight[set_index][weapon_index] = weapon_stat["Weight"]
             self.weight += weapon_stat["Weight"]
             self.weapon_skill[set_index][weapon_index] = weapon_stat["Skill"][0]  # take only first skill

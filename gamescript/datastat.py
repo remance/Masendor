@@ -229,6 +229,7 @@ class TroopData:
                     row = stat_convert(row, n, i, percent_column=percent_column, list_column=list_column,
                                        tuple_column=tuple_column, int_column=int_column, true_empty=True)
                 self.weapon_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
+                self.weapon_list[row[0]]["Shake Power"] = int(self.weapon_list[row[0]]["Sound Distance"] / 10)
         edit_file.close()
 
         self.weapon_lore = {}

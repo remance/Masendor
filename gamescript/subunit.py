@@ -161,6 +161,7 @@ class Subunit(pygame.sprite.Sprite):
         self.collide_penalty = False
         self.movement_queue = []
         self.combat_move_queue = []  # movement during melee combat
+        self.shoot_line = None
 
         self.game_id = game_id  # ID of this
         self.unit = unit  # reference to the parent uit of this subunit
@@ -284,13 +285,6 @@ class Subunit(pygame.sprite.Sprite):
         if type(troop_id) == str and "h" in troop_id:  # use leader stat for hero (leader) subunit
             attribute_stat = stat
 
-        self.strength = attribute_stat["Strength"]
-        self.dexterity = attribute_stat["Dexterity"]
-        self.agility = attribute_stat["Agility"]
-        self.constitution = attribute_stat["Constitution"]
-        self.intelligence = attribute_stat["Intelligence"]
-        self.wisdom = attribute_stat["Wisdom"]
-
         max_scale = sum(training_scale)
         if max_scale != 0:
             training_scale = [item / max_scale for item in
@@ -298,17 +292,26 @@ class Subunit(pygame.sprite.Sprite):
         else:
             training_scale = [0.333333 for _ in training_scale]
 
+        self.strength = attribute_stat["Strength"]
+        self.dexterity = attribute_stat["Dexterity"]
+        self.agility = attribute_stat["Agility"]
+        self.constitution = attribute_stat["Constitution"]
+        self.intelligence = attribute_stat["Intelligence"]
+        self.wisdom = attribute_stat["Wisdom"]
+
         self.original_melee_attack = ((self.strength * 0.4) + (self.dexterity * 0.3) + (self.wisdom * 0.2)) + \
                                      (grade_stat["Training Score"] * training_scale[0])
 
         self.original_melee_def = ((self.dexterity * 0.3) + (self.agility * 0.3) + (self.constitution * 0.2) +
-                                   (self.wisdom * 0.2)) + (grade_stat["Training Score"] * training_scale[1])
+                                   (self.wisdom * 0.2)) + (grade_stat["Training Score"] *
+                                                           ((training_scale[0] + training_scale[1]) / 2))
 
         self.original_range_def = ((self.dexterity * 0.5) + (self.agility * 0.3) + (self.constitution * 0.1) +
-                                   (self.wisdom * 0.1)) + (grade_stat["Training Score"] * training_scale[1])
+                                   (self.wisdom * 0.1)) + (grade_stat["Training Score"] *
+                                                           ((training_scale[1] + training_scale[2]) / 2))
 
         self.original_accuracy = ((self.strength * 0.1) + (self.dexterity * 0.6) + (self.wisdom * 0.3)) + \
-                                 (grade_stat["Training Score"] * training_scale[2])
+                                 (grade_stat["Training Score"] * training_scale[2]) / 2
 
         self.original_sight = ((self.dexterity * 0.8) + (self.wisdom * 0.2)) + (grade_stat["Training Score"] *
                                                                                 training_scale[2])
@@ -320,7 +323,8 @@ class Subunit(pygame.sprite.Sprite):
                                 (self.wisdom * 0.2)) + (grade_stat["Training Score"] * training_scale[0])
 
         self.original_charge_def = ((self.dexterity * 0.4) + (self.agility * 0.1) + (self.constitution * 0.3) +
-                                    (self.wisdom * 0.2)) + (grade_stat["Training Score"] * training_scale[1])
+                                    (self.wisdom * 0.2)) + (grade_stat["Training Score"] *
+                                                            ((training_scale[0] + training_scale[1]) / 2))
 
         self.original_speed = self.agility / 5  # get replaced with mount agi and speed bonus
 
@@ -344,8 +348,7 @@ class Subunit(pygame.sprite.Sprite):
         if "" in self.original_skill:
             self.original_skill.remove("")
 
-        self.troop_health = ((self.strength * 0.2) + (self.constitution * 0.8)) * 10 * grade_stat[
-            "Health Effect"]  # Health of each troop
+        self.troop_health = ((self.strength * 0.2) + (self.constitution * 0.8)) * grade_stat["Health Effect"]  # Health of each troop
         self.stamina = ((self.strength * 0.2) + (self.constitution * 0.8)) * grade_stat["Stamina Effect"] * (
                 start_stamina / 100)  # starting stamina with grade
         self.original_mana = 0
@@ -624,7 +627,7 @@ class Subunit(pygame.sprite.Sprite):
         if self.subunit_health > 0:  # only run these when not dead
             self.player_interact(mouse_pos, mouse_left_up)
 
-            if dt > 0:  # only run these when self not pause
+            if dt > 0:  # only run these when game not pause
                 self.timer += dt
 
                 if len(self.enemy_in_melee_distance) > 0:
@@ -669,12 +672,15 @@ class Subunit(pygame.sprite.Sprite):
                     self.subunit_health = 0
                     self.die("flee")
 
-            self.enemy_in_melee_distance = []  # reset collide
-            self.enemy_collide = []
-            self.friend_front = []
-            self.same_front = []
-            self.overlap_collide = []
-            self.collide_penalty = False
+                if self.player_equipped_weapon != self.equipped_weapon and self.state == 0:  # reset equipped weapon to player chose
+                    self.player_weapon_selection()
+
+                self.enemy_in_melee_distance = []  # reset collide
+                self.enemy_collide = []
+                self.friend_front = []
+                self.same_front = []
+                self.overlap_collide = []
+                self.collide_penalty = False
 
         else:  # dead
             if self.state != 100:  # enter dead state
@@ -747,8 +753,6 @@ class Subunit(pygame.sprite.Sprite):
 
         if recreate_rect:
             self.rect = self.image.get_rect(center=self.pos)
-        if self.player_equipped_weapon != self.equipped_weapon and self.state == 0:  # reset equipped weapon to player chose
-            self.player_weapon_selection()
 
 
 class EditorSubunit(Subunit):
