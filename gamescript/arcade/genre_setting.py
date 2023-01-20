@@ -10,10 +10,11 @@ unit_behaviour_wheel = {"Main": {"Skill": "Skill", "Shift Line": "Shift Line", "
                                   "Troop Skill 1": "Troop Skill 1", "Troop Skill 2": "Troop Skill 2"},
                         "Shift Line": {"Front To Back": "Front To Back", "Left To Right": "Left To Right",
                                        "Back To Front": "Back To Front", "Right To Left": "Right To Left"},
-                        "Range Attack": {"Leader Aim": "Leader Aim", "Fire At Will": "Fire At Will",
-                                         "Manual Only": "Manual Only", "Volley At Will": "Volley At Will",
-                                         "Focus Aim": "Focus Aim", "Line Aim": "Line Aim",
-                                         "Allow Arc Shot": "Allow Arc Shot", "No Arc Shot": "No Arc Shot"},  # TODO change button to changable, also wheel with circle button
+                        "Range Attack": {"Fire At Will": "Fire At Will", "Manual Only": "Manual Only",
+                                         "Volley At Will": "Volley At Will", "Focus Aim": "Focus Aim",
+                                         "Line Aim": "Line Aim", "Leader Aim": "Leader Aim",
+                                         "Allow Arc Shot": "Allow Arc Shot", "No Arc Shot": "No Arc Shot"},
+                        # TODO change wheel button to like switcable button
                         "Behaviour": {"Hold": "Hold", "Follow": "Follow", "Free": "Free", "Retreat": "Retreat"},
                         "Command": {"Offensive": "Offensive", "Defensive": "Defensive", "Skirmish": "Skirmish",
                                     "Protect Me": "Protect Me", "Follow Unit": "Follow Unit", "Free": "Free",
@@ -57,7 +58,8 @@ object_variable = {("self", "object"): {"add_troop_number_sprite": False,  # tro
                                        },
                    ("subunit", "class"): {"dmg_include_leader": False,
                                           # not include leader in damage calculation, leader is subunit
-                                          "hero_health_scale": 10
+                                          "hero_health_scale": 10,  # scale leader health
+                                          "move_speed_modifier": 3  # scale subunit movement speed
                                           }
                    }
 

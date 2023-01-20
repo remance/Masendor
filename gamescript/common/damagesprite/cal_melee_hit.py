@@ -32,7 +32,8 @@ def cal_melee_hit(self, attacker, weapon, target, attacker_side, hit_side):
 
     if (attacker.check_special_effect("Rear Attack Bonus") and hit_side == 2) or \
             (attacker.check_special_effect("No Rear Defence") and hit_side == 2) or \
-            (attacker.check_special_effect("Flank Attack Bonus") and attacker_side in (1, 3)):  # apply only for attacker
+            (attacker.check_special_effect("Flank Attack Bonus") and attacker_side in (
+            1, 3)):  # apply only for attacker
         target_defence = 0
 
     attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, \
@@ -66,7 +67,8 @@ def cal_melee_hit(self, attacker, weapon, target, attacker_side, hit_side):
                     this_subunit.melee_def * hit_side_mod) + target_luck
                 attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, \
                 element_effect, _ = attacker.cal_dmg(this_subunit, attacker_hit, target_defence, weapon,
-                                                     attacker.weapon_penetrate[attacker.equipped_weapon][weapon], "melee")
+                                                     attacker.weapon_penetrate[attacker.equipped_weapon][weapon],
+                                                     "melee")
 
                 attacker.cal_loss(this_subunit, attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect)
                 if attacker.inflict_status != {}:
@@ -82,12 +84,15 @@ def apply_status_to_enemy(inflict_status, target, attacker_side, receiver_side):
             target.apply_effect(status[0], target.status_list, target.status_effect, target.status_duration)
             if status[1] == 3:  # apply to corner enemy subunit (left and right of self front enemy subunit)
                 corner_enemy_apply = target.nearby_subunit_list[0:2]
-                if receiver_side in (1, 2):  # attack on left/right side means corner enemy would be from front and rear side of the enemy
+                if receiver_side in (
+                1, 2):  # attack on left/right side means corner enemy would be from front and rear side of the enemy
                     corner_enemy_apply = [target.nearby_subunit_list[2], target.nearby_subunit_list[5]]
                 for this_subunit in corner_enemy_apply:
                     if this_subunit != 0:
-                        this_subunit.apply_effect(status[0], this_subunit.status_list, this_subunit.status_effect, this_subunit.status_duration)
+                        this_subunit.apply_effect(status[0], this_subunit.status_list, this_subunit.status_effect,
+                                                  this_subunit.status_duration)
             elif status[1] == 4:  # whole unit aoe
                 for this_subunit in target.unit.alive_subunit_list:
                     if this_subunit.state != 100:
-                        this_subunit.apply_effect(status[0], this_subunit.status_list, this_subunit.status_effect, this_subunit.status_duration)
+                        this_subunit.apply_effect(status[0], this_subunit.status_list, this_subunit.status_effect,
+                                                  this_subunit.status_duration)

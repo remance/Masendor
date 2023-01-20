@@ -9,7 +9,6 @@ rotation_xy = utility.rotation_xy
 def placement(self, mouse_pos, mouse_right, mouse_right_down, double_mouse_right):
     if double_mouse_right:  # move unit to new pos
         self.base_pos = mouse_pos
-        self.last_base_pos = self.base_pos
 
     elif mouse_right or mouse_right_down:  # rotate unit
         self.angle = self.set_rotate(mouse_pos)

@@ -1,6 +1,3 @@
-import pygame
-
-
 def gone_leader_process(self, *args):
     """All subunit enter broken state when leader gone in arcade mode"""
     if self.unit_leader:  # leader dead, all subunit enter broken state

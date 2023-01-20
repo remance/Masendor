@@ -4,9 +4,3 @@ def state_reset_logic(self, unit_state):
         self.state = unit_state  # Enforce unit state to subunit when moving and breaking
 
     self.melee_target = None
-    # if self.state == 0:
-    #     if self.base_target != self.command_target:
-    #         self.base_target = self.command_target
-    #         self.new_angle = self.set_rotate(self.base_target)
-    #     elif self.angle != self.unit.angle:  # reset angle
-    #         self.new_angle = self.unit.angle

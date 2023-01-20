@@ -3,15 +3,10 @@ import pygame
 
 def battle_keyboard_process(self, key_press):
     if key_press == pygame.K_q:  # Open unit command wheel ui
-        self.battle_ui_updater.add(self.eight_wheel_ui)
-        self.player_input_state = self.eight_wheel_ui
-        self.eight_wheel_ui.change_text_icon(self.unit_behaviour_wheel["Main"])
-
-    # elif key_press == pygame.K_p:  # Speed Pause/unpause Button
-
-    # elif key_press == pygame.K_KP_MINUS:  # reduce self speed
-    #
-    # elif key_press == pygame.K_KP_PLUS:  # increase self speed
+        self.battle_ui_updater.add(self.wheel_ui)
+        self.previous_player_input_state = self.player_input_state
+        self.player_input_state = self.wheel_ui
+        self.wheel_ui.generate(self.unit_behaviour_wheel["Main"])
 
     # elif key_press == pygame.K_PAGEUP:  # Go to top of event log
     #     self.event_log.current_start_row = 0
@@ -23,9 +18,6 @@ def battle_keyboard_process(self, key_press):
     #         self.event_log.current_start_row = self.event_log.len_check - self.event_log.max_row_show
     #         self.event_log.recreate_image()
     #         self.log_scroll.change_image(new_row=self.event_log.current_start_row)
-
-    # elif key_press == pygame.K_SPACE and self.current_selected is not None:
-    #     self.current_selected.user_input(self.command_mouse_pos, False, False, False, self.last_mouseover, None, other_command=2)
 
     # FOR DEVELOPMENT DELETE LATER
     elif key_press == pygame.K_F1:
@@ -55,7 +47,8 @@ def battle_keyboard_process(self, key_press):
     elif key_press == pygame.K_m and self.current_selected is not None:
         self.current_selected.leader_subunit.interrupt_animation = True
         self.current_selected.leader_subunit.command_action = {"name": "Knockdown", "uninterruptible": True,
-                            "next action": {"name": "Standup", "uninterruptible": True}}
+                                                               "next action": {"name": "Standup",
+                                                                               "uninterruptible": True}}
         self.current_selected.leader_subunit.one_activity_limit = 5
     elif key_press == pygame.K_n and self.current_selected is not None:
         self.current_selected.leader_subunit.interrupt_animation = True

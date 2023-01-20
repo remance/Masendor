@@ -82,26 +82,3 @@ def mouse_scrolling_process(self, mouse_scroll_up, mouse_scroll_down):
                                                  self.editor_troop_list_box, self.current_troop_row,
                                                  self.faction_data.faction_name_list,
                                                  self.troop_namegroup, self.battle_ui_updater)
-
-    # elif self.map_scale_delay == 0:  # Scrolling in self map to zoom
-    #     if mouse_scroll_up:
-    #         self.camera_zoom += 1
-    #         if self.camera_zoom > 10:
-    #             self.camera_zoom = 10
-    #         else:
-    #             self.camera_pos[0] = self.base_camera_pos[0] * self.camera_zoom
-    #             self.camera_pos[1] = self.base_camera_pos[1] * self.camera_zoom
-    #             self.show_map.change_scale(self.camera_zoom)
-    #             if self.game_state == "battle":  # only have delay in battle mode
-    #                 self.map_scale_delay = 0.001
-    #
-    #     elif mouse_scroll_down:
-    #         self.camera_zoom -= 1
-    #         if self.camera_zoom < 1:
-    #             self.camera_zoom = 1
-    #         else:
-    #             self.camera_pos[0] = self.base_camera_pos[0] * self.camera_zoom
-    #             self.camera_pos[1] = self.base_camera_pos[1] * self.camera_zoom
-    #             self.show_map.change_scale(self.camera_zoom)
-    #             if self.game_state == "battle":  # only have delay in battle mode
-    #                 self.map_scale_delay = 0.001

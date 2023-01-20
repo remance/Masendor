@@ -60,4 +60,3 @@ class EffectSprite(pygame.sprite.Sprite):
 
             if self.angle != 0:
                 self.image = pygame.transform.rotate(self.angle)
-

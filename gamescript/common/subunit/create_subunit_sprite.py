@@ -97,15 +97,22 @@ def create_subunit_sprite(self, inspect_subunit_size, sprite_troop_size):
     stamina_block_rect = stamina_image.get_rect(center=block.get_rect().center)  # for ui sprite
 
     # Weapon class icon in middle circle or leader (hero) portrait
-    image1 = self.troop_data.weapon_icon[
-        self.troop_data.weapon_list[self.primary_main_weapon[0]]["ImageID"]]  # image on subunit sprite
+
     if type(self.troop_id) != int and "h" in self.troop_id:
         try:
             image1 = self.leader_data.images[self.troop_id.replace("h", "") + ""].copy()
         except KeyError:
             image1 = self.leader_data.images["9999999"].copy()
-
-    image1 = pygame.transform.smoothscale(image1, (stamina_image.get_width() * 0.65, stamina_image.get_height() * 0.65))
+        image1 = pygame.transform.smoothscale(image1,
+                                              (stamina_image.get_width() * 0.65, stamina_image.get_height() * 0.65))
+    else:
+        image1 = self.troop_data.weapon_icon[
+            self.troop_data.weapon_list[self.primary_main_weapon[0]]["ImageID"]]  # image on subunit sprite
+        if sprite_troop_size > 1:
+            new_size = self.subunit_ui_images["stamina" + str(sprite_troop_size)]["stamina_circle_100"].get_width() / \
+                       self.subunit_ui_images["stamina_circle_100"].get_width()
+            image1 = pygame.transform.smoothscale(image1,
+                                                  (image1.get_width() * new_size, image1.get_height() * new_size))
 
     image_rect = image1.get_rect(center=image.get_rect().center)
     image.blit(image1, image_rect)

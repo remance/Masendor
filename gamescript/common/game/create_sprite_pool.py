@@ -11,9 +11,9 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
     weapon_list = self.troop_data.weapon_list
     animation_sprite_pool = {}  # TODO need to add for subunit creator
     weapon_common_type_list = tuple(set(["_" + value["Common"] for key, value in weapon_list.items() if
-                                        key != ""]))  # list of all common type animation set
+                                         key != ""]))  # list of all common type animation set
     weapon_attack_type_list = tuple(set(["_" + value["Attack"] for key, value in weapon_list.items() if
-                                        key != ""]))  # list of all attack set
+                                         key != ""]))  # list of all attack set
     for subunit_id, this_subunit in who_todo.items():
         # try:
         if subunit_id not in (0, "h1") and this_subunit["Sprite ID"] != "":  # skip None troop
@@ -31,7 +31,7 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
             secondary_main_weapon = this_subunit["Secondary Main Weapon"][0]
             secondary_sub_weapon = this_subunit["Secondary Sub Weapon"][0]
             hand_weapon_list = (
-            (primary_main_weapon, primary_sub_weapon), (secondary_main_weapon, secondary_sub_weapon))
+                (primary_main_weapon, primary_sub_weapon), (secondary_main_weapon, secondary_sub_weapon))
             armour = (self.troop_data.armour_list[this_subunit["Armour"][0]]["Name"],
                       self.troop_data.mount_armour_list[this_subunit["Mount"][2]]["Name"])
 
@@ -47,7 +47,8 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                 weapon_list[primary_sub_weapon]["Skill"] + \
                                 weapon_list[secondary_main_weapon]["Skill"] + \
                                 weapon_list[secondary_sub_weapon]["Skill"]
-            weapon_skill_list = [self.troop_data.skill_list[skill]["Action"][0] for skill in weapon_skill_list if skill in self.troop_data.skill_list]
+            weapon_skill_list = [self.troop_data.skill_list[skill]["Action"][0] for skill in weapon_skill_list if
+                                 skill in self.troop_data.skill_list]
             skill_list += weapon_skill_list
             skill_list = tuple(set([item for item in skill_list if item != "Action"]))
 
@@ -104,7 +105,8 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                                     self.troop_data.weapon_list[primary_sub_weapon]["Hand"])),
                                                   armour, self.colour_list,
                                                   genre_sprite_size, screen_scale, self.troop_data.race_list,
-                                                  self.generic_animation_pool[1][race + "_" + weapon_common_action[0][0] + "_Idle"][0])
+                                                  self.generic_animation_pool[1][
+                                                      race + "_" + weapon_common_action[0][0] + "_Idle"][0])
 
                 animation_sprite_pool[subunit_id] = {"sprite": sprite_dict["sprite"],
                                                      "animation_property": sprite_dict["animation_property"],
@@ -145,7 +147,7 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                  [item for item in animation_list if "Default" not in item]
                 for animation in animation_list:  # use one side in the list for finding animation name
                     if "Preview" not in animation and race in animation and \
-                        ((mount_race_name == "None" and "&" not in animation) or mount_race_name in animation) and \
+                            ((mount_race_name == "None" and "&" not in animation) or mount_race_name in animation) and \
                             ("Skill_" not in animation or any(ext in animation for ext in skill_list)):
                         animation_property = self.generic_animation_pool[0][animation][0]["animation_property"].copy()
                         for weapon_set_index, weapon_set in enumerate(
@@ -216,12 +218,15 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                                                               armour, self.colour_list,
                                                                               genre_sprite_size, screen_scale,
                                                                               self.troop_data.race_list,
-                                                                              self.generic_animation_pool[index][race + "_" + weapon_common_action[weapon_set_index][0] + "_Idle"][0])
+                                                                              self.generic_animation_pool[index][
+                                                                                  race + "_" + weapon_common_action[
+                                                                                      weapon_set_index][0] + "_Idle"][
+                                                                                  0])
                                             sprite_pic = sprite_dict["sprite"]
                                             if self.play_troop_animation == 0 and "_Default" not in animation:  # replace sprite with default if disable animation
                                                 sprite_pic = \
-                                                current_in_pool[tuple(current_in_pool.keys())[0]][new_direction][0][
-                                                    "sprite"]
+                                                    current_in_pool[tuple(current_in_pool.keys())[0]][new_direction][0][
+                                                        "sprite"]
 
                                             # Find optimal cropped sprite size that all animation will share exact same center point
                                             size = sprite_pic.get_size()

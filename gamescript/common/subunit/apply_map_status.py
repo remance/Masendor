@@ -5,19 +5,23 @@ def apply_map_status(self, map_feature_mod):
                 self.apply_effect(self.status_list["Wet"], self.status_list, self.status_effect, self.status_duration)
         if 4 in map_feature_mod["Status"] or 5 in map_feature_mod["Status"]:  # Deep water type terrain
             if 5 in map_feature_mod["Status"] and "Drench" in self.status_list:
-                self.apply_effect(self.status_list["Drench"], self.status_list, self.status_effect, self.status_duration)
+                self.apply_effect(self.status_list["Drench"], self.status_list, self.status_effect,
+                                  self.status_duration)
 
             if self.weight > 60 or self.stamina <= 0:  # weight too much or tired will cause drowning
                 if "Drown" in self.status_list:
-                    self.apply_effect(self.status_list["Drown"], self.status_list, self.status_effect, self.status_duration)
+                    self.apply_effect(self.status_list["Drown"], self.status_list, self.status_effect,
+                                      self.status_duration)
 
             elif self.weight > 30:  # Medium weight subunit has trouble travel through water and will sink and progressively lose troops
                 if "Sink" in self.status_list:
-                    self.apply_effect(self.status_list["Sink"], self.status_list, self.status_effect, self.status_duration)
+                    self.apply_effect(self.status_list["Sink"], self.status_list, self.status_effect,
+                                      self.status_duration)
 
             elif self.weight < 30:  # Lightweight subunit has no trouble travel through water
                 if "Swimming" in self.status_list:
-                    self.apply_effect(self.status_list["Swimming"], self.status_list, self.status_effect, self.status_duration)
+                    self.apply_effect(self.status_list["Swimming"], self.status_list, self.status_effect,
+                                      self.status_duration)
 
         if 2 in map_feature_mod["Status"]:  # Rot type terrain
             if "Decay" in self.status_list:
@@ -28,4 +32,5 @@ def apply_map_status(self, map_feature_mod):
 
         if 6 in map_feature_mod["Status"]:  # Mud terrain
             if "Muddy Leg" in self.status_list:
-                self.apply_effect(self.status_list["Muddy Leg"], self.status_list, self.status_effect, self.status_duration)
+                self.apply_effect(self.status_list["Muddy Leg"], self.status_list, self.status_effect,
+                                  self.status_duration)

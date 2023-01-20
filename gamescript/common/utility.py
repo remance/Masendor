@@ -5,13 +5,10 @@ import inspect
 import math
 import os
 import re
-import numpy as np
 
 import pygame
 import pygame.freetype
-
 from PIL import Image, ImageOps
-
 from gamescript import menu
 
 accept_image_types = ("png", "jpg", "jpeg", "svg", "gif", "bmp")

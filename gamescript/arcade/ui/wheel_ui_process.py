@@ -13,6 +13,7 @@ def wheel_ui_process(self, choice):
             elif "Leader" in choice:
                 self.player_char.command_action = leader_skill_command_action[int(choice[-1]) - 1]
             self.battle_ui_updater.remove(self.wheel_ui)
+            self.previous_player_input_state = self.player_input_state
             self.player_input_state = None
 
         elif choice in self.unit_behaviour_wheel["Setting"]:
@@ -22,6 +23,7 @@ def wheel_ui_process(self, choice):
                     self.map_mode = 0
                 self.battle_map.change_mode(self.battle_map_height, self.map_mode)
             self.battle_ui_updater.remove(self.wheel_ui)
+            self.previous_player_input_state = self.player_input_state
             self.player_input_state = None
 
         elif choice in self.unit_behaviour_wheel["Shift Line"]:
@@ -44,6 +46,7 @@ def wheel_ui_process(self, choice):
         elif choice in self.unit_behaviour_wheel["Equipment"]:
             self.current_selected.swap_weapon_command(choice)
             self.battle_ui_updater.remove(self.wheel_ui)
+            self.previous_player_input_state = self.player_input_state
             self.player_input_state = None
 
         elif choice in self.unit_behaviour_wheel["Range Attack"]:
@@ -59,6 +62,7 @@ def wheel_ui_process(self, choice):
                 self.current_selected.shoot_mode = 1
             elif "Aim" in choice:
                 self.battle_ui_updater.remove(self.wheel_ui)
+                self.previous_player_input_state = self.player_input_state
                 self.player_input_state = None
                 self.camera_zoom = 4
                 self.camera_zoom_change()
@@ -82,13 +86,4 @@ def wheel_ui_process(self, choice):
 
 
 def renew_wheel(self, choice):
-    self.battle_ui_updater.remove(self.wheel_ui)  # remove current wheel first
-    self.player_input_state = None
-    if len(self.unit_behaviour_wheel[choice]) > 4:
-        self.player_input_state = self.eight_wheel_ui
-        self.eight_wheel_ui.change_text_icon(self.unit_behaviour_wheel[choice])
-        self.battle_ui_updater.add(self.eight_wheel_ui)
-    elif len(self.unit_behaviour_wheel[choice]) <= 4:
-        self.player_input_state = self.four_wheel_ui
-        self.four_wheel_ui.change_text_icon(self.unit_behaviour_wheel[choice])
-        self.battle_ui_updater.add(self.four_wheel_ui)
+    self.wheel_ui.generate(self.unit_behaviour_wheel[choice])

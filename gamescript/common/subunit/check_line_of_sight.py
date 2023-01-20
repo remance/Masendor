@@ -5,8 +5,6 @@ def check_line_of_sight(self, target_pos):
             if this_subunit != self:
                 clip = this_subunit.hitbox_rect.clipline(target_pos, self.base_pos)
                 if clip:
-                    if self.player_manual_control:
-                        print(clip, this_subunit.game_id, this_unit.name, this_subunit.base_pos)
                     clip_friend = True
                     break
     return clip_friend

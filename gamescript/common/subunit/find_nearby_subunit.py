@@ -44,4 +44,3 @@ def find_nearby_subunit(self):
     else:  # not exist
         self.nearby_subunit_list.append(None)  # add None instead
     self.nearby_subunit_list = self.nearby_subunit_list + corner_subunit
-

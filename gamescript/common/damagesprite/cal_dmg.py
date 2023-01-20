@@ -15,6 +15,8 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, penetrate, hit_side=No
     :param target: Target subunit object
     :param hit: Hit chance value
     :param defence: Defence chance value
+    :param weapon: Weapon index (0 for main, 1 for sub)
+    :param penetrate: Remaining weapon penetration value
     :param hit_side: Side that the target got hit
     :return: Damage on health, morale, leader and element effect
     """
@@ -88,9 +90,10 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, penetrate, hit_side=No
             dmg_sum = sum(dmg.values())
             dmg_sum = dmg_sum * combat_score
 
-        for key, value in target.element_resistance.items():
-            if key in dmg:
-                remain_penetrate -= value
+        for key in dmg:
+            remain_penetrate -= target.element_resistance[key]
+
+        remain_penetrate -= (target.troop_mass * 5)
 
         leader_dmg = dmg_sum
 

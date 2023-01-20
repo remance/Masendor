@@ -6,7 +6,6 @@ from pathlib import Path
 import pygame
 import pygame.freetype
 from gamescript.common import utility
-
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
@@ -106,6 +105,7 @@ class Subunit(pygame.sprite.Sprite):
     # genre specific variables
     dmg_include_leader = True
     hero_health_scale = 1
+    move_speed_modifier = 1
 
     # static variable
     subunit_hitbox_size = 6  # full square hitbox height and width size, this also affect subunit sprite size
@@ -134,6 +134,7 @@ class Subunit(pygame.sprite.Sprite):
         self.board_pos = None  # used for event log position of subunit (Assigned in battle subunit setup)
         self.walk = False  # currently walking
         self.run = False  # currently running
+        self.move = False  # currently moving
         self.unit_leader = False  # contain the leader of unit or not, making it leader subunit
         self.attack_target = None  # target for attacking
         self.melee_target = None  # current target of melee combat
@@ -254,7 +255,8 @@ class Subunit(pygame.sprite.Sprite):
         self.grade_name = grade_stat["Name"]
 
         # Default element stat
-        element_dict = {key.split(" ")[0]: 0 for key in race_stat if " Resistance" in key}  # get only resistance that exist in race data
+        element_dict = {key.split(" ")[0]: 0 for key in race_stat if
+                        " Resistance" in key}  # get only resistance that exist in race data
         self.element_status_check = element_dict.copy()  # element threshold count
         self.original_element_resistance = element_dict.copy()
 
@@ -348,7 +350,8 @@ class Subunit(pygame.sprite.Sprite):
         if "" in self.original_skill:
             self.original_skill.remove("")
 
-        self.troop_health = ((self.strength * 0.2) + (self.constitution * 0.8)) * grade_stat["Health Effect"]  # Health of each troop
+        self.troop_health = ((self.strength * 0.2) + (self.constitution * 0.8)) * grade_stat[
+            "Health Effect"]  # Health of each troop
         self.stamina = ((self.strength * 0.2) + (self.constitution * 0.8)) * grade_stat["Stamina Effect"] * (
                 start_stamina / 100)  # starting stamina with grade
         self.original_mana = 0
@@ -481,9 +484,9 @@ class Subunit(pygame.sprite.Sprite):
         self.subunit_health = self.troop_health * self.troop_number  # Total health of subunit from all troop
         self.old_subunit_health = self.subunit_health
         self.max_health = self.subunit_health  # health percentage
+        self.max_health1 = self.max_health * 0.01
         self.max_health5 = self.max_health * 0.05
         self.max_health10 = self.max_health * 0.1
-        self.max_health15 = self.max_health * 0.15
         self.health_list = (self.subunit_health * 0.75, self.subunit_health * 0.5, self.subunit_health * 0.25, 0)
 
         self.old_last_health, self.old_last_stamina = self.subunit_health, self.stamina  # save previous health and stamina in previous update
@@ -609,7 +612,8 @@ class Subunit(pygame.sprite.Sprite):
             self.full_merge_distance = self.subunit_hitbox_size / 4  # distance to become fully merge with this sprite
 
             hitbox_image = pygame.Surface((self.subunit_hitbox_size, self.subunit_hitbox_size))
-            self.hitbox_rect = hitbox_image.get_rect(center=self.base_pos)  # hitbox rect based on base pos and furthest image size
+            self.hitbox_rect = hitbox_image.get_rect(
+                center=self.base_pos)  # hitbox rect based on base pos and furthest image size
 
             self.hitbox_front_distance = (self.subunit_hitbox_size / 2)
 
@@ -639,6 +643,7 @@ class Subunit(pygame.sprite.Sprite):
 
                 self.walk = False  # reset walk
                 self.run = False  # reset run
+                self.move = False  # reset move check
 
                 unit_state = self.unit.state
 
@@ -646,14 +651,14 @@ class Subunit(pygame.sprite.Sprite):
 
                 self.check_weapon_cooldown(dt)
 
-                if self.player_manual_control is False:
-                    unit_state = self.combat_ai_logic(dt, unit_state, self.enemy_in_melee_distance)
-                    self.manual_shoot = False  # reset this every update
-
                 if self.angle != self.new_angle:  # Rotate Function
                     self.rotate_logic(dt)
 
                 self.move_logic(dt, unit_state, self.enemy_in_melee_distance)  # Move function
+
+                if self.player_manual_control is False:
+                    unit_state = self.combat_ai_logic(dt, unit_state, self.enemy_in_melee_distance)
+                    self.manual_shoot = False  # reset this every update
 
                 self.morale_logic(dt, unit_state)
 
@@ -721,7 +726,7 @@ class Subunit(pygame.sprite.Sprite):
 
         if "melee attack" in self.current_action and just_start and \
                 self.current_animation[self.sprite_direction][self.show_frame][
-                    "dmg_sprite"] is not None:  # make attack if frame
+                    "dmg_sprite"] is not None:  # perform melee attack when frame that produce dmg effect starts
             self.attack(self.current_animation[self.sprite_direction][self.show_frame]["dmg_sprite"])
         # Pick new animation, condition to stop animation: get interrupt,
         # low level animation got replace with more important one, finish playing, skill animation and its effect end
@@ -732,7 +737,7 @@ class Subunit(pygame.sprite.Sprite):
                   ("skill" in self.current_action and self.current_action["skill"] not in self.skill_effect) or
                   (self.idle_action and self.idle_action != self.command_action) or
                   self.current_action != self.last_current_action)):
-            if done and "range attack" in self.current_action:  # shoot bullet
+            if done and "range attack" in self.current_action:  # shoot bullet only when animation finish
                 self.attack("range")
 
             if self.current_action != self.last_current_action:

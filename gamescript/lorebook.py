@@ -107,7 +107,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.skill_id_reindex = {}
         run = 1
         for stat_list in (
-        self.troop_data.skill_list, self.leader_data.skill_list, self.leader_data.commander_skill_list):
+                self.troop_data.skill_list, self.leader_data.skill_list, self.leader_data.commander_skill_list):
             for index in stat_list:
                 self.skill_stat[run] = stat_list[index]
                 self.skill_id_reindex[index] = run
@@ -116,7 +116,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.skill_lore = {}
         run = 1
         for stat_list in (
-        self.troop_data.skill_lore, self.leader_data.skill_lore, self.leader_data.commander_skill_lore):
+                self.troop_data.skill_lore, self.leader_data.skill_lore, self.leader_data.commander_skill_lore):
             for index in stat_list:
                 self.skill_lore[run] = stat_list[index]
                 run += 1
@@ -124,7 +124,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.section_tag_header = ("Tag", "Tag", "Type", "Troop Class", "Type", "Type", "Type", "Type", "Type",
                                    "Type", "Type",)
 
-        self.tag_list = [{stuff["Tag"]: True for stuff in self. concept_stat.values() if stuff["Tag"] != ""},
+        self.tag_list = [{stuff["Tag"]: True for stuff in self.concept_stat.values() if stuff["Tag"] != ""},
                          {stuff["Tag"]: True for stuff in self.history_stat.values() if stuff["Tag"] != ""},
                          {stuff["Type"]: True for stuff in self.faction_data.faction_list.values() if
                           stuff["Type"] != ""},

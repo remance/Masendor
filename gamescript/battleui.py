@@ -446,7 +446,8 @@ class CommandUI(pygame.sprite.Sprite):
                                          index2 not in who.magazine_count[true_weapon_set_index]):  # no ammo
                                     ammo_count = 0
                                     text_colour = (200, 100, 100)
-                                    weapon_image = apply_sprite_colour(weapon_image, (200, 50, 50), None, keep_white=False)
+                                    weapon_image = apply_sprite_colour(weapon_image, (200, 50, 50), None,
+                                                                       keep_white=False)
                                 else:
                                     ammo_count = who.magazine_count[true_weapon_set_index][index2]
                                     text_colour = (255, 255, 255)
@@ -901,7 +902,8 @@ class UnitIcon(pygame.sprite.Sprite):
         self.pos = pos  # position on unit selector ui
         self.selected = False
 
-        self.leader_image = pygame.transform.scale(self.unit.leader[0].full_image, size)  # scale leader image to fit the icon
+        self.leader_image = pygame.transform.scale(self.unit.leader[0].full_image,
+                                                   size)  # scale leader image to fit the icon
         self.not_selected_image = pygame.Surface((self.leader_image.get_width() + (self.leader_image.get_width() / 7),
                                                   self.leader_image.get_height() + (
                                                           self.leader_image.get_height() / 7)))  # create image black corner block
@@ -1049,81 +1051,50 @@ class BattleScaleUI(pygame.sprite.Sprite):
 
 
 class WheelUI(pygame.sprite.Sprite):
-    def __init__(self, images, selected_images, pos, screen_size, text_size=20):
+    def __init__(self, image, selected_image, pos, screen_size, text_size=20):
         """Wheel choice ui with text or image inside the choice.
         Works similar to Fallout companion wheel and similar system"""
         self._layer = 11
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.font = pygame.font.SysFont("helvetica", text_size)
         self.pos = pos
         self.screen_size = screen_size
         self.choice_list = ()
 
-        self.base_image2 = pygame.Surface((images[0].get_width() * 3.5,
-                                           images[0].get_height() * 3.5), pygame.SRCALPHA)  # empty image
+        self.wheel_button_image = image
+        self.wheel_selected_button_image = selected_image
+
+        self.base_image2 = pygame.Surface((image.get_width() * 6,
+                                           image.get_height() * 6), pygame.SRCALPHA)  # empty image
         self.rect = self.base_image2.get_rect(center=self.pos)
+
+        self.wheel_image_with_stuff = []
+        self.wheel_selected_image_with_stuff = []
+        self.wheel_rect = []
+
+    def generate(self, blit_list):
         image_center = (self.base_image2.get_width() / 2, self.base_image2.get_height() / 2)
-        if len(images) == 2:  # create 8 direction wheel ui
-            self.wheel_image_list = (images[0].copy(),  # top up left
-                                     images[1].copy(),  # top left
-                                     pygame.transform.flip(images[0], False, True),  # bottom down left
-                                     pygame.transform.flip(images[1], False, True),  # bottom left
-                                     pygame.transform.flip(images[0], True, False),  # top up right
-                                     pygame.transform.flip(images[1], True, False),  # top right
-                                     pygame.transform.flip(images[0], True, True),  # bottom down right
-                                     pygame.transform.flip(images[1], True, True)  # bottom right
-                                     )
+        self.wheel_image_with_stuff = []
+        self.wheel_selected_image_with_stuff = []
+        self.wheel_rect = []
+        angle_space = 360 / len(blit_list)
+        angle = 0
+        for wheel_button in range(len(blit_list)):
+            base_target = pygame.Vector2(image_center[0] - (image_center[0] / 2 *
+                                                            math.sin(math.radians(angle))),
+                                         image_center[1] + (image_center[1] / 2 *
+                                                            math.cos(math.radians(angle))))
+            angle += angle_space
 
-            self.wheel_selected_image_list = (selected_images[0].copy(),  # top up left
-                                              selected_images[1].copy(),  # top left
-                                              pygame.transform.flip(selected_images[0], False, True),
-                                              # bottom lower left
-                                              pygame.transform.flip(selected_images[1], False, True),  # bottom left
-                                              pygame.transform.flip(selected_images[0], True, False),  # top upper right
-                                              pygame.transform.flip(selected_images[1], True, False),  # top right
-                                              pygame.transform.flip(selected_images[0], True, True),
-                                              # bottom lower right
-                                              pygame.transform.flip(selected_images[1], True, True)  # bottom right
-                                              )
-
-            self.wheel_inactive_image_list = [image.copy() for image in
-                                              self.wheel_image_list]  # wheel choice that not active
-            for image in self.wheel_inactive_image_list:
-                image.fill((50, 50, 50, 150))
-            self.wheel_rect = (
-                images[0].get_rect(center=(image_center[0] * 0.7, image_center[1] * 0.36)),  # top upper left
-                images[0].get_rect(center=(image_center[0] * 0.45, image_center[1] * 0.65)),  # top left
-                images[0].get_rect(center=(image_center[0] * 0.7, image_center[1] * 1.64)),  # bottom lower left
-                images[0].get_rect(center=(image_center[0] * 0.45, image_center[1] * 1.3)),  # bottom left
-                images[0].get_rect(center=(image_center[0] * 1.3, image_center[1] * 0.36)),  # top upper right
-                images[0].get_rect(center=(image_center[0] * 1.6, image_center[1] * 0.65)),  # top right
-                images[0].get_rect(center=(image_center[0] * 1.3, image_center[1] * 1.64)),  # bottom lower right
-                images[0].get_rect(center=(image_center[0] * 1.6, image_center[1] * 1.3))  # bottom right
-            )
-
-        elif len(images) == 1:  # create 4 direction wheel ui
-            self.wheel_image_list = (images[0].copy(),  # top left
-                                     pygame.transform.flip(images[0], False, True),  # bottom left
-                                     pygame.transform.flip(images[0], True, False),  # top right
-                                     pygame.transform.flip(images[0], True, True),  # bottom right
-                                     )
-
-            self.wheel_selected_image_list = (selected_images[0].copy(),  # top left
-                                              pygame.transform.flip(selected_images[0], False, True),  # bottom left
-                                              pygame.transform.flip(selected_images[0], True, False),  # top upper right
-                                              pygame.transform.flip(selected_images[0], True, True),  # bottom right
-                                              )
-            self.wheel_rect = (images[0].get_rect(center=(image_center[0] * 0.6, image_center[1] * 0.6)),  # top left
-                               images[0].get_rect(center=(image_center[0] * 0.6, image_center[1] * 1.4)),  # bottom left
-                               images[0].get_rect(center=(image_center[0] * 1.4, image_center[1] * 0.6)),  # top right
-                               images[0].get_rect(center=(image_center[0] * 1.4, image_center[1] * 1.4))  # bottom right
-                               )
-        self.wheel_image_with_stuff = [image.copy() for image in self.wheel_image_list]
-        self.wheel_selected_image_with_stuff = [image.copy() for image in self.wheel_selected_image_list]
+            self.wheel_image_with_stuff.append(self.wheel_button_image.copy())
+            self.wheel_selected_image_with_stuff.append(self.wheel_selected_button_image.copy())
+            self.wheel_rect.append(self.wheel_button_image.get_rect(center=base_target))
 
         self.image = self.base_image2.copy()
         for index, rect in enumerate(self.wheel_rect):
             self.image.blit(self.wheel_image_with_stuff[index], rect)
+
+        self.change_text_icon(blit_list)
 
     def selection(self, mouse_pos):
         closest_rect_distance = None
@@ -1158,8 +1129,6 @@ class WheelUI(pygame.sprite.Sprite):
     def change_text_icon(self, blit_list):
         """Add icon or text to the wheel choice"""
         self.image = self.base_image2.copy()
-        self.wheel_image_with_stuff = [image.copy() for image in self.wheel_image_list]
-        self.wheel_selected_image_with_stuff = [image.copy() for image in self.wheel_selected_image_list]
         self.choice_list = tuple(blit_list.keys())
         for index, item in enumerate(blit_list):
             if item is not None:  # Wheel choice with icon or text inside

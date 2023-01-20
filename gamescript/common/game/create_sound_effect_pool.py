@@ -1,5 +1,4 @@
 import os
-import pygame
 
 
 def create_sound_effect_pool(self):

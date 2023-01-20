@@ -27,7 +27,4 @@ def reposition_leader(self, how):
         self.subunit_id_array[leader_position[0][0]][leader_position[1][0]] = self.leader_subunit.game_id
         self.subunit_id_array[old_leader_position[0][0]][old_leader_position[1][0]] = old_subunit
 
-        # old_subunit_list = self.subunit_list[~np.all(self.subunit_list == 0, axis=1)]  # remove whole empty column in subunit list
-        # self.subunit_list = old_subunit_list[:, ~np.all(old_subunit_list == 0, axis=0)]  # remove whole empty row in subunit list
-
         self.subunit_formation_change()

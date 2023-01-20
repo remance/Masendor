@@ -45,6 +45,7 @@ def move_logic(self, dt, unit_state, collide_list):
                     self.run = True
                 if self.collide_penalty:  # reduce speed during moving through another unit
                     self.move_speed /= 2
+                self.move = True
                 self.move_speed /= 10
                 move *= self.move_speed * dt
                 new_move_length = move.length()

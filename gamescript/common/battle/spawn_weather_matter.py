@@ -2,7 +2,6 @@ import math
 import random
 
 import pygame
-
 from gamescript import weather
 
 
@@ -28,7 +27,8 @@ def spawn_weather_matter(self):
             if spawn_angle < 180:  # spawn from right screen, target must reach left border of screen
                 target = (0, random.randint(int(screen_rect_height * height_cal), screen_rect_height))
             else:  # spawn from left screen, target must reach right border of screen
-                target = (self.screen_rect.width, random.randint(int(screen_rect_height * height_cal), screen_rect_height))
+                target = (
+                self.screen_rect.width, random.randint(int(screen_rect_height * height_cal), screen_rect_height))
         else:
             target = (start_width, screen_rect_height)
     else:

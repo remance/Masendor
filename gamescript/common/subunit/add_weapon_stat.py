@@ -43,9 +43,11 @@ def add_weapon_stat(self):
 
             self.trait["Weapon"][set_index][weapon_index] += weapon_stat["Trait"]
             if weapon_index == 1 and weapon_stat["Hand"] == 2:  # 2 handed weapon as sub weapon get attack speed penalty
-                self.original_weapon_speed[set_index][weapon_index] = (weapon_stat["Cooldown"] - (weapon_stat["Cooldown"] * speed_scaling / 100)) * 1.5
+                self.original_weapon_speed[set_index][weapon_index] = (weapon_stat["Cooldown"] - (
+                            weapon_stat["Cooldown"] * speed_scaling / 100)) * 1.5
             else:
-                self.original_weapon_speed[set_index][weapon_index] = weapon_stat["Cooldown"] - (weapon_stat["Cooldown"] * speed_scaling / 100)
+                self.original_weapon_speed[set_index][weapon_index] = weapon_stat["Cooldown"] - (
+                            weapon_stat["Cooldown"] * speed_scaling / 100)
             if self.original_weapon_speed[set_index][weapon_index] < 0:
                 self.original_weapon_speed[set_index][weapon_index] = 0
             self.weapon_weight[set_index][weapon_index] = weapon_stat["Weight"]

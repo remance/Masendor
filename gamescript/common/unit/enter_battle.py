@@ -28,8 +28,9 @@ def enter_battle(self):
                            key != self.team and key != "alive"}
 
     self.authority_recalculation()
-    self.command_buff = [(self.leader[0].melee_command - 5) * 0.1, (self.leader[0].range_command - 5) * 0.1,
-                         (self.leader[0].cav_command - 5) * 0.1]  # unit leader command buff
+    self.command_buff = ((self.leader[0].melee_command - 5) * 0.1,
+                         (self.leader[0].range_command - 5) * 0.1,
+                         (self.leader[0].cav_command - 5) * 0.1)  # unit leader command buff
 
     self.subunit_id_array = self.subunit_id_array.astype(int)
 

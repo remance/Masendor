@@ -259,7 +259,7 @@ def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool
     head_sprite_surface.blit(head, head_rect)
     if sprite_list[p + "_skin"] not in ("", "none"):
         head_sprite_surface = apply_sprite_colour(head_sprite_surface, sprite_list[p + "_skin"], colour_list,
-                                           keep_white=False)
+                                                  keep_white=False)
     face = [grab_face_part(body_pool, head_race, head_side, "eyebrow", sprite_list[p + "_eyebrow"]),
             grab_face_part(body_pool, head_race, head_side, "eye", animation_part_list[p + "_eye"],
                            part_default=sprite_list[p + "_eye"]),
@@ -325,7 +325,8 @@ def generate_body(part, body_part_list, troop_sprite_list, sprite_pool, armour_s
             if "r_" in part_name[:2] or "l_" in part_name[:2]:
                 new_part_name = part_name[2:]  # remove side
             if "effect_" not in part:
-                sprite_image = sprite_pool[body_part_list[0]][body_part_list[1]][new_part_name][body_part_list[2]].copy()
+                sprite_image = sprite_pool[body_part_list[0]][body_part_list[1]][new_part_name][
+                    body_part_list[2]].copy()
             else:
                 sprite_image = sprite_pool[body_part_list[0]][body_part_list[1]][body_part_list[2]].copy()
             # if sprite_list[p + "_skin"] != "none":

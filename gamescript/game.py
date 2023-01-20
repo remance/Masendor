@@ -314,7 +314,6 @@ class Game:
         self.weather_updater = pygame.sprite.Group()  # updater for weather objects
         self.effect_updater = pygame.sprite.Group()  # updater for effect objects (e.g. range melee_attack sprite)
 
-
         self.preview_char = pygame.sprite.Group()  # group for char list in char select screen
 
         self.damage_sprites = pygame.sprite.Group()  # all damage sprite group and maybe other range effect stuff later
@@ -324,7 +323,6 @@ class Game:
 
         self.button_ui = pygame.sprite.Group()  # ui button group in battle
         self.inspect_selected_border = pygame.sprite.Group()  # subunit selected border in inspect ui unit box
-        self.wheel_ui = pygame.sprite.Group()
 
         self.skill_icon = pygame.sprite.Group()  # skill and trait icon objects
         self.effect_icon = pygame.sprite.Group()  # status effect icon objects
@@ -360,7 +358,6 @@ class Game:
         battleui.UnitIcon.containers = self.unit_icon, self.main_ui_updater, self.battle_ui_updater
         battleui.TroopNumber.containers = self.troop_number_sprite, self.effect_updater, self.battle_camera
         battleui.DirectionArrow.containers = self.direction_arrows, self.effect_updater, self.battle_camera
-        battleui.WheelUI.containers = self.wheel_ui
         battleui.ShootLine.containers = self.shoot_lines, self.battle_camera
 
         damagesprite.DamageSprite.containers = self.damage_sprites, self.effect_updater, self.battle_camera
@@ -530,9 +527,11 @@ class Game:
         self.animation_box = option_menu_dict["animation_box"]
         self.animation_text = option_menu_dict["animation_text"]
 
-        self.option_text_list = tuple([self.resolution_text, self.fullscreen_text, self.animation_text] + [value for value in self.volume_texts.values()])
+        self.option_text_list = tuple(
+            [self.resolution_text, self.fullscreen_text, self.animation_text] + [value for value in
+                                                                                 self.volume_texts.values()])
         self.option_menu_button = (
-        self.back_button, self.default_button, self.resolution_drop, self.fullscreen_box, self.animation_box)
+            self.back_button, self.default_button, self.resolution_drop, self.fullscreen_box, self.animation_box)
 
         # Genre related stuff
         genre_folder = Path(os.path.join(main_dir, script_folder))  # Load genre list
@@ -561,6 +560,7 @@ class Game:
         if pygame.mixer and not pygame.mixer.get_init():
             pygame.mixer = None
         if pygame.mixer:
+            pygame.mixer.set_num_channels(1000)
             pygame.mixer.music.set_volume(self.master_volume)
             self.SONG_END = pygame.USEREVENT + 1
             self.music_list = glob.glob(self.main_dir + "/data/sound/music/*.ogg")
@@ -624,8 +624,7 @@ class Game:
         self.unit_selector = battle_ui_dict["unit_selector"]
         self.unitstat_ui = battle_ui_dict["unitstat_ui"]
         self.unitstat_ui.unit_state_text = unit_state_text
-        self.eight_wheel_ui = battle_ui_dict["eight_wheel_ui"]
-        self.four_wheel_ui = battle_ui_dict["four_wheel_ui"]
+        self.wheel_ui = battle_ui_dict["wheel_ui"]
 
         weather.Weather.wind_compass_images = {"wind_compass": battle_ui_image["wind_compass"],
                                                "wind_arrow": battle_ui_image["wind_arrow"]}

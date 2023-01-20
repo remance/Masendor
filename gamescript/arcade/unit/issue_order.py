@@ -12,6 +12,7 @@ def issue_order(self, target_pos, run_command=False, revert_move=False, enemy=No
             else:  # rotate unit only
                 self.new_angle = self.set_rotate(target_pos)
                 self.set_subunit_target()
+
         elif type(other_command) == str:
             if "Skill" in other_command:
                 if "Charge" in other_command:  # also move when charge

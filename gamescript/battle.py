@@ -32,12 +32,14 @@ class Battle:
     popup_list_open = utility.popup_list_open
 
     # Import from common.battle
+    add_sound_effect_queue = empty_method
     cal_shake_value = empty_method
     camera_fix = empty_method
     camera_process = empty_method
     camera_zoom_change = empty_method
     check_sprite_collision = empty_method
     generate_unit = empty_method
+    play_sound_effect = empty_method
     popout_lorebook = empty_method
     remove_unit_ui = empty_method
     setup_battle_unit = empty_method
@@ -216,6 +218,7 @@ class Battle:
         self.skill_images = main.skill_images
 
         self.sound_effect_pool = main.sound_effect_pool
+        self.sound_effect_queue = {}
 
         self.map_corner = (999, 999)
         self.max_camera = (999 * self.screen_scale[0], 999 * self.screen_scale[1])
@@ -244,8 +247,6 @@ class Battle:
         self.troop_card_button = main.troop_card_button
         self.unitstat_ui = main.unitstat_ui
         self.wheel_ui = main.wheel_ui
-        self.eight_wheel_ui = main.eight_wheel_ui
-        self.four_wheel_ui = main.four_wheel_ui
 
         # Genre UI, get added later in change_genre method in Game
 
@@ -318,6 +319,7 @@ class Battle:
         self.current_selected = None
         self.before_selected = None
         self.player_input_state = None  # specific player command input and ui
+        self.previous_player_input_state = None
 
         self.all_team_unit = {1: pygame.sprite.Group(),
                               2: pygame.sprite.Group(), "alive": pygame.sprite.Group()}  # more team can be added later
@@ -416,7 +418,8 @@ class Battle:
                                            self.map_source), output_type="list")
             self.weather_event = self.weather_event[1:]
             utility.convert_str_time(self.weather_event)
-        except (FileNotFoundError, TypeError):  # If no weather found or no map use light sunny weather start at 9:00 and wind direction at 0 angle
+        except (FileNotFoundError,
+                TypeError):  # If no weather found or no map use light sunny weather start at 9:00 and wind direction at 0 angle
             new_time = datetime.datetime.strptime("09:00:00", "%H:%M:%S").time()
             new_time = datetime.timedelta(hours=new_time.hour, minutes=new_time.minute, seconds=new_time.second)
             self.weather_event = ((4, new_time, 0, 0))  # default weather light sunny all day
@@ -488,7 +491,8 @@ class Battle:
                                    self.battle_map_feature.feature_colour[0])  # plain
 
         self.map_corner = (
-        len(self.battle_map_base.map_array[0]), len(self.battle_map_base.map_array))  # get map size that troop can move
+            len(self.battle_map_base.map_array[0]),
+            len(self.battle_map_base.map_array))  # get map size that troop can move
 
         self.max_camera = ((self.battle_map_height.image.get_width() - 1) * self.screen_scale[0],
                            (self.battle_map_height.image.get_height() - 1) * self.screen_scale[
@@ -669,6 +673,7 @@ class Battle:
         self.split_happen = False  # Check if unit get split in that loop
         self.show_troop_number = True  # for toggle troop number on/off
         self.player_input_state = None
+        self.previous_player_input_state = None
 
         self.base_mouse_pos = [0, 0]  # mouse position list in battle map not screen without zoom
         self.battle_mouse_pos = [0, 0]  # with camera zoom adjust but without screen scale
@@ -693,7 +698,7 @@ class Battle:
             double_mouse_right = False  # double right click
             mouse_scroll_down = False
             mouse_scroll_up = False
-            key_press = pygame.key.get_pressed()
+            key_state = pygame.key.get_pressed()
             esc_press = False
             self.click_any = False
 
@@ -748,7 +753,7 @@ class Battle:
 
                 elif event.type == pygame.KEYDOWN:
                     if self.input_popup[0] == "text_input":  # event update to input box
-                        self.input_box.player_input(event, key_press)
+                        self.input_box.player_input(event, key_state)
                         self.text_delay = 0.1
                     else:
                         event_key_press = event.key
@@ -780,39 +785,41 @@ class Battle:
                         if event_key_press is not None:
                             self.battle_keyboard_process(event_key_press)
 
-                        self.camera_process(key_press)
+                        self.camera_process(key_state)
 
                         if self.mouse_timer != 0:  # player click mouse once before
                             self.mouse_timer += self.ui_dt  # increase timer for mouse click using real time
                             if self.mouse_timer >= 0.3:  # time pass 0.3 second no longer count as double click
                                 self.mouse_timer = 0
 
-                        if mouse_left_up or mouse_right_up or mouse_left_down or mouse_right_down or key_press:
+                        if mouse_left_up or mouse_right_up or mouse_left_down or mouse_right_down or key_state:
                             self.mouse_process(mouse_left_up, mouse_right_up, mouse_left_down,
-                                               mouse_right_down, key_press)
+                                               mouse_right_down, key_state)
 
                             if self.game_state == "battle":
                                 self.battle_mouse_process(mouse_left_up, mouse_right_up, double_mouse_right,
-                                                          mouse_left_down, mouse_right_down, key_press, event_key_press)
+                                                          mouse_left_down, mouse_right_down, key_state, event_key_press)
 
                             elif self.game_state == "editor":  # unit editor state
                                 self.editor_mouse_process(mouse_left_up, mouse_right_up, mouse_left_down,
-                                                          mouse_right_down, key_press, event_key_press)
+                                                          mouse_right_down, key_state, event_key_press)
 
                         self.selected_unit_process(mouse_left_up, mouse_right_up, double_mouse_right,
-                                                   mouse_left_down, mouse_right_down, key_press, event_key_press)
+                                                   mouse_left_down, mouse_right_down, key_state, event_key_press)
                     else:  # register and process ui that require player input and block everything else
                         if type(self.player_input_state) != str:  # ui input state
                             choice = self.player_input_state.selection(self.mouse_pos)
-                            if self.player_input_state in self.wheel_ui:  # wheel ui process
+                            if self.player_input_state == self.wheel_ui:  # wheel ui process
                                 if mouse_left_up:
                                     self.wheel_ui_process(choice)
                                 elif event_key_press == pygame.K_q:  # Close unit command wheel ui
                                     self.battle_ui_updater.remove(self.wheel_ui)
-                                    self.player_input_state = None
+                                    old_player_input_state = self.player_input_state
+                                    self.player_input_state = self.previous_player_input_state
+                                    self.previous_player_input_state = old_player_input_state
                         elif "aim" in self.player_input_state:
-                            self.manual_aim(event_key_press, mouse_left_up, mouse_right_up, mouse_scroll_up,
-                                            mouse_scroll_down)
+                            self.manual_aim(mouse_left_up, mouse_right_up, mouse_scroll_up,
+                                            mouse_scroll_down, key_state, event_key_press)
 
                     # Drama text function
                     if self.drama_timer == 0 and len(
@@ -954,6 +961,10 @@ class Battle:
 
                     self.camera.update(self.shown_camera_pos, self.battle_camera, self.camera_zoom)
 
+                    for key, value in self.sound_effect_queue.items():  # play each sound effect initiate in this loop
+                        self.play_sound_effect(key, value[0], shake=value[1])
+                    self.sound_effect_queue = {}
+
                     # Update game time
                     self.dt = self.true_dt * self.game_speed  # apply dt with game_speed for calculation
                     if self.ui_timer >= 1.1:  # reset ui timer every 1.1 seconds
@@ -1070,7 +1081,7 @@ class Battle:
                 elif self.input_popup[0] == "text_input":
                     if self.text_delay == 0:
                         if event_key_press[self.input_box.hold_key]:
-                            self.input_box.player_input(None, key_press)
+                            self.input_box.player_input(None, key_state)
                             self.text_delay = 0.1
                     else:
                         self.text_delay += self.true_dt
@@ -1117,6 +1128,8 @@ class Battle:
         self.current_selected = None
         self.before_selected = None
         self.last_mouseover = None
+
+        self.sound_effect_queue = {}
 
         self.player_char = None
 

@@ -41,7 +41,6 @@ def setup_formation(self):
         new_pos = (self.base_pos[0] + width_box_dif, self.base_pos[1] + height_box_dif)
 
         self.base_pos = rotation_xy(self.base_pos, new_pos, self.radians_angle)
-        self.last_base_pos = self.base_pos
 
         front_pos = (self.base_pos[0], (self.base_pos[1] - self.base_height_box))  # find front position of unit
         self.front_pos = rotation_xy(self.base_pos, front_pos, self.radians_angle)

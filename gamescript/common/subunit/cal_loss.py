@@ -20,17 +20,17 @@ def cal_loss(self, target, final_dmg, final_morale_dmg, leader_dmg, element_effe
     if final_dmg > target.subunit_health:  # dmg cannot be higher than remaining health
         final_dmg = target.subunit_health
 
-    if final_dmg > target.max_health15:
+    if final_dmg > target.max_health10:
         target.interrupt_animation = True
         target.command_action = knockdown_command_action
 
         target.one_activity_limit = target.max_health / final_dmg * 10
 
-    elif final_dmg > target.max_health10:
+    elif final_dmg > target.max_health5:
         target.interrupt_animation = True
         target.command_action = heavy_damaged_command_action
 
-    elif final_dmg > target.max_health5:  # play damaged animation
+    elif final_dmg > target.max_health1:  # play damaged animation
         target.interrupt_animation = True
         target.command_action = damaged_command_action
 

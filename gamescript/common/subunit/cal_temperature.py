@@ -15,10 +15,10 @@ def cal_temperature(self, temp_reach):
         if "Hot" in self.status_list:
             self.apply_effect(self.status_list["Hot"], self.status_list, self.status_effect, self.status_duration)
         if self.temperature_count > 100 and "Heatstroke" in self.status_list:
-            self.apply_effect(self.status_list["Heatstroke"], self.status_list, self.status_effect, self.status_duration)
+            self.apply_effect(self.status_list["Heatstroke"], self.status_list, self.status_effect,
+                              self.status_duration)
     elif self.temperature_count < -50:  # Cold
         if "Cold" in self.status_list:
             self.apply_effect(self.status_list["Cold"], self.status_list, self.status_effect, self.status_duration)
         if self.temperature_count < -100 and "Freeze" in self.status_list:  # Extremely cold
             self.apply_effect(self.status_list["Freeze"], self.status_list, self.status_effect, self.status_duration)
-

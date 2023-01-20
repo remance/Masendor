@@ -21,13 +21,9 @@ def make_battle_ui(battle_ui_image, battle_icon_image, team_colour, screen_size)
     # Right top bar ui that show rough information of selected battalions
     unitstat_ui = battleui.TopBar(battle_ui_image["topbar"], battle_icon_image)
 
-    eight_wheel_ui = battleui.WheelUI((battle_ui_image["8_wheel_top"], battle_ui_image["8_wheel_side"]),
-                                      (battle_ui_image["8_wheel_top_selected"],
-                                       battle_ui_image["8_wheel_side_selected"]),
-                                      (screen_size[0] / 2, screen_size[1] / 2), screen_size)
-    four_wheel_ui = battleui.WheelUI((battle_ui_image["4_wheel"],), (battle_ui_image["4_wheel_selected"],),
-                                     (screen_size[0] / 2, screen_size[1] / 2), screen_size)
+    wheel_ui = battleui.WheelUI(battle_ui_image["wheel"], battle_ui_image["wheel_selected"],
+                                (screen_size[0] / 2, screen_size[1] / 2), screen_size)
 
     return {"time_ui": time_ui, "time_number": time_number, "speed_number": speed_number,
             "battle_scale_ui": battle_scale_ui, "time_button": time_button, "unit_selector": unit_selector,
-            "unitstat_ui": unitstat_ui, "eight_wheel_ui": eight_wheel_ui, "four_wheel_ui": four_wheel_ui}
+            "unitstat_ui": unitstat_ui, "wheel_ui": wheel_ui}

@@ -100,7 +100,7 @@ def status_update(self, weather=None):
 
     # Apply status effect from trait
     for trait_list in (self.trait["Original"].values(), self.trait["Weapon"][self.equipped_weapon][0].values(),
-        self.trait["Weapon"][self.equipped_weapon][1].values()):
+                       self.trait["Weapon"][self.equipped_weapon][1].values()):
         for trait in trait_list:
             if 0 not in trait["Status"]:
                 for effect in trait["Status"]:  # apply status effect from trait
@@ -274,7 +274,7 @@ def status_update(self, weather=None):
     self.charge_def = (self.charge_def * (
             self.morale_state + 0.1)) * self.stamina_state_cal + self.command_buff  # use morale, stamina and command buff
     height_diff = (
-                              self.height / self.front_height) ** 2  # walking down hill increase speed while walking up hill reduce speed
+                          self.height / self.front_height) ** 2  # walking down hill increase speed while walking up hill reduce speed
     self.speed = self.speed * self.stamina_state_cal * height_diff
     self.charge = (self.charge + self.speed) * (self.morale_state + 0.1) * self.stamina_state_cal + self.command_buff
 

@@ -109,7 +109,6 @@ class Unit(pygame.sprite.Sprite):
                                                     len(self.subunit_id_array) * (self.image_size[1] + 2) / 20
 
         self.base_pos = pygame.Vector2(start_pos)  # base_pos is for true pos that is used for battle calculation
-        self.last_base_pos = self.base_pos
         self.base_attack_pos = None  # position of attack base_target
         self.angle = start_angle  # start at this angle
         if self.angle == 360:  # 360 is 0 angle at the start, not doing this cause angle glitch when self start
@@ -232,8 +231,7 @@ class Unit(pygame.sprite.Sprite):
             else:  # Unit enter dead state when no more troop left
                 self.stamina, self.morale, self.speed = 0, 0, 0
 
-                leader_list = [leader for leader in self.leader]  # create temp list to remove leader
-                for leader in leader_list:  # leader retreat
+                for leader in self.leader:  # leader retreat
                     if leader.state < 90:  # Leaders flee when unit destroyed
                         leader.state = 96
                         leader.gone()
@@ -255,7 +253,7 @@ class Unit(pygame.sprite.Sprite):
                 if self.timer >= 1:
                     self.setup_stat()
 
-                    # v Find near enemy base_target
+                    # Find near enemy base_target
                     self.nearby_enemy = {}  # Near base_target is enemy that is nearest
                     for team in self.enemy_pos_list.values():
                         for n, enemy_pos in team.items():
@@ -265,24 +263,21 @@ class Unit(pygame.sprite.Sprite):
                     for n in self.enemy_pos_list:
                         self.nearby_enemy[n] = self.enemy_pos_list[
                             n]  # change back near base_target list value to vector with sorted order
-                    # ^ End find near base_target
 
                     self.state_reset_logic()
 
-                    self.timer -= 1  # reset timer, not reset to 0 because higher speed can cause inconsistency in update timing
+                    self.timer -= 1  # reset timer, not to 0 because higher speed can cause inconsistency in update timing
 
-                # v Recal stat involve leader if one destroyed
-                if self.leader_change:
+                if self.leader_change:  # recal stat involve leader if one destroyed
                     self.authority_recalculation()
-                    self.command_buff = [(self.leader[0].melee_command - 5) * 0.1,
+                    self.command_buff = ((self.leader[0].melee_command - 5) * 0.1,
                                          (self.leader[0].range_command - 5) * 0.1,
-                                         (self.leader[0].cav_command - 5) * 0.1]
+                                         (self.leader[0].cav_command - 5) * 0.1)
                     self.leader_change = False
-                # ^ End recal stat when leader destroyed
 
                 self.unit_ai()
-                # v Morale/authority state function
-                if self.authority <= 0:  # disobey
+
+                if self.authority <= 0:  # unit disobey
                     self.state = 95
                     if random.randint(0, 100) == 100 and self.leader[0].state < 90:  # chance to recover
                         self.leader[0].authority += 20

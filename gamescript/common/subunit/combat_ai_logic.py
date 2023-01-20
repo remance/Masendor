@@ -12,9 +12,9 @@ range_move_attack_command_action = {True: ({"name": "Action 0", "range attack": 
                                            {"name": "Action 1", "range attack": True, "move attack": True,
                                             "movable": True, "arc shot": True}),
                                     False: ({"name": "Action 0", "range attack": True, "move attack": True,
-                                            "movable": True, "arc shot": False},
+                                             "movable": True, "arc shot": False},
                                             {"name": "Action 1", "range attack": True, "move attack": True,
-                                            "movable": True, "arc shot": False})}
+                                             "movable": True, "arc shot": False})}
 
 
 def combat_ai_logic(self, dt, unit_state, collide_list):
@@ -44,18 +44,19 @@ def combat_ai_logic(self, dt, unit_state, collide_list):
                             self.new_angle = self.set_rotate(self.base_target)
 
                     if self.melee_target.unit.state != 100:
-                        if self.move_timer == 0:
-                            self.move_timer = 0.1  # recalculate again in 10 seconds if not in fight
+                        if self.melee_move_timer == 0:
+                            self.melee_move_timer = 0.1  # recalculate again in 10 seconds if not in fight
                             # if len(self.same_front) != 0 and len(self.enemy_front) == 0: # collide with friend try move to base_target first before enemy
                             # self.combat_move_queue = [] # clean queue since the old one no longer without collide
                         else:
-                            self.move_timer += dt
-                            if len(self.enemy_in_melee_distance) != 0 or len(self.enemy_collide) != 0:  # in fight, stop timer
-                                self.move_timer = 0
+                            self.melee_move_timer += dt
+                            if len(self.enemy_in_melee_distance) != 0 or len(
+                                    self.enemy_collide) != 0:  # in fight, stop timer
+                                self.melee_move_timer = 0
 
-                            elif self.move_timer > 10 or len(
+                            elif self.melee_move_timer > 10 or len(
                                     self.combat_move_queue) == 0:  # # time up, or no path. reset path
-                                self.move_timer = 0
+                                self.melee_move_timer = 0
                                 self.close_target = None
                                 if self in self.battle.combat_path_queue:
                                     self.battle.combat_path_queue.remove(self)
@@ -103,7 +104,7 @@ def combat_ai_logic(self, dt, unit_state, collide_list):
                     self.state = 11  # can shoot if troop have magazine_left and in shoot range, enter range combat state
 
             elif self.unit.fire_at_will == 0 and (self.state == 0 or
-                                                  ((self.walk or self.run) and
+                                                  (self.move and
                                                    self.check_special_effect("Shoot While Moving"))):  # Fire at will
                 if self.unit.nearby_enemy != {} and self.attack_target is None:
                     self.find_shooting_target(unit_state)  # shoot the nearest target
@@ -128,33 +129,35 @@ def combat_ai_logic(self, dt, unit_state, collide_list):
             self.attack_target = self.unit.attack_target
             if self.attack_target is not None:
                 self.attack_pos = self.attack_target.base_pos
+
         if self.attack_pos is not None and not self.command_action and not self.current_action:
-            for weapon in self.ammo_now[self.equipped_weapon]:
-                # can shoot if reload finish and base_target existed and not dead. Non arc_shot cannot shoot if forbid
-                if self.ammo_now[self.equipped_weapon][weapon] > 0 and \
-                        self.shoot_range[weapon] >= self.attack_pos.distance_to(self.base_pos):
-                    can_shoot = False
-                    weapon_arc_shot = self.check_special_effect("Arc Shot", weapon=weapon)
-                    if self.check_special_effect("Arc Shot Only", weapon=weapon) is False and \
-                            len(self.attack_target.alive_subunit_list) > 0:  # find the closest enemy subunit not block by friend
-                        target_hit = self.find_attack_target(
-                            self.attack_target.alive_subunit_list, check_line_of_sight=True)
-                        if target_hit is not None:
+            if self.move is False or (self.move and self.check_special_effect("Shoot While Moving")):
+                for weapon in self.ammo_now[self.equipped_weapon]:
+                    # can shoot if reload finish, in shoot range and attack pos target exist
+                    if self.ammo_now[self.equipped_weapon][weapon] > 0 and \
+                            self.shoot_range[weapon] >= self.attack_pos.distance_to(self.base_pos):
+                        can_shoot = False
+                        weapon_arc_shot = self.check_special_effect("Arc Shot", weapon=weapon)
+                        if self.check_special_effect("Arc Shot Only", weapon=weapon) is False and \
+                                len(self.attack_target.alive_subunit_list) > 0:  # find the closest enemy subunit not block by friend
+                            target_hit = self.find_attack_target(
+                                self.attack_target.alive_subunit_list, check_line_of_sight=True)
+                            if target_hit is not None:
+                                can_shoot = True
+                                arc_shot = False
+
+                        if can_shoot is False and self.unit.shoot_mode == 0 and weapon_arc_shot:  # check for arc shot
                             can_shoot = True
-                            arc_shot = False
+                            arc_shot = True
 
-                    if can_shoot is False and self.unit.shoot_mode == 0 and weapon_arc_shot:  # check for arc shot
-                        can_shoot = True
-                        arc_shot = True
+                        if can_shoot:
+                            if self.move and self.check_special_effect("Shoot While Moving"):  # shoot while moving
+                                self.command_action = range_move_attack_command_action[arc_shot][weapon]
+                            else:
+                                self.command_action = range_attack_command_action[arc_shot][weapon]
+                            break
 
-                    if can_shoot:
-                        if self.state in (12, 13):  # shoot while moving
-                            self.command_action = range_move_attack_command_action[arc_shot][weapon]
-                        else:
-                            self.command_action = range_attack_command_action[arc_shot][weapon]
-                        break
-
-    else:  # reset base_target every update to command base_target outside of combat
+    elif self.state == 0:  # reset base_target every update to command base_target outside of combat
         if self.base_target != self.command_target:
             self.base_target = self.command_target
             if unit_state == 0:

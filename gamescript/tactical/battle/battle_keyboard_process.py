@@ -76,11 +76,11 @@ def battle_keyboard_process(self, key_press):
         for subunit in self.current_selected.alive_subunit_list:
             subunit.subunit_health -= 10000000
     # elif key_press == pygame.K_m and self.current_selected is not None:
-        # self.last_selected.leader[0].health -= 1000
-        # self.subunit_selected.self.leader.health -= self.subunit_selected.self.leader.health
-        # self.subunit_selected.self.base_morale -= 1000
-        # self.subunit_selected.self.broken_limit = 80
-        # self.subunit_selected.self.state = 99
+    # self.last_selected.leader[0].health -= 1000
+    # self.subunit_selected.self.leader.health -= self.subunit_selected.self.leader.health
+    # self.subunit_selected.self.base_morale -= 1000
+    # self.subunit_selected.self.broken_limit = 80
+    # self.subunit_selected.self.state = 99
     # elif key_press == pygame.K_COMMA and self.last_selected is not None:
     #     for index, subunit in enumerate(self.last_selected.subunit_sprite):
     #         subunit.stamina -= subunit.stamina

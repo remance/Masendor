@@ -7,7 +7,8 @@ def add_mount_stat(self):
         self.troop_size = mount_size
 
     self.original_charge_def = 25  # charge defence only 25 for cav
-    self.original_speed = (mount_race_stat["Agility"] / 5) + (self.mount["Speed Bonus"] + self.mount_grade["Speed Bonus"])  # use mount base speed instead
+    self.original_speed = (mount_race_stat["Agility"] / 5) + (
+                self.mount["Speed Bonus"] + self.mount_grade["Speed Bonus"])  # use mount base speed instead
     self.troop_health += (self.mount["Health Bonus"] * self.mount_grade["Health Effect"]) + \
                          self.mount_armour["Health"]  # Add mount health to the troop health
     self.original_charge += (self.mount["Charge Bonus"] +

@@ -1,8 +1,9 @@
-import pygame
 import math
 
+import pygame
 
-def manual_aim(self, key_press, mouse_left_up, mouse_right_up, mouse_scroll_up, mouse_scroll_down):
+
+def manual_aim(self, mouse_left_up, mouse_right_up, mouse_scroll_up, mouse_scroll_down, key_state, key_press):
     """
     Range attack aim with player manual control.
     """
@@ -16,81 +17,71 @@ def manual_aim(self, key_press, mouse_left_up, mouse_right_up, mouse_scroll_up, 
 
     if self.player_input_state == "leader aim":
         if self.player_char.equipped_weapon in self.player_char.ammo_now:
-            for weapon in self.player_char.ammo_now[self.player_char.equipped_weapon]:
-                shoot_distance = self.player_char.base_pos.distance_to(base_target_pos)
-                shoot_range = self.player_char.shoot_range[weapon]
-                if (self.player_char.ammo_now[self.player_char.equipped_weapon][
-                    weapon]) > 0 and shoot_range >= shoot_distance:
-                    shoot_ready_list[weapon].append(self.player_char)
-                    shoot_ready[weapon] += 1
-                shoot_text += str(self.player_char.ammo_now[self.player_char.equipped_weapon][weapon]) + "/" + \
-                              str(self.player_char.magazine_count[self.player_char.equipped_weapon][
-                                      weapon]) + " Range " + \
-                              str(int(shoot_distance)) + "/" + str(int(shoot_range)) + ", "
-            # self.player_char.shoot_line.update(target_pos, clip_list, can_shoot, self.camera_zoom_image_scale)
-            shoot_text = shoot_text[:-2]
-
+            who_shoot = (self.player_char,)
     elif self.player_input_state == "line aim" or self.player_input_state == "focus aim":
-        for this_subunit in self.player_char.unit.alive_subunit_list:
-            clip_list = [False, False]
-            range_weapon_check = [False, False]
-            can_shoot = [False, False]
-            arc_shot = [False, False]
+        who_shoot = self.player_char.unit.alive_subunit_list
 
-            if this_subunit.state < 90:
-                this_subunit.manual_shoot = True
+    for this_subunit in who_shoot:
+        clip_list = [False, False]
+        range_weapon_check = [False, False]
+        can_shoot = [False, False]
+        arc_shot = [False, False]
 
-                if self.player_input_state == "line aim":
-                    angle = this_subunit.unit.set_rotate(self.command_mouse_pos)
-                    distance = this_subunit.unit.base_pos.distance_to(self.command_mouse_pos)
-                    base_target_pos = pygame.Vector2(
-                        this_subunit.base_pos[0] - (distance * math.sin(math.radians(angle))),
-                        this_subunit.base_pos[1] - (distance * math.cos(math.radians(angle))))
-                    target_pos = (base_target_pos[0] * self.camera_zoom * self.screen_scale[0],
-                                  base_target_pos[1] * self.camera_zoom * self.screen_scale[1])
+        if this_subunit.state < 90:
+            this_subunit.manual_shoot = True
 
-                for weapon in (0, 1):
-                    if this_subunit.equipped_weapon in this_subunit.ammo_now:
-                        if weapon in this_subunit.ammo_now[this_subunit.equipped_weapon]:
-                            range_weapon_check[weapon] = True
-                            has_ammo[weapon] += 1
-                            if this_subunit.ammo_now[this_subunit.equipped_weapon][weapon] > 0:
-                                if this_subunit.shoot_range[weapon] >= this_subunit.base_pos.distance_to(base_target_pos):
-                                    weapon_arc_shot = this_subunit.check_special_effect("Arc Shot", weapon=weapon)
-                                    if this_subunit.check_special_effect("Arc Shot Only", weapon=weapon) is False:
-                                        clip = this_subunit.check_line_of_sight(this_subunit.base_pos)
-                                        clip_list[weapon] = clip
-                                        if clip is False:
-                                            can_shoot[weapon] = True
+            if self.player_input_state == "line aim":
+                angle = this_subunit.unit.set_rotate(self.command_mouse_pos)
+                distance = this_subunit.unit.base_pos.distance_to(self.command_mouse_pos)
+                base_target_pos = pygame.Vector2(
+                    this_subunit.base_pos[0] - (distance * math.sin(math.radians(angle))),
+                    this_subunit.base_pos[1] - (distance * math.cos(math.radians(angle))))
+                target_pos = (base_target_pos[0] * self.camera_zoom * self.screen_scale[0],
+                              base_target_pos[1] * self.camera_zoom * self.screen_scale[1])
 
-                                    if can_shoot[weapon] is False and this_subunit.unit.shoot_mode == 0 and \
-                                            weapon_arc_shot:  # check for arc shot
-                                        clip_list[weapon] = False
+            for weapon in (0, 1):
+                if this_subunit.equipped_weapon in this_subunit.ammo_now:
+                    if weapon in this_subunit.ammo_now[this_subunit.equipped_weapon]:
+                        range_weapon_check[weapon] = True
+                        has_ammo[weapon] += 1
+                        if this_subunit.ammo_now[this_subunit.equipped_weapon][weapon] > 0:
+                            if this_subunit.shoot_range[weapon] >= this_subunit.base_pos.distance_to(base_target_pos):
+                                weapon_arc_shot = this_subunit.check_special_effect("Arc Shot", weapon=weapon)
+                                if this_subunit.check_special_effect("Arc Shot Only", weapon=weapon) is False:
+                                    clip = this_subunit.check_line_of_sight(base_target_pos)
+                                    clip_list[weapon] = clip
+                                    if clip is False:
                                         can_shoot[weapon] = True
-                                        arc_shot[weapon] = True
 
-                                    if can_shoot[weapon]:
-                                        shoot_ready_list[weapon].append(this_subunit)
-                                        shoot_ready[weapon] += 1
+                                if can_shoot[weapon] is False and this_subunit.unit.shoot_mode == 0 and \
+                                        weapon_arc_shot:  # check for arc shot
+                                    clip_list[weapon] = False
+                                    can_shoot[weapon] = True
+                                    arc_shot[weapon] = True
 
-            if True in range_weapon_check:
-                if this_subunit.shoot_line not in self.battle_camera:  # add back shoot line
-                    self.battle_camera.add(this_subunit.shoot_line)
-                this_subunit.shoot_line.update(base_target_pos, target_pos, clip_list, can_shoot,
-                                               self.camera_zoom_image_scale, arc_shot)
-            else:  # no weapon in current equipped weapon set
-                if this_subunit.shoot_line in self.battle_camera:  # remove shoot line
-                    self.battle_camera.remove(this_subunit.shoot_line)
+                                if can_shoot[weapon]:
+                                    shoot_ready_list[weapon].append(this_subunit)
+                                    shoot_ready[weapon] += 1
+
+        if True in range_weapon_check:
+            if this_subunit.shoot_line not in self.battle_camera:  # add back shoot line
+                self.battle_camera.add(this_subunit.shoot_line)
+            this_subunit.shoot_line.update(base_target_pos, target_pos, clip_list, can_shoot,
+                                           self.camera_zoom_image_scale, arc_shot)
+        else:  # no weapon in current equipped weapon set
+            if this_subunit.shoot_line in self.battle_camera:  # remove shoot line
+                self.battle_camera.remove(this_subunit.shoot_line)
 
         shoot_text = str(shoot_ready[0]) + "/" + str(has_ammo[0]) + ", " + str(shoot_ready[1]) + "/" + str(has_ammo[1])
 
     self.single_text_popup.pop(self.cursor.rect.bottomright, shoot_text)
 
-    if key_press == pygame.K_q:  # Cancel manual aim
+    if key_press in (pygame.K_w, pygame.K_a, pygame.K_s, pygame.K_d) or self.player_char.state == 100:  # Cancel manual aim when move or player die
         self.camera_zoom = self.max_camera_zoom
         self.camera_zoom_change()
         self.cursor.change_image("normal")
         self.battle_ui_updater.remove(self.single_text_popup)
+        self.previous_player_input_state = self.player_input_state
         self.player_input_state = None
         for this_subunit in self.player_char.unit.alive_subunit_list:
             if this_subunit.equipped_weapon != this_subunit.player_equipped_weapon:
@@ -112,7 +103,7 @@ def manual_aim(self, key_press, mouse_left_up, mouse_right_up, mouse_scroll_up, 
                                                "pos": this_subunit.shoot_line.base_target_pos,
                                                "arc shot": this_subunit.shoot_line.arc_shot[weapon]}
 
-    elif self.map_scale_delay == 0:
+    elif self.map_scale_delay == 0 and (mouse_scroll_up or mouse_scroll_down):
         if mouse_scroll_up:
             self.camera_zoom += 1
             if self.camera_zoom > self.max_camera_zoom:
@@ -125,3 +116,8 @@ def manual_aim(self, key_press, mouse_left_up, mouse_right_up, mouse_scroll_up, 
                 self.camera_zoom = 1
             else:
                 self.camera_zoom_change()
+
+    else:
+        if key_press is not None:
+            self.battle_keyboard_process(key_press)
+        self.current_selected.player_input(self.command_mouse_pos, key_state=key_state)

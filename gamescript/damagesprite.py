@@ -1,11 +1,10 @@
+import math
 import os
 import random
-import math
+from pathlib import Path
 
 import pygame
 import pygame.freetype
-from pathlib import Path
-
 from gamescript.common import utility
 
 direction_angle = {"r_side": math.radians(90), "l_side": math.radians(270), "back": math.radians(180),
@@ -133,9 +132,14 @@ class DamageSprite(pygame.sprite.Sprite):
 
         self.sprite_scaling()
 
-        hitbox_image = pygame.transform.scale(self.base_image,
-                                              (min(1, int(self.base_image.get_width() / self.battle.max_camera_zoom)),
-                                               min(1, int(self.base_image.get_height() / self.battle.max_camera_zoom))))
+        hitbox_size = [int(self.base_image.get_width() / self.battle.max_camera_zoom),
+                       int(self.base_image.get_height() / self.battle.max_camera_zoom)]
+        if hitbox_size[0] < 1:
+            hitbox_size[0] = 1
+        if hitbox_size[1] < 1:
+            hitbox_size[1] = 1
+
+        hitbox_image = pygame.transform.scale(self.base_image, hitbox_size)
 
         self.hitbox_rect = hitbox_image.get_rect(center=self.base_pos)  # hitbox rect based on base pos
 
@@ -151,7 +155,7 @@ class DamageSprite(pygame.sprite.Sprite):
 
         self.base_image = self.image.copy()
 
-    def update(self, unit_list, dt, camera_zoom):
+    def update(self, subunit_list, dt, camera_zoom):
         just_start = False
 
         self.timer += dt
@@ -194,28 +198,25 @@ class DamageSprite(pygame.sprite.Sprite):
                 self.rect.center = self.pos
 
         if self.deal_dmg:  # sprite can still deal damage
-            for subunit in pygame.sprite.spritecollide(self, unit_list, False):  # collide check while travel
-                if subunit != self.attacker and subunit.hitbox_rect.colliderect(self.hitbox_rect) and subunit not in self.already_hit:
+            for this_subunit in subunit_list:  # collide check while travel
+                if this_subunit != self.attacker and this_subunit.hitbox_rect.colliderect(self.hitbox_rect) and \
+                        this_subunit not in self.already_hit:
                     if self.attack_type == "range":
                         if self.arc_shot is False:  # direct shot
-                            self.hit_register(subunit)
-                            self.already_hit.append(subunit)
+                            self.hit_register(this_subunit)
+                            self.already_hit.append(this_subunit)
                             if self.aoe is False and self.penetrate <= 0:
+                                self.deal_dmg = False
                                 self.kill()
                                 break
                         else:
-                            self.pass_subunit = subunit
+                            self.pass_subunit = this_subunit
 
-                    elif self.attack_type == "melee" and subunit.team != self.attacker.team:  # no friendly attack for melee
-                        self.hit_register(subunit)
+                    elif self.attack_type == "melee" and this_subunit.team != self.attacker.team:  # no friendly attack for melee
+                        self.hit_register(this_subunit)
                         if self.aoe is False:
                             self.deal_dmg = False
                             break
-
-                    if self.arc_shot is False:
-                        print(subunit.base_pos, subunit.hitbox_rect, subunit.hitbox_rect.center, subunit.game_id,
-                              subunit.name, self.base_pos, self.hitbox_rect, self.hitbox_rect.center)
-                        print(self.penetrate)
 
         if self.timer > 1 and self.duration > 0:  # reset timer and list of subunit already hit for duration damage
             self.timer = 0
