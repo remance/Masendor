@@ -1360,6 +1360,10 @@ class ShootLine(pygame.sprite.Sprite):
 
             self.rect = self.image.get_rect(center=pos)
 
+    def delete(self):
+        self.who.shoot_line = None
+        self.kill()
+
 
 class TroopNumber(pygame.sprite.Sprite):
     def __init__(self, screen_scale, who):

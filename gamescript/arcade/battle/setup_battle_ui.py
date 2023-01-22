@@ -29,11 +29,11 @@ def setup_battle_ui(self, change):
         width = self.inspect_ui.rect.topleft[0] + self.subunit_inspect_sprite_size[0] / 1.25
         height = self.inspect_ui.rect.topleft[1]
         sub_unit_number = 0  # Number of subunit based on the position in row and column
-        for _ in list(range(self.main.unit_size[0] * self.main.unit_size[1])):
+        for _ in list(range(self.main.max_unit_size[0] * self.main.max_unit_size[1])):
             width += self.subunit_inspect_sprite_size[0]
             self.inspect_subunit.append(battleui.InspectSubunit((width, height)))
             sub_unit_number += 1
-            if sub_unit_number == self.main.unit_size[0]:  # Reach the last subunit in the row, go to the next one
+            if sub_unit_number == self.main.max_unit_size[0]:  # Reach the last subunit in the row, go to the next one
                 width = self.inspect_ui.rect.topleft[0] + self.subunit_inspect_sprite_size[0] / 1.25
                 height += self.subunit_inspect_sprite_size[1]
                 sub_unit_number = 0

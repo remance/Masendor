@@ -1,6 +1,6 @@
 """For keeping variable related to genre specific"""
 
-unit_size = (8, 8)
+max_unit_size = (8, 8)  # maximum array size unit can contain subunits
 troop_size_adjustable = False  # troop always at size 1
 
 unit_behaviour_wheel = {}  # player unit behaviour control via wheel ui, not used in tactical mode as it use different control and ui
@@ -12,7 +12,7 @@ object_variable = {("self", "object"): {"add_troop_number_sprite": True,  # troo
                                         "leader_sprite": False,  # leader has its own animation sprite
                                         "troop_sprite_size": (200, 200),  # troop animation sprite size
                                         "troop_size_adjustable": troop_size_adjustable,
-                                        "unit_size": unit_size,  # maximum array size unit can contain subunits
+                                        "max_unit_size": max_unit_size,
                                         "command_ui_type": "command",  # type of command bar, either hero or rts command
                                         },
                    ("battle_game", "self-object"): {"start_zoom_mode": "Free",  # rts style camera
@@ -22,10 +22,9 @@ object_variable = {("self", "object"): {"add_troop_number_sprite": True,  # troo
                                                     "time_speed_scale": 10,  # how fast time fly in battle
                                                     "unit_behaviour_wheel": unit_behaviour_wheel,
                                                     # player unit behaviour control via wheel ui
-                                                    "unit_size": unit_size,
-                                                    # maximum array size unit can contain subunits
+                                                    "max_unit_size": max_unit_size,
                                                     },
-                   ("unit", "class"): {"unit_size": unit_size,  # maximum array size unit can contain subunits
+                   ("unit", "class"): {"max_unit_size": max_unit_size,
                                        },
                    ("subunit", "class"): {"dmg_include_leader": True,  # include leader in damage calculation
                                           }

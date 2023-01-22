@@ -1,87 +1,87 @@
-"ID","Name","Strength Bonus Scale","Dexterity Bonus Scale","Damage Balance","Physical Damage","Fire Damage","Poison Damage","Armour Penetration","Defence","Charge","Weight","Skill","Trait","Cooldown","Ammunition","Magazine","Shot Number","Range","Travel Speed","Cost","Hand","Learning Difficulty","Mastery Difficulty","ImageID","Damage Sprite","Damage Sprite Effect","Sound Effect","Sound Distance","Common","Attack","Properties","Type","Ruleset"
-1,"Unarmed",5,5,80,20,0,0,10,0,0,0,0,0,1,0,0,0,1,0,0,1,0,3,10,,,,5,"1hand","Punch",,"Melee",0
-2,"Sword",4,6,65,100,0,0,17,15,5,10,0,0,3,0,0,0,3,0,,1,5,7,0,"Slash Medium",,,10,"1hand","Slash",,"Melee",0
-3,"Greatsword",6,4,50,250,0,0,45,12,12,20,0,14,6,0,0,0,5,0,,2,7,8,0,"Slash Big",,,15,"2hand","Slash","hold,power","Melee",0
-4,"Shortsword",3,7,70,70,0,0,11,8,2,5,0,0,2,0,0,0,2,0,,1,4,6,0,,,,9,"1hand","Pierce",,"Melee",0
-5,"Dagger",2,8,75,55,0,0,55,3,1,2,0,0,2,0,0,0,1,0,,1,2,5,0,,,,,"1hand","Pierce","parry","Melee",0
-6,"Spear",3,7,65,75,0,0,13,7,10,8,25,14,3,0,0,0,5,0,,1,1,6,1,,,,,"1pole","Pierce","hold,holdfront","Melee",0
-7,"Club",7,3,40,70,0,0,35,4,3,14,0,0,4,0,0,0,3,0,,1,2,4,3,,,,,"1hand","Smash",,"Melee",0
-8,"Mace",7,3,45,69,0,0,50,5,3,18,0,0,2,0,0,0,3,0,,1,2,5,3,,,,,"1hand","Smash",,"Melee",0
-9,"Great Mace",8,2,35,180,0,0,65,10,4,30,0,0,6,0,0,0,5,0,,2,5,6,3,,,,,"2pole","Smash","hold,power","Melee",0
-10,"Flail",4,6,45,80,0,0,50,2,1,16,0,0,4,0,0,0,3,0,,1,8,7,4,,,,,"1hand","Smash",,"Melee",0
-11,"Hammer",7,3,35,75,0,0,60,4,3,18,0,0,4,0,0,0,3,0,,1,3,6,5,,,,,"1hand","Smash",,"Melee",0
-12,"War Hammer",8,2,25,200,0,0,70,10,3,35,0,0,6,0,0,0,5,0,,2,6,7,5,,,,,"2pole","Smash","hold,power","Melee",0
-13,"Handaxe",6,4,30,140,0,0,30,3,4,15,0,0,3,0,0,0,3,0,,1,3,5,2,"Slash Medium",,,,"1hand","Slash",,"Melee",0
-14,"Greataxe",7,3,15,310,0,0,55,7,8,30,0,13,6,0,0,0,5,0,,2,5,6,2,"Slash Big",,,,"2pole","Slash","hold,power","Melee",0
-15,"Halberd",5,5,25,240,0,0,60,6,20,35,0,14,6,0,0,0,6,0,,2,8,7,6,"Slash Big",,,,"2pole","Slash","hold,holdfront","Melee",0
-16,"Pike",2,8,35,180,0,0,35,2,30,25,41,14,5,0,0,0,9,0,,2,4,8,7,,,,,"2pole","Pierce","hold,holdfront","Melee",0
-17,"Glaive",4,6,40,170,0,0,30,10,25,30,0,14,6,0,0,0,6,0,,2,8,8,8,"Slash Big",,,,"2pole","Slash","hold,power","Melee",0
-18,"Whip",2,8,50,70,0,0,5,1,1,5,0,0,4,0,0,0,6,0,,1,6,9,9,,,,,"1hand","Slash",,"Melee",0
-19,"Quarterstaff",4,6,70,80,0,0,35,14,5,10,0,0,3,0,0,0,5,0,,2,,,20,,,,,"2pole","Smash","hold,power","Melee",0
-20,"Sling",3,7,70,100,0,0,30,0,0,5,0,9,7,120,1,1,170,80,,1,4,6,11,"Stone",,,,"1hand","Swing","cancelable","Long Range",0
-21,"Blowgun",1,9,35,80,0,0,10,0,0,3,0,0,6,60,1,1,30,80,,1,3,5,12,"Dart",,,,"1hand","Blow","cancelable","Short Range",0
-22,"Javelin",4,6,65,160,0,0,40,1,0,15,0,9,8,10,1,1,70,60,,1,4,7,13,"self",,,,"1pole","Throw","cancelable,hold,timing_2_2","Short Range",0
-23,"Throwing Axe",4,6,50,140,0,0,45,0,0,20,0,13,8,15,1,1,60,55,,1,4,6,14,"self","spin",,,"1hand","Throw","cancelable,hold,timing_2_2,bullet_rotate","Short Range",0
-24,"Longbow",2,8,70,300,0,0,40,0,0,25,0,9,15,80,1,1,200,100,,2,7,9,15,"Arrow",,,,"bow","Draw","cancelable,hold,timing_2_2","Long Range",0
-25,"Shortbow",1,9,75,150,0,0,15,0,0,10,0,9,10,80,1,1,150,90,,2,5,6,16,"Arrow",,,,"bow","Draw","cancelable,hold,timing_2_3","Long Range",0
-26,"Greatbow",4,6,65,500,0,0,60,0,0,40,0,9,25,60,1,1,250,110,,2,8,10,17,"Arrow Big",,,,"bow","Draw","cancelable,hold,timing_2_1","Long Range",0
-27,"Light Crossbow",1,9,90,150,0,0,30,0,0,20,0,0,20,80,1,1,120,100,,2,2,5,18,"Bolt",,,,"2gun","Shoot","cancelable,hold","Long Range",0
-28,"Heavy Crossbow",2,8,85,400,0,0,50,0,0,40,0,0,25,80,1,1,150,110,,2,3,6,19,"Bolt",,,,"2gun","Shoot","cancelable,hold","Long Range",0
-29,"Repeater Crossbow",1,9,80,130,0,0,10,0,0,25,0,0,25,120,5,1,100,100,,2,4,5,18,"Bolt",,,,"2gun","Shoot","cancelable,hold","Long Range",0
-30,"Arbalest",2,8,75,700,0,0,70,0,0,25,0,0,30,70,1,1,200,120,,2,5,6,19,"Bolt",,,,"2gun","Shoot","cancelable,hold","Long Range",0
-31,"Stone",4,6,70,60,0,0,20,0,0,5,0,9,6,120,1,1,50,40,,1,1,4,21,"self",,,,"1hand","Throw","cancelable,hold,timing_2_2","Short Range",0
-32,"Composite Bow",1,9,75,180,0,0,25,0,0,15,0,9,15,80,1,1,170,100,,2,5,6,16,"Arrow",,,,"bow","Draw","cancelable,hold,timing_2_3","Long Range",0
-33,"Matchlock Musket",1,9,80,400,0,0,80,0,0,35,0,72,30,80,1,1,110,300,,2,4,6,,"Bullet",,"musket_shot",50,"2gun","Shoot","cancelable,hold","Long Range",0
-34,"Arquebus",1,9,60,350,0,0,70,0,0,25,0,72,20,80,1,1,100,300,,2,,,,"Bullet",,"musket_shot",40,"2gun","Shoot","cancelable,hold","Long Range",0
-35,"Blunderbuss",1,9,30,370,0,0,70,0,0,50,0,72,25,50,2,4,40,300,,2,6,6,,"Bullet",,"musket_shot",50,"2gun","Shoot","cancelable,hold","Long Range",0
-36,"Flintlock Musket",1,9,70,500,0,0,90,0,0,30,0,72,20,80,1,1,130,300,,2,,,,"Bullet",,"musket_shot",50,"2gun","Shoot","cancelable,hold","Long Range",0
-37,"Flintlock Pistol",0,10,70,300,0,0,75,0,0,10,0,72,10,80,1,1,80,300,,1,,,,"Bullet",,"old_pistol_shot",30,"1gun","Shoot","cancelable,hold","Short Range",0
-38,"Matchlock Pistol",0,10,80,280,0,0,50,0,0,10,0,72,17,80,1,1,70,300,,1,,,,"Bullet",,"old_pistol_shot",30,"1gun","Shoot","cancelable,hold","Short Range",0
-39,"Kite Shield",8,2,85,35,0,0,4,50,4,20,27,0,5,0,0,0,2,0,,1,4,5,,,,,,"shield","Bash","hold,block","Shield",0
-40,"Buckler",5,5,70,25,0,0,5,15,1,10,0,0,3,0,0,0,2,0,,1,5,7,,,,,,"shield","Bash","parry","Shield",0
-41,"Round Shield",6,4,85,45,0,0,5,30,5,15,27,0,4,0,0,0,2,0,,1,2,4,,,,,,"shield","Bash","hold,block","Shield",0
-42,"Tower Shield",10,0,90,30,0,0,2,75,1,40,"28,27",0,6,0,0,0,2,0,,1,6,5,,,,,,"shield","Bash","hold,block","Shield",0
-43,"Heater Shield",,,80,45,0,0,6,40,7,18,27,0,4,0,0,0,2,0,,1,6,6,,,,,,"shield","Bash","hold,block","Shield",0
-44,"Pavise Shield",10,0,90,30,0,0,2,75,1,34,27,0,6,0,0,0,2,0,,1,5,6,,,,,,"shield","Bash","hold,block","Shield",0
-45,"Spiked Shield",5,5,65,70,0,0,20,25,10,25,0,0,4,0,0,0,2,0,,1,5,6,,,,,,"shield","Bash","hold,block","Shield",0
-46,"Aspis Shield",4,6,,,0,0,,,,,27,0,3,0,0,0,2,0,,1,,,,,,,,"shield","Bash","hold,block","Shield",0
-47,"Oval Shield",7,3,85,40,0,0,4,45,5,18,27,0,4,0,0,0,2,0,,1,6,5,,,,,,"shield","Bash","hold,block","Shield",0
-48,"Parry Dagger",1,9,70,45,0,0,40,,1,,0,0,4,0,0,0,1,0,,1,4,9,,,,,,"shield","Slash","parry","Melee",0
-49,"Parry Club",3,7,,,0,0,30,20,2,,0,0,3,0,0,0,3,0,,1,3,8,,,,,,"shield","Smash","parry","Melee",0
-50,"Barrier Shield",10,0,90,15,0,0,0,90,1,60,30,0,6,0,0,0,2,0,,2,6,6,,,,,,"shield","Bash","hold,block","Shield",0
-51,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",,
-52,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",,
-53,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",,
-54,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",,
-55,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",,
-56,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",,
-57,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",,
-58,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",,
-59,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",,
-60,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",,
-61,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",,
-62,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",,
-63,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",,
-64,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",,
-65,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",,
-66,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",,
-67,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",,
-68,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",,
-69,"Throwing Knife",,,,,,,,,,,,,5,30,1,1,40,60,,,,,,"self",,,,"1hand","Throw","cancelable,hold,timing_2_2,bullet_rotate","Short Range",
-70,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"2pole","Shoot",,,
-71,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"2pole","Shoot",,,
-72,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"2pole","Shoot",,,
-73,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"2pole","Shoot",,,
-74,"Hand Cannon",,,,,0,0,,,,,,72,,,,,,150,,2,,,,"Bullet",,,,"2gun","Shoot","bullet_rotate","Long Range",
-75,"Trebuchet",,,9000,,0,0,2000,,,95,,"9,53",100,,1,1,800,160,,2,,,,"Stone Big",,,,"trebuchet","Shoot","bullet_rotate","Artillery",0
-76,"Catapult",,,4500,,0,0,1000,,,70,,"9,53",80,,1,1,500,160,,2,,,,"Stone Big",,,,"catapult","Shoot","bullet_rotate","Artillery",0
-77,"Ballista",,,950,,0,0,500,,,60,,"9,53",60,,1,1,400,200,,2,,,,"Bolt Big",,,,"ballista","Shoot","bullet_rotate","Artillery",0
-78,"Scorpion",,,175,,0,0,400,,,,,53,40,,1,1,300,200,,2,,,,"Bolt Big",,,,"scorpion","Shoot","bullet_rotate","Artillery",0
-79,"Onager",,,,,0,0,1000,,,,,"9,53",,,1,1,,160,,2,,,,"Stone Big",,,,"onager","Shoot","bullet_rotate","Artillery",0
-80,"Mangonel",,,,,0,0,1000,,,,,"9,53",,,1,1,,160,,2,,,,"Stone Big",,,,"mangonel","Shoot","bullet_rotate","Artillery",0
-81,"Hwacha",,,100,,0,0,90,,,,,"9,53",280,,15,1,,,,2,,,,"Rocket Small",,,,"hwacha","Shoot","bullet_rotate","Artillery",0
-82,"Mounted Crossbow",,,160,,0,0,90,,,,,"9,53",45,,1,1,200,180,,2,,,,"Bolt Big",,,,"mounted crossbow","Shoot","bullet_rotate","Artillery",0
-83,"Light Cannon",,,,,0,0,1000,,,50,,"9,53,72",55,,1,1,600,200,,2,,,,"Cannon Ball",,,,"light cannon","Shoot","bullet_rotate","Artillery",0
-84,"Heavy Cannon",,,,,0,0,5000,,,65,,"9,53,72",65,,1,1,900,200,,2,,,,"Cannon Ball",,,,"heavy cannon","Shoot","bullet_rotate","Artillery",0
-85,"Giant Cannon",,,80000,,0,0,10000,,,95,,"9,53,72",600,,1,1,1000,200,,2,,,,"Cannon Ball",,,,"giant cannon","Shoot","bullet_rotate","Artillery",0
-86,"Mortar",,,,,0,0,4000,,,65,,"9,53,72",60,,1,1,800,170,,2,,,,"Cannon Ball",,,,"mortar","Shoot","bullet_rotate","Artillery",0
+"ID","Name","Strength Bonus Scale","Dexterity Bonus Scale","Damage Balance","Physical Damage","Fire Damage","Poison Damage","Armour Penetration","Defence","Charge","Weight","Skill","Trait","Cooldown","Ammunition","Magazine","Shot Number","Range","Travel Speed","Cost","Hand","Learning Difficulty","Mastery Difficulty","ImageID","Damage Sprite","Damage Sprite Effect","Sound Effect","Sound Distance","Common","Attack","Properties","Type"
+1,"Unarmed",5,5,80,20,0,0,10,0,0,0,0,0,1,0,0,0,1,0,0,1,0,3,10,,,,5,"1hand","Punch",,"Melee"
+2,"Sword",4,6,65,100,0,0,17,15,5,10,0,0,3,0,0,0,3,0,,1,5,7,0,"Slash Medium",,,10,"1hand","Slash",,"Melee"
+3,"Greatsword",6,4,50,250,0,0,45,12,12,20,0,14,6,0,0,0,5,0,,2,7,8,0,"Slash Big",,,15,"2hand","Slash","hold,power","Melee"
+4,"Shortsword",3,7,70,70,0,0,11,8,2,5,0,0,2,0,0,0,2,0,,1,4,6,0,,,,9,"1hand","Pierce",,"Melee"
+5,"Dagger",2,8,75,55,0,0,55,3,1,2,0,0,2,0,0,0,1,0,,1,2,5,0,,,,,"1hand","Pierce","parry","Melee"
+6,"Spear",3,7,65,75,0,0,13,7,10,8,25,14,3,0,0,0,5,0,,1,1,6,1,,,,,"1pole","Pierce","hold,holdfront","Melee"
+7,"Club",7,3,40,70,0,0,35,4,3,14,0,0,4,0,0,0,3,0,,1,2,4,3,,,,,"1hand","Smash",,"Melee"
+8,"Mace",7,3,45,69,0,0,50,5,3,18,0,0,2,0,0,0,3,0,,1,2,5,3,,,,,"1hand","Smash",,"Melee"
+9,"Great Mace",8,2,35,180,0,0,65,10,4,30,0,0,6,0,0,0,5,0,,2,5,6,3,,,,,"2pole","Smash","hold,power","Melee"
+10,"Flail",4,6,45,80,0,0,50,2,1,16,0,0,4,0,0,0,3,0,,1,8,7,4,,,,,"1hand","Smash",,"Melee"
+11,"Hammer",7,3,35,75,0,0,60,4,3,18,0,0,4,0,0,0,3,0,,1,3,6,5,,,,,"1hand","Smash",,"Melee"
+12,"War Hammer",8,2,25,200,0,0,70,10,3,35,0,0,6,0,0,0,5,0,,2,6,7,5,,,,,"2pole","Smash","hold,power","Melee"
+13,"Handaxe",6,4,30,140,0,0,30,3,4,15,0,0,3,0,0,0,3,0,,1,3,5,2,"Slash Medium",,,,"1hand","Slash",,"Melee"
+14,"Greataxe",7,3,15,310,0,0,55,7,8,30,0,13,6,0,0,0,5,0,,2,5,6,2,"Slash Big",,,,"2pole","Slash","hold,power","Melee"
+15,"Halberd",5,5,25,240,0,0,60,6,20,35,0,14,6,0,0,0,6,0,,2,8,7,6,"Slash Big",,,,"2pole","Slash","hold,holdfront","Melee"
+16,"Pike",2,8,35,180,0,0,35,2,30,25,41,14,5,0,0,0,9,0,,2,4,8,7,,,,,"2pole","Pierce","hold,holdfront","Melee"
+17,"Glaive",4,6,40,170,0,0,30,10,25,30,0,14,6,0,0,0,6,0,,2,8,8,8,"Slash Big",,,,"2pole","Slash","hold,power","Melee"
+18,"Whip",2,8,50,70,0,0,5,1,1,5,0,0,4,0,0,0,6,0,,1,6,9,9,,,,,"1hand","Slash",,"Melee"
+19,"Quarterstaff",4,6,70,80,0,0,35,14,5,10,0,0,3,0,0,0,5,0,,2,,,20,,,,,"2pole","Smash","hold,power","Melee"
+20,"Sling",3,7,70,100,0,0,30,0,0,5,0,9,7,120,1,1,170,80,,1,4,6,11,"Stone",,,,"1hand","Swing","cancelable","Long Range"
+21,"Blowgun",1,9,35,80,0,0,10,0,0,3,0,0,6,60,1,1,30,80,,1,3,5,12,"Dart",,,,"1hand","Blow","cancelable","Short Range"
+22,"Javelin",4,6,65,160,0,0,40,1,0,15,0,9,8,10,1,1,70,60,,1,4,7,13,"self",,,,"1pole","Throw","cancelable,hold,timing_2_2","Short Range"
+23,"Throwing Axe",4,6,50,140,0,0,45,0,0,20,0,13,8,15,1,1,60,55,,1,4,6,14,"self","spin",,,"1hand","Throw","cancelable,hold,timing_2_2,bullet_rotate","Short Range"
+24,"Longbow",2,8,70,300,0,0,40,0,0,25,0,9,15,80,1,1,200,100,,2,7,9,15,"Arrow",,,,"bow","Draw","cancelable,hold,timing_2_2","Long Range"
+25,"Shortbow",1,9,75,150,0,0,15,0,0,10,0,9,10,80,1,1,150,90,,2,5,6,16,"Arrow",,,,"bow","Draw","cancelable,hold,timing_2_3","Long Range"
+26,"Greatbow",4,6,65,500,0,0,60,0,0,40,0,9,25,60,1,1,250,110,,2,8,10,17,"Arrow Big",,,,"bow","Draw","cancelable,hold,timing_2_1","Long Range"
+27,"Light Crossbow",1,9,90,150,0,0,30,0,0,20,0,0,20,80,1,1,120,100,,2,2,5,18,"Bolt",,,,"2gun","Shoot","cancelable,hold","Long Range"
+28,"Heavy Crossbow",2,8,85,400,0,0,50,0,0,40,0,0,25,80,1,1,150,110,,2,3,6,19,"Bolt",,,,"2gun","Shoot","cancelable,hold","Long Range"
+29,"Repeater Crossbow",1,9,80,130,0,0,10,0,0,25,0,0,25,120,5,1,100,100,,2,4,5,18,"Bolt",,,,"2gun","Shoot","cancelable,hold","Long Range"
+30,"Arbalest",2,8,75,700,0,0,70,0,0,25,0,0,30,70,1,1,200,120,,2,5,6,19,"Bolt",,,,"2gun","Shoot","cancelable,hold","Long Range"
+31,"Stone",4,6,70,60,0,0,20,0,0,5,0,9,6,120,1,1,50,40,,1,1,4,21,"self",,,,"1hand","Throw","cancelable,hold,timing_2_2","Short Range"
+32,"Composite Bow",1,9,75,180,0,0,25,0,0,15,0,9,15,80,1,1,170,100,,2,5,6,16,"Arrow",,,,"bow","Draw","cancelable,hold,timing_2_3","Long Range"
+33,"Matchlock Musket",1,9,80,400,0,0,80,0,0,35,0,72,30,80,1,1,110,300,,2,4,6,,"Bullet",,"musket_shot",50,"2gun","Shoot","cancelable,hold","Long Range"
+34,"Arquebus",1,9,60,350,0,0,70,0,0,25,0,72,20,80,1,1,100,300,,2,,,,"Bullet",,"musket_shot",40,"2gun","Shoot","cancelable,hold","Long Range"
+35,"Blunderbuss",1,9,30,370,0,0,70,0,0,50,0,"72,75",25,50,2,4,40,300,,2,6,6,,"Bullet",,"musket_shot",50,"2gun","Shoot","cancelable,hold","Long Range"
+36,"Flintlock Musket",1,9,70,500,0,0,90,0,0,30,0,72,20,80,1,1,130,300,,2,,,,"Bullet",,"musket_shot",50,"2gun","Shoot","cancelable,hold","Long Range"
+37,"Flintlock Pistol",0,10,70,300,0,0,75,0,0,10,0,72,10,80,1,1,80,300,,1,,,,"Bullet",,"old_pistol_shot",30,"1gun","Shoot","cancelable,hold","Short Range"
+38,"Matchlock Pistol",0,10,80,280,0,0,50,0,0,10,0,72,17,80,1,1,70,300,,1,,,,"Bullet",,"old_pistol_shot",30,"1gun","Shoot","cancelable,hold","Short Range"
+39,"Kite Shield",8,2,85,35,0,0,4,50,4,20,27,0,5,0,0,0,2,0,,1,4,5,,,,,,"shield","Bash","hold,block","Shield"
+40,"Buckler",5,5,70,25,0,0,5,15,1,10,0,0,3,0,0,0,2,0,,1,5,7,,,,,,"shield","Bash","parry","Shield"
+41,"Round Shield",6,4,85,45,0,0,5,30,5,15,27,0,4,0,0,0,2,0,,1,2,4,,,,,,"shield","Bash","hold,block","Shield"
+42,"Tower Shield",10,0,90,30,0,0,2,75,1,40,"28,27",0,6,0,0,0,2,0,,1,6,5,,,,,,"shield","Bash","hold,block","Shield"
+43,"Heater Shield",,,80,45,0,0,6,40,7,18,27,0,4,0,0,0,2,0,,1,6,6,,,,,,"shield","Bash","hold,block","Shield"
+44,"Pavise Shield",10,0,90,30,0,0,2,75,1,34,27,0,6,0,0,0,2,0,,1,5,6,,,,,,"shield","Bash","hold,block","Shield"
+45,"Spiked Shield",5,5,65,70,0,0,20,25,10,25,0,0,4,0,0,0,2,0,,1,5,6,,,,,,"shield","Bash","hold,block","Shield"
+46,"Aspis Shield",4,6,,,0,0,,,,,27,0,3,0,0,0,2,0,,1,,,,,,,,"shield","Bash","hold,block","Shield"
+47,"Oval Shield",7,3,85,40,0,0,4,45,5,18,27,0,4,0,0,0,2,0,,1,6,5,,,,,,"shield","Bash","hold,block","Shield"
+48,"Parry Dagger",1,9,70,45,0,0,40,,1,,0,0,4,0,0,0,1,0,,1,4,9,,,,,,"shield","Slash","parry","Melee"
+49,"Parry Club",3,7,,,0,0,30,20,2,,0,0,3,0,0,0,3,0,,1,3,8,,,,,,"shield","Smash","parry","Melee"
+50,"Barrier Shield",10,0,90,15,0,0,0,90,1,60,30,0,6,0,0,0,2,0,,2,6,6,,,,,,"shield","Bash","hold,block","Shield"
+51,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",
+52,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",
+53,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",
+54,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",
+55,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",
+56,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",
+57,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",
+58,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",
+59,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",
+60,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",
+61,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",
+62,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",
+63,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",
+64,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",
+65,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",
+66,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",
+67,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",
+68,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash","hold,block",
+69,"Throwing Knife",,,,,,,,,,,,,5,30,1,1,40,60,,,,,,"self",,,,"1hand","Throw","cancelable,hold,timing_2_2,bullet_rotate","Short Range"
+70,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"2pole","Shoot",,
+71,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"2pole","Shoot",,
+72,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"2pole","Shoot",,
+73,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"2pole","Shoot",,
+74,"Hand Cannon",,,,,0,0,,,,,,72,,,,,,150,,2,,,,"Bullet",,,,"2gun","Shoot","bullet_rotate","Long Range"
+75,"Trebuchet",,,9000,,0,0,2000,,,95,44,"9,53",100,,1,1,800,160,,2,,,,"Stone Big",,,,"trebuchet","Shoot","bullet_rotate","Artillery"
+76,"Catapult",,,4500,,0,0,1000,,,70,44,"9,53",80,,1,1,500,160,,2,,,,"Stone Big",,,,"catapult","Shoot","bullet_rotate","Artillery"
+77,"Ballista",,,950,,0,0,500,,,60,,"9,53",60,,1,1,400,200,,2,,,,"Bolt Big",,,,"ballista","Shoot","bullet_rotate","Artillery"
+78,"Scorpion",,,175,,0,0,400,,,,,53,40,,1,1,300,200,,2,,,,"Bolt Big",,,,"scorpion","Shoot","bullet_rotate","Artillery"
+79,"Onager",,,,,0,0,1000,,,,,"9,53",,,1,1,,160,,2,,,,"Stone Big",,,,"onager","Shoot","bullet_rotate","Artillery"
+80,"Mangonel",,,,,0,0,1000,,,,,"9,53",,,1,1,,160,,2,,,,"Stone Big",,,,"mangonel","Shoot","bullet_rotate","Artillery"
+81,"Hwacha",,,100,,0,0,90,,,,,"9,53",280,,15,1,,,,2,,,,"Rocket Small",,,,"hwacha","Shoot","bullet_rotate","Artillery"
+82,"Mounted Crossbow",,,160,,0,0,90,,,,,"9,53",45,,1,1,200,180,,2,,,,"Bolt Big",,,,"mounted crossbow","Shoot","bullet_rotate","Artillery"
+83,"Light Cannon",,,,,0,0,1000,,,50,44,"9,53,72",55,,1,1,600,200,,2,,,,"Cannon Ball",,,,"light cannon","Shoot","bullet_rotate","Artillery"
+84,"Heavy Cannon",,,,,0,0,5000,,,65,44,"9,53,72",65,,1,1,900,200,,2,,,,"Cannon Ball",,,,"heavy cannon","Shoot","bullet_rotate","Artillery"
+85,"Giant Cannon",,,80000,,0,0,10000,,,95,,"9,53,72",600,,1,1,1000,200,,2,,,,"Cannon Ball",,,,"giant cannon","Shoot","bullet_rotate","Artillery"
+86,"Mortar",,,,,0,0,4000,,,65,,"9,53,72",60,,1,1,800,170,,2,,,,"Cannon Ball",,,,"mortar","Shoot","bullet_rotate","Artillery"

@@ -13,14 +13,13 @@ default_sprite_size = (200, 200)
 def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_list, body_sprite_pool,
                         weapon_sprite_pool, armour_sprite_pool, effect_sprite_pool, animation_property,
                         weapon_joint_list, weapon, armour, colour_list, genre_sprite_size,
-                        screen_scale, race_list, idle_animation):
+                        screen_scale, race_list, idle_animation, troop_size_adjustable):
     frame_property = animation_part_list["frame_property"].copy()
     animation_property = animation_property.copy()
     check_prop = frame_property + animation_property
     dmg_sprite = None
     size = int(size)
-    if size > 5:
-        size = 5
+
     surface = pygame.Surface((default_sprite_size[0] * size, default_sprite_size[1] * size),
                              pygame.SRCALPHA)  # default size will scale down later
 
@@ -218,8 +217,12 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
                 animation_property.remove(prop)
 
     # change to whatever genre's specific size
-    surface = pygame.transform.smoothscale(surface, (
-        genre_sprite_size[0] * size * screen_scale[0], genre_sprite_size[1] * size * screen_scale[1]))
+    if troop_size_adjustable:
+        surface = pygame.transform.smoothscale(surface, (
+            genre_sprite_size[0] * size * screen_scale[0], genre_sprite_size[1] * size * screen_scale[1]))
+    else:  # change animation frame to default genre size for genre where all troops have the same sprite size
+        surface = pygame.transform.smoothscale(surface, (
+            genre_sprite_size[0] * screen_scale[0], genre_sprite_size[1] * screen_scale[1]))
 
     return {"sprite": surface, "animation_property": tuple(animation_property), "frame_property": tuple(frame_property),
             "dmg_sprite": dmg_sprite}

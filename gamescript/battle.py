@@ -339,14 +339,15 @@ class Battle:
 
         # Assign battle variable to some classes
         unit.Unit.battle = self
-        unit.Unit.image_size = self.subunit_inspect_sprite_size
         subunit.Subunit.battle = self
         subunit.Subunit.sound_effect_pool = self.sound_effect_pool
         damagesprite.DamageSprite.sound_effect_pool = self.sound_effect_pool
         leader.Leader.battle = self
 
         # Create the game camera
-        self.camera_zoom = 1  # camera zoom level, starting at the furthest zoom
+        self.camera_zoom = 1  # camera zoom level, starting at the furthest
+        self.camera_zoom_level = tuple([item for item in range(1, self.max_camera_zoom + 1) if
+                                        item == 1 or item % 2 == 0])
         self.camera_zoom_image_scale = self.camera_zoom / self.max_camera_zoom
         self.camera_mode = "Free"  # mode of game camera
         self.true_camera_pos = pygame.Vector2(500, 500)  # camera pos on map

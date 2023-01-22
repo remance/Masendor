@@ -106,7 +106,7 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                                   armour, self.colour_list,
                                                   genre_sprite_size, screen_scale, self.troop_data.race_list,
                                                   self.generic_animation_pool[1][
-                                                      race + "_" + weapon_common_action[0][0] + "_Idle"][0])
+                                                      race + "_" + weapon_common_action[0][0] + "_Idle"][0], False)
 
                 animation_sprite_pool[subunit_id] = {"sprite": sprite_dict["sprite"],
                                                      "animation_property": sprite_dict["animation_property"],
@@ -221,7 +221,7 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                                                               self.generic_animation_pool[index][
                                                                                   race + "_" + weapon_common_action[
                                                                                       weapon_set_index][0] + "_Idle"][
-                                                                                  0])
+                                                                                  0], self.troop_size_adjustable)
                                             sprite_pic = sprite_dict["sprite"]
                                             if self.play_troop_animation == 0 and "_Default" not in animation:  # replace sprite with default if disable animation
                                                 sprite_pic = \

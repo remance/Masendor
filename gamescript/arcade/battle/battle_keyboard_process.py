@@ -23,7 +23,7 @@ def battle_keyboard_process(self, key_press):
     elif key_press == pygame.K_F1:
         self.drama_text.queue.append("Hello and Welcome to update video")
     elif key_press == pygame.K_F2:
-        self.drama_text.queue.append("Showcase: Update to arcade mode so far")
+        self.drama_text.queue.append("Showcase: Sample sound effect and new manual aim system")
     elif key_press == pygame.K_F3:
         self.drama_text.queue.append("Formation system")
     elif key_press == pygame.K_F4:

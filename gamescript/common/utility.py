@@ -90,7 +90,7 @@ def load_images(main_dir, screen_scale=(1, 1), subfolder=(), load_order=False, r
             if "." in file_name:  # remove extension from name
                 file_name = file.split(".")[:-1]
                 file_name = "".join(file_name)
-            images[file_name] = load_image(main_dir, screen_scale, file, dir_path)
+            images[file_name] = load_image(main_dir, screen_scale, file, subfolder=dir_path)
 
         if return_order is False:
             return images

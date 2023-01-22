@@ -195,6 +195,10 @@ class BeautifulMap(pygame.sprite.Sprite):
                             row[n] = ast.literal_eval(i)
                     self.battle_map_colour[row[0]] = row[1:]
 
+        self.true_image = None  # image before adding effect and place name
+        self.base_image = None  # image before adding topology map mode
+        self.base_image2 = None  # image before scale
+
     def draw_image(self, base_map, feature_map, height_map, place_name, battle, editor_map):
         self.image = pygame.Surface((len(base_map.map_array[0]), len(base_map.map_array)))
         self.rect = self.image.get_rect(topleft=(0, 0))
@@ -266,38 +270,41 @@ class BeautifulMap(pygame.sprite.Sprite):
         rect = self.image.get_rect(topleft=(0, 0))
         self.image.blit(place_name_map, rect)  # add place_name layer to map
 
-        self.true_image = self.image.copy()  # image before adding effect and place name
+        self.true_image = self.image.copy()
 
     def add_effect(self, effect_image=None, time_image=None):
-        self.image = self.true_image.copy()
+        self.base_image = self.true_image.copy()
         rect = self.image.get_rect(topleft=(0, 0))
         if effect_image is not None:
-            self.image.blit(effect_image, rect)  # add weather filter effect
+            self.base_image.blit(effect_image, rect)  # add weather filter effect
 
         if time_image is not None:
-            self.image.blit(time_image, rect)  # add day time effect
+            self.base_image.blit(time_image, rect)  # add day time effect
 
-        self.base_image = self.image.copy()
+        self.base_image = self.base_image
+        self.base_image2 = self.base_image.copy()
+
         self.change_scale(self.scale)
 
     def change_mode(self, height_map, mode):
         """Switch between normal, height normal map, topology map mode"""
         self.mode = mode
-        self.image = self.base_image.copy()
+        self.base_image2 = self.base_image.copy()
         if self.mode == 1:  # with topology map
-            rect = self.image.get_rect(topleft=(0, 0))
-            self.image.blit(height_map.topology_image, rect)
+            rect = self.base_image2.get_rect(topleft=(0, 0))
+            self.base_image2.blit(height_map.topology_image, rect)
         elif self.mode == 2:  # with height map
-            rect = self.image.get_rect(topleft=(0, 0))
-            self.image.blit(height_map.image, rect)
+            rect = self.base_image2.get_rect(topleft=(0, 0))
+            self.base_image2.blit(height_map.image, rect)
         self.change_scale(self.scale)
 
     def change_scale(self, scale):
         """Change map scale based on current camera zoom"""
         self.scale = scale
-        self.image = pygame.transform.smoothscale(self.image, (int(self.base_image.get_width() * self.scale),
-                                                               int(self.base_image.get_height() * self.scale)))
+        self.image = pygame.transform.smoothscale(self.base_image2, (int(self.base_image.get_width() * self.scale),
+                                                                     int(self.base_image.get_height() * self.scale)))
 
     def clear_image(self):
         self.image = None
+        self.base_image = None
         self.true_image = None

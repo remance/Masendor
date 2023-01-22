@@ -140,7 +140,7 @@ class Game:
     start_zoom_mode = "Follow"
     time_speed_scale = 1
     troop_size_adjustable = False
-    unit_size = (8, 8)
+    max_unit_size = (8, 8)
     add_troop_number_sprite = False
     command_ui_type = "command"
 
@@ -570,18 +570,6 @@ class Game:
         # Battle related stuffs
         subunit_ui_images = load_images(self.main_dir,
                                         subfolder=("ui", "subunit_ui"))  # no scaling when loaded for subunit sprite yet
-        new_subunit_ui_images = {}
-        for this_size in range(2, 11):  # create hp and stamina ring for 10 possible subunit sizes
-            new_subunit_ui_images["health" + str(this_size)] = \
-                {key: pygame.transform.smoothscale(value,
-                                                   (value.get_width() * this_size, value.get_height() * this_size))
-                 for key, value in subunit_ui_images.items() if "health" in key}
-            new_subunit_ui_images["stamina" + str(this_size)] = \
-                {key: pygame.transform.smoothscale(value,
-                                                   (value.get_width() * this_size, value.get_height() * this_size))
-                 for key, value in subunit_ui_images.items() if "stamina" in key}
-
-        subunit_ui_images |= new_subunit_ui_images
 
         for stuff in subunit_ui_images:  # scale images with screen scale
             if type(subunit_ui_images[stuff]) != dict:
@@ -712,6 +700,7 @@ class Game:
         self.encyclopedia_stuff = (self.encyclopedia, self.lore_name_list, self.filter_tag_list,
                                    self.lore_name_list.scroll, self.filter_tag_list.scroll, *self.lore_button_ui)
 
+        self.subunit_hitbox_size = subunit.Subunit.subunit_hitbox_size
         self.subunit_inspect_sprite_size = (subunit.Subunit.subunit_hitbox_size * 10 * self.screen_scale[0],
                                             subunit.Subunit.subunit_hitbox_size * 10 * self.screen_scale[1])
 
@@ -983,6 +972,8 @@ class Game:
         self.battle_game.inspect_ui = self.inspect_ui
         self.battle_game.behaviour_switch_button = self.behaviour_switch_button
         self.battle_game.max_camera_zoom_image_scale = self.battle_game.max_camera_zoom + 1
+        self.battle_game.camera_zoom_level = tuple([item for item in range(1, self.battle_game.max_camera_zoom + 1) if
+                                                    item == 1 or item % 2 == 0])
 
         if self.command_ui.ui_type == "command":
             self.command_ui.load_sprite(genre_battle_ui_image["command_box"], genre_icon_image)

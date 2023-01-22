@@ -12,9 +12,6 @@ def wheel_ui_process(self, choice):
                 self.current_selected.issue_order(None, other_command="Troop Skill " + str(int(choice[-1]) - 1))
             elif "Leader" in choice:
                 self.player_char.command_action = leader_skill_command_action[int(choice[-1]) - 1]
-            self.battle_ui_updater.remove(self.wheel_ui)
-            self.previous_player_input_state = self.player_input_state
-            self.player_input_state = None
 
         elif choice in self.unit_behaviour_wheel["Setting"]:
             if choice == "Height Map":
@@ -22,9 +19,6 @@ def wheel_ui_process(self, choice):
                 if self.map_mode > 2:
                     self.map_mode = 0
                 self.battle_map.change_mode(self.battle_map_height, self.map_mode)
-            self.battle_ui_updater.remove(self.wheel_ui)
-            self.previous_player_input_state = self.player_input_state
-            self.player_input_state = None
 
         elif choice in self.unit_behaviour_wheel["Shift Line"]:
             self.current_selected.shift_line(choice)
@@ -45,9 +39,6 @@ def wheel_ui_process(self, choice):
             self.current_selected.change_formation(formation=choice)
         elif choice in self.unit_behaviour_wheel["Equipment"]:
             self.current_selected.swap_weapon_command(choice)
-            self.battle_ui_updater.remove(self.wheel_ui)
-            self.previous_player_input_state = self.player_input_state
-            self.player_input_state = None
 
         elif choice in self.unit_behaviour_wheel["Range Attack"]:
             if choice == "Fire At Will":
@@ -64,8 +55,10 @@ def wheel_ui_process(self, choice):
                 self.battle_ui_updater.remove(self.wheel_ui)
                 self.previous_player_input_state = self.player_input_state
                 self.player_input_state = None
-                self.camera_zoom = 4
+                self.camera_zoom = self.camera_zoom_level[3]
                 self.camera_zoom_change()
+                for shoot_line in self.shoot_lines:
+                    shoot_line.delete()  # reset shoot guide lines
                 self.cursor.change_image("aim")
                 self.single_text_popup.pop(self.cursor.rect.bottomright, "")
                 self.battle_ui_updater.add(self.single_text_popup)

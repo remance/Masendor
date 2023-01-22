@@ -15,9 +15,9 @@ def manual_aim(self, mouse_left_up, mouse_right_up, mouse_scroll_up, mouse_scrol
     base_target_pos = self.command_mouse_pos
     target_pos = self.base_mouse_pos
 
+    who_shoot = ()
     if self.player_input_state == "leader aim":
-        if self.player_char.equipped_weapon in self.player_char.ammo_now:
-            who_shoot = (self.player_char,)
+        who_shoot = (self.player_char,)
     elif self.player_input_state == "line aim" or self.player_input_state == "focus aim":
         who_shoot = self.player_char.unit.alive_subunit_list
 
@@ -86,9 +86,8 @@ def manual_aim(self, mouse_left_up, mouse_right_up, mouse_scroll_up, mouse_scrol
         for this_subunit in self.player_char.unit.alive_subunit_list:
             if this_subunit.equipped_weapon != this_subunit.player_equipped_weapon:
                 this_subunit.player_weapon_selection()
-            if this_subunit.shoot_line is not None:
-                this_subunit.shoot_line.kill()
-                this_subunit.shoot_line = None
+        for shoot_line in self.shoot_lines:
+            shoot_line.delete()  # reset shoot guide lines
 
     elif mouse_left_up or mouse_right_up:
         weapon = 0
@@ -105,16 +104,15 @@ def manual_aim(self, mouse_left_up, mouse_right_up, mouse_scroll_up, mouse_scrol
 
     elif self.map_scale_delay == 0 and (mouse_scroll_up or mouse_scroll_down):
         if mouse_scroll_up:
-            self.camera_zoom += 1
-            if self.camera_zoom > self.max_camera_zoom:
-                self.camera_zoom = self.max_camera_zoom
-            else:
+            try:
+                self.camera_zoom = self.camera_zoom_level[self.camera_zoom_level.index(self.camera_zoom) + 1]
                 self.camera_zoom_change()
+            except IndexError:
+                pass
+
         elif mouse_scroll_down:
-            self.camera_zoom -= 1
-            if self.camera_zoom < 1:
-                self.camera_zoom = 1
-            else:
+            if self.camera_zoom_level.index(self.camera_zoom) > 1:
+                self.camera_zoom = self.camera_zoom_level[self.camera_zoom_level.index(self.camera_zoom) - 1]
                 self.camera_zoom_change()
 
     else:

@@ -23,24 +23,24 @@ def split_unit(self, how):
     if how == 0:  # split by row
         new_army_subunit = np.array_split(self.subunit_id_array, 2)[1]
         self.subunit_id_array = np.array_split(self.subunit_id_array, 2)[0]
-        new_pos = pygame.Vector2(self.base_pos[0], self.base_pos[1] + (self.base_height_box / 2))
+        new_pos = pygame.Vector2(self.base_pos[0], self.base_pos[1] + (self.unit_box_height / 2))
         new_pos = rotation_xy(self.base_pos, new_pos, self.radians_angle)  # new unit pos (back)
-        base_pos = pygame.Vector2(self.base_pos[0], self.base_pos[1] - (self.base_height_box / 2))
+        base_pos = pygame.Vector2(self.base_pos[0], self.base_pos[1] - (self.unit_box_height / 2))
         self.base_pos = rotation_xy(self.base_pos, base_pos,
                                     self.radians_angle)  # new position for original unit (front)
-        self.base_height_box /= 2
+        self.unit_box_height /= 2
 
     else:  # split by column
         new_army_subunit = np.array_split(self.subunit_id_array, 2, axis=1)[1]
         self.subunit_id_array = np.array_split(self.subunit_id_array, 2, axis=1)[0]
-        new_pos = pygame.Vector2(self.base_pos[0] + (self.base_width_box / 3.3),
+        new_pos = pygame.Vector2(self.base_pos[0] + (self.unit_box_width / 3.3),
                                  self.base_pos[1])  # 3.3 because 2 make new unit position overlap
         new_pos = rotation_xy(self.base_pos, new_pos, self.radians_angle)  # new unit pos (right)
-        base_pos = pygame.Vector2(self.base_pos[0] - (self.base_width_box / 2), self.base_pos[1])
+        base_pos = pygame.Vector2(self.base_pos[0] - (self.unit_box_width / 2), self.base_pos[1])
         self.base_pos = rotation_xy(self.base_pos, base_pos,
                                     self.radians_angle)  # new position for original unit (left)
-        self.base_width_box /= 2
-        frontpos = (self.base_pos[0], (self.base_pos[1] - self.base_height_box))  # find new front position of unit
+        self.unit_box_width /= 2
+        frontpos = (self.base_pos[0], (self.base_pos[1] - self.unit_box_height))  # find new front position of unit
         self.front_pos = rotation_xy(self.base_pos, frontpos, self.radians_angle)
         self.set_target(self.front_pos)
 
@@ -151,14 +151,15 @@ def add_new_unit(self, add_unit_list=True):
     :return:
     """
     # generate subunit sprite array for inspect ui
-    self.subunit_object_array = np.full(self.unit_size, None)  # array of subunit object(not index)
+    self.subunit_object_array = np.full(self.max_unit_size, None)  # array of subunit object(not index)
     found_count = 0  # for subunit_sprite index
     for row in range(0, len(self.subunit_id_array)):
         for column in range(0, len(self.subunit_id_array[0])):
             if self.subunit_id_array[row][column] != 0:
                 self.subunit_object_array[row][column] = self.subunit_list[found_count]
-                self.subunit_list[found_count].unit_position = (self.subunit_position_list[row][column][0] / 10,
-                                                                self.subunit_position_list[row][column][
+                self.subunit_hitbox_size_array[row][column] = self.subunit_list[found_count].subunit_hitbox_size
+                self.subunit_list[found_count].pos_in_unit = (self.subunit_position_list[row][column][0] / 10,
+                                                              self.subunit_position_list[row][column][
                                                                     1] / 10)  # position in unit sprite
                 found_count += 1
     # ^ End generate subunit array
@@ -173,8 +174,8 @@ def add_new_unit(self, add_unit_list=True):
     self.enter_battle(self.battle.subunit_updater)
     self.set_target(self.front_pos)
 
-    number_pos = (self.base_pos[0] - self.base_width_box,
-                  (self.base_pos[1] + self.base_height_box))
+    number_pos = (self.base_pos[0] - self.unit_box_width,
+                  (self.base_pos[1] + self.unit_box_height))
     self.number_pos = self.rotation_xy(self.base_pos, number_pos, self.radians_angle)
     self.change_pos_scale()  # find new position for troop number text
 

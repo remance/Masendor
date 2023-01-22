@@ -91,14 +91,8 @@ def move_logic(self, dt, unit_state, collide_list):
                     if self.unit_leader and new_move_length > 0:
                         self.unit.base_pos += move
                         front_pos = (self.unit.base_pos[0],
-                                     (self.unit.base_pos[1] - self.unit.base_height_box))  # find front position
+                                     (self.unit.base_pos[1] - self.unit.unit_box_height))  # find front position
                         self.unit.front_pos = rotation_xy(self.unit.base_pos, front_pos, self.unit.radians_angle)
-
-                        number_pos = (self.unit.base_pos[0] - self.unit.base_width_box,
-                                      (self.unit.base_pos[1] + self.unit.base_height_box))  # TODO change to flag team
-                        self.unit.number_pos = rotation_xy(self.unit.base_pos, number_pos, self.unit.radians_angle)
-                        self.unit.true_number_pos = self.unit.number_pos * (
-                                11 - self.unit.camera_zoom)  # find new position for troop number text
 
                     # momentum calculation
                     if self.run:

@@ -26,11 +26,11 @@ def change_formation(self, formation=None, phase=None, style=None):
         else:
             new_formation = self.unit_formation_list[self.formation].copy()
             if self.formation == "Cluster":
-                new_formation = {key: value * np.random.randint(10, size=self.unit_size) for key, value in
+                new_formation = {key: value * np.random.randint(10, size=self.max_unit_size) for key, value in
                                  new_formation.items()}  # make cluster formation
 
-        self.subunit_id_array = np.zeros(self.unit_size, dtype=int)  # change all to empty
-        first_placement = np.zeros(self.unit_size, dtype=int)  # for placement before consider style and phase
+        self.subunit_id_array = np.zeros(self.max_unit_size, dtype=int)  # change all to empty
+        first_placement = np.zeros(self.max_unit_size, dtype=int)  # for placement before consider style and phase
 
         placement_order = []  # list of formation position placement order
         for placement_value in tuple(set(new_formation["original"].flat)):
@@ -38,12 +38,11 @@ def change_formation(self, formation=None, phase=None, style=None):
             placement_order += [(placement_position[0][index], placement_position[1][index]) for index, _ in
                                 enumerate(placement_position[0])]
 
-        for this_subunit in self.alive_subunit_list:
-            if this_subunit is not None:
-                for position in placement_order:
-                    if first_placement[position[0]][position[1]] == 0:  # replace empty position
-                        first_placement[position[0]][position[1]] = 1
-                        break
+        for _ in self.alive_subunit_list:
+            for position in placement_order:
+                if first_placement[position[0]][position[1]] == 0:  # replace empty position
+                    first_placement[position[0]][position[1]] = 1
+                    break
 
         first_placement = np.where(first_placement == 0, 99, first_placement)
 
@@ -53,28 +52,28 @@ def change_formation(self, formation=None, phase=None, style=None):
                                   "outer-rear": []}  # dict to keep placement priority score of subunit
         for this_subunit in self.alive_subunit_list:
             if "Melee" in self.formation_phase:  # melee front
-                if this_subunit.subunit_type in (0, 2):  # melee
+                if any(ext in this_subunit.troop_class for ext in ("Heavy", "Light")):  # melee at front
                     formation_style_check(self, this_subunit, priority_subunit_place, "front")
-                else:  # range
+                else:  # range and other classes at rear
                     formation_style_check(self, this_subunit, priority_subunit_place, "rear")
             elif "Skirmish" in self.formation_phase:  # range front
-                if this_subunit.subunit_type in (1, 3):  # range
+                if "Range" in this_subunit.troop_class:  # range
                     formation_style_check(self, this_subunit, priority_subunit_place, "front")
-                elif this_subunit.subunit_type == 4:  # artillery
+                elif this_subunit.troop_class == "Artillery":  # artillery
                     formation_style_check(self, this_subunit, priority_subunit_place, "front")
                 else:  # melee
                     formation_style_check(self, this_subunit, priority_subunit_place, "rear")
             elif "Bombard" in self.formation_phase:
-                if this_subunit.subunit_type == 4:  # artillery
+                if this_subunit.troop_class == "Artillery":  # artillery
                     formation_style_check(self, this_subunit, priority_subunit_place, "front")
-                elif this_subunit.subunit_type in (1, 3):  # range
+                elif "Range" in this_subunit.troop_class:  # range
                     formation_style_check(self, this_subunit, priority_subunit_place, "front")
                 else:  # melee
                     formation_style_check(self, this_subunit, priority_subunit_place, "rear")
             elif "Heroic" in self.formation_phase:
                 if this_subunit.leader is not None:  # leader
                     formation_style_check(self, this_subunit, priority_subunit_place, "front")
-                elif this_subunit.subunit_type in (0, 2):  # melee
+                elif any(ext in this_subunit.troop_class for ext in ("Heavy", "Light")):  # melee
                     formation_style_check(self, this_subunit, priority_subunit_place, "front")
                 else:  # range
                     formation_style_check(self, this_subunit, priority_subunit_place, "rear")
@@ -83,7 +82,7 @@ def change_formation(self, formation=None, phase=None, style=None):
         for key, value in priority_subunit_place.items():  # there should be no excess number of subunit
             formation_sorted = []  # sorted from the lowest score to highest
             formation_position = first_placement * new_formation[key]
-            for placement_value in tuple(sorted(set(formation_position.flat))):
+            for placement_value in tuple(sorted(set(formation_position.flat), reverse=True)):
                 placement_position = np.where(formation_position == placement_value)
                 formation_sorted += [(placement_position[0][index], placement_position[1][index]) for index, _ in
                                      enumerate(placement_position[0])]

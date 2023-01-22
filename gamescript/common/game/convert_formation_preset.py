@@ -17,7 +17,7 @@ def convert_formation_preset(self):
 
     for key, value in self.troop_data.default_unit_formation_list.items():
         image = Image.fromarray((value * 255).astype(np.uint8))
-        image = image.resize((self.unit_size[0], self.unit_size[1]))
+        image = image.resize((self.max_unit_size[0], self.max_unit_size[1]))
         new_value = np.array(image)
         front_score = new_value.copy()
         rear_score = new_value.copy()
@@ -50,38 +50,38 @@ def calculate_formation_priority(self):
     :param self: Either Game or Unit object should work
     :return: front and rear position score list
     """
-    center = (int(round(self.unit_size[0] / 2, 0)), int(round(self.unit_size[1] / 2, 0)))
+    center = (int(round(self.max_unit_size[0] / 2, 0)), int(round(self.max_unit_size[1] / 2, 0)))
 
-    front_order_to_place = [list(range(0, self.unit_size[0])), [center[1]]]
-    for occurrence, _ in enumerate(range(center[1] + 1, self.unit_size[1])):
+    front_order_to_place = [list(range(0, self.max_unit_size[0])), [center[1]]]
+    for occurrence, _ in enumerate(range(center[1] + 1, self.max_unit_size[1])):
         front_order_to_place[1].append(center[1] - (occurrence + 1))
         front_order_to_place[1].append(center[1] + (occurrence + 1))
     front_order_to_place = [(item1, item2) for item1 in front_order_to_place[0] for item2 in front_order_to_place[1]]
 
-    rear_order_to_place = [list(range(0, self.unit_size[0])), [center[1]]]
+    rear_order_to_place = [list(range(0, self.max_unit_size[0])), [center[1]]]
     rear_order_to_place[0] = rear_order_to_place[0][int(len(rear_order_to_place[0]) / 2) + 1:] + list(
         reversed(rear_order_to_place[0][:int(len(rear_order_to_place[0]) / 2) + 1]))
-    for occurrence, _ in enumerate(range(center[1] + 1, self.unit_size[1])):
+    for occurrence, _ in enumerate(range(center[1] + 1, self.max_unit_size[1])):
         rear_order_to_place[1].append(center[1] - (occurrence + 1))
         rear_order_to_place[1].append(center[1] + (occurrence + 1))
     rear_order_to_place = [(item1, item2) for item1 in rear_order_to_place[0] for item2 in rear_order_to_place[1]]
 
-    flank_order_to_place = [list(range(0, self.unit_size[0])), [center[1]]]
-    for occurrence, _ in enumerate(range(center[1] + 1, self.unit_size[1])):
+    flank_order_to_place = [list(range(0, self.max_unit_size[0])), [center[1]]]
+    for occurrence, _ in enumerate(range(center[1] + 1, self.max_unit_size[1])):
         flank_order_to_place[1].append(center[1] - (occurrence + 1))
         flank_order_to_place[1].append(center[1] + (occurrence + 1))
     flank_order_to_place = [(item1, item2) for item2 in flank_order_to_place[1] for item1 in flank_order_to_place[0]]
 
-    outer_order_to_place = [list(range(0, self.unit_size[0])), list(range(0, self.unit_size[1]))]
+    outer_order_to_place = [list(range(0, self.max_unit_size[0])), list(range(0, self.max_unit_size[1]))]
     outer_order_to_place = min_max_order(outer_order_to_place, 0)
     outer_order_to_place = min_max_order(outer_order_to_place, 1)
     outer_order_to_place = [(item1, item2) for item2 in outer_order_to_place[1] for item1 in outer_order_to_place[0]]
 
     inner_order_to_place = [[center[0]], [center[1]]]
-    for occurrence, _ in enumerate(range(center[0] + 1, self.unit_size[0])):
+    for occurrence, _ in enumerate(range(center[0] + 1, self.max_unit_size[0])):
         inner_order_to_place[0].append(center[0] - (occurrence + 1))
         inner_order_to_place[0].append(center[0] + (occurrence + 1))
-    for occurrence, _ in enumerate(range(center[1] + 1, self.unit_size[1])):
+    for occurrence, _ in enumerate(range(center[1] + 1, self.max_unit_size[1])):
         inner_order_to_place[1].append(center[1] - (occurrence + 1))
         inner_order_to_place[1].append(center[1] + (occurrence + 1))
 

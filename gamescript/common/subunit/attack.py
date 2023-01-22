@@ -58,9 +58,6 @@ def attack(self, attack_type):
                 angel_dif += angel_dif * attack_range / 100
             accuracy -= round(angel_dif)
 
-            if accuracy < 0:
-                accuracy = 0
-
             if self.attack_target is not None:
                 if len(self.attack_target.alive_subunit_list) > 0:
                     target_hit = self.find_attack_target(
@@ -77,6 +74,12 @@ def attack(self, attack_type):
                                                 target_hit.move_speed * how_long)) / 11)  # recal target base on enemy move target
                             if self.check_special_effect("Agile Aim") is False:
                                 accuracy -= 15
+
+            if self.check_special_effect("Cone Shot"):
+                accuracy /= 2
+
+            if accuracy < 0:
+                accuracy = 0
 
             for _ in range(self.shot_per_shoot[self.equipped_weapon][weapon]):  # Shoot ammo
                 # Calculate accuracy and final base_target where damage sprite will land
@@ -119,7 +122,7 @@ def attack(self, attack_type):
                 if len(self.ammo_now[self.equipped_weapon]) == 0:  # remove entire set if no ammo at all
                     self.ammo_now.pop(self.equipped_weapon)
                     self.magazine_count.pop(self.equipped_weapon)
-    else:  # TODO maybe use target with range like range attack
+    else:
         equipped_weapon_data = self.equipped_weapon_data[weapon]
         weapon_range = equipped_weapon_data["Range"]
         if self.front_pos.distance_to(base_target) > weapon_range:

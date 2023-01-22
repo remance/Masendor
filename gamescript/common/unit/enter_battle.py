@@ -34,11 +34,11 @@ def enter_battle(self):
 
     self.subunit_id_array = self.subunit_id_array.astype(int)
 
-    unit_top_left = pygame.Vector2(self.base_pos[0] - self.base_width_box,
+    unit_top_left = pygame.Vector2(self.base_pos[0] - self.unit_box_width,
                                    self.base_pos[
-                                       1] - self.base_height_box)  # get the top left corner of sprite to generate subunit position
+                                       1] - self.unit_box_height)  # get the top left corner of sprite to generate subunit position
     for subunit in self.subunit_list:  # generate start position of each subunit
-        subunit.base_pos = unit_top_left + subunit.unit_position
+        subunit.base_pos = unit_top_left + subunit.pos_in_unit
         subunit.base_pos = pygame.Vector2(rotation_xy(self.base_pos, subunit.base_pos, self.radians_angle))
         subunit.hitbox_rect.center = subunit.base_pos
         subunit.zoom_scale()
@@ -49,7 +49,7 @@ def enter_battle(self):
     self.change_pos_scale()
 
     # create unit original formation positioning score
-    new_formation = np.where(self.subunit_object_array == None, 99,  # Do not use is for where None, not work
+    new_formation = np.where(self.subunit_object_array == None, 99,  # Do not use is None, not work
                              self.subunit_object_array)  # change empty to the least important
     new_formation = np.where(self.subunit_object_array != None, 1,
                              new_formation)  # change all occupied to most important

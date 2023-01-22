@@ -16,10 +16,6 @@ rotation_dict = {key: rotation_name[index] for index, key in enumerate(rotation_
 
 infinity = float("inf")
 
-troop_class_index = {"Melee Infantry": 0, "Range Infantry": 1, "Flying Cavalry": 2, "Range Cavalry": 3,
-                     "Light Cavalry": 4, "Heavy Cavalry": 5, "Chariot": 6, "Mage": 7, "Siege Machine": 8,
-                     "War Beast": 9, "Titan": 10}
-
 
 class Subunit(pygame.sprite.Sprite):
     empty_method = utility.empty_method
@@ -110,7 +106,7 @@ class Subunit(pygame.sprite.Sprite):
     # static variable
     subunit_hitbox_size = 6  # full square hitbox height and width size, this also affect subunit sprite size
 
-    def __init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale):
+    def __init__(self, troop_id, game_id, unit, start_hp, start_stamina, troop_number_scale):
         """
         Subunit object represent a group of troop or leader
         Subunit has three different stage of stat;
@@ -120,10 +116,9 @@ class Subunit(pygame.sprite.Sprite):
         :param troop_id: ID of the troop in data, can be 'h' for game mode that directly use leader character
         :param game_id: ID of the subunit as object
         :param unit: Unit that this subunit belongs to
-        :param start_pos: Starting pos of the subunit that will be used for sprite blit
         :param start_hp: Starting health or troop number percentage
         :param start_stamina: Starting maximum stamina percentage
-        :param unit_scale: Scale of troop number
+        :param troop_number_scale: Scale of troop number
         """
         self._layer = 4
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -168,6 +163,7 @@ class Subunit(pygame.sprite.Sprite):
         self.unit = unit  # reference to the parent uit of this subunit
         self.team = self.unit.team
 
+        self.attack_pos = None
         self.red_border = False  # red corner to indicate taking melee_dmg in inspect ui
         self.state = 0  # current subunit state, similar to unit state
         self.timer = random.random()  # may need to use random.random()
@@ -220,10 +216,10 @@ class Subunit(pygame.sprite.Sprite):
                 "Discipline Bonus"]  # discipline with grade bonus
             self.original_mental = stat["Mental"] + grade_stat[
                 "Mental Bonus"]  # mental resistance from morale melee_dmg and mental status effect
-            self.troop_number = stat["Troop"] * unit_scale[
+            self.troop_number = stat["Troop"] * troop_number_scale[
                 self.team] * start_hp / 100  # number of starting troop, team -1 to become list index
-            self.subunit_type = troop_class_index[
-                stat["Troop Class"]]  # 0 is melee infantry and 1 is range for command buff
+
+            self.troop_class = stat["Troop Class"]
 
         else:  # leader/hero character, for game mode that replace subunit with leader
             self.troop_id = troop_id
@@ -242,11 +238,12 @@ class Subunit(pygame.sprite.Sprite):
                 "Discipline Bonus"]  # discipline with grade bonus
             self.original_mental = 50 + grade_stat[
                 "Mental Bonus"]  # mental resistance from morale melee_dmg and mental status effect
-            self.subunit_type = 0
 
             self.troop_number = self.hero_health_scale
 
             self.special_effect["Shoot While Moving"][0][0] = True  # allow shoot while moving for hero
+
+            self.troop_class = "Leader"
 
         self.name = lore[0]  # name according to the preset
         self.race = stat["Race"]  # creature race
@@ -293,6 +290,10 @@ class Subunit(pygame.sprite.Sprite):
                               training_scale]  # convert to proportion of whatever max number
         else:
             training_scale = [0.333333 for _ in training_scale]
+
+        self.subunit_type = 0
+        if training_scale[2] > training_scale[0]:  # range training higher than melee, change type to range infantry
+            self.subunit_type = 1
 
         self.strength = attribute_stat["Strength"]
         self.dexterity = attribute_stat["Dexterity"]
@@ -549,7 +550,7 @@ class Subunit(pygame.sprite.Sprite):
         self.move_speed = 0
 
         # sprite for inspection or far view
-        self.sprite_troop_size = int(self.troop_size / 10)
+        self.sprite_troop_size = self.troop_size / 10
         if self.sprite_troop_size < 1:
             self.sprite_troop_size = 1
         sprite_dict = self.create_subunit_sprite(self.battle.subunit_inspect_sprite_size, self.sprite_troop_size)
@@ -577,36 +578,25 @@ class Subunit(pygame.sprite.Sprite):
         self.icon_sprite_width = self.inspect_base_image3.get_width()
         self.icon_sprite_height = self.inspect_base_image3.get_height()
 
-        self.unit_position = (start_pos[0] / 10, start_pos[1] / 10)  # position in unit sprite
+        self.pos_in_unit = (0, 0)  # position in unit array
+        self.base_pos = (0, 0)  # true position of subunit in battle
+        self.pos = (0, 0)  # pos is for showing on screen
+        self.last_pos = self.base_pos
+        self.front_pos = (0, 0)
+        self.base_target = (0, 0)  # base_target to move
+        self.command_target = (0, 0)  # actual base_target outside of combat
 
         try:
-            unit_top_left = pygame.Vector2(self.unit.base_pos[0] - self.unit.base_width_box / 2,
-                                           self.unit.base_pos[
-                                               1] - self.unit.base_height_box / 2)  # get top left corner position of unit to calculate true pos
-            self.base_pos = pygame.Vector2(unit_top_left[0] + self.unit_position[0],
-                                           unit_top_left[1] + self.unit_position[1])  # true position of subunit in map
-            self.last_pos = self.base_pos
-
             self.angle = self.unit.angle
             self.new_angle = self.unit.angle
             self.radians_angle = math.radians(360 - self.angle)  # radians for apply angle to position
             self.sprite_direction = rotation_dict[min(rotation_list,
                                                       key=lambda x: abs(
                                                           x - self.angle))]  # find closest in list of rotation for sprite direction
-            self.attack_pos = None
-
-            self.base_target = self.base_pos  # base_target to move
-            self.command_target = self.base_pos  # actual base_target outside of combat
-            self.pos = (self.base_pos[0] * self.screen_scale[0] * self.camera_zoom,
-                        self.base_pos[1] * self.screen_scale[1] * self.camera_zoom)  # pos is for showing on screen
-
-            self.image_height = (self.image.get_height() - 1) / 20  # get real half height of circle sprite
-
-            self.front_pos = self.make_front_pos()
 
             self.rect = self.image.get_rect(center=self.pos)  # for blit into screen
 
-            if self.sprite_troop_size > 1:
+            if self.battle.troop_size_adjustable and self.sprite_troop_size > 1:
                 self.subunit_hitbox_size *= self.sprite_troop_size
 
             self.full_merge_distance = self.subunit_hitbox_size / 4  # distance to become fully merge with this sprite
@@ -624,8 +614,25 @@ class Subunit(pygame.sprite.Sprite):
                                     sprite_list[self.sprite_id]["p1_primary_sub_weapon"]),
                                    (sprite_list[self.sprite_id]["p1_secondary_main_weapon"],
                                     sprite_list[self.sprite_id]["p1_secondary_sub_weapon"]))
+
         except AttributeError:  # for subunit with dummy unit, use in editor
             pass
+
+    def setup_start_pos(self):
+        unit_top_left = pygame.Vector2(self.unit.base_pos[0] - self.unit.unit_box_width / 2,
+                                       self.unit.base_pos[
+                                           1] - self.unit.unit_box_height / 2)  # get top left corner position of unit to calculate true pos
+        self.base_pos = pygame.Vector2(unit_top_left[0] + self.pos_in_unit[0],
+                                       unit_top_left[1] + self.pos_in_unit[1])  # true position of subunit in battle
+        self.last_pos = self.base_pos
+        self.base_target = self.base_pos  # base_target to move
+        self.command_target = self.base_pos  # actual base_target outside of combat
+        self.pos = (self.base_pos[0] * self.screen_scale[0] * self.camera_zoom,
+                    self.base_pos[1] * self.screen_scale[1] * self.camera_zoom)  # pos is for showing on screen
+        self.rect.center = self.pos
+        self.hitbox_rect.center = self.base_pos
+
+        self.front_pos = self.make_front_pos()
 
     def update(self, weather, dt, zoom, mouse_pos, mouse_left_up):
         if self.subunit_health > 0:  # only run these when not dead
@@ -761,9 +768,9 @@ class Subunit(pygame.sprite.Sprite):
 
 
 class EditorSubunit(Subunit):
-    def __init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale):
+    def __init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, troop_number_scale):
         """Create subunit object used for editor only"""
-        Subunit.__init__(self, troop_id, game_id, unit, start_pos, start_hp, start_stamina, unit_scale)
+        Subunit.__init__(self, troop_id, game_id, unit, start_hp, start_stamina, troop_number_scale)
         self.pos = start_pos
         self.image = self.block_image
         self.inspect_image_original = self.block_base_image

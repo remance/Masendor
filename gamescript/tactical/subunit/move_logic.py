@@ -88,11 +88,11 @@ def move_logic(self, dt, unit_state, collide_list):
                         if self.unit.move_rotate is False:
                             self.unit.base_pos += move
                         front_pos = (self.unit.base_pos[0],
-                                     (self.unit.base_pos[1] - self.unit.base_height_box))  # find front position
+                                     (self.unit.base_pos[1] - self.unit.unit_box_height))  # find front position
                         self.unit.front_pos = rotation_xy(self.unit.base_pos, front_pos, self.unit.radians_angle)
 
-                        number_pos = (self.unit.base_pos[0] - self.unit.base_width_box,
-                                      (self.unit.base_pos[1] + self.unit.base_height_box))
+                        number_pos = (self.unit.base_pos[0] - self.unit.unit_box_width,
+                                      (self.unit.base_pos[1] + self.unit.unit_box_height))
                         self.unit.base_number_pos = rotation_xy(self.unit.base_pos, number_pos, self.unit.radians_angle)
                         self.unit.change_pos_scale()
 

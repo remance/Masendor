@@ -6,6 +6,7 @@ from pathlib import Path
 import numpy as np
 import pygame
 import pygame.freetype
+
 from gamescript.common import utility
 
 rotation_xy = utility.rotation_xy
@@ -20,7 +21,6 @@ class Unit(pygame.sprite.Sprite):
 
     battle = None
     form_change_timer = 10
-    image_size = None
 
     set_rotate = utility.set_rotate
 
@@ -70,7 +70,7 @@ class Unit(pygame.sprite.Sprite):
             exec(f"" + file_name + " = " + file_name + "." + file_name)
 
     # Variable from *genre*.genre_setting
-    unit_size = None
+    max_unit_size = None
     order_to_place = None
 
     # Variable from troop_data that got added during change_ruleset function
@@ -86,8 +86,9 @@ class Unit(pygame.sprite.Sprite):
         self.start_where = []
         self.subunit_list = []
         self.alive_subunit_list = []
-        self.subunit_object_array = np.full(self.unit_size, None)
+        self.subunit_object_array = np.full(self.max_unit_size, None)
         self.subunit_id_array = subunit_list  # troop id array, will be converted to subunit game id array when creating subunit in generate_unit, must not contain empty row or column unlike subunit_object_array
+        self.subunit_hitbox_size_array = np.full(self.max_unit_size, self.battle.subunit_hitbox_size)
         self.leader = []
         self.leader_subunit = None  # subunit that the main unit leader is in, get added in leader first update
         self.nearby_enemy = {}  # list dict of nearby enemy unit, sorted by distance
@@ -98,15 +99,11 @@ class Unit(pygame.sprite.Sprite):
         self.colour = colour  # box colour according to team
         self.commander = commander  # True if commander unit
 
-        self.max_zoom = self.battle.max_camera_zoom  # closest zoom allowed
-        self.camera_zoom = self.max_zoom  # start with the closest zoom
-        self.last_camera_zoom = 1  # zoom level without calculate with 11 - zoom for scale
+        self.max_camera_zoom = self.battle.max_camera_zoom  # closest zoom allowed
+        self.camera_zoom = self.max_camera_zoom  # start with the closest zoom
 
         self.screen_scale = self.battle.screen_scale
         self.map_corner = self.battle.map_corner
-
-        self.base_width_box, self.base_height_box = len(self.subunit_id_array[0]) * (self.image_size[0] + 10) / 20, \
-                                                    len(self.subunit_id_array) * (self.image_size[1] + 2) / 20
 
         self.base_pos = pygame.Vector2(start_pos)  # base_pos is for true pos that is used for battle calculation
         self.base_attack_pos = None  # position of attack base_target
@@ -116,17 +113,17 @@ class Unit(pygame.sprite.Sprite):
         self.new_angle = self.angle
         self.radians_angle = math.radians(
             360 - start_angle)  # radians for apply angle to position and subunit
-        front_pos = (self.base_pos[0], (self.base_pos[1] - self.base_height_box))  # find front position of unit
-        self.front_pos = rotation_xy(self.base_pos, front_pos, self.radians_angle)
-        self.movement_queue = []
+
+        self.unit_box_width = 0
+        self.unit_box_height = 0
+
+        self.front_pos = (0, 0)  # front position of unit
         self.base_target = self.front_pos
         self.command_target = self.front_pos
-        number_pos = (self.base_pos[0] - self.base_width_box,
-                      (self.base_pos[1] + self.base_height_box))  # find position for number text
-        self.base_number_pos = rotation_xy(self.base_pos, number_pos, self.radians_angle)
+        self.base_number_pos = (0, 0)  # position for number text
         self.change_pos_scale()
 
-        # v Setup default behaviour check # TODO add volley, divide behaviour ui into 3 types: combat, shoot, other (move)
+        # Setup default behaviour check # TODO add volley, divide behaviour ui into 3 types: combat, shoot, other (move)
         self.formation = "Original"
         self.formation_phase = "Skirmish Phase"
         self.formation_style = "Cavalry Flank"
@@ -160,9 +157,8 @@ class Unit(pygame.sprite.Sprite):
         self.attack_mode = 0  # 10 = formation attack, 1 = free for all attack,
         self.hold = 0  # 0 = not hold, 1 = skirmish/scout/avoid, 2 = hold
         self.fire_at_will = 0  # 0 = fire at will, 1 = no fire
-        # ^ End behaviour check
 
-        # v setup default starting value
+        # Setup default starting value
         self.troop_number = 0  # sum
         self.stamina = 0  # average from all subunit
         self.morale = 0  # average from all subunit
@@ -178,7 +174,6 @@ class Unit(pygame.sprite.Sprite):
         self.timer = random.random()
         self.state_delay = 3  # some state has delay before can change state, default at 3 seconds
         self.rotate_speed = 1
-        # ^ End default starting value
 
         # check if unit can split
         self.can_split_row = False
@@ -207,17 +202,16 @@ class Unit(pygame.sprite.Sprite):
         self.ally_pos_list = {}
         self.enemy_pos_list = {}
 
-        self.setup_subunit_position_list()  # Set up subunit position list for subunit positioning
+        self.movement_queue = []
 
     def update(self, weather, squad_group, dt, camera_zoom, mouse_pos, mouse_up):
-        if self.last_camera_zoom != camera_zoom:  # camera zoom change
+        if self.camera_zoom != camera_zoom:  # camera zoom change
             self.camera_zoom_change = True
-            self.camera_zoom = 11 - camera_zoom  # save scale
-            self.change_pos_scale()  # update position according to new scale
-            if self.last_camera_zoom == 1:  # revert to default layer at further zoom
+            if self.camera_zoom == self.max_camera_zoom:  # revert to default layer at further zoom
                 for subunit in self.alive_subunit_list:
                     self.battle.battle_camera.change_layer(subunit, 4)
-            self.last_camera_zoom = camera_zoom
+            self.camera_zoom = camera_zoom  # save scale
+            self.change_pos_scale()  # update position according to new scale
 
         if self.dead_change:  # setup frontline again when any subunit destroyed
             if len(self.alive_subunit_list) > 0:
