@@ -601,7 +601,7 @@ class BodyHelper(pygame.sprite.Sprite):
                 stat[2] = str(stat[2])
                 if len(stat) > 3:
                     try:
-                        stat[3] = str([[stat[3][0], stat[3][1]]])
+                        stat[3] = str([[round(stat[3][0], 1), round(stat[3][1], 1)]])
                     except TypeError:
                         stat[3] = str([0, 0])
                     for index2, change in enumerate(["F", "FH", "FV", "FHV"]):
@@ -1079,51 +1079,46 @@ class Model:
                     pass
 
         self.sprite_image = {key: None for key in self.mask_part_list}
-        except_list = ["eye", "mouth", "head"]  # skip doing these
+        except_list = ("eye", "mouth", "head")  # skip doing these
         for stuff in bodypart_list:  # create stat and image
             if bodypart_list[stuff] is not None:
                 if any(ext in stuff for ext in except_list) is False:
-                    if "weapon" in stuff:
-                        part_name = self.weapon[stuff]
-                        if part_name is not None and bodypart_list[stuff][2]:
-                            self.sprite_image[stuff] = gen_weapon_sprite_pool[part_name][bodypart_list[stuff][1]][
+                    try:
+                        if "weapon" in stuff:
+                            part_name = self.weapon[stuff]
+                            if part_name is not None and bodypart_list[stuff][2]:
+                                self.sprite_image[stuff] = gen_weapon_sprite_pool[part_name][bodypart_list[stuff][1]][
+                                    bodypart_list[stuff][2]].copy()
+                        elif "effect_" in stuff:
+                            self.sprite_image[stuff] = effect_sprite_pool[bodypart_list[stuff][0]][bodypart_list[stuff][1]][
                                 bodypart_list[stuff][2]].copy()
-                    elif "effect_" in stuff:
-                        self.sprite_image[stuff] = effect_sprite_pool[bodypart_list[stuff][0]][bodypart_list[stuff][1]][
-                            bodypart_list[stuff][2]].copy()
-                    else:
-                        new_part_name = stuff
-                        if any(ext in stuff for ext in p_list):
-                            part_name = stuff[3:]  # remove p*number*_ to get part name
-                            new_part_name = part_name
-                        if "special" in stuff:
-                            part_name = "special"
-                            new_part_name = part_name
-                        if "r_" in part_name[0:2] or "l_" in part_name[0:2]:
-                            new_part_name = part_name[2:]  # remove side
-                        try:
+                        else:
+                            new_part_name = stuff
+                            if any(ext in stuff for ext in p_list):
+                                part_name = stuff[3:]  # remove p*number*_ to get part name
+                                new_part_name = part_name
+                            if "special" in stuff:
+                                part_name = "special"
+                                new_part_name = part_name
+                            if "r_" in part_name[0:2] or "l_" in part_name[0:2]:
+                                new_part_name = part_name[2:]  # remove side
                             self.sprite_image[stuff] = \
                             gen_body_sprite_pool[bodypart_list[stuff][0]][bodypart_list[stuff][1]][new_part_name][
                                 bodypart_list[stuff][2]].copy()
-                        except KeyError:  # no part name known for current race or direction, skip getting image
-                            pass
                         if any(ext in stuff for ext in p_list) and self.armour[stuff[0:2] + "_armour"] != "None":
-                            try:
-                                armour = self.armour[stuff[0:2] + "_armour"].split("/")
-                                gear_image = gen_armour_sprite_pool[bodypart_list[stuff][0]][armour[0]][armour[1]][
-                                    bodypart_list[stuff][1]][part_name][bodypart_list[stuff][2]].copy()
-                                gear_surface = pygame.Surface(gear_image.get_size(), pygame.SRCALPHA)
-                                rect = self.sprite_image[stuff].get_rect(
-                                    center=(gear_surface.get_width() / 2, gear_surface.get_height() / 2))
-                                gear_surface.blit(self.sprite_image[stuff], rect)
-                                rect = gear_image.get_rect(center=(gear_surface.get_width() / 2,
-                                                                   gear_surface.get_height() / 2))
-                                gear_surface.blit(gear_image, rect)
-                                self.sprite_image[stuff] = gear_surface
-                            except KeyError:  # skip part that not exist
-                                pass
-                            except UnboundLocalError:  # for when change animation
-                                pass
+                            armour = self.armour[stuff[0:2] + "_armour"].split("/")
+                            gear_image = gen_armour_sprite_pool[bodypart_list[stuff][0]][armour[0]][armour[1]][
+                                bodypart_list[stuff][1]][part_name][bodypart_list[stuff][2]].copy()
+                            gear_surface = pygame.Surface(gear_image.get_size(), pygame.SRCALPHA)
+                            rect = self.sprite_image[stuff].get_rect(
+                                center=(gear_surface.get_width() / 2, gear_surface.get_height() / 2))
+                            gear_surface.blit(self.sprite_image[stuff], rect)
+                            rect = gear_image.get_rect(center=(gear_surface.get_width() / 2,
+                                                               gear_surface.get_height() / 2))
+                            gear_surface.blit(gear_image, rect)
+                            self.sprite_image[stuff] = gear_surface
+                    except (KeyError, UnboundLocalError):  # no part name known for current race or direction, skip getting image
+                        pass
 
                 elif "head" in stuff:
                     self.sprite_image[stuff] = p_head_sprite_surface[stuff[0:2]]
@@ -1261,7 +1256,7 @@ class Model:
             self.generate_body(self.bodypart_list[edit_frame])
             for frame in range(max_frame):
                 for part in self.sprite_image:
-                    if self.animation_part_list[frame][part] is not None:
+                    if self.animation_part_list[frame][part] is not None and self.animation_part_list[frame][part]:
                         self.animation_part_list[frame][part][0] = self.sprite_image[part]
 
         elif "eye" in edit_type:
@@ -1480,19 +1475,19 @@ class Model:
             surface = self.create_animation_film(pose_layer_list, frame_num)
             self.animation_list[frame_num] = surface
         name_list = self.part_name_list[edit_frame]
-        try:
-            sprite_part = self.animation_part_list[edit_frame]
-            self.frame_list[edit_frame] = {
-                key: name_list[key] + [sprite_part[key][2][0], sprite_part[key][2][1], sprite_part[key][3],
-                                       sprite_part[key][4],
-                                       sprite_part[key][5], sprite_part[key][6]] if sprite_part[key] is not None else [
-                    0]
-                for key in list(self.mask_part_list.keys())}
-        except TypeError:  # None type error from empty frame
-            self.frame_list[edit_frame] = {key: [0] for key in list(self.mask_part_list.keys())}
-        except IndexError:
-            self.frame_list[edit_frame] = {key: [0] for key in list(self.mask_part_list.keys())}
-        for key in list(self.frame_list[edit_frame].keys()):
+        self.frame_list[edit_frame] = {}
+        for key in self.mask_part_list:
+            try:
+                sprite_part = self.animation_part_list[edit_frame]
+                if sprite_part[key] is not None:
+                    self.frame_list[edit_frame][key] = name_list[key] + [sprite_part[key][2][0], sprite_part[key][2][1],
+                                                                         sprite_part[key][3], sprite_part[key][4],
+                                                                         sprite_part[key][5], sprite_part[key][6]]
+                else:
+                    self.frame_list[edit_frame][key] = [0]
+            except (TypeError, IndexError):  # None type error from empty frame
+                self.frame_list[edit_frame][key] = [0]
+        for key in self.frame_list[edit_frame]:
             if "weapon" in key and self.frame_list[edit_frame][key] != [0]:
                 self.frame_list[edit_frame][key] = self.frame_list[edit_frame][key][1:]
         p_face = {}

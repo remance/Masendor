@@ -228,7 +228,7 @@ class DamageSprite(pygame.sprite.Sprite):
             self.kill()  # remove sprite
 
         if len(self.current_animation) > 0:
-            done, just_start = self.play_animation(0.1, dt, False)
+            done, just_start = self.play_animation(0.05, dt, False)
             if just_start:
                 self.adjust_sprite()
             if done:

@@ -24,4 +24,3 @@ def setup_subunit_position_list(self):
 
             if self.subunit_object_array[row_index][col_index] is not None:
                 self.subunit_object_array[row_index][col_index].pos_in_unit = (x, y)
-    # print(self.subunit_position_list)

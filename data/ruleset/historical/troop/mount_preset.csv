@@ -78,10 +78,10 @@
 77,,,,,,,,,
 78,,,,,,,,,
 79,,,,,,,,,
-80,,,,,,,,,
-81,,,,,,,,,
-82,,,,,,,,,
-83,,,,,,,,,
+80,"Light Artillery",-30,,-70,,,,,"Artillery"
+81,"Medium Artillery",-50,,-90,,,,,"Artillery"
+82,"Large Artillery",-70,,-100,,,,,"Artillery"
+83,"Giant Artillery",-90,,-200,,,,,"Artillery"
 84,,,,,,,,,
 85,,,,,,,,,
 86,,,,,,,,,
@@ -95,10 +95,10 @@
 94,,,,,,,,,
 95,,,,,,,,,
 96,,,,,,,,,
-97,"Light Chariot",70,1300,100,100,,0,5,"Land"
-98,"Heavy Chariot",30,2500,80,100,,21,5,"Land"
-99,"War Chariot",55,2000,90,100,,21,5,"Land"
-100,"Egyptian War Chariot",60,2000,95,100,,21,5,"Land"
+97,"Light Chariot",70,1300,100,100,,0,5,"Early Mount"
+98,"Heavy Chariot",30,2500,80,100,,21,5,"Early Mount"
+99,"War Chariot",55,2000,90,100,,21,5,"Early Mount"
+100,"Egyptian War Chariot",60,2000,95,100,,21,5,"Early Mount"
 101,,,,,,,,,
 102,,,,,,,,,
 103,,,,,,,,,
