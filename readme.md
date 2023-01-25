@@ -165,6 +165,7 @@ historical information to players.
 ### Sound (Obtained and edited):
 
 - Musket sound effect by aaronsiler (https://freesound.org/people/aaronsiler/)
+- Assorted weapon sound effect from Videvo (https://www.videvo.net/)
 
 ## Translation
 

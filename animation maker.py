@@ -1073,9 +1073,7 @@ class Model:
 
                     p_head_sprite_surface[key] = gear_image_sprite
 
-                except KeyError:  # skip part that not exist
-                    pass
-                except UnboundLocalError:  # for when change animation
+                except (KeyError, UnboundLocalError, TypeError):  # skip part that not exist
                     pass
 
         self.sprite_image = {key: None for key in self.mask_part_list}
@@ -1253,11 +1251,7 @@ class Model:
         elif "armour" in edit_type:
             if any(ext in edit_type for ext in p_list):
                 self.armour[edit_type[0:2] + "_armour"] = edit_type.split(edit_type[0:2] + "_armour_")[1]
-            self.generate_body(self.bodypart_list[edit_frame])
-            for frame in range(max_frame):
-                for part in self.sprite_image:
-                    if self.animation_part_list[frame][part] is not None and self.animation_part_list[frame][part]:
-                        self.animation_part_list[frame][part][0] = self.sprite_image[part]
+                change_animation(animation_name)
 
         elif "eye" in edit_type:
             if "Any" in edit_type:
@@ -2188,6 +2182,7 @@ while True:
                                 p_body_helper.change_p_type(name.name, player_change=True)
                                 effect_helper.change_p_type(name.name + "_effect", player_change=True)
                                 p_selector.change_name(name.name)
+                                armour_selector.change_name(model.armour[name.name + "_armour"])
                                 face = [model.bodypart_list[current_frame][p_body_helper.ui_type + "_eye"],
                                         model.bodypart_list[current_frame][p_body_helper.ui_type + "_mouth"]]
                                 head_text = ["Eye: ", "Mouth: "]
