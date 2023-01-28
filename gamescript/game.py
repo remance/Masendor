@@ -768,7 +768,7 @@ class Game:
         self.custom_map_folder = make_battle_list_data(self.main_dir, self.ruleset_folder, self.language)
 
         self.troop_animation = datasprite.TroopAnimationData(self.main_dir,
-                                                             [self.troop_data.race_list[key]["Name"] for key in
+                                                             [str(self.troop_data.race_list[key]["Name"]) for key in
                                                               self.troop_data.race_list])
         self.generic_animation_pool = self.troop_animation.generic_animation_pool  # animation data pool
         self.gen_body_sprite_pool = self.troop_animation.gen_body_sprite_pool  # body sprite pool
