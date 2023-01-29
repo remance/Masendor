@@ -4,7 +4,7 @@ def add_weapon_stat(self):
     self.weapon_type = {0: ["melee", "melee"], 1: ["melee", "melee"]}
     for set_index, weapon_set in enumerate(self.weapon_set):
         for weapon_index, weapon in enumerate(weapon_set):
-            weapon_stat = self.troop_data.weapon_list[weapon[0]]
+            weapon_stat = self.troop_data.troop_weapon_list[weapon[0]]
             dmg_sum = 0
             dmg_scaling = (weapon_stat["Strength Bonus Scale"], weapon_stat["Dexterity Bonus Scale"])
             dmg_scaling = [item / sum(dmg_scaling) if sum(dmg_scaling) > 0 else 0 for item in dmg_scaling]

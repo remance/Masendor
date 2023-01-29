@@ -371,15 +371,15 @@ class Subunit(pygame.sprite.Sprite):
                            (self.secondary_main_weapon, self.secondary_sub_weapon))
         self.weapon_id = ((self.primary_main_weapon[0], self.primary_sub_weapon[0]),
                           (self.secondary_main_weapon[0], self.secondary_sub_weapon[0]))
-        self.weapon_data = ((self.troop_data.weapon_list[self.primary_main_weapon[0]],
-                             self.troop_data.weapon_list[self.primary_sub_weapon[0]]),
-                            (self.troop_data.weapon_list[self.secondary_main_weapon[0]],
-                             self.troop_data.weapon_list[self.secondary_sub_weapon[0]]))
+        self.weapon_data = ((self.troop_data.troop_weapon_list[self.primary_main_weapon[0]],
+                             self.troop_data.troop_weapon_list[self.primary_sub_weapon[0]]),
+                            (self.troop_data.troop_weapon_list[self.secondary_main_weapon[0]],
+                             self.troop_data.troop_weapon_list[self.secondary_sub_weapon[0]]))
         self.equipped_weapon_data = self.weapon_data[self.equipped_weapon]
-        self.weapon_name = ((self.troop_data.weapon_list[self.primary_main_weapon[0]]["Name"],
-                             self.troop_data.weapon_list[self.primary_sub_weapon[0]]["Name"]),
-                            (self.troop_data.weapon_list[self.secondary_main_weapon[0]]["Name"],
-                             self.troop_data.weapon_list[self.secondary_sub_weapon[0]]["Name"]))
+        self.weapon_name = ((self.troop_data.troop_weapon_list[self.primary_main_weapon[0]]["Name"],
+                             self.troop_data.troop_weapon_list[self.primary_sub_weapon[0]]["Name"]),
+                            (self.troop_data.troop_weapon_list[self.secondary_main_weapon[0]]["Name"],
+                             self.troop_data.troop_weapon_list[self.secondary_sub_weapon[0]]["Name"]))
 
         self.mount_gear = stat["Mount"]
         self.mount = self.troop_data.mount_list[self.mount_gear[0]]  # mount this subunit use

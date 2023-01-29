@@ -217,37 +217,42 @@ class TroopData:
         edit_file.close()
 
         # Weapon dict
-        self.weapon_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "troop_weapon.csv"),
-                  encoding="utf-8", mode="r") as edit_file:
-            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
-            header = rd[0]
-            int_column = ("ID", "Strength Bonus Scale", "Dexterity Bonus Scale", "Physical Damage",
-                          "Fire Damage", "Water Damage", "Air Damage", "Earth Damage", "Poison Damage", "Magic Damage",
-                          "Armour Penetration", "Defence", "Weight", "Speed", "Ammunition", "Magazine", "Shot Number",
-                          "Range", "Travel Speed", "Learning Difficulty", "Mastery Difficulty", "Learning Difficulty",
-                          "Cost", "ImageID", "Speed", "Hand")  # value int only
-            list_column = ("Skill", "Trait", "Properties")  # value in list only
-            tuple_column = ("Damage Sprite Effect",)  # value in tuple only
-            percent_column = ("Damage Balance",)
-            int_column = [index for index, item in enumerate(header) if item in int_column]
-            list_column = [index for index, item in enumerate(header) if item in list_column]
-            tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
-            percent_column = [index for index, item in enumerate(header) if item in percent_column]
-            for row_index, row in enumerate(rd[1:]):
-                for n, i in enumerate(row):
-                    row = stat_convert(row, n, i, percent_column=percent_column, list_column=list_column,
-                                       tuple_column=tuple_column, int_column=int_column, true_empty=True)
-                self.weapon_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
-                self.weapon_list[row[0]]["Shake Power"] = int(self.weapon_list[row[0]]["Sound Distance"] / 10)
-        edit_file.close()
+        self.troop_weapon_list = {}
+        self.mount_weapon_list = {}
+        for index, weapon_list in enumerate((self.troop_weapon_list, self.mount_weapon_list)):
+            with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop",
+                                   ("troop_weapon", "mount_weapon")[index] + ".csv"), encoding="utf-8", mode="r") as edit_file:
+                rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
+                header = rd[0]
+                int_column = ("ID", "Strength Bonus Scale", "Dexterity Bonus Scale", "Physical Damage",
+                              "Fire Damage", "Water Damage", "Air Damage", "Earth Damage", "Poison Damage", "Magic Damage",
+                              "Armour Penetration", "Defence", "Weight", "Speed", "Ammunition", "Magazine", "Shot Number",
+                              "Range", "Travel Speed", "Learning Difficulty", "Mastery Difficulty", "Learning Difficulty",
+                              "Cost", "ImageID", "Speed", "Hand")  # value int only
+                list_column = ("Skill", "Trait", "Properties")  # value in list only
+                tuple_column = ("Damage Sprite Effect",)  # value in tuple only
+                percent_column = ("Damage Balance",)
+                int_column = [index for index, item in enumerate(header) if item in int_column]
+                list_column = [index for index, item in enumerate(header) if item in list_column]
+                tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
+                percent_column = [index for index, item in enumerate(header) if item in percent_column]
+                for row_index, row in enumerate(rd[1:]):
+                    for n, i in enumerate(row):
+                        row = stat_convert(row, n, i, percent_column=percent_column, list_column=list_column,
+                                           tuple_column=tuple_column, int_column=int_column, true_empty=True)
+                    weapon_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
+                    weapon_list[row[0]]["Shake Power"] = int(weapon_list[row[0]]["Sound Distance"] / 10)
+            edit_file.close()
 
-        self.weapon_lore = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop",
-                               "troop_weapon_lore_" + language + ".csv"), encoding="utf-8",
-                  mode="r") as edit_file:
-            lore_csv_read(edit_file, self.weapon_lore)
-            self.weapon_lore = {key: value for key, value in self.weapon_lore.items() if key in self.weapon_list}
+        self.troop_weapon_lore = {}
+        self.mount_weapon_lore = {}
+        for index, weapon_lore in enumerate((self.troop_weapon_lore, self.mount_weapon_lore)):
+            with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop",
+                                   ("troop_", "mount_")[index] + "weapon_lore_" + language + ".csv"), encoding="utf-8",
+                      mode="r") as edit_file:
+                lore_csv_read(edit_file, weapon_lore)
+                weapon_lore |= {key: value for key, value in weapon_lore.items() if key
+                                in (self.troop_weapon_list, self.mount_weapon_list)[index]}
         edit_file.close()
 
         # Armour dict

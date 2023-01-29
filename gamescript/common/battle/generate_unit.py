@@ -93,7 +93,7 @@ def generate_unit(self, which_team, setup_data, control, command, colour, coa, s
                         if self.hitbox_distance < add_subunit.subunit_hitbox_size:
                             self.hitbox_distance = add_subunit.subunit_hitbox_size
 
-                        for weapon in self.troop_data.weapon_list.values():
+                        for weapon in self.troop_data.troop_weapon_list.values():
                             if self.max_melee_weapon_range < weapon["Range"]:
                                 self.max_melee_weapon_range = weapon["Range"]
 

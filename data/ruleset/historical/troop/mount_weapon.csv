@@ -20,5 +20,5 @@
 19,"Heavy Cannon (Explosive)",1,9,,,,,,0,0,,,,,,1,,,,,,,,,,,,,80,"cannon","Shoot",,"Artillery"
 20,"Giant Cannon (Round)",1,9,20,80000,0,0,10000,0,0,95,,"9,53,72",600,,1,1,1000,200,,1,,,,"Cannon Ball",,,,100,"giant cannon","Shoot","bullet_rotate","Artillery"
 21,"Mortar (Round)",1,9,50,,0,0,4000,0,0,65,,"9,53,72",60,,1,1,800,170,,1,,,,"Cannon Ball",,,"cannon_shot",60,"mortar","Shoot","bullet_rotate","Artillery"
-22,"Mortar (Shrapnel)",1,9,,,,,,0,0,,,,,,1,,,,,,,,,,,,,60,"mortar","Shoot",,
-23,"Mortar (Explosive)",1,9,,,,,,0,0,,,,,,1,,,,,,,,,,,,,60,"mortar","Shoot",,
+22,"Mortar (Shrapnel)",1,9,,,,,,0,0,,,,,,1,,,,,,,,,,,,,60,"mortar","Shoot",,"Artillery"
+23,"Mortar (Explosive)",1,9,,,,,,0,0,,,,,,1,,,,,,,,,,,,,60,"mortar","Shoot",,"Artillery"
