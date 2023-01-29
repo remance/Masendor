@@ -47,7 +47,7 @@ class DamageSprite(pygame.sprite.Sprite):
     def __init__(self, attacker, weapon, dmg, penetrate, weapon_stat, camera_zoom,
                  attack_type, base_target, accuracy=None, height_ignore=False, degrade_when_travel=True,
                  degrade_when_hit=True, random_direction=False, random_move=False, arc_shot=False):
-        self._layer = 50
+        self._layer = 10000001
         pygame.sprite.Sprite.__init__(self, self.containers)
 
         self.attacker = attacker  # subunit that perform the attack

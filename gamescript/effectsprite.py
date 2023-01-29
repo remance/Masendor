@@ -15,7 +15,7 @@ class EffectSprite(pygame.sprite.Sprite):
     play_animation = play_animation.play_animation  # use play_animation from damage sprite
 
     def __init__(self, start_pos, target, angle, duration, sprite_type, sprite_direction, sprite_name):
-        self._layer = 49
+        self._layer = 10000000
         pygame.sprite.Sprite.__init__(self, self.containers)
 
         self.camera_scale = 1

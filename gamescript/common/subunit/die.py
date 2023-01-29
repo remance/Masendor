@@ -18,7 +18,7 @@ def die(self, how):
     self.unit.dead_change = True
     if how == "dead":
         if self in self.battle.battle_camera:
-            self.battle.battle_camera.change_layer(sprite=self, new_layer=1)
+            self.battle.battle_camera.change_layer(sprite=self, new_layer=0)
 
             self.command_action = die_command_action
             self.top_interrupt_animation = True

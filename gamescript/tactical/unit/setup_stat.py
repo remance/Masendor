@@ -11,13 +11,13 @@ def setup_stat(self, battle_start=False):
     # Grab subunit stat
     not_broken = False
 
-    # for checking row order and adjusting layer to show subunit closest to bottom of the screen first
-    pos_dict = {sprite: sprite.base_pos for sprite in self.alive_subunit_list}
-    pos_dict = dict(sorted(pos_dict.items(), key=lambda x: x[1][1]))
-
-    for index, subunit in enumerate(pos_dict.keys()):
+    for subunit in self.alive_subunit_list:
         if self.camera_zoom == self.max_camera_zoom and subunit in self.battle.battle_camera:
-            self.battle.battle_camera.change_layer(subunit, index + 4)
+            # Adjust layer to show subunit closest to bottom and furthest to the right of the screen first
+            layer = round(subunit.base_pos[0] + (subunit.base_pos[1] * 10), 0)
+            if layer < 0:
+                layer = 1
+            self.battle.battle_camera.change_layer(subunit, layer)
         self.troop_number += subunit.troop_number
         self.stamina += subunit.stamina
         self.morale += subunit.morale
