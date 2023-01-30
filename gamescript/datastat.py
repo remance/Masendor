@@ -218,10 +218,9 @@ class TroopData:
 
         # Weapon dict
         self.troop_weapon_list = {}
-        self.mount_weapon_list = {}
-        for index, weapon_list in enumerate((self.troop_weapon_list, self.mount_weapon_list)):
+        for index, weapon_list in enumerate(("troop_weapon", "mount_weapon")):
             with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop",
-                                   ("troop_weapon", "mount_weapon")[index] + ".csv"), encoding="utf-8", mode="r") as edit_file:
+                                   weapon_list + ".csv"), encoding="utf-8", mode="r") as edit_file:
                 rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
                 header = rd[0]
                 int_column = ("ID", "Strength Bonus Scale", "Dexterity Bonus Scale", "Physical Damage",
@@ -240,19 +239,19 @@ class TroopData:
                     for n, i in enumerate(row):
                         row = stat_convert(row, n, i, percent_column=percent_column, list_column=list_column,
                                            tuple_column=tuple_column, int_column=int_column, true_empty=True)
-                    weapon_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
-                    weapon_list[row[0]]["Shake Power"] = int(weapon_list[row[0]]["Sound Distance"] / 10)
+                    self.troop_weapon_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
+                    self.troop_weapon_list[row[0]]["Shake Power"] = int(self.troop_weapon_list[row[0]]["Sound Distance"] / 10)
             edit_file.close()
 
         self.troop_weapon_lore = {}
-        self.mount_weapon_lore = {}
-        for index, weapon_lore in enumerate((self.troop_weapon_lore, self.mount_weapon_lore)):
+        for index, weapon_lore in enumerate(("troop_", "mount_")):
             with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop",
-                                   ("troop_", "mount_")[index] + "weapon_lore_" + language + ".csv"), encoding="utf-8",
+                                   weapon_lore + "weapon_lore_" + language + ".csv"), encoding="utf-8",
                       mode="r") as edit_file:
-                lore_csv_read(edit_file, weapon_lore)
-                weapon_lore |= {key: value for key, value in weapon_lore.items() if key
-                                in (self.troop_weapon_list, self.mount_weapon_list)[index]}
+                weapon_lore_list = {}
+                lore_csv_read(edit_file, weapon_lore_list)
+                self.troop_weapon_lore |= {key: value for key, value in weapon_lore_list.items() if key
+                                           in self.troop_weapon_list}
         edit_file.close()
 
         # Armour dict

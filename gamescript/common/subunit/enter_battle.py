@@ -1,19 +1,19 @@
 def enter_battle(self, zoom, animation_pool):
     """run once when battle start or subunit just get created"""
     self.camera_zoom = zoom
-    self.front_pos = self.make_front_pos()
-    self.make_pos_range()
     self.zoom_scale()
-    self.find_nearby_subunit()
-    self.swap_weapon()
 
     try:
         self.terrain, self.feature = self.get_feature(self.base_pos,
                                                       self.base_map)  # Get new terrain and feature at each subunit position
         self.height = self.height_map.get_height(self.base_pos)  # Current terrain height
-        self.front_height = self.height_map.get_height(self.front_pos)  # Terrain height at front position
     except AttributeError:
         pass
+
+    self.find_nearby_subunit()
+    self.swap_weapon()
+    self.make_pos_range()
+    self.make_front_pos()
 
     self.map_corner = self.battle.map_corner
 

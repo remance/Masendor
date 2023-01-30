@@ -37,7 +37,7 @@ class Battle:
     camera_fix = empty_method
     camera_process = empty_method
     camera_zoom_change = empty_method
-    check_sprite_collision = empty_method
+    check_subunit_collision = empty_method
     generate_unit = empty_method
     play_sound_effect = empty_method
     popout_lorebook = empty_method
@@ -920,8 +920,8 @@ class Battle:
                                         sprite_one.overlap_collide.append(sprite_two)
                                         sprite_two.overlap_collide.append(sprite_one)
 
-                                self.check_sprite_collision(sprite_one, sprite_two)
-                                self.check_sprite_collision(sprite_two, sprite_one)
+                                self.check_subunit_collision(sprite_one, sprite_two)
+                                self.check_subunit_collision(sprite_two, sprite_one)
 
                         self.subunit_pos_array = self.map_move_array.copy()
                         for this_subunit in self.battle_subunit_list:

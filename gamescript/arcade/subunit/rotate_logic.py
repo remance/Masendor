@@ -14,5 +14,4 @@ def rotate_logic(self, *args):
     if self.camera_zoom != self.max_camera_zoom:
         self.rotate()  # rotate sprite to new angle when camera zoom is not at max level since is use troop sprite
     self.sprite_direction = rotation_dict[self.angle]  # find closest in list of rotation for sprite direction
-    self.front_pos = self.make_front_pos()  # generate new pos related to side
-    self.front_height = self.height_map.get_height(self.front_pos)
+    self.make_front_pos()

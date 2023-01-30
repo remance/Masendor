@@ -14,7 +14,7 @@
 13,"Gunpowder based Weapon",109,"These troops are equipped with a gunpowder-based weapon such as a musket. Rain weather will make their weapon at minimal effectiveness, and their shooting will produce a cloud of smoke that can block their vision."
 14,,,
 15,"Cone Shot",,"These troops’ weapon shoots in a cone-shaped spread, thus having lower accuracy for each ammunition shot."
-16,,,
+16,"Attack Can Fail",,"These troops’ inferior weapons can fail when attacking and cause damage to the wielders."
 17,,,
 18,"Day Blindness",,
 19,"Night Vision",,

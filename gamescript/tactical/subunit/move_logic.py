@@ -75,13 +75,13 @@ def move_logic(self, dt, unit_state, collide_list):
                         self.combat_move_queue = self.combat_move_queue[1:]
 
                     self.change_pos_scale()
-                    self.front_pos = self.make_front_pos()
                     self.make_pos_range()
 
                     self.terrain, self.feature = self.get_feature(self.base_pos,
                                                                   self.base_map)  # get new terrain and feature at each subunit position
                     self.height = self.height_map.get_height(self.base_pos)  # get new height
-                    self.front_height = self.height_map.get_height(self.front_pos)
+
+                    self.make_front_pos()
                     self.last_pos = self.base_pos
 
                     if self.unit_leader and new_move_length > 0:

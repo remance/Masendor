@@ -17,7 +17,8 @@ def setup_stat(self, battle_start=False):
             layer = round(subunit.base_pos[0] + (subunit.base_pos[1] * 10), 0)
             if layer < 0:
                 layer = 1
-            self.battle.battle_camera.change_layer(subunit, layer)
+            if subunit._layer != layer:
+                self.battle.battle_camera.change_layer(subunit, layer)
         self.troop_number += subunit.troop_number
         self.stamina += subunit.stamina
         self.morale += subunit.morale

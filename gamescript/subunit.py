@@ -632,7 +632,7 @@ class Subunit(pygame.sprite.Sprite):
         self.rect.center = self.pos
         self.hitbox_rect.center = self.base_pos
 
-        self.front_pos = self.make_front_pos()
+        self.make_front_pos()
 
     def update(self, weather, dt, zoom, mouse_pos, mouse_left_up):
         if self.subunit_health > 0:  # only run these when not dead

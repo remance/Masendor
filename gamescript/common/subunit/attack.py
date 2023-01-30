@@ -136,6 +136,6 @@ def attack(self, attack_type):
                                   self.equipped_weapon_data[weapon],
                                   self.camera_zoom, attack_type, base_target)
 
-        self.weapon_cooldown[weapon] -= self.weapon_speed[weapon]  # melee weapon use cooldown for attack
+        self.weapon_cooldown[weapon] = 0  # melee weapon use cooldown for attack
 
     self.stamina -= self.weapon_weight[self.equipped_weapon][weapon]

@@ -87,23 +87,27 @@ def generate_unit(self, which_team, setup_data, control, command, colour, coa, s
                     this_unit.subunit_hitbox_size_array[row_index][col_index] = add_subunit.subunit_hitbox_size
                     this_unit.subunit_list.append(add_subunit)
                     subunit_game_id += 1
-
                     # Recal highest possible distance for battle
-                    if hasattr(self, "front_distance"):
-                        if self.hitbox_distance < add_subunit.subunit_hitbox_size:
-                            self.hitbox_distance = add_subunit.subunit_hitbox_size
+                    if self.hitbox_distance < add_subunit.subunit_hitbox_size:
+                        self.hitbox_distance = add_subunit.subunit_hitbox_size
 
-                        for weapon in self.troop_data.troop_weapon_list.values():
-                            if self.max_melee_weapon_range < weapon["Range"]:
+                    for index, weapon in self.troop_data.troop_weapon_list.items():
+                        if index in add_subunit.weapon_id[0] or index in add_subunit.weapon_id[1]:
+                            if weapon["Magazine"] == 0 and self.max_melee_weapon_range < weapon["Range"]:
                                 self.max_melee_weapon_range = weapon["Range"]
 
-                        if self.front_distance < (self.hitbox_distance / 2) + self.max_melee_weapon_range:
-                            self.front_distance = (self.hitbox_distance / 2) + self.max_melee_weapon_range
+                    if self.front_distance < (self.hitbox_distance / 2) + self.max_melee_weapon_range:
+                        self.front_distance = (self.hitbox_distance / 2) + self.max_melee_weapon_range
 
                         if self.hitbox_distance > self.front_distance:
                             self.collide_distance = self.hitbox_distance
                         else:
                             self.collide_distance = self.front_distance
+
+                    self.battle_game.max_melee_weapon_range = self.max_melee_weapon_range
+                    self.battle_game.collide_distance = self.collide_distance
+                    self.battle_game.hitbox_distance = self.hitbox_distance
+                    self.battle_game.front_distance = self.front_distance
 
             army_subunit_index += 1
     this_unit.subunit_id_array = new_subunit_list

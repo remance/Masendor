@@ -1,16 +1,23 @@
-"ID","Name","Health","Weight","Cost","Type","Ruleset"
-1,"None",0,0,0,"Light Mount Armour",0
-2,"Padded Armour",350,10,,"Light Mount Armour",0
-3,"Leather Armour",300,8,,"Light Mount Armour",0
-4,"Chainmail Armour",500,15,,"Light Mount Armour",0
-5,"Scale Armour",650,25,,"Medium Mount Armour",0
-6,"Lamellar Armour",550,20,,"Medium Mount Armour",0
-7,"Plate Armour",1000,30,,"Heavy Mount Armour",0
-8,"Splint Armour",650,25,,"Medium Mount Armour",0
-9,"Brigandine Armour",450,10,,"Light Mount Armour",0
-10,"Laminar Armour",600,20,,"Medium Mount Armour",0
-11,,,,,,
-12,,,,,,
-13,"Wood Chariot",500,15,,"Medium Mount Armour",0
-14,"Saddle",100,2,,"Light Mount Armour",0
-15,"Reinforced Saddle",180,4,,"Light Mount Armour",0
+"ID","Name","Health","Weight","Cost","Type"
+1,"None",0,0,0,"Light Mount Armour"
+2,"Padded Armour",350,10,,"Light Mount Armour"
+3,"Leather Armour",300,8,,"Light Mount Armour"
+4,"Chainmail Armour",500,15,,"Light Mount Armour"
+5,"Scale Armour",650,25,,"Medium Mount Armour"
+6,"Lamellar Armour",550,20,,"Medium Mount Armour"
+7,"Plate Armour",1000,30,,"Heavy Mount Armour"
+8,"Splint Armour",650,25,,"Medium Mount Armour"
+9,"Brigandine Armour",450,10,,"Light Mount Armour"
+10,"Laminar Armour",600,20,,"Medium Mount Armour"
+11,,,,,
+12,,,,,
+13,"Wood Chariot",500,15,,"Medium Mount Armour"
+14,"Saddle",100,2,,"Light Mount Armour"
+15,"Reinforced Saddle",180,4,,"Light Mount Armour"
+16,,,,,
+17,,,,,
+18,,,,,
+19,"Light Cannon",100,0,,"Artillery Type"
+20,"Heavy Cannon",200,0,,"Artillery Type"
+21,"Giant Cannon",500,0,,"Artillery Type"
+22,,,,,

@@ -704,6 +704,11 @@ class Game:
         self.subunit_inspect_sprite_size = (subunit.Subunit.subunit_hitbox_size * 10 * self.screen_scale[0],
                                             subunit.Subunit.subunit_hitbox_size * 10 * self.screen_scale[1])
 
+        self.max_melee_weapon_range = 0
+        self.collide_distance = self.subunit_hitbox_size  # distance to check collision
+        self.hitbox_distance = self.subunit_hitbox_size
+        self.front_distance = self.subunit_hitbox_size / 2  # distance from front side
+
         self.battle_game = battle.Battle(self, self.window_style)
         self.battle_game.generate_unit = self.generate_unit
         self.battle_game.leader_position_check = self.leader_position_check
