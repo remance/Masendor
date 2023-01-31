@@ -435,7 +435,7 @@ class Battle:
                                             ("data", "ruleset", self.ruleset_folder, "map", self.map_selected),
                                             output_type="list")
                 self.music_event = self.music_event[1:]
-                if len(self.music_event) > 0:
+                if self.music_event:
                     utility.convert_str_time(self.music_event)
                     self.music_schedule = list(dict.fromkeys([item[1] for item in self.music_event]))
                     new_list = []
@@ -531,9 +531,9 @@ class Battle:
                     for this_leader in this_unit.leader:
                         who_todo |= {
                             "h" + str(this_leader.leader_id): self.leader_data.leader_list[this_leader.leader_id]}
-            self.subunit_animation_pool = self.main.create_sprite_pool(direction_list, self.main.troop_sprite_size,
-                                                                       self.screen_scale,
-                                                                       who_todo)
+            self.subunit_animation_pool = self.main.create_troop_sprite_pool(direction_list, self.main.troop_sprite_size,
+                                                                             self.screen_scale,
+                                                                             who_todo)
 
         else:
             self.camera_zoom = 1  # always start at furthest zoom for editor
@@ -823,8 +823,7 @@ class Battle:
                                             mouse_scroll_down, key_state, event_key_press)
 
                     # Drama text function
-                    if self.drama_timer == 0 and len(
-                            self.drama_text.queue) != 0:  # Start timer and add to main_ui If there is event queue
+                    if self.drama_timer == 0 and self.drama_text.queue:  # Start timer and draw if there is event queue
                         self.battle_ui_updater.add(self.drama_text)
                         self.drama_text.process_queue()
                         self.drama_timer = 0.1
@@ -867,7 +866,7 @@ class Battle:
                             except IndexError:  # weather does not have effect
                                 pass
 
-                            if len(self.weather_event) > 0:  # Get end time of next event which is now index 0
+                            if self.weather_event:  # Get end time of next event which is now index 0
                                 self.weather_playing = self.weather_event[0][1]
                             else:
                                 self.weather_playing = None
@@ -887,7 +886,7 @@ class Battle:
                                 self.screen_shake_value = 0
 
                         # Music System
-                        if len(self.music_schedule) > 0 and self.time_number.time_number >= self.music_schedule[0]:
+                        if self.music_schedule and self.time_number.time_number >= self.music_schedule[0]:
                             pygame.mixer.music.unload()
                             self.music_current = self.music_event[0].copy()
                             self.picked_music = random.randint(0, len(self.music_current) - 1)
@@ -938,9 +937,9 @@ class Battle:
                                                 self.base_mouse_pos, mouse_left_up)
 
                     # Run pathfinding for melee combat no more than limit number of subunit per update to prevent stutter
-                    if len(self.combat_path_queue) > 0:
+                    if self.combat_path_queue:
                         run = 0
-                        while len(self.combat_path_queue) > 0 and run < 5:
+                        while self.combat_path_queue and run < 5:
                             self.combat_path_queue[0].combat_pathfind()
                             self.combat_path_queue = self.combat_path_queue[1:]
                             run += 1
@@ -981,15 +980,15 @@ class Battle:
                     self.time_update()
 
                     if self.mode == "battle" and len([key for key, value in self.all_team_unit.items() if
-                                                      key != "alive" and len(value) > 0]) <= 1:
+                                                      key != "alive" and value]) <= 1:
                         if self.battle_done_box not in self.battle_ui_updater:
-                            if len(self.all_team_unit["alive"]) <= 0:
+                            if not self.all_team_unit["alive"]:
                                 team_win = 0  # draw
                                 self.battle_done_box.pop("Draw")
                             else:
                                 for key, value in self.all_team_unit.items():
                                     if key != "alive":
-                                        if len(value) > 0:
+                                        if value:
                                             team_win = key
                                             for index, coa in enumerate(self.team_coa):
                                                 if index == team_win - 1:

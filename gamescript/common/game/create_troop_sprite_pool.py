@@ -7,7 +7,7 @@ from gamescript.common.subunit import create_troop_sprite
 create_troop_sprite = create_troop_sprite.create_troop_sprite
 
 
-def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, who_todo, preview=False):
+def create_troop_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, who_todo, preview=False):
     weapon_list = self.troop_data.troop_weapon_list
     animation_sprite_pool = {}  # TODO need to add for subunit creator
     weapon_common_type_list = tuple(set(["_" + value["Common"] + "_" for key, value in weapon_list.items() if
@@ -79,7 +79,8 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                              if (any(ext in this_animation for ext in weapon_common_type_list) is False or
                                  "_any_" in this_animation or weapon_common_action[0][0] in this_animation) and
                              (any(ext in this_animation for ext in weapon_attack_type_list) is False or
-                              (weapon_attack_action[0][0] in this_animation and "_Main_" in this_animation))]
+                              (weapon_attack_action[0][0] in this_animation and ("_Main_" in this_animation or
+                               "_Both_" in this_animation)))]
                 # remove animation not suitable for preview
                 animation = [this_animation for this_animation in animation if
                              any(ext in this_animation for ext in
@@ -152,20 +153,21 @@ def create_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, wh
                                   ("Skill_" not in this_animation or any(ext in this_animation for ext in skill_list))]
                 temp_animation_list = animation_list.copy()
                 animation_list = [this_animation for this_animation in animation_list if "_any_" not in this_animation
-                                  and "_Main_" not in this_animation and "_Sub_" not in this_animation and
+                                  and any(ext in this_animation for ext in ("_Main_", "_Sub_", "_Both_")) is False and
                                   (any(ext in this_animation for ext in weapon_common_type_list)) is False]
                 temp_list = []
                 for weapon_set_index, weapon_set in enumerate(
                         subunit_weapon_list):
                     for weapon_index, weapon in enumerate(weapon_set):
                         for this_animation in temp_animation_list:
-                            if "_Main_" not in this_animation and "_Sub_" not in this_animation:  # common animation
+                            if any(ext in this_animation for ext in ("_Main_", "_Sub_", "_Both_")) is False:  # common animation
                                 if weapon_common_action[weapon_set_index][weapon_index] in this_animation or \
                                         "_any_" in this_animation:
                                     temp_list.append(this_animation)
                             elif weapon_common_action[weapon_set_index][weapon_index] in this_animation and \
                                     weapon_attack_action[weapon_set_index][weapon_index] in this_animation and \
-                                    ("_Main_", "_Sub_")[weapon_index] in this_animation:  # attack animation
+                                    (("_Main_", "_Sub_")[weapon_index] in this_animation or
+                                     "_Both_" in this_animation):  # attack animation
                                 temp_list.append(this_animation)
                         for this_animation in reversed(temp_list): # check if weapon common type for same animation exist
                             if "_any_" in this_animation and any(weapon_common_action[weapon_set_index][weapon_index] in

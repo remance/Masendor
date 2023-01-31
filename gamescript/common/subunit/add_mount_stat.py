@@ -10,7 +10,6 @@ def add_mount_stat(self):
         self.original_charge_def = 10
         self.subunit_type = 1  # count as range infantry for command buff
         self.feature_mod = "Infantry"  # Use cavalry type for terrain bonus
-        # self.weapon
     else:
         self.original_charge_def = 25  # charge defence only 25 for cav
         self.original_speed = (mount_race_stat["Agility"] / 5) + (

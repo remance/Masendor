@@ -214,7 +214,7 @@ class Unit(pygame.sprite.Sprite):
             self.change_pos_scale()  # update position according to new scale
 
         if self.dead_change:  # setup frontline again when any subunit destroyed
-            if len(self.alive_subunit_list) > 0:
+            if self.alive_subunit_list:
                 self.setup_formation()
                 self.auth_penalty = 0
                 for subunit in self.alive_subunit_list:

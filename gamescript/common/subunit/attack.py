@@ -59,7 +59,7 @@ def attack(self, attack_type):
             accuracy -= round(angel_dif)
 
             if self.attack_target is not None:
-                if len(self.attack_target.alive_subunit_list) > 0:
+                if self.attack_target.alive_subunit_list:
                     target_hit = self.find_attack_target(
                         self.attack_target.alive_subunit_list)  # find the closest subunit in enemy unit
                     how_long = attack_range / self.speed  # shooting distance divide damage sprite speed to find travel time
@@ -119,9 +119,10 @@ def attack(self, attack_type):
                     self.magazine_count[self.equipped_weapon][weapon] == 0:
                 self.ammo_now[self.equipped_weapon].pop(weapon)  # remove weapon with no ammo
                 self.magazine_count[self.equipped_weapon].pop(weapon)
-                if len(self.ammo_now[self.equipped_weapon]) == 0:  # remove entire set if no ammo at all
+                if not self.ammo_now[self.equipped_weapon]:  # remove entire set if no ammo at all
                     self.ammo_now.pop(self.equipped_weapon)
                     self.magazine_count.pop(self.equipped_weapon)
+                    self.range_weapon_set.remove(self.equipped_weapon)
     else:
         equipped_weapon_data = self.equipped_weapon_data[weapon]
         weapon_range = equipped_weapon_data["Range"]

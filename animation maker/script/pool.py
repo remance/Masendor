@@ -70,10 +70,7 @@ def read_joint_data(direction_list):
                     else:
                         position = pygame.Vector2(position[0], position[1])
 
-                    if key in joint_list:
-                        joint_list[key].append({row[0]: position})
-                    else:
-                        joint_list[key] = [{row[0]: position}]
+                    joint_list[key] = position
             weapon_joint_list.append(joint_list)
         edit_file.close()
     return weapon_joint_list

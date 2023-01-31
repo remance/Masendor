@@ -6,6 +6,7 @@ def check_subunit_collision(self, a, b):
                 a.enemy_in_melee_distance.append(b)
                 if a_front_distance_to_b < a.hitbox_front_distance:
                     a.unit.collide = True
+                    a.front_collide.append(b)
         elif a_front_distance_to_b < a.hitbox_front_distance:  # cannot run pass other unit if either run or in combat
-            a.friend_front.append(b)
+            a.front_collide.append(b)
             a.unit.collide = True

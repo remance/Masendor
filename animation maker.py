@@ -1319,6 +1319,30 @@ class Model:
             self.part_name_list = [{key: None for key in self.mask_part_list}] * max_frame
             self.part_selected = []
 
+        elif edit_type == "weapon joint to hand":
+            for part_index in key_list:
+                if "_weapon" in part_index:
+                    if self.animation_part_list[edit_frame][part_index] is not None and \
+                            len(self.animation_part_list[edit_frame][part_index]) > 3 and \
+                            self.part_name_list[edit_frame][part_index][-1] != "sheath":
+                        hand = "r_"
+                        if "sub" in part_index:
+                            hand = "l_"
+                        hand_part = part_index[:3] + hand + "hand"
+                        if self.animation_part_list[edit_frame][hand_part] is not None and \
+                                len(self.animation_part_list[edit_frame][hand_part]) > 3:  # hand exist
+                            hand_pos = self.animation_part_list[edit_frame][hand_part][2]
+                            part_image = self.animation_part_list[edit_frame][part_index][0]
+                            center = pygame.Vector2(part_image.get_width() / 2, part_image.get_height() / 2)
+                            pos_different = center - weapon_joint_list[direction_list.index(self.bodypart_list[edit_frame][part_index][1])][
+                                  self.weapon[part_index]]  # find distance between image center and connect point main_joint_pos
+                            target = hand_pos + pos_different
+                            if self.animation_part_list[edit_frame][part_index][3] != 0:
+                                radians_angle = math.radians(360 - self.animation_part_list[edit_frame][part_index][3])
+                                target = rotation_xy(hand_pos, target, radians_angle)  # find new point with rotation
+
+                            self.animation_part_list[edit_frame][part_index][2] = target
+
         elif self.part_selected:
             if edit_type == "place":  # find center point of all selected parts
                 min_x = 9999999
@@ -1736,9 +1760,16 @@ filter_button = Button("Filter", image, (screen_size[0] - (image.get_width() * 1
                        description=("Filter animation list according to input", "Capital letter sensitive.",
                                     "Use ',' for multiple filters (e.g., Human,Slash).",
                                     "Add '--' in front of the keyword for exclusion instead of inclusion."))
-export_button = Button("Export", image, (
-screen_size[0] - (image.get_width() * 1.5), p_body_helper.rect.midtop[1] - (image.get_height() * 5)),
+export_button = Button("Export", image, (screen_size[0] - (image.get_width() * 1.5),
+                                         p_body_helper.rect.midtop[1] - (image.get_height() * 5)),
                        description=("Export animation", "Export the current animation to several png image files."))
+
+weapon_joint_to_hand_button = Button("W.J.T.H", image, (screen_size[0] - (image.get_width() * 3.5),
+                                                        p_body_helper.rect.midtop[1] - (image.get_height() * 5)),
+                       description=("Weapon Joint To Hand", "Move weapon to person hand part based on its joint.",
+                                    "This affects weapon pos in game if fix property enable.",
+                                    "Does not affect weapon part with 'sheath' name."))
+
 delete_button = Button("Delete", image, (screen_size[0] - (image.get_width() / 2), image.get_height() / 2),
                        description=("Delete animation", "Delete the current animation."))
 
@@ -2559,6 +2590,9 @@ while True:
                         text_input_popup = ("confirm_input", "export_animation")
                         input_ui.change_instruction("Export to PNG Files?")
                         ui.add(input_ui_popup)
+
+                    elif weapon_joint_to_hand_button.rect.collidepoint(mouse_pos):
+                        model.edit_part(mouse_pos, "weapon joint to hand")
 
                     elif flip_hori_button.rect.collidepoint(mouse_pos):
                         model.edit_part(mouse_pos, "flip1")

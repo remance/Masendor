@@ -852,12 +852,12 @@ class UnitSelector(pygame.sprite.Sprite):
 
     def setup_unit_icon(self, unit_icon_group, unit_list):
         """Setup unit selection list in unit selector ui top left of screen"""
-        if len(unit_icon_group) > 0:  # remove all old icon first before making new list
+        if unit_icon_group:  # remove all old icon first before making new list
             for icon in unit_icon_group:
                 icon.kill()
                 del icon
 
-        if len(unit_list) > 0:
+        if unit_list:
             for this_unit in unit_list:
                 max_column_show = int(
                     self.image.get_width() / ((this_unit.leader[0].full_image.get_width() * self.icon_scale * 1.5)))

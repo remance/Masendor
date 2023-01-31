@@ -227,7 +227,7 @@ class DamageSprite(pygame.sprite.Sprite):
                 self.hit_register(self.pass_subunit)  # register hit whatever subunit the sprite land at
             self.kill()  # remove sprite
 
-        if len(self.current_animation) > 0:
+        if self.current_animation:
             done, just_start = self.play_animation(0.05, dt, False)
             if just_start:
                 self.adjust_sprite()

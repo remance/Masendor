@@ -17,17 +17,20 @@ range_move_attack_command_action = {True: ({"name": "Action 0", "range attack": 
                                              "movable": True, "arc shot": False})}
 
 
-def combat_ai_logic(self, dt, unit_state, collide_list):
-    if collide_list:  # Check if in melee combat or not
+def combat_ai_logic(self, dt, unit_state):
+    if self.enemy_in_melee_distance:  # Check if in melee combat or not
         if self.state not in (96, 98, 99):
             self.state = 10
-            self.melee_target = collide_list[0]
+            self.melee_target = self.enemy_in_melee_distance[0]
             self.unit.attack_target = self.melee_target.unit
             self.new_angle = self.set_rotate(self.melee_target.base_pos)
+            if self.equipped_weapon != self.melee_weapon_set[0]:  # swap to melee weapon when enemy near
+                self.equipped_weapon = self.melee_weapon_set[0]
+                self.swap_weapon()
 
     elif unit_state == 10:  # no nearby enemy to hit while parent unit in melee fight state
         if self.attacking and self.unit.collide:
-            if self.momentum == 1 and self.unit.attack_mode == 1:  # attack to the nearest target instead
+            if self.momentum == 0.1 and self.unit.attack_mode == 1:  # attack to the nearest target instead
                 if self.melee_target is None and self.unit.attack_target is not None:
                     self.melee_target = self.unit.attack_target.alive_subunit_list[0]
                 if self.melee_target is not None:
@@ -86,7 +89,7 @@ def combat_ai_logic(self, dt, unit_state, collide_list):
         if self.state != 10 and self.manual_shoot is False and \
                 (self.magazine_count[self.equipped_weapon][0] > 0 or
                  self.magazine_count[self.equipped_weapon][1] > 0) and self.unit.fire_at_will == 0 and \
-                self.momentum == 1:  # Range attack when unit in melee state
+                self.momentum == 0.1:  # Range attack when unit in melee state
             self.state = 11
             if self.unit.nearby_enemy != {} and (self.attack_target is None or self.attack_pos is None):
                 self.find_shooting_target(unit_state)
@@ -97,7 +100,11 @@ def combat_ai_logic(self, dt, unit_state, collide_list):
             self.battle.combat_path_queue.remove(self)
         self.attack_target = None
         self.combat_move_queue = []
-        if self.ammo_now:
+        if self.ammo_now and self.equipped_weapon not in self.ammo_now:
+            for this_set in self.range_weapon_set:  # find weapon set with range weapon that can shoot, primary first
+                self.equipped_weapon = this_set
+                self.swap_weapon()
+                break
             if unit_state == 11:  # unit in range attack state
                 if any(weapon_range >= self.attack_pos.distance_to(self.base_pos) for weapon_range in
                        self.shoot_range.values()):

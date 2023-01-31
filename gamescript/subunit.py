@@ -151,7 +151,7 @@ class Subunit(pygame.sprite.Sprite):
 
         self.enemy_in_melee_distance = []  # list of front collide sprite
         self.enemy_collide = []  # list of side collide sprite
-        self.friend_front = []  # list of friendly front collide sprite
+        self.front_collide = []  # list of friendly front collide sprite
         self.overlap_collide = []  # list of sprite that collide and almost overlap with this sprite
         self.nearby_subunit_list = []
         self.collide_penalty = False
@@ -641,7 +641,7 @@ class Subunit(pygame.sprite.Sprite):
             if dt > 0:  # only run these when game not pause
                 self.timer += dt
 
-                if len(self.enemy_in_melee_distance) > 0:
+                if self.enemy_in_melee_distance:
                     self.enemy_in_melee_distance = {subunit: subunit.base_pos.distance_to(self.base_pos) for
                                                     subunit in self.enemy_in_melee_distance}
                     self.enemy_in_melee_distance = [item[0] for item in
@@ -661,10 +661,10 @@ class Subunit(pygame.sprite.Sprite):
                 if self.angle != self.new_angle:  # Rotate Function
                     self.rotate_logic(dt)
 
-                self.move_logic(dt, unit_state, self.enemy_in_melee_distance)  # Move function
+                self.move_logic(dt, unit_state)  # Move function
 
                 if self.player_manual_control is False:
-                    unit_state = self.combat_ai_logic(dt, unit_state, self.enemy_in_melee_distance)
+                    unit_state = self.combat_ai_logic(dt, unit_state)
                     self.manual_shoot = False  # reset this every update
 
                 self.morale_logic(dt, unit_state)
@@ -689,8 +689,7 @@ class Subunit(pygame.sprite.Sprite):
 
                 self.enemy_in_melee_distance = []  # reset collide
                 self.enemy_collide = []
-                self.friend_front = []
-                self.same_front = []
+                self.front_collide = []
                 self.overlap_collide = []
                 self.collide_penalty = False
 

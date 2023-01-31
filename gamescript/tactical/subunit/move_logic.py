@@ -7,28 +7,26 @@ rotation_xy = utility.rotation_xy
 infinity = float("inf")
 
 
-def move_logic(self, dt, unit_state, collide_list):
+def move_logic(self, dt, unit_state):
     revert_move = True  # revert move check for in case subunit still need to rotate before moving
     if unit_state == 0 or self.unit.revert or (self.angle != self.unit.angle and self.unit.move_rotate is False):
         revert_move = False
 
-    if (self.base_pos != self.base_target or self.momentum > 1) and \
+    if self.base_pos != self.base_target and \
             (revert_move or self.angle == self.new_angle):  # cannot move if unit still need to rotate
-        no_friend_collide_check = False  # can move if front of unit not collided
-        if self.unit.collide is False or self.broken or unit_state == 10 or self.momentum > 1 or self.unit.move_rotate:
-            no_friend_collide_check = True
+        no_collide = True  # can move if front of subunit not collided or with some exception
 
-        enemy_collide_check = False  # for chance to move or charge through enemy
-        if len(collide_list) > 0:
-            enemy_collide_check = True
-            if self.state in (96, 98, 99):  # escape
-                enemy_collide_check = False
-                no_friend_collide_check = True  # bypass collide
-            elif 0 in self.skill_effect and random.randint(0, 1) == 0:  # chance to charge through
-                enemy_collide_check = False
+        if self.front_collide and self.momentum < 1:
+            diff_list = []
+            for subunit in self.front_collide:
+                diff_list.append(abs(self.troop_mass - subunit.troop_mass))
+            avg = (sum(diff_list) / len(diff_list)) + 1
+            # Chance to move pass based on mass difference (smaller or bigger mean easier)
+            # More collision make it more difficult to move pass too
+            if random.randint(0, avg) < avg / len(diff_list):
+                no_collide = False
 
-        if self.stamina > 0 and no_friend_collide_check and enemy_collide_check is False and \
-                (len(self.friend_front) == 0 or self.state in (96, 98, 99)):
+        if no_collide:
             move = self.base_target - self.base_pos
             move_length = move.length()  # convert length
 

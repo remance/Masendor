@@ -244,8 +244,8 @@ class Lorebook(pygame.sprite.Sprite):
         elif self.section == self.troop_section:
             try:
                 who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key == self.subsection}
-                preview_sprite_pool = self.main.create_sprite_pool(("side",), self.main.troop_sprite_size,
-                                                                   self.screen_scale, who_todo, preview=True)
+                preview_sprite_pool = self.main.create_troop_sprite_pool(("side",), self.main.troop_sprite_size,
+                                                                         self.screen_scale, who_todo, preview=True)
                 self.portrait = preview_sprite_pool[self.subsection]["sprite"]
 
                 self.portrait = pygame.transform.scale(self.portrait, (int(250 * self.screen_scale[0]),

@@ -98,8 +98,8 @@ class Game:
     convert_formation_preset = empty_method
     create_preview_map = empty_method
     create_sound_effect_pool = empty_method
-    create_sprite_pool = empty_method
     create_team_coa = empty_method
+    create_troop_sprite_pool = empty_method
     create_unit_slot = empty_method
     loading_screen = empty_method
     menu_game_editor = empty_method

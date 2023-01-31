@@ -68,7 +68,7 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, penetrate, hit_side=No
                         side_cal = 1
                     dmg_sum = dmg_sum + ((attacker.charge_power - (target.charge_def_power * side_cal)) * 2)
                     if (target.charge_def * side_cal) >= attacker.charge_power / 2:
-                        attacker.momentum = 1  # charge get stopped by charge def
+                        attacker.momentum = 0.1  # charge get stopped by charge def
                     else:
                         attacker.momentum -= (target.charge_def_power * side_cal) / attacker.charge_power
                 else:
