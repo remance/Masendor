@@ -4,3 +4,6 @@ def state_reset_logic(self, unit_state):
         self.state = unit_state  # Enforce unit state to subunit when moving and breaking
 
     self.melee_target = None
+
+    if self.player_equipped_weapon != self.equipped_weapon and self.state == 0:  # reset equipped weapon to player chose
+        self.player_weapon_selection()

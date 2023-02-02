@@ -88,7 +88,7 @@ class Lorebook(pygame.sprite.Sprite):
         # Make new equipment list that contain all type weapon, armour, mount
         self.equipment_stat = {}
         run = 1
-        for stat_list in (self.troop_data.troop_weapon_list,
+        for stat_list in (self.troop_data.weapon_list,
                           self.troop_data.armour_list, self.troop_data.mount_list, self.troop_data.mount_armour_list):
             for index in stat_list:
                 self.equipment_stat[run] = stat_list[index]
@@ -96,7 +96,7 @@ class Lorebook(pygame.sprite.Sprite):
 
         self.equipment_lore = {}
         run = 1
-        for stat_list in (self.troop_data.troop_weapon_lore,
+        for stat_list in (self.troop_data.weapon_lore,
                           self.troop_data.armour_lore, self.troop_data.mount_lore, self.troop_data.mount_armour_lore):
             for index in stat_list:
                 self.equipment_lore[run] = stat_list[index]
@@ -385,7 +385,7 @@ class Lorebook(pygame.sprite.Sprite):
                             if self.section == self.troop_section or self.section == self.leader_section:  # troop section
                                 if "Weapon" in key:  # weapon text with quality
                                     create_text = key + ": " + self.troop_data.equipment_grade_list[value[1]]["Name"] \
-                                                  + " " + self.troop_data.troop_weapon_list[value[0]]["Name"]
+                                                  + " " + self.troop_data.weapon_list[value[0]]["Name"]
 
                                 elif key == "Armour":  # armour text with quality
                                     create_text = key + ": " + self.troop_data.equipment_grade_list[value[1]]["Name"] \

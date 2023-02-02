@@ -3,7 +3,7 @@ def issue_order(self, target_pos, run_command=False, revert_move=False, enemy=No
     if other_command is None:  # move or melee_attack command
         self.state = 1
 
-        if self.attack_place or (enemy is not None and (self.team != enemy.team)):  # melee_attack
+        if self.attack_place or (enemy is not None and (self.team != enemy.team)):  # attack enemy
             if self.ammo <= 0 or self.forced_melee:  # no magazine_left to shoot or forced melee_attack command
                 self.state = 3  # move to melee
             elif self.ammo > 0:  # have magazine_left to shoot

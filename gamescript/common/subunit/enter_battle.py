@@ -11,7 +11,7 @@ def enter_battle(self, zoom, animation_pool):
         pass
 
     self.find_nearby_subunit()
-    self.swap_weapon()
+    self.swap_weapon(self.equipped_weapon)
     self.make_pos_range()
     self.make_front_pos()
 

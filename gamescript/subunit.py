@@ -369,17 +369,18 @@ class Subunit(pygame.sprite.Sprite):
         self.weapon_type = {}
         self.weapon_set = ((self.primary_main_weapon, self.primary_sub_weapon),
                            (self.secondary_main_weapon, self.secondary_sub_weapon))
+
         self.weapon_id = ((self.primary_main_weapon[0], self.primary_sub_weapon[0]),
                           (self.secondary_main_weapon[0], self.secondary_sub_weapon[0]))
-        self.weapon_data = ((self.troop_data.troop_weapon_list[self.primary_main_weapon[0]],
-                             self.troop_data.troop_weapon_list[self.primary_sub_weapon[0]]),
-                            (self.troop_data.troop_weapon_list[self.secondary_main_weapon[0]],
-                             self.troop_data.troop_weapon_list[self.secondary_sub_weapon[0]]))
+        self.weapon_data = ((self.troop_data.weapon_list[self.primary_main_weapon[0]],
+                             self.troop_data.weapon_list[self.primary_sub_weapon[0]]),
+                            (self.troop_data.weapon_list[self.secondary_main_weapon[0]],
+                             self.troop_data.weapon_list[self.secondary_sub_weapon[0]]))
         self.equipped_weapon_data = self.weapon_data[self.equipped_weapon]
-        self.weapon_name = ((self.troop_data.troop_weapon_list[self.primary_main_weapon[0]]["Name"],
-                             self.troop_data.troop_weapon_list[self.primary_sub_weapon[0]]["Name"]),
-                            (self.troop_data.troop_weapon_list[self.secondary_main_weapon[0]]["Name"],
-                             self.troop_data.troop_weapon_list[self.secondary_sub_weapon[0]]["Name"]))
+        self.weapon_name = ((self.troop_data.weapon_list[self.primary_main_weapon[0]]["Name"],
+                             self.troop_data.weapon_list[self.primary_sub_weapon[0]]["Name"]),
+                            (self.troop_data.weapon_list[self.secondary_main_weapon[0]]["Name"],
+                             self.troop_data.weapon_list[self.secondary_sub_weapon[0]]["Name"]))
 
         self.mount_gear = stat["Mount"]
         self.mount = self.troop_data.mount_list[self.mount_gear[0]]  # mount this subunit use
@@ -683,9 +684,6 @@ class Subunit(pygame.sprite.Sprite):
                     self.state = 100  # # remove troop that pass map border, enter dead state
                     self.subunit_health = 0
                     self.die("flee")
-
-                if self.player_equipped_weapon != self.equipped_weapon and self.state == 0:  # reset equipped weapon to player chose
-                    self.player_weapon_selection()
 
                 self.enemy_in_melee_distance = []  # reset collide
                 self.enemy_collide = []

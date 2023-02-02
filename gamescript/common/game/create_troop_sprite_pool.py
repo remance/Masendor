@@ -8,7 +8,7 @@ create_troop_sprite = create_troop_sprite.create_troop_sprite
 
 
 def create_troop_sprite_pool(self, direction_list, genre_sprite_size, screen_scale, who_todo, preview=False):
-    weapon_list = self.troop_data.troop_weapon_list
+    weapon_list = self.troop_data.weapon_list
     animation_sprite_pool = {}  # TODO need to add for subunit creator
     weapon_common_type_list = tuple(set(["_" + value["Common"] + "_" for key, value in weapon_list.items() if
                                          key != "" and type(value["Common"]) != int]))  # all common type animation set
@@ -102,8 +102,8 @@ def create_troop_sprite_pool(self, direction_list, genre_sprite_size, screen_sca
                                                   self.effect_sprite_pool, animation_property,
                                                   self.weapon_joint_list,
                                                   (0, subunit_weapon_list[0],
-                                                   (self.troop_data.troop_weapon_list[primary_main_weapon]["Hand"],
-                                                    self.troop_data.troop_weapon_list[primary_sub_weapon]["Hand"])),
+                                                   (self.troop_data.weapon_list[primary_main_weapon]["Hand"],
+                                                    self.troop_data.weapon_list[primary_sub_weapon]["Hand"])),
                                                   armour, self.colour_list,
                                                   genre_sprite_size, screen_scale, self.troop_data.race_list,
                                                   self.generic_animation_pool[1][
@@ -231,10 +231,10 @@ def create_troop_sprite_pool(self, direction_list, genre_sprite_size, screen_sca
                                                                           animation_property,
                                                                           self.weapon_joint_list,
                                                                           (weapon_set_index, weapon_set,
-                                                                           (self.troop_data.troop_weapon_list[
+                                                                           (self.troop_data.weapon_list[
                                                                                 hand_weapon_list[weapon_set_index][
                                                                                     0]]["Hand"],
-                                                                            self.troop_data.troop_weapon_list[
+                                                                            self.troop_data.weapon_list[
                                                                                 hand_weapon_list[weapon_set_index][
                                                                                     1]]["Hand"])),
                                                                           armour, self.colour_list,

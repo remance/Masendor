@@ -715,7 +715,7 @@ class Game:
 
         self.change_game_genre(self.genre)
 
-        self.troop_card_ui.troop_weapon_list = self.troop_data.troop_weapon_list
+        self.troop_card_ui.weapon_list = self.troop_data.weapon_list
         self.troop_card_ui.armour_list = self.troop_data.armour_list
         self.troop_card_ui.terrain_list = self.battle_base_map.terrain_list
         self.troop_card_ui.feature_list = self.battle_feature_map.feature_list  # add terrain feature list name to subunit card

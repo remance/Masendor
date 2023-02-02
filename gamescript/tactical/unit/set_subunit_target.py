@@ -17,7 +17,7 @@ def set_subunit_target(self, target="rotate", reset_path=False, *args):
                                       self.base_pos[1] - self.unit_box_height)
 
         for subunit in self.alive_subunit_list:  # generate position of each subunit
-            if subunit.state != 99 or (subunit.state == 99 and self.retreat_start):
+            if subunit.broken is False:
                 new_target = unit_topleft + subunit.pos_in_unit
                 if reset_path:
                     subunit.command_target.append(pygame.Vector2(

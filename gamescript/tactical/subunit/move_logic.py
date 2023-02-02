@@ -11,7 +11,6 @@ def move_logic(self, dt, unit_state):
     revert_move = True  # revert move check for in case subunit still need to rotate before moving
     if unit_state == 0 or self.unit.revert or (self.angle != self.unit.angle and self.unit.move_rotate is False):
         revert_move = False
-
     if self.base_pos != self.base_target and \
             (revert_move or self.angle == self.new_angle):  # cannot move if unit still need to rotate
         no_collide = True  # can move if front of subunit not collided or with some exception

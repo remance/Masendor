@@ -25,8 +25,7 @@ def combat_ai_logic(self, dt, unit_state):
             self.unit.attack_target = self.melee_target.unit
             self.new_angle = self.set_rotate(self.melee_target.base_pos)
             if self.equipped_weapon != self.melee_weapon_set[0]:  # swap to melee weapon when enemy near
-                self.equipped_weapon = self.melee_weapon_set[0]
-                self.swap_weapon()
+                self.swap_weapon(self.melee_weapon_set[0])
 
     elif unit_state == 10:  # no nearby enemy to hit while parent unit in melee fight state
         if self.attacking and self.unit.collide:
@@ -102,8 +101,7 @@ def combat_ai_logic(self, dt, unit_state):
         self.combat_move_queue = []
         if self.ammo_now and self.equipped_weapon not in self.ammo_now:
             for this_set in self.range_weapon_set:  # find weapon set with range weapon that can shoot, primary first
-                self.equipped_weapon = this_set
-                self.swap_weapon()
+                self.swap_weapon(this_set)
                 break
             if unit_state == 11:  # unit in range attack state
                 if any(weapon_range >= self.attack_pos.distance_to(self.base_pos) for weapon_range in

@@ -15,6 +15,9 @@ def create_subunit_sprite(self, inspect_subunit_size, sprite_troop_size):
     :return: Dict with sprites
     """
     # Subunit image sprite in inspect ui and far zoom
+    if self.battle.troop_size_adjustable is False:  # no hitbox scaling for mode that disable it
+        sprite_troop_size = 1
+
     colour = team_colour[self.team]
     ui_image = pygame.Surface(inspect_subunit_size, pygame.SRCALPHA)
     ui_image.fill((0, 0, 0))
@@ -104,7 +107,7 @@ def create_subunit_sprite(self, inspect_subunit_size, sprite_troop_size):
                                               (stamina_image.get_width() * 0.7, stamina_image.get_height() * 0.7))
     else:
         image1 = self.troop_data.weapon_icon[
-            self.troop_data.troop_weapon_list[self.primary_main_weapon[0]]["ImageID"]]  # image on subunit sprite
+            self.troop_data.weapon_list[self.primary_main_weapon[0]]["ImageID"]]  # image on subunit sprite
         if sprite_troop_size > 1:
             image1 = pygame.transform.smoothscale(image1, (image1.get_width() * sprite_troop_size, image1.get_height() * sprite_troop_size))
 

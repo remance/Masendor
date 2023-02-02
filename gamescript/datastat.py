@@ -217,7 +217,7 @@ class TroopData:
         edit_file.close()
 
         # Weapon dict
-        self.troop_weapon_list = {}
+        self.weapon_list = {}
         for index, weapon_list in enumerate(("troop_weapon", "mount_weapon")):
             with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop",
                                    weapon_list + ".csv"), encoding="utf-8", mode="r") as edit_file:
@@ -239,19 +239,19 @@ class TroopData:
                     for n, i in enumerate(row):
                         row = stat_convert(row, n, i, percent_column=percent_column, list_column=list_column,
                                            tuple_column=tuple_column, int_column=int_column, true_empty=True)
-                    self.troop_weapon_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
-                    self.troop_weapon_list[row[0]]["Shake Power"] = int(self.troop_weapon_list[row[0]]["Sound Distance"] / 10)
+                    self.weapon_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
+                    self.weapon_list[row[0]]["Shake Power"] = int(self.weapon_list[row[0]]["Sound Distance"] / 10)
             edit_file.close()
 
-        self.troop_weapon_lore = {}
+        self.weapon_lore = {}
         for index, weapon_lore in enumerate(("troop_", "mount_")):
             with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop",
                                    weapon_lore + "weapon_lore_" + language + ".csv"), encoding="utf-8",
                       mode="r") as edit_file:
                 weapon_lore_list = {}
                 lore_csv_read(edit_file, weapon_lore_list)
-                self.troop_weapon_lore |= {key: value for key, value in weapon_lore_list.items() if key
-                                           in self.troop_weapon_list}
+                self.weapon_lore |= {key: value for key, value in weapon_lore_list.items() if key
+                                     in self.weapon_list}
         edit_file.close()
 
         # Armour dict

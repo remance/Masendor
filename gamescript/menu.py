@@ -495,13 +495,13 @@ class ArmyStat(pygame.sprite.Sprite):
         self.secondary_main_weapon = stat["Secondary Main Weapon"]
         self.secondary_sub_weapon = stat["Secondary Sub Weapon"]
         leader_primary_weapon = troop_data.equipment_grade_list[stat["Primary Main Weapon"][1]]["Name"] + " " + \
-                                troop_data.troop_weapon_list[stat["Primary Main Weapon"][0]]["Name"] + ", " + \
+                                troop_data.weapon_list[stat["Primary Main Weapon"][0]]["Name"] + ", " + \
                                 troop_data.equipment_grade_list[stat["Primary Sub Weapon"][1]]["Name"] + " " + \
-                                troop_data.troop_weapon_list[stat["Primary Sub Weapon"][0]]["Name"]
+                                troop_data.weapon_list[stat["Primary Sub Weapon"][0]]["Name"]
         leader_secondary_weapon = troop_data.equipment_grade_list[stat["Secondary Main Weapon"][1]]["Name"] + " " + \
-                                  troop_data.troop_weapon_list[stat["Secondary Main Weapon"][0]]["Name"] + ", " + \
+                                  troop_data.weapon_list[stat["Secondary Main Weapon"][0]]["Name"] + ", " + \
                                   troop_data.equipment_grade_list[stat["Secondary Sub Weapon"][1]]["Name"] + " " + \
-                                  troop_data.troop_weapon_list[stat["Secondary Sub Weapon"][0]]["Name"]
+                                  troop_data.weapon_list[stat["Secondary Sub Weapon"][0]]["Name"]
         leader_armour = troop_data.equipment_grade_list[stat["Armour"][1]]["Name"] + " " + \
                         troop_data.armour_list[stat["Armour"][0]]["Name"]
         leader_mount = troop_data.mount_grade_list[stat["Mount"][1]]["Name"] + ", " + \

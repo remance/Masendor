@@ -4,8 +4,5 @@ def range_weapon_selection(self, player_order=False):
             for key, value in self.magazine_count[weapon_set].items():
                 if value > 0:
                     if self.equipped_weapon != weapon_set:
-                        self.equipped_weapon = weapon_set
-                        if player_order:
-                            self.player_equipped_weapon = self.equipped_weapon
-                        self.swap_weapon()
+                        self.swap_weapon(weapon_set, player_equip=player_order)
                     break
