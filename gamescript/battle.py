@@ -634,6 +634,7 @@ class Battle:
                     if unit.game_id == self.char_selected:
                         self.player_char = unit.leader[0].subunit
                         unit.leader[0].subunit.player_manual_control = True
+                        self.command_ui.add_leader_image(unit.leader[0].full_image)  # TODO enactment mode let player click other unit when old one dead, change command_ui stuff too
                         self.current_selected = unit
                         unit.just_selected = True
                         unit.selected = True
@@ -1111,13 +1112,8 @@ class Battle:
                               2: pygame.sprite.Group(), "alive": pygame.sprite.Group()}  # reset dict
         self.team_pos_list = {key: {} for key in self.team_pos_list.keys()}
 
-        clean_group_object((self.shoot_lines, self.subunit_updater, self.leader_updater, self.unit_updater,
-                            self.unit_icon, self.troop_number_sprite, self.damage_sprites, self.weather_matter))
-
-        self.subunit_animation_pool = None
-        self.generic_action_data = None
-
-        self.remove_unit_ui()
+        if hasattr(self.command_ui, "last_who"):
+            self.command_ui.last_who = None
 
         self.combat_path_queue = []
         self.battle_subunit_list = []
@@ -1129,9 +1125,19 @@ class Battle:
         self.before_selected = None
         self.last_mouseover = None
 
-        self.sound_effect_queue = {}
-
         self.player_char = None
+
+        clean_group_object((self.shoot_lines, self.inspect_subunit, self.subunit_updater, self.leader_updater,
+                            self.unit_updater, self.unit_icon, self.troop_number_sprite, self.damage_sprites,
+                            self.weather_matter))
+
+        self.inspect_subunit = []
+        self.subunit_animation_pool = None
+        self.generic_action_data = None
+
+        self.remove_unit_ui()
+
+        self.sound_effect_queue = {}
 
         self.drama_timer = 0  # reset drama text popup
         self.battle_ui_updater.remove(self.drama_text)

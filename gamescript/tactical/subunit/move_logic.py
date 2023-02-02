@@ -8,6 +8,7 @@ infinity = float("inf")
 
 
 def move_logic(self, dt, unit_state):
+    self.base_target = self.command_target  # always attempt to catch up to command target
     revert_move = True  # revert move check for in case subunit still need to rotate before moving
     if unit_state == 0 or self.unit.revert or (self.angle != self.unit.angle and self.unit.move_rotate is False):
         revert_move = False
@@ -90,7 +91,7 @@ def move_logic(self, dt, unit_state):
 
                         number_pos = (self.unit.base_pos[0] - self.unit.unit_box_width,
                                       (self.unit.base_pos[1] + self.unit.unit_box_height))
-                        self.unit.base_number_pos = rotation_xy(self.unit.base_pos, number_pos, self.unit.radians_angle)
+                        self.unit.base_number_pos = self.unit.base_pos
                         self.unit.change_pos_scale()
 
                     if self.run:  # charge skill only when running to melee

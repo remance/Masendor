@@ -83,15 +83,15 @@ def mouse_scrolling_process(self, mouse_scroll_up, mouse_scroll_down):
                                                  self.faction_data.faction_name_list,
                                                  self.troop_namegroup, self.battle_ui_updater)
 
-    elif self.map_scale_delay == 0:  # Scrolling in self map to zoom
-        if mouse_scroll_up:
+    elif self.map_scale_delay == 0:  # Scrolling in battle map to zoom
+        if mouse_scroll_up:  # zoom in
             try:
                 self.camera_zoom = self.camera_zoom_level[self.camera_zoom_level.index(self.camera_zoom) + 1]
                 self.camera_zoom_change()
             except IndexError:
                 pass
 
-        elif mouse_scroll_down:
-            if self.camera_zoom_level.index(self.camera_zoom) > 1:
+        elif mouse_scroll_down:  # zoom out
+            if self.camera_zoom > 1:
                 self.camera_zoom = self.camera_zoom_level[self.camera_zoom_level.index(self.camera_zoom) - 1]
                 self.camera_zoom_change()

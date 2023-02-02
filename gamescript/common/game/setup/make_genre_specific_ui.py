@@ -9,8 +9,11 @@ def make_genre_specific_ui(main_dir, screen_scale, genre, command_ui_type):
 
     genre_icon_image = load_images(main_dir, screen_scale=screen_scale,
                                    subfolder=(genre, "ui", "battle_ui", "commandbar_icon"))
-    command_ui = battleui.CommandUI(screen_scale, command_ui_type)  # Command ui with leader and unit behaviours button
-    command_ui.load_sprite(genre_battle_ui_image["command_box"], genre_icon_image)
+    if command_ui_type == "hero":
+        command_ui = battleui.HeroUI(screen_scale)  # hero ui that show leader weapon, health, and portrait
+    elif command_ui_type == "command":
+        command_ui = battleui.CommandUI(screen_scale)  # Command ui with leader and unit behaviours button
+        command_ui.load_sprite(genre_battle_ui_image["command_box"], genre_icon_image)
 
     col_split_button = battleui.UIButton(genre_battle_ui_image["colsplit_button"],
                                          0)  # unit split by column button

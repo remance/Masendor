@@ -701,8 +701,8 @@ class Game:
                                    self.lore_name_list.scroll, self.filter_tag_list.scroll, *self.lore_button_ui)
 
         self.subunit_hitbox_size = subunit.Subunit.subunit_hitbox_size
-        self.subunit_inspect_sprite_size = (subunit.Subunit.subunit_hitbox_size * 10 * self.screen_scale[0],
-                                            subunit.Subunit.subunit_hitbox_size * 10 * self.screen_scale[1])
+        self.subunit_inspect_sprite_size = (60 * self.screen_scale[0],
+                                            60 * self.screen_scale[1])
 
         self.max_melee_weapon_range = 0
         self.collide_distance = self.subunit_hitbox_size  # distance to check collision
@@ -979,11 +979,6 @@ class Game:
         self.battle_game.max_camera_zoom_image_scale = self.battle_game.max_camera_zoom + 1
         self.battle_game.camera_zoom_level = tuple([item for item in range(1, self.battle_game.max_camera_zoom + 1) if
                                                     item == 1 or item % 2 == 0])
-
-        if self.command_ui.ui_type == "command":
-            self.command_ui.load_sprite(genre_battle_ui_image["command_box"], genre_icon_image)
-        else:
-            self.command_ui.load_sprite(None, None)
 
         self.genre_ui_dict["col_split_button"].image = genre_battle_ui_image["colsplit_button"]
         self.genre_ui_dict["row_split_button"].image = genre_battle_ui_image["rowsplit_button"]

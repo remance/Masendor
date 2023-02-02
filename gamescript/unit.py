@@ -80,7 +80,7 @@ class Unit(pygame.sprite.Sprite):
                  start_hp=100, start_stamina=100, team=0):
         """Unit object represent a group of subunits, each unit can contain a specific number of subunits
         depending on the genre setting"""
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self, self.containers)  # class unit as sprite for updater
         self.icon = None  # for linking with army selection ui, got linked when icon created in game_ui.ArmyIcon
         self.team_commander = None  # commander leader
         self.start_where = []

@@ -6,20 +6,20 @@ from gamescript import unit
 team_colour = unit.team_colour
 
 
-def create_subunit_sprite(self, inspect_subunit_size, sprite_troop_size):
+def create_subunit_sprite(self, subunit_inspect_size, troop_sprite_size):
     """
     Create subunit sprite for furthest zoom and inspect ui
     :param self: Subunit object
-    :param inspect_subunit_size: Size of subunit inspect sprite used to created sprite
-    :param sprite_troop_size: Size of troop sprite based on troop size
+    :param subunit_inspect_size: Size of subunit inspect sprite used to created sprite
+    :param troop_sprite_size: Size of troop sprite based on troop size
     :return: Dict with sprites
     """
     # Subunit image sprite in inspect ui and far zoom
     if self.battle.troop_size_adjustable is False:  # no hitbox scaling for mode that disable it
-        sprite_troop_size = 1
+        troop_sprite_size = 1
 
     colour = team_colour[self.team]
-    ui_image = pygame.Surface(inspect_subunit_size, pygame.SRCALPHA)
+    ui_image = pygame.Surface(subunit_inspect_size, pygame.SRCALPHA)
     ui_image.fill((0, 0, 0))
     pygame.draw.rect(ui_image, (255, 255, 255), (ui_image.get_width() / 20, ui_image.get_height() / 20,
                                                  ui_image.get_width() - (ui_image.get_width() / 10),
@@ -29,9 +29,9 @@ def create_subunit_sprite(self, inspect_subunit_size, sprite_troop_size):
                                         ui_image.get_width() - (ui_image.get_width() / 4),
                                         ui_image.get_height() - (ui_image.get_height() / 4)))
 
-    if sprite_troop_size > 1:
-        ui_image = pygame.transform.smoothscale(ui_image, (ui_image.get_width() * sprite_troop_size,
-                                                           ui_image.get_height() * sprite_troop_size))
+    if troop_sprite_size > 1:
+        ui_image = pygame.transform.smoothscale(ui_image, (ui_image.get_width() * troop_sprite_size,
+                                                           ui_image.get_height() * troop_sprite_size))
 
     image = pygame.Surface((ui_image.get_width(), ui_image.get_height()),
                            pygame.SRCALPHA)  # subunit sprite image
@@ -69,8 +69,8 @@ def create_subunit_sprite(self, inspect_subunit_size, sprite_troop_size):
     far_image = pygame.transform.smoothscale(far_image, (int(dim[0]), int(dim[1])))
     far_selected_image = pygame.transform.smoothscale(far_selected_image, (int(dim[0]), int(dim[1])))
 
-    block = pygame.transform.smoothscale(ui_image, (image.get_width() * int(sprite_troop_size),
-                                                    image.get_height() * int(sprite_troop_size)))  # image shown in inspect ui as square instead of circle
+    block = pygame.transform.smoothscale(ui_image, (image.get_width() * int(troop_sprite_size),
+                                                    image.get_height() * int(troop_sprite_size)))  # image shown in inspect ui as square instead of circle
 
     # Health and stamina related
     health_image_list = (self.subunit_ui_images["health_circle_100"], self.subunit_ui_images["health_circle_75"],
@@ -80,12 +80,12 @@ def create_subunit_sprite(self, inspect_subunit_size, sprite_troop_size):
                           self.subunit_ui_images["stamina_circle_50"], self.subunit_ui_images["stamina_circle_25"],
                           self.subunit_ui_images["stamina_circle_0"])
 
-    if sprite_troop_size != 1:  # use scaled bar image to subunit sprite size
-        health_image_list = tuple([pygame.transform.smoothscale(image, (image.get_width() * sprite_troop_size,
-                                                                        image.get_height() * sprite_troop_size))
+    if troop_sprite_size != 1:  # use scaled bar image to subunit sprite size
+        health_image_list = tuple([pygame.transform.smoothscale(image, (image.get_width() * troop_sprite_size,
+                                                                        image.get_height() * troop_sprite_size))
                                    for image in health_image_list])
-        stamina_image_list = tuple([pygame.transform.smoothscale(image, (image.get_width() * sprite_troop_size,
-                                                                         image.get_height() * sprite_troop_size))
+        stamina_image_list = tuple([pygame.transform.smoothscale(image, (image.get_width() * troop_sprite_size,
+                                                                         image.get_height() * troop_sprite_size))
                                    for image in stamina_image_list])
 
     health_image = health_image_list[0]
@@ -108,8 +108,8 @@ def create_subunit_sprite(self, inspect_subunit_size, sprite_troop_size):
     else:
         image1 = self.troop_data.weapon_icon[
             self.troop_data.weapon_list[self.primary_main_weapon[0]]["ImageID"]]  # image on subunit sprite
-        if sprite_troop_size > 1:
-            image1 = pygame.transform.smoothscale(image1, (image1.get_width() * sprite_troop_size, image1.get_height() * sprite_troop_size))
+        if troop_sprite_size > 1:
+            image1 = pygame.transform.smoothscale(image1, (image1.get_width() * troop_sprite_size, image1.get_height() * troop_sprite_size))
 
     image_rect = image1.get_rect(center=image.get_rect().center)
     image.blit(image1, image_rect)

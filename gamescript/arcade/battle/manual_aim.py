@@ -103,17 +103,18 @@ def manual_aim(self, mouse_left_up, mouse_right_up, mouse_scroll_up, mouse_scrol
                                                "arc shot": this_subunit.shoot_line.arc_shot[weapon]}
 
     elif self.map_scale_delay == 0 and (mouse_scroll_up or mouse_scroll_down):
-        if mouse_scroll_up:
+        if mouse_scroll_up:  # zoom in
             try:
                 self.camera_zoom = self.camera_zoom_level[self.camera_zoom_level.index(self.camera_zoom) + 1]
                 self.camera_zoom_change()
             except IndexError:
                 pass
 
-        elif mouse_scroll_down:
-            if self.camera_zoom_level.index(self.camera_zoom) > 1:
+        elif mouse_scroll_down:  # zoom out
+            if self.camera_zoom > 1:
                 self.camera_zoom = self.camera_zoom_level[self.camera_zoom_level.index(self.camera_zoom) - 1]
                 self.camera_zoom_change()
+
 
     else:
         if key_press is not None:

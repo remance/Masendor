@@ -33,9 +33,10 @@ def setup_formation(self):
 
         self.setup_subunit_position_list()
 
-        number_pos = (self.base_pos[0] - self.unit_box_width,
-                      (self.base_pos[1] + self.unit_box_height))  # find new position for number text
-        self.number_pos = rotation_xy(self.base_pos, number_pos, self.radians_angle)
+        # number_pos = (self.base_pos[0] - self.unit_box_width,
+        #               (self.base_pos[1] + self.unit_box_height))  # find new position for number text
+        # self.base_number_pos = rotation_xy(self.base_pos, number_pos, self.radians_angle)
+        self.base_number_pos = self.base_pos
         self.change_pos_scale()
 
         # Recalculate center pos of the unit since the formation/size change
@@ -53,6 +54,10 @@ def setup_formation(self):
 
         front_pos = (self.base_pos[0], (self.base_pos[1] - self.unit_box_height))  # find front position of unit
         self.front_pos = rotation_xy(self.base_pos, front_pos, self.radians_angle)
+        number_pos = (self.base_pos[0] - self.unit_box_width,
+                      (self.base_pos[1] + self.unit_box_height))  # find position for number text
+        self.base_number_pos = rotation_xy(self.base_pos, number_pos, self.radians_angle)
+        self.change_pos_scale()
 
 
 def find_box_size(self):

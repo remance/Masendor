@@ -36,10 +36,7 @@ def selected_unit_process(self, mouse_left_up, mouse_right_up, double_mouse_righ
 
             else:  # Update unit stat ui and command ui value every 1.1 seconds
                 if self.ui_timer >= 1.1:
-                    who_in_command_ui = self.current_selected
-                    if self.command_ui.ui_type == "hero":
-                        who_in_command_ui = self.player_char
-                    self.command_ui.value_input(who=who_in_command_ui)
+                    self.command_ui.value_input(who=self.player_char)
 
         elif self.game_state == "editor" and self.subunit_build not in self.battle_ui_updater:
             if (mouse_right_up or mouse_right_down) and self.click_any is False:  # Unit placement
