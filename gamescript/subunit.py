@@ -139,6 +139,8 @@ class Subunit(pygame.sprite.Sprite):
         self.player_manual_control = False  # for mode that allow player to manually control a subunit
         self.manual_shoot = False  # currently in manual shoot control, do not automatically shoot by itself
 
+        self.sprite_troop_size = 1
+        self.subunit_type = 1
         self.animation_pool = {}  # list of animation sprite this subunit can play with its action
         self.current_animation = {}  # list of animation frames playing
         self.animation_queue = []  # list of animation queue
@@ -163,244 +165,14 @@ class Subunit(pygame.sprite.Sprite):
         self.unit = unit  # reference to the parent uit of this subunit
         self.team = self.unit.team
 
-        self.attack_pos = None
-        self.red_border = False  # red corner to indicate taking melee_dmg in inspect ui
-        self.state = 0  # current subunit state, similar to unit state
-        self.timer = random.random()  # may need to use random.random()
-        self.move_timer = 0  # timer for moving to front position before attacking nearest enemy
-        self.momentum = 0.1  # charging momentum to reach target before choosing the nearest enemy
-        self.max_melee_attack_range = 0
-
-        self.camera_zoom = 1
-        self.max_camera_zoom = self.battle.max_camera_zoom  # closest zoom allowed
-        self.last_camera_zoom = 0
-
-        self.screen_scale = self.battle.screen_scale
-
-        self.map_corner = self.battle.map_corner
-
-        self.skill_cond = 0
-        self.broken_limit = 0  # morale require for unit to stop broken state, will increase everytime broken state stop
-        self.broken = False  # completely broken means no more chance of leaving broken state and morale is not check
-        self.interrupt_animation = False
-        self.top_interrupt_animation = False  # interrupt animation regardless of property
-        self.use_animation_sprite = False
-        self.play_troop_animation = self.battle.play_troop_animation
-
-        # Set up special effect variable, first main item is for effect from troop/trait, second main item is for weapon
-        # first sub item is permanent effect from trait, second sub item from temporary status or skill
-        self.special_effect = {status_name["Name"]: [[False, False], [False, False]]
-                               for status_name in self.troop_data.special_effect_list.values() if
-                               status_name["Name"] != "Name"}
-
-        # Setup troop original stat before applying trait, gear and other stuffs
-        skill = []  # keep only troop and weapon skills in here, leader skills are kept in Leader object
-        self.troop_number = 1  # number of troops inside the subunit
-
-        if type(troop_id) == int or "h" not in troop_id:  # normal troop
-            self.troop_id = int(troop_id)  # ID of preset used for this subunit
-            sprite_list = self.troop_sprite_list
-            stat = self.troop_data.troop_list[self.troop_id].copy()
-            lore = self.troop_data.troop_lore[self.troop_id].copy()
-            self.grade = stat["Grade"]  # training level/class grade
-            grade_stat = self.troop_data.grade_list[self.grade]
-
-            training_scale = (stat["Melee Attack Scale"], stat["Defence Scale"], stat["Ranged Attack Scale"])
-
-            skill = stat["Skill"]  # skill list according to the preset
-            self.magazine_count = {index: {0: 1 + stat["Ammunition Modifier"], 1: 1 + stat["Ammunition Modifier"]}
-                                   for index in range(0, 2)}  # Number of magazine, as mod number
-            self.charge_skill = stat["Charge Skill"]  # for easier reference to check what charge skill this subunit has
-            self.original_morale = stat["Morale"] + grade_stat["Morale Bonus"]  # morale with grade bonus
-            self.original_discipline = stat["Discipline"] + grade_stat[
-                "Discipline Bonus"]  # discipline with grade bonus
-            self.original_mental = stat["Mental"] + grade_stat[
-                "Mental Bonus"]  # mental resistance from morale melee_dmg and mental status effect
-            self.troop_number = stat["Troop"] * troop_number_scale[
-                self.team] * start_hp / 100  # number of starting troop, team -1 to become list index
-
-            self.troop_class = stat["Troop Class"]
-
-        else:  # leader/hero character, for game mode that replace subunit with leader
-            self.troop_id = troop_id
-            sprite_list = self.leader_sprite_list
-            stat = self.leader_data.leader_list[int(troop_id.replace("h", ""))].copy()
-            lore = self.leader_data.leader_lore[int(troop_id.replace("h", ""))].copy()
-            self.grade = 12  # leader grade by default
-            grade_stat = self.troop_data.grade_list[self.grade]
-
-            training_scale = (stat["Melee Speciality"], stat["Melee Speciality"], stat["Range Speciality"])
-
-            self.magazine_count = {0: {0: 2, 1: 2}, 1: {0: 2, 1: 2}}  # leader gets double ammunition
-            self.charge_skill = stat["Charge Skill"]
-            self.original_morale = 100 + grade_stat["Morale Bonus"]  # morale with grade bonus
-            self.original_discipline = 100 + grade_stat[
-                "Discipline Bonus"]  # discipline with grade bonus
-            self.original_mental = 50 + grade_stat[
-                "Mental Bonus"]  # mental resistance from morale melee_dmg and mental status effect
-
-            self.troop_number = self.hero_health_scale
-
-            self.special_effect["Shoot While Moving"][0][0] = True  # allow shoot while moving for hero
-
-            self.troop_class = "Leader"
-
-        self.name = lore[0]  # name according to the preset
-        self.race = stat["Race"]  # creature race
-        race_stat = self.troop_data.race_list[stat["Race"]]
-        self.race_name = race_stat["Name"]
-        self.grade_name = grade_stat["Name"]
-
-        # Default element stat
-        element_dict = {key.split(" ")[0]: 0 for key in race_stat if
-                        " Resistance" in key}  # get only resistance that exist in race data
-        self.element_status_check = element_dict.copy()  # element threshold count
-        self.original_element_resistance = element_dict.copy()
-
-        self.original_heat_resistance = 0  # resistance to heat temperature
-        self.original_cold_resistance = 0  # Resistance to cold temperature
-        self.temperature_count = 0  # temperature threshold count
-
-        # initiate equipment stat
-        self.weight = 0
-        self.original_weapon_dmg = {index: {0: element_dict.copy(), 1: element_dict.copy()} for index in range(0, 2)}
-        self.weapon_penetrate = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
-        self.weapon_weight = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
-        self.range_dmg = {index: {0: element_dict.copy(), 1: element_dict.copy()} for index in range(0, 2)}
-        self.original_range = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
-        self.original_melee_range = {0: {}, 1: {}}
-        self.original_weapon_speed = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
-
-        self.magazine_size = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}  # can shoot how many times before have to reload
-        self.ammo_now = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}  # ammunition count in the current magazine
-        self.weapon_skill = {0: {0: [], 1: []}, 1: {0: [], 1: []}}
-        self.equipped_weapon = 0
-        self.player_equipped_weapon = self.equipped_weapon
-        self.swap_weapon_list = (1, 0)  # for swapping to other set
-
-        # Get troop stat
-
-        attribute_stat = race_stat
-        if type(troop_id) == str and "h" in troop_id:  # use leader stat for hero (leader) subunit
-            attribute_stat = stat
-
-        max_scale = sum(training_scale)
-        if max_scale != 0:
-            training_scale = [item / max_scale for item in
-                              training_scale]  # convert to proportion of whatever max number
-        else:
-            training_scale = [0.333333 for _ in training_scale]
-
-        self.subunit_type = 0
-        if training_scale[2] > training_scale[0]:  # range training higher than melee, change type to range infantry
-            self.subunit_type = 1
-
-        self.strength = attribute_stat["Strength"]
-        self.dexterity = attribute_stat["Dexterity"]
-        self.agility = attribute_stat["Agility"]
-        self.constitution = attribute_stat["Constitution"]
-        self.intelligence = attribute_stat["Intelligence"]
-        self.wisdom = attribute_stat["Wisdom"]
-
-        self.original_melee_attack = ((self.strength * 0.4) + (self.dexterity * 0.3) + (self.wisdom * 0.2)) + \
-                                     (grade_stat["Training Score"] * training_scale[0])
-
-        self.original_melee_def = ((self.dexterity * 0.3) + (self.agility * 0.3) + (self.constitution * 0.2) +
-                                   (self.wisdom * 0.2)) + (grade_stat["Training Score"] *
-                                                           ((training_scale[0] + training_scale[1]) / 2))
-
-        self.original_range_def = ((self.dexterity * 0.5) + (self.agility * 0.3) + (self.constitution * 0.1) +
-                                   (self.wisdom * 0.1)) + (grade_stat["Training Score"] *
-                                                           ((training_scale[1] + training_scale[2]) / 2))
-
-        self.original_accuracy = ((self.strength * 0.1) + (self.dexterity * 0.6) + (self.wisdom * 0.3)) + \
-                                 (grade_stat["Training Score"] * training_scale[2]) / 2
-
-        self.original_sight = ((self.dexterity * 0.8) + (self.wisdom * 0.2)) + (grade_stat["Training Score"] *
-                                                                                training_scale[2])
-
-        self.original_reload = ((self.strength * 0.1) + (self.dexterity * 0.4) + (self.agility * 0.4) +
-                                (self.wisdom * 0.1)) + (grade_stat["Training Score"] * training_scale[2])
-
-        self.original_charge = ((self.strength * 0.3) + (self.agility * 0.3) + (self.dexterity * 0.3) +
-                                (self.wisdom * 0.2)) + (grade_stat["Training Score"] * training_scale[0])
-
-        self.original_charge_def = ((self.dexterity * 0.4) + (self.agility * 0.1) + (self.constitution * 0.3) +
-                                    (self.wisdom * 0.2)) + (grade_stat["Training Score"] *
-                                                            ((training_scale[0] + training_scale[1]) / 2))
-
-        self.original_speed = self.agility / 5  # get replaced with mount agi and speed bonus
-
-        self.shot_per_shoot = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
-
-        self.original_crit_effect = 1  # critical extra modifier
-
-        self.trait = {"Original": stat["Trait"] + race_stat["Trait"] +
-                                  self.troop_data.grade_list[self.grade]["Trait"],
-                      "Weapon": {0: {0: [], 1: []}, 1: {0: [], 1: []}}}  # trait from preset, race and grade
-
-        self.skill_cooldown = {}
-        self.armour_gear = stat["Armour"]  # armour equipment
-        armour_stat = self.troop_data.armour_list[self.armour_gear[0]]
-        armour_grade_mod = self.troop_data.equipment_grade_list[self.armour_gear[1]]["Modifier"]
-        for element in self.original_element_resistance:  # resistance from race and armour
-            self.original_element_resistance[element] = race_stat[element + " Resistance"]
-            self.original_element_resistance[element] += (armour_stat[element + " Resistance"] * armour_grade_mod)
-
-        self.original_skill = skill.copy()  # Skill that the subunit processes
-        if "" in self.original_skill:
-            self.original_skill.remove("")
-
-        self.troop_health = ((self.strength * 0.2) + (self.constitution * 0.8)) * grade_stat[
-            "Health Effect"]  # Health of each troop
-        self.stamina = ((self.strength * 0.2) + (self.constitution * 0.8)) * grade_stat["Stamina Effect"] * (
-                start_stamina / 100)  # starting stamina with grade
-        self.original_mana = 0
-        if "Mana" in stat:
-            self.original_mana = stat["Mana"]  # Resource for magic skill
-
-        # Add equipment stat
-        self.primary_main_weapon = stat["Primary Main Weapon"]
-        self.primary_sub_weapon = stat["Primary Sub Weapon"]
-        self.secondary_main_weapon = stat["Secondary Main Weapon"]
-        self.secondary_sub_weapon = stat["Secondary Sub Weapon"]
-        self.melee_weapon_set = {}
-        self.range_weapon_set = {}
-        self.weapon_type = {}
-        self.weapon_set = ((self.primary_main_weapon, self.primary_sub_weapon),
-                           (self.secondary_main_weapon, self.secondary_sub_weapon))
-
-        self.weapon_id = ((self.primary_main_weapon[0], self.primary_sub_weapon[0]),
-                          (self.secondary_main_weapon[0], self.secondary_sub_weapon[0]))
-        self.weapon_data = ((self.troop_data.weapon_list[self.primary_main_weapon[0]],
-                             self.troop_data.weapon_list[self.primary_sub_weapon[0]]),
-                            (self.troop_data.weapon_list[self.secondary_main_weapon[0]],
-                             self.troop_data.weapon_list[self.secondary_sub_weapon[0]]))
-        self.equipped_weapon_data = self.weapon_data[self.equipped_weapon]
-        self.weapon_name = ((self.troop_data.weapon_list[self.primary_main_weapon[0]]["Name"],
-                             self.troop_data.weapon_list[self.primary_sub_weapon[0]]["Name"]),
-                            (self.troop_data.weapon_list[self.secondary_main_weapon[0]]["Name"],
-                             self.troop_data.weapon_list[self.secondary_sub_weapon[0]]["Name"]))
-
-        self.mount_gear = stat["Mount"]
-        self.mount = self.troop_data.mount_list[self.mount_gear[0]]  # mount this subunit use
-        self.mount_race_name = self.troop_data.race_list[self.mount["Race"]]["Name"]
-        self.mount_grade = self.troop_data.mount_grade_list[self.mount_gear[1]]
-        self.mount_armour = self.troop_data.mount_armour_list[self.mount_gear[2]]
-
-        self.animation_race_name = self.race_name
-        if self.mount_race_name != "None":
-            self.animation_race_name += "&" + self.mount_race_name
-
-        self.troop_size = race_stat["Size"]
-
         self.original_inflict_status = {}  # status that this subunit will inflict to enemy when melee_attack
         self.feature_mod = "Infantry"  # the terrain feature that will be used on this subunit
         self.authority = 100  # default start at 100
+        self.move_speed = 0  # speed of current movement
 
         # Other stats
         self.weapon_cooldown = {0: 0, 1: 0}  # subunit can attack with weapon only when cooldown reach attack speed
-        self.corner_atk = False  # check if subunit can melee_attack corner enemy or not
+        self.corner_atk = False  # check if subunit can melee attack corner enemy or not
         self.flank_bonus = 1  # combat bonus when flanking
         self.base_auth_penalty = 0.1  # penalty to authority when bad event happen
         self.morale_dmg_bonus = 0  # extra morale melee_dmg
@@ -421,137 +193,400 @@ class Subunit(pygame.sprite.Sprite):
         self.countup_timer = 0  # timer that count up to specific threshold to start event like charge attack timing
         self.countup_trigger_time = 0  # time that indicate when trigger happen
 
-        if self.mount_gear[0] != 1:  # have a mount, add mount stat with its grade to subunit stat
-            self.add_mount_stat()
+        self.attack_pos = None
+        self.red_border = False  # red corner to indicate taking melee_dmg in inspect ui
+        self.state = 0  # current subunit state, similar to unit state
+        self.timer = random.random()  # may need to use random.random()
+        self.move_timer = 0  # timer for moving to front position before attacking nearest enemy
+        self.momentum = 0.1  # charging momentum to reach target before choosing the nearest enemy
+        self.max_melee_attack_range = 0
 
-        self.troop_mass = self.troop_size
+        self.camera_zoom = 1
+        self.max_camera_zoom = self.battle.max_camera_zoom  # closest zoom allowed
+        self.last_camera_zoom = 0
 
-        self.original_hidden = 1000 / self.troop_mass  # hidden based on size, use size after add mount
+        self.screen_scale = self.battle.screen_scale
 
-        self.trait["Original"] += self.troop_data.armour_list[self.armour_gear[0]][
-            "Trait"]  # add armour trait to subunit
+        self.map_corner = self.battle.map_corner
 
-        self.trait["Original"] = tuple(
-            set([trait for trait in self.trait["Original"] if trait != 0]))  # remove empty and duplicate traits
-        self.trait["Original"] = {x: self.troop_data.trait_list[x] for x in self.trait["Original"] if
-                                  x in self.troop_data.trait_list}  # replace trait index with data
+        self.pos_in_unit = (0, 0)  # position in unit array
+        self.base_pos = (0, 0)  # true position of subunit in battle
+        self.pos = (0, 0)  # pos is for showing on screen
+        self.last_pos = self.base_pos
+        self.front_pos = (0, 0)
+        self.base_target = (0, 0)  # base_target to move
+        self.command_target = (0, 0)  # actual base_target outside of combat
 
-        self.add_original_trait()
+        self.skill_cond = 0
+        self.broken_limit = 0  # morale require for unit to stop broken state, will increase everytime broken state stop
+        self.broken = False  # completely broken means no more chance of leaving broken state and morale is not check
+        self.interrupt_animation = False
+        self.top_interrupt_animation = False  # interrupt animation regardless of property
+        self.use_animation_sprite = False
+        self.play_troop_animation = self.battle.play_troop_animation
 
-        # Stat after applying trait and gear
-        self.base_melee_attack = self.original_melee_attack
-        self.base_melee_def = self.original_melee_def
-        self.base_range_def = self.original_range_def
+        # Set up special effect variable, first main item is for effect from troop/trait, second main item is for weapon
+        # first sub item is permanent effect from trait, second sub item from temporary status or skill
+        self.special_effect = {status_name["Name"]: [[False, False], [False, False]]
+                               for status_name in self.troop_data.special_effect_list.values() if
+                               status_name["Name"] != "Name"}
 
-        self.base_element_resistance = self.original_element_resistance.copy()
+        # Setup troop original stat before applying trait, gear and other stuffs
+        skill = []  # keep only troop and weapon skills in here, leader skills are kept in Leader object
+        self.troop_number = 1  # number of troops inside the subunit
+        self.troop_id = troop_id  # ID of preset used for this subunit
+        self.name = "None"
+        if self.troop_id != 0:
+            if type(self.troop_id) == int or "h" not in self.troop_id:  # normal troop
+                self.troop_id = int(self.troop_id)
+                sprite_list = self.troop_sprite_list
+                stat = self.troop_data.troop_list[self.troop_id].copy()
+                lore = self.troop_data.troop_lore[self.troop_id].copy()
+                self.grade = stat["Grade"]  # training level/class grade
+                grade_stat = self.troop_data.grade_list[self.grade]
 
-        self.base_speed = self.original_speed
-        self.base_accuracy = self.original_accuracy
-        self.base_sight = self.original_sight
-        self.base_hidden = self.original_hidden
-        self.base_reload = self.original_reload
-        self.base_charge = self.original_charge
-        self.base_charge_def = self.original_charge_def
-        self.skill = self.original_skill.copy()
-        self.troop_skill = self.original_skill.copy()
-        self.troop_skill = [skill for skill in self.troop_skill if skill != 0 and
-                            (type(skill) == str or (skill in self.troop_data.skill_list and
-                                                    self.troop_data.skill_list[skill]["Troop Type"] == 0 or
-                                                    self.troop_data.skill_list[skill][
-                                                        "Troop Type"] == self.subunit_type))]  # keep matched
-        self.base_mana = self.original_mana
-        self.base_morale = self.original_morale
-        self.base_discipline = self.original_discipline
-        self.base_hp_regen = self.original_hp_regen
-        self.base_stamina_regen = self.original_stamina_regen
-        self.base_morale_regen = self.original_morale_regen
-        self.base_heat_resistance = self.original_heat_resistance
-        self.base_cold_resistance = self.original_cold_resistance
-        self.base_mental = self.original_mental
-        self.base_crit_effect = self.original_crit_effect
+                training_scale = (stat["Melee Attack Scale"], stat["Defence Scale"], stat["Ranged Attack Scale"])
 
-        self.add_weapon_stat()
-        self.action_list = {}  # get added in change_equipment
+                skill = stat["Skill"]  # skill list according to the preset
+                self.magazine_count = {index: {0: 1 + stat["Ammunition Modifier"], 1: 1 + stat["Ammunition Modifier"]}
+                                       for index in range(0, 2)}  # Number of magazine, as mod number
+                self.charge_skill = stat["Charge Skill"]  # for easier reference to check what charge skill this subunit has
+                self.original_morale = stat["Morale"] + grade_stat["Morale Bonus"]  # morale with grade bonus
+                self.original_discipline = stat["Discipline"] + grade_stat[
+                    "Discipline Bonus"]  # discipline with grade bonus
+                self.original_mental = stat["Mental"] + grade_stat[
+                    "Mental Bonus"]  # mental resistance from morale melee_dmg and mental status effect
+                self.troop_number = stat["Troop"] * troop_number_scale[
+                    self.team] * start_hp / 100  # number of starting troop, team -1 to become list index
 
-        self.last_health_state = 0  # state start at full
-        self.last_stamina_state = 0
+                self.troop_class = stat["Troop Class"]
 
-        self.max_stamina = self.stamina
-        self.stamina75 = self.stamina * 0.75
-        self.stamina50 = self.stamina * 0.5
-        self.stamina25 = self.stamina * 0.25
-        self.stamina5 = self.stamina * 0.05
-        self.stamina_list = (self.stamina75, self.stamina50, self.stamina25, self.stamina5, -1)
+            else:  # leader/hero character, for game mode that replace subunit with leader
+                sprite_list = self.leader_sprite_list
+                stat = self.leader_data.leader_list[int(troop_id.replace("h", ""))].copy()
+                lore = self.leader_data.leader_lore[int(troop_id.replace("h", ""))].copy()
+                self.grade = 12  # leader grade by default
+                grade_stat = self.troop_data.grade_list[self.grade]
 
-        self.subunit_health = self.troop_health * self.troop_number  # Total health of subunit from all troop
-        self.old_subunit_health = self.subunit_health
-        self.max_health = self.subunit_health  # health percentage
-        self.max_health1 = self.max_health * 0.01
-        self.max_health5 = self.max_health * 0.05
-        self.max_health10 = self.max_health * 0.1
-        self.health_list = (self.subunit_health * 0.75, self.subunit_health * 0.5, self.subunit_health * 0.25, 0)
+                training_scale = (stat["Melee Speciality"], stat["Melee Speciality"], stat["Range Speciality"])
 
-        self.old_last_health, self.old_last_stamina = self.subunit_health, self.stamina  # save previous health and stamina in previous update
-        self.max_troop = self.troop_number  # max number of troop at the start
+                self.magazine_count = {0: {0: 2, 1: 2}, 1: {0: 2, 1: 2}}  # leader gets double ammunition
+                self.charge_skill = stat["Charge Skill"]
+                self.original_morale = 100 + grade_stat["Morale Bonus"]  # morale with grade bonus
+                self.original_discipline = 100 + grade_stat[
+                    "Discipline Bonus"]  # discipline with grade bonus
+                self.original_mental = 50 + grade_stat[
+                    "Mental Bonus"]  # mental resistance from morale melee_dmg and mental status effect
 
-        # v Weight calculation
-        self.weight += self.troop_data.armour_list[self.armour_gear[0]]["Weight"] + self.mount_armour[
-            "Weight"]  # Weight from both melee and range weapon and armour
-        if self.subunit_type == 2:  # cavalry has half weight penalty
-            self.weight = self.weight / 2
-        # ^ End weight cal
+                self.troop_number = self.hero_health_scale
 
-        self.base_speed = (self.base_speed * ((100 - self.weight) / 100)) + grade_stat[
-            "Speed Bonus"]  # finalise base speed with weight and grade bonus
-        self.acceleration = self.base_speed / 2  # determine how long it takes to reach full speed when run
-        self.description = lore[1]  # subunit description for inspect ui
+                self.special_effect["Shoot While Moving"][0][0] = True  # allow shoot while moving for hero
 
-        # Final stat after receiving modifier effect from various sources, reset every time status is updated
-        self.max_morale = self.base_morale
-        self.melee_attack = self.base_melee_attack
-        self.melee_def = self.base_melee_def
-        self.range_def = self.base_range_def
-        self.element_resistance = self.base_element_resistance.copy()
-        self.speed = self.base_speed
-        self.accuracy = self.base_accuracy
-        self.reload = self.base_reload
-        self.morale = self.base_morale
-        self.discipline = self.base_discipline
-        self.charge = self.base_charge
-        self.charge_power = self.charge * self.speed / 2 * self.troop_mass
-        self.charge_def = self.base_charge_def
-        self.charge_def_power = self.charge_def * self.troop_mass
-        self.auth_penalty = self.base_auth_penalty
-        self.hp_regen = self.base_hp_regen
-        self.stamina_regen = self.base_stamina_regen
-        self.morale_regen = self.base_morale_regen
-        self.heat_resistance = self.base_heat_resistance
-        self.cold_resistance = self.base_cold_resistance
-        self.mental = self.base_mental
-        self.crit_effect = self.base_crit_effect
+                self.troop_class = "Leader"
 
-        self.inflict_status = self.base_inflict_status
-        self.weapon_dmg = self.original_weapon_dmg[self.equipped_weapon].copy()
-        self.weapon_speed = self.original_weapon_speed[self.equipped_weapon].copy()
-        self.shoot_range = self.original_range[self.equipped_weapon].copy()
+            self.name = lore[0]  # name according to the preset
+            self.race = stat["Race"]  # creature race
+            race_stat = self.troop_data.race_list[stat["Race"]]
+            self.race_name = race_stat["Name"]
+            self.grade_name = grade_stat["Name"]
 
-        self.morale_state = 1  # turn into percentage
-        self.stamina_state = (self.stamina * 100) / self.max_stamina  # turn into percentage
-        self.stamina_state_cal = self.stamina_state / 100  # for using as modifier on stat
+            # Default element stat
+            element_dict = {key.split(" ")[0]: 0 for key in race_stat if
+                            " Resistance" in key}  # get only resistance that exist in race data
+            self.element_status_check = element_dict.copy()  # element threshold count
+            self.original_element_resistance = element_dict.copy()
 
-        if self.mental < 0:  # cannot be negative
-            self.mental = 0
-        elif self.mental > 200:  # cannot exceed 200
-            self.mental = 200
-        self.mental_text = self.mental - 100  # for showing in subunit card ui
-        self.mental = (200 - self.mental) / 100  # convert to percentage
+            self.original_heat_resistance = 0  # resistance to heat temperature
+            self.original_cold_resistance = 0  # Resistance to cold temperature
+            self.temperature_count = 0  # temperature threshold count
 
-        self.corner_atk = False  # cannot melee_attack corner enemy by default
+            # initiate equipment stat
+            self.weight = 0
+            self.original_weapon_dmg = {index: {0: element_dict.copy(), 1: element_dict.copy()} for index in range(0, 2)}
+            self.weapon_penetrate = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
+            self.weapon_weight = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
+            self.range_dmg = {index: {0: element_dict.copy(), 1: element_dict.copy()} for index in range(0, 2)}
+            self.original_range = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
+            self.original_melee_range = {0: {}, 1: {}}
+            self.original_weapon_speed = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
 
-        self.move_speed = 0
+            self.magazine_size = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}  # can shoot how many times before have to reload
+            self.ammo_now = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}  # ammunition count in the current magazine
+            self.weapon_skill = {0: {0: [], 1: []}, 1: {0: [], 1: []}}
+            self.equipped_weapon = 0
+            self.player_equipped_weapon = self.equipped_weapon
+            self.swap_weapon_list = (1, 0)  # for swapping to other set
 
-        # sprite for inspection or far view
-        self.sprite_troop_size = self.troop_size / 10
+            # Get troop stat
+
+            attribute_stat = race_stat
+            if type(troop_id) == str and "h" in troop_id:  # use leader stat for hero (leader) subunit
+                attribute_stat = stat
+
+            max_scale = sum(training_scale)
+            if max_scale != 0:
+                training_scale = [item / max_scale for item in
+                                  training_scale]  # convert to proportion of whatever max number
+            else:
+                training_scale = [0.333333 for _ in training_scale]
+
+            self.subunit_type = 0
+            if training_scale[2] > training_scale[0]:  # range training higher than melee, change type to range infantry
+                self.subunit_type = 1
+
+            self.strength = attribute_stat["Strength"]
+            self.dexterity = attribute_stat["Dexterity"]
+            self.agility = attribute_stat["Agility"]
+            self.constitution = attribute_stat["Constitution"]
+            self.intelligence = attribute_stat["Intelligence"]
+            self.wisdom = attribute_stat["Wisdom"]
+
+            self.original_melee_attack = ((self.strength * 0.4) + (self.dexterity * 0.3) + (self.wisdom * 0.2)) + \
+                                         (grade_stat["Training Score"] * training_scale[0])
+
+            self.original_melee_def = ((self.dexterity * 0.3) + (self.agility * 0.3) + (self.constitution * 0.2) +
+                                       (self.wisdom * 0.2)) + (grade_stat["Training Score"] *
+                                                               ((training_scale[0] + training_scale[1]) / 2))
+
+            self.original_range_def = ((self.dexterity * 0.5) + (self.agility * 0.3) + (self.constitution * 0.1) +
+                                       (self.wisdom * 0.1)) + (grade_stat["Training Score"] *
+                                                               ((training_scale[1] + training_scale[2]) / 2))
+
+            self.original_accuracy = ((self.strength * 0.1) + (self.dexterity * 0.6) + (self.wisdom * 0.3)) + \
+                                     (grade_stat["Training Score"] * training_scale[2]) / 2
+
+            self.original_sight = ((self.dexterity * 0.8) + (self.wisdom * 0.2)) + (grade_stat["Training Score"] *
+                                                                                    training_scale[2])
+
+            self.original_reload = ((self.strength * 0.1) + (self.dexterity * 0.4) + (self.agility * 0.4) +
+                                    (self.wisdom * 0.1)) + (grade_stat["Training Score"] * training_scale[2])
+
+            self.original_charge = ((self.strength * 0.3) + (self.agility * 0.3) + (self.dexterity * 0.3) +
+                                    (self.wisdom * 0.2)) + (grade_stat["Training Score"] * training_scale[0])
+
+            self.original_charge_def = ((self.dexterity * 0.4) + (self.agility * 0.1) + (self.constitution * 0.3) +
+                                        (self.wisdom * 0.2)) + (grade_stat["Training Score"] *
+                                                                ((training_scale[0] + training_scale[1]) / 2))
+
+            self.original_speed = self.agility / 5  # get replaced with mount agi and speed bonus
+
+            self.shot_per_shoot = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
+
+            self.original_crit_effect = 1  # critical extra modifier
+
+            self.trait = {"Original": stat["Trait"] + race_stat["Trait"] +
+                                      self.troop_data.grade_list[self.grade]["Trait"],
+                          "Weapon": {0: {0: [], 1: []}, 1: {0: [], 1: []}}}  # trait from preset, race and grade
+
+            self.skill_cooldown = {}
+            self.armour_gear = stat["Armour"]  # armour equipment
+            armour_stat = self.troop_data.armour_list[self.armour_gear[0]]
+            armour_grade_mod = self.troop_data.equipment_grade_list[self.armour_gear[1]]["Modifier"]
+            for element in self.original_element_resistance:  # resistance from race and armour
+                self.original_element_resistance[element] = race_stat[element + " Resistance"]
+                self.original_element_resistance[element] += (armour_stat[element + " Resistance"] * armour_grade_mod)
+
+            self.original_skill = skill.copy()  # Skill that the subunit processes
+            if "" in self.original_skill:
+                self.original_skill.remove("")
+
+            self.troop_health = ((self.strength * 0.2) + (self.constitution * 0.8)) * grade_stat[
+                "Health Effect"]  # Health of each troop
+            self.stamina = ((self.strength * 0.2) + (self.constitution * 0.8)) * grade_stat["Stamina Effect"] * (
+                    start_stamina / 100)  # starting stamina with grade
+            self.original_mana = 0
+            if "Mana" in stat:
+                self.original_mana = stat["Mana"]  # Resource for magic skill
+
+            # Add equipment stat
+            self.primary_main_weapon = stat["Primary Main Weapon"]
+            self.primary_sub_weapon = stat["Primary Sub Weapon"]
+            self.secondary_main_weapon = stat["Secondary Main Weapon"]
+            self.secondary_sub_weapon = stat["Secondary Sub Weapon"]
+            self.melee_weapon_set = {}
+            self.range_weapon_set = {}
+            self.weapon_type = {}
+            self.weapon_set = ((self.primary_main_weapon, self.primary_sub_weapon),
+                               (self.secondary_main_weapon, self.secondary_sub_weapon))
+
+            self.weapon_id = ((self.primary_main_weapon[0], self.primary_sub_weapon[0]),
+                              (self.secondary_main_weapon[0], self.secondary_sub_weapon[0]))
+            self.weapon_data = ((self.troop_data.weapon_list[self.primary_main_weapon[0]],
+                                 self.troop_data.weapon_list[self.primary_sub_weapon[0]]),
+                                (self.troop_data.weapon_list[self.secondary_main_weapon[0]],
+                                 self.troop_data.weapon_list[self.secondary_sub_weapon[0]]))
+            self.equipped_weapon_data = self.weapon_data[self.equipped_weapon]
+            self.weapon_name = ((self.troop_data.weapon_list[self.primary_main_weapon[0]]["Name"],
+                                 self.troop_data.weapon_list[self.primary_sub_weapon[0]]["Name"]),
+                                (self.troop_data.weapon_list[self.secondary_main_weapon[0]]["Name"],
+                                 self.troop_data.weapon_list[self.secondary_sub_weapon[0]]["Name"]))
+
+            self.mount_gear = stat["Mount"]
+            self.mount = self.troop_data.mount_list[self.mount_gear[0]]  # mount this subunit use
+            self.mount_race_name = self.troop_data.race_list[self.mount["Race"]]["Name"]
+            self.mount_grade = self.troop_data.mount_grade_list[self.mount_gear[1]]
+            self.mount_armour = self.troop_data.mount_armour_list[self.mount_gear[2]]
+
+            self.animation_race_name = self.race_name
+            if self.mount_race_name != "None":
+                self.animation_race_name += "&" + self.mount_race_name
+
+            self.troop_size = race_stat["Size"]
+
+            if self.mount_gear[0] != 1:  # have a mount, add mount stat with its grade to subunit stat
+                self.add_mount_stat()
+
+            self.troop_mass = self.troop_size
+
+            self.original_hidden = 1000 / self.troop_mass  # hidden based on size, use size after add mount
+
+            self.trait["Original"] += self.troop_data.armour_list[self.armour_gear[0]][
+                "Trait"]  # add armour trait to subunit
+
+            self.trait["Original"] = tuple(
+                set([trait for trait in self.trait["Original"] if trait != 0]))  # remove empty and duplicate traits
+            self.trait["Original"] = {x: self.troop_data.trait_list[x] for x in self.trait["Original"] if
+                                      x in self.troop_data.trait_list}  # replace trait index with data
+
+            self.add_original_trait()
+
+            # Stat after applying trait and gear
+            self.base_melee_attack = self.original_melee_attack
+            self.base_melee_def = self.original_melee_def
+            self.base_range_def = self.original_range_def
+
+            self.base_element_resistance = self.original_element_resistance.copy()
+
+            self.base_speed = self.original_speed
+            self.base_accuracy = self.original_accuracy
+            self.base_sight = self.original_sight
+            self.base_hidden = self.original_hidden
+            self.base_reload = self.original_reload
+            self.base_charge = self.original_charge
+            self.base_charge_def = self.original_charge_def
+            self.skill = self.original_skill.copy()
+            self.troop_skill = self.original_skill.copy()
+            self.troop_skill = [skill for skill in self.troop_skill if skill != 0 and
+                                (type(skill) == str or (skill in self.troop_data.skill_list and
+                                                        self.troop_data.skill_list[skill]["Troop Type"] == 0 or
+                                                        self.troop_data.skill_list[skill][
+                                                            "Troop Type"] == self.subunit_type))]  # keep matched
+            self.base_mana = self.original_mana
+            self.base_morale = self.original_morale
+            self.base_discipline = self.original_discipline
+            self.base_hp_regen = self.original_hp_regen
+            self.base_stamina_regen = self.original_stamina_regen
+            self.base_morale_regen = self.original_morale_regen
+            self.base_heat_resistance = self.original_heat_resistance
+            self.base_cold_resistance = self.original_cold_resistance
+            self.base_mental = self.original_mental
+            self.base_crit_effect = self.original_crit_effect
+
+            self.add_weapon_stat()
+            self.action_list = {}  # get added in change_equipment
+
+            self.last_health_state = 0  # state start at full
+            self.last_stamina_state = 0
+
+            self.max_stamina = self.stamina
+            self.stamina75 = self.stamina * 0.75
+            self.stamina50 = self.stamina * 0.5
+            self.stamina25 = self.stamina * 0.25
+            self.stamina5 = self.stamina * 0.05
+            self.stamina_list = (self.stamina75, self.stamina50, self.stamina25, self.stamina5, -1)
+
+            self.subunit_health = self.troop_health * self.troop_number  # Total health of subunit from all troop
+            self.old_subunit_health = self.subunit_health
+            self.max_health = self.subunit_health  # health percentage
+            self.max_health1 = self.max_health * 0.01
+            self.max_health5 = self.max_health * 0.05
+            self.max_health10 = self.max_health * 0.1
+            self.health_list = (self.subunit_health * 0.75, self.subunit_health * 0.5, self.subunit_health * 0.25, 0)
+
+            self.old_last_health, self.old_last_stamina = self.subunit_health, self.stamina  # save previous health and stamina in previous update
+            self.max_troop = self.troop_number  # max number of troop at the start
+
+            # v Weight calculation
+            self.weight += self.troop_data.armour_list[self.armour_gear[0]]["Weight"] + self.mount_armour[
+                "Weight"]  # Weight from both melee and range weapon and armour
+            if self.subunit_type == 2:  # cavalry has half weight penalty
+                self.weight = self.weight / 2
+            # ^ End weight cal
+
+            self.base_speed = (self.base_speed * ((100 - self.weight) / 100)) + grade_stat[
+                "Speed Bonus"]  # finalise base speed with weight and grade bonus
+            self.acceleration = self.base_speed / 2  # determine how long it takes to reach full speed when run
+            self.description = lore[1]  # subunit description for inspect ui
+
+            # Final stat after receiving modifier effect from various sources, reset every time status is updated
+            self.max_morale = self.base_morale
+            self.melee_attack = self.base_melee_attack
+            self.melee_def = self.base_melee_def
+            self.range_def = self.base_range_def
+            self.element_resistance = self.base_element_resistance.copy()
+            self.speed = self.base_speed
+            self.accuracy = self.base_accuracy
+            self.reload = self.base_reload
+            self.morale = self.base_morale
+            self.discipline = self.base_discipline
+            self.charge = self.base_charge
+            self.charge_power = self.charge * self.speed / 2 * self.troop_mass
+            self.charge_def = self.base_charge_def
+            self.charge_def_power = self.charge_def * self.troop_mass
+            self.auth_penalty = self.base_auth_penalty
+            self.hp_regen = self.base_hp_regen
+            self.stamina_regen = self.base_stamina_regen
+            self.morale_regen = self.base_morale_regen
+            self.heat_resistance = self.base_heat_resistance
+            self.cold_resistance = self.base_cold_resistance
+            self.mental = self.base_mental
+            self.crit_effect = self.base_crit_effect
+
+            self.inflict_status = self.base_inflict_status
+            self.weapon_dmg = self.original_weapon_dmg[self.equipped_weapon].copy()
+            self.weapon_speed = self.original_weapon_speed[self.equipped_weapon].copy()
+            self.shoot_range = self.original_range[self.equipped_weapon].copy()
+
+            self.morale_state = 1  # turn into percentage
+            self.stamina_state = (self.stamina * 100) / self.max_stamina  # turn into percentage
+            self.stamina_state_cal = self.stamina_state / 100  # for using as modifier on stat
+
+            if self.mental < 0:  # cannot be negative
+                self.mental = 0
+            elif self.mental > 200:  # cannot exceed 200
+                self.mental = 200
+            self.mental_text = self.mental - 100  # for showing in subunit card ui
+            self.mental = (200 - self.mental) / 100  # convert to percentage
+
+            # sprite for inspection or far view
+            self.sprite_troop_size = self.troop_size / 10
+
+            self.angle = self.unit.angle
+            self.new_angle = self.unit.angle
+            self.radians_angle = math.radians(360 - self.angle)  # radians for apply angle to position
+            self.sprite_direction = rotation_dict[min(rotation_list,
+                                                      key=lambda x: abs(
+                                                          x - self.angle))]  # find closest in list of rotation for sprite direction
+
+            if self.battle.troop_size_adjustable and self.sprite_troop_size > 1:
+                self.subunit_hitbox_size *= self.sprite_troop_size
+
+            self.full_merge_distance = self.subunit_hitbox_size / 4  # distance to become fully merge with this sprite
+
+            hitbox_image = pygame.Surface((self.subunit_hitbox_size, self.subunit_hitbox_size))
+            self.hitbox_rect = hitbox_image.get_rect(
+                center=self.base_pos)  # hitbox rect based on base pos and furthest image size
+
+            self.hitbox_front_distance = (self.subunit_hitbox_size / 2)
+
+            self.hitbox_front_melee_distance = self.hitbox_front_distance + self.max_melee_attack_range
+
+            self.sprite_id = str(stat["Sprite ID"])
+            self.weapon_version = ((sprite_list[self.sprite_id]["p1_primary_main_weapon"],
+                                    sprite_list[self.sprite_id]["p1_primary_sub_weapon"]),
+                                   (sprite_list[self.sprite_id]["p1_secondary_main_weapon"],
+                                    sprite_list[self.sprite_id]["p1_secondary_sub_weapon"]))
+
         if self.sprite_troop_size < 1:
             self.sprite_troop_size = 1
         sprite_dict = self.create_subunit_sprite(self.battle.subunit_inspect_sprite_size, self.sprite_troop_size)
@@ -579,45 +614,7 @@ class Subunit(pygame.sprite.Sprite):
         self.icon_sprite_width = self.inspect_base_image3.get_width()
         self.icon_sprite_height = self.inspect_base_image3.get_height()
 
-        self.pos_in_unit = (0, 0)  # position in unit array
-        self.base_pos = (0, 0)  # true position of subunit in battle
-        self.pos = (0, 0)  # pos is for showing on screen
-        self.last_pos = self.base_pos
-        self.front_pos = (0, 0)
-        self.base_target = (0, 0)  # base_target to move
-        self.command_target = (0, 0)  # actual base_target outside of combat
-
-        try:
-            self.angle = self.unit.angle
-            self.new_angle = self.unit.angle
-            self.radians_angle = math.radians(360 - self.angle)  # radians for apply angle to position
-            self.sprite_direction = rotation_dict[min(rotation_list,
-                                                      key=lambda x: abs(
-                                                          x - self.angle))]  # find closest in list of rotation for sprite direction
-
-            self.rect = self.image.get_rect(center=self.pos)  # for blit into screen
-
-            if self.battle.troop_size_adjustable and self.sprite_troop_size > 1:
-                self.subunit_hitbox_size *= self.sprite_troop_size
-
-            self.full_merge_distance = self.subunit_hitbox_size / 4  # distance to become fully merge with this sprite
-
-            hitbox_image = pygame.Surface((self.subunit_hitbox_size, self.subunit_hitbox_size))
-            self.hitbox_rect = hitbox_image.get_rect(
-                center=self.base_pos)  # hitbox rect based on base pos and furthest image size
-
-            self.hitbox_front_distance = (self.subunit_hitbox_size / 2)
-
-            self.hitbox_front_melee_distance = self.hitbox_front_distance + self.max_melee_attack_range
-
-            self.sprite_id = str(stat["Sprite ID"])
-            self.weapon_version = ((sprite_list[self.sprite_id]["p1_primary_main_weapon"],
-                                    sprite_list[self.sprite_id]["p1_primary_sub_weapon"]),
-                                   (sprite_list[self.sprite_id]["p1_secondary_main_weapon"],
-                                    sprite_list[self.sprite_id]["p1_secondary_sub_weapon"]))
-
-        except AttributeError:  # for subunit with dummy unit, use in editor
-            pass
+        self.rect = self.image.get_rect(center=self.pos)  # for blit into screen
 
     def setup_start_pos(self):
         unit_top_left = pygame.Vector2(self.unit.base_pos[0] - self.unit.unit_box_width / 2,
@@ -704,9 +701,11 @@ class Subunit(pygame.sprite.Sprite):
             recreate_rect = True
 
         # animation and sprite system
-        play_speed = 0.1
-        if "_Idle" in self.current_animation["name"]:  # idle animation use a bit slower speed
+        play_speed = 0.07
+        if "_Idle" in self.current_animation["name"]:  # some animations use a bit slower speed
             play_speed = 0.15
+        elif "_Walk" in self.current_animation["name"]:
+            play_speed = 0.1
 
         #     if 0 < self.countup_timer < self.countup_trigger_time:
         #         self.countup_timer += dt

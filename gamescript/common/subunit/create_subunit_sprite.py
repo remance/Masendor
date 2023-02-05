@@ -97,7 +97,7 @@ def create_subunit_sprite(self, subunit_inspect_size, troop_sprite_size):
     stamina_block_rect = stamina_image.get_rect(center=block.get_rect().center)  # for ui sprite
 
     # Weapon class icon in middle circle or leader (hero) portrait
-
+    image1 = pygame.Surface((0, 0))
     if type(self.troop_id) != int and "h" in self.troop_id:
         try:
             image1 = self.leader_data.images[self.troop_id.replace("h", "") + ""].copy()
@@ -106,10 +106,13 @@ def create_subunit_sprite(self, subunit_inspect_size, troop_sprite_size):
         image1 = pygame.transform.smoothscale(image1,
                                               (stamina_image.get_width() * 0.7, stamina_image.get_height() * 0.7))
     else:
-        image1 = self.troop_data.weapon_icon[
-            self.troop_data.weapon_list[self.primary_main_weapon[0]]["ImageID"]]  # image on subunit sprite
-        if troop_sprite_size > 1:
-            image1 = pygame.transform.smoothscale(image1, (image1.get_width() * troop_sprite_size, image1.get_height() * troop_sprite_size))
+        try:
+            image1 = self.troop_data.weapon_icon[
+                self.troop_data.weapon_list[self.primary_main_weapon[0]]["ImageID"]]  # image on subunit sprite
+            if troop_sprite_size > 1:
+                image1 = pygame.transform.smoothscale(image1, (image1.get_width() * troop_sprite_size, image1.get_height() * troop_sprite_size))
+        except (AttributeError, IndexError):  # weapon with no icon or editor dummy troop with no weapon
+            pass
 
     image_rect = image1.get_rect(center=image.get_rect().center)
     image.blit(image1, image_rect)

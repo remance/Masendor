@@ -13,7 +13,7 @@ def leader_command_ui_mouse_over(self, mouse_right):
             self.battle_ui_updater.add(self.single_text_popup)
             leader_mouse_over = True
 
-            if mouse_right:
-                self.popout_lorebook(8, this_leader.leader_id)
+            if mouse_right and this_leader.leader_id != 0:
+                self.popout_lorebook(self.main.encyclopedia.leader_section, this_leader.leader_id)
             break
     return leader_mouse_over

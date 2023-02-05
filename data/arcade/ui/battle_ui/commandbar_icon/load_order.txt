@@ -1,1 +1,0 @@
-['king.png','queen.png','rook.png','knight.png','knight.png','bishop.png','authority.png']

@@ -316,6 +316,9 @@ class Battle:
         self.current_pop_up_row = 0
         self.filter_troop = [True, True, True,
                              True]  # filter in this order: melee infantry, range inf, melee cavalry, range cav
+        for box in self.filter_tick_box:
+            if box.tick is False:
+                box.change_tick(True)
         self.current_selected = None
         self.before_selected = None
         self.player_input_state = None  # specific player command input and ui
@@ -423,7 +426,7 @@ class Battle:
                 TypeError):  # If no weather found or no map use light sunny weather start at 9:00 and wind direction at 0 angle
             new_time = datetime.datetime.strptime("09:00:00", "%H:%M:%S").time()
             new_time = datetime.timedelta(hours=new_time.hour, minutes=new_time.minute, seconds=new_time.second)
-            self.weather_event = ((4, new_time, 0, 0))  # default weather light sunny all day
+            self.weather_event = ((4, new_time, 0, 0),)  # default weather light sunny all day
         self.weather_playing = self.weather_event[0][1]  # used as the reference for map starting time
 
         # Random music played from list
@@ -565,12 +568,7 @@ class Battle:
         if self.mode == "unit_editor":
             self.game_state = "editor"  # editor mode
 
-            self.troop_list = [item["Name"] for item in self.troop_data.troop_list.values()][
-                              1:]  # generate troop name list
-            self.troop_index_list = list(range(0, len(self.troop_list) + 1))
-
-            self.leader_list = [item["Name"] for item in self.leader_data.leader_list.values()][
-                               1:]  # generate leader name list
+            self.filter_troop_list()
 
             setup_list(self.screen_scale, menu.NameList, self.current_unit_row,
                        tuple(self.custom_unit_preset_list.keys()),
@@ -587,7 +585,7 @@ class Battle:
             self.feature_terrain = 0
             self.weather_type = 4
             self.weather_strength = 0
-            self.current_weather.__init__(self.time_ui, self.weather_type, self.weather_strength, self.weather_data)
+            self.current_weather.__init__(self.time_ui, 4, 0, 0, self.weather_data)
             self.subunit_in_card = None  # current sub-subunit showing in subunit card
 
             self.main.create_team_coa([0], ui_class=self.battle_ui_updater, one_team=True,
@@ -1171,11 +1169,9 @@ class Battle:
 
             self.faction_pick = 0
             self.filter_troop = [True, True, True, True]
-            self.troop_list = [item["Name"] for item in self.troop_data.troop_list.values()][
-                              1:]  # reset troop filter back to all faction
-            self.troop_index_list = list(range(0, len(self.troop_list) + 1))
-
-            self.leader_list = [item["Name"] for item in self.leader_data.leader_list.values()][
-                               1:]  # generate leader name list)
+            for box in self.filter_tick_box:
+                if box.tick is False:
+                    box.change_tick(True)
+            self.filter_troop_list()
 
         self.leader_now = []

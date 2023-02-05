@@ -98,7 +98,7 @@ def load_images(main_dir, screen_scale=(1, 1), subfolder=(), load_order=False, r
             load_order_file = [int(name.replace(".png", "")) for name in load_order_file]
             return images, load_order_file
     except FileNotFoundError as b:
-        print(b)
+        # print(b)
         return images
 
 
@@ -390,7 +390,8 @@ def travel_to_map_border(pos, angle, map_size):
         distance_ns = (map_size[1] - y) / sin_angle if sin_angle > 0 else -y / sin_angle
         distance = min(distance_ew, distance_ns)
 
-    target = find_target(pos, distance, angle)
+    target = pygame.Vector2(pos[0] - (distance * sin_angle),
+                            pos[1] - (distance * cos_angle))
     return target
 
 

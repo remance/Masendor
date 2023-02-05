@@ -15,7 +15,7 @@ def convert_unit_slot_to_dict(self, name, pos=None, add_id=None):
         leader_list = []
         leader_pos_list = []
         for this_leader in self.preview_leader:  # add leader id
-            if this_leader.leader_id != 1:
+            if this_leader.leader_id != 0:
                 subunit_count += 1
             leader_list.append(str(this_leader.leader_id))
             leader_pos_list.append(str(this_leader.subunit_pos))

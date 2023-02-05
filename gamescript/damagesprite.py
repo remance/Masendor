@@ -91,6 +91,8 @@ class DamageSprite(pygame.sprite.Sprite):
             self.base_pos = pygame.Vector2(self.attacker.front_pos)
 
             self.speed = weapon_stat["Travel Speed"]  # bullet travel speed
+            if self.arc_shot:
+                self.speed *= 0.75  # arc shot has reduced travel speed compared to direct
             if weapon_stat["Damage Sprite"] != "self":
                 self.image = self.bullet_sprite_pool[weapon_stat["Damage Sprite"]]["side"][
                     "base"]  # use side and base sprite by default for now

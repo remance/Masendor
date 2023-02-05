@@ -46,7 +46,7 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                             self.battle_ui_updater.add(self.warning_msg)
 
                 elif mouse_right_up:
-                    self.popout_lorebook(8, self.current_pop_up_row + index + 1)
+                    self.popout_lorebook(self.main.encyclopedia.leader_section, self.current_pop_up_row + index + 1)
 
     elif self.unit_preset_list_box.rect.collidepoint(
             self.mouse_pos) and self.unit_preset_list_box in self.battle_ui_updater:
@@ -138,7 +138,7 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                          self.battle_ui_updater)
 
                 elif mouse_right_up:
-                    self.popout_lorebook(8, this_leader.leader_id)
+                    self.popout_lorebook(self.main.encyclopedia.leader_section, this_leader.leader_id)
                 break
 
     elif self.troop_card_ui.rect.collidepoint(self.mouse_pos):
@@ -353,7 +353,7 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                 self.current_list_show = "troop"
 
                             elif mouse_right_up:
-                                self.popout_lorebook(2, index)
+                                self.popout_lorebook(self.main.encyclopedia.faction_section, index)
 
                         elif self.current_list_show == "troop":
                             if mouse_left_up:
@@ -400,7 +400,8 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                     self.battle_ui_updater.add(self.warning_msg)
 
                             elif mouse_right_up:  # open encyclopedia
-                                self.popout_lorebook(3, self.troop_index_list[index + self.current_troop_row])
+                                self.popout_lorebook(self.main.encyclopedia.troop_section,
+                                                     self.troop_index_list[index + self.current_troop_row])
                         break
 
             elif self.filter_box.rect.collidepoint(self.mouse_pos):

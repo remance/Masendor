@@ -4,7 +4,7 @@ def preview_authority(self, leader_list):
         leader_list[0].authority + (leader_list[0].authority / 2) +
         (leader_list[1].authority / 4) + (leader_list[2].authority / 4) +
         (leader_list[3].authority / 10))
-    big_unit_size = len([slot for slot in self.subunit_build if slot.name != "None"])
+    big_unit_size = len([slot for slot in self.subunit_build if slot.troop_id != 0])
     if big_unit_size > 20:  # army size larger than 20 will reduce start_set leader authority
         authority = int(leader_list[0].authority +
                         (leader_list[0].authority / 2 * (100 - big_unit_size) / 100) +

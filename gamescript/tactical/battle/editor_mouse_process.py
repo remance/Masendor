@@ -21,12 +21,12 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                             self.leader_now[
                                 self.subunit_in_card.leader.role].name != "None":  # remove old leader
                         self.leader_now[self.subunit_in_card.leader.role].change_preview_leader(1)
-                        self.leader_now[self.subunit_in_card.leader.role].change_subunit(None)
-
-                    true_index = [index for index, value in
-                                  enumerate(list(self.leader_data.leader_list.values())) if value["Name"] == name.name][
-                        0]
-                    true_index = list(self.leader_data.leader_list.keys())[true_index]
+                        # self.leader_now[self.subunit_in_card.leader.role].change_subunit(None)
+                    true_index = 0
+                    if index != 0:
+                        true_index = [index for index, value in
+                                      enumerate(self.leader_data.leader_list.values()) if value["Name"] == name.name][0]
+                        true_index = tuple(self.leader_data.leader_list.keys())[true_index]
                     self.leader_now[self.selected_leader].change_preview_leader(true_index)
                     self.leader_now[self.selected_leader].change_editor_subunit(self.subunit_in_card)
                     self.subunit_in_card.leader = self.leader_now[self.selected_leader]
@@ -36,7 +36,7 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                     if unit_dict is not None:
                         warn_list = []
                         leader_list = [int(item) for item in unit_dict['test']["Leader"]]
-                        leader_list = [item for item in leader_list if 1 < item < 10000]
+                        leader_list = [item for item in leader_list if 0 < item < 10000]
                         leader_list_set = set(leader_list)
                         if len(leader_list) != len(leader_list_set):  # unit has duplicate unique leader
                             warn_list.append(self.warning_msg.duplicate_leader_warn)
@@ -47,7 +47,7 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                             self.battle_ui_updater.add(self.warning_msg)
 
                 elif mouse_right_up:
-                    self.popout_lorebook(8, self.current_pop_up_row + index + 1)
+                    self.popout_lorebook(self.main.encyclopedia.leader_section, self.current_pop_up_row + index + 1)
 
     elif self.unit_preset_list_box.rect.collidepoint(
             self.mouse_pos) and self.unit_preset_list_box in self.battle_ui_updater:
@@ -55,10 +55,10 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
         for index, name in enumerate(self.unitpreset_namegroup):
             if name.rect.collidepoint(self.mouse_pos) and mouse_left_up:
                 self.preset_select_border.change_pos(name.rect.topleft)  # change border to one selected
-                if list(self.custom_unit_preset_list.keys())[index] != "New Preset":
+                if tuple(self.custom_unit_preset_list.keys())[index] != "New Preset":
                     self.unit_preset_name = name.name
                     unit_list = []
-                    arraylist = list(self.custom_unit_preset_list[list(self.custom_unit_preset_list.keys())[index]])
+                    arraylist = tuple(self.custom_unit_preset_list[tuple(self.custom_unit_preset_list.keys())[index]])
                     for listnum in (0, 1, 2, 3, 4, 5, 6, 7):
                         unit_list += [int(item) if item.isdigit() else item
                                       for item in arraylist[listnum].split(",")]
@@ -137,8 +137,8 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                     self.popup_list_open(this_leader.rect.midright, self.leader_list, "leader",
                                          "topleft", self.battle_ui_updater)
 
-                elif mouse_right_up:
-                    self.popout_lorebook(8, this_leader.leader_id)
+                elif mouse_right_up and this_leader.leader_id != 0:
+                    self.popout_lorebook(self.main.encyclopedia.leader_section, this_leader.leader_id)
                 break
 
     elif self.troop_card_ui.rect.collidepoint(self.mouse_pos):
@@ -163,21 +163,21 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                             if self.popup_list_box.type == "terrain":
                                 self.terrain_change_button.change_text(self.battle_map_base.terrain_list[index])
                                 self.base_terrain = index
-                                self.change_editor_map(battlemap.terrain_colour[self.base_terrain],
-                                                       battlemap.feature_colour[self.feature_terrain])
+                                self.change_editor_map(self.battle_map_base.terrain_colour[self.base_terrain],
+                                                       self.battle_map_feature.feature_colour[self.feature_terrain])
 
                             elif self.popup_list_box.type == "feature":
                                 self.feature_change_button.change_text(self.battle_map_feature.feature_list[index])
                                 self.feature_terrain = index
-                                self.change_editor_map(battlemap.terrain_colour[self.base_terrain],
-                                                       battlemap.feature_colour[self.feature_terrain])
+                                self.change_editor_map(self.battle_map_base.terrain_colour[self.base_terrain],
+                                                       self.battle_map_feature.feature_colour[self.feature_terrain])
 
                             elif self.popup_list_box.type == "weather":
                                 self.weather_type = int(index / 3)
                                 self.weather_strength = index - (self.weather_type * 3)
                                 self.weather_change_button.change_text(self.weather_list[index])
-                                self.current_weather.__init__(self.time_ui, self.weather_type + 1,
-                                                              self.weather_strength, self.weather_data)
+                                self.current_weather.__init__(self.time_ui, self.weather_type,
+                                                              self.weather_strength, 0, self.weather_data)
 
                             if self.subunit_in_card is not None:  # reset subunit card as well
                                 self.command_ui.value_input(who=self.subunit_in_card)
@@ -238,7 +238,7 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                 self.current_unit_row = self.unit_preset_list_box.scroll.player_input(
                     self.mouse_pos)  # update the scroll and get new current subsection
                 setup_list(self.screen_scale, menu.NameList, self.current_unit_row,
-                           list(self.custom_unit_preset_list.keys()),
+                           tuple(self.custom_unit_preset_list.keys()),
                            self.unitpreset_namegroup, self.unit_preset_list_box,
                            self.battle_ui_updater)  # setup preset army list
 
@@ -297,7 +297,7 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                         self.unit_edit_border.add(battleui.SelectedSquad(clicked_slot.inspect_pos, 5))
                         self.battle_ui_updater.add(*self.unit_edit_border)
 
-                        if clicked_slot.name != "None":
+                        if clicked_slot.troop_id != 0:
                             self.subunit_in_card = slot
                             self.command_ui.value_input(who=self.subunit_in_card.unit)
                             self.troop_card_ui.value_input(
@@ -319,19 +319,6 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                             if mouse_left_up:
                                 self.faction_pick = index
                                 self.filter_troop_list()
-                                if index != 0:  # pick faction
-                                    self.leader_list = [item[1]["Name"] for this_index, item in
-                                                        enumerate(self.leader_data.leader_list.items())
-                                                        if this_index > 0 and (item[1]["Name"] == "None" or
-                                                                               (item[0] >= 10000 and item[1][
-                                                                                   "Faction"] in (0, index)) or
-                                                                               item[0] in
-                                                                               self.faction_data.faction_list[index][
-                                                                                   "Leader"])]
-
-                                else:  # pick all faction
-                                    self.leader_list = self.leader_list = [item[0] for item in
-                                                                           self.leader_data.leader_list.values()][1:]
 
                                 setup_list(self.screen_scale, menu.NameList, self.current_troop_row, self.troop_list,
                                            self.troop_namegroup,
@@ -350,7 +337,7 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                 self.current_list_show = "troop"
 
                             elif mouse_right_up:
-                                self.popout_lorebook(2, index)
+                                self.popout_lorebook(self.main.encyclopedia.faction_section, index)
 
                         elif self.current_list_show == "troop":
                             if mouse_left_up:
@@ -374,19 +361,19 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                             self.subunit_build.add(slot)
                                             self.battle_ui_updater.add(slot)
 
-                                        if slot.name != "None":  # update information of subunit that just got changed
-                                            self.battle_ui_updater.remove(*self.leader_now)
-                                            self.leader_now = [this_leader for this_leader in self.preview_leader]
-                                            self.battle_ui_updater.add(*self.leader_now)  # add leader portrait to draw
-                                            self.subunit_in_card = slot
-                                            self.preview_authority(self.leader_now)
-                                            self.troop_card_ui.value_input(
-                                                who=self.subunit_in_card)  # update subunit card on selected subunit
-                                            if self.troop_card_ui.option == 2:
-                                                self.trait_skill_icon_blit()
-                                                self.effect_icon_blit()
-                                                self.countdown_skill_icon()
-                                        elif slot.name == "None" and slot.leader is not None:  # remove leader from none subunit if any
+                                        # if slot.troop_id != 0:  # update information of subunit that just got changed
+                                        self.battle_ui_updater.remove(*self.leader_now)
+                                        self.leader_now = [this_leader for this_leader in self.preview_leader]
+                                        self.battle_ui_updater.add(*self.leader_now)  # add leader portrait to draw
+                                        self.subunit_in_card = slot
+                                        self.preview_authority(self.leader_now)
+                                        self.troop_card_ui.value_input(
+                                            who=self.subunit_in_card)  # update subunit card on selected subunit
+                                        if self.troop_card_ui.option == 2:
+                                            self.trait_skill_icon_blit()
+                                            self.effect_icon_blit()
+                                            self.countdown_skill_icon()
+                                        elif slot.troop_id != 0 and slot.leader is not None:  # remove leader from none subunit if any
                                             slot.leader.change_preview_leader(1)
                                             slot.leader.change_editor_subunit(None)  # remove subunit link in leader
                                             slot.leader = None  # remove leader link in subunit
@@ -396,8 +383,9 @@ def editor_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, m
                                     self.warning_msg.warning([self.warning_msg.multi_faction_warn])
                                     self.battle_ui_updater.add(self.warning_msg)
 
-                            elif mouse_right_up:  # open encyclopedia
-                                self.popout_lorebook(3, self.troop_index_list[index + self.current_troop_row])
+                            elif mouse_right_up and self.troop_index_list[index + self.current_troop_row] != 0:  # open encyclopedia
+                                self.popout_lorebook(self.main.encyclopedia.troop_section,
+                                                     self.troop_index_list[index + self.current_troop_row])
                         break
 
             elif self.filter_box.rect.collidepoint(self.mouse_pos):

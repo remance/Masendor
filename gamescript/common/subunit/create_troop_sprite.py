@@ -28,7 +28,7 @@ def create_troop_sprite(animation_name, size, animation_part_list, troop_sprite_
                        any(ext in k for ext in except_list) is False and "weapon" not in k}  # layer list
     pose_layer_list.update({k: v[6] for k, v in animation_part_list.items() if v != [0] and v != "" and v != [""]
                             and "weapon" in k})
-    if "Skill" in animation_name:  # change layer of weapon for skill animation to match whether it is behind hand or not
+    if "_Skill_" in animation_name:  # change layer of weapon for skill animation to match whether it is behind hand or not
         for key, layer in pose_layer_list.items():
             if "weapon" in key:
                 part = animation_part_list[key]

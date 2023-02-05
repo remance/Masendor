@@ -19,38 +19,42 @@ class Leader(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.morale = 100
         self.leader_data = leader_data
-        stat = self.leader_data.leader_list[leader_id]
-        lore = self.leader_data.leader_lore[leader_id]
         self.leader_id = leader_id  # leader_id is only used as reference to the data
-        self.name = lore[0]
+        if self.leader_id != 0:
+            stat = self.leader_data.leader_list[leader_id]
+            lore = self.leader_data.leader_lore[leader_id]
 
-        self.strength = stat["Strength"]
-        self.dexterity = stat["Dexterity"]
-        self.agility = stat["Agility"]
-        self.constitution = stat["Constitution"]
-        self.intelligence = stat["Intelligence"]
-        self.wisdom = stat["Wisdom"]
-        self.authority = stat["Charisma"]
-        self.melee_command = stat["Melee Speciality"]
-        self.range_command = stat["Range Speciality"]
-        self.cav_command = stat["Cavalry Speciality"]
-        self.health = ((self.strength * 0.2) + (self.constitution * 0.8)) * 10
-        self.combat = ((self.strength * 0.5) + (self.dexterity * 0.5) + (self.agility * 0.5) +
-                       (self.wisdom * 0.5))
-        self.social = self.leader_data.leader_class[stat["Social Class"]]
-        self.formation = ["Cluster"] + stat["Formation"]
-        self.description = lore[1]
+            self.name = lore[0]
 
-        self.subunit_pos = int(subunit_position)  # Squad position is the index of subunit in subunit sprite loop
-        # self.trait = stat
-        self.skill = stat["Skill"]
+            self.strength = stat["Strength"]
+            self.dexterity = stat["Dexterity"]
+            self.agility = stat["Agility"]
+            self.constitution = stat["Constitution"]
+            self.intelligence = stat["Intelligence"]
+            self.wisdom = stat["Wisdom"]
+            self.authority = stat["Charisma"]
+            self.melee_command = stat["Melee Speciality"]
+            self.range_command = stat["Range Speciality"]
+            self.cav_command = stat["Cavalry Speciality"]
+            self.health = ((self.strength * 0.2) + (self.constitution * 0.8)) * 10
+            self.combat = ((self.strength * 0.5) + (self.dexterity * 0.5) + (self.agility * 0.5) +
+                           (self.wisdom * 0.5))
+            self.social = self.leader_data.leader_class[stat["Social Class"]]
+            self.formation = ["Cluster"] + stat["Formation"]
+            self.description = lore[1]
 
-        self.state = 0  # 0 = alive, 96 = retreated, 97 = captured, 98 = missing, 99 = wound, 100 = dead
+            # self.trait = stat
+            self.skill = stat["Skill"]
+            self.state = 0  # 0 = alive, 96 = retreated, 97 = captured, 98 = missing, 99 = wound, 100 = dead
 
-        if self.name == "None":  # None leader is considered dead by default, function the same way as dead one
+        else:  # None leader is considered dead by default, function the same way as dead one
+            self.name = "None"
             self.health = 0
             self.state = 100  # no leader is same as dead so no need to update
+            self.skill = []
+            self.authority = 0
 
+        self.subunit_pos = int(subunit_position)  # Squad position is the index of subunit in subunit sprite loop
         self.unit = unit
         self.subunit = None  # get assigned in enter_battle
         # self.mana = stat["Mana"]
@@ -114,7 +118,7 @@ class Leader(pygame.sprite.Sprite):
 
     def update(self):
         if self.state not in (96, 97, 98, 99, 100):
-            if self.health <= 0:  # health reach 0, destroyed. may implement wound state chance later
+            if self.health <= 0:  # health reach 0, destroyed. TODO may implement wound state chance later
                 self.health = 0
                 self.state = 100
                 # if random.randint(0,1) == 1: self.state = 99 ## chance to become wound instead when hp reach 0
@@ -124,11 +128,15 @@ class Leader(pygame.sprite.Sprite):
         """Change only stat that will be shown for preview leader"""
         self.leader_id = leader_id  # leader_id is only used as reference to the leader data
 
-        stat = self.leader_data.leader_list[self.leader_id]
+        if self.leader_id != 0:
+            stat = self.leader_data.leader_list[self.leader_id]
 
-        self.name = stat["Name"]
-        self.authority = stat["Charisma"]
-        self.social = self.leader_data.leader_class[stat["Social Class"]]
+            self.name = stat["Name"]
+            self.authority = stat["Charisma"]
+            self.social = self.leader_data.leader_class[stat["Social Class"]]
+        else:
+            self.name = "None"
+            self.authority = 0
 
         self.full_image, self.image = self.create_portrait()
         self.base_image = self.image.copy()

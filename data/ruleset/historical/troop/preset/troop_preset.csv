@@ -1,5 +1,4 @@
 "ID","Name","Grade","Race","Trait","Skill","Cost","Upkeep","Melee Attack Scale","Defence Scale","Ranged Attack Scale","Ammunition Modifier","Charge Skill","Morale","Discipline","Mental","Troop","Troop Class","Primary Main Weapon","Primary Sub Weapon","Secondary Main Weapon","Secondary Sub Weapon","Armour","Mount","Item","Sprite ID","Role"
-0,"None",1,1,0,0,0,0,1,1,1,1,19,1,1,1,1,"Light Infantry","1,3","1,3","1,3","1,3","1,1","1,0,1",,"None",0
 1,"Norman Swordsmen",1,1,0,0,0,0,50,50,0,100,19,100,50,100,100,"Heavy Infantry","2,3","41,3","1,3","1,3","5,3","1,0,1",,"Norman Heavy",0
 2,"Norman Axemen",1,1,0,0,0,0,60,40,0,100,19,100,50,100,100,"Heavy Infantry","13,3","41,3","1,3","1,3","5,3","1,0,1",,"Norman Heavy",1
 3,"Norman Spearmen",1,1,0,0,0,0,45,55,0,100,19,100,50,100,100,"Heavy Infantry","6,3","41,3","1,3","1,3","5,3","1,0,1",,"Norman Heavy",2

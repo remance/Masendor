@@ -93,7 +93,7 @@ def combat_ai_logic(self, dt, unit_state):
             if self.unit.nearby_enemy != {} and (self.attack_target is None or self.attack_pos is None):
                 self.find_shooting_target(unit_state)
 
-    elif self.state < 90:  # range attack
+    elif self.state < 90 and not self.command_action:  # range attack
         self.close_target = None
         if self in self.battle.combat_path_queue:
             self.battle.combat_path_queue.remove(self)
@@ -103,16 +103,16 @@ def combat_ai_logic(self, dt, unit_state):
             for this_set in self.range_weapon_set:  # find weapon set with range weapon that can shoot, primary first
                 self.swap_weapon(this_set)
                 break
-            if unit_state == 11:  # unit in range attack state
-                if any(weapon_range >= self.attack_pos.distance_to(self.base_pos) for weapon_range in
-                       self.shoot_range.values()):
-                    self.state = 11  # can shoot if troop have magazine_left and in shoot range, enter range combat state
+        if unit_state == 11:  # unit in range attack state
+            if any(weapon_range >= self.attack_pos.distance_to(self.base_pos) for weapon_range in
+                   self.shoot_range.values()):
+                self.state = 11  # can shoot if troop have magazine_left and in shoot range, enter range combat state
 
-            elif self.unit.fire_at_will == 0 and (self.state == 0 or
-                                                  (self.move and
-                                                   self.check_special_effect("Shoot While Moving"))):  # Fire at will
-                if self.unit.nearby_enemy != {} and self.attack_target is None:
-                    self.find_shooting_target(unit_state)  # shoot the nearest target
+        elif self.unit.fire_at_will == 0 and (self.state == 0 or
+                                              (self.move and
+                                               self.check_special_effect("Shoot While Moving"))):  # Fire at will
+            if self.unit.nearby_enemy != {} and self.attack_target is None:
+                self.find_shooting_target(unit_state)  # shoot the nearest target
 
     if self.state == 10 and not self.command_action and not self.current_action:  # if melee combat (engaging anyone on any side)
         for weapon in self.weapon_cooldown:

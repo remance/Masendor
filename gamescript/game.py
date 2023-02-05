@@ -835,10 +835,10 @@ class Game:
         # Error log for selected genre, ruleset
         self.error_log.write("Ruleset: " + self.ruleset_list[self.ruleset][0] + ", Mode: " + self.genre)
 
-        self.preview_leader = (leader.Leader(1, 0, 0, None, self.leader_data, layer=11),
-                               leader.Leader(1, 0, 1, None, self.leader_data, layer=11),
-                               leader.Leader(1, 0, 2, None, self.leader_data, layer=11),
-                               leader.Leader(1, 0, 3, None, self.leader_data,
+        self.preview_leader = (leader.Leader(0, 0, 0, None, self.leader_data, layer=11),
+                               leader.Leader(0, 0, 1, None, self.leader_data, layer=11),
+                               leader.Leader(0, 0, 2, None, self.leader_data, layer=11),
+                               leader.Leader(0, 0, 3, None, self.leader_data,
                                              layer=11))  # list of preview leader for unit editor
         for this_leader in self.preview_leader:
             self.leader_updater.remove(this_leader)

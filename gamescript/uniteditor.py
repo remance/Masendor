@@ -83,6 +83,8 @@ class UnitBuildSlot(pygame.sprite.Sprite):
         self.feature = 0
         self.weather = 0
 
+        self.angle = 0
+
         self.commander = True
 
         self.coa = pygame.Surface((0, 0))  # empty coa_list to prevent leader ui error

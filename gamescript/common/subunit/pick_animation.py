@@ -31,18 +31,18 @@ def pick_animation(self):
                                  self.action_list[0]["Common"] + "_" + \
                                  state_name
         self.current_animation = {key: value for key, value in self.animation_pool.items() if animation_name in key}
-        self.current_animation = {key: value for key, value in self.current_animation.items() if
+        self.current_animation = {key: value for key, value in self.current_animation.items() if "/" not in key or
                                   "/" + str(self.equipped_weapon) == key[-2:]}  # pick animation of current weapon set
         self.current_animation = self.current_animation[random.choice(list(self.current_animation.keys()))]
 
     except KeyError:  # animation not found, use default
-        self.current_animation = self.animation_pool[self.animation_race_name + "_Default/0"]
+        self.current_animation = self.animation_pool[self.animation_race_name + "_Default"]
 
     except IndexError:  # animation not found, use default
-        self.current_animation = self.animation_pool[self.animation_race_name + "_Default/0"]
-        # print(animation_name)
-        # print(self.animation_pool)
-    #     print(self.current_animation)
-    #     asdf
+        self.current_animation = self.animation_pool[self.animation_race_name + "_Default"]
+        # if self.leader is not None:
+        #     print(animation_name)
+        #     print(list(self.animation_pool.keys()))
+        #     asdf
 
     self.current_animation["name"] = animation_name

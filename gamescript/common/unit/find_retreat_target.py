@@ -11,7 +11,7 @@ retreat_angle = (math.radians(90), math.radians(270), math.radians(180), math.ra
 
 def find_retreat_target(self):
     if self.retreat_way is False:  # not yet start retreat or previous retreat way got blocked
-        retreat_score = [0, 0, 0, 0, 0, 0, 0, 0]  # retreat to path with fewest enemy then closest to border
+        retreat_score = [0, 0, 0, 0, 0, 0, 0, 0]  # retreat to path with the fewest enemies then closest to border
         retreat_target = []
 
         map_distance_score = (self.map_corner[0] + self.map_corner[1]) / 2
@@ -26,7 +26,8 @@ def find_retreat_target(self):
                     clip = this_subunit.hitbox_rect.clipline(base_target, self.base_pos)
                     if clip:
                         retreat_score[index] += 1
-
+        print(retreat_score)
+        print(retreat_target)
         base_target = retreat_target[retreat_score.index(min(retreat_score))]  # pick lowest score direction
         self.retreat_command(base_target, self.state)
 

@@ -78,10 +78,10 @@
 77,,,,,,,,,
 78,,,,,,,,,
 79,,,,,,,,,
-80,"Light Artillery",-30,,-70,,,,,"Combat Equipment"
-81,"Medium Artillery",-50,,-90,,,,,"Combat Equipment"
-82,"Large Artillery",-70,,-100,,,,,"Combat Equipment"
-83,"Giant Artillery",-90,,-200,,,,,"Combat Equipment"
+80,"Light Artillery",-30,,-70,,,,48,"Combat Equipment"
+81,"Medium Artillery",-50,,-90,,,,49,"Combat Equipment"
+82,"Large Artillery",-70,,-100,,,,50,"Combat Equipment"
+83,"Giant Artillery",-90,,-200,,,,51,"Combat Equipment"
 84,,,,,,,,,
 85,,,,,,,,,
 86,,,,,,,,,

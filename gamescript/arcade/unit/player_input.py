@@ -55,6 +55,8 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
             elif key_state[pygame.K_d]:  # move right
                 new_pos[0] += speed
 
+            self.leader_subunit.command_target = new_pos
+
         if self.rotate_only:
             self.issue_order(cursor_pos, run_command=key_state[pygame.K_LSHIFT])
 
@@ -88,7 +90,6 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                         self.leader_subunit.current_action.pop("hold")
 
         elif "uninterruptible" not in self.leader_subunit.command_action:  # attack while moving
-            move = False
             self.leader_subunit.new_angle = self.leader_subunit.set_rotate(new_pos)
             if mouse_left_down or mouse_right_down:
                 action_num = 0
@@ -98,28 +99,34 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                     str_action_num = "1"
                 if self.leader_subunit.equipped_weapon in self.leader_subunit.ammo_now and \
                         action_num in self.leader_subunit.ammo_now[self.leader_subunit.equipped_weapon] and \
-                        self.leader_subunit.check_special_effect("Shoot While Moving") and \
-                        self.leader_subunit.ammo_now[self.leader_subunit.equipped_weapon][
-                            action_num] > 0:  # range weapon
-                    if "range attack" not in self.leader_subunit.current_action:
-                        self.leader_subunit.command_action = {"name": "Action " + str_action_num, "range attack": True,
-                                                              "pos": cursor_pos, "move attack": True, "movable": True}
-                        self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True)
-                    elif "move attack" not in self.leader_subunit.current_action:
-                        if "hold" in self.leader_subunit.current_action:  # cannot hold shoot while moving
-                            self.leader_subunit.current_action.pop("hold")
-                        self.leader_subunit.current_action["movable"] = True
-                        self.leader_subunit.current_action["move attack"] = True
-                        self.leader_subunit.current_action["pos"] = cursor_pos
-                        self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True)
-                    else:
-                        self.leader_subunit.current_action["pos"] = cursor_pos
-                        self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True)
-                    move = True
+                        self.leader_subunit.check_special_effect("Shoot While Moving"):  # range weapon
+                    if self.leader_subunit.ammo_now[self.leader_subunit.equipped_weapon][action_num] > 0:
+                        if "range attack" not in self.leader_subunit.current_action:
+                            self.leader_subunit.command_action = {"name": "Action " + str_action_num, "range attack": True,
+                                                                  "pos": cursor_pos, "move attack": True, "movable": True}
+                            self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True)
+                        elif "move attack" not in self.leader_subunit.current_action:
+                            if "hold" in self.leader_subunit.current_action:  # cannot hold shoot while moving
+                                self.leader_subunit.current_action.pop("hold")
+                            self.leader_subunit.current_action["movable"] = True
+                            self.leader_subunit.current_action["move attack"] = True
+                            self.leader_subunit.current_action["pos"] = cursor_pos
+                            self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True)
+                        else:
+                            self.leader_subunit.current_action["pos"] = cursor_pos
+                            self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True)
                 elif key_state[pygame.K_LSHIFT]:  # melee weapon charge
                     self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True,
                                      other_command="Charge Skill " + str_action_num)
-                    move = True
+                elif not self.leader_subunit.current_action:  # normal melee attack
+                    self.leader_subunit.command_action = {"name": "Action " + str_action_num,
+                                                          "melee attack": True, "pos": cursor_pos}
+                elif "Action " + str_action_num in self.leader_subunit.current_action[
+                    "name"]:  # No new attack command if already doing it
+                    if "hold" not in self.leader_subunit.current_action:  # start holding
+                        self.leader_subunit.current_action["hold"] = True
+                    else:  # holding, update new attack pos
+                        self.leader_subunit.current_action["pos"] = cursor_pos
 
             elif mouse_left_up or mouse_right_up:
                 action_num = 0
@@ -128,6 +135,10 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                     action_num = 1
                     str_action_num = "1"
 
+                if "hold" in self.leader_subunit.current_action and \
+                        "Action " + str_action_num in self.leader_subunit.current_action["name"]:  # release holding
+                    self.leader_subunit.current_action.pop("hold")
+
                 if self.leader_subunit.current_action and weapon_set[action_num] in self.leader_subunit.current_action[
                     "name"]:  # perform attack when release charge
                     if "_Charge" in self.leader_subunit.current_action["name"]:
@@ -135,12 +146,6 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                                          other_command="Action " + str_action_num)
                     elif "range attack" in self.leader_subunit.current_action:  # update new range attack pos
                         self.leader_subunit.current_action["pos"] = cursor_pos
-                        move = True
 
             else:
                 self.issue_order(new_pos, run_command=key_state[pygame.K_LSHIFT], revert_move=True)
-                move = True
-            if move:
-                self.leader_subunit.command_target = new_pos
-
-        # else:  # no new movement register other command

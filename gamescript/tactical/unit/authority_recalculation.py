@@ -1,7 +1,7 @@
 def authority_recalculation(self):
     """recalculate authority from all alive leaders"""
-    self.authority = (self.leader[0].authority / 2) + (self.leader[1].authority / 4) + \
-                     (self.leader[2].authority / 4) + (self.leader[3].authority / 10)
+    self.authority = (self.team_commander.authority / 2) + (self.leader[0].authority / 2) + \
+                     (self.leader[1].authority / 4) + (self.leader[2].authority / 4) + (self.leader[3].authority / 10)
     self.leader_social = self.leader[0].social
     if self.authority > 0:
         big_army_size = len(self.subunit_id_array)

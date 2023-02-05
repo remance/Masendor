@@ -225,7 +225,7 @@ def battle_mouse_process(self, mouse_left_up, mouse_right_up, double_mouse_right
                                     self.kill_effect_icon()
 
                             elif mouse_right_up:
-                                self.popout_lorebook(3, this_subunit.who.troop_id)
+                                self.popout_lorebook(self.main.encyclopedia.troop_section, this_subunit.who.troop_id)
                             break
 
                 elif self.troop_card_ui.rect.collidepoint(self.mouse_pos):  # mouse position in subunit card

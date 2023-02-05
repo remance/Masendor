@@ -635,6 +635,8 @@ class FactionData:
                 self.faction_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
 
+        self.faction_name_list = [value["Name"] for value in self.faction_list.values()][1:]
+
         self.faction_lore = {}
         with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "faction",
                                "faction_lore_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
