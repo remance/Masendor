@@ -18,7 +18,6 @@ class EffectSprite(pygame.sprite.Sprite):
         self._layer = 10000000
         pygame.sprite.Sprite.__init__(self, self.containers)
 
-        self.camera_scale = 1
         self.show_frame = 0
         self.animation_timer = 0
         self.angle = angle
@@ -38,7 +37,7 @@ class EffectSprite(pygame.sprite.Sprite):
         if self.angle != 0:
             self.image = pygame.transform.rotate(self.angle)
 
-    def update(self, dt, camera_scale):
+    def update(self, dt):
         done, just_start = self.play_animation(0.1, dt, False)
 
         if self.duration > 0:
@@ -49,14 +48,3 @@ class EffectSprite(pygame.sprite.Sprite):
             if self.show_frame:
                 self.kill()
 
-        if self.camera_scale != camera_scale:
-            self.camera_scale = camera_scale
-            if self.camera_scale == 1:
-                self.image = self.base_image.copy()
-            else:
-                self.image = pygame.transform.smoothscale(self.base_image,
-                                                          (int(self.base_image.get_width() / self.camera_scale),
-                                                           int(self.base_image.get_height() / self.camera_scale)))
-
-            if self.angle != 0:
-                self.image = pygame.transform.rotate(self.angle)

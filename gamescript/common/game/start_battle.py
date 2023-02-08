@@ -6,10 +6,9 @@ import pygame
 def start_battle(self, char_selected=None):
     self.error_log.write("\n Map: " + str(self.map_title.name) + ", Source: " +
                          str(self.source_name_list[self.map_source]) + ", Character: " + str(char_selected) + "\n")
+
     self.battle_game.prepare_new_game(self.ruleset, self.ruleset_folder, self.team_selected,
-                                      self.enactment, self.map_selected,
-                                      self.map_source, self.source_scale[self.map_source], "battle",
-                                      char_selected=char_selected)
+                                      self.map_selected, self.map_source, char_selected)
     self.battle_game.run_game()
     pygame.mixer.music.unload()
     pygame.mixer.music.set_endevent(self.SONG_END)

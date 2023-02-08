@@ -26,7 +26,6 @@ class Lorebook(pygame.sprite.Sprite):
     leader_data = None
     battle_map_data = None
     preview_sprite_pool = None
-    unit_state_text = None
 
     concept_section = 0
     history_section = 1
@@ -42,9 +41,7 @@ class Lorebook(pygame.sprite.Sprite):
     leader_text = ("Detrimental", "Incompetent", "Inferior", "Unskilled", "Dull", "Average", "Decent", "Skilled",
                    "Master", "Genius", "Unmatched")
 
-    def __init__(self, main, image, textsize=24):
-        """ Lorebook section: 0 = welcome/concept, 1 world history, 2 = faction, 3 = subunit, 4 = equipment, 5 = subunit status, 6 = subunit skill,
-        7 = subunit trait, 8 = leader, 9 terrain, 10 = landmark"""
+    def __init__(self, main, image, text_size=24):
         self.main = main
         self.main_dir = main.main_dir
         self.screen_rect = main.screen_rect
@@ -52,7 +49,7 @@ class Lorebook(pygame.sprite.Sprite):
 
         self._layer = 23
         pygame.sprite.Sprite.__init__(self)
-        self.font = pygame.font.SysFont("helvetica", int(textsize * self.screen_scale[1]))
+        self.font = pygame.font.SysFont("helvetica", int(text_size * self.screen_scale[1]))
         self.font_header = pygame.font.SysFont("oldenglishtext", int(52 * self.screen_scale[1]))
         self.image = image
         self.base_image = self.image.copy()
@@ -101,6 +98,26 @@ class Lorebook(pygame.sprite.Sprite):
             for index in stat_list:
                 self.equipment_lore[run] = stat_list[index]
                 run += 1
+
+        # reindex string leader id
+        self.leader_id_reindex = {}
+        run = 1
+        for index in self.leader_data.leader_list:
+            self.skill_stat[run] = self.leader_data.leader_list[index]
+            self.leader_id_reindex[index] = run
+            run += 1
+
+        self.leader_stat = {}
+        run = 1
+        for value in self.leader_data.leader_list.values():
+            self.leader_stat[run] = value
+            run += 1
+
+        self.leader_lore = {}
+        run = 1
+        for value in self.leader_data.leader_lore.values():
+            self.leader_lore[run] = value
+            run += 1
 
         # Make new skill list that contain all troop and leader skills
         self.skill_stat = {}
@@ -152,7 +169,7 @@ class Lorebook(pygame.sprite.Sprite):
                              (self.troop_data.status_list, self.troop_data.status_lore),
                              (self.skill_stat, self.skill_lore, self.skill_id_reindex),
                              (self.troop_data.trait_list, self.troop_data.trait_lore),
-                             (self.leader_data.leader_list, self.leader_data.leader_lore),
+                             (self.leader_stat, self.leader_lore, self.leader_id_reindex),
                              (self.battle_map_data.feature_mod, self.battle_map_data.feature_mod_lore),
                              (self.battle_map_data.weather_data, self.battle_map_data.weather_lore))
 
@@ -189,9 +206,17 @@ class Lorebook(pygame.sprite.Sprite):
         self.current_subsection_row = 0  # reset subsection scroll to the top one
         self.current_filter_row = 0
         this_list = tuple(self.stat_data.values())  # get list of subsection
-        self.subsection_list = [name[0] if
-                                type(name) is list and "Name" != name[0] else name["Name"] for name in
-                                this_list]  # remove the header from subsection list
+        self.subsection_list = []  # remove the header from subsection list
+        # name[0] if
+        # type(name) == list and "Name" != name[0] else name["Name"]
+        # for name in
+        #     this_list
+        for index, name in enumerate(this_list):
+            if type(name) is list and "Name" != name[0]:
+                self.subsection_list.append(name[0])
+            elif type(name) is dict:
+                self.subsection_list.append(name["Name"])
+
         if "Name" in self.subsection_list:
             self.subsection_list.remove("Name")
         self.row_size = len(self.subsection_list)  # get size of subsection list
@@ -230,7 +255,7 @@ class Lorebook(pygame.sprite.Sprite):
                     image_name]  # get leader portrait based on subsection number
             except KeyError:
                 self.portrait = self.leader_data.images[
-                    "9999999"].copy()  # Use Unknown leader image if there is none in list
+                    "other"].copy()  # Use Unknown leader image if there is none in list
                 font = pygame.font.SysFont("timesnewroman", int(100 * self.screen_scale[1]))
                 text_image = font.render(str(self.subsection), True, pygame.Color("white"))
                 text_rect = text_image.get_rect(
@@ -244,13 +269,9 @@ class Lorebook(pygame.sprite.Sprite):
         elif self.section == self.troop_section:
             try:
                 who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key == self.subsection}
-                preview_sprite_pool = self.main.create_troop_sprite_pool(("side",), self.main.troop_sprite_size,
-                                                                         self.screen_scale, who_todo, preview=True)
+                preview_sprite_pool = self.main.create_troop_sprite_pool(who_todo, preview=True, max_preview_size=200)
                 self.portrait = preview_sprite_pool[self.subsection]["sprite"]
 
-                self.portrait = pygame.transform.scale(self.portrait, (int(250 * self.screen_scale[0]),
-                                                                       int(250 * self.screen_scale[
-                                                                           1])))
             except KeyError:
                 pass
 
@@ -494,18 +515,7 @@ class Lorebook(pygame.sprite.Sprite):
                                         create_text = ""
                                         pass
                                 if self.section == self.skill_section:
-                                    if key == "Restriction" or key == "Condition":  # skill restriction and condition
-                                        state_list = ""
-                                        if value != "":
-                                            for this_text in value:
-                                                state_list += self.unit_state_text[this_text] + ", "
-                                            state_list = state_list[0:-2]  # remove the last ", "
-                                            create_text = key + ": " + state_list
-                                        else:
-                                            create_text = ""
-                                            pass
-
-                                    elif key == "Troop Type":
+                                    if key == "Troop Type":
                                         create_text = key + ": " + ("Any", "Infantry", "Cavalry")[value]
 
                                 if value in (0, 1):

@@ -1,11 +1,9 @@
 swap_weapon_command_action = {"name": "SwapGear"}
 
 
-def swap_weapon(self, new_weapon_set, player_equip=False):
+def swap_weapon(self, new_weapon_set):
     """Change weapon, adjust stat, trait and skill"""
     self.equipped_weapon = new_weapon_set
-    if player_equip:
-        self.player_equipped_weapon = new_weapon_set
     if not self.command_action:  # play swap animation if nothing in queue
         self.command_action = swap_weapon_command_action
     self.weapon_cooldown[0] = 0  # reset weapon attack cooldown time

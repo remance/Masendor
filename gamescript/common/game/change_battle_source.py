@@ -8,17 +8,14 @@ def change_battle_source(self, scale_value, team_army, team_commander):
     leader_name_list = {key: leader[0] for key, leader in team_commander.items()}
 
     for index, team in team_army.items():
-        for this_unit in team:
-            if this_unit != 0 and type(this_unit) != str:
-                team_total_troop[index] += self.troop_data.troop_list[this_unit]["Troop"] * scale_value[index]
-                troop_type = 0
-                if self.troop_data.troop_list[this_unit]["Troop Class"] in (2, 4):  # range subunit
-                    troop_type += 1  # range weapon and accuracy higher than melee melee_attack
-                if self.troop_data.troop_list[this_unit]["Troop Class"] in (3, 4, 5, 6, 7):  # cavalry
-                    troop_type += 2
-                troop_type_list[index][troop_type] += int(
-                    self.troop_data.troop_list[this_unit]["Troop"] * scale_value[index])
-        troop_type_list[index].append(len(team))
+        for this_troop in team:
+            team_total_troop[index] += 1
+            troop_type = 0
+            if self.troop_data.troop_list[this_troop]["Troop Class"] in ("Range Infantry", "Range Cavalry", "Artillery"):  # range subunit
+                troop_type += 1  # range weapon and accuracy higher than melee melee_attack
+            if self.troop_data.troop_list[this_troop]["Troop Class"] in ("Light Cavalry", "Heavy Cavalry", "Chariot"):  # cavalry
+                troop_type += 2
+            troop_type_list[index][troop_type] += 1
 
     army_loop_list = {key: self.leader_data.leader_list[leader_name_list[key]]["Name"] + ": " +
                            "{:,}".format(int(troop)) + " Troops" for key, troop in team_total_troop.items()}

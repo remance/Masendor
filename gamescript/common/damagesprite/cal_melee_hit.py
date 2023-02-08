@@ -62,15 +62,14 @@ def cal_melee_hit(self, attacker, weapon, target, attacker_side, hit_side):
         if hit_side in (0, 2):
             loop_list = target.nearby_subunit_list[0:2]  # Front/rear attack get (0) left and (1) right nearby subunit
         for this_subunit in loop_list:
-            if this_subunit != 0 and this_subunit.state != 100:
+            if this_subunit != 0 and this_subunit.alive:
                 target_hit, target_defence = float(attacker.melee_attack * hit_side_mod) + target_luck, float(
                     this_subunit.melee_def * hit_side_mod) + target_luck
-                attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, \
-                element_effect, _ = attacker.cal_dmg(this_subunit, attacker_hit, target_defence, weapon,
-                                                     attacker.weapon_penetrate[attacker.equipped_weapon][weapon],
-                                                     "melee")
+                attacker_dmg, attacker_morale_dmg, element_effect, _ = \
+                    attacker.cal_dmg(this_subunit, attacker_hit, target_defence, weapon,
+                                     attacker.weapon_penetrate[attacker.equipped_weapon][weapon], "melee")
 
-                attacker.cal_loss(this_subunit, attacker_dmg, attacker_morale_dmg, attacker_leader_dmg, element_effect)
+                attacker.cal_loss(this_subunit, attacker_dmg, attacker_morale_dmg, element_effect)
                 if attacker.inflict_status != {}:
                     apply_status_to_enemy(attacker.inflict_status, this_subunit, attacker_side, hit_side)
 
@@ -93,6 +92,5 @@ def apply_status_to_enemy(inflict_status, target, attacker_side, receiver_side):
                                                   this_subunit.status_duration)
             elif status[1] == 4:  # whole unit aoe
                 for this_subunit in target.unit.alive_subunit_list:
-                    if this_subunit.state != 100:
-                        this_subunit.apply_effect(status[0], this_subunit.status_list, this_subunit.status_effect,
-                                                  this_subunit.status_duration)
+                    this_subunit.apply_effect(status[0], this_subunit.status_list, this_subunit.status_effect,
+                                              this_subunit.status_duration)

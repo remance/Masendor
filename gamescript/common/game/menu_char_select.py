@@ -13,8 +13,7 @@ def menu_char_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
                                     list(self.char_stat.values()), *self.char_select_button)
         self.menu_button.remove(*self.char_select_button)
 
-        clean_group_object((self.subunit_updater, self.leader_updater, self.preview_char,
-                            self.unit_icon, self.troop_number_sprite))
+        clean_group_object((self.subunit_updater, self.preview_char, self.char_icon))
 
         self.change_to_source_selection_menu()
 
@@ -30,31 +29,21 @@ def menu_char_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
             new_row = self.char_selector.scroll.player_input(self.mouse_pos)
             if self.char_selector.current_row != new_row:
                 self.char_selector.current_row = new_row
-                self.char_selector.setup_unit_icon(self.unit_icon, self.preview_char)
+                self.char_selector.setup_char_icon(self.char_icon, self.preview_char)
 
     elif self.char_selector.rect.collidepoint(self.mouse_pos) and mouse_left_up:
-        for index, icon in enumerate(self.unit_icon):
+        for index, icon in enumerate(self.char_icon):
             if icon.rect.collidepoint(self.mouse_pos):
-                for other_icon in self.unit_icon:
+                for other_icon in self.char_icon:
                     if other_icon.selected:  # unselected all others first
                         other_icon.selection()
-                        self.main_ui_updater.remove(other_icon.unit.subunit_list)
                 icon.selection()
-                self.char_stat["char"].add_leader_stat(icon.unit.leader[0], self.leader_data, self.troop_data)
-                self.map_show.change_mode(1, team_pos_list=self.team_pos, selected=icon.unit.base_pos)
+                self.char_stat["char"].add_leader_stat(icon.who, self.leader_data, self.troop_data)
+                who_todo = {key: value for key, value in self.leader_data.leader_list.items() if key == icon.who.troop_id}
+                preview_sprite_pool = self.create_troop_sprite_pool(who_todo, preview=True, max_preview_size=400)
+                self.char_stat["model"].add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"],
+                                                          icon.who.coa)
+                self.map_show.change_mode(1, team_pos_list=self.team_pos, selected=icon.who.base_pos)
 
-                self.main_ui_updater.add(icon.unit.subunit_list)
-
-                self.char_selected = icon.unit.game_id
+                self.char_selected = icon.who.game_id
                 break
-
-    elif self.char_stat["troop"].rect.collidepoint(self.mouse_pos):
-        for icon in self.unit_icon:
-            if icon.selected:
-                for subunit in icon.unit.subunit_list:
-                    if subunit.rect.collidepoint(self.mouse_pos):
-                        self.main_ui_updater.add(self.char_popup)
-                        self.char_popup.pop(self.mouse_pos, subunit.name)
-
-    else:
-        self.main_ui_updater.remove(self.char_popup)

@@ -8,8 +8,7 @@ def add_sound_effect_queue(self, sound_name, sound_base_pos, sound_distance_powe
     elif sound_distance > 1:
         sound_distance = 1
 
-    effect_volume = sound_distance * (self.camera_zoom / self.max_camera_zoom) * \
-                    self.play_effect_volume
+    effect_volume = sound_distance * self.play_effect_volume
 
     screen_shake_power = self.cal_shake_value(sound_base_pos, shake_power)
 

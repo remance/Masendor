@@ -1,6 +1,7 @@
 import pygame
 import pygame.freetype
 import pygame.freetype
+import pygame.transform
 import pyperclip
 from gamescript.common import utility
 
@@ -191,7 +192,6 @@ class InputBox(pygame.sprite.Sprite):
                 event_key = input_event.key
                 event_unicode = event.unicode
                 self.hold_key = event_key  # save last holding press key
-                # print("hold", self.hold_key, key_press.index(True))
                 self.hold_key_unicode = event_unicode
 
             if event_key == pygame.K_BACKSPACE or self.hold_key == pygame.K_BACKSPACE:
@@ -445,10 +445,10 @@ class ArmyStat(pygame.sprite.Sprite):
     def __init__(self, screen_scale, pos, image):
         self._layer = 1
         pygame.sprite.Sprite.__init__(self)
+        self.screen_scale = screen_scale
+        self.font_size = int(32 * self.screen_scale[1])
 
-        self.font_size = int(32 * screen_scale[1])
-
-        self.leader_font = pygame.font.SysFont("helvetica", int(36 * screen_scale[1]))
+        self.leader_font = pygame.font.SysFont("helvetica", int(36 * self.screen_scale[1]))
         self.font = pygame.font.SysFont("helvetica", self.font_size)
 
         self.base_image = image.copy()
@@ -467,7 +467,7 @@ class ArmyStat(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
 
     def add_army_stat(self, troop_number, leader_name):
-        """troop_number need to be in list format as follows:[total,melee infantry, range infantry,
+        """troop_number need to be in list format as follows:[total, melee infantry, range infantry,
         cavalry, range cavalry]"""
         self.image = self.base_image.copy()
 
@@ -480,14 +480,22 @@ class ArmyStat(pygame.sprite.Sprite):
             text_rect = text_surface.get_rect(midleft=self.type_number_pos[index])
             self.image.blit(text_surface, text_rect)
 
-    def add_leader_stat(self, leader, leader_data, troop_data):
+    def add_preview_model(self, model, coa):
+        self.image = self.base_image.copy()
+        rect = coa.get_rect(topleft=(20 * self.screen_scale[0], 20 * self.screen_scale[1]))
+        self.image.blit(pygame.transform.smoothscale(coa, (200 * self.screen_scale[0],
+                                                           200 * self.screen_scale[1])), rect)
+        rect = model.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
+        self.image.blit(model, rect)
+
+    def add_leader_stat(self, who, leader_data, troop_data):
         """For character select screen"""
         self.image = self.base_image.copy()
-        stat = leader_data.leader_list[leader.leader_id]
-        leader_name = leader.name
-        leader_image = leader.full_image
+        stat = leader_data.leader_list[who.troop_id]
+        leader_name = who.name
+        leader_image = who.portrait
         leader_skill = ""
-        for skill in leader.skill:
+        for skill in who.skill:
             leader_skill += leader_data.skill_list[skill]["Name"] + ", "
         leader_skill = leader_skill[:-2]
         self.primary_main_weapon = stat["Primary Main Weapon"]
@@ -508,12 +516,11 @@ class ArmyStat(pygame.sprite.Sprite):
                        troop_data.mount_list[stat["Mount"][0]]["Name"] + ", " + \
                        troop_data.mount_armour_list[stat["Mount"][2]]["Name"]
 
-        leader_stat = {"Health: ": leader.health, "Authority: ": leader.authority,
-                       "Melee Command: ": self.leader_text[leader.melee_command],
-                       "Range Command: ": self.leader_text[leader.range_command],
-                       "Cavalry Command: ": self.leader_text[leader.cav_command],
-                       "Combat Power: ": leader.combat,
-                       "Social Class: ": leader.social["Leader Social Class"],
+        leader_stat = {"Health: ": who.health, "Authority: ": who.authority,
+                       "Melee Command: ": self.leader_text[who.melee_command],
+                       "Range Command: ": self.leader_text[who.range_command],
+                       "Cavalry Command: ": self.leader_text[who.cav_command],
+                       "Social Class: ": who.social["Leader Social Class"],
                        "Skill: ": leader_skill,
                        "Primary Weapon: ": leader_primary_weapon,
                        "Secondary Weapon: ": leader_secondary_weapon,
@@ -655,7 +662,8 @@ class MapOptionBox(pygame.sprite.Sprite):
 class MapPreview(pygame.sprite.Sprite):
     colour = {0: (50, 50, 50), 1: (0, 0, 200), 2: (200, 0, 0)}
     selected_colour = {0: (200, 200, 200), 1: (150, 150, 255), 2: (255, 150, 150)}
-    team_dot = {team: {True: None, False: None} for team in colour.keys()}
+    troop_dot = {team: None for team in colour.keys()}
+    leader_dot = {team: {True: None, False: None} for team in colour.keys()}
 
     def __init__(self, main_dir, screen_scale, pos, terrain_colour, feature_colour, battle_map_colour):
         self.main_dir = main_dir
@@ -669,25 +677,31 @@ class MapPreview(pygame.sprite.Sprite):
         self.image = pygame.Surface((450 * self.screen_scale[0], 450 * self.screen_scale[1]))
         self.image.fill((0, 0, 0))  # draw black colour for black corner
 
-        dot = pygame.Surface((10 * self.screen_scale[0], 10 * self.screen_scale[1]))  # dot for team subunit
-        dot.fill((0, 0, 0))  # black corner
-        colour_dot = pygame.Surface((8 * self.screen_scale[0], 8 * self.screen_scale[1]))
-        rect = dot.get_rect(topleft=(2 * self.screen_scale[0], 2 * self.screen_scale[1]))
+        leader_dot = pygame.Surface((10 * self.screen_scale[0], 10 * self.screen_scale[1]))  # dot for team subunit
+        leader_dot.fill((0, 0, 0))  # black corner
+        leader_colour_dot = pygame.Surface((8 * self.screen_scale[0], 8 * self.screen_scale[1]))
+        rect = leader_dot.get_rect(topleft=(2 * self.screen_scale[0], 2 * self.screen_scale[1]))
+
+        troop_dot = pygame.Surface((4 * self.screen_scale[0], 4 * self.screen_scale[1]))  # dot for team subunit
+        troop_dot.fill((0, 0, 0))
 
         for team, colour in self.colour.items():
-            new_dot = colour_dot.copy()
+            new_dot = leader_colour_dot.copy()
             new_dot.fill(colour)
-            add_dot = dot.copy()
+            add_dot = leader_dot.copy()
             add_dot.blit(new_dot, rect)
-            self.team_dot[team][False] = add_dot
+            self.leader_dot[team][False] = add_dot
+            new_dot = troop_dot.copy()
+            new_dot.fill(colour)
+            self.troop_dot[team] = new_dot
 
         for team, colour in self.selected_colour.items():
-            new_selected_dot = colour_dot.copy()
+            new_selected_dot = leader_colour_dot.copy()
             new_selected_dot.fill
             new_dot.fill(colour)
-            add_dot = dot.copy()
+            add_dot = leader_dot.copy()
             add_dot.blit(new_dot, rect)
-            self.team_dot[team][True] = add_dot
+            self.leader_dot[team][True] = add_dot
 
         self.rect = self.image.get_rect(center=self.pos)
 
@@ -720,13 +734,18 @@ class MapPreview(pygame.sprite.Sprite):
         self.image = self.base_image.copy()
         if mode == 1:
             for team, pos_list in team_pos_list.items():
-                for pos in pos_list:
-                    select = False
-                    if pos == selected:
-                        select = True
-                    scaled_pos = pygame.Vector2(pos[0] * ((440 * self.screen_scale[0]) / 1000),
-                                                pos[1] * ((440 * self.screen_scale[1]) / 1000))
-                    rect = self.team_dot[team][select].get_rect(center=scaled_pos)
-                    self.image.blit(self.team_dot[team][select], rect)
+                for troop_type, troop_pos in pos_list.items():
+                    for pos in troop_pos:
+                        select = False
+                        if troop_pos == selected:
+                            select = True
+                        scaled_pos = pygame.Vector2(pos[0] * ((440 * self.screen_scale[0]) / 1000),
+                                                    pos[1] * ((440 * self.screen_scale[1]) / 1000))
+                        if troop_type == "Leader":
+                            rect = self.leader_dot[team][select].get_rect(center=scaled_pos)
+                            self.image.blit(self.leader_dot[team][select], rect)
+                        else:
+                            rect = self.troop_dot[team].get_rect(center=scaled_pos)
+                            self.image.blit(self.troop_dot[team], rect)
 
         self.rect = self.image.get_rect(center=self.pos)

@@ -15,122 +15,110 @@ from gamescript import datastat
 stat_convert = datastat.stat_convert
 
 
-def read_anim_data(direction_list, pool_type, anim_column_header):
-    pool = []
-    for direction in direction_list:
-        with open(os.path.join(main_dir, "data", "animation", pool_type, direction + ".csv"), encoding="utf-8",
-                  mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
-            part_name_header = rd[0]
-            list_column = anim_column_header  # value in list only
-            list_exclude = ["Name", "size", "eye", "mouth"]
-            list_column = [item for item in list_column if
-                           item not in list_exclude and any(ext in item for ext in list_exclude) is False]
-            list_column = [index for index, item in enumerate(part_name_header) if item in list_column]
-            part_name_header = part_name_header[1:]  # keep only part name for list ref later
-            animation_pool = {}
-            for row_index, row in enumerate(rd):
-                if row_index > 0:
-                    key = row[0].split("/")[0]
-                    for n, i in enumerate(row):
-                        row = stat_convert(row, n, i, list_column=list_column)
-                    row = row[1:]
-                    if key in animation_pool:
-                        animation_pool[key].append(
-                            {part_name_header[item_index]: item for item_index, item in enumerate(row)})
-                    else:
-                        animation_pool[key] = [
-                            {part_name_header[item_index]: item for item_index, item in enumerate(row)}]
-            pool.append(animation_pool)
-            part_name_header = [item for item in part_name_header if item != "effect" and "property" not in item]
+def read_anim_data(pool_type, anim_column_header):
+    with open(os.path.join(main_dir, "data", "animation", pool_type, "side.csv"), encoding="utf-8",
+              mode="r") as edit_file:
+        rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+        rd = [row for row in rd]
+        part_name_header = rd[0]
+        list_column = anim_column_header  # value in list only
+        list_exclude = ["Name", "size", "eye", "mouth"]
+        list_column = [item for item in list_column if
+                       item not in list_exclude and any(ext in item for ext in list_exclude) is False]
+        list_column = [index for index, item in enumerate(part_name_header) if item in list_column]
+        part_name_header = part_name_header[1:]  # keep only part name for list ref later
+        animation_pool = {}
+        for row_index, row in enumerate(rd):
+            if row_index > 0:
+                key = row[0].split("/")[0]
+                for n, i in enumerate(row):
+                    row = stat_convert(row, n, i, list_column=list_column)
+                row = row[1:]
+                if key in animation_pool:
+                    animation_pool[key].append(
+                        {part_name_header[item_index]: item for item_index, item in enumerate(row)})
+                else:
+                    animation_pool[key] = [
+                        {part_name_header[item_index]: item for item_index, item in enumerate(row)}]
+        pool = animation_pool
+        part_name_header = [item for item in part_name_header if item != "effect" and "property" not in item]
         edit_file.close()
     return pool, part_name_header
 
 
-def read_joint_data(direction_list):
-    weapon_joint_list = []
-    for direction_index, direction in enumerate(direction_list):
-        with open(os.path.join(main_dir, "data", "sprite", "generic", "weapon", "joint.csv"), encoding="utf-8",
-                  mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            rd = [row for row in rd]
-            header = rd[0]
-            list_column = direction_list
-            list_column = [index for index, item in enumerate(header) if item in list_column]
-            joint_list = {}
-            for row_index, row in enumerate(rd):
-                if row_index > 0:
-                    for n, i in enumerate(row):
-                        row = stat_convert(row, n, i, list_column=list_column)
-                        key = row[0].split("/")[0]
-                    position = row[direction_index + 1]
-                    if position == ["center"] or position == [""]:
-                        position = "center"
-                    else:
-                        position = pygame.Vector2(position[0], position[1])
+def read_joint_data():
+    with open(os.path.join(main_dir, "data", "sprite", "generic", "weapon", "joint.csv"), encoding="utf-8",
+              mode="r") as edit_file:
+        rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+        rd = [row for row in rd]
+        header = rd[0]
+        list_column = ["side"]
+        list_column = [index for index, item in enumerate(header) if item in list_column]
+        joint_list = {}
+        for row_index, row in enumerate(rd):
+            if row_index > 0:
+                for n, i in enumerate(row):
+                    row = stat_convert(row, n, i, list_column=list_column)
+                    key = row[0].split("/")[0]
+                position = row[1]
+                if position == ["center"] or position == [""]:
+                    position = "center"
+                else:
+                    position = pygame.Vector2(position[0], position[1])
 
-                    joint_list[key] = position
-            weapon_joint_list.append(joint_list)
-        edit_file.close()
+                joint_list[key] = position
+        weapon_joint_list = joint_list
+    edit_file.close()
     return weapon_joint_list
 
 
 def anim_to_pool(animation_name, pool, char, activate_list, new=False, replace=None, duplicate=None):
     """Add animation to animation pool data"""
     if replace is not None:  # rename animation
-        for direction in range(0, 5):
-            pool[direction][animation_name] = pool[direction].pop(replace)
+        pool[animation_name] = pool.pop(replace)
     elif duplicate is not None:
-        for direction in range(0, 5):
-            pool[direction][animation_name] = [
-                {key: [small_value for small_value in value] if type(value) == list else value for key, value in
-                 this_frame.items()} for this_frame in pool[direction][duplicate]]
+        pool[animation_name] = [
+            {key: [small_value for small_value in value] if type(value) == list else value for key, value in
+             this_frame.items()} for this_frame in pool[duplicate]]
     else:
-        if animation_name not in pool[0]:
-            for direction in range(0, 5):
-                pool[direction][animation_name] = []
+        if animation_name not in pool:
+            pool[animation_name] = []
         if new:
-            for direction in range(0, 5):
-                pool[direction][animation_name] = [frame for index, frame in enumerate(char.frame_list) if
-                                                   frame != {} and activate_list[index]]
+            pool[animation_name] = [frame for index, frame in enumerate(char.frame_list) if
+                                    frame != {} and activate_list[index]]
         else:
-            pool[char.side][animation_name] = [frame for index, frame in enumerate(char.frame_list) if
-                                               frame != {} and activate_list[index]]
+            pool[animation_name] = [frame for index, frame in enumerate(char.frame_list) if
+                                    frame != {} and activate_list[index]]
 
 
-def anim_save_pool(pool, pool_name, direction_list, anim_column_header):
+def anim_save_pool(pool, pool_name, anim_column_header):
     """Save animation pool data"""
-    for index, direction in enumerate(direction_list):
-        with open(os.path.join(main_dir, "data", "animation", pool_name, direction + ".csv"), mode="w",
-                  encoding='utf-8', newline="") as edit_file:
-            filewriter = csv.writer(edit_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_ALL)
-            save_list = pool[index]
-            final_save = [[item for item in anim_column_header]]
-            for item in list(save_list.items()):
-                for frame_num, frame in enumerate(item[1]):
-                    subitem = [tiny_item for tiny_item in list(frame.values())]
-                    for item_index, min_item in enumerate(subitem):
-                        if type(min_item) == list:
-                            min_item = [this_item if type(this_item) != float else round(this_item, 1) for this_item in
-                                        min_item]
-                            new_item = str(min_item)
-                            for character in "'[]":
-                                new_item = new_item.replace(character, "")
-                            new_item = new_item.replace(", ", ",")
-                            subitem[item_index] = new_item
-                    new_item = [item[0] + "/" + str(frame_num)] + subitem
-                    final_save.append(new_item)
-            for row in final_save:
-                filewriter.writerow(row)
+    with open(os.path.join(main_dir, "data", "animation", pool_name, "side.csv"), mode="w",
+              encoding='utf-8', newline="") as edit_file:
+        filewriter = csv.writer(edit_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_ALL)
+        save_list = pool
+        final_save = [[item for item in anim_column_header]]
+        for item in list(save_list.items()):
+            for frame_num, frame in enumerate(item[1]):
+                subitem = [tiny_item for tiny_item in list(frame.values())]
+                for item_index, min_item in enumerate(subitem):
+                    if type(min_item) == list:
+                        min_item = [this_item if type(this_item) != float else round(this_item, 1) for this_item in
+                                    min_item]
+                        new_item = str(min_item)
+                        for character in "'[]":
+                            new_item = new_item.replace(character, "")
+                        new_item = new_item.replace(", ", ",")
+                        subitem[item_index] = new_item
+                new_item = [item[0] + "/" + str(frame_num)] + subitem
+                final_save.append(new_item)
+        for row in final_save:
+            filewriter.writerow(row)
         edit_file.close()
 
 
 def anim_del_pool(pool, animation_name):
     """Delete animation from animation pool data"""
-    if animation_name in pool[0]:
-        for direction in range(0, 5):
-            try:
-                del pool[direction][animation_name]
-            except:
-                pass
+    if animation_name in pool:
+        del pool[animation_name]
+

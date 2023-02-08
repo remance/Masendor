@@ -1,14 +1,13 @@
 import pygame
 
 
-def play_animation(self, speed, dt, hold_check, replace_image=True):
+def play_animation(self, dt, hold_check):
     """
     Play troop sprite animation
     :param self: Object of the animation sprite
     :param speed: Play speed
     :param dt: Time
     :param hold_check: Check if holding animation frame or not
-    :param replace_image: Further zoom level does not show sprite animation even when it plays
     :return: Boolean of animation finish playing or not and just start
     """
     done = False
@@ -16,7 +15,7 @@ def play_animation(self, speed, dt, hold_check, replace_image=True):
     current_animation = self.current_animation[self.sprite_direction]
     if hold_check is False:  # not holding current frame
         self.animation_timer += dt
-        if self.animation_timer >= speed:
+        if self.animation_timer >= self.animation_play_speed:
             self.animation_timer = 0
             just_start = True
             if self.show_frame < len(current_animation) - 1:
@@ -26,12 +25,20 @@ def play_animation(self, speed, dt, hold_check, replace_image=True):
                     self.show_frame = 0
                 else:
                     done = True
-    if replace_image:  # replace sprite image
-        try:
-            self.image = current_animation[self.show_frame]["sprite"]
-        except KeyError:
-            print(current_animation, self.current_action, self.show_frame)
-        self.rect = self.image.get_rect(center=self.pos)
+            if done is False:  # check if new frame has play speed mod
+                if "player_speed_mod" in self.current_animation[self.show_frame]["frame_property"]:
+                    self.animation_play_speed = self.default_animation_play_speed * \
+                                                self.current_animation[self.show_frame]["frame_property"]["player_speed_mod"]
+                elif "player_speed_mod" in self.current_animation[self.show_frame]["animation_property"]:
+                    self.animation_play_speed = self.default_animation_play_speed * \
+                                                self.current_animation[self.show_frame]["animation_property"]["player_speed_mod"]
+
+    # try:
+    self.image = current_animation[self.show_frame]["sprite"]
+    # except KeyError:
+    #     print(current_animation, self.current_action, self.show_frame)
+    self.offset_pos = self.pos - current_animation[self.show_frame]["center_offset"]
+    self.rect = self.image.get_rect(center=self.offset_pos)
 
     return done, just_start
 

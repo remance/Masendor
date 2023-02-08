@@ -128,7 +128,7 @@ class TroopData:
             header = rd[0]
             int_column = ("ID", "Troop Type", "Type", "Area of Effect", "Cost", "Charge Skill")  # value int only
             list_column = ("Action",)
-            tuple_column = ("Status", "Restriction", "Condition", "Enemy Status")  # value in tuple only
+            tuple_column = ("Status", "Enemy Status")  # value in tuple only
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
                           "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect",
                           "Critical Effect", "Physical Damage Effect")
@@ -408,14 +408,15 @@ class TroopData:
                 self.troop_sprite_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
 
-        # Unit formation dict
-        self.default_unit_formation_list = {}
+
+        # Troop formation dict
+        self.default_formation_list = {}
         part_folder = Path(os.path.join(main_dir, "data", "troop", "formation"))
         subdirectories = [os.sep.join(os.path.normpath(x).split(os.sep)[-1:]) for x in
                           part_folder.iterdir() if x.is_dir() is False]
         for folder in subdirectories:
             formation_name = folder.replace(".csv", "")
-            self.default_unit_formation_list[formation_name] = []
+            self.default_formation_list[formation_name] = []
             with open(os.path.join(main_dir, "data", "troop", "formation", folder), encoding="utf-8",
                       mode="r") as edit_file:
                 rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
@@ -425,11 +426,10 @@ class TroopData:
                            row) is False:  # row does not contain any text, not header
                         row = [int(item) if item != "" else 100 for item in
                                row]  # replace empty item with high number for low priority
-                        self.default_unit_formation_list[formation_name].append(row)
-            self.default_unit_formation_list[formation_name] = np.array(
-                self.default_unit_formation_list[formation_name])
+                        self.default_formation_list[formation_name].append(row)
+            self.default_formation_list[formation_name] = np.array(
+                self.default_formation_list[formation_name])
         edit_file.close()
-        self.unit_formation_list = {}  # list of unit formation after change size, get added later when change genre and ruleset
 
 
 class LeaderData:

@@ -12,13 +12,11 @@ def add_original_trait(self):
     speed_modifier = 1
     charge_modifier = 1
 
-    morale_bonus = 0
     discipline_bonus = 0
     charge_def_bonus = 0
     sight_bonus = 0
     hidden_bonus = 0
     crit_bonus = 0
-    mental_bonus = 0
     hp_regen_bonus = 0
     stamina_regen_bonus = 0
 
@@ -35,9 +33,7 @@ def add_original_trait(self):
         hidden_bonus += trait["Hidden Bonus"]
         hp_regen_bonus += trait["HP Regeneration Bonus"]
         stamina_regen_bonus += trait["Stamina Regeneration Bonus"]
-        morale_bonus += trait["Morale Bonus"]
         discipline_bonus += trait["Discipline Bonus"]
-        mental_bonus += trait["Mental Bonus"]
         crit_bonus += trait["Critical Bonus"]
 
         for element in self.original_element_resistance:
@@ -59,9 +55,7 @@ def add_original_trait(self):
         self.original_reload *= (random.randint(70, 120) / 100)
         self.original_charge *= (random.randint(70, 120) / 100)
         self.original_charge_def *= (random.randint(70, 120) / 100)
-        self.original_morale += random.randint(-20, 10)
         self.original_discipline += random.randint(-20, 0)
-        self.original_mental += random.randint(-20, 10)
 
     self.original_melee_attack *= melee_attack_modifier
     self.original_melee_def *= melee_def_modifier
@@ -73,9 +67,7 @@ def add_original_trait(self):
     self.original_charge_def += charge_def_bonus
     self.original_hp_regen += hp_regen_bonus
     self.original_stamina_regen += stamina_regen_bonus
-    self.original_morale += morale_bonus
     self.original_discipline += discipline_bonus
     self.original_crit_effect += crit_bonus
-    self.original_mental += mental_bonus
     self.original_sight += sight_bonus
     self.original_hidden += hidden_bonus

@@ -4,7 +4,7 @@
 
 ![alt text](https://github.com/remance/preview/blob/main/preview.gif?raw=true)
 
-# Educational and historical wargame simulation made with [Pygame](https://github.com/pygame/pygame).
+# Educational and historical battle simulation made with [Pygame](https://github.com/pygame/pygame).
 
 There is no main name for the game but rather the name will be based on a major update.
 
@@ -54,7 +54,7 @@ release version. <br>
 
 OS: Windows 7 (Haven't tested on Windows XP or Vista but may work), Ubuntu and macOS need further testing
 
-Memory: 2GB RAM (Only if troop animation is disabled)
+Memory: 2GB RAM
 
 Processor: Need more testing
 
@@ -93,7 +93,7 @@ huge size battle)
 
 ![alt text](https://github.com/remance/preview/blob/main/preview.png?raw=true)
 
-Animation system and combat system rework.
+Refocus the game to arcade mode style for now to ensure that the game will ever be finished. 
 
 ---------------
 
@@ -134,7 +134,7 @@ provides a complete freedom unit design. The custom units can be used in custom 
 
 ## Extremely easy map creation
 
-Most of the strategy map creator requires a degree of learning to use effectively. Well in this game you just need to
+Most of the battle map creator requires a degree of learning to use effectively. Well in this game you just need to
 use MS Paint or any drawing software ([GIMP](https://www.gimp.org/)
 , [Adobe Photoshop](https://www.adobe.com/products/photoshop.html), etc.) to create a map.<br>
 Draw the image with the right colour set and the game will convert them into a playable map. Most other map functions
@@ -187,21 +187,15 @@ historical information to players.
 preparation and result screen, custom battle, custom unit editor, improve the main menu, Battle of Megiddo, Battle of
 Mohács
 
-**0.6.3 - 0.6.5:** Arcade mode with function to accept different game mode, custom battle
-
-**Arcade Mode:** animation, subunit action, console stick, chain of command
-
-**0.6.6 and 0.6.7:** random map generator, True AOE attack, start working on Battle of Mohács, Minor battle: 764 Irish
+**0.6.6 and 0.6.7:** random map generator, AOE attack, start working on Battle of Mohács, Minor battle: 764 Irish
 abbey war
 
-**0.6.8 and 0.6.9:** multiple unit selection/move, also add a border to a selected unit on army selector UI
+**0.6.8 and 0.6.9:** Leader command, console stick, chain of command
 
-**Ver 0.7 Future Visionary:** in-game custom subunit editor, queue command, unit form, Dismount/discard, hidden stat,
-line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus,
+**Ver 0.7 Future Visionary:** hidden stat, line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus,
 day-night, Battle of Walaja, Battle of Dorylaeum
 
-**Ver 0.8 Authentic Attraction:** In-game art, better-looking UI (All hand (and mouse) drawn except for historical
-image), add intro screen, Battle of Isandlwana, Battle of Hwangsanbeol
+**Ver 0.8 Authentic Attraction:** In-game art, better-looking UI, add intro screen, Battle of Isandlwana, Battle of Hwangsanbeol
 
 **Ver 0.9 Gaze of New Life:** AI and pathfinding (The most challenging step unless cut corner to the point of braindead
 AI), final code optimisation before full 1.0
@@ -212,21 +206,21 @@ Battle of Jengland
 **Ver 1 - 1.5:** More art, sound effects and in-game music (May need to use royalty-free music but will see) + Ingame
 Encyclopedia at main menu + more historical battles
 
-**Ver 1.1:** Add dynamic terrain/feature change based on battle effect (damage) and weather, unit mode
+**Ver 1.1:** Add dynamic terrain/feature change based on battle effect (damage) and weather
 
-**Ver 1.2:** Siege battle, more complex unit equipment (main hand/off hand, item), Minor battle: Wolf of Paris
+**Ver 1.2:** Siege battle and siege equipment, Minor battle: Wolf of Paris
 
 **Ver 1.3:** Deception, False information, scout, espionage warfare, information, Minor battle: Siege of Orleans
 
 **Ver 1.6:** Commander, strategist and leader duel with dynamic result and event (Move from 0.2.7 as it is not the main
 priority in the early battle sample yet), transfer leader, Battle of Gaixia
 
-**Ver 1.7:** leader rapport and effect on authority and control mechanic including surrender and betrayal
+**Ver 1.7:** Rework formation
 
 **Ver 1.8:** Deployable Defence (Stakes, Barrier, Camp, Wagon), dynamic squad facing position and maybe "saved"
 formation that player can rotate in battle, swappable squad position
 
-**Ver 1.9:** Naval battle
+**Ver 1.9:** 
 
 **Ver 2.0:** Multiplayer battle
 

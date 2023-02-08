@@ -154,7 +154,6 @@ class HeightMap(pygame.sprite.Sprite):
             new_pos[1] = 0
         elif new_pos[1] > self.max_map_array[1]:
             new_pos[1] = self.max_map_array[1]
-
         colour = self.map_array[int(new_pos[0])][int(new_pos[1])]
 
         if colour == 0:
@@ -175,11 +174,12 @@ class BeautifulMap(pygame.sprite.Sprite):
     load_texture_list = None
     main_dir = None
 
-    def __init__(self, main_dir, screen_scale):
+    def __init__(self, main_dir, screen_scale, height_map):
         self._layer = 0
         pygame.sprite.Sprite.__init__(self)
         self.main_dir = main_dir
         self.screen_scale = screen_scale
+        self.height_map = height_map
         self.scale = 1
         self.mode = 0
         self.battle_map_colour = {}
@@ -196,35 +196,27 @@ class BeautifulMap(pygame.sprite.Sprite):
                     self.battle_map_colour[row[0]] = row[1:]
 
         self.true_image = None  # image before adding effect and place name
-        self.base_image = None  # image before adding topology map mode
-        self.base_image2 = None  # image before scale
+        self.base_image = None  # image before adding height map mode
+        self.base_image2 = None  # image after adding height map mode
 
-    def draw_image(self, base_map, feature_map, height_map, place_name, battle, editor_map):
+    def draw_image(self, base_map, feature_map, place_name, battle):
         self.image = pygame.Surface((len(base_map.map_array[0]), len(base_map.map_array)))
         self.rect = self.image.get_rect(topleft=(0, 0))
 
-        if editor_map:
-            terrain, feature = feature_map.get_feature((1, 1), base_map)
-            new_colour = self.battle_map_colour[feature][1]
-            self.image.fill(new_colour)
-            map_feature_mod = feature_map.feature_mod[feature]
-            speed_mod = int(map_feature_mod["Infantry Speed/Charge Effect"] * 100)
-            battle.map_move_array = [[speed_mod] * self.image.get_width()] * self.image.get_height()
-        else:
-            for row_pos in range(0, self.image.get_width()):  # recolour the map
-                speed_array = []
-                for col_pos in range(0, self.image.get_height()):
-                    terrain, feature = feature_map.get_feature((row_pos, col_pos), base_map)
-                    new_colour = self.battle_map_colour[feature][1]
-                    rect = pygame.Rect(row_pos, col_pos, 1, 1)
-                    self.image.fill(new_colour, rect)
+        for row_pos in range(0, self.image.get_width()):  # recolour the map
+            speed_array = []
+            for col_pos in range(0, self.image.get_height()):
+                terrain, feature = feature_map.get_feature((row_pos, col_pos), base_map)
+                new_colour = self.battle_map_colour[feature][1]
+                rect = pygame.Rect(row_pos, col_pos, 1, 1)
+                self.image.fill(new_colour, rect)
 
-                    map_feature_mod = feature_map.feature_mod[feature]
-                    speed_mod = int(map_feature_mod["Infantry Speed/Charge Effect"] * 100)
-                    # infcombatmod = int(map_feature_mod[3] * 100)
-                    # cavcombatmod = int(map_feature_mod[6] * 100)
-                    speed_array.append(speed_mod)
-                battle.map_move_array.append(speed_array)
+                map_feature_mod = feature_map.feature_mod[feature]
+                speed_mod = int(map_feature_mod["Infantry Speed/Charge Effect"] * 100)
+                # infcombatmod = int(map_feature_mod[3] * 100)
+                # cavcombatmod = int(map_feature_mod[6] * 100)
+                speed_array.append(speed_mod)
+            battle.map_move_array.append(speed_array)
 
         # Blur map to make it look older
         data = pygame.image.tostring(self.image, "RGB")  # convert image to string data for filtering effect
@@ -240,35 +232,32 @@ class BeautifulMap(pygame.sprite.Sprite):
         rect = self.image.get_rect(topleft=(0, 0))
         self.image.blit(img, rect)
 
-        # Put in terrain feature texture
-        if editor_map is False:
-            for row_pos in range(0, len(base_map.map_array)):
-                for col_pos in range(0, len(base_map.map_array[0])):
-                    if row_pos % 20 == 0 and col_pos % 20 == 0:
-                        random_pos = (row_pos + random.randint(0, 19), col_pos + random.randint(0, 19))
-                        terrain, this_feature = feature_map.get_feature(random_pos, base_map)
-                        feature = self.texture_images[
-                            self.load_texture_list.index(self.battle_map_colour[this_feature][0])]
-                        choose = random.randint(0, len(feature) - 1)
-                        if this_feature - (terrain * 12) in (0, 1, 4, 5, 7) and \
-                                random.randint(0, 100) < 60:  # reduce special texture in empty terrain like glassland
-                            this_texture = self.empty_texture  # empty texture
-                        else:
-                            this_texture = feature[choose]
-                        rect = this_texture.get_rect(center=random_pos)
-                        self.image.blit(this_texture, rect)
+        size = (200 * self.screen_scale[0], 200 * self.screen_scale[1])  # default minimap size is 200 x 200
+        self.mini_map_image = pygame.transform.smoothscale(self.image, (int(size[0]), int(size[1])))
+
+        for row_pos in range(0, len(base_map.map_array)):
+            for col_pos in range(0, len(base_map.map_array[0])):
+                if row_pos % 20 == 0 and col_pos % 20 == 0:
+                    random_pos = (row_pos + random.randint(0, 19), col_pos + random.randint(0, 19))
+                    terrain, this_feature = feature_map.get_feature(random_pos, base_map)
+                    feature = self.texture_images[
+                        self.load_texture_list.index(self.battle_map_colour[this_feature][0])]
+                    choose = random.randint(0, len(feature) - 1)
+                    if this_feature - (terrain * 12) in (0, 1, 4, 5, 7) and \
+                            random.randint(0, 100) < 60:  # reduce special texture in empty terrain like glassland
+                        this_texture = self.empty_texture  # empty texture
+                    else:
+                        this_texture = feature[choose]
+                    rect = this_texture.get_rect(center=random_pos)
+                    self.image.blit(this_texture, rect)
 
         self.image = pygame.transform.smoothscale(self.image, (self.image.get_width() * self.screen_scale[0],
                                                                self.image.get_height() * self.screen_scale[1]))
 
-        # Save place name image as variable
         if place_name is not None:
-            place_name_map = pygame.transform.smoothscale(place_name, (self.image.get_size()))
+            self.place_name_map = pygame.transform.smoothscale(place_name, (self.image.get_size()))
         else:
-            place_name_map = pygame.Surface((0, 0))
-
-        rect = self.image.get_rect(topleft=(0, 0))
-        self.image.blit(place_name_map, rect)  # add place_name layer to map
+            self.place_name_map = pygame.Surface((0, 0))
 
         self.true_image = self.image.copy()
 
@@ -281,28 +270,24 @@ class BeautifulMap(pygame.sprite.Sprite):
         if time_image is not None:
             self.base_image.blit(time_image, rect)  # add day time effect
 
-        self.base_image = self.base_image
-        self.base_image2 = self.base_image.copy()
+        self.base_image.blit(self.place_name_map, rect)  # add place_name layer to map
+        self.change_mode()
 
-        self.change_scale(self.scale)
-
-    def change_mode(self, height_map, mode):
+    def change_mode(self):
         """Switch between normal, height normal map, topology map mode"""
-        self.mode = mode
         self.base_image2 = self.base_image.copy()
         if self.mode == 1:  # with topology map
             rect = self.base_image2.get_rect(topleft=(0, 0))
-            self.base_image2.blit(height_map.topology_image, rect)
+            self.base_image2.blit(self.height_map.topology_image, rect)
         elif self.mode == 2:  # with height map
             rect = self.base_image2.get_rect(topleft=(0, 0))
-            self.base_image2.blit(height_map.image, rect)
-        self.change_scale(self.scale)
+            self.base_image2.blit(self.height_map.image, rect)
 
-    def change_scale(self, scale):
-        """Change map scale based on current camera zoom"""
-        self.scale = scale
-        self.image = pygame.transform.smoothscale(self.base_image2, (int(self.base_image.get_width() * self.scale),
-                                                                     int(self.base_image.get_height() * self.scale)))
+        self.change_scale()
+
+    def change_scale(self):
+        self.image = pygame.transform.smoothscale(self.base_image2, (int(self.base_image.get_width() * 5),
+                                                                     int(self.base_image.get_height() * 5)))
 
     def clear_image(self):
         self.image = None

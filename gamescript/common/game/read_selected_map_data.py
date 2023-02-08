@@ -8,7 +8,7 @@ def read_selected_map_data(self, map_list, file, source=False):
         if source:
             data = csv_read(self.main_dir, file,
                             ("data", "ruleset", self.ruleset_folder, "map", map_list[self.current_map_select],
-                             str(self.map_source), self.genre))
+                             str(self.map_source)))
         else:
             data = csv_read(self.main_dir, file,
                             ("data", "ruleset", self.ruleset_folder, "map", map_list[self.current_map_select]))

@@ -3,17 +3,10 @@ import math
 infinity = float("inf")
 
 
-def status_update(self, weather=None):
+def status_update(self):
     """Calculate stat from stamina, morale state, skill, status, terrain"""
-
-    if self.red_border and self.unit.selected:  # have red border (taking melee_dmg) on inspect ui, reset image
-        self.block_image.blit(self.block_base_image, self.corner_image_rect)
-        self.red_border = False
-
     for effect in self.special_effect:  # reset temporary special effect
         self.special_effect[effect][0][1] = False
-
-    self.fatigue()
 
     # Cooldown, active and effect timer function
     for key in self.skill_cooldown.copy():  # loop is faster than comprehension here
@@ -43,8 +36,12 @@ def status_update(self, weather=None):
                           any(ext in self.status_effect for ext in val["Status Conflict"]) is False}
 
     # Reset to base stat
+    if self.leader is not None:
+        self.authority = self.leader.leader_authority  # leader authority
+    else:
+        self.authority = 0
+
     self.morale = self.base_morale
-    self.authority = self.unit.authority  # unit total authority
     self.discipline = self.base_discipline
     self.melee_attack = self.base_melee_attack
     self.melee_def = self.base_melee_def
@@ -63,7 +60,6 @@ def status_update(self, weather=None):
 
     self.corner_atk = False  # Cannot melee_attack corner enemy by default
 
-    self.auth_penalty = self.base_auth_penalty
     self.hp_regen = self.base_hp_regen
     self.stamina_regen = self.base_stamina_regen
     self.inflict_status = self.base_inflict_status
@@ -109,8 +105,9 @@ def status_update(self, weather=None):
                         self.apply_status_to_friend(trait["Buff Range"], effect)
 
     # Apply effect from weather
+    weather = self.battle.current_weather
     weather_temperature = 0
-    if weather is not None:
+    if weather.has_stat_effect:
         melee_attack_bonus += weather.melee_atk_buff
         melee_def_bonus += weather.melee_def_buff
         range_def_bonus += weather.range_def_buff
@@ -128,7 +125,7 @@ def status_update(self, weather=None):
             self.element_status_check[element[0]] += (element[1] * (100 - self.element_resistance[element[0]]) / 100)
         weather_temperature = weather.temperature
 
-    # v Map feature modifier to stat
+    # Map feature modifier to stat
     map_feature_mod = self.feature_map.feature_mod[self.feature]
     if map_feature_mod[self.feature_mod + " Speed/Charge Effect"] != 1:  # speed/charge
         speed_modifier += map_feature_mod[
@@ -205,8 +202,6 @@ def status_update(self, weather=None):
                 for effect in cal_effect["Enemy Status"]:
                     if effect != 0:
                         self.inflict_status[effect] = cal_effect["Area of Effect"]
-        if 0 in self.skill_effect:
-            self.auth_penalty += 0.5  # higher authority penalty when attacking (retreat while attacking)
 
     # Apply effect and modifier from status effect
     if len(self.status_effect) > 0:
@@ -257,25 +252,19 @@ def status_update(self, weather=None):
     elif self.morale_state < 0:
         self.morale_state = 0
 
-    self.stamina_state = (self.stamina * 100) / self.max_stamina
-    self.stamina_state_cal = 1
-    if self.stamina != infinity:
-        self.stamina_state_cal = self.stamina_state / 100  # for using as modifier to stat
-
-    # Apply stamina, morale, and leader buff to stat
-    self.discipline = (self.discipline * self.morale_state * self.stamina_state_cal) + self.unit.leader_social[
-        self.grade_name] + (self.authority / 10)  # use morale, stamina, leader social vs grade and authority
-    self.melee_attack = (self.melee_attack * (self.morale_state + 0.1)) * self.stamina_state_cal + self.command_buff
-    self.melee_def = (self.melee_def * (self.morale_state + 0.1)) * self.stamina_state_cal + self.command_buff
-    self.range_def = (self.range_def * (self.morale_state + 0.1)) * self.stamina_state_cal + (
+    # Apply morale, and leader buff to stat
+    self.discipline = (self.discipline * self.morale_state) + self.leader_social_buff + \
+                      (self.authority / 10)  # use morale, stamina, leader social vs grade and authority
+    self.melee_attack = (self.melee_attack * (self.morale_state + 0.1)) + self.command_buff
+    self.melee_def = (self.melee_def * (self.morale_state + 0.1)) + self.command_buff
+    self.range_def = (self.range_def * (self.morale_state + 0.1)) + (
             self.command_buff / 2)  # use half command buff
-    self.accuracy = self.accuracy * self.stamina_state_cal + self.command_buff  # use stamina and command buff
-    self.reload = self.reload * (2 - self.stamina_state_cal)  # the less stamina, the higher reload time
+    self.accuracy = self.accuracy + self.command_buff  # use stamina and command buff
     self.charge_def = (self.charge_def * (
-            self.morale_state + 0.1)) * self.stamina_state_cal + self.command_buff  # use morale, stamina and command buff
+            self.morale_state + 0.1)) + self.command_buff  # use morale, stamina and command buff
     height_diff = (self.height / self.front_height) ** 2  # walk down hill increase speed, walk up hill reduce speed
-    self.speed = self.speed * self.stamina_state_cal * height_diff
-    self.charge = (self.charge + self.speed) * (self.morale_state + 0.1) * self.stamina_state_cal + self.command_buff
+    self.speed = self.speed * height_diff
+    self.charge = (self.charge + self.speed) * (self.morale_state + 0.1) + self.command_buff
 
     # Add discipline to stat
     discipline_cal = self.discipline / 200
@@ -314,7 +303,7 @@ def status_update(self, weather=None):
         self.discipline = self.discipline / full_merge_len
 
     # include all penalties to morale like remaining health, battle situation scale
-    self.morale -= (((40 - (40 * self.subunit_health / self.max_health)) +
+    self.morale -= (((40 - (40 * self.health / self.max_health)) +
                      (20 - (20 * self.battle.battle_scale[self.team] / 100))) * self.mental)
 
     if self.melee_attack < 0:  # seem like using if 0 is faster than max(0,)
@@ -341,6 +330,5 @@ def status_update(self, weather=None):
             if self.weapon_speed[weapon] < 1:  # weapon speed can not be less than 0.1 second per hit
                 self.weapon_speed[weapon] = 1
 
-    self.rotate_speed = self.unit.rotate_speed * 2  # rotate speed for subunit only use for self rotate not subunit rotate related
-    if self.state in (0, 99):
-        self.rotate_speed = self.speed
+    self.run_speed = self.speed
+    self.walk_speed = self.speed / 2

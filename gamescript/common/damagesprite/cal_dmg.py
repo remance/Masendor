@@ -43,17 +43,12 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, penetrate, hit_side=No
         combat_score = 0.1
 
     troop_dmg = 0
-    leader_dmg = 0
     morale_dmg = 0
     remain_penetrate = penetrate
 
     element_effect = {}
 
     if combat_score > 0:
-        leader_dmg_bonus = 0
-        if attacker.dmg_include_leader and attacker.leader is not None:
-            leader_dmg_bonus = attacker.leader.combat  # Get extra dmg from leader combat stat
-
         if self.attack_type == "melee":  # Melee dmg
             dmg = {key: random.uniform(value[0], value[1]) * penetrate / target.element_resistance[key]
             if target.element_resistance[key] > 0 else random.uniform(value[0], value[1]) for key, value in
@@ -95,10 +90,8 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, penetrate, hit_side=No
 
         remain_penetrate -= (target.troop_mass * 5)
 
-        leader_dmg = dmg_sum
-
         # troop_dmg on subunit is dmg multiply by troop number with addition from leader combat
-        troop_dmg = (dmg_sum * attacker.troop_number) + leader_dmg_bonus
+        troop_dmg = dmg_sum
         if (attacker.check_special_effect("Anti Infantry", weapon=weapon) and target.subunit_type in (0, 1)) or \
                 (attacker.check_special_effect("Anti Cavalry", weapon=weapon) and target.subunit_type in (3, 4, 5, 6)):
             troop_dmg = troop_dmg * 1.25  # Anti trait dmg bonus
@@ -111,9 +104,7 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, penetrate, hit_side=No
         # Damage cannot be negative (it would heal instead), same for morale and leader dmg
         if troop_dmg < 0:
             troop_dmg = 0
-        if leader_dmg < 0:
-            leader_dmg = 0
         if morale_dmg < 0:
             morale_dmg = 0
 
-    return troop_dmg, morale_dmg, leader_dmg, element_effect, remain_penetrate
+    return troop_dmg, morale_dmg, element_effect, remain_penetrate

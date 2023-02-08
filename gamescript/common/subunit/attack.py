@@ -105,9 +105,8 @@ def attack(self, attack_type):
                                                                      math.cos(math.radians(base_angle))))
 
                 damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
-                                          self.weapon_penetrate[self.equipped_weapon][weapon],
-                                          equipped_weapon_data, self.camera_zoom, attack_type,
-                                          base_target, accuracy=accuracy, arc_shot=arc_shot)
+                                          self.weapon_penetrate[self.equipped_weapon][weapon], equipped_weapon_data,
+                                          attack_type, base_target, accuracy=accuracy, arc_shot=arc_shot)
 
             if equipped_weapon_data["Sound Effect"] in self.sound_effect_pool:
                 self.battle.add_sound_effect_queue(equipped_weapon_data["Sound Effect"], self.base_pos,
@@ -134,8 +133,7 @@ def attack(self, attack_type):
                                                               math.cos(math.radians(base_angle))))
         damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
                                   self.weapon_penetrate[self.equipped_weapon][weapon],
-                                  self.equipped_weapon_data[weapon],
-                                  self.camera_zoom, attack_type, base_target)
+                                  self.equipped_weapon_data[weapon], attack_type, base_target)
 
         self.weapon_cooldown[weapon] = 0  # melee weapon use cooldown for attack
 

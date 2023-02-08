@@ -7,7 +7,7 @@ make_bar_list = utility.make_bar_list
 
 
 def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_height, image_list, volume,
-                     full_screen, play_troop_animation, updater, battle_select_image):
+                     full_screen, updater, battle_select_image):
     # Create option menu button and icon
     back_button = menu.MenuButton(screen_scale, image_list, (screen_rect.width / 2, screen_rect.height / 1.2),
                                   updater, text="BACK")
@@ -23,14 +23,6 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
         (fullscreen_box.pos[0] - (fullscreen_box.pos[0] / 4.5), fullscreen_box.pos[1]),
         "Full Screen", int(36 * screen_scale[1]))
 
-    animation_box = menu.TickBox(screen_scale, (screen_rect.width / 2, screen_rect.height / 5),
-                                 battle_select_image["untick"], battle_select_image["tick"], "fullscreen")
-
-    if play_troop_animation == 1:
-        animation_box.change_tick(True)
-
-    animation_text = menu.OptionMenuText((animation_box.pos[0] - (animation_box.pos[0] / 4.5), animation_box.pos[1]),
-                                         "Troop Animation", int(36 * screen_scale[1]))
 
     # Volume change scroll bar
     esc_menu_images = load_images(main_dir, screen_scale=screen_scale, subfolder=("ui", "battlemenu_ui", "slider"))
@@ -71,4 +63,4 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
     return {"back_button": back_button, "default_button": default_button, "resolution_drop": resolution_drop,
             "resolution_bar": resolution_bar, "resolution_text": resolution_text, "volume_sliders": volume_slider,
             "value_boxes": value_box, "volume_texts": volume_text, "fullscreen_box": fullscreen_box,
-            "fullscreen_text": fullscreen_text, "animation_box": animation_box, "animation_text": animation_text}
+            "fullscreen_text": fullscreen_text}

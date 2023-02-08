@@ -52,16 +52,6 @@ def menu_option(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scr
                             self.config)
                 change_resolution(self, (self.screen_width, "", self.screen_height))
 
-            elif self.animation_box.rect.collidepoint(self.mouse_pos):
-                if self.animation_box.tick is False:
-                    self.animation_box.change_tick(True)
-                    self.play_troop_animation = 1
-                else:
-                    self.animation_box.change_tick(False)
-                    self.play_troop_animation = 0
-                self.battle_game.play_troop_animation = self.play_troop_animation
-                edit_config("USER", "play_troop_animation", self.play_troop_animation, "configuration.ini",
-                            self.config)
             else:
                 for bar in self.resolution_bar:  # loop to find which resolution bar is selected, this happens outside of clicking check below
                     if bar.event:

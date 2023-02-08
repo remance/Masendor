@@ -1,16 +1,7 @@
-"id","who","text","modelist","time"
-"t0",0,"14th October 1066, Duke William of Normandy’s force arrived at Telham Hill early in the morning, while Harold Godwinson’s force was already positioned at Senlac Ridge. It is believed that Harold intent to ambush William's army at their camp and was surprised by William's arrival at Telham Hill.",0,"08:00:00"
-"t1",0,"Several history records suggest that William started descending from Telham Hill and positioned his army at the southern side of Senlac Ridge. With Breton’s troops on the left, Norman at the center and Frankish at the right.",0,"08:05:00"
-"t2",0,"Historically, the battle started at around this time. The initial phase of the battle involved William's archers and crossbowmen rained down arrows and bolts while Harold’s infantries formed a tight shield wall defensively.",0,"09:00:00"
-"t3",0,"As the range attacks proved to be ineffective against Saxon's shield wall, Duke William ordered the charge for all three main contingents around this time, while the remaining archers shot skyward to the troops behind the shield wall, thus also avoiding friendly fire.",0,"10:00:00"
-"t4",0,"The shield wall was almost impregnable to both infantry and cavalry alike as William's troops could not gain an advantage in this battle of attrition.",0,"11:00:00"
-"t5",0,"Although many sources claimed that the battle was fought continuously for the whole day from morning till dawn. It is more likely that William ordered the main forces to temporarily retreated multiple times during the battle to recover from inevitable exhaustion, which in turn also allows Harold’s force to recuperate. ",0,"12:00:00"
-"t6",0,"Many historians pointed out Harold's tactical mistakes at this point of the battle for his decision to remain completely defensive throughout even when William's troop began to falter and the rumour of the Duke's death spread.",0,"13:00:00"
-"t7",0,"At around this time, the Bretons on the left wing began to retreat. It is unknown whether this is a tactical retreat or not, but the Saxon's right-wing began the pursuit and ran down the hill despite the King's order. Which allows William's cavalry reserved to flank and rally the fleeing infantries.",0,"14:00:00"
-"t8",0,"With the loss of their right-wing, the Saxon force lost all advantages they had in the battle. Not long after, The two Godwinson brothers fell in combat and Harold was reportedly shot by an arrow to the eye and cut down by a horseman. The fyrds began to rout immediately as the panic spread.",0,"15:00:00"
-"t9",0,"Both armies are now exhausted as dawn came, but the Saxon army was the first to falter. With all three Godwinson brothers lied dead, the troops began to lose hope for survival. William's men show no mercy and kill every man standing including those that flee from the battle.",0,"16:00:00"
-"t10",0,"It is recorded that the battle concluded around dusk (17:00) with the victory for William's force. The remaining Huscarls were cut down to the last men and most of William's troops were completely exhausted. The fleeing Saxon troops were pursued and killed all over the place from the nearby forest to the countryside.",0,"17:00:00"
-"ld0",2,"In the Battle of Hastings, many times Duke William was knocked down from his horses and presumed dead by his troops. And many times he rallied back his men and assured them of his survival. This time, William's death becomes reality and the future of both England and the world are no longer perceivable.  ",0,
-"ld1",25,"The death of Harold Godwinson marked the end of the battle in Saxon loss. Most of the fyrd would flee from battle as soon as Harold is dead, while the remaining Huscarls regrouped at the location of Harold's body and preparing for final last stand. ",0,
-"wt1",2,"With Norman’s victory, England would see changes to not only the government but its very own people. Although Saxon's resistances did threaten the stability of William's rule, such rebellions were nothing but a stepping stone to the current history.",,
-"wt2",25,"Against all odds, Harold Godwinson’s army prevailed against the pretender’s invasions that threaten all life of the good English Saxon people. May England be prosperous under the now proven true king.",,
+"ID","Who","Text","Time"
+"t0",0,"This is a test map.","09:05:00"
+"t1",0,"5 Minutes pass.","09:10:00"
+"ld0",1,,
+"ld1",25,,
+"wt1",2,,
+"wt2",25,,

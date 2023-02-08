@@ -14,8 +14,7 @@ def menu_main(self, mouse_left_up):
         self.map_selected = self.preset_map_folder[self.current_map_select]
 
         self.preset_map_button.event = False
-        self.main_ui_updater.remove(*self.start_menu_ui_only, self.popup_list_box, self.popup_list_box.scroll,
-                                    *self.popup_namegroup)
+        self.main_ui_updater.remove(*self.start_menu_ui_only)
         self.menu_button.remove(*self.menu_button)
 
         setup_list(self.screen_scale, menu.NameList, self.current_map_row, self.preset_map_list, self.map_namegroup,
@@ -45,27 +44,6 @@ def menu_main(self, mouse_left_up):
         self.menu_button.add(*self.map_select_button)
         self.main_ui_updater.add(*self.map_select_button, self.map_list_box, self.map_title, self.map_list_box.scroll)
 
-    elif self.game_edit_button.event:  # custom subunit/sub-subunit editor menu
-        self.menu_state = "game_creator"
-        self.game_edit_button.event = False
-        self.main_ui_updater.remove(*self.start_menu_ui_only, self.popup_list_box, self.popup_list_box.scroll,
-                                    *self.popup_namegroup)
-        self.menu_button.remove(*self.menu_button)
-
-        self.menu_button.add(*self.editor_button)
-        self.main_ui_updater.add(*self.editor_button)
-
-    elif self.option_button.event:  # change start_set menu to option menu
-        self.menu_state = "option"
-        self.option_button.event = False
-        self.main_ui_updater.remove(*self.start_menu_ui_only, self.popup_list_box, self.popup_list_box.scroll,
-                                    *self.popup_namegroup)
-        self.menu_button.remove(*self.menu_button)
-
-        self.menu_button.add(*self.option_menu_button)
-        self.main_ui_updater.add(*self.menu_button, *self.option_menu_sliders.values(), *self.value_boxes.values())
-        self.main_ui_updater.add(*self.option_text_list)
-
     elif self.lore_button.event:  # open encyclopedia
         self.before_lore_state = self.menu_state
         self.menu_state = "encyclopedia"
@@ -75,15 +53,21 @@ def menu_main(self, mouse_left_up):
                                          self.page_button, self.main_ui_updater)
         self.lore_button.event = False
 
+    elif self.option_button.event:  # change start_set menu to option menu
+        self.menu_state = "option"
+        self.option_button.event = False
+        self.main_ui_updater.remove(*self.start_menu_ui_only)
+        self.menu_button.remove(*self.menu_button)
+
+        self.menu_button.add(*self.option_menu_button)
+        self.main_ui_updater.add(*self.menu_button, *self.option_menu_sliders.values(), *self.value_boxes.values())
+        self.main_ui_updater.add(*self.option_text_list)
+
     elif mouse_left_up and self.profile_box.rect.collidepoint(self.mouse_pos):
         self.input_popup = ("text_input", "profile_name")
         self.input_box.text_start(self.profile_name)
         self.input_ui.change_instruction("Profile Name:")
         self.main_ui_updater.add(self.input_ui_popup)
-
-    elif mouse_left_up and self.genre_change_box.rect.collidepoint(self.mouse_pos):
-        self.popup_list_open(self.genre_change_box.rect.bottomleft, self.genre_list, "genre", "topleft",
-                             self.main_ui_updater)
 
     elif self.popup_list_box in self.main_ui_updater:
         if self.popup_list_box.rect.collidepoint(self.mouse_pos):

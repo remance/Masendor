@@ -1,7 +1,7 @@
 def combat_pathfind(self):
     """Pathfinding for unit in melee combat"""
     self.combat_move_queue = []
-    move_array = self.battle.subunit_pos_array.copy()
+    move_array = self.battle.map_move_array.copy()
     int_base_target = (int(self.close_target.base_pos[0]), int(self.close_target.base_pos[1]))
     for y in self.close_target.pos_range[0]:
         for x in self.close_target.pos_range[1]:

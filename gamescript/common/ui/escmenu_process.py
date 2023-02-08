@@ -1,10 +1,7 @@
 import pygame
-from gamescript import lorebook
 from gamescript.common import utility
 
 edit_config = utility.edit_config
-
-lorebook_process = lorebook.lorebook_process
 
 
 def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool, mouse_scrollup: bool,
@@ -116,10 +113,4 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                                     self.esc_value_boxes[0])  # update slider button based on mouse value
                 self.master_volume = float(slider.value / 100)  # for now only music volume slider exist
 
-    elif self.battle_menu.mode == "encyclopedia":  # Encyclopedia mode
-        lore_command = lorebook_process(self, uidraw, mouse_up, mouse_leftdown, mouse_scrollup, mouse_scrolldown,
-                                        esc_press)
-        if esc_press or lore_command == "exit":
-            self.battle_menu.change_mode("menu")  # change menu back to default 0
-            self.game_state = self.previous_game_state  # resume gameplay
     return command
