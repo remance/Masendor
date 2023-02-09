@@ -169,8 +169,6 @@ class Subunit(pygame.sprite.Sprite):
         self.get_height = self.height_map.get_height
 
         self.not_broken = True
-        self.walk = False  # currently walking
-        self.run = False  # currently running
         self.move = False  # currently moving
         self.attack_target = None  # target for attacking
         self.melee_target = None  # current target of melee combat
@@ -334,6 +332,7 @@ class Subunit(pygame.sprite.Sprite):
             self.formation_density = "Tight"
             self.formation_position = "Behind"
             self.follow_order = "Follow"
+            self.formation_consider_flank = False  # has both infantry and cavalry, consider flank placment style
             self.formation_distance_list = {}
             self.formation_pos_list = {}
 
@@ -724,8 +723,6 @@ class Subunit(pygame.sprite.Sprite):
                 self.enemy_collide = []
                 self.front_collide = []
 
-                self.walk = False  # reset walk
-                self.run = False  # reset run
                 self.move = False  # reset move check
 
         else:  # dead

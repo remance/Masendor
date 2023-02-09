@@ -11,7 +11,7 @@ def move_logic(self, dt):
     if "forced move" not in self.current_action:
         self.base_target = self.command_target  # always attempt to catch up to command target
 
-    if self.base_pos != self.base_target and "movable" in self.current_action:
+    if self.base_pos != self.base_target and "move speed" in self.current_action:
         move = self.base_target - self.base_pos
         move_length = move.length()  # convert length
         if move_length > 0:  # movement length longer than 0.1, not reach base_target yet
@@ -38,12 +38,16 @@ def move_logic(self, dt):
                     move = self.base_target - self.base_pos  # simply change move to whatever remaining distance
                     self.base_pos += move  # adjust base position according to movement
 
-                layer = round(self.base_pos[0] + (self.base_pos[1] * 10), 0)
-                if layer < 0:
-                    layer = 1
-                if self._layer != layer:
-                    self.battle.battle_camera.change_layer(self, layer)
+                if self.player_manual_control is False:
+                    layer = round(self.base_pos[0] + (self.base_pos[1] * 10), 0)
+                    if layer < 0:
+                        layer = 1
+                    if self._layer != layer:
+                        self.battle.battle_camera.change_layer(self, layer)
+                else:
+                    self.battle.battle_camera.change_layer(self, 999999)
 
+                self.move = True
                 self.make_pos_range()
 
                 self.terrain, self.feature = self.get_feature(self.base_pos,

@@ -46,29 +46,30 @@ def setup_formation(self, phase=None, style=None, density=None, position=None):
     first_placement = np.where(first_placement == 0, 99, first_placement)
 
     priority_subunit_place = {"center-front": [], "center-rear": [], "flank-front": [],
-                              "flank-rear": [], "inner-front": [], "inner-rear": [],
-                              "outer-front": [],
-                              "outer-rear": []}  # dict to keep placement priority score of subunit
+                              "flank-rear": [], "front": [], "rear": []}  # dict to keep placement priority score of subunit
+
+    # For whatever reason, front and rear placement has to be in opposite of what intend, for example melee troop at the
+    # front has to be assigned in "rear" instead
     for this_subunit in self.alive_troop_subordinate:
         if "Melee" in self.formation_phase:  # melee front
             if any(ext in this_subunit.troop_class for ext in ("Heavy", "Light")):  # melee at front
-                formation_style_check(self, this_subunit, priority_subunit_place, "front")
-            else:  # range and other classes at rear
                 formation_style_check(self, this_subunit, priority_subunit_place, "rear")
+            else:  # range and other classes at rear
+                formation_style_check(self, this_subunit, priority_subunit_place, "front")
         elif "Skirmish" in self.formation_phase:  # range front
             if "Range" in this_subunit.troop_class:  # range
-                formation_style_check(self, this_subunit, priority_subunit_place, "front")
-            elif this_subunit.troop_class == "Artillery":  # artillery
-                formation_style_check(self, this_subunit, priority_subunit_place, "front")
-            else:  # melee
                 formation_style_check(self, this_subunit, priority_subunit_place, "rear")
+            elif this_subunit.troop_class == "Artillery":  # artillery
+                formation_style_check(self, this_subunit, priority_subunit_place, "rear")
+            else:  # melee
+                formation_style_check(self, this_subunit, priority_subunit_place, "front")
         elif "Bombard" in self.formation_phase:
             if this_subunit.troop_class == "Artillery":  # artillery
-                formation_style_check(self, this_subunit, priority_subunit_place, "front")
-            elif "Range" in this_subunit.troop_class:  # range
-                formation_style_check(self, this_subunit, priority_subunit_place, "front")
-            else:  # melee
                 formation_style_check(self, this_subunit, priority_subunit_place, "rear")
+            elif "Range" in this_subunit.troop_class:  # range
+                formation_style_check(self, this_subunit, priority_subunit_place, "rear")
+            else:  # melee
+                formation_style_check(self, this_subunit, priority_subunit_place, "front")
 
     formation_distance_list = np.zeros((self.troop_follower_size,
                                    self.troop_follower_size),
@@ -93,7 +94,7 @@ def setup_formation(self, phase=None, style=None, density=None, position=None):
 
     if self.formation_position == "Behind":
         start_distance = placement_density + self.default_sprite_size[1]
-        pos = [0, start_distance]
+        distance = [0, start_distance]
         start = (int(len(formation_distance_list[0]) / 2), 0)  # start from center top of formation
         do_order[0].sort(key=lambda x: abs(start[0] - x))
 
@@ -102,80 +103,95 @@ def setup_formation(self, phase=None, style=None, density=None, position=None):
         start = (int(len(formation_distance_list[0]) / 2), len(formation_distance_list))  # start from center bottom of formation
         do_order[0].sort(key=lambda x: abs(start[0] - x))
         do_order[1].sort(reverse=True)
-        pos = [0, -start_distance]
+        distance = [0, -start_distance]
 
     elif self.formation_position == "Left":  # formation start from left of leader
         start_distance = placement_density + self.default_sprite_size[0]
         start = (len(formation_distance_list[0]) - 1, 0)  # start from right end of formation
         do_order[0].sort(reverse=True)
-        pos = [-start_distance, 0]
+        distance = [-start_distance, 0]
 
     elif self.formation_position == "Right":  # formation start from right of leader
         start_distance = placement_density + self.default_sprite_size[0]
         start = (0, 0)
-        pos = [start_distance, 0]
+        distance = [start_distance, 0]
 
     elif self.formation_position == "Around":
         start = (int(len(formation_distance_list[0]) / 2), int(len(formation_distance_list) / 2))
         do_order[0].sort(key=lambda x: abs(start[0] - x))
         do_order[1].sort(key=lambda x: abs(start[1] - x))
-        pos = self.base_pos
+        distance = [0, 0]
 
-    start_pos = pos.copy()
+    start_distance = tuple(distance)
     for row_index, row in enumerate(do_order[1]):  # row (y)
         for col_index, col in enumerate(do_order[0]):  # column (x) in row
             if formation_distance_list[row][col] != 0:
                 sprite_size = formation_distance_list[row][col].default_sprite_size
-                self.formation_distance_list[formation_distance_list[row][col]] = tuple(pos)
+                self.formation_distance_list[formation_distance_list[row][col]] = tuple(distance)
                 self.formation_pos_list[formation_distance_list[row][col]] = \
-                    rotation_xy(self.base_pos, self.base_pos + pos,
+                    rotation_xy(self.base_pos, self.base_pos + distance,
                                 self.radians_angle)
 
                 if col_index + 1 < len(do_order[0]):  # still more to do in this row
                     if do_order[0][col_index + 1] < col:  # left from current, such as 1 to 0, then get the right of next (1)
                         next_subunit = formation_distance_list[row][do_order[0][col_index + 1] + 1]
                         if next_subunit != 0:
-                            pos[0] = self.formation_distance_list[next_subunit][0] - \
+                            distance[0] = self.formation_distance_list[next_subunit][0] - \
                                      (placement_density + sprite_size[0])
                         else:
-                            pos[0] -= placement_density
+                            distance[0] -= placement_density * 2
                     else:  # right from current, such as 0 to 2, then get the left of next (1)
                         next_subunit = formation_distance_list[row][do_order[0][col_index + 1] - 1]
                         if next_subunit != 0:
-                            pos[0] = self.formation_distance_list[next_subunit][0] + \
+                            distance[0] = self.formation_distance_list[next_subunit][0] + \
                                      (placement_density + sprite_size[0])
                         else:
-                            pos[0] += placement_density
-            else:
+                            distance[0] += placement_density * 2
+            else:  # empty position
+                sprite_size = (0, 0)
                 if col_index + 1 < len(do_order[0]):  # still more to do in this row
-                    if do_order[0][col_index + 1] < col:  # left from current
-                        pos[0] -= placement_density
-                    else:  # right from current
-                        pos[0] += placement_density
-        pos[0] = start_pos[0]  # end of row, reset starting point x
+                    if do_order[0][col_index + 1] < col:  # left from current, such as 1 to 0, then get the right of next (1)
+                        next_subunit = formation_distance_list[row][do_order[0][col_index + 1] + 1]
+                        if next_subunit != 0:
+                            distance[0] = self.formation_distance_list[next_subunit][0] - \
+                                     (placement_density + sprite_size[0])
+                        else:
+                            distance[0] -= placement_density * 2
+                    else:  # right from current, such as 0 to 2, then get the left of next (1)
+                        next_subunit = formation_distance_list[row][do_order[0][col_index + 1] - 1]
+                        if next_subunit != 0:
+                            distance[0] = self.formation_distance_list[next_subunit][0] + \
+                                     (placement_density + sprite_size[0])
+                        else:
+                            distance[0] += placement_density * 2
+
+        distance[0] = start_distance[0]  # end of row, reset starting point x
         if row_index + 1 < len(do_order[1]):
             if do_order[1][row_index + 1] > row:  # next row
                 biggest_height = 0
                 for col in formation_distance_list[do_order[1][row_index + 1] - 1]:  # get biggest height in row before next one
                     if col != 0 and col.default_sprite_size[1] > biggest_height:
                         biggest_height = col.default_sprite_size[1]
-                pos[1] += (placement_density + biggest_height)
+                distance[1] += (placement_density + biggest_height)
             else:  # previous row
                 biggest_height = 0
                 for col in formation_distance_list[do_order[1][row_index + 1] + 1]:  # get biggest height in row after next one
                     if col != 0 and col.default_sprite_size[1] > biggest_height:
                         biggest_height = col.default_sprite_size[1]
-                pos[1] -= (placement_density + biggest_height)
+                distance[1] -= (placement_density + biggest_height)
 
 
 def formation_style_check(self, this_subunit, priority_subunit_place, side):
-    if "Infantry" in self.formation_style:  # Infantry at flank
-        if this_subunit.subunit_type < 2:  # infantry
-            priority_subunit_place["flank-" + side].append(this_subunit)
-        elif this_subunit.subunit_type == 2:  # cavalry
-            priority_subunit_place["center-" + side].append(this_subunit)
-    elif "Cavalry" in self.formation_style:  # Cavalry at flank
-        if this_subunit.subunit_type < 2:  # infantry
-            priority_subunit_place["center-" + side].append(this_subunit)
-        elif this_subunit.subunit_type == 2:  # cavalry
-            priority_subunit_place["flank-" + side].append(this_subunit)
+    if self.formation_consider_flank:
+        if "Infantry" in self.formation_style:  # Infantry at flank
+            if this_subunit.subunit_type < 2:  # infantry
+                priority_subunit_place["flank-" + side].append(this_subunit)
+            elif this_subunit.subunit_type == 2:  # cavalry
+                priority_subunit_place["center-" + side].append(this_subunit)
+        elif "Cavalry" in self.formation_style:  # Cavalry at flank
+            if this_subunit.subunit_type < 2:  # infantry
+                priority_subunit_place["center-" + side].append(this_subunit)
+            elif this_subunit.subunit_type == 2:  # cavalry
+                priority_subunit_place["flank-" + side].append(this_subunit)
+    else:  # no need to consider flank and center since has either only infantry or cavalry troops, not both types
+        priority_subunit_place[side].append(this_subunit)

@@ -296,7 +296,10 @@ def status_update(self):
     if self.current_action and self.current_action["name"] == "KnockDown":  # knockdown reduce mass
         troop_mass = int(self.troop_mass / 2)
     self.charge_power = ((self.charge * self.momentum) / 2) * troop_mass
+
     self.charge_def_power = self.charge_def * troop_mass
+    if self.move:  # reduce charge def by half when moving
+        self.charge_def_power /= 2
 
     full_merge_len = len(self.overlap_collide) + 1
     if full_merge_len > 1:  # reduce discipline if there are overlap subunit

@@ -12,11 +12,7 @@ def pick_animation(self):
                     "Common"] + "_"
                 if "move attack" not in self.current_action:
                     animation_name += self.action_list[weapon]["Attack"]
-                else:
-                    if self.walk:
-                        animation_name += "Walk" + self.action_list[weapon]["Attack"]
-                    elif self.run:
-                        animation_name += "Run" + self.action_list[weapon]["Attack"]
+
             elif "main_weapon" in self.current_action:  # animation that use main weapon specifically like walk, run
                 animation_name = self.animation_race_name + "_" + self.action_list[0]["Common"] + "_" + \
                                  self.current_action["name"]

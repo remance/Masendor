@@ -1,6 +1,6 @@
 import random
 
-follow_distance = 10
+follow_distance = 15
 stay_formation_distance = 5
 
 

@@ -59,21 +59,18 @@ def attack(self, attack_type):
             accuracy -= round(angel_dif)
 
             if self.attack_target is not None:
-                if self.attack_target.alive_subunit_list:
-                    target_hit = self.find_attack_target(
-                        self.attack_target.alive_subunit_list)  # find the closest subunit in enemy unit
-                    how_long = attack_range / self.speed  # shooting distance divide damage sprite speed to find travel time
+                how_long = attack_range / self.speed  # shooting distance divide damage sprite speed to find travel time
 
-                    # Predicatively find position the enemy will be at based on movement speed and sprite travel time
-                    if target_hit.move and how_long > 0.5:  # target walking
-                        target_move = target_hit.base_target - target_hit.base_pos  # target movement distance
-                        if target_move.length() > 1:
-                            target_move.normalize_ip()
-                            base_target = target_hit.base_pos + (
-                                    (target_move * (
-                                                target_hit.move_speed * how_long)) / 11)  # recal target base on enemy move target
-                            if self.check_special_effect("Agile Aim") is False:
-                                accuracy -= 15
+                # Predicatively find position the enemy will be at based on movement speed and sprite travel time
+                if self.attack_target.move and how_long > 0.5:  # target walking
+                    target_move = self.attack_target.base_target - self.attack_target.base_pos  # target movement distance
+                    if target_move.length() > 1:
+                        target_move.normalize_ip()
+                        base_target = self.attack_target.base_pos + (
+                                (target_move * (
+                                            self.attack_target.move_speed * how_long)) / 11)  # recal target base on enemy move target
+                        if self.check_special_effect("Agile Aim") is False:
+                            accuracy -= 15
 
             if self.check_special_effect("Cone Shot"):
                 accuracy /= 2

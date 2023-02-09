@@ -255,7 +255,6 @@ class Game:
         lorebook.SubsectionName.containers = self.main_ui_updater, self.battle_ui_updater
 
         # battle containers
-        battleui.SwitchButton.containers = self.ui_updater
         battleui.SkillCardIcon.containers = self.skill_icon, self.battle_ui_updater
         battleui.EffectCardIcon.containers = self.effect_icon, self.battle_ui_updater
         battleui.CharIcon.containers = self.char_icon, self.main_ui_updater, self.battle_ui_updater
@@ -470,15 +469,15 @@ class Game:
 
         battle_icon_image = load_images(self.main_dir, screen_scale=self.screen_scale,
                                         subfolder=("ui", "battle_ui", "topbar_icon"))
-        battle_ui_dict = make_battle_ui(battle_ui_image, battle_icon_image, self.team_colour, self.screen_rect.size)
+        battle_ui_dict = make_battle_ui(battle_ui_image, battle_icon_image, self.team_colour,
+                                        self.screen_rect.size, self.screen_scale)
         self.time_ui = battle_ui_dict["time_ui"]
         self.time_number = battle_ui_dict["time_number"]
-        self.speed_number = battle_ui_dict["speed_number"]
         self.battle_scale_ui = battle_ui_dict["battle_scale_ui"]
-        self.battle_ui_updater.add(self.time_ui, self.time_number, self.speed_number)
+        self.battle_ui_updater.add(self.time_ui, self.time_number)
         self.unit_selector = battle_ui_dict["unit_selector"]
         self.wheel_ui = battle_ui_dict["wheel_ui"]
-        self.command_ui = battleui.HeroUI(self.screen_scale)  # hero ui that show leader weapon, health, and portrait
+        self.command_ui = battle_ui_dict["command_ui"]
 
         weather.Weather.wind_compass_images = {"wind_compass": battle_ui_image["wind_compass"],
                                                "wind_arrow": battle_ui_image["wind_arrow"]}

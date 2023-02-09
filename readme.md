@@ -166,6 +166,7 @@ historical information to players.
 
 - Musket sound effect by aaronsiler (https://freesound.org/people/aaronsiler/)
 - Assorted weapon sound effect from Videvo (https://www.videvo.net/)
+- Heavy rain weather ambient sound by lebaston100 (https://freesound.org/people/lebaston100/)
 
 ## Translation
 

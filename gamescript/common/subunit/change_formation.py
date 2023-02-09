@@ -12,6 +12,19 @@ def change_formation(self, formation=None):
     if formation is not None:
         self.formation = formation
 
+    consider_flank = [False, False]
+    for subunit in self.alive_troop_subordinate:
+        if subunit.subunit_type < 2 and consider_flank[0] is False:
+            consider_flank[0] = True
+        elif subunit.subunit_type >= 2 and consider_flank[0] is False:
+            consider_flank[1] = True
+        if False not in consider_flank:
+            break
+
+    self.formation_consider_flank = False
+    if False not in consider_flank:
+        self.formation_consider_flank = True
+
     new_formation = self.all_formation_list[self.formation].copy()
     self.formation_preset = convert_formation_preset(self.troop_follower_size, new_formation)
     self.setup_formation()
@@ -39,8 +52,9 @@ def convert_formation_preset(subunit_follower_size, formation):
         flank_score[item[0]][item[1]] *= score
     for item, score in center_order_to_place.items():
         center_score[item[0]][item[1]] *= score
-    return {"original": new_value, "center-front": center_score + front_score, "center-rear": center_score + rear_score,
-            "flank-front": flank_score + front_score, "flank-rear": flank_score + rear_score}
+    return {"original": new_value, "front": front_score, "rear": rear_score, "center-front": center_score + front_score,
+            "center-rear": center_score + rear_score, "flank-front": flank_score + front_score,
+            "flank-rear": flank_score + rear_score}
 
 
 def calculate_formation_priority(subunit_follower_size):

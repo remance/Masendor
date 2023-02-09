@@ -33,34 +33,6 @@ class UIButton(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.pos)
 
 
-class SwitchButton(pygame.sprite.Sprite):
-    def __init__(self, images):
-        self._layer = 11
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        self.pos = (0, 0)
-        self.images = images
-        self.image = self.images[0]
-        self.event = 0
-        self.rect = self.image.get_rect(center=self.pos)
-        self.mouse_over = False
-        self.last_event = 0
-
-    def update(self):
-        if self.event != self.last_event:
-            self.image = self.images[self.event]
-            self.rect = self.image.get_rect(center=self.pos)
-            self.last_event = self.event
-
-    def change_pos(self, pos):
-        self.pos = pos
-        self.rect = self.image.get_rect(center=self.pos)
-
-    def change_genre(self, images):
-        self.images = images
-        self.image = self.images[0]
-        self.rect = self.image.get_rect(center=self.pos)
-
-
 class PopupIcon(pygame.sprite.Sprite):
     def __init__(self, image, pos, event, game_ui, item_id=""):
         self._layer = 12
@@ -73,23 +45,10 @@ class PopupIcon(pygame.sprite.Sprite):
         self.item_id = item_id
 
 
-class InspectUI(pygame.sprite.Sprite):
-    def __init__(self, image):
-        self._layer = 10
-        pygame.sprite.Sprite.__init__(self)
-        self.image = image
-        self.base_image = self.image.copy()
-
-    def change_pos(self, pos):
-        """change position of ui to new one"""
-        self.pos = pos
-        self.rect = self.image.get_rect(center=self.pos)
-
-
 class HeroUI(pygame.sprite.Sprite):
     weapon_sprite_pool = None
 
-    def __init__(self, screen_scale, text_size=24):
+    def __init__(self, screen_scale, weapon_box_images, text_size=24):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self)
         self.screen_scale = screen_scale
@@ -105,18 +64,32 @@ class HeroUI(pygame.sprite.Sprite):
         self.health_bar_rect = self.health_bar.get_rect(topright=(self.image.get_width(), 0))
         self.health_bar.fill((200, 0, 0))
 
+        self.weapon_box_images = weapon_box_images
         self.weapon_image = pygame.Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]),
                                            pygame.SRCALPHA)
-        self.weapon_image.fill((50, 50, 50))
+
+        self.prim_main_weapon_box_rect = self.weapon_box_images[0].get_rect(topleft=(0, 0))
+        self.weapon_image.blit(self.weapon_box_images[0], self.prim_main_weapon_box_rect)
+        self.prim_sub_weapon_box_rect = self.weapon_box_images[0].get_rect(topleft=(80 * self.screen_scale[0], 0))
+        self.weapon_image.blit(pygame.transform.flip(self.weapon_box_images[0], True, False),
+                               self.prim_sub_weapon_box_rect)
+
+        self.sec_main_weapon_box_rect = self.weapon_box_images[1].get_rect(topleft=(self.weapon_box_images[0].get_width(), self.weapon_box_images[0].get_height()))
+        self.weapon_image.blit(self.weapon_box_images[1], self.sec_main_weapon_box_rect)
+        self.sec_sub_weapon_box_rect = self.weapon_box_images[1].get_rect(topleft=(self.weapon_box_images[0].get_width() + self.weapon_box_images[1].get_width(),
+                                                                                    self.weapon_box_images[0].get_height()))
+        self.weapon_image.blit(pygame.transform.flip(self.weapon_box_images[1], True, False),
+                               self.sec_sub_weapon_box_rect)
+
+        self.weapon_image_set_pos = ((self.prim_main_weapon_box_rect.center, self.prim_sub_weapon_box_rect.center),
+                                     (self.sec_main_weapon_box_rect.center, self.sec_sub_weapon_box_rect.center))
+
         self.weapon_base_image = self.weapon_image.copy()
         self.weapon_image_rect = self.weapon_image.get_rect(topright=(self.image.get_width() - self.health_bar_size[0], 0))
-        self.weapon_image_set_pos = (((0, 0), ((80 * self.screen_scale[0]) * self.screen_scale[0], 0)),
-                                     ((self.weapon_image.get_width() / 2, self.weapon_image.get_height() / 2.5),
-                                      (self.weapon_image.get_width() / 1.3, self.weapon_image.get_height() / 2.5)))
 
         self.leader_image_rect = self.weapon_image.get_rect(topleft=(0, 0))
 
-        self.ammo_text_box = self.font.render("999", 1, (0, 0, 0))  # make text box for ammo
+        self.ammo_text_box = self.font.render("999", True, (0, 0, 0))  # make text box for ammo
         self.ammo_text_box.fill((0, 0, 0))
         self.ammo_text_box_original = self.ammo_text_box.copy()
 
@@ -152,36 +125,35 @@ class HeroUI(pygame.sprite.Sprite):
                     index = len(weapon_name_set) - 1
                 true_weapon_set_index = weapon_set_index[index]
                 for index2, this_weapon in enumerate(this_weapon_set):
-                    if this_weapon != "Unarmed":
-                        weapon_image = self.weapon_sprite_pool[this_weapon][who.weapon_version[
-                            true_weapon_set_index][index2]]["icon"].copy()
+                    weapon_image = self.weapon_sprite_pool[this_weapon][who.weapon_version[
+                        true_weapon_set_index][index2]]["icon"].copy()
 
-                        if index > 0:  # unequipped weapon
-                            weapon_image = pygame.transform.scale(weapon_image,
-                                                                  (self.weapon_image.get_width() / 4,
-                                                                   self.weapon_image.get_height() / 4))
-                        weapon_image_rect = weapon_image.get_rect(topleft=self.weapon_image_set_pos[index][index2])
-                        if who.magazine_size[true_weapon_set_index][index2] > 0:  # range weapon
-                            if true_weapon_set_index not in who.magazine_count or \
-                                    (true_weapon_set_index in who.magazine_count and
-                                     index2 not in who.magazine_count[true_weapon_set_index]):  # no ammo
-                                ammo_count = 0
-                                text_colour = (200, 100, 100)
-                                weapon_image = apply_sprite_colour(weapon_image, (200, 50, 50), None,
-                                                                   keep_white=False)
-                            else:
-                                ammo_count = who.magazine_count[true_weapon_set_index][index2]
-                                text_colour = (255, 255, 255)
-                            ammo_text_surface = self.font.render(str(ammo_count), 1, text_colour)  # ammo number
-                            ammo_text_rect = ammo_text_surface.get_rect(center=(self.ammo_text_box.get_width() / 2,
-                                                                                self.ammo_text_box.get_height() / 2))
-                            self.ammo_text_box = self.ammo_text_box_original.copy()
-                            self.ammo_text_box.blit(ammo_text_surface, ammo_text_rect)
-                            ammo_text_rect = self.ammo_text_box.get_rect(midtop=weapon_image_rect.midbottom)
-                            self.weapon_image.blit(self.ammo_text_box, ammo_text_rect)
+                    if index > 0:  # unequipped weapon
+                        weapon_image = pygame.transform.scale(weapon_image,
+                                                              (self.weapon_image.get_width() / 4,
+                                                               self.weapon_image.get_height() / 4))
+                    weapon_image_rect = weapon_image.get_rect(center=self.weapon_image_set_pos[index][index2])
+                    if who.magazine_size[true_weapon_set_index][index2] > 0:  # range weapon
+                        if true_weapon_set_index not in who.magazine_count or \
+                                (true_weapon_set_index in who.magazine_count and
+                                 index2 not in who.magazine_count[true_weapon_set_index]):  # no ammo
+                            ammo_count = 0
+                            text_colour = (200, 100, 100)
+                            weapon_image = apply_sprite_colour(weapon_image, (200, 50, 50), None,
+                                                               keep_white=False)
+                        else:
+                            ammo_count = who.magazine_count[true_weapon_set_index][index2]
+                            text_colour = (255, 255, 255)
+                        ammo_text_surface = self.font.render(str(ammo_count), 1, text_colour)  # ammo number
+                        ammo_text_rect = ammo_text_surface.get_rect(center=(self.ammo_text_box.get_width() / 2,
+                                                                            self.ammo_text_box.get_height() / 2))
+                        self.ammo_text_box = self.ammo_text_box_original.copy()
+                        self.ammo_text_box.blit(ammo_text_surface, ammo_text_rect)
+                        ammo_text_rect = self.ammo_text_box.get_rect(midtop=weapon_image_rect.midbottom)
+                        self.weapon_image.blit(self.ammo_text_box, ammo_text_rect)
 
-                        if change:
-                            self.weapon_image.blit(weapon_image, weapon_image_rect)
+                    if change:
+                        self.weapon_image.blit(weapon_image, weapon_image_rect)
 
             self.image.blit(self.weapon_image, self.weapon_image_rect)
 

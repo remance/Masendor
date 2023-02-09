@@ -290,12 +290,12 @@ class Showroom(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.size = (int(size[0]), int(size[1]))
         self.image = pygame.Surface(self.size)
-        self.image.fill((255, 255, 255))
+        self.image.fill((200, 200, 200))
         self.rect = self.image.get_rect(center=(screen_size[0] / 2, screen_size[1] / 2.2))
         self.grid = True
 
     def update(self, *args):
-        self.image.fill((255, 255, 255))
+        self.image.fill((200, 200, 200))
         if self.grid:
             grid_width = self.image.get_width() / 10
             grid_height = self.image.get_height() / 10
@@ -1062,42 +1062,42 @@ class Model:
         for stuff in bodypart_list:  # create stat and image
             if bodypart_list[stuff] is not None and bodypart_list[stuff] != [0, 0]:
                 if any(ext in stuff for ext in except_list) is False:
-                    # try:
-                    if "weapon" in stuff:
-                        part_name = self.weapon[stuff]
-                        if part_name is not None and bodypart_list[stuff][1]:
-                            self.sprite_image[stuff] = gen_weapon_sprite_pool[part_name][
+                    try:
+                        if "weapon" in stuff:
+                            part_name = self.weapon[stuff]
+                            if part_name is not None and bodypart_list[stuff][1]:
+                                self.sprite_image[stuff] = gen_weapon_sprite_pool[part_name][
+                                    bodypart_list[stuff][1]].copy()
+                        elif "effect_" in stuff:
+                            self.sprite_image[stuff] = effect_sprite_pool[bodypart_list[stuff][0]][
                                 bodypart_list[stuff][1]].copy()
-                    elif "effect_" in stuff:
-                        self.sprite_image[stuff] = effect_sprite_pool[bodypart_list[stuff][0]][
-                            bodypart_list[stuff][1]].copy()
-                    else:
-                        new_part_name = stuff
-                        if any(ext in stuff for ext in p_list):
-                            part_name = stuff[3:]  # remove p*number*_ to get part name
-                            new_part_name = part_name
-                        if "special" in stuff:
-                            part_name = "special"
-                            new_part_name = part_name
-                        if "r_" in part_name[0:2] or "l_" in part_name[0:2]:
-                            new_part_name = part_name[2:]  # remove part side
-                        self.sprite_image[stuff] = gen_body_sprite_pool[bodypart_list[stuff][0]][new_part_name][
-                            bodypart_list[stuff][1]].copy()
-                    if any(ext in stuff for ext in p_list) and self.armour[stuff[0:2] + "_armour"] != "None":
-                        armour = self.armour[stuff[0:2] + "_armour"].split("/")
+                        else:
+                            new_part_name = stuff
+                            if any(ext in stuff for ext in p_list):
+                                part_name = stuff[3:]  # remove p*number*_ to get part name
+                                new_part_name = part_name
+                            if "special" in stuff:
+                                part_name = "special"
+                                new_part_name = part_name
+                            if "r_" in part_name[0:2] or "l_" in part_name[0:2]:
+                                new_part_name = part_name[2:]  # remove part side
+                            self.sprite_image[stuff] = gen_body_sprite_pool[bodypart_list[stuff][0]][new_part_name][
+                                bodypart_list[stuff][1]].copy()
+                        if any(ext in stuff for ext in p_list) and self.armour[stuff[0:2] + "_armour"] != "None":
+                            armour = self.armour[stuff[0:2] + "_armour"].split("/")
 
-                        gear_image = gen_armour_sprite_pool[bodypart_list[stuff][0]][armour[0]][armour[1]][
-                            part_name][bodypart_list[stuff][1]].copy()
-                        gear_surface = pygame.Surface(gear_image.get_size(), pygame.SRCALPHA)
-                        rect = self.sprite_image[stuff].get_rect(
-                            center=(gear_surface.get_width() / 2, gear_surface.get_height() / 2))
-                        gear_surface.blit(self.sprite_image[stuff], rect)
-                        rect = gear_image.get_rect(center=(gear_surface.get_width() / 2,
-                                                           gear_surface.get_height() / 2))
-                        gear_surface.blit(gear_image, rect)
-                        self.sprite_image[stuff] = gear_surface
-                    # except (KeyError, UnboundLocalError):  # no part name known for current race, skip getting image
-                    #     pass
+                            gear_image = gen_armour_sprite_pool[bodypart_list[stuff][0]][armour[0]][armour[1]][
+                                part_name][bodypart_list[stuff][1]].copy()
+                            gear_surface = pygame.Surface(gear_image.get_size(), pygame.SRCALPHA)
+                            rect = self.sprite_image[stuff].get_rect(
+                                center=(gear_surface.get_width() / 2, gear_surface.get_height() / 2))
+                            gear_surface.blit(self.sprite_image[stuff], rect)
+                            rect = gear_image.get_rect(center=(gear_surface.get_width() / 2,
+                                                               gear_surface.get_height() / 2))
+                            gear_surface.blit(gear_image, rect)
+                            self.sprite_image[stuff] = gear_surface
+                    except (KeyError, UnboundLocalError):  # no part name known for current race, skip getting image
+                        pass
 
         # if skin != "white":
         #     for part in list(self.sprite_image.keys())[1:]:
@@ -1189,9 +1189,14 @@ class Model:
         elif edit_type == "all frame selected part paste":  # paste copy part for all
             for frame in all_copy_part:
                 for part in all_copy_part[frame]:
-                    self.bodypart_list[frame][part] = all_copy_part[frame][part]
-                    self.animation_part_list[frame][part] = all_copy_animation[frame][part]
-                    self.part_name_list[frame][part] = all_copy_name[frame][part]
+                    if all_copy_part[frame][part] is not None:
+                        self.bodypart_list[frame][part] = all_copy_part[frame][part].copy()
+                        self.animation_part_list[frame][part] = all_copy_animation[frame][part].copy()
+                        self.part_name_list[frame][part] = all_copy_name[frame][part].copy()
+                    else:
+                        self.bodypart_list[frame][part] = None
+                        self.bodypart_list[frame][part] = None
+                        self.part_name_list[frame][part] = None
 
         elif edit_type == "paste part stat":  # paste copy stat
             for part in copy_part_stat:
@@ -1202,6 +1207,10 @@ class Model:
                     self.bodypart_list[edit_frame][new_part] = copy_part_stat[part].copy()
                     self.animation_part_list[edit_frame][new_part] = copy_animation_stat[part].copy()
                     self.part_name_list[edit_frame][new_part] = copy_name_stat[part].copy()
+                else:
+                    self.bodypart_list[edit_frame][new_part] = None
+                    self.animation_part_list[edit_frame][new_part] = None
+                    self.part_name_list[edit_frame][new_part] = None
 
         elif edit_type == "undo" or edit_type == "redo":
             for frame_num, _ in enumerate(self.animation_part_list):
@@ -1449,41 +1458,42 @@ class Model:
         for joint in joints:  # remove all joint first
             joint.kill()
 
-        # recreate current frame image
+        # recreate frame image
         pose_layer_list = self.make_layer_list(self.animation_part_list[edit_frame])
         for frame_num, _ in enumerate(self.animation_list):
             pose_layer_list = self.make_layer_list(self.animation_part_list[frame_num])
             surface = self.create_animation_film(pose_layer_list, frame_num)
             self.animation_list[frame_num] = surface
-        name_list = self.part_name_list[edit_frame]
-        self.frame_list[edit_frame] = {}
-        for key in self.mask_part_list:
-            try:
-                sprite_part = self.animation_part_list[edit_frame]
-                if sprite_part[key] is not None:
-                    self.frame_list[edit_frame][key] = name_list[key] + [sprite_part[key][2][0], sprite_part[key][2][1],
-                                                                         sprite_part[key][3], sprite_part[key][4],
-                                                                         sprite_part[key][5], sprite_part[key][6]]
-                else:
-                    self.frame_list[edit_frame][key] = [0]
-            except (TypeError, IndexError):  # None type error from empty frame
-                self.frame_list[edit_frame][key] = [0]
-        for key in self.frame_list[edit_frame]:
-            if "weapon" in key and self.frame_list[edit_frame][key] != [0]:
-                self.frame_list[edit_frame][key] = self.frame_list[edit_frame][key][1:]
-        p_face = {}
-        for p in p_list:
-            p_face = p_face | {p: {p + "_eye": self.bodypart_list[edit_frame][p + "_eye"],
-                                   p + "_mouth": self.bodypart_list[edit_frame][p + "_mouth"]}}
-        for p in p_face:
-            p_face_pos = list(self.frame_list[edit_frame].keys()).index(p + "_head") + 1
-            self.frame_list[edit_frame] = {k: v for k, v in (
-                        list(self.frame_list[edit_frame].items())[:p_face_pos] + list(p_face[p].items()) +
-                        list(self.frame_list[edit_frame].items())[p_face_pos:])}
+        for frame, _ in enumerate(self.frame_list):
+            self.frame_list[frame] = {}
+            name_list = self.part_name_list[frame]
+            for key in self.mask_part_list:
+                try:
+                    sprite_part = self.animation_part_list[frame]
+                    if sprite_part[key] is not None:
+                        self.frame_list[frame][key] = name_list[key] + [sprite_part[key][2][0], sprite_part[key][2][1],
+                                                                             sprite_part[key][3], sprite_part[key][4],
+                                                                             sprite_part[key][5], sprite_part[key][6]]
+                    else:
+                        self.frame_list[frame][key] = [0]
+                except (TypeError, IndexError):  # None type error from empty frame
+                    self.frame_list[frame][key] = [0]
+            for key in self.frame_list[frame]:
+                if "weapon" in key and self.frame_list[frame][key] != [0]:
+                    self.frame_list[frame][key] = self.frame_list[frame][key][1:]
+            p_face = {}
+            for p in p_list:
+                p_face = p_face | {p: {p + "_eye": self.bodypart_list[frame][p + "_eye"],
+                                       p + "_mouth": self.bodypart_list[frame][p + "_mouth"]}}
+            for p in p_face:
+                p_face_pos = list(self.frame_list[frame].keys()).index(p + "_head") + 1
+                self.frame_list[frame] = {k: v for k, v in (
+                            list(self.frame_list[frame].items())[:p_face_pos] + list(p_face[p].items()) +
+                            list(self.frame_list[frame].items())[p_face_pos:])}
 
-        self.frame_list[edit_frame]["size"] = self.size
-        self.frame_list[edit_frame]["frame_property"] = frame_property_select[edit_frame]
-        self.frame_list[edit_frame]["animation_property"] = anim_property_select
+            self.frame_list[frame]["size"] = self.size
+            self.frame_list[frame]["frame_property"] = frame_property_select[frame]
+            self.frame_list[frame]["animation_property"] = anim_property_select
         anim_to_pool(animation_name, current_pool, self, activate_list)
         reload_animation(anim, self)
 

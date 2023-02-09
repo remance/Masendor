@@ -135,8 +135,6 @@ class Battle:
 
         self.battle_scale_ui = main.battle_scale_ui
 
-        self.speed_number = main.speed_number
-
         self.weather_matter = main.weather_matter
         self.weather_effect = main.weather_effect
 
@@ -455,7 +453,6 @@ class Battle:
         self.ui_dt = 0  # Realtime used for ui timer
         self.weather_spawn_timer = 0
         self.last_mouseover = None  # Which subunit last mouse over
-        self.speed_number.speed_update(self.game_speed)
         self.click_any = False  # For checking if mouse click on anything, if not close ui related to unit
         self.new_unit_click = False  # For checking if another subunit is clicked when inspect ui open
 

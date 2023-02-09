@@ -23,5 +23,3 @@ def change_battle_state(self):
         for this_subunit in self.subunit_updater:
             if this_subunit.is_leader:
                 this_subunit.change_formation()
-
-    self.speed_number.speed_update(self.game_speed)
