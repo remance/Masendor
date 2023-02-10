@@ -54,7 +54,7 @@ def status_update(self):
     self.sight = self.base_sight
     self.hidden = self.base_hidden
     self.crit_effect = self.base_crit_effect
-    self.shoot_range = self.original_range[self.equipped_weapon].copy()
+    self.shoot_range = self.original_shoot_range[self.equipped_weapon].copy()
     self.weapon_speed = self.original_weapon_speed[self.equipped_weapon].copy()
     self.weapon_dmg = self.original_weapon_dmg[self.equipped_weapon].copy()
 
@@ -305,10 +305,6 @@ def status_update(self):
     self.charge_def_power = self.charge_def * troop_mass
     if self.move:  # reduce charge def by half when moving
         self.charge_def_power /= 2
-
-    full_merge_len = len(self.overlap_collide) + 1
-    if full_merge_len > 1:  # reduce discipline if there are overlap subunit
-        self.discipline = self.discipline / full_merge_len
 
     # include all penalties to morale like remaining health, battle situation scale
     self.morale -= (((40 - (40 * self.health / self.max_health)) +

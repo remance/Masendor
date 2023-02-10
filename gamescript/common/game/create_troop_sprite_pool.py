@@ -317,8 +317,8 @@ def crop_sprite(sprite_pic):
                                          "RGBA")  # convert image back to a pygame surface
 
     # Find center offset after crop by finding width and height difference of longer side
-    center_x_offset = ((low_x0 + high_x1) / 2) + (((100 - low_x0) - (high_x1 - 100)) / 8)
-    center_y_offset = ((low_y0 + high_y1) / 2) + (((100 - low_y0) - (high_y1 - 100)) / 8)
+    center_x_offset = ((low_x0 + high_x1) / 2) + (((100 - low_x0) - (high_x1 - 100)) / 10)
+    center_y_offset = ((low_y0 + high_y1) / 2) + (((100 - low_y0) - (high_y1 - 100)) / 10)
     center_offset = (center[0] - center_x_offset, center[1] - center_y_offset)
 
     # sprite_pic_new = pygame.Surface(size)

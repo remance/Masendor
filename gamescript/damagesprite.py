@@ -14,6 +14,7 @@ direction_angle = {"r_side": math.radians(90), "l_side": math.radians(270), "bac
 
 class DamageSprite(pygame.sprite.Sprite):
     empty_method = utility.empty_method
+    clean_object = utility.clean_object
 
     bullet_sprite_pool = None
     bullet_weapon_sprite_pool = None
@@ -31,8 +32,6 @@ class DamageSprite(pygame.sprite.Sprite):
     find_random_direction = empty_method
     hit_register = empty_method
     play_animation = empty_method
-
-    sprite_scaling = empty_method
 
     script_dir = os.path.split(os.path.abspath(__file__))[0]
     for entry in os.scandir(Path(script_dir + "/common/damagesprite/")):  # load and replace modules from common.unit
@@ -56,6 +55,7 @@ class DamageSprite(pygame.sprite.Sprite):
         self.arc_shot = arc_shot  # arc shot will only hit subunit when it reaches target
         self.accuracy = accuracy
         self.height = self.attacker.height
+        self.head_height = self.attacker.head_height
         self.attack_type = attack_type
 
         self.height_ignore = height_ignore
@@ -86,7 +86,9 @@ class DamageSprite(pygame.sprite.Sprite):
         self.base_target = base_target
 
         if self.attack_type == "range":
+            self.repeat_animation = True
             self.base_pos = pygame.Vector2(self.attacker.front_pos)
+            self.angle = self.set_rotate(self.base_target)
 
             self.speed = weapon_stat["Travel Speed"]  # bullet travel speed
             if self.arc_shot:
@@ -94,20 +96,14 @@ class DamageSprite(pygame.sprite.Sprite):
             if weapon_stat["Damage Sprite"] != "self":
                 self.image = self.bullet_sprite_pool[weapon_stat["Damage Sprite"]]["base"]
             else:  # use weapon image itself as bullet image
-                direction = self.attacker_sprite_direction
-                if "r_" in direction or "l_" in direction:
-                    direction = self.attacker_sprite_direction[2:]
                 image_name = "base_main"
                 if weapon == 1:
                     image_name = "base_sub"
                 self.image = self.bullet_weapon_sprite_pool[weapon_stat["Name"]][
-                    attacker.weapon_version[attacker.equipped_weapon][weapon]][direction][image_name]
-
-            self.angle = self.set_rotate(self.base_target)
+                    attacker.weapon_version[attacker.equipped_weapon][weapon]][image_name]
 
         else:
             self.sprite_direction = self.attacker.sprite_direction
-            self.angle = self.attack_type[4]
             self.scale_size = self.attack_type[7]
 
             animation_name = "".join(self.attack_type[1].split("_"))[-1]
@@ -116,19 +112,28 @@ class DamageSprite(pygame.sprite.Sprite):
             else:
                 animation_name = self.attack_type[1]
 
-            self.current_animation = self.effect_animation_pool[weapon_stat["Damage Sprite"]][animation_name]
+            self.current_animation = self.effect_animation_pool[weapon_stat["Damage Sprite"]][self.attacker.team][animation_name]
 
             self.image = self.current_animation[self.show_frame]
 
+            self.base_pos = self.attacker.base_pos
+            self.angle = self.set_rotate(self.base_target)
             self.base_pos = base_target
+
+        if self.duration > 0:
+            self.repeat_animation = True
 
         self.target_height = self.height_map.get_height(self.base_target)  # get the height at base_target
         self.full_distance = self.base_pos.distance_to(self.base_target)
         self.distance_progress = 0
+        self.last_distance_progress = 0
 
         self.adjust_sprite()
 
-        self.sprite_scaling()
+        self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
+                                  self.base_pos[1] * self.screen_scale[1]) * 5
+        self.rect = self.image.get_rect(center=self.pos)
+        self.mask = pygame.mask.from_surface(self.image)
 
     def adjust_sprite(self):
         if self.scale_size > 1:
@@ -137,101 +142,112 @@ class DamageSprite(pygame.sprite.Sprite):
 
         self.image = pygame.transform.rotate(self.image, self.angle)
 
-        if self.attack_type != "range" and "l_" in self.attacker_sprite_direction:
-            self.image = pygame.transform.flip(self.image, True, False)
+        # if self.attack_type != "range" and "l_" in self.attacker_sprite_direction:
+        #     self.image = pygame.transform.flip(self.image, True, False)
 
         self.base_image = self.image.copy()
 
     def update(self, subunit_list, dt):
+        done = False
         just_start = False
 
         self.timer += dt
+        if self.timer > 1 and self.duration > 0:  # reset timer and list of subunit already hit
+            self.timer -= 1
+            self.already_hit = []  # sprite can deal dmg to same subunit only once every 1 second
 
-        self.pass_subunit = None  # reset every movement update
+        if self.current_animation:  # play animation if any
+            done, just_start = self.play_animation(0.05, dt, False)
+            if just_start:
+                self.adjust_sprite()
 
-        move = self.base_target - self.base_pos
-        move_length = move.length()
-        if move_length > 0:  # sprite move
-            move.normalize_ip()
-            move = move * self.speed * dt
-            self.distance_progress += self.full_distance / move.length()
-            if self.arc_shot:  # arc shot cause sprite to scale up mid way and down again later
-                if self.distance_progress % 10 == 0:
-                    if self.distance_progress <= 50:
-                        self.image = pygame.transform.smoothscale(self.base_image,
-                                                                  self.base_image.get_size() +
-                                                                  (self.base_image.get_size() *
-                                                                   self.distance_progress / 25))
-                    else:
-                        self.image = pygame.transform.smoothscale(self.base_image,
-                                                                  self.base_image.get_size() +
-                                                                  (self.base_image.get_size() *
-                                                                   (4 - (self.distance_progress / 25))))
-
-            if move.length() <= move_length:
-                self.base_pos += move
-                if self.arc_shot is False and self.height_ignore is False and \
-                        self.height_map.get_height(self.base_pos) > self.height + 20:
-                    self.kill()  # direct shot will not be able to shoot pass higher height terrain midway
-                self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
-                                          self.base_pos[1] * self.screen_scale[1]) * 5
-                self.rect.center = list(int(v) for v in self.pos)
-
-                if self.random_move is False and (
-                        self.base_pos[0] <= 0 or self.base_pos[0] >= self.battle.map_corner[0] or
-                        self.base_pos[1] <= 0 or self.base_pos[1] >= self.battle.map_corner[1]):  # pass outside of map
-                    self.kill()
-
-                if self.degrade_when_travel:  # dmg and penetration power drop the longer damage sprite travel
-                    for element in self.dmg:
-                        if self.dmg[element] > 1:
-                            self.dmg[element] -= 0.1
-                    if self.penetrate > 1:
-                        self.penetrate -= 0.1
-                    else:  # no more penetrate power to move on
-                        self.kill()  # remove sprite
-            else:
-                self.base_pos = self.base_target
-                self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
-                                          self.base_pos[1] * self.screen_scale[1]) * 5
-                self.rect.center = self.pos
-
+        # Check for collision with subunit and deal damage
         if self.deal_dmg:  # sprite can still deal damage
-            for this_subunit in subunit_list:  # collide check while travel
+            for this_subunit in subunit_list:  # collide check
                 if this_subunit != self.attacker and this_subunit.rect.colliderect(self.rect) and \
-                        this_subunit not in self.already_hit:
-                    if self.attack_type == "range":
+                        this_subunit not in self.already_hit and self.head_height <= this_subunit.head_height and \
+                        pygame.sprite.collide_mask(this_subunit, self):
+                    if self.full_distance > 0:  # range attack
                         if self.arc_shot is False:  # direct shot
                             self.hit_register(this_subunit)
                             self.already_hit.append(this_subunit)
                             if self.aoe is False and self.penetrate <= 0:
                                 self.deal_dmg = False
-                                self.kill()
-                                break
+                                self.clean_object()
+                                return
+                        else:  # arc shot
+                            self.hit_register(this_subunit)  # register hit whatever subunit the sprite land at
+                            self.clean_object()  # remove sprite
+                            return
+                    else:
+                        if this_subunit.team != self.attacker.team:
+                            self.hit_register(this_subunit)
+
+        if self.distance_progress >= 100:  # attack reach target pos
+            self.clean_object()  # remove sprite
+            return
+
+        if self.full_distance > 0:  # damage sprite that can move like range attack or spell
+            self.pass_subunit = None  # reset before every movement update and after collide check
+            move = self.base_target - self.base_pos
+            require_move_length = move.length()
+
+            if require_move_length > 0:  # sprite move
+                move.normalize_ip()
+                move = move * self.speed * dt
+                self.distance_progress += move.length() / self.full_distance * 100
+
+                if self.arc_shot:  # arc shot cause sprite to scale up midway and down again after passing mid point
+                    if int(self.distance_progress / 10) != self.last_distance_progress:
+                        self.last_distance_progress = int(self.distance_progress / 10)
+                        if self.distance_progress <= 50:
+                            self.image = pygame.transform.smoothscale(self.base_image,
+                                                                      self.base_image.get_size() +
+                                                                      (self.base_image.get_size() *
+                                                                       self.distance_progress / 25))
                         else:
-                            self.pass_subunit = this_subunit
+                            self.image = pygame.transform.smoothscale(self.base_image,
+                                                                      self.base_image.get_size() +
+                                                                      (self.base_image.get_size() *
+                                                                       (4 - (self.distance_progress / 25))))
 
-                    elif this_subunit.team != self.attacker.team:  # no friendly attack for melee
-                        self.hit_register(this_subunit)
-                        if self.aoe is False:
-                            self.deal_dmg = False
-                            break
+                if move.length() <= require_move_length:
+                    self.base_pos += move
+                    if self.arc_shot is False and self.height_ignore is False and \
+                            self.height_map.get_height(self.base_pos) > self.height + 20:
+                        self.clean_object()  # direct shot will not be able to shoot pass higher height terrain midway
+                        return
+                    self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
+                                              self.base_pos[1] * self.screen_scale[1]) * 5
+                    self.rect.center = self.pos
+                    self.mask = pygame.mask.from_surface(self.image)
 
-        if self.timer > 1 and self.duration > 0:  # reset timer and list of subunit already hit for duration damage
-            self.timer = 0
-            self.already_hit = []  # sprite can deal dmg to same subunit every 1 second
+                    if self.random_move is False and (
+                            self.base_pos[0] <= 0 or self.base_pos[0] >= self.battle.map_corner[0] or
+                            self.base_pos[1] <= 0 or self.base_pos[1] >= self.battle.map_corner[1]):  # pass outside of map
+                        self.clean_object()
+                        return
 
-        if move_length <= 0:
-            if self.deal_dmg and self.arc_shot:  # arc shot hit enemy it pass last
-                self.hit_register(self.pass_subunit)  # register hit whatever subunit the sprite land at
-            self.kill()  # remove sprite
+                    if self.degrade_when_travel:  # dmg and penetration power drop the longer damage sprite travel
+                        for element in self.dmg:
+                            if self.dmg[element] > 1:
+                                self.dmg[element] -= 0.1
+                        if self.penetrate > 1:
+                            self.penetrate -= 0.1
+                        else:  # no more penetrate power to move on
+                            self.clean_object()  # remove sprite
+                            return
+                else:  # reach target
+                    self.base_pos = self.base_target
+                    self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
+                                              self.base_pos[1] * self.screen_scale[1]) * 5
+                    self.rect.center = self.pos
 
-        if self.current_animation:
-            done, just_start = self.play_animation(0.05, dt, False)
-            if just_start:
-                self.adjust_sprite()
-            if done:
-                self.kill()
+        else:  # attack that does not travel
+            if done and self.duration == 0:
+                self.clean_object()
+                return
 
         if just_start:
-            self.sprite_scaling()
+            self.rect = self.image.get_rect(center=self.pos)
+            self.mask = pygame.mask.from_surface(self.image)

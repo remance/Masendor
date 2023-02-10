@@ -24,6 +24,7 @@ def play_animation(self, dt, hold_check):
                 if "repeat" in self.current_action:
                     self.show_frame = 0
                 else:
+                    just_start = False
                     done = True
             if done is False:  # check if new frame has play speed mod
                 if "player_speed_mod" in self.current_animation[self.show_frame]["frame_property"]:
@@ -37,6 +38,7 @@ def play_animation(self, dt, hold_check):
 
     self.offset_pos = self.pos - current_animation[self.show_frame]["center_offset"]
     self.rect = self.image.get_rect(center=self.offset_pos)
+    self.mask = pygame.mask.from_surface(self.image)
 
     return done, just_start
 

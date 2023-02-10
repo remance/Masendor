@@ -19,30 +19,30 @@ range_move_attack_command_action = {True: ({"name": "Action 0", "range attack": 
 
 def combat_ai_logic(self):
     if self.nearest_enemy[0][1] < self.melee_distance_zone:  # enemy in subunit's melee zone
-        if self.enemy_in_melee_distance:  # Check if in melee combat or not
-            self.in_melee_combat_timer = 3  # consider to be in melee for 3 seconds before reset
-            self.melee_target = self.enemy_in_melee_distance[0]
-            self.new_angle = self.set_rotate(self.melee_target.base_pos)
+        self.in_melee_combat_timer = 3  # consider to be in melee for 3 seconds before reset
+        self.attack_target = self.nearest_enemy[0][0]
+        self.new_angle = self.set_rotate(self.attack_target.base_pos)
+        if not self.command_action and not self.current_action:  # if melee combat (engaging anyone on any side)
             if self.equipped_weapon != self.melee_weapon_set[0]:  # swap to melee weapon when enemy near
                 self.swap_weapon(self.melee_weapon_set[0])
-
-            if not self.command_action and not self.current_action:  # if melee combat (engaging anyone on any side)
+            else:
                 for weapon in self.weapon_cooldown:
-                    if self.weapon_cooldown[weapon] >= self.weapon_speed[weapon]:
+                    if self.weapon_cooldown[weapon] >= self.weapon_speed[weapon] and \
+                            self.attack_target.base_pos.distance_to(self.front_pos) < self.melee_range[weapon]:
                         self.command_action = melee_attack_command_action[weapon]
                         break
 
-    elif not self.command_action:  # no nearby enemy melee threat
-        self.close_target = None
+    elif self.in_melee_combat_timer == 0 and not self.command_action:  # no nearby enemy melee threat
         self.attack_target = None
         can_shoot = False
         if self.ammo_now:  # range attack
             if self.equipped_weapon not in self.ammo_now:
-                for this_set in self.range_weapon_set:  # find weapon set with range weapon that has ammo
-                    self.swap_weapon(this_set)
-                    break
+                if not self.current_action:
+                    for this_set in self.range_weapon_set:  # find weapon set with range weapon that has ammo
+                        self.swap_weapon(this_set)
+                        break
 
-            if self.move is False or self.check_special_effect("Shoot While Moving"):  # Find target to shoot
+            elif self.move is False or self.check_special_effect("Shoot While Moving"):  # Find target to shoot
                 if self.shoot_range[0] >= self.nearest_enemy[0][1] or self.shoot_range[1] >= self.nearest_enemy[0][1]: # has enemy in range
                     for enemy in self.nearest_enemy:
                         for weapon in self.ammo_now[self.equipped_weapon]:

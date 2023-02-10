@@ -62,6 +62,8 @@ class HeroUI(pygame.sprite.Sprite):
         self.health_bar_rect = self.health_bar.get_rect(topright=(self.image.get_width(), 0))
         self.health_bar.fill((200, 0, 0))
 
+        self.health_bar_height = self.health_bar.get_height()
+
         self.weapon_box_images = weapon_box_images
         self.weapon_image = pygame.Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]),
                                            pygame.SRCALPHA)
@@ -146,7 +148,7 @@ class HeroUI(pygame.sprite.Sprite):
                             cooldown_image = pygame.Surface((self.weapon_box_images[0].get_width(),
                                                              self.weapon_box_images[0].get_height() *
                                                              (1 - (cooldown / speed))), pygame.SRCALPHA)
-                            cooldown_image.fill((255, 150, 150, 200))
+                            cooldown_image.fill((255, 50, 50, 200))
                             self.weapon_image.blit(cooldown_image, self.weapon_cooldown_rect[index2])
                     if who.magazine_size[true_weapon_set_index][index2] > 0:  # range weapon
                         if true_weapon_set_index not in who.magazine_count or \
@@ -175,15 +177,15 @@ class HeroUI(pygame.sprite.Sprite):
         if who.old_last_health != who.health:
             self.health_bar = self.health_bar_original.copy()
             health_percent = who.health / who.max_health
-            health_bar = pygame.Surface((self.health_bar_size[0] * health_percent,
-                                         self.health_bar_size[1]))
+            health_bar = pygame.Surface((self.health_bar_size[0],
+                                         self.health_bar_size[1] * health_percent))
             if health_percent >= 70:
                 health_bar.fill((0, 180, 0))
             elif health_percent >= 30:
                 health_bar.fill((220, 220, 0))
             else:
                 health_bar.fill((200, 0, 0))
-            health_bar_rect = health_bar.get_rect(topleft=(0, 0))
+            health_bar_rect = health_bar.get_rect(bottomleft=(0, self.health_bar_height))
             self.health_bar.blit(health_bar, health_bar_rect)
 
             self.image.blit(self.health_bar, self.health_bar_rect)
@@ -1067,8 +1069,8 @@ class SpriteIndicator(pygame.sprite.Sprite):
         self.battle = battle
         self.image = image
         self.who.sprite_indicator = self
-        self.rect = self.image.get_rect(center=self.who.pos)
+        self.rect = self.image.get_rect(midtop=self.who.pos)
 
     def update(self, *args):
-        self.rect = self.image.get_rect(center=self.who.pos)
+        self.rect = self.image.get_rect(midtop=self.who.pos)
 

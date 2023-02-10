@@ -17,8 +17,7 @@ def cal_loss(self, target, final_dmg, final_morale_dmg, element_effect):
     if final_dmg > target.max_health10:
         target.interrupt_animation = True
         target.command_action = self.knockdown_command_action
-
-        target.one_activity_limit = target.max_health / final_dmg * 10
+        target.one_activity_limit = target.max_health / final_dmg
 
     elif final_dmg > target.max_health5:
         target.interrupt_animation = True

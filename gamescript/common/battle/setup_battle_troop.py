@@ -62,13 +62,4 @@ def setup_battle_troop(self, team_subunit_list, specific_team=None):
                     leader_subunit[add_subunit.game_id] = add_subunit
                 which_team.add(add_subunit)
 
-                # Recal highest possible hitbox distance for battle
-                if self.hitbox_distance < add_subunit.subunit_hitbox_size:
-                    self.hitbox_distance = add_subunit.subunit_hitbox_size
-
-                for index, weapon in self.troop_data.weapon_list.items():
-                    if index in add_subunit.weapon_id[0] or index in add_subunit.weapon_id[1]:
-                        if weapon["Magazine"] == 0 and self.max_melee_weapon_range < weapon["Range"]:
-                            self.max_melee_weapon_range = weapon["Range"]
-
     unit_file.close()

@@ -26,6 +26,7 @@ skill_command_action_1 = {"name": "Skill 1"}
 
 walk_command_action = {"name": "Walk", "movable": True, "main_weapon": True}
 run_command_action = {"name": "Run", "movable": True, "main_weapon": True}
+flee_command_action = {"name": "Flee", "movable": True}
 
 melee_attack_command_action = ({"name": "Action 0", "melee attack": True}, {"name": "Action 1", "melee attack": True})
 range_attack_command_action = ({"name": "Action 0", "range attack": True}, {"name": "Action 1", "range attack": True})
@@ -83,17 +84,14 @@ class Subunit(pygame.sprite.Sprite):
     check_special_effect = empty_method
     check_weapon_cooldown = empty_method
     combat_ai_logic = empty_method
-    combat_pathfind = empty_method
     create_subunit_sprite = empty_method
     create_troop_sprite = empty_method
     die = empty_method
     enter_battle = empty_method
     find_formation_size = empty_method
-    find_nearby_subunit = empty_method
-    find_shooting_target = empty_method
+    find_retreat_target = empty_method
     health_stamina_logic = empty_method
     make_front_pos = empty_method
-    make_pos_range = empty_method
     morale_logic = empty_method
     move_ai_logic = empty_method
     move_logic = empty_method
@@ -128,6 +126,7 @@ class Subunit(pygame.sprite.Sprite):
 
     walk_command_action = walk_command_action
     run_command_action = run_command_action
+    flee_command_action = flee_command_action
 
     melee_attack_command_action = melee_attack_command_action
     range_attack_command_action = range_attack_command_action
@@ -175,6 +174,7 @@ class Subunit(pygame.sprite.Sprite):
         self.close_target = None  # closet target to move to in melee
         self.player_manual_control = False  # subunit controlled by player
         self.dead_change = False  # subordinate die in last update, reset formation, this is to avoid high workload when multiple die at once
+        self.retreat_start = False
 
         self.sprite_indicator = None
 
@@ -191,12 +191,8 @@ class Subunit(pygame.sprite.Sprite):
         self.idle_action = {}  # action that is performed when subunit is idle such as hold spear wall when skill active
         self.last_current_action = {}  # for checking if animation suddenly change
 
-        self.enemy_in_melee_distance = []  # list of front collide sprite
         self.nearest_enemy = []
         self.nearest_ally = []
-        self.enemy_collide = []  # list of side collide sprite
-        self.front_collide = []  # list of friendly front collide sprite
-        self.overlap_collide = []  # list of sprite that collide and almost overlap with this sprite
         self.movement_queue = []
 
         self.game_id = game_id  # ID of this
@@ -253,6 +249,10 @@ class Subunit(pygame.sprite.Sprite):
         self.base_target = self.base_pos  # base_target pos to move
         self.command_target = self.base_pos  # command target pos
         self.follow_target = self.base_pos  # target pos based on formation position
+
+        self.terrain = 0
+        self.feature = 0
+        self.height = 0
 
         self.front_pos = (0, 0)  # pos of this subunit for finding height of map at the front
         self.front_height = 0
@@ -365,7 +365,7 @@ class Subunit(pygame.sprite.Sprite):
         self.weapon_penetrate = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
         self.weapon_weight = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
         self.range_dmg = {index: {0: element_dict.copy(), 1: element_dict.copy()} for index in range(0, 2)}
-        self.original_range = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
+        self.original_shoot_range = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
         self.original_melee_range = {0: {}, 1: {}}
         self.original_weapon_speed = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
 
@@ -402,13 +402,19 @@ class Subunit(pygame.sprite.Sprite):
         self.original_melee_attack = ((self.strength * 0.4) + (self.dexterity * 0.3) + (self.wisdom * 0.2)) + \
                                      (grade_stat["Training Score"] * training_scale[0])
 
-        self.original_melee_def = ((self.dexterity * 0.3) + (self.agility * 0.3) + (self.constitution * 0.2) +
+        self.original_melee_def = ((self.dexterity * 0.2) + (self.agility * 0.3) + (self.constitution * 0.3) +
                                    (self.wisdom * 0.2)) + (grade_stat["Training Score"] *
                                                            ((training_scale[0] + training_scale[1]) / 2))
 
-        self.original_range_def = ((self.dexterity * 0.5) + (self.agility * 0.3) + (self.constitution * 0.1) +
+        # self.original_melee_dodge = ((self.dexterity * 0.1) + (self.agility * 0.3) + (self.wisdom * 0.1)) + \
+        #                             (grade_stat["Training Score"] * training_scale[1] / 10)
+
+        self.original_range_def = ((self.dexterity * 0.4) + (self.agility * 0.2) + (self.constitution * 0.3) +
                                    (self.wisdom * 0.1)) + (grade_stat["Training Score"] *
                                                            ((training_scale[1] + training_scale[2]) / 2))
+
+        # self.original_range_dodge = ((self.dexterity * 0.2) + (self.agility * 0.2) + (self.wisdom * 0.1)) + \
+        #                             (grade_stat["Training Score"] * training_scale[1] / 10)
 
         self.original_accuracy = ((self.strength * 0.1) + (self.dexterity * 0.6) + (self.wisdom * 0.3)) + \
                                  (grade_stat["Training Score"] * training_scale[2]) / 2
@@ -448,10 +454,11 @@ class Subunit(pygame.sprite.Sprite):
         if "" in self.original_skill:
             self.original_skill.remove("")
 
-        self.health = ((self.strength * 0.2) + (self.constitution * 0.8)) * grade_stat[
-            "Health Effect"] * (start_hp / 100)  # Health of troop
-        self.stamina = ((self.strength * 0.2) + (self.constitution * 0.8)) * grade_stat["Stamina Effect"] * (
+        self.health = ((self.strength * 0.2) + (self.constitution * 0.8)) * (grade_stat[
+            "Health Effect"] / 100) * (start_hp / 100)  # Health of troop
+        self.stamina = ((self.strength * 0.2) + (self.constitution * 0.8)) * (grade_stat["Stamina Effect"] / 100) * (
                 start_stamina / 100)  # starting stamina with grade
+
         self.original_mana = 0
         if "Mana" in stat:
             self.original_mana = stat["Mana"]  # Resource for magic skill
@@ -490,6 +497,8 @@ class Subunit(pygame.sprite.Sprite):
             self.animation_race_name += "&" + self.mount_race_name
 
         self.troop_size = race_stat["Size"]
+
+        self.head_height = self.height + (self.troop_size / 10)  # height for checking line of sight
 
         if self.mount_gear[0] != 1:  # have a mount, add mount stat with its grade to subunit stat
             self.add_mount_stat()
@@ -608,7 +617,8 @@ class Subunit(pygame.sprite.Sprite):
 
         self.weapon_dmg = self.original_weapon_dmg[self.equipped_weapon].copy()
         self.weapon_speed = self.original_weapon_speed[self.equipped_weapon].copy()
-        self.shoot_range = self.original_range[self.equipped_weapon].copy()
+        self.shoot_range = self.original_shoot_range[self.equipped_weapon].copy()
+        self.melee_range = self.original_melee_range[self.equipped_weapon]
 
         self.morale_state = 1  # turn into percentage
         self.stamina_state = (self.stamina * 100) / self.max_stamina  # turn into percentage
@@ -664,6 +674,7 @@ class Subunit(pygame.sprite.Sprite):
                            self.shadow_image.get_width() / 2.4)
 
         self.rect = self.image.get_rect(center=self.offset_pos)  # for blit into screen
+        self.mask = pygame.mask.from_surface(self.image)
 
     def update(self, dt):
         if self.health > 0:  # only run these when not dead
@@ -673,13 +684,6 @@ class Subunit(pygame.sprite.Sprite):
                 if self.dead_change:
                     self.dead_change = False
                     self.change_formation()
-
-                if self.enemy_in_melee_distance:
-                    self.enemy_in_melee_distance = {subunit: subunit.base_pos.distance_to(self.base_pos) for
-                                                    subunit in self.enemy_in_melee_distance}
-                    self.enemy_in_melee_distance = [item[0] for item in
-                                                    sorted(self.enemy_in_melee_distance.items(),
-                                                           key=lambda item: item[1])]  # sort collide list by distance
 
                 self.check_weapon_cooldown(dt)
 
@@ -704,13 +708,19 @@ class Subunit(pygame.sprite.Sprite):
 
                     self.timer -= 1
 
+                if self.player_manual_control is False:
+                    self.move_ai_logic()
+
                 if self.angle != self.new_angle:  # Rotate Function
                     self.rotate_logic(dt)
 
-                if self.player_manual_control is False and self.not_broken:
-                    self.move_ai_logic()
-
                 self.move_logic(dt)  # Move function
+
+                if self.retreat_start and (self.map_corner[0] <= self.base_pos[0] or self.base_pos[0] <= 0 or
+                                           self.map_corner[1] <= self.base_pos[1] or self.base_pos[1] <= 0):
+                    self.alive = False  # # remove troop that pass map border, enter dead state
+                    self.health = 0
+                    self.die("flee")
 
                 self.morale_logic(dt)
 
@@ -719,11 +729,8 @@ class Subunit(pygame.sprite.Sprite):
                 self.available_skill = []
                 self.skill_check_logic()
 
-                self.enemy_in_melee_distance = []  # reset collide
-                self.enemy_collide = []
-                self.front_collide = []
-
                 self.move = False  # reset move check
+
 
         else:  # dead
             if self.alive:  # enter dead state
@@ -746,48 +753,50 @@ class Subunit(pygame.sprite.Sprite):
 
         done, just_start = self.play_animation(dt, hold_check)
 
-        if self.one_activity_limit > 0:
-            self.one_activity_timer += dt
-            if self.one_activity_timer >= self.one_activity_limit:
-                self.one_activity_limit = 0
-                self.one_activity_timer = 0
+        if self.alive:
 
-        if "melee attack" in self.current_action and just_start and \
-                self.current_animation[self.show_frame][
-                    "dmg_sprite"] is not None:  # perform melee attack when frame that produce dmg effect starts
-            self.attack(self.current_animation[self.show_frame]["dmg_sprite"])
-        # Pick new animation, condition to stop animation: get interrupt,
-        # low level animation got replace with more important one, finish playing, skill animation and its effect end
-        if self.state != 100 and \
-                (self.top_interrupt_animation or
-                 (self.interrupt_animation and "uninterruptible" not in self.current_action) or
-                 (self.one_activity_timer == 0 and ((not self.current_action and self.command_action) or done or
-                  ("skill" in self.current_action and self.current_action["skill"] not in self.skill_effect) or
-                  (self.idle_action and self.idle_action != self.command_action)) or
-                  self.current_action != self.last_current_action)):
-            if done and "range attack" in self.current_action:  # shoot bullet only when animation finish
-                self.attack("range")
+            if self.one_activity_limit > 0:
+                self.one_activity_timer += dt
+                if self.one_activity_timer >= self.one_activity_limit:
+                    self.one_activity_limit = 0
+                    self.one_activity_timer = 0
 
-            if self.current_action != self.last_current_action:
-                self.last_current_action = self.current_action
-            else:
-                if "next action" in self.current_action:  # play next action first instead of command
-                    self.current_action = self.current_action["next action"]
+            if "melee attack" in self.current_action and just_start and \
+                    self.current_animation[self.show_frame][
+                        "dmg_sprite"] is not None:  # perform melee attack when frame that produce dmg effect starts
+                self.attack(self.current_animation[self.show_frame]["dmg_sprite"])
+            # Pick new animation, condition to stop animation: get interrupt,
+            # low level animation got replace with more important one, finish playing, skill animation and its effect end
+            if self.top_interrupt_animation or \
+                    (self.interrupt_animation and "uninterruptible" not in self.current_action) or \
+                    (self.one_activity_timer == 0 and
+                     ((not self.current_action and self.command_action) or done or
+                      ("skill" in self.current_action and self.current_action["skill"] not in self.skill_effect) or
+                      (self.idle_action and self.idle_action != self.command_action)) or
+                     self.current_action != self.last_current_action):
+                if done and "range attack" in self.current_action:  # shoot bullet only when animation finish
+                    self.attack("range")
+
+                if self.current_action != self.last_current_action:
+                    self.last_current_action = self.current_action
                 else:
-                    self.current_action = self.command_action  # continue next action when animation finish
-                    self.command_action = self.idle_action
+                    if "next action" in self.current_action:  # play next action first instead of command
+                        self.current_action = self.current_action["next action"]
+                    else:
+                        self.current_action = self.command_action  # continue next action when animation finish
+                        self.command_action = self.idle_action
 
-            self.interrupt_animation = False
-            self.top_interrupt_animation = False
+                self.interrupt_animation = False
+                self.top_interrupt_animation = False
 
-            self.show_frame = 0
-            self.animation_timer = 0
-            self.pick_animation()
+                self.show_frame = 0
+                self.animation_timer = 0
+                self.pick_animation()
 
-            self.animation_play_speed = self.default_animation_play_speed
-            if "_Idle" in self.current_animation["name"]:  # some animations use a bit slower speed
-                self.animation_play_speed = 0.15
-            elif "_Walk" in self.current_animation["name"]:
-                self.animation_play_speed = 0.12
+                self.animation_play_speed = self.default_animation_play_speed
+                if "_Idle" in self.current_animation["name"]:  # some animations use a bit slower speed
+                    self.animation_play_speed = 0.15
+                elif "_Walk" in self.current_animation["name"]:
+                    self.animation_play_speed = 0.12
 
-            # self.rect = self.image.get_rect(center=self.offset_pos)
+                # self.rect = self.image.get_rect(center=self.offset_pos)

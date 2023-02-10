@@ -34,9 +34,10 @@ def add_weapon_stat(self):
                 self.magazine_count[set_index][weapon_index] *= weapon_stat["Ammunition"]
                 self.magazine_size[set_index][weapon_index] = weapon_stat[
                     "Magazine"]  # can shoot how many times before have to reload
+                self.original_melee_range[set_index][weapon_index] = 0  # for distance to move closer check
                 self.shot_per_shoot[set_index][weapon_index] = weapon_stat["Shot Number"]
-                self.original_range[set_index][weapon_index] = weapon_stat["Range"] * \
-                                                               self.troop_data.equipment_grade_list[weapon[1]][
+                self.original_shoot_range[set_index][weapon_index] = weapon_stat["Range"] * \
+                                                                     self.troop_data.equipment_grade_list[weapon[1]][
                                                                    "Modifier"]
 
                 self.range_weapon_set[set_index] += dmg_sum  # add weapon damage for sort

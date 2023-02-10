@@ -16,11 +16,10 @@ def play_animation(self, speed, dt, hold_check):
             just_start = True
             if self.show_frame < len(self.current_animation) - 1:
                 self.show_frame += 1
-                self.image = self.current_animation[self.show_frame]
             else:
                 if self.repeat_animation:
                     self.show_frame = 0
-                    self.image = self.current_animation[self.show_frame]
                 else:
                     done = True
+            self.image = self.current_animation[self.show_frame]
     return done, just_start

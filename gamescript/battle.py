@@ -38,6 +38,7 @@ class Battle:
     cal_shake_value = empty_method
     camera_fix = empty_method
     camera_process = empty_method
+    change_battle_state = empty_method
     check_subunit_collision = empty_method
     generate_unit = empty_method
     mouse_scrolling_process = empty_method
@@ -146,18 +147,9 @@ class Battle:
         self.sound_effect_pool = main.sound_effect_pool
         self.sound_effect_queue = {}
 
-        self.map_corner = (999, 999)
-        self.max_camera = (999, 999)
-        self.subunit_hitbox_size = subunit.Subunit.subunit_hitbox_size
-        self.collide_distance = self.subunit_hitbox_size  # distance to check collision
-        self.hitbox_distance = self.subunit_hitbox_size
-        self.front_distance = self.subunit_hitbox_size / 2  # distance from front side
-        self.max_melee_weapon_range = 0
+        self.map_corner = (1000, 1000)
+        self.max_camera = (1000, 1000)
 
-        self.preview_leader = []
-        self.inspect_subunit = []  # list of subunit shown in inspect ui
-
-        self.combat_path_queue = []  # queue of sub-unit to run melee combat pathfiding
         self.map_move_array = []  # array for pathfinding
         self.map_def_array = []  # array for defence calculation
 
@@ -452,7 +444,6 @@ class Battle:
         self.dt = 0  # Realtime used for time calculation
         self.ui_dt = 0  # Realtime used for ui timer
         self.weather_spawn_timer = 0
-        self.last_mouseover = None  # Which subunit last mouse over
         self.click_any = False  # For checking if mouse click on anything, if not close ui related to unit
         self.new_unit_click = False  # For checking if another subunit is clicked when inspect ui open
 
@@ -663,40 +654,9 @@ class Battle:
                             self.music_schedule = self.music_schedule[1:]
                             self.music_event = self.music_event[1:]
 
-                        # Subunit collide check
-                        for this_unit in self.all_team_subunit["alive"]:  # reset collide
-                            this_unit.collide = False
-
-                        if len(self.active_subunit_list) > 1:
-                            tree = KDTree(
-                                self.subunit_pos_list)  # collision loop check, much faster than pygame collide check
-                            collisions = tree.query_pairs(self.collide_distance)
-                            for one, two in collisions:
-                                sprite_one = self.active_subunit_list[one]
-                                sprite_two = self.active_subunit_list[two]
-                                sprite_distance = sprite_one.base_pos.distance_to(sprite_two.base_pos)
-                                if sprite_distance < sprite_one.subunit_hitbox_size or \
-                                        sprite_distance < sprite_two.subunit_hitbox_size:
-                                    sprite_one.collide_penalty = True
-                                    sprite_two.collide_penalty = True
-                                    if sprite_one.team != sprite_two.team:
-                                        sprite_one.enemy_collide.append(sprite_two)
-                                        sprite_two.enemy_collide.append(sprite_one)
-
-                                # self.check_subunit_collision(sprite_one, sprite_two)
-                                # self.check_subunit_collision(sprite_two, sprite_one)
 
                     # Battle related updater
-                    self.last_mouseover = None  # reset last unit mouse over
                     self.subunit_updater.update(self.dt)
-
-                    # Run pathfinding for melee combat no more than limit number of subunit per update to prevent stutter
-                    if self.combat_path_queue:
-                        run = 0
-                        while self.combat_path_queue and run < 5:
-                            self.combat_path_queue[0].combat_pathfind()
-                            self.combat_path_queue = self.combat_path_queue[1:]
-                            run += 1
 
                     self.effect_updater.update(self.subunit_updater, self.dt)
                     self.weather_updater.update(self.dt, self.time_number.time_number)
@@ -728,11 +688,9 @@ class Battle:
                     self.time_number.timer_update(self.dt * 50)  # update battle time
                     self.time_update()
 
-                    if self.mode == "battle" and len([key for key, value in self.all_team_subunit.items() if
-                                                      key != "alive" and value]) <= 1:
+                    if self.mode == "battle" and len(self.all_team_subunit["alive"]) <= 1:
                         if self.battle_done_box not in self.battle_ui_updater:
-                            if not self.all_team_subunit["alive"]:
-                                team_win = 0  # draw
+                            if not self.all_team_subunit["alive"]:  # draw
                                 self.battle_done_box.pop("Draw")
                             else:
                                 for key, value in self.all_team_subunit.items():
@@ -824,13 +782,12 @@ class Battle:
 
         self.command_ui.last_who = None
 
-        self.combat_path_queue = []
         self.active_subunit_list = []
         self.map_move_array = []
         self.map_def_array = []
         self.subunit_pos_list = []
 
-        clean_group_object((self.inspect_subunit, self.subunit_updater, self.char_icon,
+        clean_group_object((self.subunit_updater, self.char_icon,
                             self.effect_updater, self.weather_matter))
 
         self.subunit_animation_pool = None

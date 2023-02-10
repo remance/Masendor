@@ -6,7 +6,8 @@ def enter_battle(self, animation_pool):
 
     self.terrain, self.feature = self.get_feature(self.base_pos,
                                                   self.base_map)  # Get new terrain and feature at each subunit position
-    self.height = self.height_map.get_height(self.base_pos)  # Current terrain height
+    self.height = self.get_height(self.base_pos)  # Current terrain height
+    self.head_height = self.height + (self.troop_size / 10)  # height for checking line of sight
 
     layer = round(self.base_pos[0] + (self.base_pos[1] * 10), 0)  # change layer
     if layer < 0:
@@ -14,9 +15,7 @@ def enter_battle(self, animation_pool):
     if self._layer != layer:
         self.battle.battle_camera.change_layer(self, layer)
 
-    self.find_nearby_subunit()
     self.swap_weapon(self.equipped_weapon)
-    self.make_pos_range()
     self.make_front_pos()
 
     self.map_corner = self.battle.map_corner

@@ -120,13 +120,11 @@ def attack(self, attack_type):
                     self.magazine_count.pop(self.equipped_weapon)
                     self.range_weapon_set.remove(self.equipped_weapon)
     else:
-        equipped_weapon_data = self.equipped_weapon_data[weapon]
-        weapon_range = equipped_weapon_data["Range"]
-        if self.front_pos.distance_to(base_target) > weapon_range:
+        if self.front_pos.distance_to(base_target) < self.melee_range[weapon]:
             base_angle = self.set_rotate(base_target)
-            base_target = pygame.Vector2(self.front_pos[0] - (weapon_range *
+            base_target = pygame.Vector2(self.front_pos[0] - (self.melee_range[weapon] *
                                                               math.sin(math.radians(base_angle))),
-                                         self.front_pos[1] - (weapon_range *
+                                         self.front_pos[1] - (self.melee_range[weapon] *
                                                               math.cos(math.radians(base_angle))))
         damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
                                   self.weapon_penetrate[self.equipped_weapon][weapon],

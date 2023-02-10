@@ -12,5 +12,5 @@ def hit_register(self, subunit=None):
         # calculate damage
         if self.attack_type == "range":
             self.cal_range_hit(self.attacker, subunit, hit_side)
-        elif self.attack_type == "melee":  # use attacker hit register instead
-            self.melee_dmg(self.attacker, self.weapon, subunit, 0, hit_side)
+        else:
+            self.cal_melee_hit(self.attacker, self.weapon, subunit, hit_side)

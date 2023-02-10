@@ -5,6 +5,7 @@ from pathlib import Path
 import pygame
 from gamescript.common import utility
 
+apply_sprite_colour = utility.apply_sprite_colour
 load_images = utility.load_images
 stat_convert = utility.stat_convert
 
@@ -12,11 +13,12 @@ direction_list = ("side", )
 
 
 class TroopAnimationData:
-    def __init__(self, main_dir, race_list):
+    def __init__(self, main_dir, race_list, team_colour):
         """
         Containing data related to troop animation sprite
         :param main_dir: Game folder
         :param race_list: List of troop races
+        :param team_colour: List of team colour for colourising damage effect sprites
         """
         with open(os.path.join(main_dir, "data", "sprite", "colour_rgb.csv"), encoding="utf-8",
                   mode="r") as edit_file:
@@ -178,11 +180,19 @@ class TroopAnimationData:
                     true_name = key
                 true_name_list.append(true_name)
 
-            for true_name in set(true_name_list):  # create effect animation list
-                if "#" in true_name:
-                    animation_list = tuple([value for key, value in images.items() if true_name[:-2] ==
-                                            "".join([string + "_" for string in key.split("_")[:-1]])[:-1]])
-                    self.effect_animation_pool[folder[-1]][true_name[:-2]] = animation_list
-                else:
-                    animation_list = tuple([value for key, value in images.items() if true_name == key])
-                    self.effect_animation_pool[folder[-1]][true_name] = animation_list
+            for team in team_colour:
+                self.effect_animation_pool[folder[-1]][team] = {}
+                for true_name in set(true_name_list):  # create effect animation list
+                    if "#" in true_name:
+                        animation_list = [value for key, value in images.items() if true_name[:-2] ==
+                                          "".join([string + "_" for string in key.split("_")[:-1]])[:-1]]
+                        if " (dmg)" in folder[-1]:
+                            animation_list = [apply_sprite_colour(item, team_colour[team], None, keep_white=False) for
+                                              item in animation_list]
+                        self.effect_animation_pool[folder[-1]][team][true_name[:-2]] = tuple(animation_list)
+                    else:
+                        animation_list = [value for key, value in images.items() if true_name == key]
+                        if " (dmg)" in folder[-1]:
+                            animation_list = [apply_sprite_colour(item, team_colour[team], None, keep_white=False) for
+                                              item in animation_list]
+                        self.effect_animation_pool[folder[-1]][team][true_name] = tuple(animation_list)

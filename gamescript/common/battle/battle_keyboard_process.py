@@ -38,7 +38,7 @@ def battle_keyboard_process(self, key_press):
     elif key_press == pygame.K_k and self.player_char is not None:
         # for index, subunit in enumerate(self.current_selected.subunit_sprite):
         #     subunit.unit_health -= subunit.unit_health
-        self.player_char.leader_subunit.health = 0
+        self.player_char.health = 0
     elif key_press == pygame.K_m and self.player_char is not None:
         self.player_char.leader_subunit.interrupt_animation = True
         self.player_char.leader_subunit.command_action = {"name": "Knockdown", "uninterruptible": True,

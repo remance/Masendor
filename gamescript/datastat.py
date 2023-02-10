@@ -108,14 +108,11 @@ class TroopData:
             header = rd[0]
             int_column = ("ID",)  # value int only
             list_column = ("Trait",)  # value in list only
-            mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect",
-                          "Speed Effect", "Accuracy Effect", "Reload Effect", "Charge Effect")
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
-            mod_column = [index for index, item in enumerate(header) if item in mod_column]
             for index, row in enumerate(rd[1:]):
                 for n, i in enumerate(row):
-                    row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
+                    row = stat_convert(row, n, i, list_column=list_column,
                                        int_column=int_column, true_empty=True)
                 self.grade_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
@@ -318,9 +315,11 @@ class TroopData:
             list_column = ("Trait",)  # value in list only
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
+            mod_column = [index for index, item in enumerate(header) if item in mod_column]
             for index, row in enumerate(rd[1:]):
                 for n, i in enumerate(row):
-                    row = stat_convert(row, n, i, list_column=list_column, int_column=int_column, true_empty=True)
+                    row = stat_convert(row, n, i, list_column=list_column,
+                                       int_column=int_column, true_empty=True)
                 self.mount_grade_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 

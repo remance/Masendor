@@ -23,20 +23,23 @@ def move_logic(self, dt):
             new_move_length = move.length()
             new_pos = self.base_pos + move
 
-            if self.move_speed > 0 and (0 < new_pos[0] < self.map_corner[0] and
-                                        0 < new_pos[1] < self.map_corner[1]):
+            if self.move_speed > 0 and (self.retreat_start or (0 < new_pos[0] < self.map_corner[0] and
+                                                               0 < new_pos[1] < self.map_corner[1])):
                 # cannot go pass map unless in retreat state
                 if new_move_length <= move_length:  # move normally according to move speed
                     self.base_pos += move
                     self.pos = pygame.Vector2((self.base_pos[0] * self.screen_scale[0] * 5,
                                                self.base_pos[1] * self.screen_scale[1] * 5))
                     self.offset_pos = self.pos - self.current_animation[self.sprite_direction][self.show_frame]["center_offset"]
-                    self.rect.center = list(
-                        int(v) for v in self.offset_pos)  # list rect so the sprite gradually move to position on screen
+                    self.rect.center = self.offset_pos  # list rect so the sprite gradually move to position on screen
+                    self.mask = pygame.mask.from_surface(self.image)
                     self.new_angle = self.set_rotate(self.base_target)
                 else:  # move length pass the base_target destination, set movement to stop exactly at base_target
                     move = self.base_target - self.base_pos  # simply change move to whatever remaining distance
                     self.base_pos += move  # adjust base position according to movement
+
+                self.height = self.get_height(self.base_pos)  # Current terrain height
+                self.head_height = self.height + (self.troop_size / 10)  # height for checking line of sight
 
                 if self.player_manual_control is False:
                     layer = round(self.base_pos[0] + (self.base_pos[1] * 10), 0)
@@ -48,7 +51,6 @@ def move_logic(self, dt):
                     self.battle.battle_camera.change_layer(self, 999999)
 
                 self.move = True
-                self.make_pos_range()
 
                 self.terrain, self.feature = self.get_feature(self.base_pos,
                                                               self.base_map)  # get new terrain and feature at each subunit position

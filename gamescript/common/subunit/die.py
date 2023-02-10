@@ -15,34 +15,30 @@ def die(self, how):
             self.leader.alive_leader_subordinate.remove(self)
         else:
             self.leader.alive_troop_subordinate.remove(self)
-            self.leader.find_formation_size()
-            self.leader.dead_change = True  # leader require formation change
 
-    if self.sprite_indicator is not None:
-        self.sprite_indicator.who = None
-        self.sprite_indicator.kill()
-        self.sprite_indicator = None
+    self.sprite_indicator.who = None
+    self.sprite_indicator.kill()
+    self.sprite_indicator = None
 
-    if len(self.alive_troop_subordinate) > 0:
-        for group in (self.alive_troop_subordinate, self.alive_leader_subordinate):
-            for this_subunit in group:
-                if self.leader is not None:  # move subordinate to its higher leader
-                    this_subunit.leader = self.leader
-                    if this_subunit.is_leader:
-                        self.leader.alive_leader_subordinate.append(self)
-                    else:
-                        this_subunit.command_buff = this_subunit.leader.leader_command_buff[this_subunit.subunit_type] * 100
-                        this_subunit.leader.alive_troop_subordinate.append(self)
-                        this_subunit.leader.find_formation_size()
-                        this_subunit.leader.dead_change = True  # new leader require formation change
-                else:  # no higher leader to move, assign None
-                    this_subunit.leader = None
-                    this_subunit.command_buff = 0
-                    self.leader_social_buff = 0
-                    if this_subunit.is_leader is False:
-                        if this_subunit.check_special_effect("Unbreakable") is False:  # broken from no leader
-                            subunit.broken = True
-                            subunit.retreat_start = True
+    for group in (self.alive_troop_subordinate, self.alive_leader_subordinate):  # change subordinate in list
+        for this_subunit in group:
+            if self.leader is not None:  # move subordinate to its higher leader
+                this_subunit.leader = self.leader
+                if this_subunit.is_leader:
+                    self.leader.alive_leader_subordinate.append(self)
+                else:
+                    this_subunit.command_buff = this_subunit.leader.leader_command_buff[this_subunit.subunit_type] * 100
+                    this_subunit.leader.alive_troop_subordinate.append(self)
+                    this_subunit.leader.find_formation_size()
+                    this_subunit.leader.dead_change = True  # new leader require formation change
+            else:  # no higher leader to move, assign None
+                this_subunit.leader = None
+                this_subunit.command_buff = 0
+                self.leader_social_buff = 0
+                if this_subunit.is_leader is False:  # troop become broken from no leader
+                    if this_subunit.check_special_effect("Unbreakable") is False:  # broken if no unbreakable
+                        this_subunit.not_broken = False
+                        this_subunit.find_retreat_target()
 
     self.alive_troop_subordinate = []
     self.alive_leader_subordinate = []
@@ -54,13 +50,16 @@ def die(self, how):
         if self in self.battle.battle_camera:
             self.battle.battle_camera.change_layer(sprite=self, new_layer=1)
 
-            self.command_action = die_command_action
-            self.top_interrupt_animation = True
-            self.current_action = self.command_action  # replace any current action
+            self.current_action = die_command_action
+            self.show_frame = 0
+            self.animation_timer = 0
             self.pick_animation()
+    elif how == "flee":
+        if self in self.battle.battle_camera:
+            self.battle.battle_camera.remove(self)
 
-    self.battle.event_log.add_log((0, str(self.name)
-                                   + "'s unit is destroyed"))  # add log to say this leader is destroyed
+    if self.is_leader:
+        self.battle.event_log.add_log((0, str(self.name) + " is Dead."))  # add log to say this leader is destroyed
 
     if self in self.battle.active_subunit_list:
         self.battle.subunit_pos_list.pop(self.battle.active_subunit_list.index(self))

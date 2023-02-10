@@ -17,7 +17,7 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, penetrate, hit_side=No
     :param defence: Defence chance value
     :param weapon: Weapon index (0 for main, 1 for sub)
     :param penetrate: Remaining weapon penetration value
-    :param hit_side: Side that the target got hit
+    :param hit_side: Side that the target got hit, use only for melee attack to calculate charge
     :return: Damage on health, morale, leader and element effect
     """
     height_advantage = attacker.height - target.height
@@ -44,67 +44,70 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, penetrate, hit_side=No
 
     troop_dmg = 0
     morale_dmg = 0
-    remain_penetrate = penetrate
-
     element_effect = {}
+    remain_penetrate = penetrate
 
     if combat_score > 0:
         if self.attack_type == "melee":  # Melee dmg
-            dmg = {key: random.uniform(value[0], value[1]) * penetrate / target.element_resistance[key]
-            if target.element_resistance[key] > 0 else random.uniform(value[0], value[1]) for key, value in
-                   attacker.weapon_dmg[weapon].items()}  # dict comprehension here to save element key
+            troop_dmg, remain_penetrate, element_effect = cal_dmg_penetrate(self, remain_penetrate, target)
 
-            dmg_sum = sum(dmg.values())
-            if 0 in attacker.skill_effect:  # Include charge in dmg if charging
+            if self.charge_skill in attacker.skill_effect:  # Include charge in dmg if charging
                 if attacker.check_special_effect("Ignore Charge Defence",
                                                  weapon=weapon) is False:  # ignore charge defence if have trait
                     side_cal = combat_side_cal[hit_side]
                     if target.check_special_effect("All Side Full Defence"):  # defence all side
                         side_cal = 1
-                    dmg_sum = dmg_sum + ((attacker.charge_power - (target.charge_def_power * side_cal)) * 2)
+                    troop_dmg += ((attacker.charge_power - (target.charge_def_power * side_cal)) * 2)
                     if (target.charge_def * side_cal) >= attacker.charge_power / 2:
                         attacker.momentum = 0.1  # charge get stopped by charge def
                     else:
                         attacker.momentum -= (target.charge_def_power * side_cal) / attacker.charge_power
                 else:
-                    dmg_sum = dmg_sum + (attacker.charge_power * 2)
+                    troop_dmg += attacker.charge_power * 2
 
-            if 0 in target.skill_effect:  # also include its own charge defence in dmg if enemy also charging
+            if target.charge_skill in target.skill_effect:  # also include its own charge defence in dmg if enemy also charging
                 if attacker.check_special_effect("Ignore Charge Defence") is False:
                     charge_def_cal = attacker.charge_def_power - target.charge_power
                     if charge_def_cal < 0:
                         charge_def_cal = 0
-                    dmg_sum = dmg_sum + (
-                            charge_def_cal * 2)  # if charge def is higher than enemy charge then deal back additional melee_dmg
+                    troop_dmg += (charge_def_cal * 2)  # if charge def is higher than enemy charge then deal back additional melee_dmg
 
-            dmg_sum = dmg_sum * combat_score
+            troop_dmg *= combat_score
 
         else:  # Range or other type of damage
-            dmg = {key: value * penetrate / target.element_resistance[key] if target.element_resistance[key] > 0
-            else value for key, value in self.dmg.items()}
-            dmg_sum = sum(dmg.values())
-            dmg_sum = dmg_sum * combat_score
-
-        for key in dmg:
-            remain_penetrate -= target.element_resistance[key]
+            troop_dmg, remain_penetrate, element_effect = cal_dmg_penetrate(self, remain_penetrate, target)
 
         remain_penetrate -= (target.troop_mass * 5)
 
         # troop_dmg on subunit is dmg multiply by troop number with addition from leader combat
-        troop_dmg = dmg_sum
-        if (attacker.check_special_effect("Anti Infantry", weapon=weapon) and target.subunit_type in (0, 1)) or \
-                (attacker.check_special_effect("Anti Cavalry", weapon=weapon) and target.subunit_type in (3, 4, 5, 6)):
+        if (attacker.check_special_effect("Anti Infantry", weapon=weapon) and target.subunit_type < 2 or
+                (attacker.check_special_effect("Anti Cavalry", weapon=weapon) and target.subunit_type == 2)):
             troop_dmg = troop_dmg * 1.25  # Anti trait dmg bonus
 
-        element_effect = {}
-        if troop_dmg > 0:
-            element_effect = {key: value / troop_dmg for key, value in dmg.items()}
-        morale_dmg = dmg_sum / 1000
+        morale_dmg = troop_dmg / 10
 
-        # Damage cannot be negative (it would heal instead), same for morale and leader dmg
+        # Damage cannot be negative (it would heal instead), same for morale dmg
         if troop_dmg < 0:
             troop_dmg = 0
         if morale_dmg < 0:
             morale_dmg = 0
 
     return troop_dmg, morale_dmg, element_effect, remain_penetrate
+
+
+def cal_dmg_penetrate(self, penetrate, target):
+    troop_dmg = 0
+    element_effect = {}
+    for key, value in self.dmg.items():
+        if target.element_resistance[key] > 0:
+            if penetrate < target.element_resistance[key]:
+                troop_dmg += value - (value * (target.element_resistance[key] - penetrate) / 100)
+                element_effect[key] = (value / 10 * (target.element_resistance[key] - penetrate) / 100)
+            else:
+                troop_dmg += value
+                element_effect[key] = value / 10
+            penetrate -= target.element_resistance[key]
+        else:
+            troop_dmg += value
+            element_effect[key] = value / 10
+    return troop_dmg, penetrate, element_effect

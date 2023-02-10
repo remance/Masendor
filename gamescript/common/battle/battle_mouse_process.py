@@ -18,4 +18,4 @@ def battle_mouse_process(self, mouse_left_up, mouse_right_up, double_mouse_right
         self.player_char.player_input(self.command_mouse_pos, mouse_left_up=mouse_left_up,
                                       mouse_right_up=mouse_right_up, mouse_left_down=mouse_left_down,
                                       mouse_right_down=mouse_right_down, double_mouse_right=double_mouse_right,
-                                      target=self.last_mouseover, key_state=key_state)
+                                      key_state=key_state)

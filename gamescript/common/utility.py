@@ -370,29 +370,31 @@ def travel_to_map_border(pos, angle, map_size):
     :param pos: Starting pos
     :param angle: Angle in radians
     :param map_size: Size of map (width, height)
-    :return: target on map border
+    :return: target pos on map border
     """
-    x = pos[0]
-    y = pos[1]
-    cos_angle, sin_angle = math.cos(angle), math.sin(angle)
-    if cos_angle == 0:
-        if sin_angle < 0:
-            distance = y
-        else:
-            distance = map_size[1] - y
-    elif abs(sin_angle) < 1e-12:
-        if cos_angle < 0:
-            distance = x
-        else:
-            distance = map_size[0] - x
-    else:
-        distance_ew = (map_size[0] - x) / cos_angle if cos_angle > 0 else -x / cos_angle
-        distance_ns = (map_size[1] - y) / sin_angle if sin_angle > 0 else -y / sin_angle
-        distance = min(distance_ew, distance_ns)
+    dx = math.cos(angle)
+    dy = math.sin(angle)
 
-    target = pygame.Vector2(pos[0] - (distance * sin_angle),
-                            pos[1] - (distance * cos_angle))
-    return target
+    if dx < 1.0e-16:  # left border
+        y = (-pos[0]) * dy / dx + pos[1]
+
+        if 0 <= y <= map_size[1]:
+            return pygame.Vector2((0, y))
+
+    if dx > 1.0e-16:  # right border
+        y = (map_size[0] - pos[0]) * dy / dx + pos[1]
+        if 0 <= y <= map_size[1]:
+            return pygame.Vector2((map_size[0], y))
+
+    if dy < 1.0e-16:  # top border
+        x = (-pos[1]) * dx / dy + pos[0]
+        if 0 <= x <= map_size[0]:
+            return pygame.Vector2((x, 0))
+
+    if dy > 1.0e-16:  # bottom border
+        x = (map_size[1] - pos[1]) * dx / dy + pos[0]
+        if 0 <= x <= map_size[0]:
+            return pygame.Vector2((x, map_size[1]))
 
 
 def apply_sprite_colour(surface, colour, colour_list, keep_white=True, keep_old_colour=False):

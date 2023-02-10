@@ -35,6 +35,8 @@ def swap_weapon(self, new_weapon_set):
 
     self.equipped_weapon_data = self.weapon_data[self.equipped_weapon]
 
+    self.melee_range = self.original_melee_range[self.equipped_weapon]
+
     for weapon_index, weapon in enumerate(self.weapon_set[self.equipped_weapon]):
         weapon_stat = self.equipped_weapon_data[weapon_index]
         self.base_melee_def += weapon_stat["Defence"] * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]
