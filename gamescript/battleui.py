@@ -5,8 +5,6 @@ import pygame
 import pygame.freetype
 from gamescript.common import utility
 
-text_render = utility.text_render
-
 apply_sprite_colour = utility.apply_sprite_colour
 
 
@@ -68,16 +66,23 @@ class HeroUI(pygame.sprite.Sprite):
         self.weapon_image = pygame.Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]),
                                            pygame.SRCALPHA)
 
-        self.prim_main_weapon_box_rect = self.weapon_box_images[0].get_rect(topleft=(0, 0))
+        self.prim_main_weapon_box_rect = self.weapon_box_images[0].get_rect(midleft=(0, self.image.get_height() / 2))
         self.weapon_image.blit(self.weapon_box_images[0], self.prim_main_weapon_box_rect)
-        self.prim_sub_weapon_box_rect = self.weapon_box_images[0].get_rect(topleft=(80 * self.screen_scale[0], 0))
+        self.prim_sub_weapon_box_rect = self.weapon_box_images[0].get_rect(midleft=(self.weapon_box_images[0].get_width(), self.image.get_height() / 2))
         self.weapon_image.blit(pygame.transform.flip(self.weapon_box_images[0], True, False),
                                self.prim_sub_weapon_box_rect)
 
-        self.sec_main_weapon_box_rect = self.weapon_box_images[1].get_rect(topleft=(self.weapon_box_images[0].get_width(), self.weapon_box_images[0].get_height()))
+        self.sec_main_weapon_box_rect = self.weapon_box_images[1].get_rect(topleft=(self.weapon_box_images[0].get_width() * 2, 0))
         self.weapon_image.blit(self.weapon_box_images[1], self.sec_main_weapon_box_rect)
-        self.sec_sub_weapon_box_rect = self.weapon_box_images[1].get_rect(topleft=(self.weapon_box_images[0].get_width() + self.weapon_box_images[1].get_width(),
-                                                                                    self.weapon_box_images[0].get_height()))
+        self.sec_sub_weapon_box_rect = self.weapon_box_images[1].get_rect(topleft=(self.weapon_box_images[0].get_width() * 2,
+                                                                                   self.weapon_box_images[1].get_height() * 1.5))
+
+        self.weapon_cooldown_rect = (self.weapon_box_images[0].get_rect(midbottom=self.prim_main_weapon_box_rect.midbottom),
+                                     self.weapon_box_images[0].get_rect(midbottom=self.prim_sub_weapon_box_rect.midbottom))
+
+        self.ammo_count_rect = ((self.prim_main_weapon_box_rect.midbottom, self.prim_sub_weapon_box_rect.midbottom),
+                                (self.sec_main_weapon_box_rect.midbottom, self.sec_sub_weapon_box_rect.midbottom))
+
         self.weapon_image.blit(pygame.transform.flip(self.weapon_box_images[1], True, False),
                                self.sec_sub_weapon_box_rect)
 
@@ -95,6 +100,7 @@ class HeroUI(pygame.sprite.Sprite):
 
         self.equipped_weapon = None
         self.magazine_count = None
+        self.weapon_cooldown = None
 
         self.base_image.blit(self.health_bar, self.health_bar_rect)
 
@@ -108,10 +114,9 @@ class HeroUI(pygame.sprite.Sprite):
         self.image = self.base_image.copy()
 
     def value_input(self, who, *args):
-        change = False  # for checking to blit everything again after image got replaced with original
-        if self.equipped_weapon != who.equipped_weapon or who.magazine_count != self.magazine_count:
-            if self.equipped_weapon != who.equipped_weapon:
-                change = True
+        if self.equipped_weapon != who.equipped_weapon or who.magazine_count != self.magazine_count or \
+                self.weapon_cooldown != who.weapon_cooldown:
+            if self.equipped_weapon != who.equipped_weapon or self.weapon_cooldown != who.weapon_cooldown:
                 self.equipped_weapon = who.equipped_weapon
                 self.weapon_image = self.weapon_base_image.copy()
                 self.image = self.base_image.copy()
@@ -133,6 +138,16 @@ class HeroUI(pygame.sprite.Sprite):
                                                               (self.weapon_image.get_width() / 4,
                                                                self.weapon_image.get_height() / 4))
                     weapon_image_rect = weapon_image.get_rect(center=self.weapon_image_set_pos[index][index2])
+                    self.weapon_image.blit(weapon_image, weapon_image_rect)
+                    if index == 0:  # add cooldown in any
+                        cooldown = who.weapon_cooldown[index2]
+                        speed = who.weapon_speed[index2]
+                        if 0 < cooldown < speed:
+                            cooldown_image = pygame.Surface((self.weapon_box_images[0].get_width(),
+                                                             self.weapon_box_images[0].get_height() *
+                                                             (1 - (cooldown / speed))), pygame.SRCALPHA)
+                            cooldown_image.fill((255, 150, 150, 200))
+                            self.weapon_image.blit(cooldown_image, self.weapon_cooldown_rect[index2])
                     if who.magazine_size[true_weapon_set_index][index2] > 0:  # range weapon
                         if true_weapon_set_index not in who.magazine_count or \
                                 (true_weapon_set_index in who.magazine_count and
@@ -149,15 +164,13 @@ class HeroUI(pygame.sprite.Sprite):
                                                                             self.ammo_text_box.get_height() / 2))
                         self.ammo_text_box = self.ammo_text_box_original.copy()
                         self.ammo_text_box.blit(ammo_text_surface, ammo_text_rect)
-                        ammo_text_rect = self.ammo_text_box.get_rect(midtop=weapon_image_rect.midbottom)
+                        ammo_text_rect = self.ammo_text_box.get_rect(midtop=self.ammo_count_rect[index][index2])
                         self.weapon_image.blit(self.ammo_text_box, ammo_text_rect)
-
-                    if change:
-                        self.weapon_image.blit(weapon_image, weapon_image_rect)
 
             self.image.blit(self.weapon_image, self.weapon_image_rect)
 
             self.magazine_count = {key: value.copy() for key, value in who.magazine_count.items()}
+            self.weapon_cooldown = who.weapon_cooldown.copy()
 
         if who.old_last_health != who.health:
             self.health_bar = self.health_bar_original.copy()
@@ -1054,8 +1067,8 @@ class SpriteIndicator(pygame.sprite.Sprite):
         self.battle = battle
         self.image = image
         self.who.sprite_indicator = self
-        self.rect = self.image.get_rect(midtop=self.who.pos)
+        self.rect = self.image.get_rect(center=self.who.pos)
 
     def update(self, *args):
-        self.rect = self.image.get_rect(midtop=self.who.pos)
+        self.rect = self.image.get_rect(center=self.who.pos)
 

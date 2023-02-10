@@ -287,7 +287,8 @@ def crop_sprite(sprite_pic):
     low_y0 = float("inf")  # lowest y0
     high_x1 = 0  # highest x1
     high_y1 = 0  # highest y1
-    # Find optimal cropped sprite size that all animation will share exact same center point
+
+    # Find optimal cropped sprite size and center offset
     size = sprite_pic.get_size()
     data = pygame.image.tostring(sprite_pic,
                                  "RGBA")  # convert image to string data for filtering effect
@@ -303,8 +304,6 @@ def crop_sprite(sprite_pic):
         high_y1 = bbox[3]
 
     center = ((sprite_pic.get_width() / 2), (sprite_pic.get_height() / 2))
-    center_offset = (center[0] - ((low_x0 + high_x1) / 2),
-                     center[1] - ((low_y0 + high_y1) / 2))
 
     # Crop transparent area only of surface
     size = sprite_pic.get_size()
@@ -316,4 +315,14 @@ def crop_sprite(sprite_pic):
     sprite_pic = sprite_pic.tobytes()
     sprite_pic = pygame.image.fromstring(sprite_pic, size,
                                          "RGBA")  # convert image back to a pygame surface
+
+    # Find center offset after crop by finding width and height difference of longer side
+    center_x_offset = ((low_x0 + high_x1) / 2) + (((100 - low_x0) - (high_x1 - 100)) / 8)
+    center_y_offset = ((low_y0 + high_y1) / 2) + (((100 - low_y0) - (high_y1 - 100)) / 8)
+    center_offset = (center[0] - center_x_offset, center[1] - center_y_offset)
+
+    # sprite_pic_new = pygame.Surface(size)
+    # sprite_pic_new.fill((0,0,0))
+    # rect = sprite_pic.get_rect(topleft=(0, 0))
+    # sprite_pic_new.blit(sprite_pic, rect)
     return sprite_pic, center_offset

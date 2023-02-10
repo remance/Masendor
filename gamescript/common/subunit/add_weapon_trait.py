@@ -41,9 +41,6 @@ def add_weapon_trait(self):
                 self.base_element_resistance[element] += trait[element + " Resistance Bonus"]
             self.base_heat_resistance += trait["Heat Resistance Bonus"]
             self.base_cold_resistance += trait["Cold Resistance Bonus"]
-            if 0 not in trait["Enemy Status"]:
-                for effect in trait["Enemy Status"]:
-                    self.base_inflict_status[effect] = trait["Buff Range"]
             for effect in trait["Special Effect"]:  # active weapon special effect
                 self.special_effect[self.troop_data.special_effect_list[effect]["Name"]][1][key] = True
 

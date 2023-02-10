@@ -30,7 +30,7 @@ def move_logic(self, dt):
                     self.base_pos += move
                     self.pos = pygame.Vector2((self.base_pos[0] * self.screen_scale[0] * 5,
                                                self.base_pos[1] * self.screen_scale[1] * 5))
-                    self.offset_pos = self.pos + self.current_animation[self.sprite_direction][self.show_frame]["center_offset"]
+                    self.offset_pos = self.pos - self.current_animation[self.sprite_direction][self.show_frame]["center_offset"]
                     self.rect.center = list(
                         int(v) for v in self.offset_pos)  # list rect so the sprite gradually move to position on screen
                     self.new_angle = self.set_rotate(self.base_target)

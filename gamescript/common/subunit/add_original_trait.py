@@ -40,9 +40,7 @@ def add_original_trait(self):
             self.original_element_resistance[element] += trait[element + " Resistance Bonus"]
         self.original_heat_resistance += trait["Heat Resistance Bonus"]
         self.original_cold_resistance += trait["Cold Resistance Bonus"]
-        if 0 not in trait["Enemy Status"]:
-            for effect in trait["Enemy Status"]:
-                self.original_inflict_status[effect] = trait["Buff Range"]
+
         for effect in trait["Special Effect"]:  # trait from sources other than weapon activate permanent special status
             self.special_effect[self.troop_data.special_effect_list[effect]["Name"]][0][0] = True
 

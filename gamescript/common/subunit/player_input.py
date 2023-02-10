@@ -12,9 +12,9 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
         if "uncontrollable" not in self.current_action:
             if key_state is not None:
                 if self.battle.player_char_input_delay == 0 and not self.current_action:  # for input that need to have time delay to work properly
-                    if key_state[pygame.K_1]:  # Swap to primary weapon
+                    if key_state[pygame.K_1] and self.equipped_weapon != 0:  # Swap to primary weapon
                         self.swap_weapon(0)
-                    elif key_state[pygame.K_2]:  # Swap to secondary weapon
+                    elif key_state[pygame.K_2] and self.equipped_weapon != 1:  # Swap to secondary weapon
                         self.swap_weapon(1)
                     # elif key_state[pygame.K_1]:  # Use troop weapon skill 1
                     #     self.issue_order(cursor_pos, other_command="Troop Weapon Skill 0")
@@ -62,11 +62,11 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                                 if self.ammo_now[self.equipped_weapon][action_num] > 0:
                                     self.command_action = self.range_attack_command_action[action_num].copy()
                                     self.command_action["pos"] = cursor_pos
-                            else:  # melee attack
+                            elif self.weapon_cooldown[action_num] > self.weapon_speed[action_num]:  # melee attack
                                 self.command_action = self.melee_attack_command_action[action_num].copy()
                                 self.command_action["pos"] = cursor_pos
 
-                        elif "Action " + str_action_num in self.current_action["name"]:  # already attacking
+                        elif "Action " + str_action_num in self.current_action["name"]:  # already attackidng
                             self.current_action["pos"] = cursor_pos
                             if "hold" not in self.current_action:  # start holding
                                 self.current_action["hold"] = True

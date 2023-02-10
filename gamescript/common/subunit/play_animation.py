@@ -33,10 +33,8 @@ def play_animation(self, dt, hold_check):
                     self.animation_play_speed = self.default_animation_play_speed * \
                                                 self.current_animation[self.show_frame]["animation_property"]["player_speed_mod"]
 
-    # try:
     self.image = current_animation[self.show_frame]["sprite"]
-    # except KeyError:
-    #     print(current_animation, self.current_action, self.show_frame)
+
     self.offset_pos = self.pos - current_animation[self.show_frame]["center_offset"]
     self.rect = self.image.get_rect(center=self.offset_pos)
 

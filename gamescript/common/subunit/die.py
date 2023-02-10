@@ -62,9 +62,9 @@ def die(self, how):
     self.battle.event_log.add_log((0, str(self.name)
                                    + "'s unit is destroyed"))  # add log to say this leader is destroyed
 
-    if self in self.battle.battle_subunit_list:
-        self.battle.subunit_pos_list.pop(self.battle.battle_subunit_list.index(self))
-        self.battle.battle_subunit_list.remove(self)
+    if self in self.battle.active_subunit_list:
+        self.battle.subunit_pos_list.pop(self.battle.active_subunit_list.index(self))
+        self.battle.active_subunit_list.remove(self)
 
     if self.player_manual_control:
         self.battle.camera_mode = "Free"  # camera become free when player char die so can look over the battle

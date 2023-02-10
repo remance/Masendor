@@ -72,7 +72,7 @@ class Subunit(pygame.sprite.Sprite):
     add_weapon_trait = empty_method
     apply_effect = empty_method
     apply_map_status = empty_method
-    apply_status_to_friend = empty_method
+    apply_status_to_nearby = empty_method
     attack = empty_method
     cal_loss = empty_method
     cal_temperature = empty_method
@@ -193,11 +193,10 @@ class Subunit(pygame.sprite.Sprite):
 
         self.enemy_in_melee_distance = []  # list of front collide sprite
         self.nearest_enemy = []
-        self.nearest_friend = []
+        self.nearest_ally = []
         self.enemy_collide = []  # list of side collide sprite
         self.front_collide = []  # list of friendly front collide sprite
         self.overlap_collide = []  # list of sprite that collide and almost overlap with this sprite
-        self.nearby_subunit_list = []
         self.movement_queue = []
 
         self.game_id = game_id  # ID of this
@@ -209,7 +208,6 @@ class Subunit(pygame.sprite.Sprite):
         self.alive_leader_subordinate = []  # list of alive leader subordinate subunits
         self.leader = leader_subunit  # leader of the sub-subunit if there is one
 
-        self.original_inflict_status = {}  # status that this subunit will inflict to enemy when melee_attack
         self.feature_mod = "Infantry"  # the terrain feature that will be used on this subunit
         self.move_speed = 0  # speed of current movement
 
@@ -226,7 +224,6 @@ class Subunit(pygame.sprite.Sprite):
         self.status_duration = {}  # current status duration
         self.skill_effect = {}  # activate skill effect
         self.skill_duration = {}  # current active skill duration
-        self.base_inflict_status = {}  # status that this subunit will inflict to enemy when melee_attack
 
         self.one_activity_timer = 0  # timer for activities that can be only perform when no others occur like knock down
         self.one_activity_limit = 0
@@ -609,7 +606,6 @@ class Subunit(pygame.sprite.Sprite):
         self.mental = self.base_mental
         self.crit_effect = self.base_crit_effect
 
-        self.inflict_status = self.base_inflict_status
         self.weapon_dmg = self.original_weapon_dmg[self.equipped_weapon].copy()
         self.weapon_speed = self.original_weapon_speed[self.equipped_weapon].copy()
         self.shoot_range = self.original_range[self.equipped_weapon].copy()
@@ -650,12 +646,16 @@ class Subunit(pygame.sprite.Sprite):
         self.shadow_image = pygame.Surface((self.troop_size * 5, self.troop_size * 5), pygame.SRCALPHA)
 
         if self.is_leader:
-            self.shadow_image = pygame.transform.scale(self.shadow_image, (self.shadow_image.get_width() * 1.5,
-                                                                           self.shadow_image.get_height() * 1.5))
+            # self.shadow_image = pygame.transform.scale(self.shadow_image, (self.shadow_image.get_width() * 1.5,
+            #                                                                self.shadow_image.get_height() * 1.5))
 
-        pygame.draw.circle(self.shadow_image, (0, 0, 0, 150),
-                           (self.shadow_image.get_width() / 2, self.shadow_image.get_height() / 2),
-                           self.shadow_image.get_width() / 2)
+            pygame.draw.circle(self.shadow_image, (255, 128, 0, 150),
+                               (self.shadow_image.get_width() / 2, self.shadow_image.get_height() / 2),
+                               self.shadow_image.get_width() / 2)
+        else:
+            pygame.draw.circle(self.shadow_image, (0, 0, 0, 150),
+                               (self.shadow_image.get_width() / 2, self.shadow_image.get_height() / 2),
+                               self.shadow_image.get_width() / 2)
 
         pygame.draw.circle(self.shadow_image,
                            (self.team_colour[self.team][0], self.team_colour[self.team][1],
@@ -690,13 +690,13 @@ class Subunit(pygame.sprite.Sprite):
 
                 if self.timer > 1:  # Update status and skill use around every 1 second
                     nearest_enemy = {key: key.base_pos.distance_to(self.base_pos) for key in
-                                     self.battle.battle_subunit_list if key.team != self.team}
+                                     self.battle.active_subunit_list if key.team != self.team}
                     nearest_friend = {key: key.base_pos.distance_to(self.base_pos) for key in
-                                      self.battle.battle_subunit_list if key.team != self.team}
+                                      self.battle.active_subunit_list if key.team != self.team}
                     self.nearest_enemy = sorted(nearest_enemy.items(),
                                                 key=lambda item: item[1])  # sort the closest enemy
-                    self.nearest_friend = sorted(nearest_friend.items(),
-                                                 key=lambda item: item[1])  # sort the closest friend
+                    self.nearest_ally = sorted(nearest_friend.items(),
+                                               key=lambda item: item[1])  # sort the closest friend
 
                     self.status_update()
                     if self.player_manual_control is False and self.not_broken:

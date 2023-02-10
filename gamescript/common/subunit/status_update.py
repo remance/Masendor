@@ -62,7 +62,6 @@ def status_update(self):
 
     self.hp_regen = self.base_hp_regen
     self.stamina_regen = self.base_stamina_regen
-    self.inflict_status = self.base_inflict_status
 
     morale_bonus = 0
     discipline_bonus = 0
@@ -102,7 +101,12 @@ def status_update(self):
                 for effect in trait["Status"]:  # apply status effect from trait
                     self.apply_effect(effect, self.status_list, self.status_effect, self.status_duration)
                     if trait["Buff Range"] > 1:  # status buff range to nearby friend
-                        self.apply_status_to_friend(trait["Buff Range"], effect)
+                        self.apply_status_to_nearby(self.nearest_ally, trait["Buff Range"], effect)
+
+            if 0 not in trait["Enemy Status"]:
+                for effect in trait["Enemy Status"]:  # apply status effect from trait
+                    if trait["Buff Range"] > 1:  # status buff range to nearby friend
+                        self.apply_status_to_nearby(self.nearest_enemy, trait["Buff Range"], effect)
 
     # Apply effect from weather
     weather = self.battle.current_weather
@@ -194,14 +198,15 @@ def status_update(self):
                 for status in cal_effect["Status"]:
                     self.apply_effect(status, self.status_list, self.status_effect, self.status_duration)
                     if cal_effect["Area of Effect"] > 1:
-                        self.apply_status_to_friend(cal_effect["Area of Effect"], status)
+                        self.apply_status_to_nearby(self.nearest_ally, cal_effect["Area of Effect"], status)
+
+            if 0 not in cal_effect["Enemy Status"]:  # apply status to friendly if there is one in skill effect
+                for status in cal_effect["Enemy Status"]:
+                    if cal_effect["Area of Effect"] > 1:
+                        self.apply_status_to_nearby(self.nearest_enemy, cal_effect["Area of Effect"], status)
 
             self.morale_dmg_bonus += cal_effect["Morale Damage Bonus"]
             self.stamina_dmg_bonus += cal_effect["Stamina Damage Bonus"]
-            if 0 not in cal_effect["Enemy Status"]:  # apply status effect to enemy from skill to inflict list
-                for effect in cal_effect["Enemy Status"]:
-                    if effect != 0:
-                        self.inflict_status[effect] = cal_effect["Area of Effect"]
 
     # Apply effect and modifier from status effect
     if len(self.status_effect) > 0:

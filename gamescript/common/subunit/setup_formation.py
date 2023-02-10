@@ -90,6 +90,8 @@ def setup_formation(self, phase=None, style=None, density=None, position=None):
                     break
 
     placement_density = formation_density_distance[self.formation_density]
+    formation_distance_list = formation_distance_list[~np.all(formation_distance_list == 0, axis=1)]
+
     do_order = (list(range(len(formation_distance_list[0]))), list(range(len(formation_distance_list))))
 
     if self.formation_position == "Behind":

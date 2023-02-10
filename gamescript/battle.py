@@ -249,7 +249,7 @@ class Battle:
 
         self.subunit_pos_list = []
 
-        self.battle_subunit_list = []  # list of all subunit alive in battle, need to be in list for collision check
+        self.active_subunit_list = []  # list of all subunit alive in battle, need to be in list for collision check
         self.visible_subunit_list = {}  # list of subunit visible to the team
 
         self.best_depth = pygame.display.mode_ok(self.screen_rect.size, window_style, 32)  # Set the display mode
@@ -397,7 +397,7 @@ class Battle:
         self.max_camera = ((self.battle_map_height.image.get_width() - 1),
                            (self.battle_map_height.image.get_height() - 1))  # reset max camera to new map size
 
-        self.battle_subunit_list = []
+        self.active_subunit_list = []
         self.visible_subunit_list = {}
 
         self.setup_battle_ui("add")
@@ -667,13 +667,13 @@ class Battle:
                         for this_unit in self.all_team_subunit["alive"]:  # reset collide
                             this_unit.collide = False
 
-                        if len(self.battle_subunit_list) > 1:
+                        if len(self.active_subunit_list) > 1:
                             tree = KDTree(
                                 self.subunit_pos_list)  # collision loop check, much faster than pygame collide check
                             collisions = tree.query_pairs(self.collide_distance)
                             for one, two in collisions:
-                                sprite_one = self.battle_subunit_list[one]
-                                sprite_two = self.battle_subunit_list[two]
+                                sprite_one = self.active_subunit_list[one]
+                                sprite_two = self.active_subunit_list[two]
                                 sprite_distance = sprite_one.base_pos.distance_to(sprite_two.base_pos)
                                 if sprite_distance < sprite_one.subunit_hitbox_size or \
                                         sprite_distance < sprite_two.subunit_hitbox_size:
@@ -700,7 +700,7 @@ class Battle:
 
                     self.effect_updater.update(self.subunit_updater, self.dt)
                     self.weather_updater.update(self.dt, self.time_number.time_number)
-                    self.mini_map.update([self.camera_pos, self.camera_topleft_corner], self.battle_subunit_list)
+                    self.mini_map.update([self.camera_pos, self.camera_topleft_corner], self.active_subunit_list)
 
                     self.ui_updater.update()  # update ui
 
@@ -825,13 +825,13 @@ class Battle:
         self.command_ui.last_who = None
 
         self.combat_path_queue = []
-        self.battle_subunit_list = []
+        self.active_subunit_list = []
         self.map_move_array = []
         self.map_def_array = []
         self.subunit_pos_list = []
 
-        clean_group_object((self.inspect_subunit, self.subunit_updater, self.char_icon, self.damage_sprites,
-                            self.weather_matter))
+        clean_group_object((self.inspect_subunit, self.subunit_updater, self.char_icon,
+                            self.effect_updater, self.weather_matter))
 
         self.subunit_animation_pool = None
         self.generic_action_data = None

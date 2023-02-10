@@ -229,8 +229,8 @@ def make_long_text(surface, text, pos, font, color=pygame.Color("black")):
 def text_render(text, font, gf_colour=pygame.Color("black"), o_colour=(255, 255, 255), opx=2):
     """
     Render text with background border
-    :param text: Bunch of texts
-    :param font: Pygame Font
+    :param text: Text strings
+    :param font: Pygame font
     :param gf_colour: Text colour
     :param o_colour: Background colour
     :param opx: Background colour thickness
