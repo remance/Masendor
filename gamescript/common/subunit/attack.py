@@ -10,6 +10,7 @@ convert_degree_to_360 = utility.convert_degree_to_360
 
 def attack(self, attack_type):
     weapon = int(self.current_action["name"][-1])
+    equipped_weapon_data = self.equipped_weapon_data[weapon]
     base_target = None
     if "pos" in self.current_action:  # manual attack position
         base_target = self.current_action["pos"]
@@ -19,7 +20,6 @@ def attack(self, attack_type):
         base_target = self.attack_pos
     if attack_type == "range":
         if base_target is not None:
-            equipped_weapon_data = self.equipped_weapon_data[weapon]
             if "arc shot" in self.current_action:
                 arc_shot = self.current_action["arc shot"]
             else:  # check if the attack require arc shot and can use it, for player manual attack
@@ -27,6 +27,7 @@ def attack(self, attack_type):
                 clip = self.check_line_of_sight(base_target)
                 if clip and self.check_special_effect("Arc Shot", weapon=weapon):
                     arc_shot = True
+
             max_range = self.shoot_range[weapon]
 
             accuracy = self.accuracy
@@ -58,17 +59,21 @@ def attack(self, attack_type):
                 angel_dif += angel_dif * attack_range / 100
             accuracy -= round(angel_dif)
 
+            if arc_shot is False:  # direct shot just shoot base on direction of target at max range
+                base_target = pygame.Vector2(self.base_pos[0] - (max_range *
+                                                                 math.sin(math.radians(base_angle))),
+                                             self.base_pos[1] - (max_range *
+                                                                 math.cos(math.radians(base_angle))))
+
             if self.attack_target is not None:
                 how_long = attack_range / self.speed  # shooting distance divide damage sprite speed to find travel time
 
                 # Predicatively find position the enemy will be at based on movement speed and sprite travel time
                 if self.attack_target.move and how_long > 0.5:  # target walking
                     target_move = self.attack_target.base_target - self.attack_target.base_pos  # target movement distance
-                    if target_move.length() > 1:
+                    if target_move.length() > 1:  # recal target base on enemy move target
                         target_move.normalize_ip()
-                        base_target = self.attack_target.base_pos + (
-                                (target_move * (
-                                            self.attack_target.move_speed * how_long)) / 11)  # recal target base on enemy move target
+                        base_target = base_target + ((target_move * (self.attack_target.move_speed * how_long)) / 11)
                         if self.check_special_effect("Agile Aim") is False:
                             accuracy -= 15
 
@@ -83,32 +88,13 @@ def attack(self, attack_type):
                 # The further accuracy from 0 the further damage sprite will land from base_target
                 if accuracy < 100:
                     accuracy = random.randint(int(accuracy), 100)  # random hit chance using accuracy as minimum value
-                if random.randint(0, 100) > accuracy:  # miss, not land exactly at base_target
-                    if random.randint(0, 1) == 0:  # target deviation as to percentage from base_target
-                        hit_chance1 = 100 + (accuracy / 50)
-                    else:
-                        hit_chance1 = 100 - (accuracy / 50)
-                    if random.randint(0, 1) == 0:
-                        hit_chance2 = 100 + (accuracy / 50)
-                    else:
-                        hit_chance2 = 100 - (accuracy / 50)
-                    base_target = pygame.Vector2(base_target[0] * hit_chance1 / 100,
-                                                 base_target[1] * hit_chance2 / 100)
-
-                if arc_shot is False:  # direct shot just shoot base on direction of target at max range
-                    base_target = pygame.Vector2(self.base_pos[0] - (max_range *
-                                                                     math.sin(math.radians(base_angle))),
-                                                 self.base_pos[1] - (max_range *
-                                                                     math.cos(math.radians(base_angle))))
+                # target deviation as to percentage from base_target
+                base_target = pygame.Vector2(base_target[0] * (100 + random.choice((accuracy / 50, -accuracy / 50))) / 100,
+                                             base_target[1] * (100 + random.choice((accuracy / 50, -accuracy / 50))) / 100)
 
                 damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
                                           self.weapon_penetrate[self.equipped_weapon][weapon], equipped_weapon_data,
                                           attack_type, base_target, accuracy=accuracy, arc_shot=arc_shot)
-
-            if equipped_weapon_data["Sound Effect"] in self.sound_effect_pool:
-                self.battle.add_sound_effect_queue(equipped_weapon_data["Sound Effect"], self.base_pos,
-                                                   equipped_weapon_data["Sound Distance"],
-                                                   equipped_weapon_data["Shake Power"])
 
             self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
             if self.ammo_now[self.equipped_weapon][weapon] == 0 and \
@@ -120,7 +106,7 @@ def attack(self, attack_type):
                     self.magazine_count.pop(self.equipped_weapon)
                     self.range_weapon_set.remove(self.equipped_weapon)
     else:
-        if self.front_pos.distance_to(base_target) < self.melee_range[weapon]:
+        if self.front_pos.distance_to(base_target) > self.melee_range[weapon]:  # target exceed weapon range, use max
             base_angle = self.set_rotate(base_target)
             base_target = pygame.Vector2(self.front_pos[0] - (self.melee_range[weapon] *
                                                               math.sin(math.radians(base_angle))),
@@ -128,8 +114,13 @@ def attack(self, attack_type):
                                                               math.cos(math.radians(base_angle))))
         damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
                                   self.weapon_penetrate[self.equipped_weapon][weapon],
-                                  self.equipped_weapon_data[weapon], attack_type, base_target)
+                                  equipped_weapon_data, attack_type, base_target)
 
         self.weapon_cooldown[weapon] = 0  # melee weapon use cooldown for attack
 
     self.stamina -= self.weapon_weight[self.equipped_weapon][weapon]
+
+    if equipped_weapon_data["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
+        self.battle.add_sound_effect_queue(equipped_weapon_data["Sound Effect"], self.base_pos,
+                                           equipped_weapon_data["Sound Distance"],
+                                           equipped_weapon_data["Shake Power"])

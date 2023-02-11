@@ -302,10 +302,9 @@ def make_bar_list(main_dir, screen_scale, list_to_do, menu_image, updater):
 
 
 def load_base_button(main_dir, screen_scale):
-    image = load_image(main_dir, screen_scale, "idle_button.png", ("ui", "mainmenu_ui"))
-    image2 = load_image(main_dir, screen_scale, "mouse_button.png", ("ui", "mainmenu_ui"))
-    image3 = load_image(main_dir, screen_scale, "click_button.png", ("ui", "mainmenu_ui"))
-    return [image, image2, image3]
+    return (load_image(main_dir, screen_scale, "idle_button.png", ("ui", "mainmenu_ui")),
+            load_image(main_dir, screen_scale, "mouse_button.png", ("ui", "mainmenu_ui")),
+            load_image(main_dir, screen_scale, "click_button.png", ("ui", "mainmenu_ui")))
 
 
 def text_objects(text, font):

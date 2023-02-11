@@ -534,12 +534,6 @@ class Game:
         self.encyclopedia_stuff = (self.encyclopedia, self.lore_name_list, self.filter_tag_list,
                                    self.lore_name_list.scroll, self.filter_tag_list.scroll, *self.lore_button_ui)
 
-        self.subunit_hitbox_size = subunit.Subunit.subunit_hitbox_size
-        self.max_melee_weapon_range = 0
-        self.collide_distance = self.subunit_hitbox_size  # distance to check collision
-        self.hitbox_distance = self.subunit_hitbox_size
-        self.front_distance = self.subunit_hitbox_size / 2  # distance from front side
-
         self.battle_game = battle.Battle(self, self.window_style)
 
         self.ui_updater.add(self.command_ui)

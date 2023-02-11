@@ -133,7 +133,6 @@ class DamageSprite(pygame.sprite.Sprite):
         self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
                                   self.base_pos[1] * self.screen_scale[1]) * 5
         self.rect = self.image.get_rect(center=self.pos)
-        self.mask = pygame.mask.from_surface(self.image)
 
     def adjust_sprite(self):
         if self.scale_size > 1:
@@ -164,9 +163,10 @@ class DamageSprite(pygame.sprite.Sprite):
         # Check for collision with subunit and deal damage
         if self.deal_dmg:  # sprite can still deal damage
             for this_subunit in subunit_list:  # collide check
-                if this_subunit != self.attacker and this_subunit.rect.colliderect(self.rect) and \
-                        this_subunit not in self.already_hit and self.head_height <= this_subunit.head_height and \
-                        pygame.sprite.collide_mask(this_subunit, self):
+                if this_subunit != self.attacker and this_subunit not in self.already_hit and \
+                    ((self.aoe is False and self.head_height <= this_subunit.head_height and
+                      this_subunit.hitbox.rect.collidepoint(self.base_pos)) or
+                     this_subunit.hitbox.rect.colliderect(self.rect)):
                     if self.full_distance > 0:  # range attack
                         if self.arc_shot is False:  # direct shot
                             self.hit_register(this_subunit)
@@ -220,7 +220,6 @@ class DamageSprite(pygame.sprite.Sprite):
                     self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
                                               self.base_pos[1] * self.screen_scale[1]) * 5
                     self.rect.center = self.pos
-                    self.mask = pygame.mask.from_surface(self.image)
 
                     if self.random_move is False and (
                             self.base_pos[0] <= 0 or self.base_pos[0] >= self.battle.map_corner[0] or
@@ -250,4 +249,3 @@ class DamageSprite(pygame.sprite.Sprite):
 
         if just_start:
             self.rect = self.image.get_rect(center=self.pos)
-            self.mask = pygame.mask.from_surface(self.image)

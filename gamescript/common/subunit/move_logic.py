@@ -32,7 +32,6 @@ def move_logic(self, dt):
                                                self.base_pos[1] * self.screen_scale[1] * 5))
                     self.offset_pos = self.pos - self.current_animation[self.sprite_direction][self.show_frame]["center_offset"]
                     self.rect.center = self.offset_pos  # list rect so the sprite gradually move to position on screen
-                    self.mask = pygame.mask.from_surface(self.image)
                     self.new_angle = self.set_rotate(self.base_target)
                 else:  # move length pass the base_target destination, set movement to stop exactly at base_target
                     move = self.base_target - self.base_pos  # simply change move to whatever remaining distance
@@ -76,9 +75,11 @@ def move_logic(self, dt):
                         self.momentum = 0.1
 
         else:
+            self.interrupt_animation = True
             self.command_action = {}  # no longer move, clean action
 
-    elif "move speed" in self.current_action:
+    elif "move speed" in self.current_action and "repeat" in self.current_action:
+        self.interrupt_animation = True
         self.command_action = {}  # no longer move, clean action
 
     elif self.momentum > 0.1:  # reduce charge momentum when not moving

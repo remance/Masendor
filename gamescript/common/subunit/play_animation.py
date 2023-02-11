@@ -38,7 +38,6 @@ def play_animation(self, dt, hold_check):
 
     self.offset_pos = self.pos - current_animation[self.show_frame]["center_offset"]
     self.rect = self.image.get_rect(center=self.offset_pos)
-    self.mask = pygame.mask.from_surface(self.image)
 
     return done, just_start
 

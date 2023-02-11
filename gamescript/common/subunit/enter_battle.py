@@ -21,9 +21,7 @@ def enter_battle(self, animation_pool):
     self.map_corner = self.battle.map_corner
 
     if self.leader is not None:
-        self.leader_social_buff = self.leader.social[self.grade_name]
-        self.command_buff = self.leader.leader_command_buff[
-                                self.subunit_type] * 100  # Command buff from leader according to this subunit type
+        self.add_leader_buff()
 
     if self.is_leader:
         self.find_formation_size()
@@ -59,6 +57,5 @@ def enter_battle(self, animation_pool):
 
     self.default_sprite_size = (self.animation_pool[self.animation_race_name + "_Default"]["r_side"][0]["sprite"].get_width() / 5,
                                 self.animation_pool[self.animation_race_name + "_Default"]["r_side"][0]["sprite"].get_height() / 5)
-    self.melee_distance_zone = (self.default_sprite_size[0] + self.default_sprite_size[1]) * 1.5
 
     self.pick_animation()

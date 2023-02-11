@@ -16,9 +16,9 @@ def die(self, how):
         else:
             self.leader.alive_troop_subordinate.remove(self)
 
-    self.sprite_indicator.who = None
-    self.sprite_indicator.kill()
-    self.sprite_indicator = None
+    self.hitbox.who = None
+    self.hitbox.kill()
+    self.hitbox = None
 
     for group in (self.alive_troop_subordinate, self.alive_leader_subordinate):  # change subordinate in list
         for this_subunit in group:
@@ -27,13 +27,13 @@ def die(self, how):
                 if this_subunit.is_leader:
                     self.leader.alive_leader_subordinate.append(self)
                 else:
-                    this_subunit.command_buff = this_subunit.leader.leader_command_buff[this_subunit.subunit_type] * 100
+                    this_subunit.add_leader_buff()
                     this_subunit.leader.alive_troop_subordinate.append(self)
                     this_subunit.leader.find_formation_size()
                     this_subunit.leader.dead_change = True  # new leader require formation change
             else:  # no higher leader to move, assign None
                 this_subunit.leader = None
-                this_subunit.command_buff = 0
+                this_subunit.command_buff = 1
                 self.leader_social_buff = 0
                 if this_subunit.is_leader is False:  # troop become broken from no leader
                     if this_subunit.check_special_effect("Unbreakable") is False:  # broken if no unbreakable

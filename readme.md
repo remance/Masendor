@@ -164,9 +164,11 @@ historical information to players.
 
 ### Sound (Obtained and edited):
 
-- Musket sound effect by aaronsiler (https://freesound.org/people/aaronsiler/)
+- Musket sound effect "aaronsiler_musket 3.wav", "aaronsiler_musket 4.wav" by aaronsiler (https://freesound.org/people/aaronsiler/)
 - Assorted weapon sound effect from Videvo (https://www.videvo.net/)
-- Heavy rain weather ambient sound by lebaston100 (https://freesound.org/people/lebaston100/)
+- Heavy rain weather ambient sound "Heavy Rain" by lebaston100 (https://freesound.org/people/lebaston100/)
+- Heavy Weapon swing sound effect by "Swinging staff whoosh (strong) 08.wav" Nightflame (https://freesound.org/people/Nightflame/)
+- Sword swing sound effect "Swosh Sword Swing" by qubodup (https://freesound.org/people/qubodup/)
 
 ## Translation
 

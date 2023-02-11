@@ -23,8 +23,7 @@ def status_update(self):
             self.idle_action = self.command_action
 
     self.skill_effect = {key: val for key, val in self.skill_effect.items() if
-                         key in self.skill_duration and (len(val["Restriction"]) == 0 or self.state in val[
-                             "Restriction"])}  # remove effect if time reach 0 or restriction state is not met
+                         key in self.skill_duration}  # remove effect if duration reach 0
 
     for key in self.status_duration.copy():  # loop is faster than comprehension here
         self.status_duration[key] -= self.timer
@@ -260,16 +259,15 @@ def status_update(self):
     # Apply morale, and leader buff to stat
     self.discipline = (self.discipline * self.morale_state) + self.leader_social_buff + \
                       (self.authority / 10)  # use morale, stamina, leader social vs grade and authority
-    self.melee_attack = (self.melee_attack * (self.morale_state + 0.1)) + self.command_buff
-    self.melee_def = (self.melee_def * (self.morale_state + 0.1)) + self.command_buff
-    self.range_def = (self.range_def * (self.morale_state + 0.1)) + (
-            self.command_buff / 2)  # use half command buff
-    self.accuracy = self.accuracy + self.command_buff  # use stamina and command buff
+    self.melee_attack = (self.melee_attack * (self.morale_state + 0.1)) * self.command_buff
+    self.melee_def = (self.melee_def * (self.morale_state + 0.1)) * self.command_buff
+    self.range_def = (self.range_def * (self.morale_state + 0.1)) * self.command_buff
+    self.accuracy = self.accuracy * self.command_buff
     self.charge_def = (self.charge_def * (
-            self.morale_state + 0.1)) + self.command_buff  # use morale, stamina and command buff
+            self.morale_state + 0.1)) * self.command_buff  # use morale, stamina and command buff
     height_diff = (self.height / self.front_height) ** 2  # walk down hill increase speed, walk up hill reduce speed
     self.speed = self.speed * height_diff
-    self.charge = (self.charge + self.speed) * (self.morale_state + 0.1) + self.command_buff
+    self.charge = (self.charge + self.speed) * (self.morale_state + 0.1) * self.command_buff
 
     # Add discipline to stat
     discipline_cal = self.discipline / 200

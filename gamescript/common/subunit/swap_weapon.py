@@ -36,6 +36,7 @@ def swap_weapon(self, new_weapon_set):
     self.equipped_weapon_data = self.weapon_data[self.equipped_weapon]
 
     self.melee_range = self.original_melee_range[self.equipped_weapon]
+    self.melee_charge_range = {key: value * 3 for key, value in self.melee_range.items()}
 
     for weapon_index, weapon in enumerate(self.weapon_set[self.equipped_weapon]):
         weapon_stat = self.equipped_weapon_data[weapon_index]

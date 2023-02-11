@@ -7,8 +7,7 @@ def check_special_effect(self, effect, weapon=None):
     """
     if True in self.special_effect[effect][0]:
         return True
-    elif (weapon is not None and self.special_effect[effect][1][weapon]) or \
-            True in self.special_effect[effect][1]:
+    elif weapon is not None and self.special_effect[effect][1][weapon]:
         return True
     else:
         return False

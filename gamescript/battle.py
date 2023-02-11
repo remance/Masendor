@@ -658,7 +658,7 @@ class Battle:
                     # Battle related updater
                     self.subunit_updater.update(self.dt)
 
-                    self.effect_updater.update(self.subunit_updater, self.dt)
+                    self.effect_updater.update(self.active_subunit_list, self.dt)
                     self.weather_updater.update(self.dt, self.time_number.time_number)
                     self.mini_map.update([self.camera_pos, self.camera_topleft_corner], self.active_subunit_list)
 
