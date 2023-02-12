@@ -6,6 +6,7 @@ import pygame.freetype
 from gamescript.common import utility
 
 apply_sprite_colour = utility.apply_sprite_colour
+text_render = utility.text_render
 
 
 def change_number(number):
@@ -55,14 +56,20 @@ class HeroUI(pygame.sprite.Sprite):
         self.image = pygame.Surface((420 * self.screen_scale[0], 200 * self.screen_scale[1]), pygame.SRCALPHA)
         self.base_image = self.image.copy()
 
-        self.health_bar_size = (20 * self.screen_scale[0], self.image.get_height())
+        self.health_bar_size = (10 * self.screen_scale[0], self.image.get_height())
         self.health_bar = pygame.Surface(self.health_bar_size, pygame.SRCALPHA)
         self.health_bar.fill((0, 0, 0))
         self.health_bar_original = self.health_bar.copy()
-        self.health_bar_rect = self.health_bar.get_rect(topright=(self.image.get_width(), 0))
+        self.health_bar_rect = self.health_bar.get_rect(topright=(self.image.get_width() - self.health_bar_size[0], 0))
         self.health_bar.fill((200, 0, 0))
 
         self.health_bar_height = self.health_bar.get_height()
+
+        self.stamina_bar = pygame.Surface(self.health_bar_size, pygame.SRCALPHA)
+        self.stamina_bar.fill((0, 0, 0))
+        self.stamina_bar_original = self.stamina_bar.copy()
+        self.stamina_bar_rect = self.stamina_bar.get_rect(topright=(self.image.get_width(), 0))
+        self.stamina_bar.fill((0, 200, 0))
 
         self.weapon_box_images = weapon_box_images
         self.weapon_image = pygame.Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]),
@@ -92,7 +99,7 @@ class HeroUI(pygame.sprite.Sprite):
                                      (self.sec_main_weapon_box_rect.center, self.sec_sub_weapon_box_rect.center))
 
         self.weapon_base_image = self.weapon_image.copy()
-        self.weapon_image_rect = self.weapon_image.get_rect(topright=(self.image.get_width() - self.health_bar_size[0], 0))
+        self.weapon_image_rect = self.weapon_image.get_rect(topright=(self.image.get_width() - (self.health_bar_size[0] * 2), 0))
 
         self.leader_image_rect = self.weapon_image.get_rect(topleft=(0, 0))
 
@@ -105,6 +112,10 @@ class HeroUI(pygame.sprite.Sprite):
         self.weapon_cooldown = None
 
         self.base_image.blit(self.health_bar, self.health_bar_rect)
+        self.base_image.blit(self.stamina_bar, self.stamina_bar_rect)
+
+        self.last_health = 0
+        self.last_stamina = 0
 
         self.pos = (0, 0)
         self.rect = self.image.get_rect(topleft=self.pos)
@@ -116,6 +127,34 @@ class HeroUI(pygame.sprite.Sprite):
         self.image = self.base_image.copy()
 
     def value_input(self, who, *args):
+
+        if self.last_health != who.health:
+            self.last_health = who.health
+            self.health_bar = self.health_bar_original.copy()
+            health_percent = who.health / who.max_health
+            health_bar = pygame.Surface((self.health_bar_size[0], self.health_bar_size[1] * health_percent))
+            health_bar.fill((200, 0, 0))
+            health_bar_rect = health_bar.get_rect(bottomleft=(0, self.health_bar_height))
+            self.health_bar.blit(health_bar, health_bar_rect)
+
+            self.base_image.blit(self.health_bar, self.health_bar_rect)
+            self.image.blit(self.health_bar, self.health_bar_rect)
+
+        if self.last_stamina != who.stamina:
+            self.last_stamina = who.stamina
+            self.stamina_bar = self.stamina_bar_original.copy()
+            stamina_percent = who.stamina / who.max_stamina
+            if stamina_percent < 0:
+                stamina_percent = 0
+            print(stamina_percent, )
+            stamina_bar = pygame.Surface((self.health_bar_size[0], self.health_bar_size[1] * stamina_percent))
+            stamina_bar.fill((0, 200, 0))
+            stamina_bar_rect = stamina_bar.get_rect(bottomleft=(0, self.health_bar_height))
+            self.stamina_bar.blit(stamina_bar, stamina_bar_rect)
+
+            self.base_image.blit(self.stamina_bar, self.stamina_bar_rect)
+            self.image.blit(self.stamina_bar, self.stamina_bar_rect)
+
         if self.equipped_weapon != who.equipped_weapon or who.magazine_count != self.magazine_count or \
                 self.weapon_cooldown != who.weapon_cooldown:
             if self.equipped_weapon != who.equipped_weapon or self.weapon_cooldown != who.weapon_cooldown:
@@ -174,39 +213,33 @@ class HeroUI(pygame.sprite.Sprite):
             self.magazine_count = {key: value.copy() for key, value in who.magazine_count.items()}
             self.weapon_cooldown = who.weapon_cooldown.copy()
 
-        if who.old_last_health != who.health:
-            self.health_bar = self.health_bar_original.copy()
-            health_percent = who.health / who.max_health
-            health_bar = pygame.Surface((self.health_bar_size[0],
-                                         self.health_bar_size[1] * health_percent))
-            if health_percent >= 70:
-                health_bar.fill((0, 180, 0))
-            elif health_percent >= 30:
-                health_bar.fill((220, 220, 0))
-            else:
-                health_bar.fill((200, 0, 0))
-            health_bar_rect = health_bar.get_rect(bottomleft=(0, self.health_bar_height))
-            self.health_bar.blit(health_bar, health_bar_rect)
-
-            self.image.blit(self.health_bar, self.health_bar_rect)
-
 
 class SkillCardIcon(pygame.sprite.Sprite):
     cooldown = None
     active_skill = None
 
-    def __init__(self, image, pos, icon_type, game_id=None):
+    def __init__(self, screen_scale, image, pos, key):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.icon_type = icon_type
-        self.game_id = game_id  # ID of the skill
         self.pos = pos  # pos of the skill on ui
-        self.font = pygame.font.SysFont("helvetica", 18)
+        self.font = pygame.font.SysFont("helvetica", int(24 * screen_scale[1]))
+
         self.cooldown_check = 0  # cooldown number
         self.active_check = 0  # active timer number
-        self.image = image
-        self.rect = self.image.get_rect(center=pos)
+        self.game_id = None
+
+        key_font_size = int(24 * screen_scale[1])
+        key_font = pygame.font.SysFont("helvetica", key_font_size)
+        self.image = pygame.Surface((image.get_width(), image.get_height() + (key_font_size * 1.5)), pygame.SRCALPHA)
+        text_surface = text_render(key, key_font)
+        text_rect = text_surface.get_rect(midbottom=(self.image.get_width() / 2, self.image.get_height()))
+        self.image.blit(text_surface, text_rect)
+
+        image_rect = image.get_rect(midtop=(self.image.get_width() / 2, 0))
+        self.image.blit(image, image_rect)
         self.base_image = self.image.copy()  # keep original image without number
+
+        self.rect = self.image.get_rect(topleft=pos)
         self.cooldown_rect = self.image.get_rect(topleft=(0, 0))
 
     def icon_change(self, cooldown, active_timer):
@@ -220,7 +253,7 @@ class SkillCardIcon(pygame.sprite.Sprite):
                 output_number = str(self.active_check)
                 if self.active_check >= 1000:
                     output_number = change_number(output_number)
-                text_surface = self.font.render(output_number, 1, (0, 0, 0))  # timer number
+                text_surface = self.font.render(output_number, True, (0, 0, 0))  # timer number
                 text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
                 self.image.blit(text_surface, text_rect)
 
@@ -232,7 +265,7 @@ class SkillCardIcon(pygame.sprite.Sprite):
                 output_number = str(self.cooldown_check)
                 if self.cooldown_check >= 1000:  # change a thousand number into k (1k,2k)
                     output_number = change_number(output_number)
-                text_surface = self.font.render(output_number, 1, (0, 0, 0))
+                text_surface = self.font.render(output_number, True, (0, 0, 0))
                 text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
                 self.image.blit(text_surface, text_rect)
 

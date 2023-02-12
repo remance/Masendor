@@ -14,6 +14,14 @@ def setup_battle_ui(self, change):
 
         change_group(self.command_ui, self.battle_ui_updater, change)
 
+        for icon_index, icon in enumerate(self.skill_icon):  # reset skill icon
+            icon.game_id = None
+            for index, skill in enumerate(self.player_char.skill):
+                if index == icon_index:
+                    icon.game_id = skill
+                    break
+            if icon.game_id is None:  # remove from updater if no skill for this icon
+                self.battle_ui_updater.remove(icon)
     else:
         change_group(self.unit_selector, self.battle_ui_updater, change)
         change_group(self.unit_selector.scroll, self.battle_ui_updater, change)

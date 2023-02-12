@@ -35,11 +35,6 @@ def status_update(self):
                           any(ext in self.status_effect for ext in val["Status Conflict"]) is False}
 
     # Reset to base stat
-    if self.leader is not None:
-        self.authority = self.leader.leader_authority  # leader authority
-    else:
-        self.authority = 0
-
     self.morale = self.base_morale
     self.discipline = self.base_discipline
     self.melee_attack = self.base_melee_attack
@@ -57,10 +52,11 @@ def status_update(self):
     self.weapon_speed = self.original_weapon_speed[self.equipped_weapon].copy()
     self.weapon_dmg = self.original_weapon_dmg[self.equipped_weapon].copy()
 
-    self.corner_atk = False  # Cannot melee_attack corner enemy by default
-
     self.hp_regen = self.base_hp_regen
     self.stamina_regen = self.base_stamina_regen
+
+    self.morale_dmg_bonus = 0
+    self.stamina_dmg_bonus = 0
 
     morale_bonus = 0
     discipline_bonus = 0
@@ -96,16 +92,14 @@ def status_update(self):
     for trait_list in (self.trait["Original"].values(), self.trait["Weapon"][self.equipped_weapon][0].values(),
                        self.trait["Weapon"][self.equipped_weapon][1].values()):
         for trait in trait_list:
-            if 0 not in trait["Status"]:
-                for effect in trait["Status"]:  # apply status effect from trait
-                    self.apply_effect(effect, self.status_list, self.status_effect, self.status_duration)
-                    if trait["Buff Range"] > 1:  # status buff range to nearby friend
-                        self.apply_status_to_nearby(self.nearest_ally, trait["Buff Range"], effect)
+            for effect in trait["Status"]:  # apply status effect from trait
+                self.apply_effect(effect, self.status_list[effect], self.status_effect, self.status_duration)
+                if trait["Area Of Effect"] > 1:  # status buff range to nearby friend
+                    self.apply_status_to_nearby(self.nearest_ally, trait["Buff Range"], effect)
 
-            if 0 not in trait["Enemy Status"]:
-                for effect in trait["Enemy Status"]:  # apply status effect from trait
-                    if trait["Buff Range"] > 1:  # status buff range to nearby friend
-                        self.apply_status_to_nearby(self.nearest_enemy, trait["Buff Range"], effect)
+            for effect in trait["Enemy Status"]:  # apply status effect from trait
+                if trait["Area Of Effect"] > 1:  # status buff range to nearby friend
+                    self.apply_status_to_nearby(self.nearest_enemy, trait["Buff Range"], effect)
 
     # Apply effect from weather
     weather = self.battle.current_weather
@@ -176,7 +170,7 @@ def status_update(self):
 
             for weapon in self.weapon_dmg:
                 for element in self.weapon_dmg[weapon]:
-                    if element != "Physical":
+                    if element != "Physical" and element + " Damage Extra" in cal_effect:
                         extra_dmg = cal_effect[element + " Damage Extra"]
                         if extra_dmg != 0:
                             self.weapon_dmg[weapon][element][0] += extra_dmg * self.weapon_dmg[weapon]["Physical"]
@@ -188,22 +182,6 @@ def status_update(self):
             sight_bonus += cal_effect["Sight Bonus"]
             hidden_bonus += cal_effect["Hidden Bonus"]
             crit_effect_modifier += cal_effect["Critical Effect"]
-            if cal_effect["Area of Effect"] in (2, 3):  # TODO maybe change skill system to have attack type
-                self.special_effect[0]["All Side Full Attack"][1] = True
-                if cal_effect["Area of Effect"] == 3:
-                    self.corner_atk = True  # if aoe 3 mean it can melee_attack enemy on all side
-
-            if 0 not in cal_effect["Status"]:  # apply status to friendly if there is one in skill effect
-                for status in cal_effect["Status"]:
-                    self.apply_effect(status, self.status_list, self.status_effect, self.status_duration)
-                    if cal_effect["Area of Effect"] > 1:
-                        self.apply_status_to_nearby(self.nearest_ally, cal_effect["Area of Effect"], status)
-
-            if 0 not in cal_effect["Enemy Status"]:  # apply status to friendly if there is one in skill effect
-                for status in cal_effect["Enemy Status"]:
-                    if cal_effect["Area of Effect"] > 1:
-                        self.apply_status_to_nearby(self.nearest_enemy, cal_effect["Area of Effect"], status)
-
             self.morale_dmg_bonus += cal_effect["Morale Damage Bonus"]
             self.stamina_dmg_bonus += cal_effect["Stamina Damage Bonus"]
 

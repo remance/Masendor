@@ -34,7 +34,8 @@ def die(self, how):
             else:  # no higher leader to move, assign None
                 this_subunit.leader = None
                 this_subunit.command_buff = 1
-                self.leader_social_buff = 0
+                this_subunit.leader_social_buff = 0
+                this_subunit.authority = 0
                 if this_subunit.is_leader is False:  # troop become broken from no leader
                     if this_subunit.check_special_effect("Unbreakable") is False:  # broken if no unbreakable
                         this_subunit.not_broken = False

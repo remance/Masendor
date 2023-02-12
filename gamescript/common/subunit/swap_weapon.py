@@ -31,7 +31,7 @@ def swap_weapon(self, new_weapon_set):
     self.base_cold_resistance = self.original_cold_resistance
     self.base_element_resistance = self.original_element_resistance.copy()
     self.base_mental = self.original_mental
-    self.skill = self.original_skill
+    self.skill = self.original_skill.copy()
 
     self.equipped_weapon_data = self.weapon_data[self.equipped_weapon]
 
@@ -42,12 +42,8 @@ def swap_weapon(self, new_weapon_set):
         weapon_stat = self.equipped_weapon_data[weapon_index]
         self.base_melee_def += weapon_stat["Defence"] * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]
         self.base_range_def += weapon_stat["Defence"] * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]
-        skill = self.weapon_skill[self.equipped_weapon][weapon_index]
-        if skill != 0 and (self.troop_data.skill_list[skill]["Troop Type"] != 0 and
-                           self.troop_data.skill_list[skill]["Troop Type"] != self.subunit_type):
-            self.weapon_skill[self.equipped_weapon][weapon_index] = 0  # remove unmatch class skill
-        else:
-            self.skill.append(skill)
+        if len(weapon_stat["Skill"]) > 0:
+            self.skill.append(weapon_stat["Skill"][0])  # take only first skill
 
     self.process_trait_skill()
 

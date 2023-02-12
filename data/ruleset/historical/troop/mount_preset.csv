@@ -1,7 +1,7 @@
 "ID","Name","Speed Bonus","Health Bonus","Charge Bonus","Stamina Bonus","Cost","Trait","Race","Type"
-1,"None",0,0,0,0,0,0,0,"Early Mount"
-2,"Friesian Horse",10,40,80,50,0,0,2,"Early Mount"
-3,"Mongolian Horse",6,20,40,100,0,0,2,"Early Mount"
+1,"None",0,0,0,0,0,,0,"Early Mount"
+2,"Friesian Horse",10,40,80,50,0,,2,"Early Mount"
+3,"Mongolian Horse",6,20,40,100,0,,2,"Early Mount"
 4,"Andalusian Horse",,,,,0,,2,"Early Mount"
 5,"Shire Horse",,,,,0,,2,"Early Mount"
 6,"Arabian Horse",17,30,65,35,0,,2,"Early Mount"
@@ -47,8 +47,8 @@
 46,"Bactrian Camel",6,40,30,,,265,3,"Early Mount"
 47,"Arabian Camel",,,,,,265,3,"Early Mount"
 48,,,,,,,,,
-49,"African Elephant",4,300,200,,,0,4,"Early Mount"
-50,"Asian Elephant",,,,,,0,4,"Early Mount"
+49,"African Elephant",4,300,200,,,,4,"Early Mount"
+50,"Asian Elephant",,,,,,,4,"Early Mount"
 51,,,,,,,,,
 52,,,,,,,,,
 53,,,,,,,,,

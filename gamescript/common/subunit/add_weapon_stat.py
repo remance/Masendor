@@ -53,8 +53,6 @@ def add_weapon_stat(self):
                 self.original_weapon_speed[set_index][weapon_index] = 0
             self.weapon_weight[set_index][weapon_index] = weapon_stat["Weight"]
             self.weight += weapon_stat["Weight"]
-            if len(weapon_stat["Skill"]) > 0:
-                self.weapon_skill[set_index][weapon_index] = weapon_stat["Skill"][0]  # take only first skill
 
     for key in self.trait["Weapon"]:
         for weapon in self.trait["Weapon"][key]:

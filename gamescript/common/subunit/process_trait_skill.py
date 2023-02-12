@@ -19,19 +19,20 @@ def skill_convert(self, skill_list, add_charge_skill=False):
     :param add_charge_skill: Add charge skill to dict or not
     :return: Dict of skill with id as key and stat as value
     """
-    skill_dict = list(set(skill_list))
-    skill_dict = {x: self.troop_data.skill_list[x].copy() for x in skill_dict if
-                  x != 0 and x in self.troop_data.skill_list}  # grab skill stat into dict
+    skill_dict = tuple(set(skill_list))
+
+    # Grab skill stat into dict
+    troop_skill_dict = {x: self.troop_data.skill_list[x] for x in skill_dict if x in self.troop_data.skill_list}
+
+    troop_skill_dict = {skill: troop_skill_dict[skill] for skill in troop_skill_dict if
+                        ((self.troop_data.skill_list[skill]["Troop Type"] == 0 or
+                          self.troop_data.skill_list[skill]["Troop Type"] == self.subunit_type))}  # keep skill if class match
+
+    skill_dict = troop_skill_dict | self.leader_skill
+
     if add_charge_skill:
         skill_dict[self.charge_skill] = self.troop_data.skill_list[
             self.charge_skill]  # add charge skill
-    skill_dict = {skill: skill_dict[skill] for skill in skill_dict if skill == 0 or  # keep skill if class match
-                  (skill != 0 and (self.troop_data.skill_list[skill]["Troop Type"] == 0 or
-                                   self.troop_data.skill_list[skill]["Troop Type"] == self.subunit_type))}
 
-    if self.leader is not None:
-        leader_skill_dict = {key: value.copy() for key, value in self.leader.skill.items() if
-                             key != 0}
-        skill_dict = skill_dict | leader_skill_dict
 
     return skill_dict

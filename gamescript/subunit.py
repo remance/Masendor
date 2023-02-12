@@ -5,6 +5,9 @@ from pathlib import Path
 
 import pygame
 import pygame.freetype
+
+from gamescript import effectsprite
+
 from gamescript.common import utility
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
@@ -31,17 +34,18 @@ controllable = can perform controllable action during action like walk or attack
 forced move = subunit must move to provided pos during action regardless of input
 next action = action that will be performed after the current one finish
 uninterruptible = action can not be interrupt unless top_interrupt_animation is True
+move loop = action involve repeating movement that can be cancel when movement change like walk to run
 """
-
-weapon_skill_command_action_0 = {"name": "Weapon Skill 0"}
-weapon_skill_command_action_1 = {"name": "Weapon Skill 1"}
 
 skill_command_action_0 = {"name": "Skill 0"}
 skill_command_action_1 = {"name": "Skill 1"}
+skill_command_action_2 = {"name": "Skill 2"}
+skill_command_action_3 = {"name": "Skill 3"}
 
-walk_command_action = {"name": "Walk", "movable": True, "main_weapon": True, "repeat": True}
-run_command_action = {"name": "Run", "movable": True, "main_weapon": True, "repeat": True}
-flee_command_action = {"name": "Flee", "movable": True, "repeat": True}
+walk_command_action = {"name": "Walk", "movable": True, "main_weapon": True, "repeat": True, "move loop": True}
+run_command_action = {"name": "Run", "movable": True, "main_weapon": True, "repeat": True,
+                      "move loop": True, "use momentum": True}
+flee_command_action = {"name": "Flee", "movable": True, "repeat": True, "move loop": True}
 
 melee_attack_command_action = ({"name": "Action 0", "melee attack": True}, {"name": "Action 1", "melee attack": True})
 range_attack_command_action = ({"name": "Action 0", "range attack": True}, {"name": "Action 1", "range attack": True})
@@ -49,8 +53,8 @@ range_attack_command_action = ({"name": "Action 0", "range attack": True}, {"nam
 move_shoot_command_action = ({"name": "Action 0", "range attack": True, "move attack": True, "movable": True},
                              {"name": "Action 1", "range attack": True, "move attack": True, "movable": True})
 
-charge_command_action = ({"name": "Charge 0", "movable": True, "repeat": True},
-                         {"name": "Charge 1", "movable": True, "repeat": True})
+charge_command_action = ({"name": "Charge 0", "movable": True, "repeat": True, "move loop": True, "use momentum": True},
+                         {"name": "Charge 1", "movable": True, "repeat": True, "move loop": True, "use momentum": True})
 
 heavy_damaged_command_action = {"name": "HeavyDamaged", "uncontrollable": True, "movable": True, "forced move": True}
 damaged_command_action = {"name": "Damaged", "uncontrollable": True, "movable": True, "forced move": True}
@@ -135,11 +139,10 @@ class Subunit(pygame.sprite.Sprite):
 
     weapon_set = weapon_set
 
-    weapon_skill_command_action_0 = weapon_skill_command_action_0
-    weapon_skill_command_action_1 = weapon_skill_command_action_1
-
     skill_command_action_0 = skill_command_action_0
     skill_command_action_1 = skill_command_action_1
+    skill_command_action_2 = skill_command_action_2
+    skill_command_action_3 = skill_command_action_3
 
     walk_command_action = walk_command_action
     run_command_action = run_command_action
@@ -187,10 +190,10 @@ class Subunit(pygame.sprite.Sprite):
         self.move = False  # currently moving
         self.attack_target = None  # target for attacking
         self.melee_target = None  # current target of melee combat
-        self.close_target = None  # closet target to move to in melee
         self.player_manual_control = False  # subunit controlled by player
         self.dead_change = False  # subordinate die in last update, reset formation, this is to avoid high workload when multiple die at once
         self.retreat_start = False
+        self.taking_damage_angle = None
 
         self.hitbox = None
 
@@ -209,7 +212,6 @@ class Subunit(pygame.sprite.Sprite):
 
         self.nearest_enemy = []
         self.nearest_ally = []
-        self.movement_queue = []
 
         self.game_id = game_id  # ID of this
         self.team = team
@@ -223,10 +225,9 @@ class Subunit(pygame.sprite.Sprite):
         self.feature_mod = "Infantry"  # the terrain feature that will be used on this subunit
         self.move_speed = 0  # speed of current movement
 
-        # Other stats
         self.weapon_cooldown = {0: 0, 1: 0}  # subunit can attack with weapon only when cooldown reach attack speed
-        self.corner_atk = False  # check if subunit can melee attack corner enemy or not
         self.flank_bonus = 1  # combat bonus when flanking
+        self.morale_dmg_bonus = 0
         self.stamina_dmg_bonus = 0  # extra stamina melee_dmg
         self.original_hp_regen = 0  # health regeneration modifier, will not resurrect dead troop by default
         self.original_stamina_regen = 2  # stamina regeneration modifier
@@ -236,6 +237,7 @@ class Subunit(pygame.sprite.Sprite):
         self.status_duration = {}  # current status duration
         self.skill_effect = {}  # activate skill effect
         self.skill_duration = {}  # current active skill duration
+        self.skill_cooldown = {}
 
         self.one_activity_timer = 0  # timer for activities that can be only perform when no others occur like knock down
         self.one_activity_limit = 0
@@ -243,7 +245,6 @@ class Subunit(pygame.sprite.Sprite):
         self.countup_trigger_time = 0  # time that indicate when trigger happen
 
         self.attack_pos = None
-        self.state = 0  # current subunit state, similar to unit state
         self.alive = True
         self.in_melee_combat_timer = 0
         self.timer = random.random()  # may need to use random.random()
@@ -252,6 +253,10 @@ class Subunit(pygame.sprite.Sprite):
         self.max_melee_attack_range = 0
         self.melee_distance_zone = 1
         self.default_sprite_size = 1
+
+        self.terrain = 0
+        self.feature = 0
+        self.height = 0
 
         self.screen_scale = self.battle.screen_scale
 
@@ -265,10 +270,6 @@ class Subunit(pygame.sprite.Sprite):
         self.base_target = self.base_pos  # base_target pos to move
         self.command_target = self.base_pos  # command target pos
         self.follow_target = self.base_pos  # target pos based on formation position
-
-        self.terrain = 0
-        self.feature = 0
-        self.height = 0
 
         self.front_pos = (0, 0)  # pos of this subunit for finding height of map at the front
         self.front_height = 0
@@ -299,10 +300,8 @@ class Subunit(pygame.sprite.Sprite):
 
             training_scale = (stat["Melee Attack Scale"], stat["Defence Scale"], stat["Ranged Attack Scale"])
 
-            skill = stat["Skill"]  # skill list according to the preset
             self.magazine_count = {index: {0: 1 + stat["Ammunition Modifier"], 1: 1 + stat["Ammunition Modifier"]}
                                    for index in range(0, 2)}  # Number of magazine, as mod number
-            self.charge_skill = stat["Charge Skill"]  # for easier reference to check what charge skill this subunit has
             self.original_morale = stat["Morale"] + grade_stat["Morale Bonus"]  # morale with grade bonus
             self.original_discipline = stat["Discipline"] + grade_stat[
                 "Discipline Bonus"]  # discipline with grade bonus
@@ -321,7 +320,6 @@ class Subunit(pygame.sprite.Sprite):
             training_scale = (stat["Melee Speciality"], stat["Melee Speciality"], stat["Range Speciality"])
 
             self.magazine_count = {0: {0: 2, 1: 2}, 1: {0: 2, 1: 2}}  # leader gets double ammunition
-            self.charge_skill = stat["Charge Skill"]
             self.original_morale = 100 + grade_stat["Morale Bonus"]  # morale with grade bonus
             self.original_discipline = 100 + grade_stat[
                 "Discipline Bonus"]  # discipline with grade bonus
@@ -365,6 +363,9 @@ class Subunit(pygame.sprite.Sprite):
         self.race_name = race_stat["Name"]
         self.grade_name = grade_stat["Name"]
 
+        self.charge_skill = stat["Charge Skill"]  # for easier reference to check what charge skill this subunit has
+        skill = stat["Skill"]  # skill list according to the preset
+
         # Default element stat
         element_dict = {key.split(" ")[0]: 0 for key in race_stat if
                         " Resistance" in key}  # get only resistance that exist in race data
@@ -387,7 +388,6 @@ class Subunit(pygame.sprite.Sprite):
 
         self.magazine_size = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}  # can shoot how many times before have to reload
         self.ammo_now = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}  # ammunition count in the current magazine
-        self.weapon_skill = {0: {0: [], 1: []}, 1: {0: [], 1: []}}
         self.equipped_weapon = 0
         self.swap_weapon_list = (1, 0)  # for swapping to other set
 
@@ -458,7 +458,6 @@ class Subunit(pygame.sprite.Sprite):
                                   self.troop_data.grade_list[self.grade]["Trait"],
                       "Weapon": {0: {0: [], 1: []}, 1: {0: [], 1: []}}}  # trait from preset, race and grade
 
-        self.skill_cooldown = {}
         self.armour_gear = stat["Armour"]  # armour equipment
         armour_stat = self.troop_data.armour_list[self.armour_gear[0]]
         armour_grade_mod = self.troop_data.equipment_grade_list[self.armour_gear[1]]["Modifier"]
@@ -543,6 +542,11 @@ class Subunit(pygame.sprite.Sprite):
             else:
                 self.leader.alive_troop_subordinate.append(self)
 
+        self.original_skill = [skill for skill in self.original_skill if
+                               (type(skill) is str or (skill in self.troop_data.skill_list and
+                                                       self.troop_data.skill_list[skill]["Troop Type"] == 0 or
+                                                       self.troop_data.skill_list[skill]["Troop Type"] == self.subunit_type))]
+
         # Stat after applying trait and gear
         self.base_melee_attack = self.original_melee_attack
         self.base_melee_def = self.original_melee_def
@@ -558,12 +562,16 @@ class Subunit(pygame.sprite.Sprite):
         self.base_charge = self.original_charge
         self.base_charge_def = self.original_charge_def
         self.skill = self.original_skill.copy()
-        self.troop_skill = self.original_skill.copy()
-        self.troop_skill = [skill for skill in self.troop_skill if skill != 0 and
-                            (type(skill) is str or (skill in self.troop_data.skill_list and
-                                                    self.troop_data.skill_list[skill]["Troop Type"] == 0 or
-                                                    self.troop_data.skill_list[skill][
-                                                        "Troop Type"] == self.subunit_type))]  # keep matched
+
+        self.leader_skill = {x: self.leader_data.skill_list[x] for x in self.skill if x in self.leader_data.skill_list}
+        if self.leader is None:  # no higher leader, count as commander tier
+            for key, value in self.leader_skill.items():  # replace leader skill with commander skill version
+                for key2, value2 in self.leader_data.commander_skill_list.items():
+                    if key in value2["Replace"]:
+                        old_action = self.leader_skill[key]["Action"]
+                        self.leader_skill[key] = value2
+                        self.leader_skill[key]["Action"] = old_action  # get action from normal leader skill
+
         self.base_mana = self.original_mana
         self.base_morale = self.original_morale
         self.base_discipline = self.original_discipline
@@ -588,16 +596,13 @@ class Subunit(pygame.sprite.Sprite):
         self.stamina5 = self.stamina * 0.05
         self.stamina_list = (self.stamina75, self.stamina50, self.stamina25, self.stamina5, -1)
 
-        self.old_health = self.health
         self.max_health = self.health  # health percentage
         self.max_health1 = self.max_health * 0.01
         self.max_health5 = self.max_health * 0.05
         self.max_health10 = self.max_health * 0.1
         self.health_list = (self.health * 0.75, self.health * 0.5, self.health * 0.25, 0)
 
-        self.old_last_health, self.old_last_stamina = self.health, self.stamina  # save previous health and stamina in previous update
-
-        # v Weight calculation
+        # Weight calculation
         self.weight += self.troop_data.armour_list[self.armour_gear[0]]["Weight"] + self.mount_armour[
             "Weight"]  # Weight from both melee and range weapon and armour
         if self.subunit_type == 2:  # cavalry has half weight penalty
@@ -655,8 +660,6 @@ class Subunit(pygame.sprite.Sprite):
         self.stamina_state = (self.stamina * 100) / self.max_stamina  # turn into percentage
         self.stamina_state_cal = self.stamina_state / 100  # for using as modifier on stat
 
-        # sprite for inspection or far view
-
         self.angle = start_angle
         self.new_angle = self.angle
         self.radians_angle = math.radians(360 - self.angle)  # radians for apply angle to position
@@ -681,7 +684,7 @@ class Subunit(pygame.sprite.Sprite):
             # self.shadow_image = pygame.transform.scale(self.shadow_image, (self.shadow_image.get_width() * 1.5,
             #                                                                self.shadow_image.get_height() * 1.5))
 
-            pygame.draw.circle(self.shadow_image, (255, 128, 0, 150),
+            pygame.draw.circle(self.shadow_image, (120, 128, 0, 150),
                                (self.shadow_image.get_width() / 2, self.shadow_image.get_height() / 2),
                                self.shadow_image.get_width() / 2)
         else:
@@ -717,7 +720,7 @@ class Subunit(pygame.sprite.Sprite):
                     nearest_enemy = {key: key.base_pos.distance_to(self.base_pos) for key in
                                      self.battle.active_subunit_list if key.team != self.team}
                     nearest_friend = {key: key.base_pos.distance_to(self.base_pos) for key in
-                                      self.battle.active_subunit_list if key.team != self.team}
+                                      self.battle.active_subunit_list if key.team == self.team}
                     self.nearest_enemy = sorted(nearest_enemy.items(),
                                                 key=lambda item: item[1])  # sort the closest enemy
                     self.nearest_ally = sorted(nearest_friend.items(),
@@ -730,6 +733,10 @@ class Subunit(pygame.sprite.Sprite):
                         self.move_ai_logic()
 
                     self.timer -= 1
+
+                    self.taking_damage_angle = None
+
+                self.skill_check_logic()
 
                 if self.angle != self.new_angle:  # Rotate Function
                     self.rotate_logic(dt)
@@ -746,11 +753,7 @@ class Subunit(pygame.sprite.Sprite):
 
                 self.health_stamina_logic(dt)
 
-                self.available_skill = []
-                self.skill_check_logic()
-
                 self.move = False  # reset move check
-
 
         else:  # dead
             if self.alive:  # enter dead state
@@ -794,8 +797,18 @@ class Subunit(pygame.sprite.Sprite):
                       ("skill" in self.current_action and self.current_action["skill"] not in self.skill_effect) or
                       (self.idle_action and self.idle_action != self.command_action)) or
                      self.current_action != self.last_current_action):
-                if done and "range attack" in self.current_action:  # shoot bullet only when animation finish
-                    self.attack("range")
+                if done:
+                    if "range attack" in self.current_action:  # shoot bullet only when animation finish
+                        self.attack("range")
+                    elif "skill" in self.current_action:  # spawn skill effect and sound
+                        skill_data = self.skill[self.current_action["skill"]]
+                        if self.current_animation[self.show_frame]["dmg_sprite"] is not None:
+                            effectsprite.EffectSprite(self.pos, self.pos, 0, 0, skill_data["Effect Sprite"],
+                                                      self.current_animation[self.show_frame]["dmg_sprite"])
+                        if skill_data["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
+                            self.battle.add_sound_effect_queue(skill_data["Sound Effect"], self.base_pos,
+                                                               skill_data["Sound Distance"],
+                                                               skill_data["Shake Power"])
 
                 if self.current_action != self.last_current_action:
                     self.last_current_action = self.current_action

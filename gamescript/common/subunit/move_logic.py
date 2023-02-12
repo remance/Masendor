@@ -17,8 +17,6 @@ def move_logic(self, dt):
         if move_length > 0:  # movement length longer than 0.1, not reach base_target yet
             move.normalize_ip()
             self.move_speed = self.current_action["move speed"]
-            if "use momentum" in self.current_action:
-                self.move_speed *= self.momentum
             move *= self.move_speed * dt
             new_move_length = move.length()
             new_pos = self.base_pos + move

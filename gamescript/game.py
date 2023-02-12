@@ -9,8 +9,8 @@ from pathlib import Path
 import pygame
 import pygame.freetype
 import screeninfo
-from gamescript import battlemap, weather, battleui, menu, damagesprite, battle, subunit, datasprite, datamap, \
-    lorebook, drama, popup
+from gamescript import battlemap, weather, battleui, menu, damagesprite, effectsprite, battle, subunit, datasprite, \
+    datamap, lorebook, drama, popup
 
 from gamescript.common import utility
 from gamescript.common.battle import setup_battle_troop
@@ -227,7 +227,6 @@ class Game:
         self.preview_char = pygame.sprite.Group()  # group for char list in char select screen
 
         self.sprite_indicator = pygame.sprite.Group()
-        self.damage_sprites = pygame.sprite.Group()  # all damage sprite group and maybe other range effect stuff later
 
         self.button_ui = pygame.sprite.Group()  # ui button group in battle
 
@@ -260,7 +259,8 @@ class Game:
         battleui.CharIcon.containers = self.char_icon, self.main_ui_updater, self.battle_ui_updater
         battleui.SpriteIndicator.containers = self.effect_updater, self.battle_camera
 
-        damagesprite.DamageSprite.containers = self.damage_sprites, self.effect_updater, self.battle_camera
+        damagesprite.DamageSprite.containers = self.effect_updater, self.battle_camera
+        effectsprite.EffectSprite.containers = self.effect_updater, self.battle_camera
 
         menu.EscButton.containers = self.battle_menu_button, self.esc_option_menu_button
 
@@ -479,6 +479,16 @@ class Game:
         self.wheel_ui = battle_ui_dict["wheel_ui"]
         self.command_ui = battle_ui_dict["command_ui"]
 
+        # 4 Skill icons near hero ui, TODO change key later when can set keybind
+        battleui.SkillCardIcon(self.screen_scale, self.skill_images["0"], (self.command_ui.image.get_width() +
+                                                        self.skill_images["0"].get_width() / 2, 0), "Q")
+        battleui.SkillCardIcon(self.screen_scale, self.skill_images["0"], (self.command_ui.image.get_width() +
+                                                        self.skill_images["0"].get_width() * 2, 0), "E")
+        battleui.SkillCardIcon(self.screen_scale, self.skill_images["0"], (self.command_ui.image.get_width() +
+                                                        self.skill_images["0"].get_width() * 3.5, 0), "R")
+        battleui.SkillCardIcon(self.screen_scale, self.skill_images["0"], (self.command_ui.image.get_width() +
+                                                        self.skill_images["0"].get_width() * 5, 0), "T")
+
         weather.Weather.wind_compass_images = {"wind_compass": battle_ui_image["wind_compass"],
                                                "wind_arrow": battle_ui_image["wind_arrow"]}
 
@@ -627,6 +637,9 @@ class Game:
         damagesprite.DamageSprite.bullet_weapon_sprite_pool = bullet_weapon_sprite_pool
         damagesprite.DamageSprite.effect_sprite_pool = self.effect_sprite_pool
         damagesprite.DamageSprite.effect_animation_pool = self.effect_animation_pool
+
+        effectsprite.EffectSprite.effect_sprite_pool = self.effect_sprite_pool
+        effectsprite.EffectSprite.effect_animation_pool = self.effect_animation_pool
 
         # Encyclopedia
         lorebook.Lorebook.concept_stat = csv_read(self.main_dir, "concept_stat.csv",

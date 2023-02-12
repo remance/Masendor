@@ -1,7 +1,7 @@
 "ID","Name","Training Score","Speed Bonus","Health Effect","Stamina Effect","Morale Bonus","Discipline Bonus","Mental Bonus","Trait"
 0,"Novice",100,-10,100,100,-10,-10,-20,"3,5"
 1,"Militant",130,0,105,105,-5,-5,-10,"3"
-2,"Professional",200,10,110,110,5,0,0,"0"
+2,"Professional",200,10,110,110,5,0,0,
 3,"Veteran",250,15,110,120,15,10,5,"1"
 4,"Elite",350,20,115,130,20,15,10,"1"
 5,"Champion",500,25,130,150,30,25,20,"1"
@@ -11,4 +11,4 @@
 9,"Religious Elite Warrior",300,15,115,115,50,35,50,"4"
 10,"Mercenary",170,10,105,105,10,5,5,"3"
 11,"Noble",300,0,110,110,30,-10,0,"1,149"
-12,"Leader",600,30,200,100,50,20,10,"0"
+12,"Leader",600,30,200,100,50,20,10,

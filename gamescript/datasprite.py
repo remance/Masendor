@@ -186,13 +186,15 @@ class TroopAnimationData:
                     if "#" in true_name:
                         animation_list = [value for key, value in images.items() if true_name[:-2] ==
                                           "".join([string + "_" for string in key.split("_")[:-1]])[:-1]]
-                        if " (dmg)" in folder[-1]:
+                        if " (team)" in folder[-1]:
                             animation_list = [apply_sprite_colour(item, team_colour[team], None, keep_white=False) for
                                               item in animation_list]
-                        self.effect_animation_pool[folder[-1]][team][true_name[:-2]] = tuple(animation_list)
+                            self.effect_animation_pool[folder[-1]][team][true_name[:-2]] = tuple(animation_list)
+                        else:
+                            self.effect_animation_pool[folder[-1]][true_name[:-2]] = tuple(animation_list)
                     else:
                         animation_list = [value for key, value in images.items() if true_name == key]
-                        if " (dmg)" in folder[-1]:
+                        if " (team)" in folder[-1]:
                             animation_list = [apply_sprite_colour(item, team_colour[team], None, keep_white=False) for
                                               item in animation_list]
                         self.effect_animation_pool[folder[-1]][team][true_name] = tuple(animation_list)

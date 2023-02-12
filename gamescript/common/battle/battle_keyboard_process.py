@@ -2,7 +2,7 @@ import pygame
 
 
 def battle_keyboard_process(self, key_press):
-    if key_press == pygame.K_q:  # Open unit command wheel ui
+    if key_press == pygame.K_TAB:  # Open unit command wheel ui
         self.battle_ui_updater.add(self.wheel_ui)
         self.previous_player_input_state = self.player_input_state
         self.player_input_state = self.wheel_ui
@@ -11,7 +11,7 @@ def battle_keyboard_process(self, key_press):
     elif key_press == pygame.K_F1:
         self.drama_text.queue.append("Hello and Welcome to update video")
     elif key_press == pygame.K_F2:
-        self.drama_text.queue.append("Showcase: Rework game system to focus on arcade mode")
+        self.drama_text.queue.append("Showcase: Early melee combat")
     elif key_press == pygame.K_F3:
         self.drama_text.queue.append("New formation and troop system")
     elif key_press == pygame.K_F4:

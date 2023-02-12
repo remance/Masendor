@@ -15,9 +15,6 @@ Discord channel: [![github](https://github.com/remance/preview/blob/main/discord
 
 For game update showcase video: [![github](https://github.com/remance/preview/blob/main/youtube_logo3.png?raw=true)][2]
 
-If anyone is interested in another similar game like this, there is an interesting game by another
-developer: https://kaetjaatyy.github.io/devlog/
-
 ---------------
 
 # Index
@@ -119,18 +116,22 @@ than 1 source of information that dictates the story tone, army composition, siz
 ![Image showing information about the Battle of Hastings](https://github.com/remance/preview/blob/main/source.gif?raw=true)
 
 ## Army is led by more than just a king
-
-So many historical war games have only one leader per army. Not here. Every unit has a leadership structure and every
+ 
+Troops in each army can be led by multiple leaders with chain of command and every
 historical battle will have all the named people that participated in the battle.
 
-![alt text](https://github.com/remance/preview/blob/main/leader.gif?raw=true)
+[//]: # (![alt text]&#40;https://github.com/remance/preview/blob/main/leader.gif?raw=true&#41;)
 
-## Custom Unit Creator
+[//]: # ()
+[//]: # (## Custom Unit Creator)
 
-Bored of a simple line formation and want to try making weird unit formation? There is a custom unit editor that
-provides a complete freedom unit design. The custom units can be used in custom battles.
+[//]: # ()
+[//]: # (Bored of a simple line formation and want to try making weird unit formation? There is a custom unit editor that)
 
-![alt text](https://github.com/remance/preview/blob/main/custom.gif?raw=true)
+[//]: # (provides a complete freedom unit design. The custom units can be used in custom battles.)
+
+[//]: # ()
+[//]: # (![alt text]&#40;https://github.com/remance/preview/blob/main/custom.gif?raw=true&#41;)
 
 ## Extremely easy map creation
 
@@ -164,12 +165,13 @@ historical information to players.
 
 ### Sound (Obtained and edited):
 
-- Musket sound effect "aaronsiler_musket 3.wav", "aaronsiler_musket 4.wav" by aaronsiler (https://freesound.org/people/aaronsiler/)
+- Musket sound effect "aaronsiler_musket 3", "aaronsiler_musket 4" by aaronsiler (https://freesound.org/people/aaronsiler/)
 - Assorted weapon sound effect from Videvo (https://www.videvo.net/)
 - Heavy rain weather ambient sound "Heavy Rain" by lebaston100 (https://freesound.org/people/lebaston100/)
-- Heavy Weapon swing sound effect by "Swinging staff whoosh (strong) 08.wav" Nightflame (https://freesound.org/people/Nightflame/)
+- Heavy Weapon swing sound effect by "Swinging staff whoosh (strong) 08" Nightflame (https://freesound.org/people/Nightflame/)
 - Sword swing sound effect "Swosh Sword Swing" by qubodup (https://freesound.org/people/qubodup/)
-
+- Big warhorn sound effect "BIG-REVERB-WARHORN" by newagesoup (https://freesound.org/people/newagesoup/sounds/348862/)
+- Warhorn sound effect "Battle horn 1" by kirmm (https://pixabay.com/sound-effects/battle-horn-1-6931/)
 ## Translation
 
 ### Ukrainian Translation:
@@ -190,13 +192,13 @@ historical information to players.
 preparation and result screen, custom battle, custom unit editor, improve the main menu, Battle of Megiddo, Battle of
 Mohács
 
-**0.6.6 and 0.6.7:** random map generator, AOE attack, start working on Battle of Mohács, Minor battle: 764 Irish
+**0.6.6 and 0.6.7:** random map generator, start working on Battle of Mohács, Minor battle: 764 Irish
 abbey war
 
 **0.6.8 and 0.6.9:** Leader command, console stick, chain of command
 
 **Ver 0.7 Future Visionary:** hidden stat, line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus,
-day-night, Battle of Walaja, Battle of Dorylaeum
+day-night, AOE attack, ground and impact effect, Battle of Walaja, Battle of Dorylaeum
 
 **Ver 0.8 Authentic Attraction:** In-game art, better-looking UI, add intro screen, Battle of Isandlwana, Battle of Hwangsanbeol
 

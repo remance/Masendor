@@ -51,7 +51,6 @@ class Battle:
 
     # Import common.ui
     countdown_skill_icon = empty_method
-    effect_icon_blit = empty_method
     effect_icon_mouse_over = empty_method
     escmenu_process = empty_method
     kill_effect_icon = empty_method
@@ -102,7 +101,6 @@ class Battle:
         self.battle_map = main.battle_map
 
         self.sprite_indicator = main.sprite_indicator
-        self.damage_sprites = main.damage_sprites
 
         self.mini_map = main.mini_map
         self.button_ui = main.button_ui
@@ -392,8 +390,6 @@ class Battle:
         self.active_subunit_list = []
         self.visible_subunit_list = {}
 
-        self.setup_battle_ui("add")
-
         self.camera_mode = self.start_camera_mode
         self.setup_battle_troop(self.subunit_updater)
         self.all_team_subunit = {1: pygame.sprite.Group(),
@@ -432,6 +428,8 @@ class Battle:
                         self.true_camera_pos = pygame.Vector2(self.player_char.base_pos)
                         self.camera_fix()
                     break
+
+        self.setup_battle_ui("add")
 
         self.shown_camera_pos = self.camera_pos
 
@@ -577,7 +575,7 @@ class Battle:
                             if self.player_input_state == self.wheel_ui:  # wheel ui process
                                 if mouse_left_up:
                                     self.wheel_ui_process(choice)
-                                elif event_key_press == pygame.K_q:  # Close unit command wheel ui
+                                elif event_key_press == pygame.K_TAB:  # Close unit command wheel ui
                                     self.battle_ui_updater.remove(self.wheel_ui)
                                     old_player_input_state = self.player_input_state
                                     self.player_input_state = self.previous_player_input_state
@@ -674,6 +672,7 @@ class Battle:
                     self.dt = self.true_dt * self.game_speed  # apply dt with game_speed for calculation
                     if self.ui_timer >= 0.4:  # reset ui timer every 1.1 seconds
                         self.command_ui.value_input(who=self.player_char)
+                        self.countdown_skill_icon()
                         self.battle_scale = [(value / sum(self.team_troop_number) * 100) for value in
                                              self.team_troop_number]
                         self.battle_scale_ui.change_fight_scale(

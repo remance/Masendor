@@ -45,7 +45,7 @@ class DamageSprite(pygame.sprite.Sprite):
 
     def __init__(self, attacker, weapon, dmg, penetrate, weapon_stat,
                  attack_type, base_target, accuracy=None, height_ignore=False, degrade_when_travel=True,
-                 degrade_when_hit=True, random_direction=False, random_move=False, arc_shot=False):
+                 degrade_when_hit=True, random_direction=False, random_move=False, arc_shot=False, impact_effect=None):
         self._layer = 10000001
         pygame.sprite.Sprite.__init__(self, self.containers)
 
@@ -57,6 +57,7 @@ class DamageSprite(pygame.sprite.Sprite):
         self.height = self.attacker.height
         self.head_height = self.attacker.head_height
         self.attack_type = attack_type
+        self.impact_effect = None
 
         self.height_ignore = height_ignore
         self.degrade_when_travel = degrade_when_travel

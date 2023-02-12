@@ -14,7 +14,7 @@ def move_ai_logic(self):
                     if self.leader.follow_order != "Free":  # move to assigned location
                         if self.leader.follow_order == ("Stay Formation", "Stay Here"):
                             follow = stay_formation_distance
-                            stay_distance = 10
+                            stay_distance = 5
                         else:
                             follow = follow_distance
                             stay_distance = self.stay_distance_zone
@@ -35,8 +35,7 @@ def move_ai_logic(self):
                                 attack_distance /= 3
                             if attack_distance > 0:
                                 # charge to random position near target
-                                if "repeat" in self.current_action and "movable" in self.current_action and \
-                                        "Charge" not in self.current_action["name"]:
+                                if "move loop" in self.current_action and "Charge" not in self.current_action["name"]:
                                     self.interrupt_animation = True
                                 self.command_action = self.charge_command_action[attack_index].copy()
                                 self.command_target = move_to_near_enemy(self.attack_target)
@@ -45,12 +44,12 @@ def move_ai_logic(self):
                         elif distance_to_move > follow:  # too far from follow target pos, start moving toward it
                             self.command_target = self.follow_target
                             if 0 < distance_to_move < 20:  # only walk if not too far
-                                if "repeat" in self.current_action and "movable" in self.current_action:
+                                if "move loop" in self.current_action:
                                     self.interrupt_animation = True
                                 self.command_action = self.walk_command_action.copy()
                                 self.command_action["move speed"] = self.walk_speed
                             else:  # run if too far
-                                if "repeat" in self.current_action and "movable" in self.current_action:
+                                if "move loop" in self.current_action:
                                     self.interrupt_animation = True
                                 self.command_action = self.run_command_action.copy()
                                 self.command_action["move speed"] = self.run_speed
@@ -74,7 +73,7 @@ def move_ai_logic(self):
                         self.command_action["move speed"] = self.run_speed
 
     else:
-        if "repeat" in self.current_action and "movable" in self.current_action:
+        if "move loop" in self.current_action:
             self.interrupt_animation = True
         self.command_action = self.flee_command_action.copy()
         self.command_action["move speed"] = self.run_speed

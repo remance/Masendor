@@ -18,13 +18,12 @@ def health_stamina_logic(self, dt):
         elif self.health > self.max_health:
             self.health = self.max_health  # hp can't exceed max hp (would increase number of troop)
 
-        if self.old_health != self.health:
-            self.old_health = self.health
-
     if self.stamina != infinity:
         if self.stamina < self.max_stamina:
+            if self.stamina < 0:
+                self.stamina = 0
             self.stamina = self.stamina + (dt * self.stamina_regen)  # regen
         else:  # stamina cannot exceed the max stamina
             self.stamina = self.max_stamina
 
-        self.old_last_stamina = self.stamina
+

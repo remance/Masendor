@@ -27,12 +27,12 @@ def play_animation(self, dt, hold_check):
                     just_start = False
                     done = True
             if done is False:  # check if new frame has play speed mod
-                if "player_speed_mod" in self.current_animation[self.show_frame]["frame_property"]:
+                if "play_time_mod" in self.current_animation[self.show_frame]["frame_property"]:
                     self.animation_play_speed = self.default_animation_play_speed * \
-                                                self.current_animation[self.show_frame]["frame_property"]["player_speed_mod"]
-                elif "player_speed_mod" in self.current_animation[self.show_frame]["animation_property"]:
+                                                self.current_animation[self.show_frame]["frame_property"]["play_time_mod"]
+                elif "play_time_mod" in self.current_animation[self.show_frame]["animation_property"]:
                     self.animation_play_speed = self.default_animation_play_speed * \
-                                                self.current_animation[self.show_frame]["animation_property"]["player_speed_mod"]
+                                                self.current_animation[self.show_frame]["animation_property"]["play_time_mod"]
 
     self.image = current_animation[self.show_frame]["sprite"]
 

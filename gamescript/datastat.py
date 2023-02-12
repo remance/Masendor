@@ -138,6 +138,7 @@ class TroopData:
                     row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
                                        tuple_column=tuple_column, int_column=int_column, true_empty=True)
                 self.skill_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
+                self.skill_list[row[0]]["Shake Power"] = int(self.skill_list[row[0]]["Sound Distance"] / 10)
         edit_file.close()
 
         self.skill_lore = {}
@@ -154,7 +155,7 @@ class TroopData:
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
-            int_column = ("ID", "Buff Range", "Race", "Cost", "Upkeep", "Element", "Charge Defence Bonus",
+            int_column = ("ID", "Area of Effect", "Cost", "Upkeep", "Element", "Charge Defence Bonus",
                           "HP Regeneration Bonus", "Stamina Regeneration Bonus", "Morale Bonus", "Discipline Bonus",
                           "Critical Bonus", "Sight Bonus", "Hidden Bonus", "Physical Resistance Bonus",
                           "Fire Resistance Bonus", "Water Resistance Bonus", "Air Resistance Bonus",
@@ -464,6 +465,7 @@ class LeaderData:
                     row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
                                        tuple_column=tuple_column, int_column=int_column, true_empty=True)
                 self.skill_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
+                self.skill_list[row[0]]["Shake Power"] = int(self.skill_list[row[0]]["Sound Distance"] / 10)
         edit_file.close()
 
         self.skill_lore = {}
@@ -497,6 +499,7 @@ class LeaderData:
                                        tuple_column=tuple_column, int_column=int_column, true_empty=True)
                 self.commander_skill_list[row[0]] = {header[index + 1]: stuff for index, stuff in
                                                      enumerate(row[1:])}
+                self.commander_skill_list[row[0]]["Shake Power"] = int(self.commander_skill_list[row[0]]["Sound Distance"] / 10)
         edit_file.close()
 
         self.commander_skill_lore = {}

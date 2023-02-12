@@ -20,12 +20,16 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                     #     self.issue_order(cursor_pos, other_command="Troop Weapon Skill 0")
                     # elif key_state[pygame.K_2]:  # Use troop weapon skill 2
                     #     self.issue_order(cursor_pos, other_command="Troop Weapon Skill 1")
-                    if key_state[pygame.K_e]:  # Use leader weapon skill 1
-                        self.command_action = self.weapon_skill_command_action_0
-                    elif key_state[pygame.K_r]:  # Use leader weapon skill 2
-                        self.command_action = self.weapon_skill_command_action_1
+                    if key_state[pygame.K_q]:  # Use main weapon skill
+                        self.command_action = self.skill_command_action_0
+                    elif key_state[pygame.K_e]:  # Use sub weapon skill
+                        self.command_action = self.skill_command_action_1
+                    elif key_state[pygame.K_r]:  # Use main weapon skill
+                        self.command_action = self.skill_command_action_2
+                    elif key_state[pygame.K_t]:  # Use sub weapon skill
+                        self.command_action = self.skill_command_action_3
 
-                if not self.current_action or "movable" in self.current_action:
+                if not self.current_action or "move loop" in self.current_action:
                     speed = self.walk_speed
                     if key_state[pygame.K_LSHIFT]:
                         speed = self.run_speed
@@ -49,8 +53,8 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                             if key_state[pygame.K_LSHIFT]:
                                 self.command_action = self.run_command_action.copy()
                             self.command_action["move speed"] = speed
-                        elif "repeat" in self.current_action and "Charge" not in self.current_action["name"]:
-                            # Already waling or running but not charging, replace current action with new one
+                        elif "move loop" in self.current_action and "Charge" not in self.current_action["name"]:
+                            # Already walking or running but not charging, replace current action with new one
                             self.current_action = self.walk_command_action.copy()
                             if key_state[pygame.K_LSHIFT]:
                                 self.current_action = self.run_command_action.copy()
@@ -83,7 +87,7 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                     if "hold" in self.current_action:  # release holding
                         self.current_action.pop("hold")
 
-            elif "movable" in self.current_action:  # attack while moving
+            elif "move loop" in self.current_action:  # attack while moving
                 self.new_angle = self.set_rotate(new_pos)
                 if mouse_left_down or mouse_right_down:
                     action_num = 0
@@ -104,7 +108,6 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                             elif "move attack" not in self.current_action:
                                 if "hold" in self.current_action:  # cannot hold shoot while moving
                                     self.current_action.pop("hold")
-                                self.current_action["movable"] = True
                                 self.current_action["move attack"] = True
                                 self.current_action["pos"] = cursor_pos
                             else:  # already attacking and moving, update pos
