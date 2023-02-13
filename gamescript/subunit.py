@@ -25,7 +25,7 @@ weapon_set = ("Main_", "Sub_")
 Key:
 name = action name that will be used to find animation, name with "Action" will find attack action of weapon for animation name
 main_weapon = animation use one with common main weapon action name regardless of input
-move attack
+move attack = indicate using move attack animation
 melee attack = indicate animation performing melee attack for spawning damage sprite in frame that can spawn it
 range attack = indicate animation performing range attack for spawning bullet sprite when finish
 repeat = keep repeating this animation until canceled, should only be used for action that can be controlled like walk
@@ -35,6 +35,8 @@ forced move = subunit must move to provided pos during action regardless of inpu
 next action = action that will be performed after the current one finish
 uninterruptible = action can not be interrupt unless top_interrupt_animation is True
 move loop = action involve repeating movement that can be cancel when movement change like walk to run
+charge = indicate charging action
+fly = subunit sprite will also "fly" while moving
 """
 
 skill_command_action_0 = {"name": "Skill 0"}
@@ -50,16 +52,21 @@ flee_command_action = {"name": "Flee", "movable": True, "repeat": True, "move lo
 melee_attack_command_action = ({"name": "Action 0", "melee attack": True}, {"name": "Action 1", "melee attack": True})
 range_attack_command_action = ({"name": "Action 0", "range attack": True}, {"name": "Action 1", "range attack": True})
 
-move_shoot_command_action = ({"name": "Action 0", "range attack": True, "move attack": True, "movable": True},
-                             {"name": "Action 1", "range attack": True, "move attack": True, "movable": True})
+walk_shoot_command_action = ({"name": "Action 0", "range attack": True, "walk": True, "movable": True},
+                             {"name": "Action 1", "range attack": True, "walk": True, "movable": True})
 
-charge_command_action = ({"name": "Charge 0", "movable": True, "repeat": True, "move loop": True, "use momentum": True},
-                         {"name": "Charge 1", "movable": True, "repeat": True, "move loop": True, "use momentum": True})
+run_shoot_command_action = ({"name": "Action 0", "range attack": True, "run": True, "movable": True},
+                            {"name": "Action 1", "range attack": True, "run": True, "movable": True})
+
+charge_command_action = ({"name": "Charge 0", "movable": True, "repeat": True, "move loop": True,
+                          "use momentum": True, "charge": True},
+                         {"name": "Charge 1", "movable": True, "repeat": True, "move loop": True,
+                          "use momentum": True, "charge": True})
 
 heavy_damaged_command_action = {"name": "HeavyDamaged", "uncontrollable": True, "movable": True, "forced move": True}
 damaged_command_action = {"name": "Damaged", "uncontrollable": True, "movable": True, "forced move": True}
 knockdown_command_action = {"name": "Knockdown", "uncontrollable": True, "movable": True, "forced move": True,
-                            "next action": {"name": "Standup", "uncontrollable": True}}
+                            "fly": True, "next action": {"name": "Standup", "uncontrollable": True}}
 
 die_command_action = {"name": "Die", "uninterruptible": True, "uncontrollable": True}
 
@@ -119,7 +126,7 @@ class Subunit(pygame.sprite.Sprite):
     pick_animation = empty_method
     play_animation = empty_method
     process_trait_skill = empty_method
-    range_weapon_selection = empty_method
+    retreat_ai_logic = empty_method
     rotate_logic = empty_method
     status_update = empty_method
     skill_check_logic = empty_method
@@ -151,7 +158,8 @@ class Subunit(pygame.sprite.Sprite):
     melee_attack_command_action = melee_attack_command_action
     range_attack_command_action = range_attack_command_action
 
-    move_shoot_command_action = move_shoot_command_action
+    walk_shoot_command_action = walk_shoot_command_action
+    run_shoot_command_action = run_shoot_command_action
 
     charge_command_action = charge_command_action
 
@@ -162,6 +170,7 @@ class Subunit(pygame.sprite.Sprite):
     die_command_action = die_command_action
 
     all_formation_list = {}
+    hitbox_image_list = {}
 
     # static variable
     default_animation_play_speed = 0.1
@@ -213,7 +222,7 @@ class Subunit(pygame.sprite.Sprite):
         self.nearest_enemy = []
         self.nearest_ally = []
 
-        self.game_id = game_id  # ID of this
+        self.game_id = game_id  # ID of this subunit
         self.team = team
         self.coa = coa
 
@@ -270,6 +279,7 @@ class Subunit(pygame.sprite.Sprite):
         self.base_target = self.base_pos  # base_target pos to move
         self.command_target = self.base_pos  # command target pos
         self.follow_target = self.base_pos  # target pos based on formation position
+        self.forced_target = self.base_pos  # target pos for animation that force moving
 
         self.front_pos = (0, 0)  # pos of this subunit for finding height of map at the front
         self.front_height = 0
@@ -342,7 +352,7 @@ class Subunit(pygame.sprite.Sprite):
             self.formation_style = "Cavalry Flank"
             self.formation_density = "Tight"
             self.formation_position = "Behind"
-            self.follow_order = "Follow"
+            self.follow_order = "Stay Formation"
             self.formation_consider_flank = False  # has both infantry and cavalry, consider flank placment style
             self.formation_distance_list = {}
             self.formation_pos_list = {}
@@ -471,8 +481,6 @@ class Subunit(pygame.sprite.Sprite):
 
         self.health = ((self.strength * 0.2) + (self.constitution * 0.8)) * (grade_stat[
             "Health Effect"] / 100) * (start_hp / 100)  # Health of troop
-        if self.is_leader:  # TODO TEMP
-            self.health *= 10
         self.stamina = ((self.strength * 0.2) + (self.constitution * 0.8)) * (grade_stat["Stamina Effect"] / 100) * (
                 start_stamina / 100)  # starting stamina with grade
 
@@ -562,6 +570,7 @@ class Subunit(pygame.sprite.Sprite):
         self.base_charge = self.original_charge
         self.base_charge_def = self.original_charge_def
         self.skill = self.original_skill.copy()
+        self.input_skill = self.skill.copy()  # skill dict without charge skill
 
         self.leader_skill = {x: self.leader_data.skill_list[x] for x in self.skill if x in self.leader_data.skill_list}
         if self.leader is None:  # no higher leader, count as commander tier
@@ -597,10 +606,9 @@ class Subunit(pygame.sprite.Sprite):
         self.stamina_list = (self.stamina75, self.stamina50, self.stamina25, self.stamina5, -1)
 
         self.max_health = self.health  # health percentage
-        self.max_health1 = self.max_health * 0.01
-        self.max_health5 = self.max_health * 0.05
         self.max_health10 = self.max_health * 0.1
-        self.health_list = (self.health * 0.75, self.health * 0.5, self.health * 0.25, 0)
+        self.max_health20 = self.max_health * 0.2
+        self.max_health50 = self.max_health * 0.5
 
         # Weight calculation
         self.weight += self.troop_data.armour_list[self.armour_gear[0]]["Weight"] + self.mount_armour[
@@ -642,6 +650,7 @@ class Subunit(pygame.sprite.Sprite):
         self.weapon_speed = self.original_weapon_speed[self.equipped_weapon].copy()
         self.shoot_range = self.original_shoot_range[self.equipped_weapon].copy()
         self.melee_range = self.original_melee_range[self.equipped_weapon]
+        self.max_melee_range = self.melee_range[0]
         self.melee_charge_range = {0: 0, 1: 0}
 
         self.morale_state = 1  # turn into percentage
@@ -678,31 +687,51 @@ class Subunit(pygame.sprite.Sprite):
         self.melee_distance_zone = self.troop_size * 5
         self.stay_distance_zone = self.melee_distance_zone + 10
 
-        self.shadow_image = pygame.Surface((self.troop_size * 5, self.troop_size * 5), pygame.SRCALPHA)
+        # Save some special effect that unlikely to change as variable to reduce workload
+        self.shoot_while_moving = self.check_special_effect("Shoot While Moving")
+        self.impetuous = self.check_special_effect("Impetuous")
+        self.night_vision = self.check_special_effect("Night Vision")
+        self.day_blindness = self.check_special_effect("Day Blindness")
 
+        # Create hitbox sprite
+        self.hitbox_front_distance = self.troop_size
+        if self.team not in self.hitbox_image_list:
+            self.hitbox_image_list[self.team] = {"troop": {}, "leader": {}}
         if self.is_leader:
-            # self.shadow_image = pygame.transform.scale(self.shadow_image, (self.shadow_image.get_width() * 1.5,
-            #                                                                self.shadow_image.get_height() * 1.5))
+            if (self.troop_size * 5, self.troop_size * 5) not in self.hitbox_image_list[self.team]["leader"]:
+                self.hitbox_image = pygame.Surface((self.troop_size * 5, self.troop_size * 5), pygame.SRCALPHA)
+                pygame.draw.circle(self.hitbox_image, (120, 128, 0, 150),
+                                   (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
+                                   self.hitbox_image.get_width() / 2)
 
-            pygame.draw.circle(self.shadow_image, (120, 128, 0, 150),
-                               (self.shadow_image.get_width() / 2, self.shadow_image.get_height() / 2),
-                               self.shadow_image.get_width() / 2)
+                pygame.draw.circle(self.hitbox_image,
+                                   (self.team_colour[self.team][0], self.team_colour[self.team][1],
+                                    self.team_colour[self.team][2], 150),
+                                   (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
+                                   self.hitbox_image.get_width() / 2.4)
+            else:
+                self.hitbox_image = self.hitbox_image_list[self.team]["leader"][(self.troop_size * 5, self.troop_size * 5)]
         else:
-            pygame.draw.circle(self.shadow_image, (0, 0, 0, 150),
-                               (self.shadow_image.get_width() / 2, self.shadow_image.get_height() / 2),
-                               self.shadow_image.get_width() / 2)
+            if (self.troop_size * 5, self.troop_size * 5) not in self.hitbox_image_list[self.team]["troop"]:
+                self.hitbox_image = pygame.Surface((self.troop_size * 5, self.troop_size * 5), pygame.SRCALPHA)
+                pygame.draw.circle(self.hitbox_image, (0, 0, 0, 150),
+                                   (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
+                                   self.hitbox_image.get_width() / 2)
 
-        pygame.draw.circle(self.shadow_image,
-                           (self.team_colour[self.team][0], self.team_colour[self.team][1],
-                            self.team_colour[self.team][2], 150),
-                           (self.shadow_image.get_width() / 2, self.shadow_image.get_height() / 2),
-                           self.shadow_image.get_width() / 2.4)
+                pygame.draw.circle(self.hitbox_image,
+                                   (self.team_colour[self.team][0], self.team_colour[self.team][1],
+                                    self.team_colour[self.team][2], 150),
+                                   (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
+                                   self.hitbox_image.get_width() / 2.4)
+            else:
+                self.hitbox_image = self.hitbox_image_list[self.team]["troop"][
+                    (self.troop_size * 5, self.troop_size * 5)]
 
         self.rect = self.image.get_rect(center=self.offset_pos)  # for blit into screen
 
     def update(self, dt):
-        if self.health > 0:  # only run these when not dead
-            if dt > 0:  # only run these when game not pause
+        if self.health:  # only run these when not dead
+            if dt:  # only run these when game not pause
                 self.timer += dt
 
                 if self.dead_change:
@@ -717,24 +746,12 @@ class Subunit(pygame.sprite.Sprite):
                         self.in_melee_combat_timer = 0
 
                 if self.timer > 1:  # Update status and skill use around every 1 second
-                    nearest_enemy = {key: key.base_pos.distance_to(self.base_pos) for key in
-                                     self.battle.active_subunit_list if key.team != self.team}
-                    nearest_friend = {key: key.base_pos.distance_to(self.base_pos) for key in
-                                      self.battle.active_subunit_list if key.team == self.team}
-                    self.nearest_enemy = sorted(nearest_enemy.items(),
-                                                key=lambda item: item[1])  # sort the closest enemy
-                    self.nearest_ally = sorted(nearest_friend.items(),
-                                               key=lambda item: item[1])  # sort the closest friend
-
                     self.status_update()
-                    if self.player_manual_control is False:
-                        if self.not_broken:
-                            self.combat_ai_logic()
-                        self.move_ai_logic()
+
+                    if self not in self.battle.troop_ai_logic_queue:
+                        self.battle.troop_ai_logic_queue.append(self)
 
                     self.timer -= 1
-
-                    self.taking_damage_angle = None
 
                 self.skill_check_logic()
 
@@ -778,7 +795,7 @@ class Subunit(pygame.sprite.Sprite):
 
         if self.alive:
 
-            if self.one_activity_limit > 0:
+            if self.one_activity_limit:
                 self.one_activity_timer += dt
                 if self.one_activity_timer >= self.one_activity_limit:
                     self.one_activity_limit = 0

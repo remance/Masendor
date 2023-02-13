@@ -49,7 +49,7 @@ class EffectSprite(pygame.sprite.Sprite):
     def update(self, subunit_list, dt):
         done, just_start = self.play_animation(0.1, dt, False)
 
-        if self.duration > 0:
+        if self.duration:
             self.duration -= dt
             if self.duration <= 0:  # kill effect when duration end
                 self.clean_object()

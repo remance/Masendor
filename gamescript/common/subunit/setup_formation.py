@@ -3,8 +3,8 @@ import numpy as np
 from gamescript.common import utility
 rotation_xy = utility.rotation_xy
 
-formation_density_distance = {"Very Tight": 2, "Tight": 6,
-                              "Very Loose": 20, "Loose": 12}
+formation_density_distance = {"Very Tight": 2, "Tight": 4,
+                              "Very Loose": 15, "Loose": 8}
 
 
 def setup_formation(self, phase=None, style=None, density=None, position=None):
@@ -133,6 +133,9 @@ def setup_formation(self, phase=None, style=None, density=None, position=None):
                 self.formation_pos_list[formation_distance_list[row][col]] = \
                     rotation_xy(self.base_pos, self.base_pos + distance,
                                 self.radians_angle)
+
+                if self.follow_order != "Stay Here":  # reset follow target
+                    formation_distance_list[row][col].follow_target = self.formation_pos_list[formation_distance_list[row][col]]
 
                 if col_index + 1 < len(do_order[0]):  # still more to do in this row
                     if do_order[0][col_index + 1] < col:  # left from current, such as 1 to 0, then get the right of next (1)

@@ -4,10 +4,10 @@ def use_skill(self, which_skill):
 
     group_to_do = []
     if skill_stat["Type"] in (0, 2):
-        group_to_do.append(self.nearest_ally)
+        group_to_do.append(self.near_ally)
         self.apply_effect(which_skill, skill_stat, self.skill_effect, self.skill_duration)
     if skill_stat["Type"] in (1, 2):
-        group_to_do.append(self.nearest_enemy)
+        group_to_do.append(self.near_enemy)
 
     if aoe > 1:
         for group in group_to_do:

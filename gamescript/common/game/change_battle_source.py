@@ -1,21 +1,19 @@
-def change_battle_source(self, scale_value, team_army, team_commander):
+def change_battle_source(self, team_troop, team_commander):
     """change army stat when select new source"""
 
-    self.unit_scale = scale_value
-
-    team_total_troop = {key: 0 for key in team_army.keys()}  # total troop number in army
-    troop_type_list = {key: [0, 0, 0, 0] for key in team_army.keys()}  # total number of each troop type
+    team_total_troop = {key: 0 for key in team_troop.keys()}  # total troop number in army
+    troop_type_list = {key: [0, 0, 0, 0] for key in team_troop.keys()}  # total number of each troop type
     leader_name_list = {key: leader[0] for key, leader in team_commander.items()}
 
-    for index, team in team_army.items():
+    for index, team in team_troop.items():
         for this_troop in team:
-            team_total_troop[index] += 1
+            team_total_troop[index] += team[this_troop]
             troop_type = 0
             if self.troop_data.troop_list[this_troop]["Troop Class"] in ("Range Infantry", "Range Cavalry", "Artillery"):  # range subunit
                 troop_type += 1  # range weapon and accuracy higher than melee melee_attack
             if self.troop_data.troop_list[this_troop]["Troop Class"] in ("Light Cavalry", "Heavy Cavalry", "Chariot"):  # cavalry
                 troop_type += 2
-            troop_type_list[index][troop_type] += 1
+            troop_type_list[index][troop_type] += team[this_troop]
 
     army_loop_list = {key: self.leader_data.leader_list[leader_name_list[key]]["Name"] + ": " +
                            "{:,}".format(int(troop)) + " Troops" for key, troop in team_total_troop.items()}

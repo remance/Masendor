@@ -38,6 +38,7 @@ def setup_battle_troop(self, team_subunit_list, specific_team=None):
         list_column = [index for index, item in enumerate(header) if item in list_column]
         float_column = [index for index, item in enumerate(header) if item in float_column]
         leader_subunit = {}
+        game_id = 0
         for troop in rd[1:]:  # skip header
             for n, i in enumerate(troop):
                 troop = stat_convert(troop, n, i, list_column=list_column, int_column=int_column,
@@ -55,11 +56,19 @@ def setup_battle_troop(self, team_subunit_list, specific_team=None):
                 if troop["Leader"] != 0:
                     leader = leader_subunit[troop["Leader"]]
 
-                add_subunit = subunit.Subunit(troop["Troop ID"], troop["ID"], troop["Team"], troop["POS"],
-                                              troop["Angle"], troop["Start Health"], troop["Start Stamina"], leader,
-                                              self.faction_data.coa_list[troop["Faction"]])
-                if type(troop["Troop ID"]) is str:  # leader subunit from L string leader id as troop id
-                    leader_subunit[add_subunit.game_id] = add_subunit
+                if type(troop["Troop ID"]) is str:
+                    add_subunit = subunit.Subunit(troop["Troop ID"], game_id, troop["Team"], troop["POS"],
+                                                  troop["Angle"], troop["Start Health"], troop["Start Stamina"], leader,
+                                                  self.faction_data.coa_list[troop["Faction"]])
+                    leader_subunit[troop["ID"]] = add_subunit  # leader subunit from L string leader id as troop id
+                    game_id += 1
+                else:  # troop, check how many to spawn
+                    for _ in range(int(troop["How Many"])):
+                        add_subunit = subunit.Subunit(troop["Troop ID"], game_id, troop["Team"], troop["POS"],
+                                                      troop["Angle"], troop["Start Health"], troop["Start Stamina"],
+                                                      leader, self.faction_data.coa_list[troop["Faction"]])
+                        game_id += 1
+
                 which_team.add(add_subunit)
 
     unit_file.close()

@@ -744,8 +744,5 @@ class MapPreview(pygame.sprite.Sprite):
                         if troop_type == "Leader":
                             rect = self.leader_dot[team][select].get_rect(center=scaled_pos)
                             self.image.blit(self.leader_dot[team][select], rect)
-                        else:
-                            rect = self.troop_dot[team].get_rect(center=scaled_pos)
-                            self.image.blit(self.troop_dot[team], rect)
 
         self.rect = self.image.get_rect(center=self.pos)

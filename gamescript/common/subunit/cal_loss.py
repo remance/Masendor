@@ -1,31 +1,43 @@
-import random
+import math
+import pygame
 
 infinity = float("inf")
 
 
-def cal_loss(self, target, final_dmg, final_morale_dmg, element_effect):
+def cal_loss(self, target, final_dmg, impact, final_morale_dmg, element_effect, hit_angle):
     """
     :param self: Attacker Subunit object
     :param target: Damage receiver Subunit object
     :param final_dmg: Damage value to health
     :param final_morale_dmg: Damage value to morale
     :param element_effect: Dict of element effect inflict to target
+    :param hit_angle: Angle of hitting side
     """
     if final_dmg > target.health:  # dmg cannot be higher than remaining health
         final_dmg = target.health
 
-    if final_dmg > target.max_health10:
+    impact_check = final_dmg + impact
+
+    if impact_check > target.max_health50:
         target.interrupt_animation = True
         target.command_action = self.knockdown_command_action
         target.one_activity_limit = target.max_health / final_dmg
+        # target.move_speed = target.walk_speed
+        # target.base_pos =
 
-    elif final_dmg > target.max_health5:
+    elif impact_check > target.max_health20:
         target.interrupt_animation = True
         target.command_action = self.heavy_damaged_command_action
+        target.move_speed = target.walk_speed
+        target.forced_target = pygame.Vector2(target.base_pos[0] - (impact * math.sin(math.radians(hit_angle))),
+                                              target.base_pos[1] - (impact * math.cos(math.radians(hit_angle))))
 
-    elif final_dmg > target.max_health1:  # play damaged animation
+    elif impact_check > target.max_health10:  # play damaged animation
         target.interrupt_animation = True
         target.command_action = self.damaged_command_action
+        target.move_speed = target.walk_speed
+        target.forced_target = pygame.Vector2(target.base_pos[0] - (impact * math.sin(math.radians(hit_angle))),
+                                              target.base_pos[1] - (impact * math.cos(math.radians(hit_angle))))
 
     target.health -= final_dmg
     health_check = 0.1

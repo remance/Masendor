@@ -20,14 +20,6 @@ def attack(self, attack_type):
         base_target = self.attack_pos
     if attack_type == "range":
         if base_target is not None:
-            if "arc shot" in self.current_action:
-                arc_shot = self.current_action["arc shot"]
-            else:  # check if the attack require arc shot and can use it, for player manual attack
-                arc_shot = False
-                clip = self.check_line_of_sight(base_target)
-                if clip and self.check_special_effect("Arc Shot", weapon=weapon):
-                    arc_shot = True
-
             max_range = self.shoot_range[weapon]
 
             accuracy = self.accuracy
@@ -35,8 +27,6 @@ def attack(self, attack_type):
 
             if self.move:
                 accuracy -= 10  # accuracy penalty for shoot while moving
-            if arc_shot:  # arc shot incur accuracy penalty:
-                accuracy -= 10
 
             attack_range = self.base_pos.distance_to(base_target)
             if self.check_special_effect("No Range Penalty"):
@@ -53,17 +43,14 @@ def attack(self, attack_type):
             # Wind affect accuracy, higher different in direction cause more accuracy loss
             angel_dif = (abs(convert_degree_to_360(base_angle) -
                              self.battle.current_weather.wind_direction) / 100) * self.battle.current_weather.wind_strength
-            if arc_shot:  # higher travel distance mean more effect from wind, arc shot suffer more from wind
-                angel_dif += angel_dif * attack_range / 50
-            else:
-                angel_dif += angel_dif * attack_range / 100
+
+            angel_dif += angel_dif * attack_range / 100
             accuracy -= round(angel_dif)
 
-            if arc_shot is False:  # direct shot just shoot base on direction of target at max range
-                base_target = pygame.Vector2(self.base_pos[0] - (max_range *
-                                                                 math.sin(math.radians(base_angle))),
-                                             self.base_pos[1] - (max_range *
-                                                                 math.cos(math.radians(base_angle))))
+            base_target = pygame.Vector2(self.base_pos[0] - (max_range *
+                                                             math.sin(math.radians(base_angle))),
+                                         self.base_pos[1] - (max_range *
+                                                             math.cos(math.radians(base_angle))))
 
             if self.attack_target is not None:
                 how_long = attack_range / self.speed  # shooting distance divide damage sprite speed to find travel time
@@ -94,7 +81,7 @@ def attack(self, attack_type):
 
                 damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
                                           self.weapon_penetrate[self.equipped_weapon][weapon], equipped_weapon_data,
-                                          attack_type, base_target, accuracy=accuracy, arc_shot=arc_shot)
+                                          attack_type, base_target, accuracy=accuracy)
 
             self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
             if self.ammo_now[self.equipped_weapon][weapon] == 0 and \
@@ -105,7 +92,7 @@ def attack(self, attack_type):
                     self.ammo_now.pop(self.equipped_weapon)
                     self.magazine_count.pop(self.equipped_weapon)
                     self.range_weapon_set.remove(self.equipped_weapon)
-    else:
+    else:  # melee attack
         if self.front_pos.distance_to(base_target) > self.melee_range[weapon]:  # target exceed weapon range, use max
             base_angle = self.set_rotate(base_target)
             base_target = pygame.Vector2(self.front_pos[0] - (self.melee_range[weapon] *

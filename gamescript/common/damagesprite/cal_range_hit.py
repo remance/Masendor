@@ -3,7 +3,7 @@ import random
 side_percent = (1, 0.3, 0.3, 0)
 
 
-def cal_range_hit(self, attacker, target, target_side):
+def cal_range_hit(self, attacker, target, target_side, hit_angle):
     """Calculate range attack hit chance and defence chance, side_percent is more punishing than melee attack"""
     attacker_luck = random.randint(-20, 20)  # luck of the attacker subunit
     target_luck = random.randint(-20, 20)  # luck of the defender subunit
@@ -20,7 +20,7 @@ def cal_range_hit(self, attacker, target, target_side):
     if target_def < 0:
         target_def = 0  # defence cannot be negative
 
-    attacker_dmg, attacker_morale_dmg, element_effect, self.penetrate = \
-        self.cal_dmg(attacker, target, attacker_hit, target_def, self.weapon, self.penetrate)
+    attacker_dmg, attacker_morale_dmg, element_effect, impact = \
+        self.cal_dmg(attacker, target, attacker_hit, target_def, self.weapon)
 
-    self.attacker.cal_loss(target, attacker_dmg, attacker_morale_dmg, element_effect)
+    self.attacker.cal_loss(target, attacker_dmg, impact, attacker_morale_dmg, element_effect, hit_angle)

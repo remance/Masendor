@@ -10,8 +10,13 @@ def pick_animation(self):
                 weapon = int(self.current_action["name"][-1])
                 animation_name = self.animation_race_name + "_" + equip_set[weapon] + "_" + self.action_list[weapon][
                     "Common"] + "_"
-                if "move attack" not in self.current_action:
+                if "run" in self.current_action:
+                    animation_name += "Run" + self.action_list[weapon]["Attack"]
+                elif "walk" in self.current_action:
+                    animation_name += "Walk" + self.action_list[weapon]["Attack"]
+                else:
                     animation_name += self.action_list[weapon]["Attack"]
+
             elif "Charge" in self.current_action["name"]:
                 weapon = int(self.current_action["name"][-1])
                 animation_name = self.animation_race_name + "_" + equip_set[weapon] + "_" + self.action_list[weapon][

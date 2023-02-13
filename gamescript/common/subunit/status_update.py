@@ -15,15 +15,13 @@ def status_update(self):
             self.skill_cooldown.pop(key)
 
     self.idle_action = {}
-    for key, value in self.skill_effect.items():
+    for key, value in self.skill_effect.copy().items():
         self.skill_duration[key] -= self.timer
         if self.skill_duration[key] <= 0:  # skill end
             self.skill_duration.pop(key)
+            self.skill_effect.pop(key)
         elif "hold" in value["Action"] or "repeat" in value["Action"]:
             self.idle_action = self.command_action
-
-    self.skill_effect = {key: val for key, val in self.skill_effect.items() if
-                         key in self.skill_duration}  # remove effect if duration reach 0
 
     for key in self.status_duration.copy():  # loop is faster than comprehension here
         self.status_duration[key] -= self.timer
@@ -95,11 +93,11 @@ def status_update(self):
             for effect in trait["Status"]:  # apply status effect from trait
                 self.apply_effect(effect, self.status_list[effect], self.status_effect, self.status_duration)
                 if trait["Area Of Effect"] > 1:  # status buff range to nearby friend
-                    self.apply_status_to_nearby(self.nearest_ally, trait["Buff Range"], effect)
+                    self.apply_status_to_nearby(self.near_ally, trait["Buff Range"], effect)
 
             for effect in trait["Enemy Status"]:  # apply status effect from trait
                 if trait["Area Of Effect"] > 1:  # status buff range to nearby friend
-                    self.apply_status_to_nearby(self.nearest_enemy, trait["Buff Range"], effect)
+                    self.apply_status_to_nearby(self.near_enemy, trait["Buff Range"], effect)
 
     # Apply effect from weather
     weather = self.battle.current_weather
@@ -151,7 +149,7 @@ def status_update(self):
     temp_reach = map_feature_mod[self.battle.day_time + " Temperature"] + weather_temperature
 
     # Apply effect from skill
-    if len(self.skill_effect) > 0:
+    if self.skill_effect:
         for cal_effect in self.skill_effect.values():  # apply elemental effect to melee_dmg if skill has element
             melee_attack_modifier += cal_effect["Melee Attack Effect"]
             melee_def_modifier += cal_effect["Melee Defence Effect"]
@@ -186,7 +184,7 @@ def status_update(self):
             self.stamina_dmg_bonus += cal_effect["Stamina Damage Bonus"]
 
     # Apply effect and modifier from status effect
-    if len(self.status_effect) > 0:
+    if self.status_effect:
         for cal_effect in self.status_effect.values():
             melee_attack_modifier += cal_effect["Melee Attack Effect"]
             melee_def_modifier += cal_effect["Melee Defence Effect"]
@@ -210,17 +208,17 @@ def status_update(self):
 
     # Day time effect sight and hidden stat
     if self.battle.day_time == "Twilight":
-        if self.check_special_effect("Night Vision") is False:
+        if self.night_vision is False:
             sight_bonus -= 10
             accuracy_bonus -= 5
         hidden_bonus += 10
     elif self.battle.day_time == "Night":
-        if self.check_special_effect("Night Vision") is False:
+        if self.night_vision is False:
             sight_bonus -= 30
             accuracy_bonus -= 20
         hidden_bonus += 30
     else:  # day
-        if self.check_special_effect("Day Blindness"):
+        if self.day_blindness:
             sight_bonus -= 30
             accuracy_bonus -= 20
 
@@ -283,8 +281,7 @@ def status_update(self):
         self.charge_def_power /= 2
 
     # include all penalties to morale like remaining health, battle situation scale
-    self.morale -= (((40 - (40 * self.health / self.max_health)) +
-                     (20 - (20 * self.battle.battle_scale[self.team] / 100))) * self.mental)
+    self.morale -= ((20 - (20 * self.battle.battle_scale[self.team] / 100)) * self.mental)
 
     if self.melee_attack < 0:  # seem like using if 0 is faster than max(0,)
         self.melee_attack = 0

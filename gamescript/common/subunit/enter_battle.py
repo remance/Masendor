@@ -7,7 +7,6 @@ def enter_battle(self, animation_pool):
     self.terrain, self.feature = self.get_feature(self.base_pos,
                                                   self.base_map)  # Get new terrain and feature at each subunit position
     self.height = self.get_height(self.base_pos)  # Current terrain height
-    self.head_height = self.height + (self.troop_size / 10)  # height for checking line of sight
 
     layer = round(self.base_pos[0] + (self.base_pos[1] * 10), 0)  # change layer
     if layer < 0:
@@ -28,11 +27,8 @@ def enter_battle(self, animation_pool):
 
     self.status_update()
 
-    self.battle.active_subunit_list.append(self)
-    self.battle.subunit_pos_list.append(self.base_pos)
-
     # Add troop number to counter how many troop join battle
-    self.battle.all_team_subunit["alive"].add(self)
+    self.battle.active_subunit_list.append(self)
     self.battle.all_team_subunit[self.team].add(self)
     self.battle.team_troop_number[self.team] += 1
     self.battle.start_troop_number[self.team] += 1

@@ -29,7 +29,6 @@ script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
 
 class Battle:
     empty_method = utility.empty_method
-    popup_list_open = utility.popup_list_open
 
     # Import from common.battle
     add_sound_effect_queue = empty_method
@@ -54,10 +53,6 @@ class Battle:
     effect_icon_mouse_over = empty_method
     escmenu_process = empty_method
     kill_effect_icon = empty_method
-    leader_command_ui_mouse_over = empty_method
-    trait_skill_icon_blit = empty_method
-    ui_mouse_click = empty_method
-    ui_icon_mouse_over = empty_method
     wheel_ui_process = empty_method
 
     for folder in ("battle", "ui"):
@@ -73,7 +68,6 @@ class Battle:
     start_camera_mode = "Follow"
 
     def __init__(self, main, window_style):
-        self.mode = None  # battle map mode
         self.player_char = None  # player subunit for genre that allow player to directly control only one subunit
         self.main = main
 
@@ -151,6 +145,8 @@ class Battle:
         self.map_move_array = []  # array for pathfinding
         self.map_def_array = []  # array for defence calculation
 
+        self.troop_ai_logic_queue = []
+
         self.esc_slider_menu = main.esc_slider_menu
         self.esc_value_boxes = main.esc_value_boxes
 
@@ -222,7 +218,7 @@ class Battle:
         self.day_time = "Day"
         self.old_day_time = self.day_time
         self.all_team_subunit = {1: pygame.sprite.Group(),
-                                 2: pygame.sprite.Group(), "alive": pygame.sprite.Group()}  # more team can be added later
+                                 2: pygame.sprite.Group()}  # more team can be added later
         self.team_troop_number = []  # list of troop number in each team, minimum at one because percentage can't divide by 0
         self.last_team_troop_number = []
         self.battle_scale = []
@@ -236,8 +232,6 @@ class Battle:
 
         self.player_input_state = None  # specific player command input and ui
         self.previous_player_input_state = None
-
-        self.subunit_pos_list = []
 
         self.active_subunit_list = []  # list of all subunit alive in battle, need to be in list for collision check
         self.visible_subunit_list = {}  # list of subunit visible to the team
@@ -393,13 +387,12 @@ class Battle:
         self.camera_mode = self.start_camera_mode
         self.setup_battle_troop(self.subunit_updater)
         self.all_team_subunit = {1: pygame.sprite.Group(),
-                                 2: pygame.sprite.Group(), "alive": pygame.sprite.Group()}  # more team can be added later
-        self.team_troop_number = [1 for _ in self.all_team_subunit]  # reset list of troop number in each team
-        self.battle_scale = [(value / sum(self.team_troop_number) * 100) for value in self.team_troop_number]
-        self.start_troop_number = [0 for _ in self.all_team_subunit]
-        self.death_troop_number = [0 for _ in self.all_team_subunit]
-        self.subunit_pos_list = []
-        self.visible_subunit_list = {key: {} for key in self.all_team_subunit.keys() if key != "alive"}
+                                 2: pygame.sprite.Group()}  # more team can be added later
+        self.team_troop_number = [0 for _ in range(len(self.all_team_subunit) + 1)]  # reset list of troop number in each team
+        self.battle_scale = [1 for _ in self.team_troop_number]
+        self.start_troop_number = [0 for _ in self.team_troop_number]
+        self.death_troop_number = [0 for _ in self.team_troop_number]
+        self.visible_subunit_list = {key: {} for key in self.all_team_subunit.keys()}
 
         self.battle_scale_ui.change_fight_scale(self.battle_scale)
 
@@ -419,10 +412,11 @@ class Battle:
         self.change_battle_state()
 
         if self.char_selected is not None:  # select player char by default if control only one
-            for this_subunit in self.all_team_subunit["alive"]:  # get player char
+            for this_subunit in self.active_subunit_list:  # get player char
                 if this_subunit.game_id == self.char_selected:
                     self.player_char = this_subunit
                     self.player_char.player_manual_control = True
+                    self.battle_camera.change_layer(self.player_char, 999999)
                     self.command_ui.add_leader_image(this_subunit.portrait)
                     if self.camera_mode == "Follow":
                         self.true_camera_pos = pygame.Vector2(self.player_char.base_pos)
@@ -455,7 +449,7 @@ class Battle:
 
         self.time_update()
 
-        self.effect_updater.update(self.all_team_subunit["alive"], self.dt)
+        self.effect_updater.update(self.active_subunit_list, self.dt)
 
         # self.map_def_array = []
         # self.mapunitarray = [[x[random.randint(0, 1)] if i != j else 0 for i in range(1000)] for j in range(1000)]
@@ -536,7 +530,7 @@ class Battle:
             elif pygame.mouse.get_pressed()[2]:  # Hold left click
                 mouse_right_down = True
 
-            if self.player_char_input_delay > 0:  # delay for command input
+            if self.player_char_input_delay:  # delay for command input
                 self.player_char_input_delay -= self.dt
                 if self.player_char_input_delay < 0:
                     self.player_char_input_delay = 0
@@ -582,19 +576,18 @@ class Battle:
                                     self.previous_player_input_state = old_player_input_state
 
                     # Drama text function
-                    if self.drama_timer == 0 and self.drama_text.queue:  # Start timer and draw if there is event queue
+                    if not self.drama_timer and self.drama_text.queue:  # Start timer and draw if there is event queue
                         self.battle_ui_updater.add(self.drama_text)
                         self.drama_text.process_queue()
                         self.drama_timer = 0.1
-                    elif self.drama_timer > 0:
+                    elif self.drama_timer:
                         self.drama_text.play_animation()
                         self.drama_timer += self.ui_dt
                         if self.drama_timer > 3:
                             self.drama_timer = 0
                             self.battle_ui_updater.remove(self.drama_text)
 
-                    if self.dt > 0:  # Part that run when game not pause only
-
+                    if self.dt:  # Part that run when game not pause only
                         # Event log
                         if self.event_schedule is not None and self.event_list != [] and self.time_number.time_number >= self.event_schedule:
                             self.event_log.add_log(None, event_id=self.event_id)
@@ -627,7 +620,7 @@ class Battle:
                             else:
                                 self.weather_playing = None
 
-                        if self.current_weather.spawn_rate > 0:
+                        if self.current_weather.spawn_rate:
                             self.weather_spawn_timer += self.dt
                             if self.weather_spawn_timer >= self.current_weather.spawn_rate:
                                 self.weather_spawn_timer = 0
@@ -635,7 +628,7 @@ class Battle:
 
                         # Screen shaking
                         self.shown_camera_pos = self.camera_pos  # reset camera pos first
-                        if self.screen_shake_value > 0:
+                        if self.screen_shake_value:
                             self.screen_shake_value -= 1
                             self.shake_camera()
                             if self.screen_shake_value < 0:
@@ -643,7 +636,7 @@ class Battle:
 
                         # Music System
                         if self.music_schedule and self.time_number.time_number >= self.music_schedule[0] and \
-                                len(self.music_event) > 0:
+                                self.music_event:
                             pygame.mixer.music.unload()
                             self.playing_music = self.music_event[0].copy()
                             self.picked_music = random.randint(0, len(self.playing_music) - 1)
@@ -652,13 +645,21 @@ class Battle:
                             self.music_schedule = self.music_schedule[1:]
                             self.music_event = self.music_event[1:]
 
+                    # Run troop ai logic no more than limit number of subunit per update to prevent stutter
+                    if self.troop_ai_logic_queue:
+                        limit = int(len(self.troop_ai_logic_queue) / 10)
+                        if limit < 10:
+                            limit = 10
+                        for index, this_subunit in enumerate(self.troop_ai_logic_queue):
+                            this_subunit.troop_ai_logic()
+                            if index == limit:
+                                break
+                        self.troop_ai_logic_queue = self.troop_ai_logic_queue[10:]
 
                     # Battle related updater
                     self.subunit_updater.update(self.dt)
-
                     self.effect_updater.update(self.active_subunit_list, self.dt)
                     self.weather_updater.update(self.dt, self.time_number.time_number)
-                    self.mini_map.update([self.camera_pos, self.camera_topleft_corner], self.active_subunit_list)
 
                     self.ui_updater.update()  # update ui
 
@@ -670,7 +671,8 @@ class Battle:
 
                     # Update game time
                     self.dt = self.true_dt * self.game_speed  # apply dt with game_speed for calculation
-                    if self.ui_timer >= 0.4:  # reset ui timer every 1.1 seconds
+                    if self.ui_timer >= 0.4:
+                        self.mini_map.update([self.camera_pos, self.camera_topleft_corner], self.active_subunit_list)
                         self.command_ui.value_input(who=self.player_char)
                         self.countdown_skill_icon()
                         self.battle_scale = [(value / sum(self.team_troop_number) * 100) for value in
@@ -687,39 +689,33 @@ class Battle:
                     self.time_number.timer_update(self.dt * 50)  # update battle time
                     self.time_update()
 
-                    if self.mode == "battle" and len(self.all_team_subunit["alive"]) <= 1:
-                        if self.battle_done_box not in self.battle_ui_updater:
-                            if not self.all_team_subunit["alive"]:  # draw
-                                self.battle_done_box.pop("Draw")
-                            else:
-                                for key, value in self.all_team_subunit.items():
-                                    if key != "alive":
-                                        if value:
-                                            team_win = key
-                                            for index, coa in enumerate(self.team_coa):
-                                                if index == team_win - 1:
-                                                    self.battle_done_box.pop(coa.name)
-                                                    break
-
-                            self.battle_done_button.rect = self.battle_done_button.image.get_rect(
-                                midtop=self.battle_done_button.pos)
-                            self.battle_ui_updater.add(self.battle_done_box, self.battle_done_button)
+                elif self.game_state == "end":
+                    if self.battle_done_box not in self.battle_ui_updater:
+                        if not self.active_subunit_list:  # draw
+                            self.battle_done_box.pop("Draw")
                         else:
-                            if mouse_left_up and self.battle_done_button.rect.collidepoint(self.mouse_pos):
-                                self.game_state = "end"  # end battle mode, result screen
-                                self.game_speed = 0
-                                coa_list = [None, None]
-                                for index, coa in enumerate(self.team_coa):
-                                    coa_list[index] = coa.image
-                                self.battle_done_box.show_result(coa_list[0], coa_list[1],
-                                                                 (self.start_troop_number, self.team_troop_number,
-                                                                  self.wound_troop_number, self.death_troop_number,
-                                                                  self.flee_troop_number, self.capture_troop_number))
-                                self.battle_done_button.rect = self.battle_done_button.image.get_rect(
-                                    center=(self.battle_done_box.rect.midbottom[0],
-                                            self.battle_done_box.rect.midbottom[
-                                                1] / 1.3))
-                    # ^ End update self time
+                            for key, value in self.all_team_subunit.items():
+                                if value:
+                                    self.battle_done_box.pop(key)
+                                    break
+
+                        self.battle_done_button.rect = self.battle_done_button.image.get_rect(
+                            midtop=self.battle_done_button.pos)
+                        self.battle_ui_updater.add(self.battle_done_box, self.battle_done_button)
+                    else:
+                        if mouse_left_up and self.battle_done_button.rect.collidepoint(self.mouse_pos):
+                            return
+                            # coa_list = [None, None]
+                            # for index, coa in enumerate(self.team_coa):
+                            #     coa_list[index] = coa.image
+                            # self.battle_done_box.show_result(coa_list[0], coa_list[1],
+                            #                                  (self.start_troop_number, self.team_troop_number,
+                            #                                   self.wound_troop_number, self.death_troop_number,
+                            #                                   self.flee_troop_number, self.capture_troop_number))
+                            # self.battle_done_button.rect = self.battle_done_button.image.get_rect(
+                            #     center=(self.battle_done_box.rect.midbottom[0],
+                            #             self.battle_done_box.rect.midbottom[
+                            #                 1] / 1.3))
 
                 elif self.game_state == "menu":  # Complete self pause when open either esc menu or encyclopedia
                     command = self.escmenu_process(mouse_left_up, mouse_left_down, esc_press, mouse_scroll_up,
@@ -784,7 +780,8 @@ class Battle:
         self.active_subunit_list = []
         self.map_move_array = []
         self.map_def_array = []
-        self.subunit_pos_list = []
+
+        self.troop_ai_logic_queue = []
 
         clean_group_object((self.subunit_updater, self.char_icon,
                             self.effect_updater, self.weather_matter))

@@ -45,17 +45,15 @@ class DamageSprite(pygame.sprite.Sprite):
 
     def __init__(self, attacker, weapon, dmg, penetrate, weapon_stat,
                  attack_type, base_target, accuracy=None, height_ignore=False, degrade_when_travel=True,
-                 degrade_when_hit=True, random_direction=False, random_move=False, arc_shot=False, impact_effect=None):
+                 degrade_when_hit=True, random_direction=False, random_move=False,  mpact_effect=None):
         self._layer = 10000001
         pygame.sprite.Sprite.__init__(self, self.containers)
 
         self.attacker = attacker  # subunit that perform the attack
         self.battle = self.attacker.battle
         self.weapon = weapon  # weapon that use to perform the attack
-        self.arc_shot = arc_shot  # arc shot will only hit subunit when it reaches target
         self.accuracy = accuracy
         self.height = self.attacker.height
-        self.head_height = self.attacker.head_height
         self.attack_type = attack_type
         self.impact_effect = None
 
@@ -81,6 +79,7 @@ class DamageSprite(pygame.sprite.Sprite):
 
         self.dmg = {key: random.uniform(value[0], value[1]) for key, value in dmg.items()}
         self.penetrate = penetrate
+        self.impact = weapon_stat["Impact"]
 
         self.pass_subunit = None  # subunit that damage sprite passing through, receive damage if movement stop
 
@@ -92,8 +91,7 @@ class DamageSprite(pygame.sprite.Sprite):
             self.angle = self.set_rotate(self.base_target)
 
             self.speed = weapon_stat["Travel Speed"]  # bullet travel speed
-            if self.arc_shot:
-                self.speed *= 0.75  # arc shot has reduced travel speed compared to direct
+
             if weapon_stat["Damage Sprite"] != "self":
                 self.image = self.bullet_sprite_pool[weapon_stat["Damage Sprite"]]["base"]
             else:  # use weapon image itself as bullet image
@@ -121,7 +119,7 @@ class DamageSprite(pygame.sprite.Sprite):
             self.angle = self.set_rotate(self.base_target)
             self.base_pos = base_target
 
-        if self.duration > 0:
+        if self.duration:
             self.repeat_animation = True
 
         self.target_height = self.height_map.get_height(self.base_target)  # get the height at base_target
@@ -152,9 +150,10 @@ class DamageSprite(pygame.sprite.Sprite):
         just_start = False
 
         self.timer += dt
-        if self.timer > 1 and self.duration > 0:  # reset timer and list of subunit already hit
+        if self.timer > 1:  # reset timer and list of subunit already hit
             self.timer -= 1
-            self.already_hit = []  # sprite can deal dmg to same subunit only once every 1 second
+            if self.duration:  # only clear for sprite with duration
+                self.already_hit = []  # sprite can deal dmg to same subunit only once every 1 second
 
         if self.current_animation:  # play animation if any
             done, just_start = self.play_animation(0.05, dt, False)
@@ -164,58 +163,36 @@ class DamageSprite(pygame.sprite.Sprite):
         # Check for collision with subunit and deal damage
         if self.deal_dmg:  # sprite can still deal damage
             for this_subunit in subunit_list:  # collide check
-                if this_subunit != self.attacker and this_subunit not in self.already_hit and \
-                    ((self.aoe is False and self.head_height <= this_subunit.head_height and
-                      this_subunit.hitbox.rect.collidepoint(self.base_pos)) or
-                     this_subunit.hitbox.rect.colliderect(self.rect)):
-                    if self.full_distance > 0:  # range attack
-                        if self.arc_shot is False:  # direct shot
-                            self.hit_register(this_subunit)
-                            self.already_hit.append(this_subunit)
-                            if self.aoe is False and self.penetrate <= 0:
-                                self.deal_dmg = False
-                                self.clean_object()
-                                return
-                        else:  # arc shot
-                            self.hit_register(this_subunit)  # register hit whatever subunit the sprite land at
-                            self.clean_object()  # remove sprite
+                if this_subunit.team != self.attacker.team and this_subunit.game_id not in self.already_hit and \
+                        this_subunit.hitbox.rect.colliderect(self.rect):
+                    if self.full_distance:  # range attack
+                        self.hit_register(this_subunit)
+                        self.already_hit.append(this_subunit.game_id)
+                        if self.aoe is False and self.penetrate <= 0:
+                            self.deal_dmg = False
+                            self.clean_object()
                             return
                     else:
-                        if this_subunit.team != self.attacker.team:
-                            self.hit_register(this_subunit)
+                        self.hit_register(this_subunit)
+                        self.already_hit.append(this_subunit.game_id)
 
         if self.distance_progress >= 100:  # attack reach target pos
             self.clean_object()  # remove sprite
             return
 
-        if self.full_distance > 0:  # damage sprite that can move like range attack or spell
+        if self.full_distance:  # damage sprite that can move like range attack or spell
             self.pass_subunit = None  # reset before every movement update and after collide check
             move = self.base_target - self.base_pos
             require_move_length = move.length()
 
-            if require_move_length > 0:  # sprite move
+            if require_move_length:  # sprite move
                 move.normalize_ip()
                 move = move * self.speed * dt
                 self.distance_progress += move.length() / self.full_distance * 100
 
-                if self.arc_shot:  # arc shot cause sprite to scale up midway and down again after passing mid point
-                    if int(self.distance_progress / 10) != self.last_distance_progress:
-                        self.last_distance_progress = int(self.distance_progress / 10)
-                        if self.distance_progress <= 50:
-                            self.image = pygame.transform.smoothscale(self.base_image,
-                                                                      self.base_image.get_size() +
-                                                                      (self.base_image.get_size() *
-                                                                       self.distance_progress / 25))
-                        else:
-                            self.image = pygame.transform.smoothscale(self.base_image,
-                                                                      self.base_image.get_size() +
-                                                                      (self.base_image.get_size() *
-                                                                       (4 - (self.distance_progress / 25))))
-
                 if move.length() <= require_move_length:
                     self.base_pos += move
-                    if self.arc_shot is False and self.height_ignore is False and \
-                            self.height_map.get_height(self.base_pos) > self.height + 20:
+                    if self.height_ignore is False and self.height_map.get_height(self.base_pos) > self.height + 20:
                         self.clean_object()  # direct shot will not be able to shoot pass higher height terrain midway
                         return
                     self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],

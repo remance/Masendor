@@ -146,7 +146,6 @@ class HeroUI(pygame.sprite.Sprite):
             stamina_percent = who.stamina / who.max_stamina
             if stamina_percent < 0:
                 stamina_percent = 0
-            print(stamina_percent, )
             stamina_bar = pygame.Surface((self.health_bar_size[0], self.health_bar_size[1] * stamina_percent))
             stamina_bar.fill((0, 200, 0))
             stamina_bar_rect = stamina_bar.get_rect(bottomleft=(0, self.health_bar_height))
@@ -189,7 +188,7 @@ class HeroUI(pygame.sprite.Sprite):
                                                              (1 - (cooldown / speed))), pygame.SRCALPHA)
                             cooldown_image.fill((255, 50, 50, 200))
                             self.weapon_image.blit(cooldown_image, self.weapon_cooldown_rect[index2])
-                    if who.magazine_size[true_weapon_set_index][index2] > 0:  # range weapon
+                    if who.magazine_size[true_weapon_set_index][index2]:  # range weapon
                         if true_weapon_set_index not in who.magazine_count or \
                                 (true_weapon_set_index in who.magazine_count and
                                  index2 not in who.magazine_count[true_weapon_set_index]):  # no ammo
@@ -247,7 +246,7 @@ class SkillCardIcon(pygame.sprite.Sprite):
         if active_timer != self.active_check:
             self.active_check = active_timer  # renew number
             self.image = self.base_image.copy()
-            if self.active_check > 0:
+            if self.active_check:
                 rect = self.image.get_rect(topleft=(0, 0))
                 self.image.blit(self.active_skill, rect)
                 output_number = str(self.active_check)
@@ -260,7 +259,7 @@ class SkillCardIcon(pygame.sprite.Sprite):
         elif cooldown != self.cooldown_check and self.active_check == 0:  # Cooldown only get blit when skill is not active
             self.cooldown_check = cooldown
             self.image = self.base_image.copy()
-            if self.cooldown_check > 0:
+            if self.cooldown_check:
                 self.image.blit(self.cooldown, self.cooldown_rect)
                 output_number = str(self.cooldown_check)
                 if self.cooldown_check >= 1000:  # change a thousand number into k (1k,2k)
@@ -529,9 +528,8 @@ class UIScroll(pygame.sprite.Sprite):
         percent_row = 0
         max_row = 100
         self.image = self.base_image.copy()
-        if self.row_size > 0:
+        if self.row_size:
             percent_row = self.current_row * 100 / self.row_size
-        if self.row_size > 0:
             max_row = (self.current_row + self.max_row_show) * 100 / self.row_size
         max_row = max_row - percent_row
         pygame.draw.rect(self.image, self.button_colour,
@@ -707,7 +705,7 @@ class Timer(pygame.sprite.Sprite):
 
     def timer_update(self, dt):
         """Update in-self timer number"""
-        if dt > 0:
+        if dt:
             self.timer += dt
             if self.timer - self.old_timer > 1:
                 self.old_timer = self.timer
@@ -936,7 +934,7 @@ class BattleDone(pygame.sprite.Sprite):
         self.winner = None
 
     def pop(self, winner):
-        self.winner = winner
+        self.winner = str(winner)
         self.image = self.box_image.copy()
         text_surface = self.font.render(self.winner, True, (0, 0, 0))
         text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, int(self.screen_scale[1] * 36) + 3))
@@ -945,7 +943,6 @@ class BattleDone(pygame.sprite.Sprite):
             text_surface = self.font.render("Victory", True, (0, 0, 0))
             text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, int(self.screen_scale[1] * 36) * 2))
             self.image.blit(text_surface, text_rect)
-        self.rect = self.image.get_rect(center=self.pos)
 
     def show_result(self, team1_coa, team2_coa, stat):
         self.image = self.result_image.copy()
@@ -1103,7 +1100,3 @@ class SpriteIndicator(pygame.sprite.Sprite):
         self.image = image
         self.who.hitbox = self
         self.rect = self.image.get_rect(midtop=self.who.pos)
-
-    def update(self, *args):
-        self.rect = self.image.get_rect(midtop=self.who.pos)
-

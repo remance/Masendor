@@ -9,6 +9,8 @@ def process_trait_skill(self):
                                                 self.trait["Weapon"][equip][key] if x in self.troop_data.trait_list}
     self.add_weapon_trait()
     self.skill = skill_convert(self, self.skill, add_charge_skill=True)
+    self.input_skill = self.skill.copy()
+    self.input_skill.pop(self.charge_skill)
 
 
 def skill_convert(self, skill_list, add_charge_skill=False):
@@ -33,6 +35,5 @@ def skill_convert(self, skill_list, add_charge_skill=False):
     if add_charge_skill:
         skill_dict[self.charge_skill] = self.troop_data.skill_list[
             self.charge_skill]  # add charge skill
-
 
     return skill_dict

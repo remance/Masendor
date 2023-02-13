@@ -44,8 +44,8 @@ def die(self, how):
     self.alive_troop_subordinate = []
     self.alive_leader_subordinate = []
 
-    self.battle.all_team_subunit["alive"].remove(self)
     self.battle.all_team_subunit[self.team].remove(self)
+    self.battle.active_subunit_list.remove(self)
 
     if how == "dead":
         if self in self.battle.battle_camera:
@@ -59,12 +59,12 @@ def die(self, how):
         if self in self.battle.battle_camera:
             self.battle.battle_camera.remove(self)
 
+    if len([key for key, value in self.battle.all_team_subunit.items() if len(value) > 0]) <= 1:
+        self.battle.game_state = "end"
+        self.battle.game_speed = 0
+
     if self.is_leader:
         self.battle.event_log.add_log((0, str(self.name) + " is Dead."))  # add log to say this leader is destroyed
-
-    if self in self.battle.active_subunit_list:
-        self.battle.subunit_pos_list.pop(self.battle.active_subunit_list.index(self))
-        self.battle.active_subunit_list.remove(self)
 
     if self.player_manual_control:
         self.battle.camera_mode = "Free"  # camera become free when player char die so can look over the battle

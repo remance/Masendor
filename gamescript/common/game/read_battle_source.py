@@ -16,11 +16,13 @@ def read_battle_source(self, description_text):
 
     self.map_show.change_mode(1, team_pos_list=self.team_pos)
 
-    team_army = {row["Team"]: [] for row in list(unit_info.values())}
+    team_troop = {row["Team"]: {} for row in list(unit_info.values())}
     team_leader = {row["Team"]: [] for row in list(unit_info.values())}
     for row in list(unit_info.values()):
-        if type(row["Troop ID"]) == str:
+        if type(row["Troop ID"]) is str:
             team_leader[row["Team"]].append(row["Troop ID"])
         else:
-            team_army[row["Team"]].append(int(row["Troop ID"]))
-    return team_army, team_leader
+            if int(row["Troop ID"]) not in team_troop[row["Team"]]:
+                team_troop[row["Team"]][int(row["Troop ID"])] = 0
+            team_troop[row["Team"]][int(row["Troop ID"])] += row["How Many"]
+    return team_troop, team_leader

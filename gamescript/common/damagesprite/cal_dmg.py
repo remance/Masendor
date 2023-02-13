@@ -6,7 +6,7 @@ combat_side_cal = cal_melee_hit.combat_side_cal
 infinity = float("inf")
 
 
-def cal_dmg(self, attacker, target, hit, defence, weapon, penetrate, hit_side=None):
+def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
     """
     Calculate dmg, melee attack will use attacker subunit stat,
     other types will use the type object stat instead (mostly used for range attack)
@@ -16,7 +16,6 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, penetrate, hit_side=No
     :param hit: Hit chance value
     :param defence: Defence chance value
     :param weapon: Weapon index (0 for main, 1 for sub)
-    :param penetrate: Remaining weapon penetration value
     :param hit_side: Side that the target got hit, use only for melee attack to calculate charge
     :return: Damage on health, morale, leader and element effect
     """
@@ -45,11 +44,11 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, penetrate, hit_side=No
     troop_dmg = 0
     morale_dmg = 0
     element_effect = {}
-    remain_penetrate = penetrate
+    impact = self.impact * combat_score
 
     if combat_score > 0:
         if self.attack_type == "melee":  # Melee dmg
-            troop_dmg, remain_penetrate, element_effect = cal_dmg_penetrate(self, remain_penetrate, target)
+            troop_dmg, element_effect = cal_dmg_penetrate(self, target)
 
             if self.charge_skill in attacker.skill_effect:  # Include charge in dmg if charging
                 if attacker.check_special_effect("Ignore Charge Defence",
@@ -59,9 +58,11 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, penetrate, hit_side=No
                         side_cal = 1
                     troop_dmg += ((attacker.charge_power - (target.charge_def_power * side_cal)) * 2)
                     if (target.charge_def * side_cal) >= attacker.charge_power / 2:
-                        attacker.momentum = 0.1  # charge get stopped by charge def
+                        attacker.momentum = 0  # charge get stopped by charge def
                     else:
                         attacker.momentum -= (target.charge_def_power * side_cal) / attacker.charge_power
+                        if attacker.momentum < 0:
+                            attacker.momentum = 0
                 else:
                     troop_dmg += attacker.charge_power * 2
 
@@ -75,9 +76,9 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, penetrate, hit_side=No
             troop_dmg *= combat_score
 
         else:  # Range or other type of damage
-            troop_dmg, remain_penetrate, element_effect = cal_dmg_penetrate(self, remain_penetrate, target)
+            troop_dmg, element_effect = cal_dmg_penetrate(self, target)
 
-        remain_penetrate -= (target.troop_mass * 5)
+        self.penetrate -= (target.troop_mass * 5)
 
         # troop_dmg on subunit is dmg multiply by troop number with addition from leader combat
         if (attacker.check_special_effect("Anti Infantry", weapon=weapon) and target.subunit_type < 2 or
@@ -92,22 +93,22 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, penetrate, hit_side=No
         if morale_dmg < 0:
             morale_dmg = 0
 
-    return troop_dmg, morale_dmg, element_effect, remain_penetrate
+    return troop_dmg, morale_dmg, element_effect, impact
 
 
-def cal_dmg_penetrate(self, penetrate, target):
+def cal_dmg_penetrate(self, target):
     troop_dmg = 0
     element_effect = {}
     for key, value in self.dmg.items():
         if target.element_resistance[key] > 0:
-            if penetrate < target.element_resistance[key]:
-                troop_dmg += value - (value * (target.element_resistance[key] - penetrate) / 100)
-                element_effect[key] = (value / 10 * (target.element_resistance[key] - penetrate) / 100)
+            if self.penetrate < target.element_resistance[key]:
+                troop_dmg += value - (value * (target.element_resistance[key] - self.penetrate) / 100)
+                element_effect[key] = (value / 10 * (target.element_resistance[key] - self.penetrate) / 100)
             else:
                 troop_dmg += value
                 element_effect[key] = value / 10
-            penetrate -= target.element_resistance[key]
+            self.penetrate -= target.element_resistance[key]
         else:
             troop_dmg += value
             element_effect[key] = value / 10
-    return troop_dmg, penetrate, element_effect
+    return troop_dmg, element_effect

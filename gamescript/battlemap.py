@@ -114,7 +114,7 @@ class HeightMap(pygame.sprite.Sprite):
 
     def draw_image(self, image):
         self.image = image.copy()
-        self.map_array = tuple([[col[2] for col in row] for row in pygame.surfarray.array3d(image).tolist()])
+        self.map_array = tuple([[256 - col[2] for col in row] for row in pygame.surfarray.array3d(image).tolist()])
         if self.topology:
             data = pygame.image.tostring(self.image, "RGB")  # convert image to string data for filtering effect
             img = Image.frombytes("RGB", (self.image.get_width(), self.image.get_height()),
@@ -154,11 +154,8 @@ class HeightMap(pygame.sprite.Sprite):
             new_pos[1] = 0
         elif new_pos[1] > self.max_map_array[1]:
             new_pos[1] = self.max_map_array[1]
-        colour = self.map_array[int(new_pos[0])][int(new_pos[1])]
+        height_index = self.map_array[int(new_pos[0])][int(new_pos[1])]
 
-        if colour == 0:
-            colour = 255
-        height_index = 256 - colour  # get colour at pos to obtain the terrain type
         return height_index
 
     def clear_image(self):
