@@ -39,15 +39,15 @@ def battle_keyboard_process(self, key_press):
         # for index, subunit in enumerate(self.current_selected.subunit_sprite):
         #     subunit.unit_health -= subunit.unit_health
         self.player_char.health = 0
-    elif key_press == pygame.K_m and self.player_char is not None:
-        self.player_char.leader_subunit.interrupt_animation = True
-        self.player_char.leader_subunit.command_action = {"name": "Knockdown", "uninterruptible": True,
-                                                               "next action": {"name": "Standup",
-                                                                               "uninterruptible": True}}
-        self.player_char.leader_subunit.one_activity_limit = 5
-    elif key_press == pygame.K_n and self.player_char is not None:
-        self.player_char.leader_subunit.interrupt_animation = True
-        self.player_char.leader_subunit.command_action = {"name": "HeavyDamaged", "uninterruptible": True}
+    # elif key_press == pygame.K_m and self.player_char is not None:
+    #     self.player_char.leader_subunit.interrupt_animation = True
+    #     self.player_char.leader_subunit.command_action = {"name": "Knockdown", "uninterruptible": True,
+    #                                                            "next action": {"name": "Standup",
+    #                                                                            "uninterruptible": True}}
+    #     self.player_char.leader_subunit.one_activity_limit = 5
+    # elif key_press == pygame.K_n and self.player_char is not None:
+    #     self.player_char.leader_subunit.interrupt_animation = True
+    #     self.player_char.leader_subunit.command_action = {"name": "HeavyDamaged", "uninterruptible": True}
         # elif key_press == pygame.K_COMMA and self.current_selected is not None:
     #     for index, subunit in enumerate(self.current_selected.subunit_sprite):
     #         subunit.stamina -= subunit.stamina

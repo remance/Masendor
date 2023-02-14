@@ -165,13 +165,18 @@ historical information to players.
 
 ### Sound (Obtained and edited):
 
-- Musket sound effect "aaronsiler_musket 3", "aaronsiler_musket 4" by aaronsiler (https://freesound.org/people/aaronsiler/)
-- Assorted weapon sound effect from Videvo (https://www.videvo.net/)
+- Musket shot "aaronsiler_musket 3", "aaronsiler_musket 4" by aaronsiler (https://freesound.org/people/aaronsiler/)
+- Assorted weapon sound from Videvo (https://www.videvo.net/)
 - Heavy rain weather ambient sound "Heavy Rain" by lebaston100 (https://freesound.org/people/lebaston100/)
-- Heavy Weapon swing sound effect by "Swinging staff whoosh (strong) 08" Nightflame (https://freesound.org/people/Nightflame/)
-- Sword swing sound effect "Swosh Sword Swing" by qubodup (https://freesound.org/people/qubodup/)
-- Big warhorn sound effect "BIG-REVERB-WARHORN" by newagesoup (https://freesound.org/people/newagesoup/sounds/348862/)
-- Warhorn sound effect "Battle horn 1" by kirmm (https://pixabay.com/sound-effects/battle-horn-1-6931/)
+- Heavy Weapon swing by "Swinging staff whoosh (strong) 08" Nightflame (https://freesound.org/people/Nightflame/)
+- Sword swing "Swosh Sword Swing" by qubodup (https://freesound.org/people/qubodup/)
+- Big warhorn "BIG-REVERB-WARHORN" by newagesoup (https://freesound.org/people/newagesoup/sounds/348862/)
+- Warhorn "Battle horn 1" by kirmm (https://pixabay.com/sound-effects/battle-horn-1-6931/)
+- Bow drawing "SHOOTING_ARROW_SINGLE_ARCHERY_FOLEY_02" by JoeDinesSound (https://freesound.org/people/JoeDinesSound/sounds/534951/)
+- Bow drawing "Regular Arrow Shot distant target" by brendan89 (https://freesound.org/people/brendan89/sounds/321555/)
+- Crossbow shot "bow02" by Erdie (https://freesound.org/people/Erdie/sounds/65734/)
+- Crossbow shot "Crossbow Firing and Hitting Target" by Ali_6868 (https://freesound.org/people/Ali_6868/sounds/384919/)
+
 ## Translation
 
 ### Ukrainian Translation:

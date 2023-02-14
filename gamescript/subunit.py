@@ -37,6 +37,7 @@ uninterruptible = action can not be interrupt unless top_interrupt_animation is 
 move loop = action involve repeating movement that can be cancel when movement change like walk to run
 charge = indicate charging action
 fly = subunit sprite will also "fly" while moving
+walk, run, flee, indicate movement type for easy checking
 """
 
 skill_command_action_0 = {"name": "Skill 0"}
@@ -47,10 +48,15 @@ skill_command_action_3 = {"name": "Skill 3"}
 walk_command_action = {"name": "Walk", "movable": True, "main_weapon": True, "repeat": True, "move loop": True}
 run_command_action = {"name": "Run", "movable": True, "main_weapon": True, "repeat": True,
                       "move loop": True, "use momentum": True}
-flee_command_action = {"name": "Flee", "movable": True, "repeat": True, "move loop": True}
+flee_command_action = {"name": "Flee", "movable": True, "repeat": True, "move loop": True, "flee": True}
 
 melee_attack_command_action = ({"name": "Action 0", "melee attack": True}, {"name": "Action 1", "melee attack": True})
 range_attack_command_action = ({"name": "Action 0", "range attack": True}, {"name": "Action 1", "range attack": True})
+
+melee_hold_command_action = ({"name": "Action 0", "melee attack": True, "hold": True},
+                             {"name": "Action 1", "melee attack": True, "hold": True})
+range_hold_command_action = ({"name": "Action 0", "range attack": True, "hold": True},
+                             {"name": "Action 1", "range attack": True, "hold": True})
 
 walk_shoot_command_action = ({"name": "Action 0", "range attack": True, "walk": True, "movable": True},
                              {"name": "Action 1", "range attack": True, "walk": True, "movable": True})
@@ -63,8 +69,10 @@ charge_command_action = ({"name": "Charge 0", "movable": True, "repeat": True, "
                          {"name": "Charge 1", "movable": True, "repeat": True, "move loop": True,
                           "use momentum": True, "charge": True})
 
-heavy_damaged_command_action = {"name": "HeavyDamaged", "uncontrollable": True, "movable": True, "forced move": True}
-damaged_command_action = {"name": "Damaged", "uncontrollable": True, "movable": True, "forced move": True}
+heavy_damaged_command_action = {"name": "HeavyDamaged", "uncontrollable": True, "movable": True, "move loop": True,
+                                "forced move": True}
+damaged_command_action = {"name": "Damaged", "uncontrollable": True, "movable": True, "move loop": True,
+                          "forced move": True}
 knockdown_command_action = {"name": "Knockdown", "uncontrollable": True, "movable": True, "forced move": True,
                             "fly": True, "next action": {"name": "Standup", "uncontrollable": True}}
 
@@ -158,6 +166,9 @@ class Subunit(pygame.sprite.Sprite):
     melee_attack_command_action = melee_attack_command_action
     range_attack_command_action = range_attack_command_action
 
+    melee_hold_command_action = melee_hold_command_action
+    range_hold_command_action = range_hold_command_action
+
     walk_shoot_command_action = walk_shoot_command_action
     run_shoot_command_action = run_shoot_command_action
 
@@ -239,7 +250,7 @@ class Subunit(pygame.sprite.Sprite):
         self.morale_dmg_bonus = 0
         self.stamina_dmg_bonus = 0  # extra stamina melee_dmg
         self.original_hp_regen = 0  # health regeneration modifier, will not resurrect dead troop by default
-        self.original_stamina_regen = 2  # stamina regeneration modifier
+        self.original_stamina_regen = 5  # stamina regeneration modifier
         self.original_morale_regen = 2  # morale regeneration modifier
         self.available_skill = []  # list of skills that subunit can currently use
         self.status_effect = {}  # current status effect
@@ -352,7 +363,7 @@ class Subunit(pygame.sprite.Sprite):
             self.formation_style = "Cavalry Flank"
             self.formation_density = "Tight"
             self.formation_position = "Behind"
-            self.follow_order = "Stay Formation"
+            self.follow_order = "Follow"
             self.formation_consider_flank = False  # has both infantry and cavalry, consider flank placment style
             self.formation_distance_list = {}
             self.formation_pos_list = {}

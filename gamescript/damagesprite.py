@@ -168,13 +168,16 @@ class DamageSprite(pygame.sprite.Sprite):
                     if self.full_distance:  # range attack
                         self.hit_register(this_subunit)
                         self.already_hit.append(this_subunit.game_id)
-                        if self.aoe is False and self.penetrate <= 0:
+                        if self.penetrate <= 0:
                             self.deal_dmg = False
                             self.clean_object()
                             return
                     else:
                         self.hit_register(this_subunit)
                         self.already_hit.append(this_subunit.game_id)
+                        if self.penetrate <= 0:
+                            self.deal_dmg = False
+                            break
 
         if self.distance_progress >= 100:  # attack reach target pos
             self.clean_object()  # remove sprite

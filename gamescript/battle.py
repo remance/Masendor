@@ -686,7 +686,7 @@ class Battle:
                     if self.dt > 0.1:
                         self.dt = 0.1  # make it so stutter and lag does not cause overtime issue
 
-                    self.time_number.timer_update(self.dt * 50)  # update battle time
+                    self.time_number.timer_update(self.dt * 100)  # update battle time
                     self.time_update()
 
                 elif self.game_state == "end":

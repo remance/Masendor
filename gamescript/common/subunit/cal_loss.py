@@ -21,7 +21,7 @@ def cal_loss(self, target, final_dmg, impact, final_morale_dmg, element_effect, 
     if impact_check > target.max_health50:
         target.interrupt_animation = True
         target.command_action = self.knockdown_command_action
-        target.one_activity_limit = target.max_health / final_dmg
+        target.one_activity_limit = target.max_health / impact_check
         # target.move_speed = target.walk_speed
         # target.base_pos =
 
@@ -29,15 +29,15 @@ def cal_loss(self, target, final_dmg, impact, final_morale_dmg, element_effect, 
         target.interrupt_animation = True
         target.command_action = self.heavy_damaged_command_action
         target.move_speed = target.walk_speed
-        target.forced_target = pygame.Vector2(target.base_pos[0] - (impact * math.sin(math.radians(hit_angle))),
-                                              target.base_pos[1] - (impact * math.cos(math.radians(hit_angle))))
+        target.forced_target = pygame.Vector2(target.base_pos[0] - (impact_check * math.sin(math.radians(hit_angle))),
+                                              target.base_pos[1] - (impact_check * math.cos(math.radians(hit_angle))))
 
     elif impact_check > target.max_health10:  # play damaged animation
         target.interrupt_animation = True
         target.command_action = self.damaged_command_action
         target.move_speed = target.walk_speed
-        target.forced_target = pygame.Vector2(target.base_pos[0] - (impact * math.sin(math.radians(hit_angle))),
-                                              target.base_pos[1] - (impact * math.cos(math.radians(hit_angle))))
+        target.forced_target = pygame.Vector2(target.base_pos[0] - (impact_check * math.sin(math.radians(hit_angle))),
+                                              target.base_pos[1] - (impact_check * math.cos(math.radians(hit_angle))))
 
     target.health -= final_dmg
     health_check = 0.1

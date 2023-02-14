@@ -49,18 +49,18 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                     self.command_target = new_pos
                     if new_pos != self.base_pos:
                         if not self.current_action:
-                            self.command_action = self.walk_command_action.copy()
+                            self.command_action = self.walk_command_action
                             if key_state[pygame.K_LSHIFT]:
-                                self.command_action = self.run_command_action.copy()
+                                self.command_action = self.run_command_action
                             self.move_speed = speed
-                        elif "move loop" in self.current_action and "Charge" not in self.current_action["name"]:
+                        elif "move loop" in self.current_action and "charge" not in self.current_action:
                             # Already walking or running but not charging, replace current action with new one
-                            self.current_action = self.walk_command_action.copy()
+                            self.current_action = self.walk_command_action
                             if key_state[pygame.K_LSHIFT]:
-                                self.current_action = self.run_command_action.copy()
+                                self.current_action = self.run_command_action
                             self.move_speed = speed
 
-            if new_pos == self.base_pos and not self.move_speed:  # attack while stationary
+            if not self.move_speed:  # attack while stationary
                 if mouse_left_down or mouse_right_down:
                     action_num = 0
                     str_action_num = "0"
@@ -71,21 +71,30 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                         if self.equipped_weapon in self.ammo_now and \
                                 action_num in self.ammo_now[self.equipped_weapon]:  # range attack
                             if self.ammo_now[self.equipped_weapon][action_num] > 0:
-                                self.command_action = self.range_attack_command_action[action_num].copy()
+                                self.command_action = self.range_attack_command_action[action_num]
                                 self.attack_pos = cursor_pos
-                        elif self.weapon_cooldown[action_num] > self.weapon_speed[action_num]:  # melee attack
-                            self.command_action = self.melee_attack_command_action[action_num].copy()
+                        elif self.weapon_cooldown[action_num] >= self.weapon_speed[action_num]:  # melee attack
+                            self.command_action = self.melee_attack_command_action[action_num]
                             self.attack_pos = cursor_pos
 
                     elif "Action " + str_action_num in self.current_action["name"] and \
                             "movable" not in self.current_action:  # already attacking
-                        self.current_action["pos"] = cursor_pos
+                        self.attack_pos = cursor_pos
                         if "hold" not in self.current_action:  # start holding
-                            self.current_action["hold"] = True
+                            if "melee attack" in self.current_action:
+                                self.current_action = self.melee_hold_command_action[action_num]
+                            elif "range attack" in self.current_action:
+                                self.current_action = self.range_hold_command_action[action_num]
 
                 elif mouse_left_up or mouse_right_up:
+                    action_num = 0
+                    if mouse_right_up:
+                        action_num = 1
                     if "hold" in self.current_action:  # release holding
-                        self.current_action.pop("hold")
+                        if "melee attack" in self.current_action:
+                            self.current_action = self.melee_attack_command_action[action_num]
+                        elif "range attack" in self.current_action:
+                            self.current_action = self.range_attack_command_action[action_num]
 
             elif "move loop" in self.current_action:  # attack while moving
                 self.new_angle = self.set_rotate(new_pos)
@@ -102,30 +111,33 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                                 self.check_special_effect("Stationary", weapon=action_num) is False:
                             if "range attack" not in self.current_action:  # start move shooting
                                 self.interrupt_animation = True
-                                if "Walk" in self.current_action["name"]:
-                                    self.command_action = self.walk_shoot_command_action[action_num].copy()
-                                elif "Run" in self.current_action["name"]:
-                                    self.command_action = self.run_shoot_command_action[action_num].copy()
-                                self.command_action["pos"] = cursor_pos
+                                if "walk" in self.current_action:
+                                    self.command_action = self.walk_shoot_command_action[action_num]
+                                elif "run" in self.current_action:
+                                    self.command_action = self.run_shoot_command_action[action_num]
+                                self.attack_pos = cursor_pos
                                 self.move_speed = speed
                             else:  # already move shooting, update pos
-                                self.current_action["pos"] = cursor_pos
+                                self.attack_pos = cursor_pos
                     elif key_state[pygame.K_LSHIFT]:  # melee weapon charge
-                        if "Charge" not in self.current_action["name"]:  # start charge animation
+                        if "charge" not in self.current_action:  # start charge animation
                             self.interrupt_animation = True
-                            self.command_action = self.charge_command_action[action_num].copy()
+                            self.command_action = self.charge_command_action[action_num]
                             self.move_speed = self.run_speed
 
                     elif "Action " + str_action_num in self.current_action["name"]:  # No new attack command if already doing it
                         if "hold" not in self.current_action:  # start holding
-                            self.current_action["hold"] = True
+                            if "melee attack" in self.current_action:
+                                self.current_action = self.melee_hold_command_action[action_num]
+                            elif "range attack" in self.current_action:
+                                self.current_action = self.range_hold_command_action[action_num]
                         else:  # holding, update new attack pos
-                            self.current_action["pos"] = cursor_pos
+                            self.attack_pos = cursor_pos
 
                     else:  # normal melee attack
                         self.interrupt_animation = True
-                        self.command_action = self.melee_attack_command_action[action_num].copy()
-                        self.command_action["pos"] = cursor_pos
+                        self.command_action = self.melee_attack_command_action[action_num]
+                        self.attack_pos = cursor_pos
 
                 elif mouse_left_up or mouse_right_up:  # perform attack
                     action_num = 0
@@ -134,14 +146,16 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                         action_num = 1
                         str_action_num = "1"
 
-                    if "hold" in self.current_action and \
-                            "Action " + str_action_num in self.current_action["name"]:  # release holding
-                        self.current_action.pop("hold")
+                    if "hold" in self.current_action:  # release holding
+                        if "melee attack" in self.current_action:
+                            self.current_action = self.melee_attack_command_action[action_num]
+                        elif "range attack" in self.current_action:
+                            self.current_action = self.range_attack_command_action[action_num]
 
                     if str_action_num in self.current_action["name"]:  # perform attack when release charge
                         if "Charge " in self.current_action["name"]:
                             self.interrupt_animation = True
-                            self.command_action = self.melee_attack_command_action[action_num].copy()
-                            self.command_action["pos"] = cursor_pos
+                            self.command_action = self.melee_attack_command_action[action_num]
+                            self.attack_pos = cursor_pos
                         elif "range attack" in self.current_action:  # update new range attack pos
-                            self.current_action["pos"] = cursor_pos
+                            self.attack_pos = cursor_pos

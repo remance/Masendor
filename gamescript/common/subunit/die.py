@@ -9,6 +9,7 @@ def die(self, how):
     self.skill_cooldown = {}  # remove all cooldown
     self.skill_effect = {}  # remove all skill effects
 
+    print(self.name, self.game_id)
     self.battle.team_troop_number[self.team] -= 1
     if self.leader is not None:  # remove self from leader's subordinate list
         if self.is_leader:
