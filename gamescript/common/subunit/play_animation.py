@@ -18,7 +18,7 @@ def play_animation(self, dt, hold_check):
         if self.animation_timer >= self.animation_play_speed:
             self.animation_timer = 0
             just_start = True
-            if self.show_frame < len(current_animation) - 1:
+            if self.show_frame < self.max_show_frame:
                 self.show_frame += 1
             else:
                 if "repeat" in self.current_action:

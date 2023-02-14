@@ -16,12 +16,13 @@ def status_update(self):
 
     self.idle_action = {}
     for key, value in self.skill_effect.copy().items():
-        self.skill_duration[key] -= self.timer
-        if self.skill_duration[key] <= 0:  # skill end
-            self.skill_duration.pop(key)
-            self.skill_effect.pop(key)
-        elif "hold" in value["Action"] or "repeat" in value["Action"]:
-            self.idle_action = self.command_action
+        if value["Type"] != "Perform":  # perform skill type duration mean per action instead of time
+            self.skill_duration[key] -= self.timer
+            if self.skill_duration[key] <= 0:  # skill end
+                self.skill_duration.pop(key)
+                self.skill_effect.pop(key)
+            elif "hold" in value["Action"] or "repeat" in value["Action"]:
+                self.idle_action = self.command_action
 
     for key in self.status_duration.copy():  # loop is faster than comprehension here
         self.status_duration[key] -= self.timer

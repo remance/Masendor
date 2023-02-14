@@ -224,6 +224,7 @@ class Subunit(pygame.sprite.Sprite):
         self.current_animation = {}  # list of animation frames playing
         self.animation_queue = []  # list of animation queue
         self.show_frame = 0  # current animation frame
+        self.max_show_frame = 0
         self.animation_timer = 0
         self.current_action = {}  # action being performed
         self.command_action = {}  # next action to be performed
@@ -363,7 +364,7 @@ class Subunit(pygame.sprite.Sprite):
             self.formation_style = "Cavalry Flank"
             self.formation_density = "Tight"
             self.formation_position = "Behind"
-            self.follow_order = "Follow"
+            self.follow_order = "Stay Formation"
             self.formation_consider_flank = False  # has both infantry and cavalry, consider flank placment style
             self.formation_distance_list = {}
             self.formation_pos_list = {}
@@ -783,81 +784,81 @@ class Subunit(pygame.sprite.Sprite):
 
                 self.move = False  # reset move check
 
+                # Animation and sprite system
+
+                #     if 0 < self.countup_timer < self.countup_trigger_time:
+                #         self.countup_timer += dt
+                # elif self.countup_timer > 0:
+                #     self.countup_timer = 0
+                #     self.countup_trigger_time = 0
+
+                hold_check = False
+                if self.current_action and "hold" in self.current_action and \
+                        "hold" in self.current_animation[self.show_frame]["frame_property"] and \
+                        "hold" in self.action_list[int(self.current_action["name"][-1])]["Properties"]:
+                    hold_check = True
+
+                done, just_start = self.play_animation(dt, hold_check)
+
+                if self.one_activity_limit:
+                    self.one_activity_timer += dt
+                    if self.one_activity_timer >= self.one_activity_limit:
+                        self.one_activity_limit = 0
+                        self.one_activity_timer = 0
+
+                if "melee attack" in self.current_action and just_start and \
+                        self.current_animation[self.show_frame][
+                            "dmg_sprite"] is not None:  # perform melee attack when frame that produce dmg effect starts
+                    self.attack(self.current_animation[self.show_frame]["dmg_sprite"])
+                # Pick new animation, condition to stop animation: get interrupt,
+                # low level animation got replace with more important one, finish playing, skill animation and its effect end
+                if self.top_interrupt_animation or \
+                        (self.interrupt_animation and "uninterruptible" not in self.current_action) or \
+                        (self.one_activity_timer == 0 and
+                         ((not self.current_action and self.command_action) or done or
+                          ("skill" in self.current_action and self.current_action["skill"] not in self.skill_effect) or
+                          (self.idle_action and self.idle_action != self.command_action)) or
+                         self.current_action != self.last_current_action):
+                    if done:
+                        if "range attack" in self.current_action:  # shoot bullet only when animation finish
+                            self.attack("range")
+                        elif "skill" in self.current_action:  # spawn skill effect and sound
+                            skill_data = self.skill[self.current_action["skill"]]
+                            if self.current_animation[self.show_frame]["dmg_sprite"] is not None:
+                                effectsprite.EffectSprite(self.pos, self.pos, 0, 0, skill_data["Effect Sprite"],
+                                                          self.current_animation[self.show_frame]["dmg_sprite"])
+                            if skill_data["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
+                                self.battle.add_sound_effect_queue(skill_data["Sound Effect"], self.base_pos,
+                                                                   skill_data["Sound Distance"],
+                                                                   skill_data["Shake Power"])
+
+                    if self.current_action != self.last_current_action:
+                        self.last_current_action = self.current_action
+                    else:
+                        if "next action" in self.current_action:  # play next action first instead of command
+                            self.current_action = self.current_action["next action"]
+                        else:
+                            self.current_action = self.command_action  # continue next action when animation finish
+                            self.command_action = self.idle_action
+
+                    self.interrupt_animation = False
+                    self.top_interrupt_animation = False
+
+                    self.show_frame = 0
+                    self.animation_timer = 0
+                    self.pick_animation()
+
+                    self.animation_play_speed = self.default_animation_play_speed
+                    if "_Idle" in self.current_animation["name"]:  # some animations use a bit slower speed
+                        self.animation_play_speed = 0.15
+                    elif "_Walk" in self.current_animation["name"]:
+                        self.animation_play_speed = 0.12
+
+                    self.rect = self.image.get_rect(center=self.offset_pos)
+
         else:  # dead
             if self.alive:  # enter dead state
                 self.alive = False  # enter dead state
                 self.die("dead")
-
-        # Animation and sprite system
-
-        #     if 0 < self.countup_timer < self.countup_trigger_time:
-        #         self.countup_timer += dt
-        # elif self.countup_timer > 0:
-        #     self.countup_timer = 0
-        #     self.countup_trigger_time = 0
-
-        hold_check = False
-        if self.current_action and "hold" in self.current_action and \
-                "hold" in self.current_animation[self.show_frame]["frame_property"] and \
-                "hold" in self.action_list[int(self.current_action["name"][-1])]["Properties"]:
-            hold_check = True
-
-        done, just_start = self.play_animation(dt, hold_check)
-
-        if self.alive:
-
-            if self.one_activity_limit:
-                self.one_activity_timer += dt
-                if self.one_activity_timer >= self.one_activity_limit:
-                    self.one_activity_limit = 0
-                    self.one_activity_timer = 0
-
-            if "melee attack" in self.current_action and just_start and \
-                    self.current_animation[self.show_frame][
-                        "dmg_sprite"] is not None:  # perform melee attack when frame that produce dmg effect starts
-                self.attack(self.current_animation[self.show_frame]["dmg_sprite"])
-            # Pick new animation, condition to stop animation: get interrupt,
-            # low level animation got replace with more important one, finish playing, skill animation and its effect end
-            if self.top_interrupt_animation or \
-                    (self.interrupt_animation and "uninterruptible" not in self.current_action) or \
-                    (self.one_activity_timer == 0 and
-                     ((not self.current_action and self.command_action) or done or
-                      ("skill" in self.current_action and self.current_action["skill"] not in self.skill_effect) or
-                      (self.idle_action and self.idle_action != self.command_action)) or
-                     self.current_action != self.last_current_action):
-                if done:
-                    if "range attack" in self.current_action:  # shoot bullet only when animation finish
-                        self.attack("range")
-                    elif "skill" in self.current_action:  # spawn skill effect and sound
-                        skill_data = self.skill[self.current_action["skill"]]
-                        if self.current_animation[self.show_frame]["dmg_sprite"] is not None:
-                            effectsprite.EffectSprite(self.pos, self.pos, 0, 0, skill_data["Effect Sprite"],
-                                                      self.current_animation[self.show_frame]["dmg_sprite"])
-                        if skill_data["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
-                            self.battle.add_sound_effect_queue(skill_data["Sound Effect"], self.base_pos,
-                                                               skill_data["Sound Distance"],
-                                                               skill_data["Shake Power"])
-
-                if self.current_action != self.last_current_action:
-                    self.last_current_action = self.current_action
-                else:
-                    if "next action" in self.current_action:  # play next action first instead of command
-                        self.current_action = self.current_action["next action"]
-                    else:
-                        self.current_action = self.command_action  # continue next action when animation finish
-                        self.command_action = self.idle_action
-
-                self.interrupt_animation = False
-                self.top_interrupt_animation = False
-
-                self.show_frame = 0
-                self.animation_timer = 0
-                self.pick_animation()
-
-                self.animation_play_speed = self.default_animation_play_speed
-                if "_Idle" in self.current_animation["name"]:  # some animations use a bit slower speed
-                    self.animation_play_speed = 0.15
-                elif "_Walk" in self.current_animation["name"]:
-                    self.animation_play_speed = 0.12
-
-                # self.rect = self.image.get_rect(center=self.offset_pos)
+            if self.show_frame < self.max_show_frame:
+                self.play_animation(dt, False)

@@ -9,7 +9,6 @@ def die(self, how):
     self.skill_cooldown = {}  # remove all cooldown
     self.skill_effect = {}  # remove all skill effects
 
-    print(self.name, self.game_id)
     self.battle.team_troop_number[self.team] -= 1
     if self.leader is not None:  # remove self from leader's subordinate list
         if self.is_leader:
@@ -26,12 +25,12 @@ def die(self, how):
             if self.leader is not None:  # move subordinate to its higher leader
                 this_subunit.leader = self.leader
                 if this_subunit.is_leader:
-                    self.leader.alive_leader_subordinate.append(self)
+                    self.leader.alive_leader_subordinate.append(this_subunit)
                 else:
                     this_subunit.add_leader_buff()
-                    this_subunit.leader.alive_troop_subordinate.append(self)
-                    this_subunit.leader.find_formation_size()
-                    this_subunit.leader.dead_change = True  # new leader require formation change
+                    self.leader.alive_troop_subordinate.append(this_subunit)
+                    self.leader.find_formation_size()
+                    self.leader.dead_change = True  # new leader require formation change
             else:  # no higher leader to move, assign None
                 this_subunit.leader = None
                 this_subunit.command_buff = 1
