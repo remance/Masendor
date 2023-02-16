@@ -12,25 +12,27 @@ def die(self, how):
     self.battle.team_troop_number[self.team] -= 1
     if self.leader is not None:  # remove self from leader's subordinate list
         if self.is_leader:
-            self.leader.alive_leader_subordinate.remove(self)
+            self.leader.alive_leader_follower.remove(self)
         else:
-            self.leader.alive_troop_subordinate.remove(self)
+            self.leader.alive_troop_follower.remove(self)
 
     self.hitbox.who = None
     self.hitbox.kill()
     self.hitbox = None
 
-    for group in (self.alive_troop_subordinate, self.alive_leader_subordinate):  # change subordinate in list
+    for group in (self.alive_troop_follower, self.alive_leader_follower):  # change subordinate in list
         for this_subunit in group:
             if self.leader is not None:  # move subordinate to its higher leader
                 this_subunit.leader = self.leader
                 if this_subunit.is_leader:
-                    self.leader.alive_leader_subordinate.append(this_subunit)
+                    self.leader.alive_leader_follower.append(this_subunit)
+                    self.leader.find_formation_size(leader=True)
+                    self.leader.unit_add_change = True
                 else:
                     this_subunit.add_leader_buff()
-                    self.leader.alive_troop_subordinate.append(this_subunit)
-                    self.leader.find_formation_size()
-                    self.leader.dead_change = True  # new leader require formation change
+                    self.leader.alive_troop_follower.append(this_subunit)
+                    self.leader.find_formation_size(troop=True)
+                    self.leader.formation_add_change = True  # new leader require formation change
             else:  # no higher leader to move, assign None
                 this_subunit.leader = None
                 this_subunit.command_buff = 1
@@ -41,8 +43,8 @@ def die(self, how):
                         this_subunit.not_broken = False
                         this_subunit.find_retreat_target()
 
-    self.alive_troop_subordinate = []
-    self.alive_leader_subordinate = []
+    self.alive_troop_follower = []
+    self.alive_leader_follower = []
 
     self.battle.all_team_subunit[self.team].remove(self)
     self.battle.active_subunit_list.remove(self)

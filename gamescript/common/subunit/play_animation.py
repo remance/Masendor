@@ -11,20 +11,20 @@ def play_animation(self, dt, hold_check):
     :return: Boolean of animation finish playing or not and just start
     """
     done = False
-    just_start = False  # check if new frame just start playing this call
+    frame_start = False  # check if new frame just start playing this call
     current_animation = self.current_animation[self.sprite_direction]
     if hold_check is False:  # not holding current frame
         self.animation_timer += dt
         if self.animation_timer >= self.animation_play_speed:
             self.animation_timer = 0
-            just_start = True
+            frame_start = True
             if self.show_frame < self.max_show_frame:
                 self.show_frame += 1
             else:
                 if "repeat" in self.current_action:
                     self.show_frame = 0
                 else:
-                    just_start = False
+                    frame_start = False
                     done = True
             if done is False:  # check if new frame has play speed mod
                 if "play_time_mod" in self.current_animation[self.show_frame]["frame_property"]:
@@ -39,7 +39,7 @@ def play_animation(self, dt, hold_check):
     self.offset_pos = self.pos - current_animation[self.show_frame]["center_offset"]
     self.rect = self.image.get_rect(center=self.offset_pos)
 
-    return done, just_start
+    return done, frame_start
 
 
 def sprite_fading(self, how, speed=5):

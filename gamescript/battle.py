@@ -153,15 +153,30 @@ class Battle:
         self.wheel_ui = main.wheel_ui
 
         self.unit_behaviour_wheel = \
-            {"Main": {"Team Order": "Team Order", "Formation": "Formation", "Setting": "Setting"},
+            {"Main": {"Unit": "Unit", "Formation": "Formation", "Setting": "Setting"},
              "Formation": {"Formation Style": "Formation Style",
                            "Formation Phase": "Formation Phase",
                            "Formation List": "Formation List",
                            "Formation Position": "Formation Position",
                            "Formation Density": "Formation Density",
                            "Formation Order": "Formation Order"},
-             "Team Order": {"Defend Me": "Defend Me", "Follow Me": "Follow Me", "Hold Location": "Hold Location",
-                            "Attack": "Attack"},
+             "Unit": {"Unit Style": "Unit Style",
+                      "Unit Position": "Unit Position",
+                      "Unit Phase": "Unit Phase",
+                      "Unit Formation List": "Unit Formation List",
+                      "Unit Density": "Unit Density",
+                      "Unit Order": "Unit Order"},
+
+             "Unit Phase": {"Unit Skirmish Phase": "Skirmish Phase", "Unit Melee Phase": "Melee Phase",
+                            "Unit Bombard Phase": "Bombard Phase"},
+             "Unit Style": {"Unit Infantry Flank": "Infantry Flank", "Unit Cavalry Flank": "Cavalry Flank"},
+             "Unit Order": {"Unit Stay Formation": "Stay Formation", "Unit Follow": "Follow", "Unit Free": "Free",
+                            "Unit Stay Here": "Stay Here"},
+             "Unit Position": {"Unit Behind": "Behind", "Unit Ahead": "Ahead", "Unit Around": "Around"},
+             "Unit Density": {"Unit Very Tight": "Very Tight", "Unit Tight": "Tight",
+                              "Unit Very Loose": "Very Loose", "Unit Loose": "Loose"},
+
+
              "Formation Phase": {"Skirmish Phase": "Skirmish Phase", "Melee Phase": "Melee Phase",
                                  "Bombard Phase": "Bombard Phase"},
              "Formation Style": {"Infantry Flank": "Infantry Flank", "Cavalry Flank": "Cavalry Flank"},
@@ -411,18 +426,6 @@ class Battle:
 
         self.change_battle_state()
 
-        if self.char_selected is not None:  # select player char by default if control only one
-            for this_subunit in self.active_subunit_list:  # get player char
-                if this_subunit.game_id == self.char_selected:
-                    self.player_char = this_subunit
-                    self.player_char.player_manual_control = True
-                    self.battle_camera.change_layer(self.player_char, 999999)
-                    self.command_ui.add_leader_image(this_subunit.portrait)
-                    if self.camera_mode == "Follow":
-                        self.true_camera_pos = pygame.Vector2(self.player_char.base_pos)
-                        self.camera_fix()
-                    break
-
         self.setup_battle_ui("add")
 
         self.shown_camera_pos = self.camera_pos
@@ -651,7 +654,7 @@ class Battle:
                         if limit < 10:
                             limit = 10
                         for index, this_subunit in enumerate(self.troop_ai_logic_queue):
-                            this_subunit.troop_ai_logic()
+                            this_subunit.ai_troop()
                             if index == limit:
                                 break
                         self.troop_ai_logic_queue = self.troop_ai_logic_queue[10:]

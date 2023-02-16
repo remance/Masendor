@@ -81,7 +81,8 @@ def attack(self, attack_type):
 
                 damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
                                           self.weapon_penetrate[self.equipped_weapon][weapon], equipped_weapon_data,
-                                          attack_type, base_target, accuracy=accuracy)
+                                          attack_type, base_target, accuracy=accuracy,
+                                          arc_shot=self.check_special_effect("Arc Shot", weapon=weapon))
 
             self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
             if self.ammo_now[self.equipped_weapon][weapon] == 0 and \

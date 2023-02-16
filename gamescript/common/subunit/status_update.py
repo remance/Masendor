@@ -88,17 +88,15 @@ def status_update(self):
     crit_effect_modifier = 1
 
     # Apply status effect from trait
-    for trait_list in (self.trait["Original"].values(), self.trait["Weapon"][self.equipped_weapon][0].values(),
-                       self.trait["Weapon"][self.equipped_weapon][1].values()):
-        for trait in trait_list:
-            for effect in trait["Status"]:  # apply status effect from trait
-                self.apply_effect(effect, self.status_list[effect], self.status_effect, self.status_duration)
-                if trait["Area Of Effect"] > 1:  # status buff range to nearby friend
-                    self.apply_status_to_nearby(self.near_ally, trait["Buff Range"], effect)
+    for status, aoe in self.trait_ally_status["Final"].items():
+        self.apply_effect(status, self.status_list[status], self.status_effect, self.status_duration)
+        if aoe > 1:  # status buff range to nearby friend
+            self.apply_status_to_nearby(self.near_ally, aoe, status)
 
-            for effect in trait["Enemy Status"]:  # apply status effect from trait
-                if trait["Area Of Effect"] > 1:  # status buff range to nearby friend
-                    self.apply_status_to_nearby(self.near_enemy, trait["Buff Range"], effect)
+    for status, aoe in self.trait_enemy_status["Final"].items():
+        self.apply_effect(status, self.status_list[status], self.status_effect, self.status_duration)
+        if aoe > 1:  # status buff range to nearby friend
+            self.apply_status_to_nearby(self.near_enemy, aoe, status)
 
     # Apply effect from weather
     weather = self.battle.current_weather

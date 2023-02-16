@@ -1,4 +1,4 @@
-def troop_ai_logic(self):
+def ai_troop(self):
     nearest_enemy = {key: key.base_pos.distance_to(self.base_pos) for team in
                      self.battle.all_team_subunit for key in self.battle.all_team_subunit[team] if team != self.team}
     nearest_friend = {key: key.base_pos.distance_to(self.base_pos) for key in
@@ -15,7 +15,7 @@ def troop_ai_logic(self):
 
     if self.player_manual_control is False:
         if self.not_broken:
-            self.combat_ai_logic()
-            self.move_ai_logic()
+            self.ai_combat()
+            self.ai_move()
         else:
-            self.retreat_ai_logic()
+            self.ai_retreat()

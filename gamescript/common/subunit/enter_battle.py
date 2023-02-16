@@ -23,15 +23,15 @@ def enter_battle(self, animation_pool):
         self.add_leader_buff()
 
     if self.is_leader:
-        self.find_formation_size()
-
-    self.status_update()
+        self.find_formation_size(troop=True, leader=True)
 
     # Add troop number to counter how many troop join battle
     self.battle.active_subunit_list.append(self)
     self.battle.all_team_subunit[self.team].add(self)
     self.battle.team_troop_number[self.team] += 1
     self.battle.start_troop_number[self.team] += 1
+
+    self.status_update()
 
     # Grab only animation sprite that the subunit can use
     self.animation_pool = animation_pool[self.sprite_id][self.race_name][self.mount_race_name][self.armour_gear[0]][

@@ -1615,11 +1615,11 @@ class Animation:
         global current_frame
         if dt > 0 and True in play_list:
             play_speed = self.speed_ms
-            if any("play_speed_mod_" in item for item in frame_property_select[self.show_frame]):
+            if any("play_time_mod_" in item for item in frame_property_select[self.show_frame]):
                 play_speed *= float([item for item in frame_property_select[self.show_frame] if
-                                   "play_speed_mod_" in item][0].split("_")[-1])
-            elif any("play_speed_mod_" in item for item in anim_property_select):
-                play_speed *= float([item for item in anim_property_select if "play_speed_mod_" in item][0].split("_")[-1])
+                                   "play_time_mod_" in item][0].split("_")[-1])
+            elif any("play_time_mod_" in item for item in anim_property_select):
+                play_speed *= float([item for item in anim_property_select if "play_time_mod_" in item][0].split("_")[-1])
             if time.time() - self.first_time >= play_speed:
                 self.show_frame += 1
                 while self.show_frame < max_frame and play_list[self.show_frame] is False:

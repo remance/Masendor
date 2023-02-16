@@ -44,7 +44,7 @@ class DamageSprite(pygame.sprite.Sprite):
             exec(f"" + file_name + " = " + file_name + "." + file_name)
 
     def __init__(self, attacker, weapon, dmg, penetrate, weapon_stat,
-                 attack_type, base_target, accuracy=None, height_ignore=False, degrade_when_travel=True,
+                 attack_type, base_target, accuracy=None, arc_shot=False, height_ignore=False, degrade_when_travel=True,
                  degrade_when_hit=True, random_direction=False, random_move=False,  mpact_effect=None):
         self._layer = 10000001
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -56,6 +56,7 @@ class DamageSprite(pygame.sprite.Sprite):
         self.height = self.attacker.height
         self.attack_type = attack_type
         self.impact_effect = None
+        self.arc_shot = arc_shot
 
         self.height_ignore = height_ignore
         self.degrade_when_travel = degrade_when_travel
@@ -148,6 +149,7 @@ class DamageSprite(pygame.sprite.Sprite):
     def update(self, subunit_list, dt):
         done = False
         just_start = False
+        pass_subunit = None
 
         self.timer += dt
         if self.timer > 1:  # reset timer and list of subunit already hit
@@ -166,12 +168,15 @@ class DamageSprite(pygame.sprite.Sprite):
                 if this_subunit.team != self.attacker.team and this_subunit.game_id not in self.already_hit and \
                         this_subunit.hitbox.rect.colliderect(self.rect):
                     if self.full_distance:  # range attack
-                        self.hit_register(this_subunit)
-                        self.already_hit.append(this_subunit.game_id)
-                        if self.penetrate <= 0:
-                            self.deal_dmg = False
-                            self.clean_object()
-                            return
+                        if self.arc_shot:  # arc shot does not hit during travel
+                            pass_subunit = this_subunit
+                        else:
+                            self.hit_register(this_subunit)
+                            self.already_hit.append(this_subunit.game_id)
+                            if self.penetrate <= 0:
+                                self.deal_dmg = False
+                                self.clean_object()
+                                return
                     else:
                         self.hit_register(this_subunit)
                         self.already_hit.append(this_subunit.game_id)
@@ -180,6 +185,8 @@ class DamageSprite(pygame.sprite.Sprite):
                             break
 
         if self.distance_progress >= 100:  # attack reach target pos
+            if self.arc_shot and pass_subunit is not None:  # arc shot hit last pass when land
+                self.hit_register(pass_subunit)
             self.clean_object()  # remove sprite
             return
 
@@ -195,7 +202,8 @@ class DamageSprite(pygame.sprite.Sprite):
 
                 if move.length() <= require_move_length:
                     self.base_pos += move
-                    if self.height_ignore is False and self.height_map.get_height(self.base_pos) > self.height + 20:
+                    if self.arc_shot is False and self.height_ignore is False and \
+                            self.height_map.get_height(self.base_pos) > self.height + 20:
                         self.clean_object()  # direct shot will not be able to shoot pass higher height terrain midway
                         return
                     self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],

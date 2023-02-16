@@ -96,8 +96,7 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                         elif "range attack" in self.current_action:
                             self.current_action = self.range_attack_command_action[action_num]
 
-            elif "move loop" in self.current_action:  # attack while moving
-                self.new_angle = self.set_rotate(new_pos)
+            else:  # attack while moving
                 if mouse_left_down or mouse_right_down:
                     action_num = 0
                     str_action_num = "0"
@@ -152,10 +151,10 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                         elif "range attack" in self.current_action:
                             self.current_action = self.range_attack_command_action[action_num]
 
-                    if str_action_num in self.current_action["name"]:  # perform attack when release charge
-                        if "Charge " in self.current_action["name"]:
-                            self.interrupt_animation = True
-                            self.command_action = self.melee_attack_command_action[action_num]
-                            self.attack_pos = cursor_pos
-                        elif "range attack" in self.current_action:  # update new range attack pos
-                            self.attack_pos = cursor_pos
+                    elif "charge" in self.current_action:
+                        self.interrupt_animation = True
+                        self.command_action = self.melee_attack_command_action[action_num]
+                        self.attack_pos = cursor_pos
+
+                    elif "range attack" in self.current_action:  # update new range attack pos
+                        self.attack_pos = cursor_pos

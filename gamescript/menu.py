@@ -454,11 +454,11 @@ class ArmyStat(pygame.sprite.Sprite):
         self.base_image = image.copy()
         self.image = self.base_image.copy()
 
-        self.type_number_pos = ((self.image.get_width() / 5, self.image.get_height() / 3),  # infantry melee
-                                (self.image.get_width() / 5, self.image.get_height() / 1.8),  # infantry range
-                                (self.image.get_width() / 1.6, self.image.get_height() / 3),  # cav melee
-                                (self.image.get_width() / 1.6, self.image.get_height() / 1.8),  # cav range
-                                (self.image.get_width() / 5, self.image.get_height() / 1.4))  # total subunit
+        self.type_number_pos = ((self.image.get_width() / 4.5, self.image.get_height() / 3),  # infantry melee
+                                (self.image.get_width() / 4.5, self.image.get_height() / 1.8),  # infantry range
+                                (self.image.get_width() / 1.3, self.image.get_height() / 3),  # cav melee
+                                (self.image.get_width() / 1.3, self.image.get_height() / 1.8),  # cav range
+                                (self.image.get_width() / 3, self.image.get_height() / 1.32))  # total subunit
 
         self.leader_text = (
             "Detrimental", "Incompetent", "Inferior", "Unskilled", "Dull", "Average", "Decent", "Skilled", "Master",
@@ -472,7 +472,7 @@ class ArmyStat(pygame.sprite.Sprite):
         self.image = self.base_image.copy()
 
         text_surface = self.font.render(str(leader_name), True, (0, 0, 0))
-        text_rect = text_surface.get_rect(midleft=(self.image.get_width() / 7, self.image.get_height() / 10))
+        text_rect = text_surface.get_rect(midleft=(self.image.get_width() / 10, self.image.get_height() / 8))
         self.image.blit(text_surface, text_rect)
 
         for index, text in enumerate(troop_number):
@@ -525,7 +525,9 @@ class ArmyStat(pygame.sprite.Sprite):
                        "Primary Weapon: ": leader_primary_weapon,
                        "Secondary Weapon: ": leader_secondary_weapon,
                        "Armour: ": leader_armour,
-                       "Mount: ": leader_mount}
+                       "Mount: ": leader_mount,
+                       "Followers": " Leaders: " + str(len(who.alive_leader_follower)) +
+                                    "    Troops: " + str(len(who.alive_troop_follower))}
         text_surface = self.font.render(str(leader_name), True, (0, 0, 0))
         text_rect = text_surface.get_rect(topleft=(self.font_size, self.font_size))
         self.image.blit(text_surface, text_rect)

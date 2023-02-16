@@ -13,9 +13,12 @@ def add_weapon_stat(self):
             for damage in self.original_weapon_dmg[set_index][weapon_index]:
                 damage_name = damage + " Damage"
                 if damage_name in weapon_stat:
-                    damage_with_attribute = weapon_stat[damage_name] + \
-                                            (weapon_stat[damage_name] * (self.strength * dmg_scaling[0] / 100) +
-                                             (weapon_stat[damage_name] * (self.dexterity * dmg_scaling[1] / 100)))
+                    if weapon_stat["Damage Stat Scaling"]:
+                        damage_with_attribute = weapon_stat[damage_name] + \
+                                                (weapon_stat[damage_name] * (self.strength * dmg_scaling[0] / 100) +
+                                                 (weapon_stat[damage_name] * (self.dexterity * dmg_scaling[1] / 100)))
+                    else:  # weapon damage not scale with user attribute
+                        damage_with_attribute = weapon_stat[damage_name]
                 self.original_weapon_dmg[set_index][weapon_index][damage] = [
                     damage_with_attribute * weapon_stat["Damage Balance"] *
                     self.troop_data.equipment_grade_list[weapon[1]]["Modifier"],

@@ -6,7 +6,7 @@ from pathlib import Path
 import pygame
 import pygame.freetype
 
-from gamescript import effectsprite
+from gamescript import damagesprite, effectsprite
 
 from gamescript.common import utility
 from pathfinding.core.diagonal_movement import DiagonalMovement
@@ -45,9 +45,10 @@ skill_command_action_1 = {"name": "Skill 1"}
 skill_command_action_2 = {"name": "Skill 2"}
 skill_command_action_3 = {"name": "Skill 3"}
 
-walk_command_action = {"name": "Walk", "movable": True, "main_weapon": True, "repeat": True, "move loop": True}
+walk_command_action = {"name": "Walk", "movable": True, "main_weapon": True, "repeat": True, "move loop": True,
+                       "walk": True}
 run_command_action = {"name": "Run", "movable": True, "main_weapon": True, "repeat": True,
-                      "move loop": True, "use momentum": True}
+                      "move loop": True, "use momentum": True, "run": True}
 flee_command_action = {"name": "Flee", "movable": True, "repeat": True, "move loop": True, "flee": True}
 
 melee_attack_command_action = ({"name": "Action 0", "melee attack": True}, {"name": "Action 1", "melee attack": True})
@@ -107,6 +108,11 @@ class Subunit(pygame.sprite.Sprite):
     add_original_trait = empty_method
     add_weapon_stat = empty_method
     add_weapon_trait = empty_method
+    ai_combat = empty_method
+    ai_leader = empty_method
+    ai_move = empty_method
+    ai_retreat = empty_method
+    ai_troop = empty_method
     apply_effect = empty_method
     apply_map_status = empty_method
     apply_status_to_nearby = empty_method
@@ -119,7 +125,6 @@ class Subunit(pygame.sprite.Sprite):
     check_element_threshold = empty_method
     check_special_effect = empty_method
     check_weapon_cooldown = empty_method
-    combat_ai_logic = empty_method
     create_subunit_sprite = empty_method
     create_troop_sprite = empty_method
     die = empty_method
@@ -129,12 +134,10 @@ class Subunit(pygame.sprite.Sprite):
     health_stamina_logic = empty_method
     make_front_pos = empty_method
     morale_logic = empty_method
-    move_ai_logic = empty_method
     move_logic = empty_method
     pick_animation = empty_method
     play_animation = empty_method
     process_trait_skill = empty_method
-    retreat_ai_logic = empty_method
     rotate_logic = empty_method
     status_update = empty_method
     skill_check_logic = empty_method
@@ -211,7 +214,8 @@ class Subunit(pygame.sprite.Sprite):
         self.attack_target = None  # target for attacking
         self.melee_target = None  # current target of melee combat
         self.player_manual_control = False  # subunit controlled by player
-        self.dead_change = False  # subordinate die in last update, reset formation, this is to avoid high workload when multiple die at once
+        self.formation_add_change = False  # subordinate die in last update, reset formation, this is to avoid high workload when multiple die at once
+        self.unit_add_change = False
         self.retreat_start = False
         self.taking_damage_angle = None
 
@@ -231,6 +235,8 @@ class Subunit(pygame.sprite.Sprite):
         self.idle_action = {}  # action that is performed when subunit is idle such as hold spear wall when skill active
         self.last_current_action = {}  # for checking if animation suddenly change
 
+        self.near_ally = []
+        self.nearest_enemy = []
         self.nearest_enemy = []
         self.nearest_ally = []
 
@@ -238,9 +244,10 @@ class Subunit(pygame.sprite.Sprite):
         self.team = team
         self.coa = coa
 
-        self.alive_troop_subordinate = []  # list of alive troop subordinate subunits
+        self.alive_troop_follower = []  # list of alive troop subordinate subunits
         self.troop_follower_size = 0
-        self.alive_leader_subordinate = []  # list of alive leader subordinate subunits
+        self.alive_leader_follower = []  # list of alive leader subordinate subunits
+        self.leader_follower_size = 0
         self.leader = leader_subunit  # leader of the sub-subunit if there is one
 
         self.feature_mod = "Infantry"  # the terrain feature that will be used on this subunit
@@ -358,16 +365,29 @@ class Subunit(pygame.sprite.Sprite):
             self.cav_command = stat["Cavalry Speciality"]
             self.leader_command_buff = (self.melee_command, self.range_command, self.cav_command)
             self.social = self.leader_data.leader_class[stat["Social Class"]]
+
             self.formation_list = ["Cluster"] + stat["Formation"]
-            self.formation = "Cluster"
-            self.formation_phase = "Melee Phase"
-            self.formation_style = "Cavalry Flank"
-            self.formation_density = "Tight"
-            self.formation_position = "Behind"
-            self.follow_order = "Stay Formation"
+            self.troop_formation = "Cluster"
+            self.troop_formation_phase = "Melee Phase"
+            self.troop_formation_style = "Cavalry Flank"
+            self.troop_formation_density = "Tight"
+            self.troop_formation_position = "Behind"
+            self.troop_follow_order = "Stay Formation"
+
+            self.unit_formation = "Cluster"
+            self.unit_formation_phase = self.troop_formation_phase
+            self.unit_formation_style = self.troop_formation_style
+            self.unit_formation_density = self.troop_formation_density
+            self.unit_formation_position = self.troop_formation_position
+            self.unit_follow_order = self.troop_follow_order
+            self.unit_type = "melee inf"  # type of unit indicate troop composition, melee inf, range inf, melee cav, range cav", "artillery"
+
             self.formation_consider_flank = False  # has both infantry and cavalry, consider flank placment style
-            self.formation_distance_list = {}
-            self.formation_pos_list = {}
+            self.troop_distance_list = {}
+            self.troop_pos_list = {}
+            self.unit_consider_flank = False
+            self.unit_distance_list = {}
+            self.unit_pos_list = {}
 
             try:  # Put leader image into leader slot
                 self.portrait = self.leader_data.images[self.troop_id].copy()
@@ -479,6 +499,8 @@ class Subunit(pygame.sprite.Sprite):
         self.trait = {"Original": stat["Trait"] + race_stat["Trait"] +
                                   self.troop_data.grade_list[self.grade]["Trait"],
                       "Weapon": {0: {0: [], 1: []}, 1: {0: [], 1: []}}}  # trait from preset, race and grade
+        self.trait_ally_status = {"Original": {}, "Weapon": {}, "Final": {}}
+        self.trait_enemy_status = {"Original": {}, "Weapon": {}, "Final": {}}
 
         self.armour_gear = stat["Armour"]  # armour equipment
         armour_stat = self.troop_data.armour_list[self.armour_gear[0]]
@@ -554,13 +576,22 @@ class Subunit(pygame.sprite.Sprite):
         self.trait["Original"] = {x: self.troop_data.trait_list[x] for x in self.trait["Original"] if
                                   x in self.troop_data.trait_list}  # replace trait index with data
 
+        for index, status_head in enumerate(("Status", "Enemy Status")):
+            trait_status_dict = (self.trait_ally_status, self.trait_enemy_status)[index]
+            for trait in self.trait["Original"].values():
+                for status in trait[status_head]:
+                    if status not in trait_status_dict["Original"]:
+                        trait_status_dict["Original"][status] = trait["Area Of Effect"]
+                    elif trait_status_dict["Original"][status] < trait["Area Of Effect"]:  # replace aoe that larger
+                        trait_status_dict["Original"][status] = trait["Area Of Effect"]
+
         self.add_original_trait()
 
         if self.leader is not None:
             if self.is_leader:
-                self.leader.alive_leader_subordinate.append(self)
+                self.leader.alive_leader_follower.append(self)
             else:
-                self.leader.alive_troop_subordinate.append(self)
+                self.leader.alive_troop_follower.append(self)
 
         self.original_skill = [skill for skill in self.original_skill if
                                (type(skill) is str or (skill in self.troop_data.skill_list and
@@ -746,9 +777,15 @@ class Subunit(pygame.sprite.Sprite):
             if dt:  # only run these when game not pause
                 self.timer += dt
 
-                if self.dead_change:
-                    self.dead_change = False
-                    self.change_formation()
+                if self.formation_add_change:
+                    self.formation_add_change = False
+                    if self.alive_troop_follower:
+                        self.change_formation("troop")
+
+                if self.unit_add_change:
+                    self.unit_add_change = False
+                    if self.alive_leader_follower:
+                        self.change_formation("unit")
 
                 self.check_weapon_cooldown(dt)
 
@@ -798,7 +835,7 @@ class Subunit(pygame.sprite.Sprite):
                         "hold" in self.action_list[int(self.current_action["name"][-1])]["Properties"]:
                     hold_check = True
 
-                done, just_start = self.play_animation(dt, hold_check)
+                done, frame_start = self.play_animation(dt, hold_check)
 
                 if self.one_activity_limit:
                     self.one_activity_timer += dt
@@ -806,10 +843,16 @@ class Subunit(pygame.sprite.Sprite):
                         self.one_activity_limit = 0
                         self.one_activity_timer = 0
 
-                if "melee attack" in self.current_action and just_start and \
-                        self.current_animation[self.show_frame][
-                            "dmg_sprite"] is not None:  # perform melee attack when frame that produce dmg effect starts
-                    self.attack(self.current_animation[self.show_frame]["dmg_sprite"])
+                if frame_start:
+                    if "melee attack" in self.current_action and \
+                            self.current_animation[self.show_frame]["dmg_sprite"] is not None:
+                        # perform melee attack when frame that produce dmg effect starts
+                        self.attack(self.current_animation[self.show_frame]["dmg_sprite"])
+                    # elif "charge" in self.current_action and self.momentum == 1 and self.show_frame == 0:
+                    #     # add charge damage effect
+                    #     damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
+                    #                               self.weapon_penetrate[self.equipped_weapon][weapon],
+                    #                               equipped_weapon_data, "charge", self.base_pos)
                 # Pick new animation, condition to stop animation: get interrupt,
                 # low level animation got replace with more important one, finish playing, skill animation and its effect end
                 if self.top_interrupt_animation or \

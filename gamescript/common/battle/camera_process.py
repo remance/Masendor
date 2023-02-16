@@ -20,5 +20,5 @@ def camera_process(self, key_state):
             self.camera_fix()
 
     elif self.camera_mode == "Follow":
-        self.true_camera_pos = pygame.Vector2(self.player_char.base_pos)
+        self.true_camera_pos = self.player_char.base_pos
         self.camera_fix()

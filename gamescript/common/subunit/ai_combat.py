@@ -1,4 +1,4 @@
-def combat_ai_logic(self):
+def ai_combat(self):
     if self.nearest_enemy[1] < self.melee_distance_zone:  # enemy in subunit's melee zone
         self.in_melee_combat_timer = 3  # consider to be in melee for 3 seconds before reset
         self.attack_target = self.nearest_enemy[0]
@@ -13,7 +13,8 @@ def combat_ai_logic(self):
                         self.command_action = self.melee_attack_command_action[weapon]
                         break
 
-    elif not self.in_melee_combat_timer and not self.command_action:  # no nearby enemy melee threat
+    elif not self.in_melee_combat_timer and not self.command_action and \
+            "charge" not in self.current_action:  # no nearby enemy melee threat
         self.attack_target = None
         if self.ammo_now:  # range attack
             if self.equipped_weapon not in self.ammo_now:
@@ -35,9 +36,9 @@ def combat_ai_logic(self):
                                     # weapon can shoot while moving
                                     if "move loop" in self.current_action and "charge" not in self.current_action:
                                         self.interrupt_animation = True
-                                        if "Walk" in self.current_action["Name"]:
+                                        if "Walk" in self.current_action["name"]:
                                             self.command_action = self.walk_shoot_command_action[weapon]
-                                        elif "Run" in self.current_action["Name"]:
+                                        elif "Run" in self.current_action["name"]:
                                             self.command_action = self.run_shoot_command_action[weapon]
                             else:
                                 self.command_action = self.range_attack_command_action[weapon]
