@@ -1,6 +1,17 @@
+from gamescript import effectsprite
+
+
 def use_skill(self, which_skill):
     skill_stat = self.skill[which_skill]
     aoe = skill_stat["Area of Effect"]
+
+    if self.current_animation[self.show_frame]["dmg_sprite"] is not None:
+        effectsprite.EffectSprite(self.pos, self.pos, 0, 0, skill_stat["Effect Sprite"],
+                                  self.current_animation[self.show_frame]["dmg_sprite"])
+    if skill_stat["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
+        self.battle.add_sound_effect_queue(skill_stat["Sound Effect"], self.base_pos,
+                                           skill_stat["Sound Distance"],
+                                           skill_stat["Shake Power"])
 
     group_to_do = []
     if skill_stat["Type"] in (0, 2):

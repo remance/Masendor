@@ -98,7 +98,8 @@ class HeroUI(pygame.sprite.Sprite):
         self.weapon_image_set_pos = ((self.prim_main_weapon_box_rect.center, self.prim_sub_weapon_box_rect.center),
                                      (self.sec_main_weapon_box_rect.center, self.sec_sub_weapon_box_rect.center))
 
-        self.weapon_base_image = self.weapon_image.copy()
+        self.weapon_base_image = self.weapon_image.copy()  # after adding weapon image
+        self.weapon_base_image2 = self.weapon_image.copy()  # after other effect like ammo count, cooldown, holding
         self.weapon_image_rect = self.weapon_image.get_rect(topright=(self.image.get_width() - (self.health_bar_size[0] * 2), 0))
 
         self.leader_image_rect = self.weapon_image.get_rect(topleft=(0, 0))
@@ -110,6 +111,7 @@ class HeroUI(pygame.sprite.Sprite):
         self.equipped_weapon = None
         self.magazine_count = None
         self.weapon_cooldown = None
+        self.weapon_holding = [False, False]
 
         self.base_image.blit(self.health_bar, self.health_bar_rect)
         self.base_image.blit(self.stamina_bar, self.stamina_bar_rect)
@@ -154,32 +156,47 @@ class HeroUI(pygame.sprite.Sprite):
             self.base_image.blit(self.stamina_bar, self.stamina_bar_rect)
             self.image.blit(self.stamina_bar, self.stamina_bar_rect)
 
-        if self.equipped_weapon != who.equipped_weapon or who.magazine_count != self.magazine_count or \
-                self.weapon_cooldown != who.weapon_cooldown:
-            if self.equipped_weapon != who.equipped_weapon or self.weapon_cooldown != who.weapon_cooldown:
-                self.equipped_weapon = who.equipped_weapon
-                self.weapon_image = self.weapon_base_image.copy()
-                self.image = self.base_image.copy()
-            weapon_name_set = list(who.weapon_name)
-            weapon_name_set.insert(0, weapon_name_set.pop(
-                weapon_name_set.index(weapon_name_set[self.equipped_weapon])))
-            weapon_set_index = list(range(0, len(who.weapon_name)))
-            weapon_set_index.insert(0, weapon_set_index.pop(weapon_set_index.index(self.equipped_weapon)))
-            for index, this_weapon_set in enumerate(weapon_name_set):
-                if index > len(weapon_name_set) - 1:
-                    index = len(weapon_name_set) - 1
-                true_weapon_set_index = weapon_set_index[index]
+        weapon_filter_change = False
+        if who.hold_timer == 1 and True not in self.weapon_holding:
+            self.weapon_holding[who.current_action["weapon"]] = True
+            weapon_filter_change = True
+        elif who.hold_timer == 0 and True in self.weapon_holding:
+            self.weapon_holding = [False, False]
+            weapon_filter_change = True
+        elif self.weapon_cooldown != who.weapon_cooldown:
+            weapon_filter_change = True
+            self.weapon_cooldown = who.weapon_cooldown.copy()
+
+        if self.equipped_weapon != who.equipped_weapon:
+            self.equipped_weapon = who.equipped_weapon
+            self.weapon_image = self.weapon_base_image.copy()
+            self.weapon_name_set = list(who.weapon_name)
+            self.weapon_name_set.insert(0, self.weapon_name_set.pop(
+                self.weapon_name_set.index(self.weapon_name_set[self.equipped_weapon])))
+            self.weapon_set_index = list(range(0, len(who.weapon_name)))
+            self.weapon_set_index.insert(0, self.weapon_set_index.pop(self.weapon_set_index.index(self.equipped_weapon)))
+            for index, this_weapon_set in enumerate(self.weapon_name_set):
+                if index > len(self.weapon_name_set) - 1:
+                    index = len(self.weapon_name_set) - 1
+                true_weapon_set_index = self.weapon_set_index[index]
                 for index2, this_weapon in enumerate(this_weapon_set):
                     weapon_image = self.weapon_sprite_pool[this_weapon][who.weapon_version[
                         true_weapon_set_index][index2]]["icon"].copy()
 
                     if index > 0:  # unequipped weapon
                         weapon_image = pygame.transform.scale(weapon_image,
-                                                              (self.weapon_image.get_width() / 4,
-                                                               self.weapon_image.get_height() / 4))
+                                                              (self.weapon_image.get_width() / 5,
+                                                               self.weapon_image.get_height() / 5))
                     weapon_image_rect = weapon_image.get_rect(center=self.weapon_image_set_pos[index][index2])
                     self.weapon_image.blit(weapon_image, weapon_image_rect)
-                    if index == 0:  # add cooldown in any
+            self.weapon_base_image2 = self.weapon_image.copy()
+
+        if self.equipped_weapon != who.equipped_weapon or weapon_filter_change:  # add weapon filter and ammo
+            if weapon_filter_change:
+                self.weapon_image = self.weapon_base_image2.copy()
+            for index, this_weapon_set in enumerate(self.weapon_name_set):
+                if index == 0:  # add cooldown in any
+                    for index2, this_weapon in enumerate(this_weapon_set):
                         cooldown = who.weapon_cooldown[index2]
                         speed = who.weapon_speed[index2]
                         if 0 < cooldown < speed:
@@ -188,29 +205,39 @@ class HeroUI(pygame.sprite.Sprite):
                                                              (1 - (cooldown / speed))), pygame.SRCALPHA)
                             cooldown_image.fill((255, 50, 50, 200))
                             self.weapon_image.blit(cooldown_image, self.weapon_cooldown_rect[index2])
+                        elif self.weapon_holding[index2]:  # holding weapon animation
+                            hold_image = pygame.Surface((self.weapon_box_images[0].get_width(),
+                                                         self.weapon_box_images[0].get_height()), pygame.SRCALPHA)
+                            hold_image.fill((100, 200, 100, 200))
+                            self.weapon_image.blit(hold_image, self.weapon_cooldown_rect[index2])
+
+        if who.magazine_count != self.magazine_count:
+            for index, this_weapon_set in enumerate(self.weapon_name_set):
+                if index > len(self.weapon_name_set) - 1:
+                    index = len(self.weapon_name_set) - 1
+                true_weapon_set_index = self.weapon_set_index[index]
+                for index2, this_weapon in enumerate(this_weapon_set):
                     if who.magazine_size[true_weapon_set_index][index2]:  # range weapon
                         if true_weapon_set_index not in who.magazine_count or \
                                 (true_weapon_set_index in who.magazine_count and
                                  index2 not in who.magazine_count[true_weapon_set_index]):  # no ammo
                             ammo_count = 0
                             text_colour = (200, 100, 100)
-                            weapon_image = apply_sprite_colour(weapon_image, (200, 50, 50), None,
-                                                               keep_white=False)
                         else:
                             ammo_count = who.magazine_count[true_weapon_set_index][index2]
                             text_colour = (255, 255, 255)
-                        ammo_text_surface = self.font.render(str(ammo_count), 1, text_colour)  # ammo number
+                        ammo_text_surface = self.font.render(str(ammo_count), True, text_colour)  # ammo number
                         ammo_text_rect = ammo_text_surface.get_rect(center=(self.ammo_text_box.get_width() / 2,
                                                                             self.ammo_text_box.get_height() / 2))
-                        self.ammo_text_box = self.ammo_text_box_original.copy()
-                        self.ammo_text_box.blit(ammo_text_surface, ammo_text_rect)
-                        ammo_text_rect = self.ammo_text_box.get_rect(midtop=self.ammo_count_rect[index][index2])
-                        self.weapon_image.blit(self.ammo_text_box, ammo_text_rect)
-
-            self.image.blit(self.weapon_image, self.weapon_image_rect)
+                    self.ammo_text_box = self.ammo_text_box_original.copy()
+                    self.ammo_text_box.blit(ammo_text_surface, ammo_text_rect)
+                    ammo_text_rect = self.ammo_text_box.get_rect(midtop=self.ammo_count_rect[index][index2])
+                    self.weapon_image.blit(self.ammo_text_box, ammo_text_rect)
 
             self.magazine_count = {key: value.copy() for key, value in who.magazine_count.items()}
-            self.weapon_cooldown = who.weapon_cooldown.copy()
+
+        if self.equipped_weapon != who.equipped_weapon or who.magazine_count != self.magazine_count or weapon_filter_change:
+            self.image.blit(self.weapon_image, self.weapon_image_rect)
 
 
 class SkillCardIcon(pygame.sprite.Sprite):

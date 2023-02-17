@@ -13,7 +13,9 @@ def change_formation(self, which, formation=None):
     if which == "troop":
         if formation is not None:
             self.troop_formation = formation
-
+        for leader in self.alive_leader_follower:  # leader follower change to match formation if can
+            if formation in leader.formation_list:
+                leader.change_formation("troop", formation=formation)
         for subunit in self.alive_troop_follower:
             if subunit.subunit_type < 2 and consider_flank[0] is False:
                 consider_flank[0] = True
@@ -26,8 +28,8 @@ def change_formation(self, which, formation=None):
         if False not in consider_flank:
             self.formation_consider_flank = True
 
-        change_formation = self.troop_formation
-        follow_size = self.troop_follower_size
+        new_formation = self.all_formation_list[self.troop_formation].copy()
+        self.troop_formation_preset = convert_formation_preset(self.troop_follower_size, new_formation)
 
     elif which == "unit":
         if formation is not None:
@@ -44,11 +46,9 @@ def change_formation(self, which, formation=None):
         if False not in consider_flank:
             self.unit_consider_flank = True
 
-        change_formation = self.unit_formation
-        follow_size = self.leader_follower_size
+        new_formation = self.all_formation_list[self.unit_formation].copy()
+        self.unit_formation_preset = convert_formation_preset(self.leader_follower_size, new_formation)
 
-    new_formation = self.all_formation_list[change_formation].copy()
-    self.formation_preset = convert_formation_preset(follow_size, new_formation)
     self.setup_formation(which)
 
 

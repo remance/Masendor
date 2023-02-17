@@ -1,5 +1,5 @@
 def battle_mouse_process(self, mouse_left_up, mouse_right_up, double_mouse_right, mouse_left_down, mouse_right_down,
-                         key_state, key_press):
+                         key_state):
     if self.event_log.rect.collidepoint(self.mouse_pos):  # check mouse collide for event log ui
         if self.event_log.scroll.rect.collidepoint(
                 self.mouse_pos):  # Must check mouse collide for scroll before event log ui

@@ -6,8 +6,6 @@ from pathlib import Path
 import pygame
 import pygame.freetype
 
-from gamescript import damagesprite, effectsprite
-
 from gamescript.common import utility
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
@@ -20,6 +18,8 @@ rotation_dict = {key: rotation_name[index] for index, key in enumerate(rotation_
 infinity = float("inf")
 
 weapon_set = ("Main_", "Sub_")
+
+rotation_xy = utility.rotation_xy
 
 """Command dict Guide
 Key:
@@ -36,8 +36,9 @@ next action = action that will be performed after the current one finish
 uninterruptible = action can not be interrupt unless top_interrupt_animation is True
 move loop = action involve repeating movement that can be cancel when movement change like walk to run
 charge = indicate charging action
-fly = subunit sprite will also "fly" while moving
+less mass = subunit has mass is divided during animation based on value provide
 walk, run, flee, indicate movement type for easy checking
+weapon = weapon index of action for easy checking
 """
 
 skill_command_action_0 = {"name": "Skill 0"}
@@ -51,13 +52,15 @@ run_command_action = {"name": "Run", "movable": True, "main_weapon": True, "repe
                       "move loop": True, "use momentum": True, "run": True}
 flee_command_action = {"name": "Flee", "movable": True, "repeat": True, "move loop": True, "flee": True}
 
-melee_attack_command_action = ({"name": "Action 0", "melee attack": True}, {"name": "Action 1", "melee attack": True})
-range_attack_command_action = ({"name": "Action 0", "range attack": True}, {"name": "Action 1", "range attack": True})
+melee_attack_command_action = ({"name": "Action 0", "melee attack": True, "weapon": 0},
+                               {"name": "Action 1", "melee attack": True, "weapon": 1})
+range_attack_command_action = ({"name": "Action 0", "range attack": True, "weapon": 0},
+                               {"name": "Action 1", "range attack": True, "weapon": 1})
 
-melee_hold_command_action = ({"name": "Action 0", "melee attack": True, "hold": True},
-                             {"name": "Action 1", "melee attack": True, "hold": True})
-range_hold_command_action = ({"name": "Action 0", "range attack": True, "hold": True},
-                             {"name": "Action 1", "range attack": True, "hold": True})
+melee_hold_command_action = ({"name": "Action 0", "melee attack": True, "hold": True, "weapon": 0},
+                             {"name": "Action 1", "melee attack": True, "hold": True, "weapon": 1})
+range_hold_command_action = ({"name": "Action 0", "range attack": True, "hold": True, "weapon": 0},
+                             {"name": "Action 1", "range attack": True, "hold": True, "weapon": 1})
 
 walk_shoot_command_action = ({"name": "Action 0", "range attack": True, "walk": True, "movable": True},
                              {"name": "Action 1", "range attack": True, "walk": True, "movable": True})
@@ -71,11 +74,12 @@ charge_command_action = ({"name": "Charge 0", "movable": True, "repeat": True, "
                           "use momentum": True, "charge": True})
 
 heavy_damaged_command_action = {"name": "HeavyDamaged", "uncontrollable": True, "movable": True, "move loop": True,
-                                "forced move": True}
+                                "forced move": True, "less mass": 1.5}
 damaged_command_action = {"name": "Damaged", "uncontrollable": True, "movable": True, "move loop": True,
-                          "forced move": True}
+                          "forced move": True, "less mass": 1.2}
 knockdown_command_action = {"name": "Knockdown", "uncontrollable": True, "movable": True, "forced move": True,
-                            "fly": True, "next action": {"name": "Standup", "uncontrollable": True}}
+                            "less mass": 2, "uninterruptible": True,
+                            "next action": {"name": "Standup", "uncontrollable": True}}
 
 die_command_action = {"name": "Die", "uninterruptible": True, "uncontrollable": True}
 
@@ -233,7 +237,6 @@ class Subunit(pygame.sprite.Sprite):
         self.current_action = {}  # action being performed
         self.command_action = {}  # next action to be performed
         self.idle_action = {}  # action that is performed when subunit is idle such as hold spear wall when skill active
-        self.last_current_action = {}  # for checking if animation suddenly change
 
         self.near_ally = []
         self.nearest_enemy = []
@@ -271,6 +274,7 @@ class Subunit(pygame.sprite.Sprite):
         self.one_activity_limit = 0
         self.countup_timer = 0  # timer that count up to specific threshold to start event like charge attack timing
         self.countup_trigger_time = 0  # time that indicate when trigger happen
+        self.hold_timer = 0
 
         self.attack_pos = None
         self.alive = True
@@ -367,6 +371,7 @@ class Subunit(pygame.sprite.Sprite):
             self.social = self.leader_data.leader_class[stat["Social Class"]]
 
             self.formation_list = ["Cluster"] + stat["Formation"]
+            self.troop_formation_preset = []
             self.troop_formation = "Cluster"
             self.troop_formation_phase = "Melee Phase"
             self.troop_formation_style = "Cavalry Flank"
@@ -375,6 +380,7 @@ class Subunit(pygame.sprite.Sprite):
             self.troop_follow_order = "Stay Formation"
 
             self.unit_formation = "Cluster"
+            self.unit_formation_preset = []
             self.unit_formation_phase = self.troop_formation_phase
             self.unit_formation_style = self.troop_formation_style
             self.unit_formation_density = self.troop_formation_density
@@ -464,15 +470,15 @@ class Subunit(pygame.sprite.Sprite):
                                    (self.wisdom * 0.2)) + (grade_stat["Training Score"] *
                                                            ((training_scale[0] + training_scale[1]) / 2))
 
-        # self.original_melee_dodge = ((self.dexterity * 0.1) + (self.agility * 0.3) + (self.wisdom * 0.1)) + \
-        #                             (grade_stat["Training Score"] * training_scale[1] / 10)
+        self.original_melee_dodge = ((self.dexterity * 0.1) + (self.agility * 0.3) + (self.wisdom * 0.1)) + \
+                                    (grade_stat["Training Score"] * training_scale[1])
 
         self.original_range_def = ((self.dexterity * 0.4) + (self.agility * 0.2) + (self.constitution * 0.3) +
                                    (self.wisdom * 0.1)) + (grade_stat["Training Score"] *
                                                            ((training_scale[1] + training_scale[2]) / 2))
 
-        # self.original_range_dodge = ((self.dexterity * 0.2) + (self.agility * 0.2) + (self.wisdom * 0.1)) + \
-        #                             (grade_stat["Training Score"] * training_scale[1] / 10)
+        self.original_range_dodge = ((self.dexterity * 0.2) + (self.agility * 0.2) + (self.wisdom * 0.1)) + \
+                                    (grade_stat["Training Score"] * training_scale[1])
 
         self.original_accuracy = ((self.strength * 0.1) + (self.dexterity * 0.6) + (self.wisdom * 0.3)) + \
                                  (grade_stat["Training Score"] * training_scale[2]) / 4
@@ -598,10 +604,18 @@ class Subunit(pygame.sprite.Sprite):
                                                        self.troop_data.skill_list[skill]["Troop Type"] == 0 or
                                                        self.troop_data.skill_list[skill]["Troop Type"] == self.subunit_type))]
 
+        # Weight calculation
+        self.weight += self.troop_data.armour_list[self.armour_gear[0]]["Weight"] + self.mount_armour[
+            "Weight"]  # Weight from both melee and range weapon and armour
+        if self.subunit_type == 2:  # cavalry has half weight penalty
+            self.weight = self.weight / 2
+
         # Stat after applying trait and gear
         self.base_melee_attack = self.original_melee_attack
         self.base_melee_def = self.original_melee_def
         self.base_range_def = self.original_range_def
+        self.base_melee_dodge = self.original_melee_dodge - self.weight
+        self.base_range_dodge = self.original_range_dodge - self.weight
 
         self.base_element_resistance = self.original_element_resistance.copy()
 
@@ -653,13 +667,6 @@ class Subunit(pygame.sprite.Sprite):
         self.max_health20 = self.max_health * 0.2
         self.max_health50 = self.max_health * 0.5
 
-        # Weight calculation
-        self.weight += self.troop_data.armour_list[self.armour_gear[0]]["Weight"] + self.mount_armour[
-            "Weight"]  # Weight from both melee and range weapon and armour
-        if self.subunit_type == 2:  # cavalry has half weight penalty
-            self.weight = self.weight / 2
-        # ^ End weight cal
-
         self.base_speed = (self.base_speed * ((100 - self.weight) / 100)) + grade_stat[
             "Speed Bonus"]  # finalise base speed with weight and grade bonus
         self.acceleration = self.base_speed / 2  # determine how long it takes to reach full speed when run
@@ -671,6 +678,8 @@ class Subunit(pygame.sprite.Sprite):
         self.melee_attack = self.base_melee_attack
         self.melee_def = self.base_melee_def
         self.range_def = self.base_range_def
+        self.melee_dodge = self.base_melee_dodge
+        self.range_dodge = self.base_range_dodge
         self.element_resistance = self.base_element_resistance.copy()
         self.speed = self.base_speed
         self.accuracy = self.base_accuracy
@@ -797,6 +806,18 @@ class Subunit(pygame.sprite.Sprite):
                 if self.timer > 1:  # Update status and skill use around every 1 second
                     self.status_update()
 
+                    if self.is_leader and self.move_speed:  # find new follow point for subordinate
+                        for subunit in self.alive_troop_follower:
+                            new_target = rotation_xy(self.base_pos, self.base_pos +
+                                                     self.troop_distance_list[subunit], self.radians_angle)
+                            self.troop_pos_list[subunit][0] = new_target[0]
+                            self.troop_pos_list[subunit][1] = new_target[1]
+                        for leader in self.alive_leader_follower:
+                            new_target = rotation_xy(self.base_pos, self.base_pos +
+                                                     self.unit_distance_list[leader], self.radians_angle)
+                            self.unit_pos_list[leader][0] = new_target[0]
+                            self.unit_pos_list[leader][1] = new_target[1]
+
                     if self not in self.battle.troop_ai_logic_queue:
                         self.battle.troop_ai_logic_queue.append(self)
 
@@ -830,10 +851,16 @@ class Subunit(pygame.sprite.Sprite):
                 #     self.countup_trigger_time = 0
 
                 hold_check = False
-                if self.current_action and "hold" in self.current_action and \
+                if "hold" in self.current_action and \
                         "hold" in self.current_animation[self.show_frame]["frame_property"] and \
-                        "hold" in self.action_list[int(self.current_action["name"][-1])]["Properties"]:
+                        "hold" in self.action_list[self.current_action["weapon"]]["Properties"]:
                     hold_check = True
+                    if self.hold_timer < 1:
+                        self.hold_timer += dt
+                        if self.hold_timer > 1:
+                            self.hold_timer = 1
+                elif self.hold_timer > 0:  # no longer holding, reset timer
+                    self.hold_timer = 0
 
                 done, frame_start = self.play_animation(dt, hold_check)
 
@@ -859,30 +886,18 @@ class Subunit(pygame.sprite.Sprite):
                         (self.interrupt_animation and "uninterruptible" not in self.current_action) or \
                         (self.one_activity_timer == 0 and
                          ((not self.current_action and self.command_action) or done or
-                          ("skill" in self.current_action and self.current_action["skill"] not in self.skill_effect) or
-                          (self.idle_action and self.idle_action != self.command_action)) or
-                         self.current_action != self.last_current_action):
+                          (self.idle_action and self.idle_action != self.command_action))):
                     if done:
                         if "range attack" in self.current_action:  # shoot bullet only when animation finish
                             self.attack("range")
                         elif "skill" in self.current_action:  # spawn skill effect and sound
-                            skill_data = self.skill[self.current_action["skill"]]
-                            if self.current_animation[self.show_frame]["dmg_sprite"] is not None:
-                                effectsprite.EffectSprite(self.pos, self.pos, 0, 0, skill_data["Effect Sprite"],
-                                                          self.current_animation[self.show_frame]["dmg_sprite"])
-                            if skill_data["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
-                                self.battle.add_sound_effect_queue(skill_data["Sound Effect"], self.base_pos,
-                                                                   skill_data["Sound Distance"],
-                                                                   skill_data["Shake Power"])
+                            self.use_skill(self.current_action["skill"])
 
-                    if self.current_action != self.last_current_action:
-                        self.last_current_action = self.current_action
+                    if "next action" in self.current_action:  # play next action first instead of command
+                        self.current_action = self.current_action["next action"]
                     else:
-                        if "next action" in self.current_action:  # play next action first instead of command
-                            self.current_action = self.current_action["next action"]
-                        else:
-                            self.current_action = self.command_action  # continue next action when animation finish
-                            self.command_action = self.idle_action
+                        self.current_action = self.command_action  # continue next action when animation finish
+                        self.command_action = self.idle_action
 
                     self.interrupt_animation = False
                     self.top_interrupt_animation = False

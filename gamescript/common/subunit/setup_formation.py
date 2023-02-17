@@ -22,12 +22,20 @@ def setup_formation(self, which, phase=None, style=None, density=None, position=
     if which == "troop":
         if phase is not None:
             self.troop_formation_phase = phase
+            for leader in self.alive_leader_follower:  # leader follower also change troop formation setting to match higher leader
+                leader.setup_formation("troop", phase=phase)
         if style is not None:
             self.troop_formation_style = style
+            for leader in self.alive_leader_follower:
+                leader.setup_formation("troop", style=phase)
         if density is not None:
             self.troop_formation_density = density
+            for leader in self.alive_leader_follower:
+                leader.setup_formation("troop", density=phase)
         if position is not None:
             self.troop_formation_position = position
+            for leader in self.alive_leader_follower:
+                leader.setup_formation("troop", position=phase)
 
         follower_size = self.troop_follower_size
         formation_phase = self.troop_formation_phase
@@ -39,16 +47,20 @@ def setup_formation(self, which, phase=None, style=None, density=None, position=
         follow_order = self.troop_follow_order
         follower_list = self.alive_troop_follower
         placement_density = formation_density_distance[formation_density]
+        formation_preset = self.troop_formation_preset
 
     elif which == "unit":
         if phase is not None:
-            self.unit_formation_phase = phase[5:]
+            self.unit_formation_phase = phase
+
         if style is not None:
-            self.unit_formation_style = style[5:]
+            self.unit_formation_style = style
+
         if density is not None:
-            self.unit_formation_density = density[5:]
+            self.unit_formation_density = density
+
         if position is not None:
-            self.unit_formation_position = position[5:]
+            self.unit_formation_position = position
 
         follower_size = self.leader_follower_size
         formation_phase = self.unit_formation_phase
@@ -60,16 +72,17 @@ def setup_formation(self, which, phase=None, style=None, density=None, position=
         follow_order = self.unit_follow_order
         follower_list = self.alive_leader_follower
         placement_density = unit_density_distance[formation_density]
+        formation_preset = self.unit_formation_preset
 
     first_placement = np.zeros((follower_size,
                                 follower_size), dtype=int)  # for placement before consider style and phase
 
     placement_order = []  # list of formation position placement order
-    place_list = list(set(self.formation_preset["original"].flat))
+    place_list = list(set(formation_preset["original"].flat))
     place_list.sort(reverse=True)
 
     for placement_value in place_list:
-        placement_position = np.where(self.formation_preset["original"] == placement_value)
+        placement_position = np.where(formation_preset["original"] == placement_value)
         placement_order += [(placement_position[0][index], placement_position[1][index]) for index, _ in
                             enumerate(placement_position[0])]
 
@@ -114,7 +127,7 @@ def setup_formation(self, which, phase=None, style=None, density=None, position=
     priority_place = {key: value for key, value in priority_place.items() if len(value) > 0}
     for key, value in priority_place.items():  # there should be no excess number of subunit
         formation_sorted = []  # sorted from the highest
-        formation_position_list = first_placement * self.formation_preset[key]
+        formation_position_list = first_placement * formation_preset[key]
         for placement_value in tuple(sorted(set(formation_position_list.flat))):
             placement_position = np.where(formation_position_list == placement_value)
             formation_sorted += [(placement_position[0][index], placement_position[1][index]) for index, _ in

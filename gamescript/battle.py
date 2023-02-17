@@ -564,7 +564,7 @@ class Battle:
 
                         if mouse_left_up or mouse_right_up or mouse_left_down or mouse_right_down or key_state:
                             self.battle_mouse_process(mouse_left_up, mouse_right_up, double_mouse_right,
-                                                      mouse_left_down, mouse_right_down, key_state, event_key_press)
+                                                      mouse_left_down, mouse_right_down, key_state)
 
                     else:  # register and process ui that require player input and block everything else
                         if type(self.player_input_state) is not str:  # ui input state

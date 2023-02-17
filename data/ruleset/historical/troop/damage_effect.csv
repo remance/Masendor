@@ -1,9 +1,9 @@
-"ID","Name","Area Of Effect","Duration","Physical Damage","Fire Damage","Poison Damage","Armour Penetration","Spreadable","Damage Sprite","Damage Sprite Effect","Damage Impact Effect","Sound Effect","Sound Distance","Properties"
-1,"Small Explosion",,,100,50,0,500,FALSE,,,,,70,
-2,"Medium Explosion",,,150,80,0,1000,FALSE,,,,"swing_flat",120,
-3,"Large Explosion",,,250,150,0,2000,FALSE,,,,"swing_flat_large",200,
-4,"Huge Explosion",,,1000,400,0,10000,FALSE,,,,,400,
-5,"Small Fire",,,0,20,0,60,TRUE,,,,"dagger_pierce",20,
-6,"Medium Fire",,,0,60,0,13,TRUE,,,,,30,
-7,"Large Fire",,,0,80,0,35,TRUE,,,,,45,
-8,"Huge Fire",,,0,100,0,50,TRUE,,,,,70,
+"ID","Name","Area Of Effect","Duration","Physical Damage","Fire Damage","Poison Damage","Armour Penetration","Impact","Spreadable","Damage Sprite","Damage Sprite Effect","Damage Impact Effect","Sound Effect","Sound Distance","Properties"
+1,"Small Explosion",20,0,100,50,0,500,20,"FALSE",,,,,70,
+2,"Medium Explosion",60,0,150,80,0,1000,50,"FALSE",,,,,120,
+3,"Large Explosion",100,0,250,150,0,2000,100,"FALSE",,,,,200,
+4,"Huge Explosion",200,0,1000,400,0,10000,250,"FALSE",,,,,400,
+5,"Small Fire",,,0,20,0,60,5,"TRUE",,,,,20,
+6,"Medium Fire",,,0,60,0,13,10,"TRUE",,,,,30,
+7,"Large Fire",,,0,80,0,35,20,"TRUE",,,,,45,
+8,"Huge Fire",,,0,100,0,50,45,"TRUE",,,,,70,

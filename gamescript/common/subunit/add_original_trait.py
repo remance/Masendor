@@ -48,6 +48,8 @@ def add_original_trait(self):
         self.original_melee_attack *= (random.randint(70, 120) / 100)
         self.original_melee_def *= (random.randint(70, 120) / 100)
         self.original_range_def *= (random.randint(70, 120) / 100)
+        self.original_melee_dodge *= (random.randint(70, 120) / 100)
+        self.original_range_dodge *= (random.randint(70, 120) / 100)
         self.original_speed *= (random.randint(70, 120) / 100)
         self.original_accuracy *= (random.randint(70, 120) / 100)
         self.original_reload *= (random.randint(70, 120) / 100)
@@ -58,6 +60,8 @@ def add_original_trait(self):
     self.original_melee_attack *= melee_attack_modifier
     self.original_melee_def *= melee_def_modifier
     self.original_range_def *= range_def_modifier
+    self.original_melee_dodge *= melee_def_modifier
+    self.original_range_dodge *= range_def_modifier
     self.original_speed *= speed_modifier
     self.original_accuracy *= accuracy_modifier
     self.original_reload *= reload_modifier

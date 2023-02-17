@@ -14,7 +14,6 @@ def skill_check_logic(self):
                     if len(self.input_skill) > skill:
                         skill = tuple(self.input_skill.keys())[skill]
                         if skill in available_skill:
-                            self.use_skill(skill)
                             action = self.input_skill[skill]["Action"].copy() + [skill]
                             if "Action" in action[0]:
                                 action[0] += " 0"  # use main hand by default for Action type animation skill

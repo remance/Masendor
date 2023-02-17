@@ -2,6 +2,9 @@ import math
 
 infinity = float("inf")
 
+dodge_formation_bonus = {"Very Tight": -30, "Tight": -15,
+                         "Very Loose": 0, "Loose": -5}
+
 
 def status_update(self):
     """Calculate stat from stamina, morale state, skill, status, terrain"""
@@ -39,6 +42,8 @@ def status_update(self):
     self.melee_attack = self.base_melee_attack
     self.melee_def = self.base_melee_def
     self.range_def = self.base_range_def
+    self.melee_dodge = self.base_melee_dodge
+    self.range_dodge = self.base_range_dodge
     self.accuracy = self.base_accuracy
     self.reload = self.base_reload
     self.charge_def = self.base_charge_def
@@ -70,7 +75,6 @@ def status_update(self):
     sight_bonus = 0
     hidden_bonus = 0
     shoot_range_bonus = 0
-    weapon_dmg_bonus = 0
     hp_regen_bonus = 0
     stamina_regen_bonus = 0
 
@@ -166,15 +170,15 @@ def status_update(self):
             discipline_bonus += cal_effect["Discipline Bonus"]
 
             for weapon in self.weapon_dmg:
-                for element in self.weapon_dmg[weapon]:
-                    if element != "Physical" and element + " Damage Extra" in cal_effect:
+                for key, value in self.weapon_dmg[weapon].items():
+                    if key != "Physical" and key + " Damage Extra" in cal_effect:
                         extra_dmg = cal_effect[element + " Damage Extra"]
                         if extra_dmg != 0:
-                            self.weapon_dmg[weapon][element][0] += extra_dmg * self.weapon_dmg[weapon]["Physical"]
-                            self.weapon_dmg[weapon][element][1] += extra_dmg * self.weapon_dmg[weapon]["Physical"]
+                            value[0] += extra_dmg * self.weapon_dmg[weapon]["Physical"]
+                            value[1] += extra_dmg * self.weapon_dmg[weapon]["Physical"]
                     else:
-                        self.weapon_dmg[weapon][element][0] *= cal_effect["Physical Damage Effect"]
-                        self.weapon_dmg[weapon][element][1] *= cal_effect["Physical Damage Effect"]
+                        value[0] *= cal_effect["Physical Damage Effect"]
+                        value[1] *= cal_effect["Physical Damage Effect"]
 
             sight_bonus += cal_effect["Sight Bonus"]
             hidden_bonus += cal_effect["Hidden Bonus"]
@@ -261,6 +265,11 @@ def status_update(self):
                         self.shoot_range.items()}
     self.melee_def = (self.melee_def * melee_def_modifier) + melee_def_bonus
     self.range_def = (self.range_def * range_def_modifier) + range_def_bonus
+    self.melee_dodge = (self.base_melee_dodge * speed_modifier) + speed_bonus  # dodge get buff based on speed instead
+    self.range_dodge = (self.base_range_dodge * speed_modifier) + speed_bonus
+    if self.leader is not None:  # get buff from formation density
+        self.melee_dodge += dodge_formation_bonus[self.leader.troop_formation_density]
+        self.range_dodge += dodge_formation_bonus[self.leader.troop_formation_density]
     self.accuracy = (self.accuracy * accuracy_modifier) + accuracy_bonus
     self.reload = (self.reload * reload_modifier) + reload_bonus
     self.charge_def = (self.charge_def * charge_def_modifier) + charge_def_bonus
@@ -271,13 +280,36 @@ def status_update(self):
     self.crit_effect = self.crit_effect * crit_effect_modifier
 
     troop_mass = self.troop_mass
-    if self.current_action and self.current_action["name"] == "KnockDown":  # knockdown reduce mass
-        troop_mass = int(self.troop_mass / 2)
+    if "less mass" in self.current_action:  # knockdown reduce mass
+        troop_mass = int(self.troop_mass / self.current_action["less mass"])
     self.charge_power = ((self.charge * self.momentum) / 2) * troop_mass
 
     self.charge_def_power = self.charge_def * troop_mass
-    if self.move:  # reduce charge def by half when moving
+    if self.move_speed:  # reduce charge def by half when moving
         self.charge_def_power /= 2
+
+    if self.hold_timer == 1:  # holding weapon animation for at least 1 sec, apply buff
+        if "power" in self.action_list[self.current_action["weapon"]]["Properties"]:
+            for value in self.weapon_dmg[self.current_action["weapon"]].values():
+                value[0] *= 0.5
+                value[1] *= 0.5
+
+        if "block" in self.action_list[self.current_action["weapon"]]["Properties"]:  # double def but reduce dodge
+            self.melee_def *= 2
+            self.range_def *= 2
+            self.melee_dodge /= 2
+            self.range_dodge /= 2
+
+        if "chargeblock" in self.action_list[self.current_action["weapon"]]["Properties"]:  # double charge def but reduce dodge
+            self.charge_def_power *= 2
+            self.melee_dodge /= 2
+            self.range_dodge /= 2
+
+    if weapon_dmg_modifier != 1:
+        for weapon in self.weapon_dmg:
+            for element in self.weapon_dmg[weapon]:
+                self.weapon_dmg[weapon][element][0] *= weapon_dmg_modifier
+                self.weapon_dmg[weapon][element][1] *= weapon_dmg_modifier
 
     # include all penalties to morale like remaining health, battle situation scale
     self.morale -= ((20 - (20 * self.battle.battle_scale[self.team] / 100)) * self.mental)
@@ -288,6 +320,10 @@ def status_update(self):
         self.melee_def = 0
     if self.range_def < 0:
         self.range_def = 0
+    if self.melee_dodge < 0:
+        self.melee_dodge = 0
+    if self.range_dodge < 0:
+        self.range_dodge = 0
     if self.speed < 1:  # prevent speed to be lower than 1
         self.speed = 1
     if self.accuracy < 0:

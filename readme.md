@@ -167,15 +167,18 @@ historical information to players.
 
 - Musket shot "aaronsiler_musket 3", "aaronsiler_musket 4" by aaronsiler (https://freesound.org/people/aaronsiler/)
 - Assorted weapon sound from Videvo (https://www.videvo.net/)
-- Heavy rain weather ambient sound "Heavy Rain" by lebaston100 (https://freesound.org/people/lebaston100/)
+- Heavy rain weather ambient sound "Heavy Rain", weapon sound "Wooshes" by lebaston100 (https://freesound.org/people/lebaston100/)
 - Heavy Weapon swing by "Swinging staff whoosh (strong) 08" Nightflame (https://freesound.org/people/Nightflame/)
 - Sword swing "Swosh Sword Swing" by qubodup (https://freesound.org/people/qubodup/)
-- Big warhorn "BIG-REVERB-WARHORN" by newagesoup (https://freesound.org/people/newagesoup/sounds/348862/)
+- Sword swing "swordslash" by deleted_user_13668154 (https://freesound.org/people/deleted_user_13668154/)
+- Spear pierce "Wooshs 01" by toyoto (https://freesound.org/people/toyoto/)
+- Hammer swing "Whoosh Heavy Spear Hammer Large" by EminYILDIRIM (https://freesound.org/people/EminYILDIRIM/)
+- Big warhorn "BIG-REVERB-WARHORN" by newagesoup (https://freesound.org/people/newagesoup/)
 - Warhorn "Battle horn 1" by kirmm (https://pixabay.com/sound-effects/battle-horn-1-6931/)
-- Bow drawing "SHOOTING_ARROW_SINGLE_ARCHERY_FOLEY_02" by JoeDinesSound (https://freesound.org/people/JoeDinesSound/sounds/534951/)
-- Bow drawing "Regular Arrow Shot distant target" by brendan89 (https://freesound.org/people/brendan89/sounds/321555/)
-- Crossbow shot "bow02" by Erdie (https://freesound.org/people/Erdie/sounds/65734/)
-- Crossbow shot "Crossbow Firing and Hitting Target" by Ali_6868 (https://freesound.org/people/Ali_6868/sounds/384919/)
+- Bow drawing "SHOOTING_ARROW_SINGLE_ARCHERY_FOLEY_02" by JoeDinesSound (https://freesound.org/people/JoeDinesSound/)
+- Bow drawing "Regular Arrow Shot distant target" by brendan89 (https://freesound.org/people/brendan89/)
+- Crossbow shot "bow02" by Erdie (https://freesound.org/people/Erdie/)
+- Crossbow shot "Crossbow Firing and Hitting Target" by Ali_6868 (https://freesound.org/people/Ali_6868/)
 
 ## Translation
 
@@ -193,8 +196,8 @@ historical information to players.
 
 # Future Plan
 
-**Ver 0.6 Dream Decision:** multiple unit selection/move logic, Battle selection(with different estimation source),
-preparation and result screen, custom battle, custom unit editor, improve the main menu, Battle of Megiddo, Battle of
+**Ver 0.6 Dream Decision:** Battle selection(with different estimation source),
+preparation and result screen, custom battle, improve the main menu, Battle of Megiddo, Battle of
 Mohács
 
 **0.6.6 and 0.6.7:** random map generator, start working on Battle of Mohács, Minor battle: 764 Irish
@@ -205,7 +208,7 @@ abbey war
 **Ver 0.7 Future Visionary:** hidden stat, line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus,
 day-night, AOE attack, ground and impact effect, Battle of Walaja, Battle of Dorylaeum
 
-**Ver 0.8 Authentic Attraction:** In-game art, better-looking UI, add intro screen, Battle of Isandlwana, Battle of Hwangsanbeol
+**Ver 0.8 Authentic Attraction:** In-game art, custom troop editor, better-looking UI, add intro screen, Battle of Isandlwana, Battle of Hwangsanbeol
 
 **Ver 0.9 Gaze of New Life:** AI and pathfinding (The most challenging step unless cut corner to the point of braindead
 AI), final code optimisation before full 1.0

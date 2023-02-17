@@ -6,7 +6,7 @@ combat_side_cal = cal_melee_hit.combat_side_cal
 infinity = float("inf")
 
 
-def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
+def cal_dmg(self, attacker, target, hit, defence, dodge, weapon, hit_side=None):
     """
     Calculate dmg, melee attack will use attacker subunit stat,
     other types will use the type object stat instead (mostly used for range attack)
@@ -15,16 +15,17 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
     :param target: Target subunit object
     :param hit: Hit chance value
     :param defence: Defence chance value
+    :param dodge: Dodge chance value
     :param weapon: Weapon index (0 for main, 1 for sub)
     :param hit_side: Side that the target got hit, use only for melee attack to calculate charge
     :return: Damage on health, morale, leader and element effect
     """
-    height_advantage = attacker.height - target.height
-    if self.attack_type != "melee":
-        height_advantage = int(height_advantage / 2)  # Range attack use less height advantage
-    hit += height_advantage
+    troop_dmg = 0
+    morale_dmg = 0
+    element_effect = {}
 
-    if defence < 0 or attacker.check_special_effect("Ignore Defence", weapon=weapon):  # Ignore def trait
+    # attack pass through dodge now calculate defence
+    if attacker.check_special_effect("Ignore Defence", weapon=weapon):  # Ignore def trait
         defence = 0
 
     hit_chance = hit - defence
@@ -34,16 +35,11 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
         hit_chance *= attacker.crit_effect  # modify with crit effect further
         if hit_chance > 200:
             hit_chance = 200
-    else:  # infinity number can cause nan value
-        hit_chance = 200
 
     combat_score = round(hit_chance / 100, 1)
     if combat_score == 0 and random.randint(0, 10) > 5:  # chance to scrape instead of miss
         combat_score = 0.1
 
-    troop_dmg = 0
-    morale_dmg = 0
-    element_effect = {}
     impact = self.impact * combat_score
 
     if combat_score > 0:

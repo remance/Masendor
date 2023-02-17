@@ -29,7 +29,7 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                     elif key_state[pygame.K_t]:  # Use sub weapon skill
                         self.command_action = self.skill_command_action_3
 
-                if not self.current_action or "move loop" in self.current_action:
+                if not self.current_action or "move loop" in self.current_action or "hold" in self.current_action:
                     speed = self.walk_speed
                     if key_state[pygame.K_LSHIFT]:
                         speed = self.run_speed
@@ -55,10 +55,17 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                             self.move_speed = speed
                         elif "move loop" in self.current_action and "charge" not in self.current_action:
                             # Already walking or running but not charging, replace current action with new one
-                            self.current_action = self.walk_command_action
                             if key_state[pygame.K_LSHIFT]:
+                                if "walk" in self.current_action:  # change to run animation
+                                    self.interrupt_animation = True
                                 self.current_action = self.run_command_action
+                            else:
+                                if "run" in self.current_action:
+                                    self.interrupt_animation = True
+                                self.current_action = self.walk_command_action
                             self.move_speed = speed
+                        elif "hold" in self.current_action:  # cancel hold animation by moving
+                            self.interrupt_animation = True
 
             if not self.move_speed:  # attack while stationary
                 if mouse_left_down or mouse_right_down:
@@ -124,7 +131,7 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                             self.command_action = self.charge_command_action[action_num]
                             self.move_speed = self.run_speed
 
-                    elif "Action " + str_action_num in self.current_action["name"]:  # No new attack command if already doing it
+                    elif self.current_action and "Action " + str_action_num in self.current_action["name"]:  # No new attack command if already doing it
                         if "hold" not in self.current_action:  # start holding
                             if "melee attack" in self.current_action:
                                 self.current_action = self.melee_hold_command_action[action_num]
@@ -140,10 +147,8 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
 
                 elif mouse_left_up or mouse_right_up:  # perform attack
                     action_num = 0
-                    str_action_num = "0"
                     if mouse_right_up:
                         action_num = 1
-                        str_action_num = "1"
 
                     if "hold" in self.current_action:  # release holding
                         if "melee attack" in self.current_action:

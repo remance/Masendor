@@ -34,15 +34,15 @@ def wheel_ui_process(self, choice):
             self.player_char.change_formation("troop", formation=choice)
 
         elif choice in self.unit_behaviour_wheel["Unit Style"]:
-            self.player_char.setup_formation("unit", style=choice)
+            self.player_char.setup_formation("unit", style=choice[5:])
         elif choice in self.unit_behaviour_wheel["Unit Phase"]:
-            self.player_char.setup_formation("unit", phase=choice)
+            self.player_char.setup_formation("unit", phase=choice[5:])
         elif choice in self.unit_behaviour_wheel["Unit Density"]:
-            self.player_char.setup_formation("unit", density=choice)
+            self.player_char.setup_formation("unit", density=choice[5:])
         elif choice in self.unit_behaviour_wheel["Unit Position"]:
-            self.player_char.setup_formation("unit", position=choice)
+            self.player_char.setup_formation("unit", position=choice[5:])
         elif choice in self.unit_behaviour_wheel["Unit Order"]:
-            self.player_char.change_follow_order(choice, "unit")
+            self.player_char.change_follow_order(choice[5:], "unit")
         elif "Unit Formation List" in self.unit_behaviour_wheel and choice in self.unit_behaviour_wheel["Unit Formation List"]:
             self.player_char.change_formation("unit", formation=choice)
 

@@ -8,11 +8,11 @@ stay_formation_distance = 1
 
 def ai_move(self):
     if self.leader is not None:  # has higher leader
-        if not self.command_action:
+        if "uncontrollable "not in self.command_action:
             if self.is_leader:
-                follow_order = self.leader.troop_follow_order
-            else:
                 follow_order = self.leader.unit_follow_order
+            else:
+                follow_order = self.leader.troop_follow_order
 
             if follow_order != "Free":  # move to assigned location
                 if follow_order in ("Stay Formation", "Stay Here"):
@@ -75,17 +75,17 @@ def ai_move(self):
             else:  # move to attack nearby enemy in free order
                 distance = self.nearest_enemy[0].base_pos.distance_to(self.front_pos)
                 if self.shoot_range[0] + self.shoot_range[1] > 0:  # has range weapon, move to maximum shoot range position
-                    max_shoot = max(self.shoot_range[0], self.shoot_range[1])
+                    max_shoot = max(self.shoot_range[0], self.shoot_range[1]) * 1.1
                     if distance > max_shoot:  # further than can shoot
-                        distance = distance - max_shoot
+                        distance -= max_shoot
                         angle = self.set_rotate(self.nearest_enemy[0].base_pos)
                         self.follow_target = pygame.Vector2(self.base_pos[0] - (distance * math.sin(math.radians(angle))),
                                                             self.base_pos[1] - (distance * math.cos(math.radians(angle))))
                         self.command_action = self.run_command_action
-                else:  # melee
-                    distance = self.attack_target.base_pos.distance_to(self.base_pos) - self.max_melee_range
+                else:  # no range weapon, move to melee
+                    distance = self.nearest_enemy[0].base_pos.distance_to(self.base_pos) - self.max_melee_range
                     if distance > self.max_melee_range > 0:  # too far move closer
-                        base_angle = self.set_rotate(self.attack_target.base_pos)
+                        base_angle = self.set_rotate(self.nearest_enemy[0].base_pos)
                         self.follow_target = pygame.Vector2(self.base_pos[0] -
                                                             (distance * math.sin(math.radians(base_angle))),
                                                             self.base_pos[1] -

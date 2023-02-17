@@ -58,18 +58,6 @@ def move_logic(self, dt):
 
                     self.make_front_pos()
 
-                    if self.is_leader:  # find new follow point for subordinate
-                        for subunit in self.alive_troop_follower:
-                            new_target = rotation_xy(self.base_pos, self.base_pos +
-                                                     self.troop_distance_list[subunit], self.radians_angle)
-                            self.troop_pos_list[subunit][0] = new_target[0]
-                            self.troop_pos_list[subunit][1] = new_target[1]
-                        for leader in self.alive_leader_follower:
-                            new_target = rotation_xy(self.base_pos, self.base_pos +
-                                                     self.unit_distance_list[leader], self.radians_angle)
-                            self.unit_pos_list[leader][0] = new_target[0]
-                            self.unit_pos_list[leader][1] = new_target[1]
-
                     # momentum calculation
                     if "use momentum" in self.current_action:
                         if self.momentum < 1:
