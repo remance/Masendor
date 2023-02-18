@@ -664,7 +664,6 @@ class MapOptionBox(pygame.sprite.Sprite):
 class MapPreview(pygame.sprite.Sprite):
     colour = {0: (50, 50, 50), 1: (0, 0, 200), 2: (200, 0, 0)}
     selected_colour = {0: (200, 200, 200), 1: (150, 150, 255), 2: (255, 150, 150)}
-    troop_dot = {team: None for team in colour.keys()}
     leader_dot = {team: {True: None, False: None} for team in colour.keys()}
 
     def __init__(self, main_dir, screen_scale, pos, terrain_colour, feature_colour, battle_map_colour):
@@ -684,25 +683,19 @@ class MapPreview(pygame.sprite.Sprite):
         leader_colour_dot = pygame.Surface((8 * self.screen_scale[0], 8 * self.screen_scale[1]))
         rect = leader_dot.get_rect(topleft=(2 * self.screen_scale[0], 2 * self.screen_scale[1]))
 
-        troop_dot = pygame.Surface((4 * self.screen_scale[0], 4 * self.screen_scale[1]))  # dot for team subunit
-        troop_dot.fill((0, 0, 0))
-
         for team, colour in self.colour.items():
             new_dot = leader_colour_dot.copy()
             new_dot.fill(colour)
             add_dot = leader_dot.copy()
             add_dot.blit(new_dot, rect)
             self.leader_dot[team][False] = add_dot
-            new_dot = troop_dot.copy()
-            new_dot.fill(colour)
-            self.troop_dot[team] = new_dot
 
         for team, colour in self.selected_colour.items():
             new_selected_dot = leader_colour_dot.copy()
-            new_selected_dot.fill
-            new_dot.fill(colour)
+            new_selected_dot.fill(colour)
+            new_selected_dot.fill(colour)
             add_dot = leader_dot.copy()
-            add_dot.blit(new_dot, rect)
+            add_dot.blit(new_selected_dot, rect)
             self.leader_dot[team][True] = add_dot
 
         self.rect = self.image.get_rect(center=self.pos)
@@ -736,15 +729,13 @@ class MapPreview(pygame.sprite.Sprite):
         self.image = self.base_image.copy()
         if mode == 1:
             for team, pos_list in team_pos_list.items():
-                for troop_type, troop_pos in pos_list.items():
-                    for pos in troop_pos:
-                        select = False
-                        if troop_pos == selected:
-                            select = True
-                        scaled_pos = pygame.Vector2(pos[0] * ((440 * self.screen_scale[0]) / 1000),
-                                                    pos[1] * ((440 * self.screen_scale[1]) / 1000))
-                        if troop_type == "Leader":
-                            rect = self.leader_dot[team][select].get_rect(center=scaled_pos)
-                            self.image.blit(self.leader_dot[team][select], rect)
+                for pos in pos_list["Leader"]:
+                    select = False
+                    if pos == selected:
+                        select = True
+                    scaled_pos = pygame.Vector2(pos[0] * ((440 * self.screen_scale[0]) / 1000),
+                                                pos[1] * ((440 * self.screen_scale[1]) / 1000))
+                    rect = self.leader_dot[team][select].get_rect(center=scaled_pos)
+                    self.image.blit(self.leader_dot[team][select], rect)
 
         self.rect = self.image.get_rect(center=self.pos)

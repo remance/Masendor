@@ -57,16 +57,17 @@ def setup_battle_troop(self, team_subunit_list, specific_team=None):
                     leader = leader_subunit[troop["Leader"]]
 
                 if type(troop["Troop ID"]) is str:
-                    add_subunit = subunit.Subunit(troop["Troop ID"], game_id, troop["Team"], troop["POS"],
+                    add_subunit = subunit.Subunit(troop["Troop ID"], game_id, troop["ID"], troop["Team"], troop["POS"],
                                                   troop["Angle"], troop["Start Health"], troop["Start Stamina"], leader,
                                                   self.faction_data.coa_list[troop["Faction"]])
                     leader_subunit[troop["ID"]] = add_subunit  # leader subunit from L string leader id as troop id
                     game_id += 1
                 else:  # troop, check how many to spawn
                     for _ in range(int(troop["How Many"])):
-                        add_subunit = subunit.Subunit(troop["Troop ID"], game_id, troop["Team"], troop["POS"],
-                                                      troop["Angle"], troop["Start Health"], troop["Start Stamina"],
-                                                      leader, self.faction_data.coa_list[troop["Faction"]])
+                        add_subunit = subunit.Subunit(troop["Troop ID"], game_id, troop["ID"], troop["Team"],
+                                                      troop["POS"], troop["Angle"], troop["Start Health"],
+                                                      troop["Start Stamina"], leader,
+                                                      self.faction_data.coa_list[troop["Faction"]])
                         game_id += 1
 
                 which_team.add(add_subunit)

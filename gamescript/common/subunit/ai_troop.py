@@ -10,12 +10,3 @@ def ai_troop(self):
 
     self.nearest_enemy = self.near_enemy[0]
     self.nearest_ally = self.near_ally[0]
-
-    self.taking_damage_angle = None
-
-    if self.player_manual_control is False:
-        if self.not_broken:
-            self.ai_combat()
-            self.ai_move()
-        else:
-            self.ai_retreat()

@@ -9,6 +9,7 @@ def cal_loss(self, target, final_dmg, impact, final_morale_dmg, element_effect, 
     :param self: Attacker Subunit object
     :param target: Damage receiver Subunit object
     :param final_dmg: Damage value to health
+    :param impact: Impact value affecting if the target will start damaged or knockdown animation
     :param final_morale_dmg: Damage value to morale
     :param element_effect: Dict of element effect inflict to target
     :param hit_angle: Angle of hitting side
@@ -16,12 +17,11 @@ def cal_loss(self, target, final_dmg, impact, final_morale_dmg, element_effect, 
     if final_dmg > target.health:  # dmg cannot be higher than remaining health
         final_dmg = target.health
 
-    impact_check = final_dmg + impact - target.troop_mass
+    impact_check = final_dmg + impact # - target.troop_mass
 
     if impact_check > target.max_health50:
         target.interrupt_animation = True
         target.command_action = self.knockdown_command_action
-        target.one_activity_limit = target.max_health / impact_check
         target.move_speed = impact_check
         target.forced_target = pygame.Vector2(target.base_pos[0] - (impact * math.sin(math.radians(hit_angle))),
                                               target.base_pos[1] - (impact * math.cos(math.radians(hit_angle))))

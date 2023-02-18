@@ -1,5 +1,4 @@
-def battle_mouse_process(self, mouse_left_up, mouse_right_up, double_mouse_right, mouse_left_down, mouse_right_down,
-                         key_state):
+def battle_mouse_process(self, mouse_left_up, mouse_right_up, mouse_left_down, mouse_right_down, key_state):
     if self.event_log.rect.collidepoint(self.mouse_pos):  # check mouse collide for event log ui
         if self.event_log.scroll.rect.collidepoint(
                 self.mouse_pos):  # Must check mouse collide for scroll before event log ui
@@ -12,5 +11,4 @@ def battle_mouse_process(self, mouse_left_up, mouse_right_up, double_mouse_right
     if self.player_char.alive:
         self.player_char.player_input(self.command_mouse_pos, mouse_left_up=mouse_left_up,
                                       mouse_right_up=mouse_right_up, mouse_left_down=mouse_left_down,
-                                      mouse_right_down=mouse_right_down, double_mouse_right=double_mouse_right,
-                                      key_state=key_state)
+                                      mouse_right_down=mouse_right_down, key_state=key_state)

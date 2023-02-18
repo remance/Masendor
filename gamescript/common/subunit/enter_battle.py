@@ -21,6 +21,11 @@ def enter_battle(self, animation_pool):
 
     if self.leader is not None:
         self.add_leader_buff()
+        self.unit_leader = self.leader
+        while self.unit_leader.leader is not None:  # get the highest leader of the unit
+            self.unit_leader = self.unit_leader.leader
+    elif self.is_leader:  # is top unit leader
+        self.unit_leader = self
 
     if self.is_leader:
         self.find_formation_size(troop=True, leader=True)

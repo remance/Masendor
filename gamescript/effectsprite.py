@@ -15,7 +15,7 @@ class EffectSprite(pygame.sprite.Sprite):
 
     play_animation = play_animation.play_animation  # use play_animation from damage sprite
 
-    def __init__(self, start_pos, target, angle, duration, sprite_type, sprite_name):
+    def __init__(self, attacker, start_pos, target, angle, duration, sprite_type, sprite_name):
         self._layer = 10000000
         pygame.sprite.Sprite.__init__(self, self.containers)
 
@@ -35,7 +35,10 @@ class EffectSprite(pygame.sprite.Sprite):
         else:
             animation_name = sprite_name[1]
 
-        self.current_animation = self.effect_animation_pool[sprite_type][animation_name]
+        if "(team)" in sprite_type:
+            self.current_animation = self.effect_animation_pool[sprite_type][attacker.team][animation_name]
+        else:
+            self.current_animation = self.effect_animation_pool[sprite_type][animation_name]
 
         self.image = self.current_animation[self.show_frame]
 

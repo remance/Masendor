@@ -253,10 +253,22 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
                                 sprite_pic = pygame.transform.smoothscale(sprite_pic, (
                                     sprite_pic.get_width() * self.screen_scale[0],
                                     sprite_pic.get_height() * self.screen_scale[1]))
+
+                                play_time_mod = 1  # add play_time_mod if existed in property
+                                for this_property in sprite_dict["frame_property"]:
+                                    if "play_time_mod_" in this_property:
+                                        play_time_mod = float(this_property.split("_")[-1])
+                                if play_time_mod == 1:  # no time mod in frame property, check for animation
+                                    for this_property in sprite_dict["animation_property"]:
+                                        if "play_time_mod_" in this_property:
+                                            play_time_mod = float(this_property.split("_")[-1])
+
                                 current_in_pool[name_input][frame_num] = \
                                     {"animation_property": sprite_dict["animation_property"],
                                      "frame_property": sprite_dict["frame_property"],
                                      "dmg_sprite": sprite_dict["dmg_sprite"]}
+                                if play_time_mod != 1:
+                                    current_in_pool[name_input][frame_num]["play_time_mod"] = play_time_mod
                                 current_in_pool[name_input][new_direction][frame_num] = \
                                     {"sprite": sprite_pic, "center_offset": center_offset}
 
@@ -265,10 +277,12 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
                                         {"animation_property": sprite_dict["animation_property"],
                                          "frame_property": sprite_dict["frame_property"],
                                          "dmg_sprite": sprite_dict["dmg_sprite"]}
+                                    if play_time_mod != 1:
+                                        next_level[weapon_key[1]][name_input][frame_num]["play_time_mod"] = play_time_mod
+
                                     next_level[weapon_key[1]][name_input][new_direction][frame_num] = \
                                         {"sprite": sprite_pic, "center_offset": center_offset}
                                 if opposite_direction is not None:  # flip sprite for opposite direction
-
                                     current_in_pool[name_input][opposite_direction][frame_num] = {
                                         "sprite": pygame.transform.flip(sprite_pic,
                                                                         True, False),

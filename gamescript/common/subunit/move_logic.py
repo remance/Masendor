@@ -71,7 +71,7 @@ def move_logic(self, dt):
                             self.momentum = 0
 
             else:  # reach target, interrupt moving animation
-                if "move loop" in self.current_action:  # in move loop animation, interrupt it
+                if "movable" in self.current_action:  # in moving animation, interrupt it
                     self.interrupt_animation = True
                 self.move_speed = 0
 
@@ -79,7 +79,7 @@ def move_logic(self, dt):
             self.move_speed = 0
 
     else:
-        if "move loop" in self.current_action:  # in move loop animation, interrupt it
+        if "movable" in self.current_action:  # in moving animation, interrupt it
             self.interrupt_animation = True
         if self.momentum:  # reduce charge momentum when not moving
             self.momentum -= dt

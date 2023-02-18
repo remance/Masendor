@@ -2,7 +2,7 @@ import pygame
 
 
 def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mouse_left_down=False,
-                 mouse_right_down=False, double_mouse_right=False, target=None, key_state=None):
+                 mouse_right_down=False, key_state=None):
     """other_command is special type of command such as stop all action, raise flag, decimation, duel and so on"""
     if self.alive:
         new_pos = pygame.Vector2(self.base_pos)
@@ -29,7 +29,7 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                     elif key_state[pygame.K_t]:  # Use sub weapon skill
                         self.command_action = self.skill_command_action_3
 
-                if not self.current_action or "move loop" in self.current_action or "hold" in self.current_action:
+                if not self.current_action or "movable" in self.current_action or self.hold_timer == 1:
                     speed = self.walk_speed
                     if key_state[pygame.K_LSHIFT]:
                         speed = self.run_speed
@@ -53,8 +53,8 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                             if key_state[pygame.K_LSHIFT]:
                                 self.command_action = self.run_command_action
                             self.move_speed = speed
-                        elif "move loop" in self.current_action and "charge" not in self.current_action:
-                            # Already walking or running but not charging, replace current action with new one
+                        elif "movable" in self.current_action and "weapon" not in self.current_action:
+                            # Already walking or running but not attacking, replace current action with new one
                             if key_state[pygame.K_LSHIFT]:
                                 if "walk" in self.current_action:  # change to run animation
                                     self.interrupt_animation = True

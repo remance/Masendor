@@ -99,7 +99,7 @@ def menu_team_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
         self.char_selector.setup_char_icon(self.char_icon, self.preview_char)
 
         for index, icon in enumerate(self.char_icon):  # select first char
-            self.char_selected = icon.who.game_id
+            self.char_selected = icon.who.pos_id
             icon.selection()
             self.char_stat["char"].add_leader_stat(icon.who, self.leader_data, self.troop_data)
             who_todo = {key: value for key, value in self.leader_data.leader_list.items() if key == icon.who.troop_id}

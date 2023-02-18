@@ -86,53 +86,60 @@ class DamageSprite(pygame.sprite.Sprite):
 
         self.base_target = base_target
 
-        if self.attack_type == "range":
-            self.repeat_animation = True
-            self.base_pos = pygame.Vector2(self.attacker.front_pos)
-            self.angle = self.set_rotate(self.base_target)
+        if self.attack_type == "charge":  # charge attack use subunit hitbox as damage sprite with no its own image
+            self.base_pos = self.attacker.base_pos  # always move along with attacker
+            self.angle = self.attacker.angle
+            self.rect = self.attacker.hitbox.rect
 
-            self.speed = weapon_stat["Travel Speed"]  # bullet travel speed
-
-            if weapon_stat["Damage Sprite"] != "self":
-                self.image = self.bullet_sprite_pool[weapon_stat["Damage Sprite"]]["base"]
-            else:  # use weapon image itself as bullet image
-                image_name = "base_main"
-                if weapon == 1:
-                    image_name = "base_sub"
-                self.image = self.bullet_weapon_sprite_pool[weapon_stat["Name"]][
-                    attacker.weapon_version[attacker.equipped_weapon][weapon]][image_name]
+            self.battle.battle_camera.remove(self)
 
         else:
-            self.sprite_direction = self.attacker.sprite_direction
-            self.scale_size = self.attack_type[7]
+            if self.attack_type == "range":
+                self.repeat_animation = True
+                self.base_pos = pygame.Vector2(self.attacker.front_pos)
+                self.angle = self.set_rotate(self.base_target)
 
-            animation_name = "".join(self.attack_type[1].split("_"))[-1]
-            if animation_name.isdigit():
-                animation_name = "".join([string + "_" for string in self.attack_type[1].split("_")[:-1]])[:-1]
-            else:
-                animation_name = self.attack_type[1]
+                self.speed = weapon_stat["Travel Speed"]  # bullet travel speed
 
-            self.current_animation = self.effect_animation_pool[weapon_stat["Damage Sprite"]][self.attacker.team][animation_name]
+                if weapon_stat["Damage Sprite"] != "self":
+                    self.image = self.bullet_sprite_pool[weapon_stat["Damage Sprite"]]["base"]
+                else:  # use weapon image itself as bullet image
+                    image_name = "base_main"
+                    if weapon == 1:
+                        image_name = "base_sub"
+                    self.image = self.bullet_weapon_sprite_pool[weapon_stat["Name"]][
+                        attacker.weapon_version[attacker.equipped_weapon][weapon]][image_name]
 
-            self.image = self.current_animation[self.show_frame]
+            elif isinstance(self.attack_type, (list, tuple, dict)):
+                self.sprite_direction = self.attacker.sprite_direction
+                self.scale_size = self.attack_type[7]
 
-            self.base_pos = self.attacker.base_pos
-            self.angle = self.set_rotate(self.base_target)
-            self.base_pos = base_target
+                animation_name = "".join(self.attack_type[1].split("_"))[-1]
+                if animation_name.isdigit():
+                    animation_name = "".join([string + "_" for string in self.attack_type[1].split("_")[:-1]])[:-1]
+                else:
+                    animation_name = self.attack_type[1]
+
+                self.current_animation = self.effect_animation_pool[weapon_stat["Damage Sprite"]][self.attacker.team][animation_name]
+
+                self.image = self.current_animation[self.show_frame]
+
+                self.base_pos = self.attacker.base_pos
+                self.angle = self.set_rotate(self.base_target)
+                self.base_pos = base_target
+
+            self.adjust_sprite()
+
+            self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
+                                      self.base_pos[1] * self.screen_scale[1]) * 5
+            self.rect = self.image.get_rect(center=self.pos)
 
         if self.duration:
             self.repeat_animation = True
 
-        self.target_height = self.height_map.get_height(self.base_target)  # get the height at base_target
         self.full_distance = self.base_pos.distance_to(self.base_target)
         self.distance_progress = 0
         self.last_distance_progress = 0
-
-        self.adjust_sprite()
-
-        self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
-                                  self.base_pos[1] * self.screen_scale[1]) * 5
-        self.rect = self.image.get_rect(center=self.pos)
 
     def adjust_sprite(self):
         if self.scale_size > 1:
@@ -154,7 +161,7 @@ class DamageSprite(pygame.sprite.Sprite):
         self.timer += dt
         if self.timer > 1:  # reset timer and list of subunit already hit
             self.timer -= 1
-            if self.duration:  # only clear for sprite with duration
+            if self.duration or self.attack_type == "charge":  # only clear for sprite with duration or charge
                 self.already_hit = []  # sprite can deal dmg to same subunit only once every 1 second
 
         if self.current_animation:  # play animation if any
@@ -232,7 +239,11 @@ class DamageSprite(pygame.sprite.Sprite):
                     self.rect.center = self.pos
 
         else:  # attack that does not travel
-            if done and self.duration == 0:
+            if self.attack_type == "charge":
+                if self.attacker.charging is False:
+                    self.clean_object()
+                    return
+            elif done and self.duration == 0:
                 self.clean_object()
                 return
 

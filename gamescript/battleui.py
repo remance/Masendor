@@ -157,10 +157,10 @@ class HeroUI(pygame.sprite.Sprite):
             self.image.blit(self.stamina_bar, self.stamina_bar_rect)
 
         weapon_filter_change = False
-        if who.hold_timer == 1 and True not in self.weapon_holding:
+        if (who.hold_timer == 1 or who.charging) and True not in self.weapon_holding:
             self.weapon_holding[who.current_action["weapon"]] = True
             weapon_filter_change = True
-        elif who.hold_timer == 0 and True in self.weapon_holding:
+        elif (who.hold_timer == 0 and who.charging is False) and True in self.weapon_holding:
             self.weapon_holding = [False, False]
             weapon_filter_change = True
         elif self.weapon_cooldown != who.weapon_cooldown:
@@ -229,10 +229,10 @@ class HeroUI(pygame.sprite.Sprite):
                         ammo_text_surface = self.font.render(str(ammo_count), True, text_colour)  # ammo number
                         ammo_text_rect = ammo_text_surface.get_rect(center=(self.ammo_text_box.get_width() / 2,
                                                                             self.ammo_text_box.get_height() / 2))
-                    self.ammo_text_box = self.ammo_text_box_original.copy()
-                    self.ammo_text_box.blit(ammo_text_surface, ammo_text_rect)
-                    ammo_text_rect = self.ammo_text_box.get_rect(midtop=self.ammo_count_rect[index][index2])
-                    self.weapon_image.blit(self.ammo_text_box, ammo_text_rect)
+                        self.ammo_text_box = self.ammo_text_box_original.copy()
+                        self.ammo_text_box.blit(ammo_text_surface, ammo_text_rect)
+                        ammo_text_rect = self.ammo_text_box.get_rect(midtop=self.ammo_count_rect[index][index2])
+                        self.weapon_image.blit(self.ammo_text_box, ammo_text_rect)
 
             self.magazine_count = {key: value.copy() for key, value in who.magazine_count.items()}
 
@@ -319,7 +319,7 @@ class FPScount(pygame.sprite.Sprite):
         self.base_image = self.image.copy()
         self.font = pygame.font.SysFont("Arial", 18)
         fps_text = self.font.render("60", True, pygame.Color("blue"))
-        self.text_rect = fps_text.get_rect(center=(25, 25))
+        self.text_rect = fps_text.get_rect(center=(10, 10))
         self.rect = self.image.get_rect(topleft=(0, 0))
 
     def fps_show(self, clock):
@@ -327,7 +327,7 @@ class FPScount(pygame.sprite.Sprite):
         self.image = self.base_image.copy()
         fps = str(int(clock.get_fps()))
         fps_text = self.font.render(fps, True, pygame.Color("blue"))
-        text_rect = fps_text.get_rect(center=(25, 25))
+        text_rect = fps_text.get_rect(center=(10, 10))
         self.image.blit(fps_text, text_rect)
 
 

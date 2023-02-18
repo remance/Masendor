@@ -29,7 +29,7 @@ def change_battle_state(self):
                     this_subunit.change_formation("unit")
 
             if self.char_selected is not None:  # select player char by default if control only one
-                if this_subunit.game_id == self.char_selected:  # get player char
+                if this_subunit.pos_id == self.char_selected:  # get player char
                     self.player_char = this_subunit
                     self.player_char.player_manual_control = True
                     self.battle_camera.change_layer(self.player_char, 999999)

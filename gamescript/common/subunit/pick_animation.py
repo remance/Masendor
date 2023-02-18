@@ -45,8 +45,8 @@ def pick_animation(self):
 
     self.current_animation["name"] = animation_name
 
-    self.animation_play_speed = self.default_animation_play_speed  # get new play speed
+    self.animation_play_time = self.default_animation_play_time  # get new play speed
     if "play_time_mod" in self.current_animation[self.show_frame]["frame_property"]:
-        self.animation_play_speed *= self.current_animation[self.show_frame]["frame_property"]["play_time_mod"]
+        self.animation_play_time *= self.current_animation[self.show_frame]["frame_property"]["play_time_mod"]
     elif "play_time_mod" in self.current_animation[self.show_frame]["animation_property"]:
-        self.animation_play_speed *= self.current_animation[self.show_frame]["animation_property"]["play_time_mod"]
+        self.animation_play_time *= self.current_animation[self.show_frame]["animation_property"]["play_time_mod"]

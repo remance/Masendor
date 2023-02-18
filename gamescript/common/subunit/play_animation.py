@@ -15,7 +15,7 @@ def play_animation(self, dt, hold_check):
     current_animation = self.current_animation[self.sprite_direction]
     if hold_check is False:  # not holding current frame
         self.animation_timer += dt
-        if self.animation_timer >= self.animation_play_speed:
+        if self.animation_timer >= self.animation_play_time:
             self.animation_timer = 0
             frame_start = True
             if self.show_frame < self.max_show_frame:
@@ -27,12 +27,10 @@ def play_animation(self, dt, hold_check):
                     frame_start = False
                     done = True
             if done is False:  # check if new frame has play speed mod
-                if "play_time_mod" in self.current_animation[self.show_frame]["frame_property"]:
-                    self.animation_play_speed = self.default_animation_play_speed * \
-                                                self.current_animation[self.show_frame]["frame_property"]["play_time_mod"]
-                elif "play_time_mod" in self.current_animation[self.show_frame]["animation_property"]:
-                    self.animation_play_speed = self.default_animation_play_speed * \
-                                                self.current_animation[self.show_frame]["animation_property"]["play_time_mod"]
+                self.animation_play_time = self.default_animation_play_time
+                if "play_time_mod" in self.current_animation[self.show_frame]:
+                    self.animation_play_time = self.default_animation_play_time * \
+                                               self.current_animation[self.show_frame]["play_time_mod"]
 
     self.image = current_animation[self.show_frame]["sprite"]
 

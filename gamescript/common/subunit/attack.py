@@ -93,6 +93,12 @@ def attack(self, attack_type):
                     self.ammo_now.pop(self.equipped_weapon)
                     self.magazine_count.pop(self.equipped_weapon)
                     self.range_weapon_set.remove(self.equipped_weapon)
+
+    elif attack_type == "charge":
+        damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
+                                  self.weapon_penetrate[self.equipped_weapon][weapon],
+                                  equipped_weapon_data, "charge", self.base_pos)
+
     else:  # melee attack
         if self.front_pos.distance_to(base_target) > self.melee_range[weapon]:  # target exceed weapon range, use max
             base_angle = self.set_rotate(base_target)

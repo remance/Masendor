@@ -46,11 +46,10 @@ skill_command_action_1 = {"name": "Skill 1"}
 skill_command_action_2 = {"name": "Skill 2"}
 skill_command_action_3 = {"name": "Skill 3"}
 
-walk_command_action = {"name": "Walk", "movable": True, "main_weapon": True, "repeat": True, "move loop": True,
-                       "walk": True}
+walk_command_action = {"name": "Walk", "movable": True, "main_weapon": True, "repeat": True, "walk": True}
 run_command_action = {"name": "Run", "movable": True, "main_weapon": True, "repeat": True,
-                      "move loop": True, "use momentum": True, "run": True}
-flee_command_action = {"name": "Flee", "movable": True, "repeat": True, "move loop": True, "flee": True}
+                      "use momentum": True, "run": True}
+flee_command_action = {"name": "Flee", "movable": True, "repeat": True, "flee": True}
 
 melee_attack_command_action = ({"name": "Action 0", "melee attack": True, "weapon": 0},
                                {"name": "Action 1", "melee attack": True, "weapon": 1})
@@ -62,20 +61,20 @@ melee_hold_command_action = ({"name": "Action 0", "melee attack": True, "hold": 
 range_hold_command_action = ({"name": "Action 0", "range attack": True, "hold": True, "weapon": 0},
                              {"name": "Action 1", "range attack": True, "hold": True, "weapon": 1})
 
-walk_shoot_command_action = ({"name": "Action 0", "range attack": True, "walk": True, "movable": True},
-                             {"name": "Action 1", "range attack": True, "walk": True, "movable": True})
+walk_shoot_command_action = ({"name": "Action 0", "range attack": True, "walk": True, "movable": True, "weapon": 0},
+                             {"name": "Action 1", "range attack": True, "walk": True, "movable": True, "weapon": 1})
 
-run_shoot_command_action = ({"name": "Action 0", "range attack": True, "run": True, "movable": True},
-                            {"name": "Action 1", "range attack": True, "run": True, "movable": True})
+run_shoot_command_action = ({"name": "Action 0", "range attack": True, "run": True, "movable": True, "weapon": 0},
+                            {"name": "Action 1", "range attack": True, "run": True, "movable": True, "weapon": 1})
 
-charge_command_action = ({"name": "Charge 0", "movable": True, "repeat": True, "move loop": True,
-                          "use momentum": True, "charge": True},
-                         {"name": "Charge 1", "movable": True, "repeat": True, "move loop": True,
-                          "use momentum": True, "charge": True})
+charge_command_action = ({"name": "Charge 0", "movable": True, "repeat": True,
+                          "use momentum": True, "charge": True, "weapon": 0},
+                         {"name": "Charge 1", "movable": True, "repeat": True,
+                          "use momentum": True, "charge": True, "weapon": 1})
 
-heavy_damaged_command_action = {"name": "HeavyDamaged", "uncontrollable": True, "movable": True, "move loop": True,
+heavy_damaged_command_action = {"name": "HeavyDamaged", "uncontrollable": True, "movable": True,
                                 "forced move": True, "less mass": 1.5}
-damaged_command_action = {"name": "Damaged", "uncontrollable": True, "movable": True, "move loop": True,
+damaged_command_action = {"name": "Damaged", "uncontrollable": True, "movable": True,
                           "forced move": True, "less mass": 1.2}
 knockdown_command_action = {"name": "Knockdown", "uncontrollable": True, "movable": True, "forced move": True,
                             "less mass": 2, "uninterruptible": True,
@@ -191,9 +190,10 @@ class Subunit(pygame.sprite.Sprite):
     hitbox_image_list = {}
 
     # static variable
-    default_animation_play_speed = 0.1
+    default_animation_play_time = 0.1
 
-    def __init__(self, troop_id, game_id, team, start_pos, start_angle, start_hp, start_stamina, leader_subunit, coa):
+    def __init__(self, troop_id, game_id, pos_id, team, start_pos, start_angle, start_hp, start_stamina,
+                 leader_subunit, coa):
         """
         Subunit object represent a group of troop or leader
         Subunit has three different stage of stat;
@@ -202,6 +202,7 @@ class Subunit(pygame.sprite.Sprite):
         third: stat with all effect (e.g., melee_attack), this is their stat after calculating terrain, weather, and status effect
         :param troop_id: ID of the troop or leader in data
         :param game_id: ID of the subunit as object
+        :param pos_id: ID in map pos data
         :param team: Team index that this subunit belongs to
         :param start_angle: Starting angle
         :param start_hp: Starting health or troop number percentage
@@ -215,6 +216,7 @@ class Subunit(pygame.sprite.Sprite):
 
         self.not_broken = True
         self.move = False  # currently moving
+        self.charging = False
         self.attack_target = None  # target for attacking
         self.melee_target = None  # current target of melee combat
         self.player_manual_control = False  # subunit controlled by player
@@ -227,7 +229,7 @@ class Subunit(pygame.sprite.Sprite):
 
         self.sprite_troop_size = 1
         self.subunit_type = 1
-        self.animation_play_speed = self.default_animation_play_speed
+        self.animation_play_time = self.default_animation_play_time
         self.animation_pool = {}  # list of animation sprite this subunit can play with its action
         self.current_animation = {}  # list of animation frames playing
         self.animation_queue = []  # list of animation queue
@@ -244,6 +246,7 @@ class Subunit(pygame.sprite.Sprite):
         self.nearest_ally = []
 
         self.game_id = game_id  # ID of this subunit
+        self.pos_id = pos_id
         self.team = team
         self.coa = coa
 
@@ -252,6 +255,7 @@ class Subunit(pygame.sprite.Sprite):
         self.alive_leader_follower = []  # list of alive leader subordinate subunits
         self.leader_follower_size = 0
         self.leader = leader_subunit  # leader of the sub-subunit if there is one
+        self.unit_leader = self  # leader at the top hierarchy in the unit
 
         self.feature_mod = "Infantry"  # the terrain feature that will be used on this subunit
         self.move_speed = 0  # speed of current movement
@@ -270,8 +274,6 @@ class Subunit(pygame.sprite.Sprite):
         self.skill_duration = {}  # current active skill duration
         self.skill_cooldown = {}
 
-        self.one_activity_timer = 0  # timer for activities that can be only perform when no others occur like knock down
-        self.one_activity_limit = 0
         self.countup_timer = 0  # timer that count up to specific threshold to start event like charge attack timing
         self.countup_trigger_time = 0  # time that indicate when trigger happen
         self.hold_timer = 0
@@ -823,6 +825,16 @@ class Subunit(pygame.sprite.Sprite):
 
                     self.timer -= 1
 
+                self.taking_damage_angle = None
+
+                if self.player_manual_control is False:
+                    if self.not_broken and "uncontrollable" not in self.current_action and \
+                            "uncontrollable" not in self.command_action:
+                        self.ai_move()
+                        self.ai_combat()
+                    else:
+                        self.ai_retreat()
+
                 self.skill_check_logic()
 
                 if self.angle != self.new_angle:  # Rotate Function
@@ -864,28 +876,24 @@ class Subunit(pygame.sprite.Sprite):
 
                 done, frame_start = self.play_animation(dt, hold_check)
 
-                if self.one_activity_limit:
-                    self.one_activity_timer += dt
-                    if self.one_activity_timer >= self.one_activity_limit:
-                        self.one_activity_limit = 0
-                        self.one_activity_timer = 0
+                if self.charging and "charge" not in self.current_action:  # no longer charge
+                    self.charging = False
 
                 if frame_start:
                     if "melee attack" in self.current_action and \
                             self.current_animation[self.show_frame]["dmg_sprite"] is not None:
                         # perform melee attack when frame that produce dmg effect starts
                         self.attack(self.current_animation[self.show_frame]["dmg_sprite"])
-                    # elif "charge" in self.current_action and self.momentum == 1 and self.show_frame == 0:
-                    #     # add charge damage effect
-                    #     damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
-                    #                               self.weapon_penetrate[self.equipped_weapon][weapon],
-                    #                               equipped_weapon_data, "charge", self.base_pos)
+                    elif self.charging is False and "charge" in self.current_action and self.momentum == 1:
+                        # add charge damage effect
+                        self.charging = True
+                        self.attack("charge")
+
                 # Pick new animation, condition to stop animation: get interrupt,
                 # low level animation got replace with more important one, finish playing, skill animation and its effect end
                 if self.top_interrupt_animation or \
                         (self.interrupt_animation and "uninterruptible" not in self.current_action) or \
-                        (self.one_activity_timer == 0 and
-                         ((not self.current_action and self.command_action) or done or
+                        (((not self.current_action and self.command_action) or done or
                           (self.idle_action and self.idle_action != self.command_action))):
                     if done:
                         if "range attack" in self.current_action:  # shoot bullet only when animation finish
@@ -906,11 +914,7 @@ class Subunit(pygame.sprite.Sprite):
                     self.animation_timer = 0
                     self.pick_animation()
 
-                    self.animation_play_speed = self.default_animation_play_speed
-                    if "_Idle" in self.current_animation["name"]:  # some animations use a bit slower speed
-                        self.animation_play_speed = 0.15
-                    elif "_Walk" in self.current_animation["name"]:
-                        self.animation_play_speed = 0.12
+                    self.animation_play_time = self.default_animation_play_time
 
                     self.rect = self.image.get_rect(center=self.offset_pos)
 

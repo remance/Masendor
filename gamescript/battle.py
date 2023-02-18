@@ -432,7 +432,6 @@ class Battle:
 
         self.player_char_input_delay = 0
         self.text_delay = 0
-        self.mouse_timer = 0  # This is timer for checking double mouse click, use realtime
         self.screen_shake_value = 0
         self.ui_timer = 0  # This is timer for ui update function, use realtime
         self.drama_timer = 0  # This is timer for combat related function, use self time (realtime * game_speed)
@@ -465,7 +464,6 @@ class Battle:
             mouse_left_down = False  # hold left click
             mouse_right_up = False  # right click
             mouse_right_down = False  # hold right click
-            double_mouse_right = False  # double right click
             mouse_scroll_down = False
             mouse_scroll_up = False
             key_state = pygame.key.get_pressed()
@@ -488,8 +486,6 @@ class Battle:
                                                     self.battle_mouse_pos[1] / self.screen_scale[
                                                         1])  # with screen scale
 
-            self.battle_ui_updater.clear(self.screen, self.background)  # Clear sprite before update new one
-
             for event in pygame.event.get():  # get event that happen
                 if event.type == QUIT:  # quit self
                     self.input_popup = ("confirm_input", "quit")
@@ -511,11 +507,6 @@ class Battle:
                         self.new_unit_click = False
                     elif event.button == 3:  # Right Click
                         mouse_right_up = True
-                        if self.mouse_timer == 0:
-                            self.mouse_timer = 0.001  # Start timer after first mouse click
-                        elif self.mouse_timer < 0.3:  # if click again within 0.3 second for it to be considered double click
-                            double_mouse_right = True  # double right click
-                            self.mouse_timer = 0
                     elif event.button == 4:  # Mouse scroll up
                         mouse_scroll_up = True
                     elif event.button == 5:  # Mouse scroll down
@@ -557,14 +548,9 @@ class Battle:
 
                         self.camera_process(key_state)
 
-                        if self.mouse_timer != 0:  # player click mouse once before
-                            self.mouse_timer += self.ui_dt  # increase timer for mouse click using real time
-                            if self.mouse_timer >= 0.3:  # time pass 0.3 second no longer count as double click
-                                self.mouse_timer = 0
-
                         if mouse_left_up or mouse_right_up or mouse_left_down or mouse_right_down or key_state:
-                            self.battle_mouse_process(mouse_left_up, mouse_right_up, double_mouse_right,
-                                                      mouse_left_down, mouse_right_down, key_state)
+                            self.battle_mouse_process(mouse_left_up, mouse_right_up, mouse_left_down,
+                                                      mouse_right_down, key_state)
 
                     else:  # register and process ui that require player input and block everything else
                         if type(self.player_input_state) is not str:  # ui input state
@@ -674,6 +660,12 @@ class Battle:
 
                     # Update game time
                     self.dt = self.true_dt * self.game_speed  # apply dt with game_speed for calculation
+                    if self.dt > 0.1:
+                        self.dt = 0.1  # make it so stutter and lag does not cause overtime issue
+
+                    self.ui_timer += self.dt  # ui update by real time instead of self time to reduce workload
+                    self.ui_dt = self.dt  # get ui timer before apply self
+
                     if self.ui_timer >= 0.4:
                         self.mini_map.update([self.camera_pos, self.camera_topleft_corner], self.active_subunit_list)
                         self.command_ui.value_input(who=self.player_char)
@@ -683,11 +675,6 @@ class Battle:
                         self.battle_scale_ui.change_fight_scale(
                             self.battle_scale)  # change fight colour scale on time_ui bar
                         self.ui_timer -= -0.4
-                    self.ui_timer += self.dt  # ui update by real time instead of self time to reduce workload
-                    self.ui_dt = self.dt  # get ui timer before apply self
-
-                    if self.dt > 0.1:
-                        self.dt = 0.1  # make it so stutter and lag does not cause overtime issue
 
                     self.time_number.timer_update(self.dt * 100)  # update battle time
                     self.time_update()
@@ -760,7 +747,7 @@ class Battle:
                         if self.text_delay >= 0.3:
                             self.text_delay = 0
 
-            self.screen.blit(self.camera.image, (0, 0))  # Draw the self camera and everything that appear in it
+            self.screen.blit(self.camera.image, (0, 0))  # Draw the battle camera and everything that appear in it
             self.battle_ui_updater.draw(self.screen)  # Draw the UI
             pygame.display.update()  # update self display, draw everything
             self.clock.tick(60)  # clock update even if self pause

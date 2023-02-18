@@ -45,5 +45,5 @@ def menu_char_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
                                                           icon.who.coa)
                 self.map_show.change_mode(1, team_pos_list=self.team_pos, selected=icon.who.base_pos)
 
-                self.char_selected = icon.who.game_id
+                self.char_selected = icon.who.pos_id
                 break

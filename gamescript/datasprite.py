@@ -94,12 +94,20 @@ class TroopAnimationData:
             try:
                 subdirectories = [os.path.split(os.sep.join(
                     os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x
-                    in part_folder.iterdir() if x.is_dir()]  # assuming
+                    in part_folder.iterdir() if x.is_dir()]
                 self.gen_body_sprite_pool[race] = {}
 
                 for folder in subdirectories:
-                    imgs = load_images(main_dir, subfolder=folder)
-                    self.gen_body_sprite_pool[race][folder[-1]] = imgs
+                    if folder[1] != "armour":
+                        imgs = load_images(main_dir, subfolder=folder)
+                        self.gen_body_sprite_pool[race][folder[-1]] = imgs
+                        part_subfolder = Path(os.path.join(main_dir, "data", "sprite", "generic", race, folder[-1]))
+                        subsubdirectories = [os.path.split(os.sep.join(
+                            os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x
+                            in part_subfolder.iterdir() if x.is_dir()]
+                        for subfolder in subsubdirectories:
+                            imgs = load_images(main_dir, subfolder=subfolder)
+                            self.gen_body_sprite_pool[race][folder[-1]][subfolder[-1]] = imgs
             except FileNotFoundError:
                 pass
 
