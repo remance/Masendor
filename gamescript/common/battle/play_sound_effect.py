@@ -6,5 +6,5 @@ def play_sound_effect(self, sound_name, effect_volume, shake=False):
     sound_effect.set_volume(effect_volume)
     sound_effect.play()
 
-    if shake is not False:
+    if shake:
         self.screen_shake_value += shake

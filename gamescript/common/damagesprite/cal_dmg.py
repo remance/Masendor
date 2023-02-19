@@ -6,7 +6,7 @@ combat_side_cal = cal_melee_hit.combat_side_cal
 infinity = float("inf")
 
 
-def cal_dmg(self, attacker, target, hit, defence, dodge, weapon, hit_side=None):
+def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
     """
     Calculate dmg, melee attack will use attacker subunit stat,
     other types will use the type object stat instead (mostly used for range attack)
@@ -15,7 +15,6 @@ def cal_dmg(self, attacker, target, hit, defence, dodge, weapon, hit_side=None):
     :param target: Target subunit object
     :param hit: Hit chance value
     :param defence: Defence chance value
-    :param dodge: Dodge chance value
     :param weapon: Weapon index (0 for main, 1 for sub)
     :param hit_side: Side that the target got hit, use only for melee attack to calculate charge
     :return: Damage on health, morale, leader and element effect
@@ -49,8 +48,8 @@ def cal_dmg(self, attacker, target, hit, defence, dodge, weapon, hit_side=None):
         else:  # Melee dmg
             if self.attack_type == "charge":  # Include charge in dmg if charging
                 troop_dmg, element_effect = cal_dmg_penetrate(self, target, reduce_penetrate=False)
-                if attacker.check_special_effect("Ignore Charge Defence",
-                                                 weapon=weapon) is False:  # ignore charge defence if have trait
+                if not attacker.check_special_effect("Ignore Charge Defence",
+                                                     weapon=weapon):  # ignore charge defence if have trait
                     side_cal = combat_side_cal[hit_side]
                     if target.check_special_effect("All Side Full Defence"):  # defence all side
                         side_cal = 1
@@ -68,7 +67,7 @@ def cal_dmg(self, attacker, target, hit, defence, dodge, weapon, hit_side=None):
                 self.penetrate -= (target.troop_mass * 5)
 
             if target.charging:  # also include its own charge defence in dmg if enemy also charging
-                if attacker.check_special_effect("Ignore Charge Defence") is False:
+                if not attacker.check_special_effect("Ignore Charge Defence", weapon=weapon):
                     charge_def_cal = attacker.charge_def_power - target.charge_power
                     if charge_def_cal < 0:
                         charge_def_cal = 0

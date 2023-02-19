@@ -34,7 +34,7 @@ def status_update(self):
 
     # Remove status that reach 0 duration or status with conflict to the other status
     self.status_effect = {key: val for key, val in self.status_effect.items() if key in self.status_duration and
-                          any(ext in self.status_effect for ext in val["Status Conflict"]) is False}
+                          not any(ext in self.status_effect for ext in val["Status Conflict"])}
 
     # Reset to base stat
     self.morale = self.base_morale
@@ -172,7 +172,7 @@ def status_update(self):
             for weapon in self.weapon_dmg:
                 for key, value in self.weapon_dmg[weapon].items():
                     if key != "Physical" and key + " Damage Extra" in cal_effect:
-                        extra_dmg = cal_effect[element + " Damage Extra"]
+                        extra_dmg = cal_effect[key + " Damage Extra"]
                         if extra_dmg != 0:
                             value[0] += extra_dmg * self.weapon_dmg[weapon]["Physical"]
                             value[1] += extra_dmg * self.weapon_dmg[weapon]["Physical"]
@@ -211,12 +211,12 @@ def status_update(self):
 
     # Day time effect sight and hidden stat
     if self.battle.day_time == "Twilight":
-        if self.night_vision is False:
+        if not self.night_vision:
             sight_bonus -= 10
             accuracy_bonus -= 5
         hidden_bonus += 10
     elif self.battle.day_time == "Night":
-        if self.night_vision is False:
+        if not self.night_vision:
             sight_bonus -= 30
             accuracy_bonus -= 20
         hidden_bonus += 30

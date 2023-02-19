@@ -5,6 +5,8 @@ def change_battle_state(self):
     self.previous_game_state = self.game_state
     if self.game_state == "battle":  # change to battle state
         self.camera_mode = self.start_camera_mode
+        if not self.char_selected:
+            self.camera_mode = "Free"
         self.mini_map.draw_image(self.battle_map_base, self.battle_map.mini_map_image, self.camera)
 
         # self.command_ui.rect = self.command_ui.image.get_rect(
@@ -28,7 +30,7 @@ def change_battle_state(self):
                 if this_subunit.alive_leader_follower:
                     this_subunit.change_formation("unit")
 
-            if self.char_selected is not None:  # select player char by default if control only one
+            if self.char_selected:  # select player char by default if control only one
                 if this_subunit.pos_id == self.char_selected:  # get player char
                     self.player_char = this_subunit
                     self.player_char.player_manual_control = True

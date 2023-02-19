@@ -20,19 +20,19 @@ def setup_formation(self, which, phase=None, style=None, density=None, position=
     :param position: New formation position from leader, None mean use current one
     """
     if which == "troop":
-        if phase is not None:
+        if phase:
             self.troop_formation_phase = phase
             for leader in self.alive_leader_follower:  # leader follower also change troop formation setting to match higher leader
                 leader.setup_formation("troop", phase=phase)
-        if style is not None:
+        if style:
             self.troop_formation_style = style
             for leader in self.alive_leader_follower:
                 leader.setup_formation("troop", style=phase)
-        if density is not None:
+        if density:
             self.troop_formation_density = density
             for leader in self.alive_leader_follower:
                 leader.setup_formation("troop", density=phase)
-        if position is not None:
+        if position:
             self.troop_formation_position = position
             for leader in self.alive_leader_follower:
                 leader.setup_formation("troop", position=phase)
@@ -50,16 +50,16 @@ def setup_formation(self, which, phase=None, style=None, density=None, position=
         formation_preset = self.troop_formation_preset
 
     elif which == "unit":
-        if phase is not None:
+        if phase:
             self.unit_formation_phase = phase
 
-        if style is not None:
+        if style:
             self.unit_formation_style = style
 
-        if density is not None:
+        if density:
             self.unit_formation_density = density
 
-        if position is not None:
+        if position:
             self.unit_formation_position = position
 
         follower_size = self.leader_follower_size

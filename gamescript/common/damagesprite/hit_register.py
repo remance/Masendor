@@ -1,6 +1,6 @@
 def hit_register(self, subunit=None):
     """Calculate hit and damage"""
-    if subunit is not None:
+    if subunit:
         if self.aoe:  # aoe angle use pos instead
             hit_angle = self.set_rotate(subunit.base_pos)
         else:

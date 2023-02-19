@@ -33,6 +33,6 @@ def cal_range_hit(self, attacker, target, target_side, hit_angle):
             target_dodge = 0  # cannot be negative
 
         attacker_dmg, attacker_morale_dmg, element_effect, impact = \
-            self.cal_dmg(attacker, target, attacker_hit, target_def, target_dodge, self.weapon)
+            self.cal_dmg(attacker, target, attacker_hit, target_def, self.weapon)
 
         self.attacker.cal_loss(target, attacker_dmg, impact, attacker_morale_dmg, element_effect, hit_angle)

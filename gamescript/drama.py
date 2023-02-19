@@ -45,7 +45,7 @@ class TextDrama(pygame.sprite.Sprite):
                                                     int(self.image.get_height() / 2)))  # body of the drama popup
             self.image.blit(self.body, body_rect)
             self.current_length += self.body.get_width()
-        elif self.current_length >= self.max_length and self.blit_text is False:  # blit text when finish unfold and only once
+        elif self.current_length >= self.max_length and not self.blit_text:  # blit text when finish unfold and only once
             text_rect = self.text_surface.get_rect(center=(int(self.image.get_width() / 2),
                                                            int(self.image.get_height() / 2)))
             self.image.blit(self.text_surface, text_rect)

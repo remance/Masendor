@@ -14,12 +14,12 @@ def attack(self, attack_type):
     base_target = None
     if "pos" in self.current_action:  # manual attack position
         base_target = self.current_action["pos"]
-    elif self.attack_target is not None:
+    elif self.attack_target:
         base_target = self.attack_target.base_pos
-    elif self.attack_pos is not None:
+    elif self.attack_pos:
         base_target = self.attack_pos
     if attack_type == "range":
-        if base_target is not None:
+        if base_target:
             max_range = self.shoot_range[weapon]
 
             accuracy = self.accuracy
@@ -47,12 +47,14 @@ def attack(self, attack_type):
             angel_dif += angel_dif * attack_range / 100
             accuracy -= round(angel_dif)
 
-            base_target = pygame.Vector2(self.base_pos[0] - (max_range *
-                                                             math.sin(math.radians(base_angle))),
-                                         self.base_pos[1] - (max_range *
-                                                             math.cos(math.radians(base_angle))))
+            arc_shot = self.check_special_effect("Arc Shot", weapon=weapon)
+            if not arc_shot:  # direct shot just move until it reach max range
+                base_target = pygame.Vector2(self.base_pos[0] - (max_range *
+                                                                 math.sin(math.radians(base_angle))),
+                                             self.base_pos[1] - (max_range *
+                                                                 math.cos(math.radians(base_angle))))
 
-            if self.attack_target is not None:
+            if self.attack_target:
                 how_long = attack_range / self.speed  # shooting distance divide damage sprite speed to find travel time
 
                 # Predicatively find position the enemy will be at based on movement speed and sprite travel time
@@ -61,11 +63,11 @@ def attack(self, attack_type):
                     if target_move.length() > 1:  # recal target base on enemy move target
                         target_move.normalize_ip()
                         base_target = base_target + ((target_move * (self.attack_target.move_speed * how_long)) / 11)
-                        if self.check_special_effect("Agile Aim") is False:
+                        if not self.check_special_effect("Agile Aim"):
                             accuracy -= 15
 
             if self.check_special_effect("Cone Shot"):
-                accuracy /= 2
+                accuracy /= 1.5
 
             if accuracy < 0:
                 accuracy = 0
@@ -81,8 +83,7 @@ def attack(self, attack_type):
 
                 damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
                                           self.weapon_penetrate[self.equipped_weapon][weapon], equipped_weapon_data,
-                                          attack_type, base_target, accuracy=accuracy,
-                                          arc_shot=self.check_special_effect("Arc Shot", weapon=weapon))
+                                          attack_type, base_target, accuracy=accuracy, arc_shot=arc_shot)
 
             self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
             if self.ammo_now[self.equipped_weapon][weapon] == 0 and \

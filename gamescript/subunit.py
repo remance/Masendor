@@ -287,6 +287,7 @@ class Subunit(pygame.sprite.Sprite):
         self.max_melee_attack_range = 0
         self.melee_distance_zone = 1
         self.default_sprite_size = 1
+        self.manual_shoot = False
 
         self.terrain = 0
         self.feature = 0
@@ -595,7 +596,7 @@ class Subunit(pygame.sprite.Sprite):
 
         self.add_original_trait()
 
-        if self.leader is not None:
+        if self.leader:
             if self.is_leader:
                 self.leader.alive_leader_follower.append(self)
             else:
@@ -632,7 +633,7 @@ class Subunit(pygame.sprite.Sprite):
         self.input_skill = self.skill.copy()  # skill dict without charge skill
 
         self.leader_skill = {x: self.leader_data.skill_list[x] for x in self.skill if x in self.leader_data.skill_list}
-        if self.leader is None:  # no higher leader, count as commander tier
+        if not self.leader:  # no higher leader, count as commander tier
             for key, value in self.leader_skill.items():  # replace leader skill with commander skill version
                 for key2, value2 in self.leader_data.commander_skill_list.items():
                     if key in value2["Replace"]:
@@ -881,7 +882,7 @@ class Subunit(pygame.sprite.Sprite):
 
                 if frame_start:
                     if "melee attack" in self.current_action and \
-                            self.current_animation[self.show_frame]["dmg_sprite"] is not None:
+                            self.current_animation[self.show_frame]["dmg_sprite"]:
                         # perform melee attack when frame that produce dmg effect starts
                         self.attack(self.current_animation[self.show_frame]["dmg_sprite"])
                     elif self.charging is False and "charge" in self.current_action and self.momentum == 1:

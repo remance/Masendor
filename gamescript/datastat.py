@@ -413,7 +413,7 @@ class TroopData:
         self.default_formation_list = {}
         part_folder = Path(os.path.join(main_dir, "data", "troop", "formation"))
         subdirectories = [os.sep.join(os.path.normpath(x).split(os.sep)[-1:]) for x in
-                          part_folder.iterdir() if x.is_dir() is False]
+                          part_folder.iterdir() if not x.is_dir()]
         for folder in subdirectories:
             formation_name = folder.replace(".csv", "")
             self.default_formation_list[formation_name] = []

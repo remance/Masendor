@@ -34,16 +34,14 @@ def pick_animation(self):
                                   "/" + str(self.equipped_weapon) == key[-2:]}  # pick animation of current weapon set
         self.current_animation = self.current_animation[random.choice(list(self.current_animation.keys()))]
 
-        self.max_show_frame = len(self.current_animation[self.sprite_direction]) - 1
-
     except (KeyError, IndexError):  # animation not found, use default
         self.current_animation = self.animation_pool[self.animation_race_name + "_Default"]
-        # if self.leader is not None:
-        #     print(animation_name)
-        #     print(list(self.animation_pool.keys()))
-        #     asdf
+        # print(animation_name)
+        # print(list(self.animation_pool.keys()))
+        # asdf
 
     self.current_animation["name"] = animation_name
+    self.max_show_frame = len(self.current_animation[self.sprite_direction]) - 1
 
     self.animation_play_time = self.default_animation_play_time  # get new play speed
     if "play_time_mod" in self.current_animation[self.show_frame]["frame_property"]:

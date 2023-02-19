@@ -104,7 +104,7 @@ class SliderMenu(pygame.sprite.Sprite):
         :param forced_value: forced
         :return:
         """
-        if forced_value is False:
+        if not forced_value:
             self.mouse_value = mouse_pos[0]
             if self.mouse_value > self.max_value:
                 self.mouse_value = self.max_value
@@ -188,7 +188,7 @@ class InputBox(pygame.sprite.Sprite):
             event = input_event
             event_key = None
             event_unicode = ""
-            if event is not None:
+            if event:
                 event_key = input_event.key
                 event_unicode = event.unicode
                 self.hold_key = event_key  # save last holding press key
@@ -288,7 +288,7 @@ class MenuButton(pygame.sprite.Sprite):
         self.event = False
 
     def update(self, mouse_pos, mouse_up, mouse_down):
-        if self.updater is None or self in self.updater:
+        if not self.updater or self in self.updater:
             self.mouse_over = False
             self.image = self.button_normal_image
             if self.rect.collidepoint(mouse_pos):
@@ -631,17 +631,16 @@ class TickBox(pygame.sprite.Sprite):
 
 class MapOptionBox(pygame.sprite.Sprite):
     def __init__(self, screen_scale, pos, image, mode):
-        self.font = pygame.font.SysFont("helvetica", int(16 * screen_scale[1]))
+        self.font = pygame.font.SysFont("helvetica", int(20 * screen_scale[1]))
 
         self._layer = 13
         pygame.sprite.Sprite.__init__(self)
         self.image = image
 
-        # v enactment option text
-        text_surface = self.font.render("Enactment Mode", True, (0, 0, 0))
+        # Observation mode option text
+        text_surface = self.font.render("Observation Mode", True, (0, 0, 0))
         text_rect = text_surface.get_rect(midleft=(self.image.get_width() / 3.5, self.image.get_height() / 4))
         self.image.blit(text_surface, text_rect)
-        # ^ end enactment
 
         if mode == 0:  # preset map option
             pass

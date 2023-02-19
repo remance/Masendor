@@ -18,7 +18,7 @@ def add_mount_stat(self):
         self.feature_mod = "Cavalry"  # Use cavalry type for terrain bonus
 
     self.health += (self.mount["Health Bonus"] * (self.mount_grade["Health Effect"] / 100)) + \
-                   self.mount_armour["Health"]  # Add mount health to the troop health
+                    self.mount_armour["Health"]  # Add mount health to the troop health
     self.original_morale += self.mount_grade["Morale Bonus"]
     self.original_charge += (self.mount["Charge Bonus"] +
                              self.mount_grade["Charge Bonus"])  # Add charge power of mount to troop

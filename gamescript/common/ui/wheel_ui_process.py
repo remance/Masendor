@@ -1,7 +1,12 @@
+import pygame
+
+from gamescript import battleui
+
+
 def wheel_ui_process(self, choice):
     if choice in self.unit_behaviour_wheel:  # click choice that has children choice
         renew_wheel(self, choice)
-    elif choice is not None:  # click choice with game effect
+    elif choice:  # click choice with game effect
         if choice in self.unit_behaviour_wheel["Setting"]:
             if choice == "Height Map":
                 self.battle_map.mode += 1  # change height map mode
@@ -45,6 +50,29 @@ def wheel_ui_process(self, choice):
             self.player_char.change_follow_order(choice[5:], "unit")
         elif "Unit Formation List" in self.unit_behaviour_wheel and choice in self.unit_behaviour_wheel["Unit Formation List"]:
             self.player_char.change_formation("unit", formation=choice)
+
+        elif choice in self.unit_behaviour_wheel["Range Attack"]:
+            self.battle_ui_updater.remove(self.wheel_ui)
+            self.previous_player_input_state = self.player_input_state
+            self.player_input_state = None
+            self.camera_mode = "Free"
+            self.true_camera_pos = pygame.Vector2(self.player_char.base_pos)
+            for shoot_line in self.shoot_lines:
+                shoot_line.delete()  # reset shoot guide lines
+            self.cursor.change_image("aim")
+            self.single_text_popup.pop(self.cursor.rect.bottomright, "")
+            self.battle_ui_updater.add(self.single_text_popup)
+            if choice == "Leader Aim":
+                self.player_input_state = "leader aim"
+                battleui.ShootLine(self.screen_scale, self.player_char)
+            elif choice == "Line Aim":
+                self.player_input_state = "line aim"
+                for this_subunit in self.player_char.alive_troop_follower:
+                    battleui.ShootLine(self.screen_scale, this_subunit)
+            elif choice == "Focus Aim":
+                self.player_input_state = "focus aim"
+                for this_subunit in self.player_char.alive_troop_follower:
+                    battleui.ShootLine(self.screen_scale, this_subunit)
 
 
 def renew_wheel(self, choice):

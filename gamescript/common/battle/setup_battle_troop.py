@@ -44,7 +44,7 @@ def setup_battle_troop(self, team_subunit_list, specific_team=None):
                 troop = stat_convert(troop, n, i, list_column=list_column, int_column=int_column,
                                      float_column=float_column)
             troop = {header[index]: stuff for index, stuff in enumerate(troop)}
-            if specific_team is None or specific_team == troop["Team"]:  # check player control
+            if not specific_team or specific_team == troop["Team"]:  # check player control
                 if type(team_subunit_list) == dict:
                     if troop["Team"] not in team_subunit_list:
                         team_subunit_list[troop["Team"]] = pygame.sprite.Group()

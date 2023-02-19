@@ -14,7 +14,8 @@ def ai_combat(self):
                             self.command_action = self.melee_attack_command_action[weapon]
                             break
 
-        elif not self.in_melee_combat_timer and not self.command_action:  # no nearby enemy melee threat
+        elif not self.in_melee_combat_timer and not self.command_action and not self.manual_shoot:
+            # no nearby enemy melee threat
             self.attack_target = None
             if self.ammo_now:  # range attack
                 if self.equipped_weapon not in self.ammo_now:
@@ -32,7 +33,7 @@ def ai_combat(self):
                                 self.attack_target = self.nearest_enemy[0]  # replace attack_target with enemy unit object
                                 self.attack_pos = self.attack_target.base_pos  # replace attack_pos with enemy unit pos
                                 if self.move_speed:  # moving
-                                    if self.check_special_effect("Stationary", weapon=weapon) is False:
+                                    if not self.check_special_effect("Stationary", weapon=weapon):
                                         # weapon can shoot while moving
                                         if "move loop" in self.current_action and "charge" not in self.current_action:
                                             self.interrupt_animation = True
@@ -41,7 +42,6 @@ def ai_combat(self):
                                             elif "Run" in self.current_action["name"]:
                                                 self.command_action = self.run_shoot_command_action[weapon]
                                 else:
-                                    print(self.game_id, self.ammo_now[self.equipped_weapon][weapon])
                                     self.command_action = self.range_attack_command_action[weapon]
                                     self.new_angle = self.set_rotate(self.attack_target.base_pos)
                                 break

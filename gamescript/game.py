@@ -228,6 +228,7 @@ class Game:
 
         self.sprite_indicator = pygame.sprite.Group()
 
+        self.shoot_lines = pygame.sprite.Group()
         self.button_ui = pygame.sprite.Group()  # ui button group in battle
 
         self.skill_icon = pygame.sprite.Group()  # skill and trait icon objects
@@ -258,6 +259,7 @@ class Game:
         battleui.EffectCardIcon.containers = self.effect_icon, self.battle_ui_updater
         battleui.CharIcon.containers = self.char_icon, self.main_ui_updater, self.battle_ui_updater
         battleui.SpriteIndicator.containers = self.effect_updater, self.battle_camera
+        battleui.ShootLine.containers = self.shoot_lines, self.battle_camera
 
         damagesprite.DamageSprite.containers = self.effect_updater, self.battle_camera
         effectsprite.EffectSprite.containers = self.effect_updater, self.battle_camera
@@ -365,11 +367,17 @@ class Game:
         self.map_option_box = menu.MapOptionBox(self.screen_scale, (self.screen_rect.width, 0),
                                                 battle_select_image["top_box"],
                                                 0)  # ui box for battle option during preparation screen
+        self.observe_mode_tick_box = menu.TickBox(self.screen_scale,
+                                                  (self.map_option_box.rect.bottomright[0] / 1.2,
+                                                   self.map_option_box.rect.bottomright[1] / 4),
+                                                  battle_select_image["untick"], battle_select_image["tick"], "observe")
 
         self.current_map_row = 0
         self.current_map_select = 0
         self.current_source_row = 0
         self.char_select_row = 0
+
+        self.enactment = False
 
         self.source_name_list = [""]
         self.source_scale_text = [""]
@@ -475,7 +483,6 @@ class Game:
         self.time_number = battle_ui_dict["time_number"]
         self.battle_scale_ui = battle_ui_dict["battle_scale_ui"]
         self.battle_ui_updater.add(self.time_ui, self.time_number)
-        self.unit_selector = battle_ui_dict["unit_selector"]
         self.wheel_ui = battle_ui_dict["wheel_ui"]
         self.command_ui = battle_ui_dict["command_ui"]
 
@@ -492,6 +499,9 @@ class Game:
         weather.Weather.wind_compass_images = {"wind_compass": battle_ui_image["wind_compass"],
                                                "wind_arrow": battle_ui_image["wind_arrow"]}
 
+        empty_aim = pygame.Surface((0, 0))
+        battleui.ShootLine.aim_images = {0: battle_ui_image["aim_0"], 1: battle_ui_image["aim_1"],
+                                         2: battle_ui_image["aim_2"], 3: empty_aim}
 
         box_image = load_image(main_dir, self.screen_scale, "unit_presetbox.png", ("ui", "mainmenu_ui"))
         self.popup_list_box = menu.ListBox(self.screen_scale, (0, 0), box_image,
@@ -715,7 +725,7 @@ class Game:
                         mouse_scroll_down = True
 
                 elif event.type == KEYDOWN:
-                    if self.input_popup[0] is not None:  # event update to input box
+                    if self.input_popup[0]:  # event update to input box
                         if event.key == K_ESCAPE:
                             input_esc = True
                         elif self.input_popup[0] == "text_input":
@@ -738,7 +748,7 @@ class Game:
             self.screen.blit(self.background, (0, 0))  # blit background over instead of clear() to reset screen
 
             if self.input_popup[
-                0] is not None:  # currently, have input text pop up on screen, stop everything else until done
+                0]:  # currently, have input text pop up on screen, stop everything else until done
                 for button in self.input_button:
                     button.update(self.mouse_pos, mouse_left_up, mouse_left_down)
 

@@ -24,6 +24,8 @@ def menu_team_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
                         box.change_tick(True)
                     else:
                         box.change_tick(False)
+                    if box.option == "observe":
+                        self.enactment = box.tick
 
         if self.source_list_box.scroll.rect.collidepoint(self.mouse_pos):  # click on subsection list scroll
             self.current_source_row = self.source_list_box.scroll.player_input(
@@ -40,7 +42,8 @@ def menu_team_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
         self.menu_state = self.last_select
         self.map_back_button.event = False
         self.main_ui_updater.remove(*self.menu_button, self.map_list_box, self.map_option_box,
-                                    self.source_list_box, self.source_list_box.scroll, self.source_description)
+                                    self.observe_mode_tick_box, self.source_list_box, self.source_list_box.scroll,
+                                    self.source_description)
         self.menu_button.remove(*self.menu_button)
 
         # Reset selected team
@@ -75,7 +78,8 @@ def menu_team_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
         self.char_select_row = 0
 
         self.main_ui_updater.remove(*self.map_select_button, self.map_option_box, self.source_list_box,
-                                    self.source_list_box.scroll, self.source_description, self.army_stat)
+                                    self.observe_mode_tick_box, self.source_list_box.scroll,
+                                    self.source_description, self.army_stat)
         self.menu_button.remove(*self.map_select_button)
 
         for group in (self.map_namegroup, self.team_coa):  # remove no longer related sprites in group

@@ -59,7 +59,7 @@ def add_weapon_stat(self):
 
     for key in self.trait["Weapon"]:
         for weapon in self.trait["Weapon"][key]:
-            self.trait["Weapon"][key][weapon] = list(set([trait for trait in
+            self.trait["Weapon"][key][weapon] = tuple(set([trait for trait in
                                                           self.trait["Weapon"][key][weapon] if
                                                           trait != 0]))  # remove empty and duplicate traits
             self.trait["Weapon"][key][weapon] = {x: self.troop_data.trait_list[x] for x in

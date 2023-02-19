@@ -94,13 +94,16 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
             else:
                 sprite_data = self.leader_data.leader_sprite_list[sprite_id]
 
+            idle_animation_name = final_race_name + weapon_common_action[0][0] + "_Idle"
+            if idle_animation_name not in self.generic_animation_pool:  # try any
+                idle_animation_name = final_race_name + "any_Idle"
+
             sprite_dict = self.create_troop_sprite(animation, this_subunit["Size"], frame_data,
                                                    sprite_data, animation_property,
                                                    (0, subunit_weapon_list[0],
                                                     (self.troop_data.weapon_list[primary_main_weapon]["Hand"],
                                                      self.troop_data.weapon_list[primary_sub_weapon]["Hand"])), armour,
-                                                   self.generic_animation_pool[final_race_name +
-                                                                               weapon_common_action[0][0] + "_Idle"][0])
+                                                   self.generic_animation_pool[idle_animation_name][0])
             sprite_pic, center_offset = crop_sprite(sprite_dict["sprite"])
 
             scale = min(max_preview_size * self.screen_scale[0] / sprite_pic.get_width(),
@@ -152,7 +155,6 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
                               and any(ext in this_animation for ext in ("_Main_", "_Sub_", "_Both_")) is False and
                               (any(ext in this_animation for ext in weapon_common_type_list)) is False]
             temp_list = []
-
             for weapon_set_index, weapon_set in enumerate(
                     subunit_weapon_list):
                 for weapon_index, weapon in enumerate(weapon_set):
@@ -164,11 +166,10 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
                                 temp_list.append(this_animation)
                         elif ((weapon_common_action[weapon_set_index][weapon_index] in this_animation and
                                 weapon_attack_action[weapon_set_index][weapon_index] in this_animation) or
-                              "_Charge" in this_animation) and (("_Main_", "_Sub_")[weapon_index] in
-                                                                this_animation or "_Both_" in this_animation):  # attack animation
+                              "_Charge" in this_animation):  # attack animation
                             temp_list.append(this_animation)
                     for this_animation in reversed(
-                            temp_list):  # check if weapon common type and any for same animation exist, remove any
+                            temp_list):  # check if weapon common type and "any" for same animation exist, remove any
                         if "_any_" in this_animation and any(weapon_common_action[weapon_set_index][weapon_index] in
                                                              animation and this_animation.split("_")[-1] in animation
                                                              for animation in temp_list):

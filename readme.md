@@ -167,6 +167,8 @@ historical information to players.
 
 - Musket shot "aaronsiler_musket 3", "aaronsiler_musket 4" by aaronsiler (https://freesound.org/people/aaronsiler/)
 - Assorted weapon sound from Videvo (https://www.videvo.net/)
+- Cannon sound "canon" from man (https://freesound.org/people/man/)
+- Bullet sound "Bullet passbys" from Audionautics (https://freesound.org/people/Audionautics/)
 - Heavy rain weather ambient sound "Heavy Rain", weapon sound "Wooshes" by lebaston100 (https://freesound.org/people/lebaston100/)
 - Heavy Weapon swing by "Swinging staff whoosh (strong) 08" Nightflame (https://freesound.org/people/Nightflame/)
 - Sword swing "Swosh Sword Swing" by qubodup (https://freesound.org/people/qubodup/)

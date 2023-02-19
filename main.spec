@@ -25,7 +25,7 @@ a = Analysis(['main.py'],
     noarchive=False)
 
 
-b = Analysis(['animation_maker.py'],
+b = Analysis(['animation maker.py'],
     pathex=[spec_root],
     binaries=[],
     datas=datas,
@@ -58,7 +58,7 @@ exe2 = EXE(pyz,
     b.scripts,
     [],
     exclude_binaries=True,
-    name='animation_maker',
+    name='animation maker',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

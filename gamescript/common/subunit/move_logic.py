@@ -44,7 +44,7 @@ def move_logic(self, dt):
 
                     self.height = self.get_height(self.base_pos)  # Current terrain height
 
-                    if self.player_manual_control is False:
+                    if not self.player_manual_control:
                         layer = int(self.base_pos[0] + (self.base_pos[1] * 10))
                         if layer < 0:
                             layer = 1

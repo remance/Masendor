@@ -5,7 +5,7 @@ def use_skill(self, which_skill):
     skill_stat = self.skill[which_skill]
     aoe = skill_stat["Area of Effect"]
 
-    if self.current_animation[self.show_frame]["dmg_sprite"] is not None and which_skill != self.charge_skill:
+    if self.current_animation[self.show_frame]["dmg_sprite"] and which_skill != self.charge_skill:
         effectsprite.EffectSprite(self, self.pos, self.pos, 0, 0, skill_stat["Effect Sprite"],
                                   self.current_animation[self.show_frame]["dmg_sprite"])
     if skill_stat["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
@@ -13,14 +13,14 @@ def use_skill(self, which_skill):
                                            skill_stat["Sound Distance"],
                                            skill_stat["Shake Power"])
 
-    if skill_stat["Type"] in (0, 2):
+    if skill_stat["Receiver"] in (0, 2):
         self.apply_effect(which_skill, skill_stat, self.skill_effect, self.skill_duration)
 
     if aoe > 1:
         group_to_do = []
-        if skill_stat["Type"] in (0, 2):
+        if skill_stat["Receiver"] in (0, 2):
             group_to_do.append(self.near_ally)
-        if skill_stat["Type"] in (1, 2):
+        if skill_stat["Receiver"] in (1, 2):
             group_to_do.append(self.near_enemy)
         for group in group_to_do:
             for subunit in group:

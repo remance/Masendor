@@ -192,7 +192,7 @@ class DamageSprite(pygame.sprite.Sprite):
                             break
 
         if self.distance_progress >= 100:  # attack reach target pos
-            if self.arc_shot and pass_subunit is not None:  # arc shot hit last pass when land
+            if self.arc_shot and pass_subunit:  # arc shot hit last pass when land
                 self.hit_register(pass_subunit)
             self.clean_object()  # remove sprite
             return
@@ -209,7 +209,7 @@ class DamageSprite(pygame.sprite.Sprite):
 
                 if move.length() <= require_move_length:
                     self.base_pos += move
-                    if self.arc_shot is False and self.height_ignore is False and \
+                    if not self.arc_shot and not self.height_ignore and \
                             self.height_map.get_height(self.base_pos) > self.height + 20:
                         self.clean_object()  # direct shot will not be able to shoot pass higher height terrain midway
                         return
@@ -217,7 +217,7 @@ class DamageSprite(pygame.sprite.Sprite):
                                               self.base_pos[1] * self.screen_scale[1]) * 5
                     self.rect.center = self.pos
 
-                    if self.random_move is False and (
+                    if not self.random_move and (
                             self.base_pos[0] <= 0 or self.base_pos[0] >= self.battle.map_corner[0] or
                             self.base_pos[1] <= 0 or self.base_pos[1] >= self.battle.map_corner[1]):  # pass outside of map
                         self.clean_object()
@@ -240,7 +240,7 @@ class DamageSprite(pygame.sprite.Sprite):
 
         else:  # attack that does not travel
             if self.attack_type == "charge":
-                if self.attacker.charging is False:
+                if not self.attacker.charging:
                     self.clean_object()
                     return
             elif done and self.duration == 0:

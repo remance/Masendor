@@ -19,10 +19,10 @@ def enter_battle(self, animation_pool):
 
     self.map_corner = self.battle.map_corner
 
-    if self.leader is not None:
+    if self.leader:
         self.add_leader_buff()
         self.unit_leader = self.leader
-        while self.unit_leader.leader is not None:  # get the highest leader of the unit
+        while self.unit_leader.leader:  # get the highest leader of the unit
             self.unit_leader = self.unit_leader.leader
     elif self.is_leader:  # is top unit leader
         self.unit_leader = self

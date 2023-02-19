@@ -14,7 +14,7 @@ class Weather:
         if self.weather_type == 0:
             self.weather_type = random.randint(1, len(weather_data) - 1)
         self.has_stat_effect = False
-        if weather_data is not None:
+        if weather_data:
             self.has_stat_effect = True
             stat = weather_data[weather_type]
             self.name = stat["Name"]

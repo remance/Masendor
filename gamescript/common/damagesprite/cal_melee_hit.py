@@ -32,7 +32,7 @@ def cal_melee_hit(self, attacker, weapon, target, hit_side, hit_angle):
             target_defence = 0
 
         attacker_dmg, attacker_morale_dmg, element_effect, impact = self.cal_dmg(attacker, target, attacker_hit,
-                                                                                 target_defence, target_dodge,
+                                                                                 target_defence,
                                                                                  weapon, hit_side=hit_side)
 
         attacker.cal_loss(target, attacker_dmg, impact, attacker_morale_dmg, element_effect, hit_angle)  # inflict dmg to defender

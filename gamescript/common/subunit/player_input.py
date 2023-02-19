@@ -10,7 +10,7 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
             self.new_angle = self.set_rotate(cursor_pos)
 
         if "uncontrollable" not in self.current_action and "uncontrollable" not in self.command_action:
-            if key_state is not None:
+            if key_state:
                 if self.battle.player_char_input_delay == 0 and not self.current_action:  # for input that need to have time delay to work properly
                     if key_state[pygame.K_1] and self.equipped_weapon != 0:  # Swap to primary weapon
                         self.swap_weapon(0)
@@ -114,7 +114,7 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                             action_num in self.ammo_now[self.equipped_weapon]:  # range weapon
                         if self.ammo_now[self.equipped_weapon][action_num] > 0 and \
                                 self.shoot_while_moving and \
-                                self.check_special_effect("Stationary", weapon=action_num) is False:
+                                not self.check_special_effect("Stationary", weapon=action_num):
                             if "range attack" not in self.current_action:  # start move shooting
                                 self.interrupt_animation = True
                                 if "walk" in self.current_action:

@@ -160,7 +160,7 @@ class HeroUI(pygame.sprite.Sprite):
         if (who.hold_timer == 1 or who.charging) and True not in self.weapon_holding:
             self.weapon_holding[who.current_action["weapon"]] = True
             weapon_filter_change = True
-        elif (who.hold_timer == 0 and who.charging is False) and True in self.weapon_holding:
+        elif (who.hold_timer == 0 and not who.charging) and True in self.weapon_holding:
             self.weapon_holding = [False, False]
             weapon_filter_change = True
         elif self.weapon_cooldown != who.weapon_cooldown:
@@ -482,7 +482,7 @@ class EventLog(pygame.sprite.Sprite):
         else:  # Cut the text log into multiple row if more than 45 char
             cut_space = [index for index, letter in enumerate(text_output) if letter == " "]
             loop_number = len(text_output) / 45  # number of row
-            if loop_number.is_integer() is False:  # always round up if there is decimal number
+            if not loop_number.is_integer():  # always round up if there is decimal number
                 loop_number = int(loop_number) + 1
             starting_index = 0
 
@@ -511,10 +511,10 @@ class EventLog(pygame.sprite.Sprite):
         image_change2 = False
         if self.current_start_row + self.max_row_show >= self.len_check:
             at_last_row = True
-        if log is not None:  # when event map log commentary come in, log will be none
+        if log:  # when event map log commentary come in, log will be none
             text_output = ": " + log[1]
             image_change = self.log_text_process(log[0], text_output)
-        if event_id is not None and event_id in self.map_event:  # Process whether there is historical commentary to add to event log
+        if event_id and event_id in self.map_event:  # Process whether there is historical commentary to add to event log
             text_output = self.map_event[event_id]
             image_change2 = self.log_text_process(text_output["Who"], str(text_output["Time"]) + ": " + text_output["Text"])
         if image_change or image_change2:
@@ -565,16 +565,16 @@ class UIScroll(pygame.sprite.Sprite):
 
     def change_image(self, new_row=None, row_size=None):
         """New row is input of scrolling by user to new row, row_size is changing based on adding more log or clear"""
-        if row_size is not None and self.row_size != row_size:
+        if row_size and self.row_size != row_size:
             self.row_size = row_size
             self.create_new_image()
-        if new_row is not None and self.current_row != new_row:  # accept from both wheeling scroll and drag scroll bar
+        if new_row and self.current_row != new_row:  # accept from both wheeling scroll and drag scroll bar
             self.current_row = new_row
             self.create_new_image()
 
     def player_input(self, mouse_pos, mouse_scroll_up=False, mouse_scroll_down=False):
         """Player input update via click or scrolling"""
-        if mouse_pos is not None and self.rect.collidepoint(mouse_pos):
+        if mouse_pos and self.rect.collidepoint(mouse_pos):
             mouse_value = (mouse_pos[1] - self.pos[
                 1]) * 100 / self.height_ui  # find what percentage of mouse_pos at the scroll bar (0 = top, 100 = bottom)
             if mouse_value > 100:
@@ -618,7 +618,7 @@ class UnitSelector(pygame.sprite.Sprite):
             current_index = int(self.current_row * max_column_show)  # the first index of current row
             self.row_size = len(subunit_list) / max_column_show
 
-            if self.row_size.is_integer() is False:
+            if not self.row_size.is_integer():
                 self.row_size = int(self.row_size) + 1
 
             if self.current_row > self.row_size - 1:
@@ -693,7 +693,7 @@ class CharIcon(pygame.sprite.Sprite):
             if self.who.team == 2:
                 self.image.fill((255, 114, 114))
             self.image.blit(self.leader_image, self.leader_image_rect)
-        if new_image is not None:
+        if new_image:
             self.leader_image = new_image
             self.image.blit(self.leader_image, self.leader_image_rect)
 
@@ -760,10 +760,10 @@ class TimeUI(pygame.sprite.Sprite):
         self.pos = pos
         self.rect = self.image.get_rect(topleft=pos)
         time_number.change_pos(self.rect.topleft)
-        if speed_number is not None:
+        if speed_number:
             speed_number.change_pos((self.rect.center[0] + int(self.rect.center[0] / 10), self.rect.center[1]))
 
-        if time_button is not None:
+        if time_button:
             time_button[0].change_pos((self.rect.center[0] * 0.885,
                                        self.rect.center[1]))  # time pause button
             time_button[1].change_pos((self.rect.center[0] * 0.95,
@@ -884,10 +884,9 @@ class WheelUI(pygame.sprite.Sprite):
         self.image = self.base_image2.copy()
         self.choice_list = tuple(blit_list.keys())
         for index, item in enumerate(blit_list):
-            if item is not None:  # Wheel choice with icon or text inside
+            if item:  # Wheel choice with icon or text inside
                 if type(item) == str:  # text
                     surface = self.font.render(item, True, (0, 0, 0))
-
                 else:
                     surface = item
                 rect = surface.get_rect(center=(self.wheel_image_with_stuff[index].get_width() / 2,
@@ -938,7 +937,7 @@ class InspectSubunit(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=self.pos)
 
     def add_subunit(self, who):
-        if who is not None:
+        if who:
             self.who = who
             self.image = self.who.block_image
             self.rect = self.image.get_rect(topleft=self.pos)
@@ -1001,116 +1000,42 @@ class BattleDone(pygame.sprite.Sprite):
                 row_number += 1
 
 
-class DirectionArrow(pygame.sprite.Sprite):  # TODO make it work so it can be implemented again
-    def __init__(self, who):
-        """Layer must be called before sprite_init"""
-        self._layer = 40
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        self.who = who
-        self.pos = self.who.pos
-        self.who.direction_arrow = self
-        self.length_gap = self.who.image.get_height() / 2
-        self.length = self.who.pos.distance_to(self.who.base_target) + self.length_gap
-        self.previous_length = self.length
-        self.image = pygame.Surface((5, self.length), pygame.SRCALPHA)
-        self.image.fill((0, 0, 0))
-        # pygame.draw.line(self.image, (0, 0, 0), (self.image.get_width()/2, 0),(self.image.get_width()/2,self.image.get_height()), 5)
-        self.image = pygame.transform.rotate(self.image, self.who.angle)
-        self.rect = self.image.get_rect(midbottom=self.who.front_pos)
-
-    def update(self, zoom):
-        self.length = self.who.pos.distance_to(self.who.base_target) + self.length_gap
-        distance = self.who.front_pos.distance_to(self.who.base_target) + self.length_gap
-        if self.length != self.previous_length and distance > 2 and self.who.state != 0:
-            self.pos = self.who.pos
-            self.image = pygame.Surface((5, self.length), pygame.SRCALPHA)
-            self.image.fill((0, 0, 0))
-            self.image = pygame.transform.rotate(self.image, self.who.angle)
-            self.rect = self.image.get_rect(midbottom=self.who.front_pos)
-            self.previous_length = self.length
-        elif distance < 2 or self.who.state in (0, 10, 11, 100):
-            self.who.direction_arrow = False
-            self.kill()
-
-
 class ShootLine(pygame.sprite.Sprite):
-    set_rotate = utility.set_rotate
+    aim_images = None
 
     def __init__(self, screen_scale, who):
-        self._layer = 40
+        self._layer = 2000000
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.screen_scale = screen_scale
         self.who = who
         self.who.shoot_line = self
-        self.clip = (False, False)  # clip for weapon 1 and 2
-        self.base_pos = pygame.Vector2(self.who.pos)
+        self.pos = pygame.Vector2(self.who.pos)
         self.base_target_pos = None
-        self.target_pos = None
-        self.camera_zoom_scale = 0
-        self.line_size = 100 * self.screen_scale[0]
         self.can_shoot = [False, False]
-        self.arc_shot = [False, False]
 
-        self.image = pygame.Surface((0, 0))
+        self.image = self.aim_images[0]
         self.rect = self.image.get_rect(center=(0, 0))
 
-    def update(self, base_target_pos, target_pos, clip, can_shoot, camera_zoom_scale, arc_shot):
-        redo = False
-        self.arc_shot = arc_shot
-        if self.target_pos != target_pos:
-            self.base_target_pos = base_target_pos
-            self.target_pos = target_pos
-            redo = True
-        if self.clip != clip:
-            self.clip = clip
-            redo = True
-        if self.can_shoot != can_shoot:
-            self.can_shoot = can_shoot
-            redo = True
-        if self.base_pos != self.who.pos:
-            self.base_pos = pygame.Vector2(self.who.pos)
-            redo = True
-        if self.camera_zoom_scale != camera_zoom_scale:
-            self.camera_zoom_scale = camera_zoom_scale
-            redo = True
-
-        if self.who.alive is False:
+    def update(self, base_target_pos, target_pos, can_shoot):
+        if not self.who.alive:
             self.who.shoot_line = None
             self.kill()
-
-        if redo:
-            angle = self.set_rotate(self.target_pos)
-            length = self.base_pos.distance_to(target_pos)
-            half_length = length / 2
-            self.image = pygame.Surface((self.line_size * self.camera_zoom_scale, length), pygame.SRCALPHA)
-            check_image = pygame.Surface((self.line_size * self.camera_zoom_scale, length / 2))
-            if self.who.state == 10:  # troop busy in melee
-                self.image.fill((255, 127, 39, 50))
-            else:
-                self.image.fill((0, 0, 0, 50))
-                rect_choice = ((0, 0), (check_image.get_width() / 2, 0))
-                for index, this_clip in enumerate(self.clip):
-                    if index == 0:
-                        check_image2 = pygame.Surface((self.image.get_width() / 2, length / 2))
-                    else:  # to make it so the bar fill entire line width
-                        check_image2 = pygame.Surface((self.image.get_width(), length / 2))
-                    if this_clip:  # shoot line block by friend
-                        check_image2.fill((255, 0, 0, 50))
-                    elif self.can_shoot[index]:  # can shoot
-                        check_image2.fill(((100, 100, 255, 50), (100, 255, 100, 50))[index])
-                    else:
-                        check_image2.fill((100, 100, 100, 50))
-                    rect = check_image2.get_rect(topleft=(rect_choice[index]))
-                    check_image.blit(check_image2, rect)
-
-            rect = check_image.get_rect(topleft=(0, 0))
-            self.image.blit(check_image, rect)
-            self.image = pygame.transform.rotate(self.image, angle)
-
-            pos = pygame.Vector2(self.base_pos[0] - (half_length * math.sin(math.radians(angle))),
-                                 self.base_pos[1] - (half_length * math.cos(math.radians(angle))))
-
-            self.rect = self.image.get_rect(center=pos)
+        else:
+            if self.can_shoot != can_shoot:
+                self.can_shoot = can_shoot
+                if False not in self.can_shoot:  # both weapon can shoot
+                    self.image = self.aim_images[0]
+                elif True not in self.can_shoot:  # no weapon can shoot use empty image
+                    self.image = self.aim_images[3]
+                else:
+                    if self.can_shoot[0]:  # only main weapon can shoot
+                        self.image = self.aim_images[1]
+                    else:  # only sub weapon can shoot
+                        self.image = self.aim_images[2]
+            if self.pos != target_pos:
+                self.base_target_pos = base_target_pos
+                self.pos = target_pos
+                self.rect.center = self.pos
 
     def delete(self):
         self.who.shoot_line = None

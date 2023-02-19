@@ -7,7 +7,7 @@ stay_formation_distance = 1
 
 
 def ai_move(self):
-    if self.leader is not None:  # has higher leader
+    if self.leader:  # has higher leader
         if self.is_leader:
             follow_order = self.leader.unit_follow_order
         else:
@@ -58,7 +58,7 @@ def ai_move(self):
                     self.command_action = self.run_command_action
                     self.move_speed = self.run_speed
 
-            elif self.attack_target is not None and self.max_melee_range > 0:
+            elif self.attack_target and self.max_melee_range > 0:
                 distance = self.attack_target.base_pos.distance_to(self.base_pos) - self.max_melee_range
                 if distance < follow or self.impetuous:
                     # enemy nearby and self not too far from follow_target

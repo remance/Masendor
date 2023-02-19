@@ -37,7 +37,7 @@ def battle_keyboard_process(self, key_press):
     # elif key_press == pygame.K_l and self.current_selected is not None:
     #     for subunit in self.current_selected.subunit_sprite:
     #         subunit.base_morale = 0
-    elif key_press == pygame.K_k and self.player_char is not None:
+    elif key_press == pygame.K_k and self.player_char:
         # for index, subunit in enumerate(self.current_selected.subunit_sprite):
         #     subunit.unit_health -= subunit.unit_health
         self.player_char.health = 0

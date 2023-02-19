@@ -40,6 +40,7 @@ class Battle:
     change_battle_state = empty_method
     check_subunit_collision = empty_method
     generate_unit = empty_method
+    manual_aim = empty_method
     mouse_scrolling_process = empty_method
     play_sound_effect = empty_method
     setup_battle_troop = empty_method
@@ -95,6 +96,7 @@ class Battle:
         self.battle_map = main.battle_map
 
         self.sprite_indicator = main.sprite_indicator
+        self.shoot_lines = main.shoot_lines
 
         self.mini_map = main.mini_map
         self.button_ui = main.button_ui
@@ -120,7 +122,6 @@ class Battle:
         self.confirm_ui = main.confirm_ui
         self.confirm_ui_popup = main.confirm_ui_popup
 
-        self.unit_selector = main.unit_selector
         self.char_icon = main.char_icon
 
         self.time_ui = main.time_ui
@@ -153,7 +154,7 @@ class Battle:
         self.wheel_ui = main.wheel_ui
 
         self.unit_behaviour_wheel = \
-            {"Main": {"Unit": "Unit", "Formation": "Formation", "Setting": "Setting"},
+            {"Main": {"Unit": "Unit", "Formation": "Formation", "Range Attack": "Range Attack", "Setting": "Setting"},
              "Formation": {"Formation Style": "Formation Style",
                            "Formation Phase": "Formation Phase",
                            "Formation List": "Formation List",
@@ -166,6 +167,9 @@ class Battle:
                       "Unit Formation List": "Unit Formation List",
                       "Unit Density": "Unit Density",
                       "Unit Order": "Unit Order"},
+             "Range Attack": {"Focus Aim": "Focus Aim",
+                              "Line Aim": "Line Aim",
+                              "Leader Aim": "Leader Aim"},
 
              "Unit Phase": {"Unit Skirmish Phase": "Skirmish Phase", "Unit Melee Phase": "Melee Phase",
                             "Unit Bombard Phase": "Bombard Phase"},
@@ -370,7 +374,7 @@ class Battle:
         self.event_schedule = None
         self.event_list = []
         for index, event in enumerate(self.event_log.map_event):
-            if self.event_log.map_event[event]["Time"] is not None:
+            if self.event_log.map_event[event]["Time"]:
                 if index == 0:
                     self.event_id = event
                     self.event_schedule = self.event_log.map_event[event]["Time"]
@@ -400,6 +404,8 @@ class Battle:
         self.visible_subunit_list = {}
 
         self.camera_mode = self.start_camera_mode
+        if not self.char_selected:
+            self.camera_mode = "Free"
         self.setup_battle_troop(self.subunit_updater)
         self.all_team_subunit = {1: pygame.sprite.Group(),
                                  2: pygame.sprite.Group()}  # more team can be added later
@@ -447,7 +453,6 @@ class Battle:
         self.battle_mouse_pos = [0, 0]  # mouse position list in battle map not screen without zoom
         self.battle_mouse_pos = [0, 0]  # with camera zoom adjust but without screen scale
         self.command_mouse_pos = [0, 0]  # with zoom and screen scale for unit command
-        self.unit_selector.current_row = 0
 
         self.time_update()
 
@@ -538,12 +543,12 @@ class Battle:
                         esc_press = False  # reset esc press, so it not stops esc menu when open
 
                 if self.game_state == "battle":  # game in battle state
-                    if self.player_input_state is None:  # register user input during gameplay
+                    if not self.player_input_state:  # register user input during gameplay
                         if mouse_scroll_up or mouse_scroll_down:  # Mouse scroll
                             self.mouse_scrolling_process(mouse_scroll_up, mouse_scroll_down)
 
                         # keyboard input
-                        if event_key_press is not None:
+                        if event_key_press:
                             self.battle_keyboard_process(event_key_press)
 
                         self.camera_process(key_state)
@@ -563,6 +568,9 @@ class Battle:
                                     old_player_input_state = self.player_input_state
                                     self.player_input_state = self.previous_player_input_state
                                     self.previous_player_input_state = old_player_input_state
+                        elif "aim" in self.player_input_state:
+                            self.manual_aim(mouse_left_up, mouse_right_up, key_state, event_key_press)
+
 
                     # Drama text function
                     if not self.drama_timer and self.drama_text.queue:  # Start timer and draw if there is event queue
@@ -578,10 +586,10 @@ class Battle:
 
                     if self.dt:  # Part that run when game not pause only
                         # Event log
-                        if self.event_schedule is not None and self.event_list != [] and self.time_number.time_number >= self.event_schedule:
+                        if self.event_schedule and self.event_list != [] and self.time_number.time_number >= self.event_schedule:
                             self.event_log.add_log(None, event_id=self.event_id)
                             for event in self.event_log.map_event:
-                                if self.event_log.map_event[event]["Time"] is not None and self.event_log.map_event[event][
+                                if self.event_log.map_event[event]["Time"] and self.event_log.map_event[event][
                                     "Time"] > self.time_number.time_number:
                                     self.event_id = event
                                     self.event_schedule = self.event_log.map_event[event]["Time"]
@@ -589,7 +597,7 @@ class Battle:
                             self.event_list = self.event_list[1:]
 
                         # Weather system
-                        if self.weather_playing is not None and self.time_number.time_number >= self.weather_playing:
+                        if self.weather_playing and self.time_number.time_number >= self.weather_playing:
                             this_weather = self.weather_event[0]
 
                             if this_weather[0] != 0 and this_weather[0] in self.weather_data:
@@ -668,8 +676,9 @@ class Battle:
 
                     if self.ui_timer >= 0.4:
                         self.mini_map.update([self.camera_pos, self.camera_topleft_corner], self.active_subunit_list)
-                        self.command_ui.value_input(who=self.player_char)
-                        self.countdown_skill_icon()
+                        if self.player_char:
+                            self.command_ui.value_input(who=self.player_char)
+                            self.countdown_skill_icon()
                         self.battle_scale = [(value / sum(self.team_troop_number) * 100) for value in
                                              self.team_troop_number]
                         self.battle_scale_ui.change_fight_scale(
@@ -765,16 +774,16 @@ class Battle:
         # remove all reference from battle object
         self.player_char = None
 
-        self.command_ui.last_who = None
-
         self.active_subunit_list = []
         self.map_move_array = []
         self.map_def_array = []
 
         self.troop_ai_logic_queue = []
 
-        clean_group_object((self.subunit_updater, self.char_icon,
+        clean_group_object((self.shoot_lines, self.subunit_updater, self.char_icon,
                             self.effect_updater, self.weather_matter))
+
+        self.command_ui.__init__(self.screen_scale, self.command_ui.weapon_box_images)  # reset command ui
 
         self.subunit_animation_pool = None
         self.generic_action_data = None

@@ -251,7 +251,7 @@ class BeautifulMap(pygame.sprite.Sprite):
         self.image = pygame.transform.smoothscale(self.image, (self.image.get_width() * self.screen_scale[0],
                                                                self.image.get_height() * self.screen_scale[1]))
 
-        if place_name is not None:
+        if place_name:
             self.place_name_map = pygame.transform.smoothscale(place_name, (self.image.get_size()))
         else:
             self.place_name_map = pygame.Surface((0, 0))
@@ -261,10 +261,10 @@ class BeautifulMap(pygame.sprite.Sprite):
     def add_effect(self, effect_image=None, time_image=None):
         self.base_image = self.true_image.copy()
         rect = self.image.get_rect(topleft=(0, 0))
-        if effect_image is not None:
+        if effect_image:
             self.base_image.blit(effect_image, rect)  # add weather filter effect
 
-        if time_image is not None:
+        if time_image:
             self.base_image.blit(time_image, rect)  # add day time effect
 
         self.base_image.blit(self.place_name_map, rect)  # add place_name layer to map
