@@ -57,7 +57,7 @@ Processor: Need more testing
 
 Graphics: Need more testing
 
-Storage: Currently 400 MB but likely around 1 GB available space in finished version.
+Storage: Currently 200 MB but likely around 500 MB available space in finished version.
 
 ### RECOMMEND:
 
@@ -74,10 +74,6 @@ Storage: 1GB available space
 ## Compile
 
 To compile the source code into an executable program, recommend using pyinstaller and `main.spec`. <br>
-The `main.spec` compile only `main.py`, so you will need to copy gamescript, data, profile folder manually to the dist
-folder after.
-Additionally, the spec file also include animation maker, but you will also need to copy animation maker folder to the
-dist folder to make it functional.
 
 Check the [`requirements.txt`](requirements.txt) file for dependency requirements if running with the python source
 code.<br>

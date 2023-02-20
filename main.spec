@@ -7,6 +7,7 @@ spec_root = os.path.abspath(SPECPATH)
 
 tmp_ret = collect_all('PIL')
 datas = tmp_ret[0]; tmp_ret[1]; tmp_ret[2]
+datas += [('data', 'data'), ('gamescript', 'gamescript'), ('animation maker', 'animation maker')]
 
 block_cipher = None
 
