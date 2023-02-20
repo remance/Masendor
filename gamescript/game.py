@@ -525,7 +525,7 @@ class Game:
                                                    battle_ui_image["end_box"], battle_ui_image["result_box"])
         self.battle_done_button = battleui.UIButton(battle_ui_image["end_button"], layer=19)
         self.battle_done_button.change_pos(
-            (self.battle_done_box.pos[0], self.battle_done_box.box_image.get_height() * 0.8))
+            (self.battle_done_box.pos[0], self.battle_done_box.box_image.get_height() * 2))
 
         drama.TextDrama.images = load_images(self.main_dir, screen_scale=self.screen_scale,
                                              subfolder=("ui", "popup_ui", "drama_text"))

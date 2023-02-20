@@ -125,7 +125,7 @@ class TroopData:
             header = rd[0]
             int_column = ("ID", "Troop Type", "Type", "Area of Effect", "Cost", "Charge Skill")  # value int only
             list_column = ("Action",)
-            tuple_column = ("Status", "Enemy Status")  # value in tuple only
+            tuple_column = ("Status", "Enemy Status", "AI Use Condition")  # value in tuple only
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
                           "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect",
                           "Critical Effect", "Physical Damage Effect")
@@ -450,9 +450,9 @@ class LeaderData:
                   mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
-            int_column = ("Troop Type", "Type", "Range", "Area of Effect", "Element", "Cost")  # value int only
+            int_column = ("Troop Type", "Type", "Range", "Area of Effect", "Cost")  # value int only
             list_column = ("Action",)
-            tuple_column = ("Status", "Restriction", "Condition", "Enemy Status")  # value in tuple only
+            tuple_column = ("Status", "Enemy Status", "AI Use Condition")  # value in tuple only
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
                           "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect",
                           "Critical Effect", "Physical Damage Effect")
@@ -482,9 +482,9 @@ class LeaderData:
                   mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
-            int_column = ("Troop Type", "Type", "Area of Effect", "Element", "Cost")  # value int only
+            int_column = ("Troop Type", "Type", "Area of Effect", "Cost")  # value int only
             list_column = ("Action", "Replace")
-            tuple_column = ("Status", "Restriction", "Condition", "Enemy Status")  # value in tuple only
+            tuple_column = ("Status", "Enemy Status", "AI Use Condition")  # value in tuple only
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
                           "Accuracy Effect", "Range Effect", "Reload Effect", "Charge Effect",
                           "Critical Effect", "Physical Damage Effect")

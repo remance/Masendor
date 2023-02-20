@@ -69,11 +69,13 @@ def die(self, how):
 
             self.current_action = die_command_action
             self.show_frame = 0
-            self.animation_timer = 0
+            self.frame_timer = 0
             self.pick_animation()
+            self.battle.death_troop_number[self.team] += 1
     elif how == "flee":
         if self in self.battle.battle_camera:
             self.battle.battle_camera.remove(self)
+            self.battle.flee_troop_number[self.team] += 1
 
     if len([key for key, value in self.battle.all_team_subunit.items() if len(value) > 0]) <= 1:
         self.battle.game_state = "end"

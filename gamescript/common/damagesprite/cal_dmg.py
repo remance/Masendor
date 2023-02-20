@@ -39,7 +39,7 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
     if combat_score == 0 and random.randint(0, 10) > 5:  # chance to scrape instead of miss
         combat_score = 0.1
 
-    impact = self.impact * combat_score
+    impact = self.knock_power * combat_score
 
     if combat_score > 0:
         if self.attack_type == "range":  # Range or other type of damage
@@ -56,10 +56,12 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
                     troop_dmg += ((attacker.charge_power - (target.charge_def_power * side_cal)) * 2)
                     if (target.charge_def * side_cal) >= attacker.charge_power / 2:
                         attacker.momentum = 0  # charge get stopped by charge def
+                        impact /= 2
                     else:
                         attacker.momentum -= (target.charge_def_power * side_cal) / attacker.charge_power
                         if attacker.momentum < 0:
                             attacker.momentum = 0
+                        impact *= 1.5
                 else:
                     troop_dmg += attacker.charge_power * 2
             else:
@@ -69,16 +71,17 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
             if target.charging:  # also include its own charge defence in dmg if enemy also charging
                 if not attacker.check_special_effect("Ignore Charge Defence", weapon=weapon):
                     charge_def_cal = attacker.charge_def_power - target.charge_power
-                    if charge_def_cal < 0:
-                        charge_def_cal = 0
-                    troop_dmg += (charge_def_cal * 2)  # if charge def is higher than enemy charge then deal back additional melee_dmg
+                    if charge_def_cal > 0:  # charge def is higher than enemy charge then deal additional dmg
+                        impact *= 1.5
+                        troop_dmg += (charge_def_cal * 2)
 
             troop_dmg *= combat_score
 
         # troop_dmg on subunit is dmg multiply by troop number with addition from leader combat
         if (attacker.check_special_effect("Anti Infantry", weapon=weapon) and target.subunit_type < 2 or
                 (attacker.check_special_effect("Anti Cavalry", weapon=weapon) and target.subunit_type == 2)):
-            troop_dmg = troop_dmg * 1.25  # Anti trait dmg bonus
+            troop_dmg *= 1.25  # Anti trait dmg bonus
+            impact *= 1.25
 
         morale_dmg = troop_dmg / 10
 

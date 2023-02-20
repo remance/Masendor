@@ -23,7 +23,7 @@ def change_battle_state(self):
 
         # Setup formation for leader
         for this_subunit in self.subunit_updater:
-            this_subunit.ai_troop()
+            this_subunit.ai_subunit()
             if this_subunit.is_leader:
                 if this_subunit.alive_troop_follower:
                     this_subunit.change_formation("troop")

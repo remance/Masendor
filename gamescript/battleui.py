@@ -952,14 +952,21 @@ class BattleDone(pygame.sprite.Sprite):
         self.screen_scale = screen_scale
         self.box_image = box_image
         self.result_image = result_image
-        self.font = pygame.font.SysFont("oldenglishtext", int(self.screen_scale[1] * 36))
+        self.font = pygame.font.SysFont("oldenglishtext", int(self.screen_scale[1] * 60))
+        self.header_font = pygame.font.SysFont("timesnewroman", int(self.screen_scale[1] * 36), bold=True)
         self.text_font = pygame.font.SysFont("timesnewroman", int(self.screen_scale[1] * 24))
         self.pos = pos
         self.image = self.box_image.copy()
         self.rect = self.image.get_rect(center=self.pos)
         self.winner = None
+        self.result_showing = False
 
-    def pop(self, winner):
+        self.result_text_x = {"Faction": 10 * self.screen_scale[0], "Total": 500 * self.screen_scale[0],
+                              "Alive": 650 * self.screen_scale[0],
+                              "Flee": 800 * self.screen_scale[0],
+                              "Death": 950 * self.screen_scale[0]}
+
+    def pop(self, winner, coa=None):
         self.winner = str(winner)
         self.image = self.box_image.copy()
         text_surface = self.font.render(self.winner, True, (0, 0, 0))
@@ -967,37 +974,45 @@ class BattleDone(pygame.sprite.Sprite):
         self.image.blit(text_surface, text_rect)
         if self.winner != "Draw":
             text_surface = self.font.render("Victory", True, (0, 0, 0))
-            text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, int(self.screen_scale[1] * 36) * 2))
+            text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, int(self.screen_scale[1] * 60) * 2))
+            self.image.blit(text_surface, text_rect)
+            new_coa = pygame.transform.smoothscale(coa, (200 * self.screen_scale[0], 200 * self.screen_scale[1]))
+            coa_rect = new_coa.get_rect(midtop=text_rect.midbottom)
+            self.image.blit(new_coa, coa_rect)
+        self.result_showing = False
+
+    def show_result(self, team_coa, stat):
+        self.result_showing = True
+        self.image = self.result_image.copy()
+
+        for key, value in self.result_text_x.items():
+            text_surface = self.header_font.render(key, True, (0, 0, 0))
+            if key == "Faction":
+                text_rect = text_surface.get_rect(midleft=(value, 60 * self.screen_scale[1]))
+            else:
+                text_rect = text_surface.get_rect(midright=(value, 60 * self.screen_scale[1]))
             self.image.blit(text_surface, text_rect)
 
-    def show_result(self, team1_coa, team2_coa, stat):
-        self.image = self.result_image.copy()
-        text_surface = self.font.render(self.winner, True, (0, 0, 0))
-        text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, int(self.height_adjust * 36) + 3))
-        self.image.blit(text_surface, text_rect)
-        if self.winner != "Draw":
-            text_surface = self.font.render("Victory", True, (0, 0, 0))
-            text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, int(self.height_adjust * 36) * 2))
-            self.image.blit(text_surface, text_rect)
-        coa1_rect = team1_coa.get_rect(center=(self.image.get_width() / 3, int(self.height_adjust * 36) * 5))
-        coa2_rect = team2_coa.get_rect(center=(self.image.get_width() / 1.5, int(self.height_adjust * 36) * 5))
-        self.image.blit(team1_coa, coa1_rect)
-        self.image.blit(team2_coa, coa2_rect)
-        self.rect = self.image.get_rect(center=self.pos)
-        team_coa_rect = (coa1_rect, coa2_rect)
-        text_header = ("Total Troop: ", "Remaining: ", "Injured: ", "Death: ", "Flee: ", "Captured: ")
-        for index, team in enumerate([1, 2]):
-            row_number = 1
-            for stat_index, this_stat in enumerate(stat):
-                if stat_index == 1:
-                    text_surface = self.font.render(text_header[stat_index] + str(this_stat[team] - 1), True, (0, 0, 0))
+        # pygame.draw.line(self.image, "black", )
+        y = 150 * self.screen_scale[1]
+        for team, coa in enumerate(team_coa):
+            new_coa = pygame.transform.smoothscale(coa, (50 * self.screen_scale[0], 50 * self.screen_scale[1]))
+            coa_rect = new_coa.get_rect(midleft=(10 * self.screen_scale[0], y))
+            self.image.blit(new_coa, coa_rect)
+            for key, value in self.result_text_x.items():
+                try:
+                    text_surface = self.header_font.render(str(stat[key][team + 1]), True, (0, 0, 0))
+                except IndexError:  # no number in list, e.g., no wounded troops
+                    text_surface = self.header_font.render(str(0), True, (0, 0, 0))
+                if key == "Faction":
+                    text_rect = text_surface.get_rect(midleft=(65 * self.screen_scale[0], y))
                 else:
-                    text_surface = self.font.render(text_header[stat_index] + str(this_stat[team]), True, (0, 0, 0))
-                text_rect = text_surface.get_rect(center=(team_coa_rect[index].midbottom[0],
-                                                          team_coa_rect[index].midbottom[1] + (
-                                                                  int(self.height_adjust * 25) * row_number)))
+                    text_rect = text_surface.get_rect(midright=(value, y))
                 self.image.blit(text_surface, text_rect)
-                row_number += 1
+
+            y += 150 * self.screen_scale[1]
+
+        self.rect = self.image.get_rect(center=self.pos)
 
 
 class ShootLine(pygame.sprite.Sprite):

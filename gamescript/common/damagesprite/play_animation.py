@@ -10,9 +10,9 @@ def play_animation(self, speed, dt, hold_check):
     done = False
     just_start = False  # check if new frame just start playing this call
     if not hold_check:  # not holding current frame
-        self.animation_timer += dt
-        if self.animation_timer >= speed:
-            self.animation_timer = 0
+        self.frame_timer += dt
+        if self.frame_timer >= speed:
+            self.frame_timer = 0
             just_start = True
             if self.show_frame < len(self.current_animation) - 1:
                 self.show_frame += 1

@@ -40,6 +40,10 @@ def cal_loss(self, target, final_dmg, impact, final_morale_dmg, element_effect, 
         target.forced_target = pygame.Vector2(target.base_pos[0] - (impact_check * math.sin(math.radians(hit_angle))),
                                               target.base_pos[1] - (impact_check * math.cos(math.radians(hit_angle))))
 
+    else:  # use damaged skill
+        if self.available_damaged_skill and not self.current_action and not self.command_action:  # use damaged skill
+            self.command_action = {"skill": self.available_damaged_skill[0]}
+
     target.health -= final_dmg
     health_check = 0.1
     if target.max_health != infinity:

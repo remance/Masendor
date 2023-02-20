@@ -202,13 +202,17 @@ historical information to players.
 preparation and result screen, custom battle, improve the main menu, Battle of Megiddo, Battle of
 Mohács
 
-**0.6.6 and 0.6.7:** random map generator, start working on Battle of Mohács, Minor battle: 764 Irish
+**0.6.4:** skill perform system, skill placement for both player and AI, AOE attack and after impact effect, ground effect like smoke,
+
+**0.6.5 - 0.6.7:** Leader command, hidden stat, line of sight, start working on Battle of Mohács, Minor battle: 764 Irish
 abbey war
 
-**0.6.8 and 0.6.9:** Leader command, console stick, chain of command
+**0.6.8 and 0.6.9:** random map generator and custom battle
 
-**Ver 0.7 Future Visionary:** hidden stat, line of sight, battalion information based on hidden vs sight, raise flag/ light torch and recon command, ambush bonus,
-day-night, AOE attack, ground and impact effect, Battle of Walaja, Battle of Dorylaeum
+**Ver 0.7 Future Visionary:**  batte information based on hidden vs sight, raise flag/ light torch, ambush bonus,
+day-night, Battle of Walaja, Battle of Dorylaeum
+
+**0.7.8 and 0.7.9:** Leader command, console stick, control key binding
 
 **Ver 0.8 Authentic Attraction:** In-game art, custom troop editor, better-looking UI, add intro screen, Battle of Isandlwana, Battle of Hwangsanbeol
 

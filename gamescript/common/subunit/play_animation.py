@@ -13,9 +13,9 @@ def play_animation(self, dt, hold_check):
     frame_start = False  # check if new frame just start playing this call
     current_animation = self.current_animation[self.sprite_direction]
     if not hold_check:  # not holding current frame
-        self.animation_timer += dt
-        if self.animation_timer >= self.animation_play_time:
-            self.animation_timer = 0
+        self.frame_timer += dt
+        if self.frame_timer >= self.animation_play_time:
+            self.frame_timer = 0
             frame_start = True
             if self.show_frame < self.max_show_frame:
                 self.show_frame += 1

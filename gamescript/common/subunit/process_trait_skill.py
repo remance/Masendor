@@ -31,6 +31,28 @@ def process_trait_skill(self):
     self.input_skill = self.skill.copy()
     self.input_skill.pop(self.charge_skill)
 
+    ai_skill_condition_list = {"move": [], "melee": [], "range": [], "enemy_near": [], "damaged": [], "retreat": [],
+                               "idle": [], "unit_melee": [], "unit_range": [], "troop_melee": [], "troop_range": [],
+                               "move_far": []}
+    for key, value in self.input_skill.items():
+        for condition in value["AI Use Condition"]:
+            ai_skill_condition_list[condition].append(key)
+
+    self.move_skill = ai_skill_condition_list["move"]
+    self.melee_skill = ai_skill_condition_list["melee"]
+    self.range_skill = ai_skill_condition_list["range"]
+    self.enemy_near_skill = ai_skill_condition_list["enemy_near"]
+    self.damaged_skill = ai_skill_condition_list["damaged"]
+    self.retreat_skill = ai_skill_condition_list["retreat"]
+    self.idle_skill = ai_skill_condition_list["idle"]
+
+    if self.is_leader:
+        self.unit_melee_skill = ai_skill_condition_list["unit_melee"]
+        self.troop_melee_skill = ai_skill_condition_list["troop_melee"]
+        self.unit_range_skill = ai_skill_condition_list["unit_range"]
+        self.troop_range_skill = ai_skill_condition_list["troop_range"]
+        self.move_far_skill = ai_skill_condition_list["move_far"]
+
 
 def skill_convert(self, skill_list, add_charge_skill=False):
     """

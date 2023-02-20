@@ -20,7 +20,7 @@ class EffectSprite(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.containers)
 
         self.show_frame = 0
-        self.animation_timer = 0
+        self.frame_timer = 0
         self.angle = angle
         self.rotate = False
         self.repeat_animation = False

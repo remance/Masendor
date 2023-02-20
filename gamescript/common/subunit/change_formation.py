@@ -16,38 +16,40 @@ def change_formation(self, which, formation=None):
         for leader in self.alive_leader_follower:  # leader follower change to match formation if can
             if formation in leader.formation_list:
                 leader.change_formation("troop", formation=formation)
-        for subunit in self.alive_troop_follower:
-            if subunit.subunit_type < 2 and not consider_flank[0]:
-                consider_flank[0] = True
-            elif subunit.subunit_type >= 2 and not consider_flank[0]:
-                consider_flank[1] = True
+        if self.alive_troop_follower:
+            for subunit in self.alive_troop_follower:
+                if subunit.subunit_type < 2 and not consider_flank[0]:
+                    consider_flank[0] = True
+                elif subunit.subunit_type >= 2 and not consider_flank[0]:
+                    consider_flank[1] = True
+                if False not in consider_flank:
+                    break
+
+            self.formation_consider_flank = False
             if False not in consider_flank:
-                break
+                self.formation_consider_flank = True
 
-        self.formation_consider_flank = False
-        if False not in consider_flank:
-            self.formation_consider_flank = True
-
-        new_formation = self.all_formation_list[self.troop_formation].copy()
-        self.troop_formation_preset = convert_formation_preset(self.troop_follower_size, new_formation)
+            new_formation = self.all_formation_list[self.troop_formation].copy()
+            self.troop_formation_preset = convert_formation_preset(self.troop_follower_size, new_formation)
 
     elif which == "unit":
         if formation:
             self.unit_formation = formation
-        for leader in self.alive_leader_follower:
-            if "cav" not in leader.unit_type and not consider_flank[0]:
-                consider_flank[0] = True
-            elif "cav" in leader.unit_type and not consider_flank[0]:
-                consider_flank[1] = True
+        if self.alive_leader_follower:
+            for leader in self.alive_leader_follower:
+                if "cav" not in leader.unit_type and not consider_flank[0]:
+                    consider_flank[0] = True
+                elif "cav" in leader.unit_type and not consider_flank[0]:
+                    consider_flank[1] = True
+                if False not in consider_flank:
+                    break
+
+            self.unit_consider_flank = False
             if False not in consider_flank:
-                break
+                self.unit_consider_flank = True
 
-        self.unit_consider_flank = False
-        if False not in consider_flank:
-            self.unit_consider_flank = True
-
-        new_formation = self.all_formation_list[self.unit_formation].copy()
-        self.unit_formation_preset = convert_formation_preset(self.leader_follower_size, new_formation)
+            new_formation = self.all_formation_list[self.unit_formation].copy()
+            self.unit_formation_preset = convert_formation_preset(self.leader_follower_size, new_formation)
 
     self.setup_formation(which)
 

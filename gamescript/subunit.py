@@ -73,12 +73,12 @@ charge_command_action = ({"name": "Charge 0", "movable": True, "repeat": True,
                           "use momentum": True, "charge": True, "weapon": 1})
 
 heavy_damaged_command_action = {"name": "HeavyDamaged", "uncontrollable": True, "movable": True,
-                                "forced move": True, "less mass": 1.5}
+                                "forced move": True, "less mass": 1.5, "damaged": True}
 damaged_command_action = {"name": "Damaged", "uncontrollable": True, "movable": True,
-                          "forced move": True, "less mass": 1.2}
+                          "forced move": True, "less mass": 1.2, "damaged": True}
 knockdown_command_action = {"name": "Knockdown", "uncontrollable": True, "movable": True, "forced move": True,
                             "less mass": 2, "uninterruptible": True,
-                            "next action": {"name": "Standup", "uncontrollable": True}}
+                            "next action": {"name": "Standup", "uncontrollable": True, "damaged": True}}
 
 die_command_action = {"name": "Die", "uninterruptible": True, "uncontrollable": True}
 
@@ -115,7 +115,7 @@ class Subunit(pygame.sprite.Sprite):
     ai_leader = empty_method
     ai_move = empty_method
     ai_retreat = empty_method
-    ai_troop = empty_method
+    ai_subunit = empty_method
     apply_effect = empty_method
     apply_map_status = empty_method
     apply_status_to_nearby = empty_method
@@ -235,7 +235,7 @@ class Subunit(pygame.sprite.Sprite):
         self.animation_queue = []  # list of animation queue
         self.show_frame = 0  # current animation frame
         self.max_show_frame = 0
-        self.animation_timer = 0
+        self.frame_timer = 0
         self.current_action = {}  # action being performed
         self.command_action = {}  # next action to be performed
         self.idle_action = {}  # action that is performed when subunit is idle such as hold spear wall when skill active
@@ -265,7 +265,7 @@ class Subunit(pygame.sprite.Sprite):
         self.morale_dmg_bonus = 0
         self.stamina_dmg_bonus = 0  # extra stamina melee_dmg
         self.original_hp_regen = 0  # health regeneration modifier, will not resurrect dead troop by default
-        self.original_stamina_regen = 5  # stamina regeneration modifier
+        self.original_stamina_regen = 4  # stamina regeneration modifier
         self.original_morale_regen = 2  # morale regeneration modifier
         self.available_skill = []  # list of skills that subunit can currently use
         self.status_effect = {}  # current status effect
@@ -273,6 +273,30 @@ class Subunit(pygame.sprite.Sprite):
         self.skill_effect = {}  # activate skill effect
         self.skill_duration = {}  # current active skill duration
         self.skill_cooldown = {}
+
+        self.move_skill = []
+        self.melee_skill = []
+        self.range_skill = []
+        self.enemy_near_skill = []
+        self.damaged_skill = []
+        self.retreat_skill = []
+        self.idle_skill = []
+        self.unit_melee_skill = []
+        self.unit_range_skill = []
+        self.troop_melee_skill = []
+        self.move_far_skill = []
+
+        self.available_move_skill = []
+        self.available_melee_skill = []
+        self.available_range_skill = []
+        self.available_enemy_near_skill = []
+        self.available_damaged_skill = []
+        self.available_retreat_skill = []
+        self.available_idle_skill = []
+        self.available_unit_melee_skill = []
+        self.available_troop_melee_skill = []
+        self.available_troop_range_skill = []
+        self.available_move_far_skill = []
 
         self.countup_timer = 0  # timer that count up to specific threshold to start event like charge attack timing
         self.countup_trigger_time = 0  # time that indicate when trigger happen
@@ -282,7 +306,6 @@ class Subunit(pygame.sprite.Sprite):
         self.alive = True
         self.in_melee_combat_timer = 0
         self.timer = random.random()  # may need to use random.random()
-        self.move_timer = 0  # timer for moving to front position before attacking nearest enemy
         self.momentum = 0.1  # charging momentum
         self.max_melee_attack_range = 0
         self.melee_distance_zone = 1
@@ -310,7 +333,6 @@ class Subunit(pygame.sprite.Sprite):
         self.front_pos = (0, 0)  # pos of this subunit for finding height of map at the front
         self.front_height = 0
 
-        self.skill_cond = 0
         self.interrupt_animation = False
         self.top_interrupt_animation = False  # interrupt animation regardless of property
 
@@ -398,9 +420,9 @@ class Subunit(pygame.sprite.Sprite):
             self.unit_distance_list = {}
             self.unit_pos_list = {}
 
-            try:  # Put leader image into leader slot
+            if self.troop_id in self.leader_data.images:  # Put leader image into leader slot
                 self.portrait = self.leader_data.images[self.troop_id].copy()
-            except KeyError:  # Use Unknown leader image if there is none in list
+            else:  # Use Unknown leader image if there is none in list
                 self.portrait = self.leader_data.images["other"].copy()
                 font = pygame.font.SysFont("timesnewroman", 50)
                 text_image = font.render(self.troop_id, True, pygame.Color("white"))
@@ -709,7 +731,6 @@ class Subunit(pygame.sprite.Sprite):
         self.melee_charge_range = {0: 0, 1: 0}
 
         self.morale_state = 1  # turn into percentage
-        self.stamina_state = (self.stamina * 100) / self.max_stamina  # turn into percentage
 
         self.run_speed = 1
         self.walk_speed = 1
@@ -718,11 +739,8 @@ class Subunit(pygame.sprite.Sprite):
             self.mental = 0
         elif self.mental > 200:  # cannot exceed 200
             self.mental = 200
-        self.mental_text = self.mental - 100  # for showing in subunit card ui
-        self.mental = (200 - self.mental) / 100  # convert to percentage
 
-        self.stamina_state = (self.stamina * 100) / self.max_stamina  # turn into percentage
-        self.stamina_state_cal = self.stamina_state / 100  # for using as modifier on stat
+        self.mental = (200 - self.mental) / 100  # convert to percentage
 
         self.angle = start_angle
         self.new_angle = self.angle
@@ -828,7 +846,7 @@ class Subunit(pygame.sprite.Sprite):
 
                 self.taking_damage_angle = None
 
-                if self.player_manual_control is False:
+                if not self.player_manual_control:
                     if self.not_broken and "uncontrollable" not in self.current_action and \
                             "uncontrollable" not in self.command_action:
                         self.ai_move()
@@ -904,6 +922,10 @@ class Subunit(pygame.sprite.Sprite):
 
                     if "next action" in self.current_action:  # play next action first instead of command
                         self.current_action = self.current_action["next action"]
+                    elif "damaged" in self.current_action and self.available_damaged_skill and \
+                            not self.command_action:  # use skill after playing damaged animation
+                        self.current_action = {}  # idle first to check for skill next update
+                        self.command_action = {"skill": self.available_damaged_skill[0]}
                     else:
                         self.current_action = self.command_action  # continue next action when animation finish
                         self.command_action = self.idle_action
@@ -912,7 +934,7 @@ class Subunit(pygame.sprite.Sprite):
                     self.top_interrupt_animation = False
 
                     self.show_frame = 0
-                    self.animation_timer = 0
+                    self.frame_timer = 0
                     self.pick_animation()
 
                     self.animation_play_time = self.default_animation_play_time

@@ -35,21 +35,14 @@ def move_logic(self, dt):
                         if "forced move" not in self.current_action:  # damaged or knockdown does not change direction
                             self.new_angle = self.set_rotate(new_pos)
 
-                    self.pos = pygame.Vector2((self.base_pos[0] * self.screen_scale[0] * 5,
-                                               self.base_pos[1] * self.screen_scale[1] * 5))
+                    self.pos = pygame.Vector2((self.base_pos[0] * self.screen_scale[0],
+                                               self.base_pos[1] * self.screen_scale[1])) * 5
                     self.offset_pos = self.pos - self.current_animation[self.sprite_direction][self.show_frame][
                         "center_offset"]
                     self.rect.center = self.offset_pos
                     self.hitbox.rect.midtop = self.pos
 
                     self.height = self.get_height(self.base_pos)  # Current terrain height
-
-                    if not self.player_manual_control:
-                        layer = int(self.base_pos[0] + (self.base_pos[1] * 10))
-                        if layer < 0:
-                            layer = 1
-                        if self._layer != layer:
-                            self.battle.battle_camera.change_layer(self, layer)
 
                     self.move = True
 

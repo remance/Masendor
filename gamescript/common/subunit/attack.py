@@ -9,15 +9,14 @@ convert_degree_to_360 = utility.convert_degree_to_360
 
 
 def attack(self, attack_type):
-    weapon = int(self.current_action["name"][-1])
+    weapon = self.current_action["weapon"]
     equipped_weapon_data = self.equipped_weapon_data[weapon]
     base_target = None
-    if "pos" in self.current_action:  # manual attack position
-        base_target = self.current_action["pos"]
-    elif self.attack_target:
+    if self.attack_target:
         base_target = self.attack_target.base_pos
     elif self.attack_pos:
         base_target = self.attack_pos
+
     if attack_type == "range":
         if base_target:
             max_range = self.shoot_range[weapon]

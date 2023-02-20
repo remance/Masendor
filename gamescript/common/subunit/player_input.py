@@ -8,7 +8,6 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
         new_pos = pygame.Vector2(self.base_pos)
         if not self.current_action or "hold" in self.current_action:  # can rotate if not has any action or holding
             self.new_angle = self.set_rotate(cursor_pos)
-
         if "uncontrollable" not in self.current_action and "uncontrollable" not in self.command_action:
             if key_state:
                 if self.battle.player_char_input_delay == 0 and not self.current_action:  # for input that need to have time delay to work properly

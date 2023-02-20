@@ -27,6 +27,34 @@ def status_update(self):
             elif "hold" in value["Action"] or "repeat" in value["Action"]:
                 self.idle_action = self.command_action
 
+    self.available_skill = [skill for skill in self.input_skill if skill not in self.skill_cooldown.keys()
+                            and self.discipline >= self.input_skill[skill]["Discipline Requirement"]
+                            and self.stamina > self.input_skill[skill]["Stamina Cost"]]
+
+    ai_skill_condition_list = {"move": [], "melee": [], "range": [], "enemy_near": [], "damaged": [], "retreat": [],
+                               "idle": [], "unit_melee": [], "unit_range": [], "troop_melee": [], "troop_range": [],
+                               "move_far": []}
+
+    for key, value in self.input_skill.items():
+        if key in self.available_skill:
+            for condition in value["AI Use Condition"]:
+                ai_skill_condition_list[condition].append(key)
+
+    self.available_move_skill = ai_skill_condition_list["move"]
+    self.available_melee_skill = ai_skill_condition_list["melee"]
+    self.available_range_skill = ai_skill_condition_list["range"]
+    self.available_enemy_near_skill = ai_skill_condition_list["enemy_near"]
+    self.available_damaged_skill = ai_skill_condition_list["damaged"]
+    self.available_retreat_skill = ai_skill_condition_list["retreat"]
+    self.available_idle_skill = ai_skill_condition_list["idle"]
+
+    if self.is_leader:
+        self.available_unit_melee_skill = ai_skill_condition_list["unit_melee"]
+        self.available_troop_melee_skill = ai_skill_condition_list["troop_melee"]
+        self.available_unit_range_skill = ai_skill_condition_list["unit_range"]
+        self.available_troop_range_skill = ai_skill_condition_list["troop_range"]
+        self.available_move_far_skill = ai_skill_condition_list["move_far"]
+
     for key in self.status_duration.copy():  # loop is faster than comprehension here
         self.status_duration[key] -= self.timer
         if self.status_duration[key] <= 0:
@@ -259,7 +287,7 @@ def status_update(self):
 
     # Apply bonus and modifier to stat
     self.morale = (self.morale * morale_modifier) + morale_bonus
-    self.discipline = self.discipline + discipline_bonus
+    self.discipline += discipline_bonus
     self.melee_attack = (self.melee_attack * melee_attack_modifier) + melee_attack_bonus
     self.shoot_range = {key: (shoot_range * shoot_range_modifier) + shoot_range_bonus for key, shoot_range in
                         self.shoot_range.items()}
@@ -275,9 +303,9 @@ def status_update(self):
     self.charge_def = (self.charge_def * charge_def_modifier) + charge_def_bonus
     self.speed = (self.speed * speed_modifier) + speed_bonus
     self.charge = (self.charge * charge_modifier) + charge_bonus
-    self.sight = self.sight + sight_bonus
-    self.hidden = self.hidden + hidden_bonus
-    self.crit_effect = self.crit_effect * crit_effect_modifier
+    self.sight += sight_bonus
+    self.hidden += hidden_bonus
+    self.crit_effect *= crit_effect_modifier
 
     troop_mass = self.troop_mass
     if "less mass" in self.current_action:  # knockdown reduce mass
@@ -342,5 +370,5 @@ def status_update(self):
             if self.weapon_speed[weapon] < 1:  # weapon speed can not be less than 0.1 second per hit
                 self.weapon_speed[weapon] = 1
 
-    self.run_speed = self.speed
-    self.walk_speed = self.speed / 2
+    self.run_speed = self.speed / 2
+    self.walk_speed = self.speed / 4

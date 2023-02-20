@@ -68,7 +68,7 @@ class DamageSprite(pygame.sprite.Sprite):
         self.deal_dmg = True
 
         self.scale_size = 1
-        self.animation_timer = 0
+        self.frame_timer = 0
         self.duration = 0
         self.timer = 0
         self.show_frame = 0
@@ -80,7 +80,7 @@ class DamageSprite(pygame.sprite.Sprite):
 
         self.dmg = {key: random.uniform(value[0], value[1]) for key, value in dmg.items()}
         self.penetrate = penetrate
-        self.impact = weapon_stat["Impact"]
+        self.knock_power = weapon_stat["Impact"]
 
         self.pass_subunit = None  # subunit that damage sprite passing through, receive damage if movement stop
 

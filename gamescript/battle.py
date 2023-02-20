@@ -242,10 +242,8 @@ class Battle:
         self.last_team_troop_number = []
         self.battle_scale = []
         self.start_troop_number = []
-        self.wound_troop_number = []
         self.death_troop_number = []
         self.flee_troop_number = []
-        self.capture_troop_number = []
         self.faction_pick = 0
         self.current_pop_up_row = 0
 
@@ -291,7 +289,7 @@ class Battle:
         self.command_mouse_pos = [0, 0]  # with zoom and screen scale for unit command
 
     def prepare_new_game(self, ruleset, ruleset_folder, team_selected, map_selected,
-                         map_source, char_selected):
+                         map_source, char_selected, map_info):
         """Setup stuff when start new battle"""
         self.language = self.main.language
 
@@ -302,6 +300,7 @@ class Battle:
         self.team_selected = team_selected  # player selected team
 
         self.char_selected = char_selected
+        self.map_info = map_info
 
         self.faction_data = self.main.faction_data
         self.coa_list = self.faction_data.coa_list
@@ -648,7 +647,7 @@ class Battle:
                         if limit < 10:
                             limit = 10
                         for index, this_subunit in enumerate(self.troop_ai_logic_queue):
-                            this_subunit.ai_troop()
+                            this_subunit.ai_subunit()
                             if index == limit:
                                 break
                         self.troop_ai_logic_queue = self.troop_ai_logic_queue[10:]
@@ -695,7 +694,9 @@ class Battle:
                         else:
                             for key, value in self.all_team_subunit.items():
                                 if value:
-                                    self.battle_done_box.pop(key)
+                                    self.battle_done_box.pop(self.faction_data.faction_list[self.map_info[
+                                        "Team " + str(key)]]["Name"], self.coa_list[self.map_info[
+                                        "Team " + str(key)]])
                                     break
 
                         self.battle_done_button.rect = self.battle_done_button.image.get_rect(
@@ -703,18 +704,24 @@ class Battle:
                         self.battle_ui_updater.add(self.battle_done_box, self.battle_done_button)
                     else:
                         if mouse_left_up and self.battle_done_button.rect.collidepoint(self.mouse_pos):
-                            return
-                            # coa_list = [None, None]
-                            # for index, coa in enumerate(self.team_coa):
-                            #     coa_list[index] = coa.image
-                            # self.battle_done_box.show_result(coa_list[0], coa_list[1],
-                            #                                  (self.start_troop_number, self.team_troop_number,
-                            #                                   self.wound_troop_number, self.death_troop_number,
-                            #                                   self.flee_troop_number, self.capture_troop_number))
-                            # self.battle_done_button.rect = self.battle_done_button.image.get_rect(
-                            #     center=(self.battle_done_box.rect.midbottom[0],
-                            #             self.battle_done_box.rect.midbottom[
-                            #                 1] / 1.3))
+                            coa_list = [self.coa_list[self.map_info[key]] for key in self.map_info if "Team " in key if
+                                        self.map_info[key] != 0]
+                            if not self.battle_done_box.result_showing:  # show battle result stat
+                                faction_name = {key: self.faction_data.faction_list[self.map_info[
+                                    "Team " + str(key)]]["Name"] for key in self.all_team_subunit}
+
+                                self.battle_done_box.show_result(coa_list,
+                                                                 {"Faction": faction_name,
+                                                                  "Total": self.start_troop_number,
+                                                                  "Alive": self.team_troop_number,
+                                                                  "Death": self.death_troop_number,
+                                                                  "Flee": self.flee_troop_number})
+                                self.battle_done_button.rect = self.battle_done_button.image.get_rect(
+                                    center=(self.battle_done_box.rect.midbottom[0],
+                                            self.battle_done_box.rect.midbottom[
+                                                1] / 1.3))
+                            else:  # already shown result, end battle
+                                return
 
                 elif self.game_state == "menu":  # Complete self pause when open either esc menu or encyclopedia
                     command = self.escmenu_process(mouse_left_up, mouse_left_down, esc_press, mouse_scroll_up,
