@@ -25,5 +25,7 @@ def setup_battle_ui(self, change):
                         break
                 if not icon.game_id:  # remove from updater if no skill for this icon
                     self.battle_ui_updater.remove(icon)
+                else:
+                    self.battle_ui_updater.add(icon)
 
     change_group(self.battle_scale_ui, self.battle_ui_updater, change)

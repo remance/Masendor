@@ -29,7 +29,7 @@ def create_troop_sprite(self, animation_name, troop_size, animation_part_list, t
         for key, layer in pose_layer_list.items():
             if "weapon" in key:
                 part = animation_part_list[key]
-                if part[0] != "sheath":
+                if "sheath" not in part[0]:
                     if "main" in key:
                         hand_layer = pose_layer_list[key[:2] + "_r_hand"]
                         idle_hand_layer = idle_animation[key[:2] + "_r_hand"]
@@ -109,7 +109,7 @@ def create_troop_sprite(self, animation_name, troop_size, animation_part_list, t
                         (p + "sub_" in layer and p + "fix_sub_weapon" not in check_prop):
                     use_center = False
                     if p + "main_weapon" in layer:  # main weapon
-                        if part[0] != "sheath":  # change main weapon pos to right hand, if part is not sheath
+                        if "sheath" not in part[0]:  # change main weapon pos to right hand, if part is not sheath
                             target = (animation_part_list[p + "r_hand"][2], animation_part_list[p + "r_hand"][3])
                             use_center = False  # use weapon joint
                         else:
@@ -117,7 +117,7 @@ def create_troop_sprite(self, animation_name, troop_size, animation_part_list, t
                                       animation_part_list[p + "body"][3])  # put on back
                             use_center = True
                     elif p + "sub_weapon" in layer:  # sub weapon
-                        if part[0] != "sheath":  # change weapon pos to hand, if part is not sheath
+                        if "sheath" not in part[0]:  # change weapon pos to hand, if part is not sheath
                             if "_Sub_" in animation_name and weapon[2][
                                 1] == 2:  # two-handed sub weapon use same animation as main for attack so put sub weapon in man hand, remove code if different
                                 target = (animation_part_list[p + "r_hand"][2], animation_part_list[p + "r_hand"][3])

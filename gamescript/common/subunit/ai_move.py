@@ -1,4 +1,3 @@
-import random
 import math
 import pygame
 
@@ -27,7 +26,7 @@ def ai_move(self):
                 else:  # already equipped melee weapon
                     # charge movement based on angle instead of formation pos
                     if self.available_move_skill and not self.command_action:  # use move skill first
-                        self.command_action = {"skill": self.available_move_skill[0]}
+                        self.skill_command_input(0, self.available_move_skill)
                     else:
                         run_speed = self.run_speed
                         if run_speed > self.unit_leader.run_speed:  # use unit leader run speed instead if faster
@@ -51,31 +50,32 @@ def ai_move(self):
             elif distance > follow:  # too far from follow target pos, start moving toward it
                 self.command_target = self.follow_target
                 if 0 < distance < 20:  # only walk if not too far
-                    if "movable" in self.current_action and "walk" not in self.current_action:
+                    if ("movable" in self.current_action and "walk" not in self.current_action) or \
+                            "hold" in self.current_action:
                         self.interrupt_animation = True
                     self.command_action = self.walk_command_action
                     self.move_speed = self.walk_speed
                 else:  # run if too far
                     if distance > 100 and self.leader and self.available_move_far_skill and not self.command_action:  # use move far skill first if leader
-                        self.command_action = {"skill": self.available_move_far_skill[0]}
+                        self.skill_command_input(0, self.available_move_far_skill)
                     elif self.available_move_skill and not self.command_action:  # use move skill
-                        self.command_action = {"skill": self.available_move_skill[0]}
+                        self.skill_command_input(0, self.available_move_skill)
                     else:
-                        if "movable" in self.current_action and "run" not in self.current_action:
+                        if ("movable" in self.current_action and "run" not in self.current_action) or "hold" in self.current_action:
                             self.interrupt_animation = True
                         self.command_action = self.run_command_action
                         self.move_speed = self.run_speed
 
-            elif self.attack_target and self.max_melee_range > 0:
+            elif self.attack_target and self.max_melee_range > 0:  # enemy nearby and follow target not too far
                 distance = self.attack_target.base_pos.distance_to(self.base_pos) - self.max_melee_range
                 if distance < follow or self.impetuous:
                     # enemy nearby and self not too far from follow_target
                     if distance > self.max_melee_range:  # move closer to enemy in range
                         # charge to front of near target
                         if distance > 100 and self.leader and self.available_move_far_skill and not self.command_action:  # use move far skill first if leader
-                            self.command_action = {"skill": self.available_move_far_skill[0]}
+                            self.skill_command_input(0, self.available_move_far_skill)
                         elif self.available_move_skill and not self.command_action:  # use move skill
-                            self.command_action = {"skill": self.available_move_skill[0]}
+                            self.skill_command_input(0, self.available_move_skill)
                         else:
                             if "movable" in self.current_action and "charge" not in self.current_action:
                                 self.interrupt_animation = True
@@ -100,9 +100,9 @@ def ai_move(self):
                 if distance > max_shoot:  # further than can shoot
                     distance -= max_shoot
                     if distance > 100 and self.leader and self.available_move_far_skill and not self.command_action:  # use move far skill first if leader
-                        self.command_action = {"skill": self.available_move_far_skill[0]}
+                        self.skill_command_input(0, self.available_move_far_skill)
                     elif self.available_move_skill and not self.command_action:  # use move skill first
-                        self.command_action = {"skill": self.available_move_skill[0]}
+                        self.skill_command_input(0, self.available_move_skill)
                     else:
                         angle = self.set_rotate(self.nearest_enemy[0].base_pos)
                         self.follow_target = pygame.Vector2(self.base_pos[0] - (distance * math.sin(math.radians(angle))),
@@ -115,9 +115,9 @@ def ai_move(self):
                 distance = self.nearest_enemy[0].base_pos.distance_to(self.base_pos) - self.max_melee_range
                 if distance > self.max_melee_range > 0:  # too far move closer
                     if distance > 100 and self.leader and self.available_move_far_skill and not self.command_action:  # use move far skill first if leader
-                        self.command_action = {"skill": self.available_move_far_skill[0]}
+                        self.skill_command_input(0, self.available_move_far_skill)
                     elif self.available_move_skill and not self.command_action:  # use move skill first
-                        self.command_action = {"skill": self.available_move_skill[0]}
+                        self.skill_command_input(0, self.available_move_skill)
                     else:
                         base_angle = self.set_rotate(self.nearest_enemy[0].base_pos)
                         self.follow_target = pygame.Vector2(self.base_pos[0] -
@@ -132,12 +132,4 @@ def ai_move(self):
                         self.move_speed = self.run_speed
 
     if not self.current_action and not self.command_action and self.available_idle_skill:  # idle, use idle skill
-        self.command_action = {"skill": self.available_idle_skill[0]}
-
-
-def move_to_near_enemy(enemy):
-    """Find random position near enemy target"""
-    angle = random.uniform(0, 2.0 * math.pi)
-    vector = pygame.Vector2(random.randint(1, 10) * math.cos(angle),
-                            random.randint(1, 10) * math.sin(angle))
-    return enemy.base_pos + vector
+        self.skill_command_input(0, self.available_idle_skill)

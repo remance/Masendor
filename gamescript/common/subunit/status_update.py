@@ -27,9 +27,11 @@ def status_update(self):
             elif "hold" in value["Action"] or "repeat" in value["Action"]:
                 self.idle_action = self.command_action
 
+    # skill is considered available if not in cooldown, has enough discipline and stamina, not already in used
     self.available_skill = [skill for skill in self.input_skill if skill not in self.skill_cooldown.keys()
                             and self.discipline >= self.input_skill[skill]["Discipline Requirement"]
-                            and self.stamina > self.input_skill[skill]["Stamina Cost"]]
+                            and self.stamina > self.input_skill[skill]["Stamina Cost"] and
+                            ("skill" not in self.current_action or self.current_action["skill"] != skill)]
 
     ai_skill_condition_list = {"move": [], "melee": [], "range": [], "enemy_near": [], "damaged": [], "retreat": [],
                                "idle": [], "unit_melee": [], "unit_range": [], "troop_melee": [], "troop_range": [],
@@ -316,19 +318,14 @@ def status_update(self):
     if self.move_speed:  # reduce charge def by half when moving
         self.charge_def_power /= 2
 
-    if self.hold_timer == 1:  # holding weapon animation for at least 1 sec, apply buff
-        if "power" in self.action_list[self.current_action["weapon"]]["Properties"]:
-            for value in self.weapon_dmg[self.current_action["weapon"]].values():
-                value[0] *= 0.5
-                value[1] *= 0.5
-
-        if "block" in self.action_list[self.current_action["weapon"]]["Properties"]:  # double def but reduce dodge
+    if self.hold_timer > 1 and "weapon" in self.current_action:  # holding weapon animation for at least 1 sec, apply buff
+        if self.current_action["weapon"] in self.equipped_block_weapon:  # double def but reduce dodge
             self.melee_def *= 2
             self.range_def *= 2
             self.melee_dodge /= 2
             self.range_dodge /= 2
 
-        if "chargeblock" in self.action_list[self.current_action["weapon"]]["Properties"]:  # double charge def but reduce dodge
+        if self.current_action["weapon"] in self.equipped_charge_block_weapon:  # double charge def but reduce dodge
             self.charge_def_power *= 2
             self.melee_dodge /= 2
             self.range_dodge /= 2

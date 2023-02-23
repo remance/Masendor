@@ -1,13 +1,13 @@
-import random
+from random import randint
 
 combat_side_cal = (1, 0.3, 0.3, 0)  # for range side that hit target modifier
 
 
 def cal_range_hit(self, attacker, target, target_side, hit_angle):
     """Calculate range attack hit chance and defence chance, side_percent is more punishing than melee attack"""
-    attacker_luck = random.randint(-20, 20)  # luck of the attacker subunit
-    target_def_luck = random.randint(-20, 20)  # luck of the defender subunit
-    target_dodge_luck = random.randint(-30, 30)  # luck of the defender subunit
+    attacker_luck = randint(-20, 20)  # luck of the attacker subunit
+    target_def_luck = randint(-20, 20)  # luck of the defender subunit
+    target_dodge_luck = randint(-30, 30)  # luck of the defender subunit
 
     attacker_hit = self.accuracy + attacker_luck + (attacker.height - target.height) / 2  # calculate hit chance with height advantage
     if attacker_hit < 0:
@@ -20,7 +20,7 @@ def cal_range_hit(self, attacker, target, target_side, hit_angle):
 
     hit_chance = attacker_hit - target_dodge
 
-    if hit_chance > 100 or hit_chance > random.randint(0, 100):  # not miss, now cal def and dmg
+    if hit_chance > 100 or hit_chance > randint(0, 100):  # not miss, now cal def and dmg
         if target.check_special_effect("All Side Full Defence"):
             hit_side_mod = 1  # no side penalty for all round defend
 
@@ -36,3 +36,5 @@ def cal_range_hit(self, attacker, target, target_side, hit_angle):
             self.cal_dmg(attacker, target, attacker_hit, target_def, self.weapon)
 
         self.attacker.cal_loss(target, attacker_dmg, impact, attacker_morale_dmg, element_effect, hit_angle)
+
+        target.take_range_dmg = 3

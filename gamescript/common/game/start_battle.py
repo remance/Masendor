@@ -10,10 +10,10 @@ def start_battle(self, char_selected=None):
     start_char_selected = char_selected
     if self.enactment:
         start_char_selected = None
-    self.battle_game.prepare_new_game(self.ruleset, self.ruleset_folder, self.team_selected,
-                                      self.map_selected, self.map_source, start_char_selected,
-                                      self.map_data[self.map_title.name])
-    self.battle_game.run_game()
+    self.battle.prepare_new_game(self.ruleset, self.ruleset_folder, self.team_selected,
+                                 self.map_selected, self.map_source, start_char_selected,
+                                 self.map_data[self.map_title.name])
+    self.battle.run_game()
     pygame.mixer.music.unload()
     pygame.mixer.music.set_endevent(self.SONG_END)
     pygame.mixer.music.load(self.music_list[0])

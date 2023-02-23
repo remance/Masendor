@@ -13,22 +13,24 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                 if self.battle.player_char_input_delay == 0 and not self.current_action:  # for input that need to have time delay to work properly
                     if key_state[pygame.K_1] and self.equipped_weapon != 0:  # Swap to primary weapon
                         self.swap_weapon(0)
+                        self.battle.player_char_input_delay = 1
                     elif key_state[pygame.K_2] and self.equipped_weapon != 1:  # Swap to secondary weapon
                         self.swap_weapon(1)
-                    # elif key_state[pygame.K_1]:  # Use troop weapon skill 1
-                    #     self.issue_order(cursor_pos, other_command="Troop Weapon Skill 0")
-                    # elif key_state[pygame.K_2]:  # Use troop weapon skill 2
-                    #     self.issue_order(cursor_pos, other_command="Troop Weapon Skill 1")
-                    if key_state[pygame.K_q]:  # Use main weapon skill
+                        self.battle.player_char_input_delay = 1
+                    elif key_state[pygame.K_q]:  # Use input skill 1
                         self.command_action = self.skill_command_action_0
-                    elif key_state[pygame.K_e]:  # Use sub weapon skill
+                        self.battle.player_char_input_delay = 1
+                    elif key_state[pygame.K_e]:  # Use input skill 2
                         self.command_action = self.skill_command_action_1
-                    elif key_state[pygame.K_r]:  # Use main weapon skill
+                        self.battle.player_char_input_delay = 1
+                    elif key_state[pygame.K_r]:  # Use input skill 3
                         self.command_action = self.skill_command_action_2
-                    elif key_state[pygame.K_t]:  # Use sub weapon skill
+                        self.battle.player_char_input_delay = 1
+                    elif key_state[pygame.K_t]:  # Use input skill 4
                         self.command_action = self.skill_command_action_3
+                        self.battle.player_char_input_delay = 1
 
-                if not self.current_action or "movable" in self.current_action or self.hold_timer == 1:
+                if not self.current_action or "movable" in self.current_action:
                     speed = self.walk_speed
                     if key_state[pygame.K_LSHIFT]:
                         speed = self.run_speed
@@ -97,6 +99,7 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                     if mouse_right_up:
                         action_num = 1
                     if "hold" in self.current_action:  # release holding
+                        self.release_timer = self.hold_timer
                         if "melee attack" in self.current_action:
                             self.current_action = self.melee_attack_command_action[action_num]
                         elif "range attack" in self.current_action:
@@ -117,9 +120,9 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                             if "range attack" not in self.current_action:  # start move shooting
                                 self.interrupt_animation = True
                                 if "walk" in self.current_action:
-                                    self.command_action = self.walk_shoot_command_action[action_num]
+                                    self.command_action = self.range_walk_command_action[action_num]
                                 elif "run" in self.current_action:
-                                    self.command_action = self.run_shoot_command_action[action_num]
+                                    self.command_action = self.range_run_command_action[action_num]
                                 self.attack_pos = cursor_pos
                                 self.move_speed = speed
                             else:  # already move shooting, update pos
@@ -150,6 +153,7 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                         action_num = 1
 
                     if "hold" in self.current_action:  # release holding
+                        self.release_timer = self.hold_timer
                         if "melee attack" in self.current_action:
                             self.current_action = self.melee_attack_command_action[action_num]
                         elif "range attack" in self.current_action:

@@ -64,8 +64,22 @@ frame_property_list = ["hold", "p1_fix_main_weapon", "p1_fix_sub_weapon", "p2_fi
                        "effect_contrast_", "effect_brightness_",
                        "effect_fade_", "effect_grey", "effect_colour_"]  # starting property list
 
-anim_property_list = ["dmgsprite", "interuptrevert", "norestart"] + frame_property_list
+anim_property_list = ["interuptrevert", "norestart"] + frame_property_list
 
+
+"""Property explanation:
+
+hold: Frame or entire animation can be played until release from holding input
+p(number)_fix_main_weapon or p(number)_fix_sub_weapon: Use center point instead weapon joint position and place them
+at the specified position instead of automatically at user's hand (main = right hand, sub = left hand) or back for sheath
+play_time_mod_: Value of play time modification, higher mean longer play time
+effect_blur_: Put blur effect on entire frame based on the input value
+effect_contrast_: Put colour contrast effect on entire frame based on the input value
+effect_brightness_: Change brightness of entire frame based on the input value
+effect_fade_: Put fade effect on entire frame based on the input value
+effect_grey: Put greyscale effect on entire frame
+effect_colour_: Colourise entire frame based on the input value
+"""
 
 # TODO: unique (add race/type animation with separate folder instead of generic), lock?,
 
@@ -1296,7 +1310,7 @@ class Model:
                 if "_weapon" in part_index:
                     if self.animation_part_list[edit_frame][part_index] is not None and \
                             len(self.animation_part_list[edit_frame][part_index]) > 3 and \
-                            self.part_name_list[edit_frame][part_index][-1] != "sheath":
+                            "sheath" not in self.part_name_list[edit_frame][part_index][-1]:
                         hand = "r_"
                         if "sub" in part_index:
                             hand = "l_"
@@ -1305,15 +1319,18 @@ class Model:
                                 len(self.animation_part_list[edit_frame][hand_part]) > 3:  # hand exist
                             hand_pos = self.animation_part_list[edit_frame][hand_part][2]
                             part_image = self.animation_part_list[edit_frame][part_index][0]
-                            center = pygame.Vector2(part_image.get_width() / 2, part_image.get_height() / 2)
-                            pos_different = center - weapon_joint_list[
-                                  self.weapon[part_index]]  # find distance between image center and connect point main_joint_pos
-                            target = hand_pos + pos_different
-                            if self.animation_part_list[edit_frame][part_index][3] != 0:
-                                radians_angle = math.radians(360 - self.animation_part_list[edit_frame][part_index][3])
-                                target = rotation_xy(hand_pos, target, radians_angle)  # find new point with rotation
+                            if part_image is not None:
+                                center = pygame.Vector2(part_image.get_width() / 2, part_image.get_height() / 2)
+                                if weapon_joint_list[self.weapon[part_index]] != "center":
+                                    pos_different = center - weapon_joint_list[self.weapon[part_index]]  # find distance between image center and connect point main_joint_pos
+                                    target = hand_pos + pos_different
+                                else:
+                                    target = hand_pos
+                                if self.animation_part_list[edit_frame][part_index][3] != 0:
+                                    radians_angle = math.radians(360 - self.animation_part_list[edit_frame][part_index][3])
+                                    target = rotation_xy(hand_pos, target, radians_angle)  # find new point with rotation
 
-                            self.animation_part_list[edit_frame][part_index][2] = target
+                                self.animation_part_list[edit_frame][part_index][2] = target
 
         elif self.part_selected:
             if edit_type == "place":  # find center point of all selected parts

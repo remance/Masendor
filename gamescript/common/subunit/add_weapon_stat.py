@@ -1,6 +1,12 @@
 def add_weapon_stat(self):
     self.melee_weapon_set = {0: 0, 1: 0}
     self.range_weapon_set = {0: 0, 1: 0}
+    self.power_weapon = {0: [], 1: []}
+    self.block_weapon = {0: [], 1: []}
+    self.charge_block_weapon = {0: [], 1: []}
+    self.timing_weapon = {0: [], 1: []}
+    self.timing_start_weapon = {0: [], 1: []}
+    self.timing_end_weapon = {0: [], 1: []}
     self.weapon_type = {0: ["melee", "melee"], 1: ["melee", "melee"]}
     for set_index, weapon_set in enumerate(self.weapon_set):
         for weapon_index, weapon in enumerate(weapon_set):
@@ -56,6 +62,31 @@ def add_weapon_stat(self):
                 self.original_weapon_speed[set_index][weapon_index] = 0
             self.weapon_weight[set_index][weapon_index] = weapon_stat["Weight"]
             self.weight += weapon_stat["Weight"]
+
+            if "hold" in weapon_stat["Properties"]:  # weapon with holding that has special properties
+                if "power" in weapon_stat["Properties"]:
+                    self.power_weapon[set_index].append(weapon_index)
+                if "chargeblock" in weapon_stat["Properties"]:
+                    self.charge_block_weapon[set_index].append(weapon_index)
+                if "block" in weapon_stat["Properties"]:
+                    self.block_weapon[set_index].append(weapon_index)
+                if any("timing" in ext for ext in weapon_stat["Properties"]):
+                    for prop in weapon_stat["Properties"]:
+                        if "timing" in prop:
+                            self.timing_weapon[set_index].append(weapon_index)
+                            self.timing_start_weapon[set_index].append(int(prop.split("_")[1]))
+                            self.timing_end_weapon[set_index].append(int(prop.split("_")[2]))
+                            break
+                else:  # add 0 to make index match with timing weapon set
+                    self.timing_start_weapon[set_index].append(0)
+                    self.timing_end_weapon[set_index].append(0)
+
+    self.power_weapon = {0: tuple(self.power_weapon[0]), 1: tuple(self.power_weapon[1])}
+    self.block_weapon = {0: tuple(self.block_weapon[0]), 1: tuple(self.block_weapon[1])}
+    self.charge_block_weapon = {0: tuple(self.charge_block_weapon[0]), 1: tuple(self.charge_block_weapon[1])}
+    self.timing_weapon = {0: tuple(self.timing_weapon[0]), 1: tuple(self.timing_weapon[1])}
+    self.timing_start_weapon = {0: tuple(self.timing_start_weapon[0]), 1: tuple(self.timing_start_weapon[1])}
+    self.timing_end_weapon = {0: tuple(self.timing_end_weapon[0]), 1: tuple(self.timing_end_weapon[1])}
 
     for key in self.trait["Weapon"]:
         for weapon in self.trait["Weapon"][key]:

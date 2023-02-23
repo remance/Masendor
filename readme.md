@@ -164,6 +164,7 @@ historical information to players.
 - Musket shot "aaronsiler_musket 3", "aaronsiler_musket 4" by aaronsiler (https://freesound.org/people/aaronsiler/)
 - Assorted weapon sound from Videvo (https://www.videvo.net/)
 - Cannon sound "canon" from man (https://freesound.org/people/man/)
+- Cannonball sound effect "Real Cannonballs Flying By (Restored Audio)" from John Camara (https://www.youtube.com/watch?v=maVSnWIXGE8)
 - Bullet sound "Bullet passbys" from Audionautics (https://freesound.org/people/Audionautics/)
 - Heavy rain weather ambient sound "Heavy Rain", weapon sound "Wooshes" by lebaston100 (https://freesound.org/people/lebaston100/)
 - Heavy Weapon swing by "Swinging staff whoosh (strong) 08" Nightflame (https://freesound.org/people/Nightflame/)
@@ -200,15 +201,15 @@ Mohács
 
 **0.6.4:** skill perform system, skill placement for both player and AI, AOE attack and after impact effect, ground effect like smoke,
 
-**0.6.5 - 0.6.7:** Leader command, hidden stat, line of sight, start working on Battle of Mohács, Minor battle: 764 Irish
-abbey war
+**0.6.5 - 0.6.7:** Leader command, hidden stat, stat effect battle ui, line of sight, start working on Battle of Mohács
 
 **0.6.8 and 0.6.9:** random map generator and custom battle
 
-**Ver 0.7 Future Visionary:**  batte information based on hidden vs sight, raise flag/ light torch, ambush bonus,
-day-night, Battle of Walaja, Battle of Dorylaeum
+**Ver 0.7 Future Visionary:**  battle information based on hidden vs sight, march sound system, raise flag/ light torch, ambush bonus, 
+Battle of Walaja, Battle of Dorylaeum
 
-**0.7.8 and 0.7.9:** Leader command, console stick, control key binding
+**0.7.8 and 0.7.9:** Leader command, console stick, control key binding, Minor battle: 764 Irish
+abbey war
 
 **Ver 0.8 Authentic Attraction:** In-game art, custom troop editor, better-looking UI, add intro screen, Battle of Isandlwana, Battle of Hwangsanbeol
 

@@ -1,9 +1,0 @@
-"ID","Name","Area Of Effect","Duration","Physical Damage","Fire Damage","Poison Damage","Armour Penetration","Impact","Spreadable","After Attack Effect","Damage Sprite","Damage Sprite Effect","Damage Impact Effect","Sound Effect","Sound Distance","Properties"
-1,"Small Explosion",20,0,100,50,0,500,20,"FALSE","Small Smoke",,,,,70,
-2,"Medium Explosion",60,0,150,80,0,1000,50,"FALSE","Medium Smoke",,,,,120,
-3,"Large Explosion",100,0,250,150,0,2000,100,"FALSE","Large Smoke",,,,,200,
-4,"Huge Explosion",200,0,1000,400,0,10000,250,"FALSE","Huge Smoke",,,,,400,
-5,"Small Fire",,10,0,20,0,60,5,"TRUE","Small Smoke",,,,,20,
-6,"Medium Fire",,30,0,60,0,13,10,"TRUE","Medium Smoke",,,,,30,
-7,"Large Fire",,100,0,80,0,35,20,"TRUE","Large Smoke",,,,,45,
-8,"Huge Fire",,300,0,100,0,50,45,"TRUE","Huge Smoke",,,,,70,

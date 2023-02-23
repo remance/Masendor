@@ -157,7 +157,7 @@ class HeroUI(pygame.sprite.Sprite):
             self.image.blit(self.stamina_bar, self.stamina_bar_rect)
 
         weapon_filter_change = False
-        if (who.hold_timer == 1 or who.charging) and True not in self.weapon_holding:
+        if (who.hold_timer > 1 or who.charging) and True not in self.weapon_holding:
             self.weapon_holding[who.current_action["weapon"]] = True
             weapon_filter_change = True
         elif (who.hold_timer == 0 and not who.charging) and True in self.weapon_holding:

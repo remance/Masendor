@@ -1,13 +1,14 @@
 import datetime
 import glob
 import os
-import random
 import sys
 
 import pygame
 import pygame.freetype
-from gamescript import camera, weather, battleui, menu, subunit, datasprite, damagesprite
+from gamescript import camera, weather, battleui, menu, subunit, datasprite, damagesprite, effectsprite
 from gamescript.common import utility
+
+from random import randint
 
 direction_list = datasprite.direction_list
 
@@ -68,7 +69,7 @@ class Battle:
 
     start_camera_mode = "Follow"
 
-    def __init__(self, main, window_style):
+    def __init__(self, main):
         self.player_char = None  # player subunit for genre that allow player to directly control only one subunit
         self.main = main
 
@@ -253,14 +254,14 @@ class Battle:
         self.active_subunit_list = []  # list of all subunit alive in battle, need to be in list for collision check
         self.visible_subunit_list = {}  # list of subunit visible to the team
 
-        self.best_depth = pygame.display.mode_ok(self.screen_rect.size, window_style, 32)  # Set the display mode
-        self.screen = pygame.display.set_mode(self.screen_rect.size, window_style | pygame.RESIZABLE,
+        self.best_depth = pygame.display.mode_ok(self.screen_rect.size, self.main.window_style, 32)  # Set the display mode
+        self.screen = pygame.display.set_mode(self.screen_rect.size, self.main.window_style | pygame.RESIZABLE,
                                               self.best_depth)  # set up self screen
 
         # Assign battle variable to some classes
-        subunit.Subunit.battle = self
         subunit.Subunit.sound_effect_pool = self.sound_effect_pool
         damagesprite.DamageSprite.sound_effect_pool = self.sound_effect_pool
+        effectsprite.EffectSprite.sound_effect_pool = self.sound_effect_pool
 
         # Create the game camera
         self.camera_mode = "Follow"  # mode of game camera
@@ -363,7 +364,7 @@ class Battle:
                                  ("data", "ruleset", self.ruleset_folder, "map", self.map_selected, self.map_source),
                                  header_key=True)
             battleui.EventLog.map_event = map_event
-        except Exception:  # can't find any event file
+        except FileNotFoundError:  # can't find any event file
             map_event = {}  # create empty list
 
         self.event_log.make_new_log()  # reset old event log
@@ -386,9 +387,9 @@ class Battle:
         self.battle_map_feature.draw_image(images["feature"])
         self.battle_map_height.draw_image(images["height"])
 
-        try:  # place_name map layer is optional, if not existed in folder then assign None
+        if "place_name" in images:  # place_name map layer is optional, if not existed in folder then assign None
             place_name_map = images["place_name"]
-        except Exception:
+        else:
             place_name_map = None
         self.battle_map.draw_image(self.battle_map_base, self.battle_map_feature, place_name_map, self)
 
@@ -444,7 +445,6 @@ class Battle:
         self.ui_dt = 0  # Realtime used for ui timer
         self.weather_spawn_timer = 0
         self.click_any = False  # For checking if mouse click on anything, if not close ui related to unit
-        self.new_unit_click = False  # For checking if another subunit is clicked when inspect ui open
 
         self.player_input_state = None
         self.previous_player_input_state = None
@@ -498,7 +498,7 @@ class Battle:
 
                 elif event.type == self.SONG_END:  # change music track
                     pygame.mixer.music.unload()
-                    self.picked_music = random.randint(0, len(self.playing_music) - 1)
+                    self.picked_music = randint(0, len(self.playing_music) - 1)
                     pygame.mixer.music.load(self.music_list[self.playing_music[self.picked_music]])
                     pygame.mixer.music.play(fade_ms=100)
 
@@ -508,7 +508,6 @@ class Battle:
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:  # left click
                         mouse_left_up = True
-                        self.new_unit_click = False
                     elif event.button == 3:  # Right Click
                         mouse_right_up = True
                     elif event.button == 4:  # Mouse scroll up
@@ -635,7 +634,7 @@ class Battle:
                                 self.music_event:
                             pygame.mixer.music.unload()
                             self.playing_music = self.music_event[0].copy()
-                            self.picked_music = random.randint(0, len(self.playing_music) - 1)
+                            self.picked_music = randint(0, len(self.playing_music) - 1)
                             pygame.mixer.music.load(self.music_list[self.playing_music[self.picked_music]])
                             pygame.mixer.music.play(fade_ms=100)
                             self.music_schedule = self.music_schedule[1:]

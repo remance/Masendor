@@ -17,12 +17,16 @@ def attack(self, attack_type):
     elif self.attack_pos:
         base_target = self.attack_pos
 
-    if attack_type == "range":
-        if base_target:
+    if base_target:
+        if attack_type == "range":
             max_range = self.shoot_range[weapon]
 
             accuracy = self.accuracy
             sight_penalty = 1
+            if self.current_action["weapon"] in self.equipped_timing_weapon and \
+                self.equipped_timing_start_weapon[weapon] < self.release_timer < self.equipped_timing_end_weapon[weapon]:
+                # release in timing bonus time, get accuracy boost
+                accuracy *= 1.5
 
             if self.move:
                 accuracy -= 10  # accuracy penalty for shoot while moving
@@ -84,7 +88,12 @@ def attack(self, attack_type):
                                           self.weapon_penetrate[self.equipped_weapon][weapon], equipped_weapon_data,
                                           attack_type, base_target, accuracy=accuracy, arc_shot=arc_shot)
 
-            self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
+            try:
+                self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
+            except:
+                print(self.name, self.equipped_weapon, weapon, self.ammo_now)
+                print(self.current_action, self.command_action)
+                asdasd
             if self.ammo_now[self.equipped_weapon][weapon] == 0 and \
                     self.magazine_count[self.equipped_weapon][weapon] == 0:
                 self.ammo_now[self.equipped_weapon].pop(weapon)  # remove weapon with no ammo
@@ -94,27 +103,34 @@ def attack(self, attack_type):
                     self.magazine_count.pop(self.equipped_weapon)
                     self.range_weapon_set.remove(self.equipped_weapon)
 
-    elif attack_type == "charge":
-        damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
-                                  self.weapon_penetrate[self.equipped_weapon][weapon],
-                                  equipped_weapon_data, "charge", self.base_pos)
+        elif attack_type == "charge":
+            damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
+                                      self.weapon_penetrate[self.equipped_weapon][weapon],
+                                      equipped_weapon_data, "charge", self.base_pos, accuracy=self.melee_attack)
 
-    else:  # melee attack
-        if self.front_pos.distance_to(base_target) > self.melee_range[weapon]:  # target exceed weapon range, use max
-            base_angle = self.set_rotate(base_target)
-            base_target = pygame.Vector2(self.front_pos[0] - (self.melee_range[weapon] *
-                                                              math.sin(math.radians(base_angle))),
-                                         self.front_pos[1] - (self.melee_range[weapon] *
-                                                              math.cos(math.radians(base_angle))))
-        damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
-                                  self.weapon_penetrate[self.equipped_weapon][weapon],
-                                  equipped_weapon_data, attack_type, base_target)
+        else:  # melee attack
+            accuracy = self.melee_attack
+            if self.current_action["weapon"] in self.equipped_timing_weapon and \
+                self.equipped_timing_start_weapon[weapon] < self.release_timer < self.equipped_timing_end_weapon[weapon]:
+                # release in timing bonus time, get accuracy boost
+                accuracy *= 1.5
 
-        self.weapon_cooldown[weapon] = 0  # melee weapon use cooldown for attack
+            if self.front_pos.distance_to(base_target) > self.melee_range[weapon]:  # target exceed weapon range, use max
+                base_angle = self.set_rotate(base_target)
+                base_target = pygame.Vector2(self.front_pos[0] - (self.melee_range[weapon] *
+                                                                  math.sin(math.radians(base_angle))),
+                                             self.front_pos[1] - (self.melee_range[weapon] *
+                                                                  math.cos(math.radians(base_angle))))
+            damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
+                                      self.weapon_penetrate[self.equipped_weapon][weapon],
+                                      equipped_weapon_data, attack_type, base_target, accuracy=accuracy)
 
-    self.stamina -= self.weapon_weight[self.equipped_weapon][weapon]
+            self.weapon_cooldown[weapon] = 0  # melee weapon use cooldown for attack
 
-    if equipped_weapon_data["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
-        self.battle.add_sound_effect_queue(equipped_weapon_data["Sound Effect"], self.base_pos,
-                                           equipped_weapon_data["Sound Distance"],
-                                           equipped_weapon_data["Shake Power"])
+        self.stamina -= self.weapon_weight[self.equipped_weapon][weapon]
+        self.release_timer = 0  # reset release timer after attack
+
+        if equipped_weapon_data["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
+            self.battle.add_sound_effect_queue(random.choice(self.sound_effect_pool[equipped_weapon_data["Sound Effect"]]),
+                                               self.base_pos, equipped_weapon_data["Sound Distance"],
+                                               equipped_weapon_data["Shake Power"])

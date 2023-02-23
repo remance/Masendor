@@ -17,14 +17,13 @@ def cal_loss(self, target, final_dmg, impact, final_morale_dmg, element_effect, 
     if final_dmg > target.health:  # dmg cannot be higher than remaining health
         final_dmg = target.health
 
-    impact_check = final_dmg + impact # - target.troop_mass
-
+    impact_check = final_dmg + impact - target.troop_mass
     if impact_check > target.max_health50:
         target.interrupt_animation = True
         target.command_action = self.knockdown_command_action
         target.move_speed = impact_check
-        target.forced_target = pygame.Vector2(target.base_pos[0] - (impact * math.sin(math.radians(hit_angle))),
-                                              target.base_pos[1] - (impact * math.cos(math.radians(hit_angle))))
+        target.forced_target = pygame.Vector2(target.base_pos[0] - (impact_check * math.sin(math.radians(hit_angle))),
+                                              target.base_pos[1] - (impact_check * math.cos(math.radians(hit_angle))))
 
     elif impact_check > target.max_health20:
         target.interrupt_animation = True

@@ -61,10 +61,10 @@ melee_hold_command_action = ({"name": "Action 0", "melee attack": True, "hold": 
 range_hold_command_action = ({"name": "Action 0", "range attack": True, "hold": True, "weapon": 0},
                              {"name": "Action 1", "range attack": True, "hold": True, "weapon": 1})
 
-walk_shoot_command_action = ({"name": "Action 0", "range attack": True, "walk": True, "movable": True, "weapon": 0},
+range_walk_command_action = ({"name": "Action 0", "range attack": True, "walk": True, "movable": True, "weapon": 0},
                              {"name": "Action 1", "range attack": True, "walk": True, "movable": True, "weapon": 1})
 
-run_shoot_command_action = ({"name": "Action 0", "range attack": True, "run": True, "movable": True, "weapon": 0},
+range_run_command_action = ({"name": "Action 0", "range attack": True, "run": True, "movable": True, "weapon": 0},
                             {"name": "Action 1", "range attack": True, "run": True, "movable": True, "weapon": 1})
 
 charge_command_action = ({"name": "Charge 0", "movable": True, "repeat": True,
@@ -126,6 +126,7 @@ class Subunit(pygame.sprite.Sprite):
     change_formation = empty_method
     check_element_effect = empty_method
     check_element_threshold = empty_method
+    check_skill_usage = empty_method
     check_special_effect = empty_method
     check_weapon_cooldown = empty_method
     create_subunit_sprite = empty_method
@@ -142,8 +143,8 @@ class Subunit(pygame.sprite.Sprite):
     play_animation = empty_method
     process_trait_skill = empty_method
     rotate_logic = empty_method
+    skill_command_input = empty_method
     status_update = empty_method
-    skill_check_logic = empty_method
     swap_weapon = empty_method
     troop_loss = empty_method
     use_skill = empty_method
@@ -175,8 +176,8 @@ class Subunit(pygame.sprite.Sprite):
     melee_hold_command_action = melee_hold_command_action
     range_hold_command_action = range_hold_command_action
 
-    walk_shoot_command_action = walk_shoot_command_action
-    run_shoot_command_action = run_shoot_command_action
+    range_walk_command_action = range_walk_command_action
+    range_run_command_action = range_run_command_action
 
     charge_command_action = charge_command_action
 
@@ -300,7 +301,8 @@ class Subunit(pygame.sprite.Sprite):
 
         self.countup_timer = 0  # timer that count up to specific threshold to start event like charge attack timing
         self.countup_trigger_time = 0  # time that indicate when trigger happen
-        self.hold_timer = 0
+        self.hold_timer = 0  # how long animation holding so far
+        self.release_timer = 0  # time when hold release
 
         self.attack_pos = None
         self.alive = True
@@ -311,6 +313,9 @@ class Subunit(pygame.sprite.Sprite):
         self.melee_distance_zone = 1
         self.default_sprite_size = 1
         self.manual_shoot = False
+        self.take_melee_dmg = 0
+        self.take_range_dmg = 0
+        self.take_aoe_dmg = 0
 
         self.terrain = 0
         self.feature = 0
@@ -560,6 +565,18 @@ class Subunit(pygame.sprite.Sprite):
         self.secondary_sub_weapon = stat["Secondary Sub Weapon"]
         self.melee_weapon_set = {}
         self.range_weapon_set = {}
+        self.power_weapon = {}
+        self.block_weapon = {}
+        self.charge_block_weapon = {}
+        self.timing_weapon = {}
+        self.timing_start_weapon = {}
+        self.timing_end_weapon = {}
+        self.equipped_power_weapon = ()
+        self.equipped_block_weapon = ()
+        self.equipped_charge_block_weapon = ()
+        self.equipped_timing_weapon = ()
+        self.equipped_timing_start_weapon = {}
+        self.equipped_timing_end_weapon = {}
         self.weapon_type = {}
         self.weapon_set = ((self.primary_main_weapon, self.primary_sub_weapon),
                            (self.secondary_main_weapon, self.secondary_sub_weapon))
@@ -577,7 +594,7 @@ class Subunit(pygame.sprite.Sprite):
                              self.troop_data.weapon_list[self.secondary_sub_weapon[0]]["Name"]))
 
         self.mount_gear = stat["Mount"]
-        self.mount = self.troop_data.mount_list[self.mount_gear[0]]  # mount this subunit use
+        self.mount = self.troop_data.mount_list[self.mount_gear[0]]  # stat of mount this subunit use
         self.mount_race_name = self.troop_data.race_list[self.mount["Race"]]["Name"]
         self.mount_grade = self.troop_data.mount_grade_list[self.mount_gear[1]]
         self.mount_armour = self.troop_data.mount_armour_list[self.mount_gear[2]]
@@ -594,6 +611,7 @@ class Subunit(pygame.sprite.Sprite):
             self.add_mount_stat()
 
         self.troop_mass = self.troop_size
+
         self.command_buff = 1
         self.leader_social_buff = 0
         self.authority = 0
@@ -824,6 +842,19 @@ class Subunit(pygame.sprite.Sprite):
                     if self.in_melee_combat_timer < 0:
                         self.in_melee_combat_timer = 0
 
+                if self.take_melee_dmg > 0:
+                    self.take_melee_dmg -= dt
+                    if self.take_melee_dmg < 0:
+                        self.take_melee_dmg = 0
+                if self.take_range_dmg > 0:
+                    self.take_range_dmg -= dt
+                    if self.take_range_dmg < 0:
+                        self.take_range_dmg = 0
+                if self.take_aoe_dmg > 0:
+                    self.take_aoe_dmg -= dt
+                    if self.take_aoe_dmg < 0:
+                        self.take_aoe_dmg = 0
+
                 if self.timer > 1:  # Update status and skill use around every 1 second
                     self.status_update()
 
@@ -847,14 +878,14 @@ class Subunit(pygame.sprite.Sprite):
                 self.taking_damage_angle = None
 
                 if not self.player_manual_control:
-                    if self.not_broken and "uncontrollable" not in self.current_action and \
-                            "uncontrollable" not in self.command_action:
-                        self.ai_move()
-                        self.ai_combat()
+                    if self.not_broken:
+                        if "uncontrollable" not in self.current_action and "uncontrollable" not in self.command_action:
+                            self.ai_move()
+                            self.ai_combat()
                     else:
                         self.ai_retreat()
 
-                self.skill_check_logic()
+                self.check_skill_usage()
 
                 if self.angle != self.new_angle:  # Rotate Function
                     self.rotate_logic(dt)
@@ -886,10 +917,7 @@ class Subunit(pygame.sprite.Sprite):
                         "hold" in self.current_animation[self.show_frame]["frame_property"] and \
                         "hold" in self.action_list[self.current_action["weapon"]]["Properties"]:
                     hold_check = True
-                    if self.hold_timer < 1:
-                        self.hold_timer += dt
-                        if self.hold_timer > 1:
-                            self.hold_timer = 1
+                    self.hold_timer += dt
                 elif self.hold_timer > 0:  # no longer holding, reset timer
                     self.hold_timer = 0
 
@@ -930,7 +958,10 @@ class Subunit(pygame.sprite.Sprite):
                         self.current_action = self.command_action  # continue next action when animation finish
                         self.command_action = self.idle_action
 
-                    self.interrupt_animation = False
+                    if self.interrupt_animation:
+                        self.interrupt_animation = False
+                        self.release_timer = 0  # reset any release timer
+
                     self.top_interrupt_animation = False
 
                     self.show_frame = 0

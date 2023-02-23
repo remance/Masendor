@@ -1,4 +1,4 @@
-import random
+from random import getrandbits
 
 from gamescript.common.damagesprite import cal_melee_hit
 
@@ -36,7 +36,7 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
             hit_chance = 200
 
     combat_score = round(hit_chance / 100, 1)
-    if combat_score == 0 and random.randint(0, 10) > 5:  # chance to scrape instead of miss
+    if combat_score == 0 and not not getrandbits(1):  # 50/50 chance to scrape instead of no damage
         combat_score = 0.1
 
     impact = self.knock_power * combat_score
@@ -61,7 +61,7 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
                         attacker.momentum -= (target.charge_def_power * side_cal) / attacker.charge_power
                         if attacker.momentum < 0:
                             attacker.momentum = 0
-                        impact *= 1.5
+                        impact *= 2
                 else:
                     troop_dmg += attacker.charge_power * 2
             else:

@@ -239,6 +239,7 @@ class TroopData:
                                            tuple_column=tuple_column, int_column=int_column, true_empty=True)
                     self.weapon_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
                     self.weapon_list[row[0]]["Shake Power"] = int(self.weapon_list[row[0]]["Sound Distance"] / 10)
+                    self.weapon_list[row[0]]["Bullet Shake Power"] = int(self.weapon_list[row[0]]["Bullet Sound Distance"] / 10)
             edit_file.close()
 
         self.weapon_lore = {}
@@ -500,6 +501,7 @@ class LeaderData:
                 self.commander_skill_list[row[0]] = {header[index + 1]: stuff for index, stuff in
                                                      enumerate(row[1:])}
                 self.commander_skill_list[row[0]]["Shake Power"] = int(self.commander_skill_list[row[0]]["Sound Distance"] / 10)
+
         edit_file.close()
 
         self.commander_skill_lore = {}

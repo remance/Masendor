@@ -554,7 +554,7 @@ class Game:
         self.encyclopedia_stuff = (self.encyclopedia, self.lore_name_list, self.filter_tag_list,
                                    self.lore_name_list.scroll, self.filter_tag_list.scroll, *self.lore_button_ui)
 
-        self.battle_game = battle.Battle(self, self.window_style)
+        self.battle = battle.Battle(self)
 
         self.ui_updater.add(self.command_ui)
 
@@ -565,7 +565,9 @@ class Game:
                                                             "default.png", ("ui", "mainmenu_ui")),
                                                  self.screen_rect.size)
 
-        subunit.Subunit.battle = self.battle_game
+        subunit.Subunit.battle = self.battle
+        damagesprite.DamageSprite.battle = self.battle
+        effectsprite.EffectSprite.battle = self.battle
 
         # Starting script
         self.main_ui_updater.remove(*self.menu_button)  # remove all button from drawing
@@ -591,13 +593,13 @@ class Game:
 
         self.battle_map_data = datamap.BattleMapData(self.main_dir, self.screen_scale, self.ruleset, self.language)
 
-        self.battle_game.battle_map_data = self.battle_map_data
-        self.battle_game.weather_data = self.battle_map_data.weather_data
-        self.battle_game.weather_matter_images = self.battle_map_data.weather_matter_images
-        self.battle_game.weather_effect_images = self.battle_map_data.weather_effect_images
-        self.battle_game.day_effect_images = self.battle_map_data.day_effect_images
-        self.battle_game.weather_list = self.battle_map_data.weather_list
-        self.battle_game.feature_mod = self.battle_map_data.feature_mod
+        self.battle.battle_map_data = self.battle_map_data
+        self.battle.weather_data = self.battle_map_data.weather_data
+        self.battle.weather_matter_images = self.battle_map_data.weather_matter_images
+        self.battle.weather_effect_images = self.battle_map_data.weather_effect_images
+        self.battle.day_effect_images = self.battle_map_data.day_effect_images
+        self.battle.weather_list = self.battle_map_data.weather_list
+        self.battle.feature_mod = self.battle_map_data.feature_mod
 
         subunit.Subunit.troop_data = self.troop_data
         subunit.Subunit.leader_data = self.leader_data

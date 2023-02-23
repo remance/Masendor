@@ -13,7 +13,7 @@ def change_sound_volume(self):
 
     pygame.mixer.music.set_volume(self.play_music_volume)  # set new music player volume
 
-    self.battle_game.master_volume = self.master_volume
-    self.battle_game.play_music_volume = self.play_music_volume
-    self.battle_game.play_effect_volume = self.play_effect_volume
-    self.battle_game.play_voice_volume = self.play_voice_volume
+    self.battle.master_volume = self.master_volume
+    self.battle.play_music_volume = self.play_music_volume
+    self.battle.play_effect_volume = self.play_effect_volume
+    self.battle.play_voice_volume = self.play_voice_volume

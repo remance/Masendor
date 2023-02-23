@@ -23,6 +23,7 @@ class DamageSprite(pygame.sprite.Sprite):
     screen_scale = (1, 1)
     sound_effect_pool = None
     height_map = None
+    battle = None
 
     set_rotate = utility.set_rotate
 
@@ -45,12 +46,11 @@ class DamageSprite(pygame.sprite.Sprite):
 
     def __init__(self, attacker, weapon, dmg, penetrate, weapon_stat,
                  attack_type, base_target, accuracy=None, arc_shot=False, height_ignore=False, degrade_when_travel=True,
-                 degrade_when_hit=True, random_direction=False, random_move=False,  mpact_effect=None):
+                 degrade_when_hit=True, random_direction=False, random_move=False, reach_effect=None):
         self._layer = 10000001
         pygame.sprite.Sprite.__init__(self, self.containers)
 
         self.attacker = attacker  # subunit that perform the attack
-        self.battle = self.attacker.battle
         self.weapon = weapon  # weapon that use to perform the attack
         self.accuracy = accuracy
         self.height = self.attacker.height
@@ -73,12 +73,20 @@ class DamageSprite(pygame.sprite.Sprite):
         self.timer = 0
         self.show_frame = 0
         self.current_animation = {}
+        self.sound_effect_name = None
+        self.sound_timer = 0
+        self.sound_duration = 0
         self.repeat_animation = False
         self.sprite_direction = ""
         self.attacker_sprite_direction = self.attacker.sprite_direction
         self.already_hit = []  # list of subunit already got hit by sprite for sprite with no duration
 
         self.dmg = {key: random.uniform(value[0], value[1]) for key, value in dmg.items()}
+        if self.attacker.release_timer > 1 and \
+                self.attacker.current_action["weapon"] in self.attacker.equipped_power_weapon:  # apply power hold buff
+            for key in self.dmg:
+                self.dmg[key] *= 1.5
+
         self.penetrate = penetrate
         self.knock_power = weapon_stat["Impact"]
 
@@ -102,13 +110,24 @@ class DamageSprite(pygame.sprite.Sprite):
                 self.speed = weapon_stat["Travel Speed"]  # bullet travel speed
 
                 if weapon_stat["Damage Sprite"] != "self":
-                    self.image = self.bullet_sprite_pool[weapon_stat["Damage Sprite"]]["base"]
+                    sprite_name = weapon_stat["Damage Sprite"]
+                    self.image = self.bullet_sprite_pool[sprite_name]["base"]
                 else:  # use weapon image itself as bullet image
+                    sprite_name = weapon_stat["Name"]
                     image_name = "base_main"
                     if weapon == 1:
                         image_name = "base_sub"
-                    self.image = self.bullet_weapon_sprite_pool[weapon_stat["Name"]][
+                    self.image = self.bullet_weapon_sprite_pool[sprite_name][
                         attacker.weapon_version[attacker.equipped_weapon][weapon]][image_name]
+                if sprite_name in self.sound_effect_pool:
+                    self.travel_sound_distance = weapon_stat["Bullet Sound Distance"]
+                    self.travel_shake_power = weapon_stat["Bullet Shake Power"]
+                    self.sound_effect_name = random.choice(self.sound_effect_pool[sprite_name])
+                    self.sound_duration = pygame.mixer.Sound(self.sound_effect_name).get_length() * 1000 / self.speed
+                    self.sound_timer = self.sound_duration / 1.5  # wait a bit before start playing
+                    self.travel_sound_distance_check = self.travel_sound_distance * 2
+                    if self.sound_duration > 2:
+                        self.sound_timer = self.sound_duration / 0.5
 
             elif isinstance(self.attack_type, (list, tuple, dict)):
                 self.sprite_direction = self.attacker.sprite_direction
@@ -157,6 +176,9 @@ class DamageSprite(pygame.sprite.Sprite):
         done = False
         just_start = False
         pass_subunit = None
+
+        if self.sound_effect_name and self.sound_timer < self.sound_duration:
+            self.sound_timer += dt
 
         self.timer += dt
         if self.timer > 1:  # reset timer and list of subunit already hit
@@ -207,12 +229,21 @@ class DamageSprite(pygame.sprite.Sprite):
                 move = move * self.speed * dt
                 self.distance_progress += move.length() / self.full_distance * 100
 
+                if self.sound_effect_name and self.duration == 0 and self.sound_timer >= self.sound_duration and \
+                    self.travel_sound_distance_check > self.battle.true_camera_pos.distance_to(self.base_pos):
+                    # play sound, check for distance here to avoid timer reset when not on screen
+                    self.battle.add_sound_effect_queue(self.sound_effect_name, self.base_pos,
+                                                       self.travel_sound_distance,
+                                                       self.travel_shake_power)
+                    self.sound_timer = 0
+
                 if move.length() <= require_move_length:
                     self.base_pos += move
                     if not self.arc_shot and not self.height_ignore and \
                             self.height_map.get_height(self.base_pos) > self.height + 20:
                         self.clean_object()  # direct shot will not be able to shoot pass higher height terrain midway
                         return
+
                     self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
                                               self.base_pos[1] * self.screen_scale[1]) * 5
                     self.rect.center = self.pos
@@ -239,6 +270,14 @@ class DamageSprite(pygame.sprite.Sprite):
                     self.rect.center = self.pos
 
         else:  # attack that does not travel
+            if self.duration > 0 and self.sound_timer >= self.sound_duration and \
+                    self.travel_sound_distance > self.battle.true_camera_pos.distance_to(self.base_pos):
+                # play sound, check for distance here to avoid timer reset when not on screen
+                self.battle.add_sound_effect_queue(self.sound_effect_name, self.base_pos,
+                                                   self.travel_sound_distance_check,
+                                                   self.travel_shake_power)
+                self.sound_timer = 0
+
             if self.attack_type == "charge":
                 if not self.attacker.charging:
                     self.clean_object()
