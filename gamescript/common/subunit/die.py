@@ -39,7 +39,7 @@ def die(self, how):
                 this_subunit.leader_social_buff = 0
                 this_subunit.authority = 0
                 if not this_subunit.is_leader:  # troop become broken from no leader
-                    this_subunit.unit_leader = self
+                    this_subunit.unit_leader = None
                     if not this_subunit.check_special_effect("Unbreakable"):  # broken if no unbreakable
                         this_subunit.not_broken = False
                         this_subunit.find_retreat_target()
@@ -47,9 +47,10 @@ def die(self, how):
     if not self.leader and self.is_leader:  # is unit leader
         for leader in self.alive_leader_follower:  # reassign unit leader
             leader.unit_leader = leader  # 2nd highest leader become its own unit leader
+            leader.is_unit_leader = True
 
         for this_subunit in self.battle.all_team_subunit[self.team]:  # get all follower in unit in battle
-            if this_subunit.unit_leader == self:
+            if this_subunit.unit_leader is self:
                 while this_subunit.unit_leader.leader:  # get the highest new leader of the unit
                     this_subunit.unit_leader = this_subunit.unit_leader.leader
 

@@ -413,6 +413,7 @@ class Battle:
         self.battle_scale = [1 for _ in self.team_troop_number]
         self.start_troop_number = [0 for _ in self.team_troop_number]
         self.death_troop_number = [0 for _ in self.team_troop_number]
+        self.flee_troop_number = [0 for _ in self.team_troop_number]
         self.visible_subunit_list = {key: {} for key in self.all_team_subunit.keys()}
 
         self.battle_scale_ui.change_fight_scale(self.battle_scale)

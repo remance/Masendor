@@ -65,8 +65,8 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
                 else:
                     troop_dmg += attacker.charge_power * 2
             else:
-                troop_dmg, element_effect = cal_dmg_penetrate(self, target)
-                self.penetrate -= (target.troop_mass * 5)
+                troop_dmg, element_effect = cal_dmg_penetrate(self, target, reduce_penetrate=False)
+                self.penetrate -= target.troop_mass
 
             if target.charging:  # also include its own charge defence in dmg if enemy also charging
                 if not attacker.check_special_effect("Ignore Charge Defence", weapon=weapon):

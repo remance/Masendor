@@ -28,10 +28,6 @@ def cal_range_hit(self, attacker, target, target_side, hit_angle):
         if target_def < 0:
             target_def = 0  # cannot be negative
 
-        target_dodge = (target.range_dodge * hit_side_mod) + target_dodge_luck  # calculate defence
-        if target_dodge < 0:
-            target_dodge = 0  # cannot be negative
-
         attacker_dmg, attacker_morale_dmg, element_effect, impact = \
             self.cal_dmg(attacker, target, attacker_hit, target_def, self.weapon)
 

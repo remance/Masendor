@@ -25,7 +25,8 @@ def enter_battle(self, animation_pool):
         while self.unit_leader.leader:  # get the highest leader of the unit
             self.unit_leader = self.unit_leader.leader
     elif self.is_leader:  # is top unit leader
-        self.unit_leader = self
+        self.unit_leader = None
+        self.is_unit_leader = True
 
     if self.is_leader:
         self.find_formation_size(troop=True, leader=True)
@@ -55,8 +56,5 @@ def enter_battle(self, animation_pool):
     #         if self.troop_data.skill_list[skill]["Action"][0] in animation:  # TODO recheck if this is necessary
     #             make_animation = True
     #             break
-
-    self.default_sprite_size = (self.animation_pool[self.animation_race_name + "_Default"]["r_side"][0]["sprite"].get_width() / 5,
-                                self.animation_pool[self.animation_race_name + "_Default"]["r_side"][0]["sprite"].get_height() / 5)
 
     self.pick_animation()

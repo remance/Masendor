@@ -319,16 +319,14 @@ def status_update(self):
         self.charge_def_power /= 2
 
     if self.hold_timer > 1 and "weapon" in self.current_action:  # holding weapon animation for at least 1 sec, apply buff
-        if self.current_action["weapon"] in self.equipped_block_weapon:  # double def but reduce dodge
+        self.melee_dodge /= 2  # reduce dodge during any holding
+        self.range_dodge /= 2
+        if self.current_action["weapon"] in self.equipped_block_weapon:  # double def
             self.melee_def *= 2
             self.range_def *= 2
-            self.melee_dodge /= 2
-            self.range_dodge /= 2
 
         if self.current_action["weapon"] in self.equipped_charge_block_weapon:  # double charge def but reduce dodge
             self.charge_def_power *= 2
-            self.melee_dodge /= 2
-            self.range_dodge /= 2
 
     if weapon_dmg_modifier != 1:
         for weapon in self.weapon_dmg:

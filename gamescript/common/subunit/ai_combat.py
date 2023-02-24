@@ -6,17 +6,17 @@ opposite_index = (1, 0)
 def ai_combat(self):
     if "charge" not in self.current_action:
         if self.nearest_enemy[1] < self.melee_distance_zone:  # enemy in subunit's melee zone
-            self.in_melee_combat_timer = 3  # consider to be in melee for 3 seconds before reset
             self.attack_target = self.nearest_enemy[0]
-
+            self.in_melee_combat_timer = 3  # consider to be in melee for 3 seconds before reset
         if "hold" in self.current_action:  # already perform an attack with holding
             weapon = self.current_action["weapon"]
+            target_distance = self.nearest_enemy[0].base_pos.distance_to(self.front_pos)
             if ((weapon in self.equipped_block_weapon and self.take_melee_dmg) or \
                     weapon in self.equipped_charge_block_weapon) and \
-                    self.attack_target.base_pos.distance_to(self.front_pos) <= self.melee_range[weapon] or \
-                    self.hold_timer > 3:
+                    target_distance <= self.melee_range[weapon] or \
+                    (target_distance > self.melee_def_range[weapon] and self.hold_timer > 3):
                 # block take melee dmg or in charge block
-                # with enemy in range to hit or block too long, release to attack back
+                # with enemy in range to hit or block too long when no enemy near, release to attack back
                 self.current_action = self.melee_attack_command_action[weapon]
                 self.release_timer = self.hold_timer
                 return
@@ -35,7 +35,7 @@ def ai_combat(self):
                             self.release_timer = self.hold_timer
                     return
 
-        elif self.attack_target:
+        else:
             if self.in_melee_combat_timer > 0:  # enemy in subunit's melee zone
                 if not self.current_action:  # only rotate to enemy when no current action
                     self.new_angle = self.set_rotate(self.attack_target.base_pos)
@@ -99,11 +99,11 @@ def ai_combat(self):
                                             if not self.check_special_effect("Stationary", weapon=weapon):
                                                 # weapon can shoot while moving
                                                 if "movable" in self.current_action and "charge" not in self.current_action:
-                                                    self.interrupt_animation = True
+                                                    self.show_frame = 0  # just restart frame
                                                     if "walk" in self.current_action:
-                                                        self.command_action = self.range_walk_command_action[weapon]
+                                                        self.current_action = self.range_walk_command_action[weapon]
                                                     elif "run" in self.current_action:
-                                                        self.command_action = self.range_run_command_action[weapon]
+                                                        self.current_action = self.range_run_command_action[weapon]
                                         else:
                                             if weapon in self.equipped_timing_weapon or weapon in self.equipped_power_weapon:
                                                 # consider using hold for power or timing

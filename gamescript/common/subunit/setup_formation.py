@@ -24,22 +24,26 @@ def setup_formation(self, which, phase=None, style=None, density=None, position=
             self.troop_formation_phase = phase
             if self.unit_follow_order != "Free":  # leader follower also change troop formation setting to match higher leader when not in free order
                 for leader in self.alive_leader_follower:
-                    leader.setup_formation("troop", phase=phase)
+                    if not leader.player_manual_control:
+                        leader.setup_formation("troop", phase=phase)
         if style:
             self.troop_formation_style = style
             if self.unit_follow_order != "Free":
                 for leader in self.alive_leader_follower:
-                    leader.setup_formation("troop", style=phase)
+                    if not leader.player_manual_control:
+                        leader.setup_formation("troop", style=style)
         if density:
             self.troop_formation_density = density
             if self.unit_follow_order != "Free":
                 for leader in self.alive_leader_follower:
-                    leader.setup_formation("troop", density=phase)
+                    if not leader.player_manual_control:
+                        leader.setup_formation("troop", density=density)
         if position:
             self.troop_formation_position = position
             if self.unit_follow_order != "Free":
                 for leader in self.alive_leader_follower:
-                    leader.setup_formation("troop", position=phase)
+                    if not leader.player_manual_control:
+                        leader.setup_formation("troop", position=position)
 
         follower_size = self.troop_follower_size
         formation_phase = self.troop_formation_phase
@@ -148,26 +152,26 @@ def setup_formation(self, which, phase=None, style=None, density=None, position=
         do_order = (list(range(len(temp_formation_distance_list[0]))), list(range(len(temp_formation_distance_list))))
 
         if formation_position == "Behind":
-            start_distance = placement_density + self.default_sprite_size[1]
+            start_distance = placement_density + self.troop_size
             distance = [0, start_distance]
             start = (int(len(temp_formation_distance_list[0]) / 2), 0)  # start from center top of formation
             do_order[0].sort(key=lambda x: abs(start[0] - x))
 
         elif formation_position == "Ahead":
-            start_distance = placement_density + self.default_sprite_size[1]
+            start_distance = placement_density + self.troop_size
             start = (int(len(temp_formation_distance_list[0]) / 2), len(temp_formation_distance_list))  # start from center bottom of formation
             do_order[0].sort(key=lambda x: abs(start[0] - x))
             do_order[1].sort(reverse=True)
             distance = [0, -start_distance]
 
         elif formation_position == "Left":  # formation start from left of leader
-            start_distance = placement_density + self.default_sprite_size[0]
+            start_distance = placement_density + self.troop_size
             start = (len(temp_formation_distance_list[0]) - 1, 0)  # start from right end of formation
             do_order[0].sort(reverse=True)
             distance = [-start_distance, 0]
 
         elif formation_position == "Right":  # formation start from right of leader
-            start_distance = placement_density + self.default_sprite_size[0]
+            start_distance = placement_density + self.troop_size
             start = (0, 0)
             distance = [start_distance, 0]
 
@@ -177,11 +181,12 @@ def setup_formation(self, which, phase=None, style=None, density=None, position=
             do_order[1].sort(key=lambda x: abs(start[1] - x))
             distance = [0, 0]
 
+        start_do_order_row = do_order[1][0]
         start_distance = tuple(distance)
         for row_index, row in enumerate(do_order[1]):  # row (y)
             for col_index, col in enumerate(do_order[0]):  # column (x) in row
                 if temp_formation_distance_list[row][col] != 0:
-                    sprite_size = temp_formation_distance_list[row][col].default_sprite_size
+                    sprite_size = temp_formation_distance_list[row][col].troop_size
                     formation_distance_list[temp_formation_distance_list[row][col]] = tuple(distance)
                     formation_pos_list[temp_formation_distance_list[row][col]] = \
                         rotation_xy(self.base_pos, self.base_pos + distance,
@@ -195,48 +200,49 @@ def setup_formation(self, which, phase=None, style=None, density=None, position=
                             next_who = temp_formation_distance_list[row][do_order[0][col_index + 1] + 1]
                             if next_who != 0:
                                 distance[0] = formation_distance_list[next_who][0] - \
-                                         (placement_density + sprite_size[0])
+                                         (placement_density + sprite_size)
                             else:
                                 distance[0] -= placement_density * 2
                         else:  # right from current, such as 0 to 2, then get the left of next (1)
                             next_who = temp_formation_distance_list[row][do_order[0][col_index + 1] - 1]
                             if next_who != 0:
                                 distance[0] = formation_distance_list[next_who][0] + \
-                                         (placement_density + sprite_size[0])
+                                         (placement_density + sprite_size)
                             else:
                                 distance[0] += placement_density * 2
                 else:  # empty position
-                    sprite_size = (0, 0)
+                    sprite_size = 0
                     if col_index + 1 < len(do_order[0]):  # still more to do in this row
                         if do_order[0][col_index + 1] < col:  # left from current, such as 1 to 0, then get the right of next (1)
                             next_who = temp_formation_distance_list[row][do_order[0][col_index + 1] + 1]
                             if next_who != 0:
                                 distance[0] = formation_distance_list[next_who][0] - \
-                                         (placement_density + sprite_size[0])
+                                         (placement_density + sprite_size)
                             else:
                                 distance[0] -= placement_density * 2
                         else:  # right from current, such as 0 to 2, then get the left of next (1)
                             next_who = temp_formation_distance_list[row][do_order[0][col_index + 1] - 1]
                             if next_who != 0:
                                 distance[0] = formation_distance_list[next_who][0] + \
-                                         (placement_density + sprite_size[0])
+                                         (placement_density + sprite_size)
                             else:
                                 distance[0] += placement_density * 2
 
             distance[0] = start_distance[0]  # end of row, reset starting point x
             if row_index + 1 < len(do_order[1]):
+                distance[1] = start_distance[1]
+                biggest_height = 0
                 if do_order[1][row_index + 1] > row:  # next row
-                    biggest_height = 0
                     for col in temp_formation_distance_list[do_order[1][row_index + 1] - 1]:  # get biggest height in row before next one
-                        if col != 0 and col.default_sprite_size[1] > biggest_height:
-                            biggest_height = col.default_sprite_size[1]
-                    distance[1] += (placement_density + biggest_height)
+                        if col != 0 and col.troop_size > biggest_height:
+                            biggest_height = col.troop_size
                 else:  # previous row
-                    biggest_height = 0
                     for col in temp_formation_distance_list[do_order[1][row_index + 1] + 1]:  # get biggest height in row after next one
-                        if col != 0 and col.default_sprite_size[1] > biggest_height:
-                            biggest_height = col.default_sprite_size[1]
-                    distance[1] -= (placement_density + biggest_height)
+                        if col != 0 and col.troop_size > biggest_height:
+                            biggest_height = col.troop_size
+
+                distance[1] += ((placement_density + biggest_height) *
+                                (do_order[1][row_index + 1] - start_do_order_row))
 
 
 def formation_style_check(self, who, formation_type, formation_style, priority_subunit_place, side):

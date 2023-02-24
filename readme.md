@@ -178,6 +178,9 @@ historical information to players.
 - Bow drawing "Regular Arrow Shot distant target" by brendan89 (https://freesound.org/people/brendan89/)
 - Crossbow shot "bow02" by Erdie (https://freesound.org/people/Erdie/)
 - Crossbow shot "Crossbow Firing and Hitting Target" by Ali_6868 (https://freesound.org/people/Ali_6868/)
+- Heavy damaged "Blam" by Loghome72 (https://freesound.org/people/Loghome72/)
+- Knockback "punch" by Ekokubza123 (https://freesound.org/people/Ekokubza123/)
+- Damaged "punch3" by Merrick079 (https://freesound.org/people/Merrick079/)
 
 ## Translation
 

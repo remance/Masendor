@@ -18,12 +18,17 @@ def cal_loss(self, target, final_dmg, impact, final_morale_dmg, element_effect, 
         final_dmg = target.health
 
     impact_check = final_dmg + impact - target.troop_mass
+
     if impact_check > target.max_health50:
         target.interrupt_animation = True
         target.command_action = self.knockdown_command_action
         target.move_speed = impact_check
         target.forced_target = pygame.Vector2(target.base_pos[0] - (impact_check * math.sin(math.radians(hit_angle))),
                                               target.base_pos[1] - (impact_check * math.cos(math.radians(hit_angle))))
+        self.battle.add_sound_effect_queue(self.sound_effect_pool["KnockDown"][0], target.base_pos,
+                                           target.knock_down_sound_distance,
+                                           target.knock_down_sound_shake,
+                                           volume_mod=target.hit_volume_mod)  # larger size play louder sound
 
     elif impact_check > target.max_health20:
         target.interrupt_animation = True
@@ -31,6 +36,10 @@ def cal_loss(self, target, final_dmg, impact, final_morale_dmg, element_effect, 
         target.move_speed = target.walk_speed
         target.forced_target = pygame.Vector2(target.base_pos[0] - (impact_check * math.sin(math.radians(hit_angle))),
                                               target.base_pos[1] - (impact_check * math.cos(math.radians(hit_angle))))
+        self.battle.add_sound_effect_queue(self.sound_effect_pool["HeavyDamaged"][0], target.base_pos,
+                                           target.heavy_dmg_sound_distance,
+                                           target.heavy_dmg_sound_shake,
+                                           volume_mod=target.hit_volume_mod)
 
     elif impact_check > target.max_health10:  # play damaged animation
         target.interrupt_animation = True
@@ -38,6 +47,11 @@ def cal_loss(self, target, final_dmg, impact, final_morale_dmg, element_effect, 
         target.move_speed = target.walk_speed
         target.forced_target = pygame.Vector2(target.base_pos[0] - (impact_check * math.sin(math.radians(hit_angle))),
                                               target.base_pos[1] - (impact_check * math.cos(math.radians(hit_angle))))
+
+        self.battle.add_sound_effect_queue(self.sound_effect_pool["Damaged"][0], target.base_pos,
+                                           target.dmg_sound_distance,
+                                           target.dmg_sound_shake,
+                                           volume_mod=target.hit_volume_mod)
 
     else:  # use damaged skill
         if self.available_damaged_skill and not self.current_action and not self.command_action:  # use damaged skill

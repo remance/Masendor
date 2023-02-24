@@ -192,6 +192,12 @@ class Subunit(pygame.sprite.Sprite):
 
     # static variable
     default_animation_play_time = 0.1
+    knock_down_sound_distance = 4
+    knock_down_sound_shake = 1
+    heavy_dmg_sound_distance = 2
+    heavy_dmg_sound_shake = 0
+    dmg_sound_distance = 1
+    dmg_sound_shake = 0
 
     def __init__(self, troop_id, game_id, pos_id, team, start_pos, start_angle, start_hp, start_stamina,
                  leader_subunit, coa):
@@ -256,7 +262,8 @@ class Subunit(pygame.sprite.Sprite):
         self.alive_leader_follower = []  # list of alive leader subordinate subunits
         self.leader_follower_size = 0
         self.leader = leader_subunit  # leader of the sub-subunit if there is one
-        self.unit_leader = self  # leader at the top hierarchy in the unit
+        self.unit_leader = None  # leader at the top hierarchy in the unit
+        self.is_unit_leader = False
 
         self.feature_mod = "Infantry"  # the terrain feature that will be used on this subunit
         self.move_speed = 0  # speed of current movement
@@ -462,6 +469,7 @@ class Subunit(pygame.sprite.Sprite):
         self.range_dmg = {index: {0: element_dict.copy(), 1: element_dict.copy()} for index in range(0, 2)}
         self.original_shoot_range = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
         self.original_melee_range = {0: {}, 1: {}}
+        self.original_melee_def_range = {0: {}, 1: {}}
         self.original_weapon_speed = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
 
         self.magazine_size = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}  # can shoot how many times before have to reload
@@ -612,6 +620,12 @@ class Subunit(pygame.sprite.Sprite):
 
         self.troop_mass = self.troop_size
 
+        self.knock_down_sound_distance = self.knock_down_sound_distance * self.troop_mass
+        self.knock_down_sound_shake = self.knock_down_sound_shake * self.troop_mass
+        self.heavy_dmg_sound_distance = self.heavy_dmg_sound_distance * self.troop_mass
+        self.dmg_sound_distance = self.dmg_sound_distance * self.troop_mass
+        self.hit_volume_mod = self.troop_mass / 50
+
         self.command_buff = 1
         self.leader_social_buff = 0
         self.authority = 0
@@ -745,6 +759,7 @@ class Subunit(pygame.sprite.Sprite):
         self.weapon_speed = self.original_weapon_speed[self.equipped_weapon].copy()
         self.shoot_range = self.original_shoot_range[self.equipped_weapon].copy()
         self.melee_range = self.original_melee_range[self.equipped_weapon]
+        self.melee_def_range = self.original_melee_def_range[self.equipped_weapon]
         self.max_melee_range = self.melee_range[0]
         self.melee_charge_range = {0: 0, 1: 0}
 
@@ -879,9 +894,12 @@ class Subunit(pygame.sprite.Sprite):
 
                 if not self.player_manual_control:
                     if self.not_broken:
+                        if self.is_unit_leader:
+                            self.ai_leader()
+
                         if "uncontrollable" not in self.current_action and "uncontrollable" not in self.command_action:
-                            self.ai_move()
                             self.ai_combat()
+                            self.ai_move()
                     else:
                         self.ai_retreat()
 

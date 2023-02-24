@@ -344,6 +344,10 @@ def generate_body(part, body_part_list, troop_sprite_list, sprite_pool, armour_s
             part_name = part
             if any(ext in part for ext in ("p1_", "p2_", "p3_", "p4_")):
                 part_name = part[3:]  # remove person prefix to get part name
+            if "special" in part:
+                part = part[:-2]
+                part_name = part_name[:-2]
+
             gear_image = \
                 armour_sprite_pool[body_part_list[0]][armour][troop_sprite_list[part]][part_name][body_part_list[1]]
             new_sprite_image = pygame.Surface(gear_image.get_size(),

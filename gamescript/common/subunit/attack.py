@@ -88,12 +88,8 @@ def attack(self, attack_type):
                                           self.weapon_penetrate[self.equipped_weapon][weapon], equipped_weapon_data,
                                           attack_type, base_target, accuracy=accuracy, arc_shot=arc_shot)
 
-            try:
-                self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
-            except:
-                print(self.name, self.equipped_weapon, weapon, self.ammo_now)
-                print(self.current_action, self.command_action)
-                asdasd
+            self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
+
             if self.ammo_now[self.equipped_weapon][weapon] == 0 and \
                     self.magazine_count[self.equipped_weapon][weapon] == 0:
                 self.ammo_now[self.equipped_weapon].pop(weapon)  # remove weapon with no ammo
@@ -102,6 +98,12 @@ def attack(self, attack_type):
                     self.ammo_now.pop(self.equipped_weapon)
                     self.magazine_count.pop(self.equipped_weapon)
                     self.range_weapon_set.remove(self.equipped_weapon)
+
+            if equipped_weapon_data["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
+                self.battle.add_sound_effect_queue(
+                    random.choice(self.sound_effect_pool[equipped_weapon_data["Sound Effect"]]),
+                    self.base_pos, equipped_weapon_data["Sound Distance"],
+                    equipped_weapon_data["Shake Power"])
 
         elif attack_type == "charge":
             damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
@@ -127,10 +129,13 @@ def attack(self, attack_type):
 
             self.weapon_cooldown[weapon] = 0  # melee weapon use cooldown for attack
 
+            if equipped_weapon_data["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
+                self.battle.add_sound_effect_queue(
+                    random.choice(self.sound_effect_pool[equipped_weapon_data["Sound Effect"]]),
+                    self.base_pos, equipped_weapon_data["Sound Distance"],
+                    equipped_weapon_data["Shake Power"])
+
         self.stamina -= self.weapon_weight[self.equipped_weapon][weapon]
         self.release_timer = 0  # reset release timer after attack
 
-        if equipped_weapon_data["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
-            self.battle.add_sound_effect_queue(random.choice(self.sound_effect_pool[equipped_weapon_data["Sound Effect"]]),
-                                               self.base_pos, equipped_weapon_data["Sound Distance"],
-                                               equipped_weapon_data["Shake Power"])
+

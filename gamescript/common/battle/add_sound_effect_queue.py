@@ -1,4 +1,4 @@
-def add_sound_effect_queue(self, sound_name, sound_base_pos, sound_distance_power, shake_power):
+def add_sound_effect_queue(self, sound_name, sound_base_pos, sound_distance_power, shake_power, volume_mod=1):
     distance = sound_base_pos.distance_to(self.true_camera_pos)
     if distance < 1:
         distance = 1
@@ -8,7 +8,7 @@ def add_sound_effect_queue(self, sound_name, sound_base_pos, sound_distance_powe
     elif sound_distance > 1:
         sound_distance = 1
 
-    effect_volume = sound_distance * self.play_effect_volume
+    effect_volume = sound_distance * volume_mod * self.play_effect_volume
 
     screen_shake_power = self.cal_shake_value(sound_base_pos, shake_power)
 

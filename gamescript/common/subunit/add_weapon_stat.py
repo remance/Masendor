@@ -36,6 +36,7 @@ def add_weapon_stat(self):
                 self.melee_weapon_set[set_index] += dmg_sum  # add weapon damage for sort
                 self.magazine_count[set_index][weapon_index] = 0  # remove modifier
                 self.original_melee_range[set_index][weapon_index] = weapon_stat["Range"]
+                self.original_melee_def_range[set_index][weapon_index] = weapon_stat["Range"] * 3
                 if weapon_stat["Range"] > self.max_melee_attack_range:
                     self.max_melee_attack_range = weapon_stat["Range"]
             else:
@@ -44,6 +45,7 @@ def add_weapon_stat(self):
                 self.magazine_size[set_index][weapon_index] = weapon_stat[
                     "Magazine"]  # can shoot how many times before have to reload
                 self.original_melee_range[set_index][weapon_index] = 0  # for distance to move closer check
+                self.original_melee_def_range[set_index][weapon_index] = 0
                 self.shot_per_shoot[set_index][weapon_index] = weapon_stat["Shot Number"]
                 self.original_shoot_range[set_index][weapon_index] = weapon_stat["Range"] * \
                                                                      self.troop_data.equipment_grade_list[weapon[1]][
