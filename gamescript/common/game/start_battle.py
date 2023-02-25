@@ -10,7 +10,7 @@ def start_battle(self, char_selected=None):
     start_char_selected = char_selected
     if self.enactment:
         start_char_selected = None
-    self.battle.prepare_new_game(self.ruleset, self.ruleset_folder, self.team_selected,
+    self.battle.prepare_new_game(self.ruleset, self.ruleset_folder, self.team_selected, self.map_type,
                                  self.map_selected, self.map_source, start_char_selected,
                                  self.map_data[self.map_title.name])
     self.battle.run_game()

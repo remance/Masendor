@@ -42,12 +42,11 @@ def move_logic(self, dt):
                     self.rect.center = self.offset_pos
                     self.hitbox.rect.midtop = self.pos
 
-                    self.height = self.get_height(self.base_pos)  # Current terrain height
-
                     self.move = True
 
+                    self.height = self.get_height(self.base_pos)  # Current terrain height
                     self.terrain, self.feature = self.get_feature(self.base_pos,
-                                                                  self.base_map)  # get new terrain and feature at each subunit position
+                                                                  self.base_map)  # get new terrain and feature
 
                     self.make_front_pos()
 
@@ -62,6 +61,10 @@ def move_logic(self, dt):
                         self.momentum -= dt
                         if self.momentum < 0:
                             self.momentum = 0
+
+                if self.move_path and self.base_pos.distance_to(self.move_path[0]) < 0.1:
+                    # reach the current queue point, remove from queue
+                    self.move_path = self.move_path[1:]
 
             else:  # reach target, interrupt moving animation
                 if "movable" in self.current_action:  # in moving animation, interrupt it

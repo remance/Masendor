@@ -5,13 +5,8 @@ from pathlib import Path
 
 def make_battle_list_data(main_dir, ruleset_folder, language):
     """Load battle map list"""
-    read_folder = Path(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "map"))
+    read_folder = Path(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "map", "preset"))
     subdirectories = [x for x in read_folder.iterdir() if x.is_dir()]
-
-    for index, file_map in enumerate(subdirectories):
-        if "custom" in str(file_map):  # remove custom from this folder list to load
-            subdirectories.pop(index)
-            break
 
     preset_map_list = []  # map name list for map selection list
     preset_map_folder = []  # folder for reading later

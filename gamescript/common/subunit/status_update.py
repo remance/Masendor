@@ -165,14 +165,14 @@ def status_update(self):
         melee_attack_modifier += map_feature_mod[
             self.feature_mod + " Combat Effect"]  # get the melee_attack mod appropriate to subunit type
 
-    if map_feature_mod[self.feature_mod + " Defense Effect"] != 1:  # melee/charge defence
+    if map_feature_mod[self.feature_mod + " Defence Effect"] != 1:  # melee/charge defence
         melee_def_modifier += map_feature_mod[
-            self.feature_mod + " Defense Effect"]  # get the defence mod appropriate to subunit type
-        charge_def_modifier += map_feature_mod[self.feature_mod + " Defense Effect"]
+            self.feature_mod + " Defence Effect"]  # get the defence mod appropriate to subunit type
+        charge_def_modifier += map_feature_mod[self.feature_mod + " Defence Effect"]
 
-    range_def_bonus += map_feature_mod["Range Defense Bonus"]  # range defence bonus from terrain bonus
+    range_def_bonus += map_feature_mod["Range Defence Bonus"]  # range defence bonus from terrain bonus
     accuracy_bonus -= (map_feature_mod[
-                           "Range Defense Bonus"] / 2)  # range def bonus block subunit sight as well so less accuracy
+                           "Range Defence Bonus"] / 2)  # range def bonus block subunit sight as well so less accuracy
     discipline_bonus += map_feature_mod["Discipline Bonus"]  # discipline defence bonus from terrain bonus
 
     self.apply_map_status(map_feature_mod)

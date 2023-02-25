@@ -664,16 +664,17 @@ class MapPreview(pygame.sprite.Sprite):
     colour = {0: (50, 50, 50), 1: (0, 0, 200), 2: (200, 0, 0)}
     selected_colour = {0: (200, 200, 200), 1: (150, 150, 255), 2: (255, 150, 150)}
     leader_dot = {team: {True: None, False: None} for team in colour.keys()}
+    terrain_colour = None
+    feature_colour = None
+    battle_map_colour = None
 
-    def __init__(self, main_dir, screen_scale, pos, terrain_colour, feature_colour, battle_map_colour):
+    def __init__(self, main_dir, screen_scale, pos):
         self.main_dir = main_dir
         pygame.sprite.Sprite.__init__(self)
 
         self.screen_scale = screen_scale
         self.pos = pos
-        self.terrain_colour = terrain_colour
-        self.feature_colour = feature_colour
-        self.battle_map_colour = battle_map_colour
+
         self.image = pygame.Surface((450 * self.screen_scale[0], 450 * self.screen_scale[1]))
         self.image.fill((0, 0, 0))  # draw black colour for black corner
 
@@ -713,7 +714,7 @@ class MapPreview(pygame.sprite.Sprite):
                 feature_index = None
                 if feature in self.feature_colour:
                     feature_index = self.feature_colour.index(feature)
-                    feature_index = feature_index + (terrain_index * 12)
+                    feature_index = feature_index + (terrain_index * len(self.feature_colour))
                 new_colour = self.battle_map_colour[feature_index][1]
                 rect = pygame.Rect(row_pos, col_pos, 1, 1)
                 map_image.fill(new_colour, rect)

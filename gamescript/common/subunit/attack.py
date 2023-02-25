@@ -12,8 +12,8 @@ def attack(self, attack_type):
     weapon = self.current_action["weapon"]
     equipped_weapon_data = self.equipped_weapon_data[weapon]
     base_target = None
-    if self.attack_target:
-        base_target = self.attack_target.base_pos
+    if self.attack_subunit:
+        base_target = self.attack_subunit.base_pos
     elif self.attack_pos:
         base_target = self.attack_pos
 
@@ -57,15 +57,15 @@ def attack(self, attack_type):
                                              self.base_pos[1] - (max_range *
                                                                  math.cos(math.radians(base_angle))))
 
-            if self.attack_target:
+            if self.attack_subunit:
                 how_long = attack_range / self.speed  # shooting distance divide damage sprite speed to find travel time
 
                 # Predicatively find position the enemy will be at based on movement speed and sprite travel time
-                if self.attack_target.move and how_long > 0.5:  # target walking
-                    target_move = self.attack_target.base_target - self.attack_target.base_pos  # target movement distance
+                if self.attack_subunit.move and how_long > 0.5:  # target walking
+                    target_move = self.attack_subunit.base_target - self.attack_subunit.base_pos  # target movement distance
                     if target_move.length() > 1:  # recal target base on enemy move target
                         target_move.normalize_ip()
-                        base_target = base_target + ((target_move * (self.attack_target.move_speed * how_long)) / 11)
+                        base_target = base_target + ((target_move * (self.attack_subunit.move_speed * how_long)) / 11)
                         if not self.check_special_effect("Agile Aim"):
                             accuracy -= 15
 

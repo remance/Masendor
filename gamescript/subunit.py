@@ -19,8 +19,6 @@ infinity = float("inf")
 
 weapon_set = ("Main_", "Sub_")
 
-rotation_xy = utility.rotation_xy
-
 """Command dict Guide
 Key:
 name = action name that will be used to find animation, name with "Action" will find attack action of weapon for animation name
@@ -224,7 +222,7 @@ class Subunit(pygame.sprite.Sprite):
         self.not_broken = True
         self.move = False  # currently moving
         self.charging = False
-        self.attack_target = None  # target for attacking
+        self.attack_subunit = None  # target for attacking
         self.melee_target = None  # current target of melee combat
         self.player_manual_control = False  # subunit controlled by player
         self.formation_add_change = False  # subordinate die in last update, reset formation, this is to avoid high workload when multiple die at once
@@ -243,6 +241,8 @@ class Subunit(pygame.sprite.Sprite):
         self.show_frame = 0  # current animation frame
         self.max_show_frame = 0
         self.frame_timer = 0
+        self.interrupt_animation = False
+        self.top_interrupt_animation = False  # interrupt animation regardless of property
         self.current_action = {}  # action being performed
         self.command_action = {}  # next action to be performed
         self.idle_action = {}  # action that is performed when subunit is idle such as hold spear wall when skill active
@@ -264,6 +264,7 @@ class Subunit(pygame.sprite.Sprite):
         self.leader = leader_subunit  # leader of the sub-subunit if there is one
         self.unit_leader = None  # leader at the top hierarchy in the unit
         self.is_unit_leader = False
+        self.tactic = "attack"  # tactic for unit leader
 
         self.feature_mod = "Infantry"  # the terrain feature that will be used on this subunit
         self.move_speed = 0  # speed of current movement
@@ -345,8 +346,7 @@ class Subunit(pygame.sprite.Sprite):
         self.front_pos = (0, 0)  # pos of this subunit for finding height of map at the front
         self.front_height = 0
 
-        self.interrupt_animation = False
-        self.top_interrupt_animation = False  # interrupt animation regardless of property
+        self.move_path = (self.base_pos, )
 
         # Set up special effect variable, first main item is for effect from troop/trait, second main item is for weapon
         # first sub item is permanent effect from trait, second sub item from temporary status or skill
@@ -761,6 +761,7 @@ class Subunit(pygame.sprite.Sprite):
         self.melee_range = self.original_melee_range[self.equipped_weapon]
         self.melee_def_range = self.original_melee_def_range[self.equipped_weapon]
         self.max_melee_range = self.melee_range[0]
+        self.charge_melee_range = self.max_melee_range * 10
         self.melee_charge_range = {0: 0, 1: 0}
 
         self.morale_state = 1  # turn into percentage
@@ -873,18 +874,6 @@ class Subunit(pygame.sprite.Sprite):
                 if self.timer > 1:  # Update status and skill use around every 1 second
                     self.status_update()
 
-                    if self.is_leader and self.move_speed:  # find new follow point for subordinate
-                        for subunit in self.alive_troop_follower:
-                            new_target = rotation_xy(self.base_pos, self.base_pos +
-                                                     self.troop_distance_list[subunit], self.radians_angle)
-                            self.troop_pos_list[subunit][0] = new_target[0]
-                            self.troop_pos_list[subunit][1] = new_target[1]
-                        for leader in self.alive_leader_follower:
-                            new_target = rotation_xy(self.base_pos, self.base_pos +
-                                                     self.unit_distance_list[leader], self.radians_angle)
-                            self.unit_pos_list[leader][0] = new_target[0]
-                            self.unit_pos_list[leader][1] = new_target[1]
-
                     if self not in self.battle.troop_ai_logic_queue:
                         self.battle.troop_ai_logic_queue.append(self)
 
@@ -894,9 +883,6 @@ class Subunit(pygame.sprite.Sprite):
 
                 if not self.player_manual_control:
                     if self.not_broken:
-                        if self.is_unit_leader:
-                            self.ai_leader()
-
                         if "uncontrollable" not in self.current_action and "uncontrollable" not in self.command_action:
                             self.ai_combat()
                             self.ai_move()

@@ -3,9 +3,12 @@ import glob
 import os
 import sys
 
+import threading
+
 import pygame
 import pygame.freetype
-from gamescript import camera, weather, battleui, menu, subunit, datasprite, damagesprite, effectsprite
+
+from gamescript import camera, weather, battleui, menu, subunit, datasprite, damagesprite, effectsprite, ai
 from gamescript.common import utility
 
 from random import randint
@@ -148,6 +151,7 @@ class Battle:
         self.map_def_array = []  # array for defence calculation
 
         self.troop_ai_logic_queue = []
+        self.pathfinding_thread = ai.PathfindingAI(self)
 
         self.esc_slider_menu = main.esc_slider_menu
         self.esc_value_boxes = main.esc_value_boxes
@@ -289,7 +293,7 @@ class Battle:
         self.battle_mouse_pos = [0, 0]  # with camera zoom adjust but without screen scale
         self.command_mouse_pos = [0, 0]  # with zoom and screen scale for unit command
 
-    def prepare_new_game(self, ruleset, ruleset_folder, team_selected, map_selected,
+    def prepare_new_game(self, ruleset, ruleset_folder, team_selected, map_type, map_selected,
                          map_source, char_selected, map_info):
         """Setup stuff when start new battle"""
         self.language = self.main.language
@@ -321,7 +325,7 @@ class Battle:
         # Load weather schedule
         try:
             self.weather_event = csv_read(self.main_dir, "weather.csv",
-                                          ("data", "ruleset", self.ruleset_folder, "map", self.map_selected,
+                                          ("data", "ruleset", self.ruleset_folder, "map", map_type, self.map_selected,
                                            self.map_source), output_type="list")
             self.weather_event = self.weather_event[1:]
             utility.convert_str_time(self.weather_event)
@@ -338,8 +342,8 @@ class Battle:
             self.music_list = glob.glob(os.path.join(self.main_dir, "data", "sound", "music", "*.ogg"))
             try:
                 self.music_event = csv_read(self.main_dir, "music_event.csv",
-                                            ("data", "ruleset", self.ruleset_folder, "map", self.map_selected),
-                                            output_type="list")
+                                            ("data", "ruleset", self.ruleset_folder, "map", map_type,
+                                             self.map_selected), output_type="list")
                 self.music_event = self.music_event[1:]
                 if self.music_event:
                     utility.convert_str_time(self.music_event)
@@ -361,7 +365,8 @@ class Battle:
 
         try:  # get new map event for event log
             map_event = csv_read(self.main_dir, "eventlog_" + self.language + ".csv",
-                                 ("data", "ruleset", self.ruleset_folder, "map", self.map_selected, self.map_source),
+                                 ("data", "ruleset", self.ruleset_folder, "map", map_type,
+                                  self.map_selected, self.map_source),
                                  header_key=True)
             battleui.EventLog.map_event = map_event
         except FileNotFoundError:  # can't find any event file
@@ -382,10 +387,11 @@ class Battle:
 
         self.time_number.start_setup(self.weather_playing)
 
-        images = load_images(self.main_dir, subfolder=("ruleset", self.ruleset_folder, "map", self.map_selected))
+        images = load_images(self.main_dir, subfolder=("ruleset", self.ruleset_folder, "map", map_type, self.map_selected))
         self.battle_map_base.draw_image(images["base"])
         self.battle_map_feature.draw_image(images["feature"])
         self.battle_map_height.draw_image(images["height"])
+
 
         if "place_name" in images:  # place_name map layer is optional, if not existed in folder then assign None
             place_name_map = images["place_name"]
@@ -606,10 +612,9 @@ class Battle:
                                 self.current_weather.__init__(self.time_ui, 4, 0, 0, self.weather_data)
                             self.weather_event.pop(0)
                             if self.current_weather.name in self.weather_effect_images:
-                                self.battle_map.add_effect(effect_image=
-                                                           self.weather_effect_images[self.current_weather.name][
-                                                               self.current_weather.level],
-                                                           time_image=self.day_effect_images[self.day_time])
+                                self.battle_map.change_map_stuff("effect", self.weather_effect_images[
+                                    self.current_weather.name][self.current_weather.level],
+                                                                 self.day_effect_images[self.day_time])
 
                             if self.weather_event:  # Get end time of next event which is now index 0
                                 self.weather_playing = self.weather_event[0][1]
@@ -647,7 +652,8 @@ class Battle:
                         if limit < 10:
                             limit = 10
                         for index, this_subunit in enumerate(self.troop_ai_logic_queue):
-                            this_subunit.ai_subunit()
+                            if this_subunit.alive:  # in case subunit die or flee during queue
+                                this_subunit.ai_subunit()
                             if index == limit:
                                 break
                         self.troop_ai_logic_queue = self.troop_ai_logic_queue[10:]

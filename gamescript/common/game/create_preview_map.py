@@ -7,7 +7,7 @@ def create_preview_map(self, map_folder_list, map_list, custom_map=False):
     # Create map preview image
     if self.menu_state == "preset_map":
         map_images = load_images(self.main_dir, screen_scale=self.screen_scale,
-                                 subfolder=("ruleset", self.ruleset_folder, "map",
+                                 subfolder=("ruleset", self.ruleset_folder, "map", "preset",
                                             map_folder_list[self.current_map_select]))
     else:
         map_images = load_images(self.main_dir, screen_scale=self.screen_scale,

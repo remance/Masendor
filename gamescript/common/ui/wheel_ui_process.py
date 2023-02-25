@@ -12,7 +12,7 @@ def wheel_ui_process(self, choice):
                 self.battle_map.mode += 1  # change height map mode
                 if self.battle_map.mode > 2:
                     self.battle_map.mode = 0
-                self.battle_map.change_mode()
+                self.battle_map.change_map_stuff("mode")
 
         elif choice in self.unit_behaviour_wheel["Formation"]:
             if choice == "Formation List":  # get formation from leader

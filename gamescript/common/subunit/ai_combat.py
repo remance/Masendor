@@ -6,8 +6,9 @@ opposite_index = (1, 0)
 def ai_combat(self):
     if "charge" not in self.current_action:
         if self.nearest_enemy[1] < self.melee_distance_zone:  # enemy in subunit's melee zone
-            self.attack_target = self.nearest_enemy[0]
+            self.attack_subunit = self.nearest_enemy[0]
             self.in_melee_combat_timer = 3  # consider to be in melee for 3 seconds before reset
+
         if "hold" in self.current_action:  # already perform an attack with holding
             weapon = self.current_action["weapon"]
             target_distance = self.nearest_enemy[0].base_pos.distance_to(self.front_pos)
@@ -29,16 +30,16 @@ def ai_combat(self):
                         self.current_action = self.range_attack_command_action[weapon]
                         self.release_timer = self.hold_timer
                     else:
-                        if self.attack_target.base_pos.distance_to(self.front_pos) <= self.melee_range[weapon]:
+                        if self.attack_subunit.base_pos.distance_to(self.front_pos) <= self.melee_range[weapon]:
                             # enemy in range to hit
                             self.current_action = self.melee_attack_command_action[weapon]
                             self.release_timer = self.hold_timer
                     return
 
         else:
-            if self.in_melee_combat_timer > 0:  # enemy in subunit's melee zone
+            if self.in_melee_combat_timer > 0 and self.attack_subunit:  # enemy in subunit's melee zone
                 if not self.current_action:  # only rotate to enemy when no current action
-                    self.new_angle = self.set_rotate(self.attack_target.base_pos)
+                    self.new_angle = self.set_rotate(self.attack_subunit.base_pos)
                 if "weapon" not in self.current_action:
                     if self.equipped_weapon != self.melee_weapon_set[0]:  # swap to melee weapon when enemy near
                         self.swap_weapon(self.melee_weapon_set[0])
@@ -50,7 +51,7 @@ def ai_combat(self):
                         else:
                             for weapon in self.weapon_cooldown:
                                 if self.weapon_cooldown[weapon] >= self.weapon_speed[weapon]:
-                                    if self.attack_target.base_pos.distance_to(self.front_pos) <= self.melee_range[weapon]:
+                                    if self.attack_subunit.base_pos.distance_to(self.front_pos) <= self.melee_range[weapon]:
                                         if weapon in self.equipped_block_weapon and self.weapon_cooldown[opposite_index[weapon]] > 1:  # consider blocking first
                                             self.command_action = self.melee_hold_command_action[weapon]
                                         elif (weapon in self.equipped_power_weapon or weapon in self.equipped_timing_weapon) and not not getrandbits(1):
@@ -77,7 +78,7 @@ def ai_combat(self):
 
             elif not self.in_melee_combat_timer and "weapon" not in self.current_action and not self.manual_shoot:
                 # no nearby enemy melee threat
-                self.attack_target = None
+                self.attack_subunit = None
                 if self.ammo_now:  # range attack
                     if self.equipped_weapon not in self.ammo_now:
                         if not self.current_action:
@@ -93,8 +94,8 @@ def ai_combat(self):
                                 for weapon in self.ammo_now[self.equipped_weapon]:
                                     # can shoot if reload finish, in shoot range and attack pos target exist
                                     if self.ammo_now[self.equipped_weapon][weapon] > 0 and self.shoot_range[weapon] >= self.nearest_enemy[1]:
-                                        self.attack_target = self.nearest_enemy[0]  # replace attack_target with enemy unit object
-                                        self.attack_pos = self.attack_target.base_pos  # replace attack_pos with enemy unit pos
+                                        self.attack_subunit = self.nearest_enemy[0]  # replace with enemy object
+                                        self.attack_pos = self.attack_subunit.base_pos  # replace with enemy pos
                                         if self.move_speed:  # moving
                                             if not self.check_special_effect("Stationary", weapon=weapon):
                                                 # weapon can shoot while moving
@@ -110,7 +111,7 @@ def ai_combat(self):
                                                 self.command_action = self.range_hold_command_action[weapon]
                                             else:
                                                 self.command_action = self.range_attack_command_action[weapon]
-                                            self.new_angle = self.set_rotate(self.attack_target.base_pos)
+                                            self.new_angle = self.set_rotate(self.attack_subunit.base_pos)
 
                                         if self.unit_leader and not self.unit_leader.player_manual_control and not self.unit_leader.command_action and not self.unit_leader.current_action:
                                             if self.unit_leader.available_unit_range_skill:

@@ -1,7 +1,5 @@
-import ast
-import csv
-import os
 import random
+import threading
 
 import pygame
 import pygame.freetype
@@ -9,6 +7,9 @@ from PIL import Image, ImageFilter, ImageOps
 
 
 class BaseMap(pygame.sprite.Sprite):
+    terrain_list = None
+    terrain_colour = None
+
     def __init__(self, main_dir):
         self._layer = 0
         pygame.sprite.Sprite.__init__(self)
@@ -16,20 +17,6 @@ class BaseMap(pygame.sprite.Sprite):
 
         self.map_array = ()
         self.max_map_array = (0, 0)
-        self.terrain_colour = {}
-        with open(os.path.join(self.main_dir, "data", "map", "terrain.csv"), encoding="utf-8",
-                  mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            for row_index, row in enumerate(rd):
-                if row_index > 0:
-                    for n, i in enumerate(row):
-                        if i.isdigit():
-                            row[n] = int(i)
-                        elif "," in i:
-                            row[n] = ast.literal_eval(i)
-                    self.terrain_colour[row[0]] = row[1:]
-        self.terrain_list = tuple(self.terrain_colour.keys())
-        self.terrain_colour = tuple([value[0] for value in self.terrain_colour.values()])
 
     def draw_image(self, image):
         self.map_array = tuple([[tuple(col) for col in row] for row in pygame.surfarray.array3d(image).tolist()])
@@ -49,6 +36,8 @@ class BaseMap(pygame.sprite.Sprite):
 class FeatureMap(pygame.sprite.Sprite):
     main_dir = None
     feature_mod = None
+    feature_list = None
+    feature_colour = None
 
     def __init__(self, main_dir):
         self._layer = 0
@@ -57,21 +46,6 @@ class FeatureMap(pygame.sprite.Sprite):
 
         self.map_array = ()
         self.max_map_array = (0, 0)
-        self.feature_colour = {}
-        with open(os.path.join(self.main_dir, "data", "map", "feature.csv"), encoding="utf-8",
-                  mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            for row_index, row in enumerate(rd):
-                if row_index > 0:
-                    for n, i in enumerate(row):
-                        if i.isdigit():
-                            row[n] = int(i)
-                        elif "," in i:
-                            row[n] = ast.literal_eval(i)
-                    self.feature_colour[row[0]] = row[1:]
-
-        self.feature_list = tuple(self.feature_colour.keys())
-        self.feature_colour = tuple([value[0] for value in self.feature_colour.values()])
 
     def draw_image(self, image):
         self.map_array = tuple([[tuple(col) for col in row] for row in pygame.surfarray.array3d(image).tolist()])
@@ -170,6 +144,7 @@ class BeautifulMap(pygame.sprite.Sprite):
     empty_texture = None
     load_texture_list = None
     main_dir = None
+    battle_map_colour = None
 
     def __init__(self, main_dir, screen_scale, height_map):
         self._layer = 0
@@ -179,18 +154,6 @@ class BeautifulMap(pygame.sprite.Sprite):
         self.height_map = height_map
         self.scale = 1
         self.mode = 0
-        self.battle_map_colour = {}
-        with open(os.path.join(self.main_dir, "data", "map", "colourchange.csv"), encoding="utf-8",
-                  mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-            for row_index, row in enumerate(rd):
-                if row_index > 0:
-                    for n, i in enumerate(row):
-                        if i.isdigit():
-                            row[n] = int(i)
-                        elif "," in i:
-                            row[n] = ast.literal_eval(i)
-                    self.battle_map_colour[row[0]] = row[1:]
 
         self.true_image = None  # image before adding effect and place name
         self.base_image = None  # image before adding height map mode
@@ -202,6 +165,7 @@ class BeautifulMap(pygame.sprite.Sprite):
 
         for row_pos in range(0, self.image.get_width()):  # recolour the map
             speed_array = []
+            def_array = []
             for col_pos in range(0, self.image.get_height()):
                 terrain, feature = feature_map.get_feature((row_pos, col_pos), base_map)
                 new_colour = self.battle_map_colour[feature][1]
@@ -210,10 +174,11 @@ class BeautifulMap(pygame.sprite.Sprite):
 
                 map_feature_mod = feature_map.feature_mod[feature]
                 speed_mod = int(map_feature_mod["Infantry Speed/Charge Effect"] * 100)
-                # infcombatmod = int(map_feature_mod[3] * 100)
-                # cavcombatmod = int(map_feature_mod[6] * 100)
+                def_mod = int(map_feature_mod["Infantry Defence Effect"] * 100)
                 speed_array.append(speed_mod)
+                def_array.append(def_mod)
             battle.map_move_array.append(speed_array)
+            battle.map_def_array.append(def_array)
 
         # Blur map to make it look older
         data = pygame.image.tostring(self.image, "RGB")  # convert image to string data for filtering effect
@@ -239,9 +204,9 @@ class BeautifulMap(pygame.sprite.Sprite):
                     terrain, this_feature = feature_map.get_feature(random_pos, base_map)
                     feature = self.texture_images[
                         self.load_texture_list.index(self.battle_map_colour[this_feature][0])]
+
                     choose = random.randint(0, len(feature) - 1)
-                    if this_feature - (terrain * 12) in (0, 1, 4, 5, 7) and \
-                            random.randint(0, 100) < 60:  # reduce special texture in empty terrain like glassland
+                    if random.randint(0, 100) < feature_map.feature_mod[this_feature]["Texture Density"]:
                         this_texture = self.empty_texture  # empty texture
                     else:
                         this_texture = feature[choose]
@@ -257,6 +222,16 @@ class BeautifulMap(pygame.sprite.Sprite):
             self.place_name_map = pygame.Surface((0, 0))
 
         self.true_image = self.image.copy()
+
+    def change_map_stuff(self, which, *args):
+        if which == "effect":
+            t1 = threading.Thread(target=self.add_effect, args=args, daemon=True)
+            t1.start()
+            t1.join()
+        elif which == "mode":
+            t1 = threading.Thread(target=self.change_mode, daemon=True)
+            t1.start()
+            t1.join()
 
     def add_effect(self, effect_image=None, time_image=None):
         self.base_image = self.true_image.copy()

@@ -177,6 +177,7 @@ class Game:
         self.ruleset_list = csv_read(self.main_dir, "ruleset_list.csv", ("data", "ruleset"))  # get ruleset list
         self.ruleset_folder = str(self.ruleset_list[self.ruleset][1]).strip("/")
 
+        self.map_type = ""
         self.map_source = 0  # current selected map source
         self.team_selected = 1
         self.char_selected = 0
@@ -325,9 +326,8 @@ class Game:
         self.map_description = menu.DescriptionBox(battle_select_image["map_description"], self.screen_scale,
                                                    (self.screen_rect.width / 2, self.screen_rect.height / 1.3))
         self.map_show = menu.MapPreview(self.main_dir, self.screen_scale,
-                                        (self.screen_rect.width / 2, self.screen_rect.height / 3),
-                                        self.battle_base_map.terrain_colour, self.battle_feature_map.feature_colour,
-                                        self.battle_map.battle_map_colour)
+                                        (self.screen_rect.width / 2, self.screen_rect.height / 3))
+
         self.source_description = menu.DescriptionBox(battle_select_image["source_description"], self.screen_scale,
                                                       (self.screen_rect.width / 2, self.screen_rect.height / 1.3),
                                                       text_size=24)
@@ -591,7 +591,23 @@ class Game:
                                                                                               self.ruleset_folder,
                                                                                               self.language)
 
-        self.battle_map_data = datamap.BattleMapData(self.main_dir, self.screen_scale, self.ruleset, self.language)
+        self.battle_map_data = datamap.BattleMapData(self.main_dir, self.screen_scale, self.ruleset_folder,
+                                                     self.language)
+
+        self.battle.battle_map_base.terrain_list = self.battle_map_data.terrain_list
+        self.battle.battle_map_base.terrain_colour = self.battle_map_data.terrain_colour
+        self.battle.battle_map_feature.feature_list = self.battle_map_data.feature_list
+        self.battle.battle_map_feature.feature_colour = self.battle_map_data.feature_colour
+        self.battle.battle_map_feature.feature_mod = self.battle_map_data.feature_mod
+
+        self.battle.battle_map.battle_map_colour = self.battle_map_data.battle_map_colour
+        self.battle.battle_map.texture_images = self.battle_map_data.map_texture
+        self.battle.battle_map.load_texture_list = self.battle_map_data.texture_folder
+        self.battle.battle_map.empty_texture = self.battle_map_data.empty_image
+
+        self.map_show.terrain_colour = self.battle_map_data.terrain_colour
+        self.map_show.feature_colour = self.battle_map_data.feature_colour
+        self.map_show.battle_map_colour = self.battle_map_data.battle_map_colour
 
         self.battle.battle_map_data = self.battle_map_data
         self.battle.weather_data = self.battle_map_data.weather_data
@@ -797,6 +813,7 @@ class Game:
                     self.menu_main(mouse_left_up)
 
                 elif self.menu_state == "preset_map" or self.menu_state == "custom_map":
+                    self.map_type = self.menu_state[:-4]
                     self.menu_map_select(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "team_select":
