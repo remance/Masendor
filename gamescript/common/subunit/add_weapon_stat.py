@@ -8,6 +8,7 @@ def add_weapon_stat(self):
     self.timing_start_weapon = {0: [], 1: []}
     self.timing_end_weapon = {0: [], 1: []}
     self.weapon_type = {0: ["melee", "melee"], 1: ["melee", "melee"]}
+
     for set_index, weapon_set in enumerate(self.weapon_set):
         for weapon_index, weapon in enumerate(weapon_set):
             weapon_stat = self.troop_data.weapon_list[weapon[0]]

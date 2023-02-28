@@ -2,15 +2,13 @@ import math
 import random
 
 import pygame
-from gamescript import damagesprite
+from gamescript import damagesprite, effectsprite
 from gamescript.common import utility
 
 convert_degree_to_360 = utility.convert_degree_to_360
 
 
 def attack(self, attack_type):
-    weapon = self.current_action["weapon"]
-    equipped_weapon_data = self.equipped_weapon_data[weapon]
     base_target = None
     if self.attack_subunit:
         base_target = self.attack_subunit.base_pos
@@ -18,12 +16,19 @@ def attack(self, attack_type):
         base_target = self.attack_pos
 
     if base_target:
+        if "weapon" in self.current_action:
+            weapon = self.current_action["weapon"]
+            equipped_weapon_data = self.equipped_weapon_data[weapon]
+        else:
+            weapon = None
+            equipped_weapon_data = None
+
         if attack_type == "range":
             max_range = self.shoot_range[weapon]
 
             accuracy = self.accuracy
             sight_penalty = 1
-            if self.current_action["weapon"] in self.equipped_timing_weapon and \
+            if weapon in self.equipped_timing_weapon and \
                 self.equipped_timing_start_weapon[weapon] < self.release_timer < self.equipped_timing_end_weapon[weapon]:
                 # release in timing bonus time, get accuracy boost
                 accuracy *= 1.5
@@ -86,7 +91,7 @@ def attack(self, attack_type):
 
                 damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
                                           self.weapon_penetrate[self.equipped_weapon][weapon], equipped_weapon_data,
-                                          attack_type, base_target, accuracy=accuracy, arc_shot=arc_shot)
+                                          attack_type, self.front_pos, base_target, accuracy=accuracy, arc_shot=arc_shot)
 
             self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
 
@@ -106,13 +111,20 @@ def attack(self, attack_type):
                     equipped_weapon_data["Shake Power"])
 
         elif attack_type == "charge":
-            damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
-                                      self.weapon_penetrate[self.equipped_weapon][weapon],
-                                      equipped_weapon_data, "charge", self.base_pos, accuracy=self.melee_attack)
+            if weapon:
+                damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
+                                          self.weapon_penetrate[self.equipped_weapon][weapon],
+                                          equipped_weapon_data, "charge", self.base_pos, self.base_pos,
+                                          accuracy=self.melee_attack)
+            else:  # charge without using weapon (by running)
+                damagesprite.DamageSprite(self, weapon, self.body_weapon_damage,
+                                          self.body_weapon_penetrate,
+                                          self.body_weapon_stat, "charge", self.base_pos, self.base_pos,
+                                          accuracy=self.melee_attack)
 
         else:  # melee attack
             accuracy = self.melee_attack
-            if self.current_action["weapon"] in self.equipped_timing_weapon and \
+            if weapon in self.equipped_timing_weapon and \
                 self.equipped_timing_start_weapon[weapon] < self.release_timer < self.equipped_timing_end_weapon[weapon]:
                 # release in timing bonus time, get accuracy boost
                 accuracy *= 1.5
@@ -125,7 +137,8 @@ def attack(self, attack_type):
                                                                   math.cos(math.radians(base_angle))))
             damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
                                       self.weapon_penetrate[self.equipped_weapon][weapon],
-                                      equipped_weapon_data, attack_type, base_target, accuracy=accuracy)
+                                      equipped_weapon_data, attack_type, self.base_pos,
+                                      base_target, accuracy=accuracy)
 
             self.weapon_cooldown[weapon] = 0  # melee weapon use cooldown for attack
 
@@ -135,7 +148,22 @@ def attack(self, attack_type):
                     self.base_pos, equipped_weapon_data["Sound Distance"],
                     equipped_weapon_data["Shake Power"])
 
-        self.stamina -= self.weapon_weight[self.equipped_weapon][weapon]
         self.release_timer = 0  # reset release timer after attack
 
+        if equipped_weapon_data:
+            self.stamina -= self.weapon_weight[self.equipped_weapon][weapon]
+            if equipped_weapon_data["After Attack Effect"]:
+                effect_stat = self.effect_list[equipped_weapon_data["After Attack Effect"]]
+                dmg = {key: effect_stat[key + " Damage"] for key in self.original_element_resistance if
+                       key + " Damage" in effect_stat}
+                if sum(dmg.values()) <= 0:
+                    dmg = None
+                else:
+                    dmg = {key: (value / 2, value) for key, value in dmg.items()}
 
+                # use end of sprite instead of front_pos so effect not show up inside troop body sprite
+
+                damagesprite.DamageSprite(self, equipped_weapon_data["After Attack Effect"], dmg,
+                                          effect_stat["Armour Penetration"], effect_stat, "effect",
+                                          self.front_pos, self.front_pos,
+                                          reach_effect=effect_stat["After Reach Effect"])

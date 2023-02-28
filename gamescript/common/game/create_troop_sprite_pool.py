@@ -17,20 +17,39 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
     for subunit_id, this_subunit in who_todo.items():
         sprite_id = str(this_subunit["Sprite ID"])
         race = self.troop_data.race_list[this_subunit["Race"]]["Name"]
-        mount_race = self.troop_data.mount_list[this_subunit["Mount"][0]]["Race"]  # get mount id
-        mount_race = self.troop_data.race_list[mount_race]["Name"]  # replace id with name
-
+        mount_race = "None"
         final_race_name = race + "_"
-        if mount_race != "None":
+        troop_armour = "None"
+        troop_armour_id = 0
+        if this_subunit["Armour"]:
+            troop_armour_id = this_subunit["Armour"][0]
+            troop_armour = self.troop_data.armour_list[troop_armour_id]["Name"]
+
+        armour_name = (troop_armour, "None")
+        armour_id = (troop_armour_id, 0)
+        if this_subunit["Mount"]:
+            mount_race = self.troop_data.mount_list[this_subunit["Mount"][0]]["Race"]  # get mount id
+            mount_race = self.troop_data.race_list[mount_race]["Name"]  # replace id with name
             final_race_name = race + "&" + mount_race + "_"
-        primary_main_weapon = this_subunit["Primary Main Weapon"][0]
-        primary_sub_weapon = this_subunit["Primary Sub Weapon"][0]
-        secondary_main_weapon = this_subunit["Secondary Main Weapon"][0]
-        secondary_sub_weapon = this_subunit["Secondary Sub Weapon"][0]
+            armour_name = (troop_armour, self.troop_data.mount_armour_list[this_subunit["Mount"][2]]["Name"])
+            armour_id = (troop_armour_id, this_subunit["Mount"][2])
+
+        primary_main_weapon = 1
+        primary_sub_weapon = 1
+        secondary_main_weapon = 1
+        secondary_sub_weapon = 1
+
+        if this_subunit["Primary Main Weapon"]:
+            primary_main_weapon = this_subunit["Primary Main Weapon"][0]
+        if this_subunit["Primary Sub Weapon"]:
+            primary_sub_weapon = this_subunit["Primary Sub Weapon"][0]
+        if this_subunit["Secondary Main Weapon"]:
+            secondary_main_weapon = this_subunit["Secondary Main Weapon"][0]
+        if this_subunit["Secondary Sub Weapon"]:
+            secondary_sub_weapon = this_subunit["Secondary Sub Weapon"][0]
+
         hand_weapon_list = (
             (primary_main_weapon, primary_sub_weapon), (secondary_main_weapon, secondary_sub_weapon))
-        armour = (self.troop_data.armour_list[this_subunit["Armour"][0]]["Name"],
-                  self.troop_data.mount_armour_list[this_subunit["Mount"][2]]["Name"])
 
         weapon_key = (str(primary_main_weapon) + "," + str(primary_sub_weapon),
                       str(secondary_main_weapon) + "," + str(secondary_sub_weapon))
@@ -102,7 +121,7 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
                                                    sprite_data, animation_property,
                                                    (0, subunit_weapon_list[0],
                                                     (self.troop_data.weapon_list[primary_main_weapon]["Hand"],
-                                                     self.troop_data.weapon_list[primary_sub_weapon]["Hand"])), armour,
+                                                     self.troop_data.weapon_list[primary_sub_weapon]["Hand"])), armour_name,
                                                    self.generic_animation_pool[idle_animation_name][0])
             sprite_pic, center_offset = crop_sprite(sprite_dict["sprite"])
 
@@ -132,14 +151,14 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
                 next_level[mount_race] = {}
 
             next_level = next_level[mount_race]
-            if this_subunit["Armour"][0] not in next_level:
-                next_level[this_subunit["Armour"][0]] = {}
+            if armour_id[0] not in next_level:
+                next_level[armour_id[0]] = {}
 
-            next_level = next_level[this_subunit["Armour"][0]]
-            if this_subunit["Mount"][2] not in next_level:
-                next_level[this_subunit["Mount"][2]] = {}
+            next_level = next_level[armour_id[0]]
+            if armour_id[1] not in next_level:
+                next_level[armour_id[1]] = {}
 
-            next_level = next_level[this_subunit["Mount"][2]]
+            next_level = next_level[armour_id[1]]
             if weapon_key[0] not in next_level:
                 next_level[weapon_key[0]] = {}
             if weapon_key[1] not in next_level:
@@ -248,7 +267,7 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
                                                                          self.troop_data.weapon_list[
                                                                              hand_weapon_list[weapon_set_index][
                                                                                  1]]["Hand"])),
-                                                                       armour, idle_animation[0])
+                                                                       armour_name, idle_animation[0])
                                 sprite_pic = sprite_dict["sprite"]
                                 sprite_pic, center_offset = crop_sprite(sprite_pic)
                                 sprite_pic = pygame.transform.smoothscale(sprite_pic, (

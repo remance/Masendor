@@ -1,5 +1,5 @@
 "ID","Name","Physical Resistance","Fire Resistance","Water Resistance","Air Resistance","Poison Resistance","Weight","Cost","Trait","Type"
-1,"None",0,,,,,0,0,,"Light Armour"
+1,"Bronze Plate Armour",60,,,,,50,4000,,"Medium Armour"
 2,"Padded Armour",30,,,,,20,1000,,"Light Armour"
 3,"Leather Armour",25,,,20,,14,900,,"Light Armour"
 4,"Fur Armour",35,-10,-5,10,10,26,1500,"31,50","Light Armour"
@@ -28,7 +28,7 @@
 27,"Desert Armour",20,,,,,7,1000,"32,49","Light Armour"
 28,"Gladiator Armor",27,,,,,7,1250,,"Light Armour"
 29,"Brunia Armour",,,,,,,,,
-30,"Bronze Plate Armour",60,,,,,50,4000,,"Medium Armour"
+30,,,,,,,,,,
 31,,,,,,,,,,
 32,,,,,,,,,,
 33,,,,,,,,,,

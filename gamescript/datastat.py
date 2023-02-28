@@ -35,7 +35,7 @@ class TroopData:
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
             for index, row in enumerate(rd[1:]):
                 for n, i in enumerate(row):
-                    row = stat_convert(row, n, i, tuple_column=tuple_column, int_column=int_column, true_empty=True)
+                    row = stat_convert(row, n, i, tuple_column=tuple_column, int_column=int_column)
                 self.special_effect_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
 
@@ -45,21 +45,21 @@ class TroopData:
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
-            int_column = ["ID", "Max Stack", "Temperature Change", "Physical Resistance Bonus",
+            int_column = ("ID", "Max Stack", "Temperature Change", "Physical Resistance Bonus",
                           "Fire Resistance Bonus", "Water Resistance Bonus",
                           "Air Resistance Bonus", "Earth Resistance Bonus", "Magic Resistance Bonus",
-                          "Heat Resistance Bonus", "Cold Resistance Bonus", "Poison Resistance Bonus"]  # value int only
-            tuple_column = ["Special Effect", "Status Conflict"]  # value in tuple only
-            mod_column = ["Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect",
+                          "Heat Resistance Bonus", "Cold Resistance Bonus", "Poison Resistance Bonus")  # value int only
+            tuple_column = ("Special Effect", "Status Conflict")  # value in tuple only
+            mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect",
                           "Speed Effect", "Accuracy Effect", "Reload Effect",
-                          "Charge Effect"]  # need to be calculated to percentage
+                          "Charge Effect")  # need to be calculated to percentage
             int_column = [index for index, item in enumerate(header) if item in int_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]
             for index, row in enumerate(rd[1:]):
                 for n, i in enumerate(row):
                     row = stat_convert(row, n, i, mod_column=mod_column, tuple_column=tuple_column,
-                                       int_column=int_column, true_empty=True)
+                                       int_column=int_column)
                 self.status_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
@@ -96,7 +96,7 @@ class TroopData:
             for index, row in enumerate(rd[1:]):
                 for n, i in enumerate(row):
                     row = stat_convert(row, n, i, list_column=list_column, tuple_column=tuple_column,
-                                       int_column=int_column, true_empty=True)
+                                       int_column=int_column)
                 self.race_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
@@ -113,7 +113,7 @@ class TroopData:
             for index, row in enumerate(rd[1:]):
                 for n, i in enumerate(row):
                     row = stat_convert(row, n, i, list_column=list_column,
-                                       int_column=int_column, true_empty=True)
+                                       int_column=int_column)
                 self.grade_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
@@ -136,7 +136,7 @@ class TroopData:
             for index, row in enumerate(rd[1:]):
                 for n, i in enumerate(row):
                     row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
-                                       tuple_column=tuple_column, int_column=int_column, true_empty=True)
+                                       tuple_column=tuple_column, int_column=int_column)
                 self.skill_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
                 self.skill_list[row[0]]["Shake Power"] = int(self.skill_list[row[0]]["Sound Distance"] / 10)
         edit_file.close()
@@ -173,7 +173,7 @@ class TroopData:
             for index, row in enumerate(rd[1:]):
                 for n, i in enumerate(row):
                     row = stat_convert(row, n, i, percent_column=percent_column, mod_column=mod_column,
-                                       tuple_column=tuple_column, int_column=int_column, true_empty=True)
+                                       tuple_column=tuple_column, int_column=int_column)
                 self.trait_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
@@ -236,7 +236,7 @@ class TroopData:
                 for row_index, row in enumerate(rd[1:]):
                     for n, i in enumerate(row):
                         row = stat_convert(row, n, i, percent_column=percent_column, list_column=list_column,
-                                           tuple_column=tuple_column, int_column=int_column, true_empty=True)
+                                           tuple_column=tuple_column, int_column=int_column)
                     self.weapon_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
                     self.weapon_list[row[0]]["Shake Power"] = int(self.weapon_list[row[0]]["Sound Distance"] / 10)
                     self.weapon_list[row[0]]["Bullet Shake Power"] = int(self.weapon_list[row[0]]["Bullet Sound Distance"] / 10)
@@ -268,7 +268,7 @@ class TroopData:
             for row_index, row in enumerate(rd[1:]):
                 for n, i in enumerate(row):
                     row = stat_convert(row, n, i, list_column=list_column, tuple_column=tuple_column,
-                                       int_column=int_column, true_empty=True)
+                                       int_column=int_column)
                 self.armour_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
@@ -295,7 +295,7 @@ class TroopData:
             for row_index, row in enumerate(rd[1:]):
                 for n, i in enumerate(row):
                     row = stat_convert(row, n, i, tuple_column=tuple_column, list_column=list_column,
-                                       int_column=int_column, true_empty=True)
+                                       int_column=int_column)
                 self.mount_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
@@ -321,7 +321,7 @@ class TroopData:
             for index, row in enumerate(rd[1:]):
                 for n, i in enumerate(row):
                     row = stat_convert(row, n, i, list_column=list_column,
-                                       int_column=int_column, true_empty=True)
+                                       int_column=int_column)
                 self.mount_grade_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
@@ -337,8 +337,7 @@ class TroopData:
             self.mount_armour_list_header = {k: v for v, k in enumerate(header[1:])}
             for row_index, row in enumerate(rd[1:]):
                 for n, i in enumerate(row):
-                    row = stat_convert(row, n, i, tuple_column=tuple_column, int_column=int_column,
-                                       true_empty=True)
+                    row = stat_convert(row, n, i, tuple_column=tuple_column, int_column=int_column)
                 self.mount_armour_list[row[0]] = {header[index + 1]: stuff for index, stuff in
                                                   enumerate(row[1:])}
         edit_file.close()
@@ -378,15 +377,12 @@ class TroopData:
             # Add troop size to data
             for key in self.troop_list:
                 self.troop_list[key]["Size"] = 1
-                try:
+                if self.troop_list[key]["Mount"]:
                     mount_race = self.mount_list[self.troop_list[key]["Mount"][0]]["Race"]
                     if mount_race != 0:
                         self.troop_list[key]["Size"] = self.race_list[mount_race]["Size"] / 10
                     else:
                         self.troop_list[key]["size"] = self.race_list[self.troop_list[key]["Race"]]["Size"] / 10
-                except IndexError as notfound:
-                    print(key, "Troop does not have mount data")
-                    print(notfound)
 
         # Lore of the troop
         self.troop_lore = {}
@@ -409,7 +405,6 @@ class TroopData:
                 self.troop_sprite_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
 
-
         # Troop formation dict
         self.default_formation_list = {}
         part_folder = Path(os.path.join(main_dir, "data", "troop", "formation"))
@@ -430,6 +425,24 @@ class TroopData:
                         self.default_formation_list[formation_name].append(row)
             self.default_formation_list[formation_name] = np.array(
                 self.default_formation_list[formation_name])
+        edit_file.close()
+
+        # Effect that exist as its own sprite in battle
+        self.effect_list = {}
+        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "effect.csv"),
+                  encoding="utf-8", mode="r") as edit_file:
+            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
+            header = rd[0]
+            tuple_column = ("Status", "Properties")  # value in tuple only
+            mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect",
+                          "Speed Effect", "Accuracy Effect", "Reload Effect",
+                          "Charge Effect")  # need to be calculated to percentage
+            tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
+            mod_column = [index for index, item in enumerate(header) if item in mod_column]
+            for index, row in enumerate(rd[1:]):
+                for n, i in enumerate(row):
+                    row = stat_convert(row, n, i, mod_column=mod_column, tuple_column=tuple_column)
+                self.effect_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
 
@@ -464,7 +477,7 @@ class LeaderData:
             for index, row in enumerate(rd[1:]):
                 for n, i in enumerate(row):
                     row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
-                                       tuple_column=tuple_column, int_column=int_column, true_empty=True)
+                                       tuple_column=tuple_column, int_column=int_column)
                 self.skill_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
                 self.skill_list[row[0]]["Shake Power"] = int(self.skill_list[row[0]]["Sound Distance"] / 10)
         edit_file.close()
@@ -497,7 +510,7 @@ class LeaderData:
                 for n, i in enumerate(
                         row):
                     row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
-                                       tuple_column=tuple_column, int_column=int_column, true_empty=True)
+                                       tuple_column=tuple_column, int_column=int_column)
                 self.commander_skill_list[row[0]] = {header[index + 1]: stuff for index, stuff in
                                                      enumerate(row[1:])}
                 self.commander_skill_list[row[0]]["Shake Power"] = int(self.commander_skill_list[row[0]]["Sound Distance"] / 10)
@@ -546,7 +559,7 @@ class LeaderData:
             for row in rd[1:]:  # skip convert header row
                 for n, i in enumerate(row):
                     row = stat_convert(row, n, i, list_column=list_column, tuple_column=tuple_column,
-                                       int_column=int_column, true_empty=True)
+                                       int_column=int_column)
                 self.leader_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
@@ -559,22 +572,19 @@ class LeaderData:
             for row in rd[1:]:  # skip convert header row
                 for n, i in enumerate(row):
                     row = stat_convert(row, n, i, list_column=list_column, tuple_column=tuple_column,
-                                       int_column=int_column, true_empty=True)
+                                       int_column=int_column)
                 self.leader_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
         # Add leader race size to data
         for key in self.leader_list:
             self.leader_list[key]["Size"] = 1
-            try:
+            if self.leader_list[key]["Mount"]:
                 mount_race = troop_data.mount_list[self.leader_list[key]["Mount"][0]]["Race"]
                 if mount_race != 0:
                     self.leader_list[key]["Size"] = troop_data.race_list[mount_race]["Size"] / 10
                 else:
                     self.leader_list[key]["size"] = troop_data.race_list[self.leader_list[key]["Race"]]["Size"] / 10
-            except IndexError as notfound:
-                print(key, "Leader does not have mount data")
-                print(notfound)
 
         # Lore of the leader dict
         self.leader_lore = {}

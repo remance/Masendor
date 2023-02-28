@@ -622,8 +622,11 @@ class Game:
         subunit.Subunit.troop_sprite_list = self.troop_data.troop_sprite_list
         subunit.Subunit.leader_sprite_list = self.leader_data.leader_sprite_list
         subunit.Subunit.status_list = self.troop_data.status_list
-
         subunit.Subunit.all_formation_list = self.troop_data.default_formation_list
+        subunit.Subunit.effect_list = self.troop_data.effect_list
+
+        damagesprite.DamageSprite.effect_list = self.troop_data.effect_list
+        effectsprite.EffectSprite.effect_list = self.troop_data.effect_list
 
         self.preset_map_list, self.preset_map_folder, self.custom_map_list, \
         self.custom_map_folder = make_battle_list_data(self.main_dir, self.ruleset_folder, self.language)

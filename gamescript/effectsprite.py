@@ -9,7 +9,7 @@ from gamescript.common.damagesprite import play_animation
 class EffectSprite(pygame.sprite.Sprite):
     effect_sprite_pool = None
     effect_animation_pool = None
-    effect_stat = None
+    effect_list = None
     sound_effect_pool = None
     battle = None
     screen_scale = (1, 1)
@@ -20,6 +20,7 @@ class EffectSprite(pygame.sprite.Sprite):
     play_animation = play_animation.play_animation  # use play_animation from damage sprite
 
     def __init__(self, attacker, base_pos, pos, target, angle, duration, sprite_type, sprite_name):
+        """Effect sprite that does not affect subunit in any way"""
         self._layer = 10000000
         pygame.sprite.Sprite.__init__(self, self.containers)
 
@@ -46,8 +47,8 @@ class EffectSprite(pygame.sprite.Sprite):
             animation_name = sprite_name[1]
 
         if sprite_type in self.sound_effect_pool:
-            self.travel_sound_distance = self.effect_stat[sprite_type]["Sound Distance"]
-            self.travel_shake_power = self.effect_stat[sprite_type]["Shake Power"]
+            self.travel_sound_distance = self.effect_list[sprite_type]["Sound Distance"]
+            self.travel_shake_power = self.effect_list[sprite_type]["Shake Power"]
             self.sound_effect_name = random.choice(self.sound_effect_pool[sprite_type])
             self.sound_duration = pygame.mixer.Sound(self.sound_effect_name).get_length()
             self.sound_timer = 0  # start playing right away when first update

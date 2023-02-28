@@ -20,6 +20,7 @@ class DamageSprite(pygame.sprite.Sprite):
     bullet_weapon_sprite_pool = None
     effect_sprite_pool = None
     effect_animation_pool = None
+    effect_list = None
     screen_scale = (1, 1)
     sound_effect_pool = None
     height_map = None
@@ -44,9 +45,10 @@ class DamageSprite(pygame.sprite.Sprite):
             exec(f"from gamescript.common.damagesprite import " + file_name)
             exec(f"" + file_name + " = " + file_name + "." + file_name)
 
-    def __init__(self, attacker, weapon, dmg, penetrate, weapon_stat,
-                 attack_type, base_target, accuracy=None, arc_shot=False, height_ignore=False, degrade_when_travel=True,
+    def __init__(self, attacker, weapon, dmg, penetrate, stat, attack_type, base_pos, base_target, accuracy=None,
+                 arc_shot=False, height_ignore=False, degrade_when_travel=True,
                  degrade_when_hit=True, random_direction=False, random_move=False, reach_effect=None):
+        """Damage or effect sprite that can affect subunit"""
         self._layer = 10000001
         pygame.sprite.Sprite.__init__(self, self.containers)
 
@@ -57,6 +59,7 @@ class DamageSprite(pygame.sprite.Sprite):
         self.attack_type = attack_type
         self.impact_effect = None
         self.arc_shot = arc_shot
+        self.reach_effect = reach_effect
 
         self.height_ignore = height_ignore
         self.degrade_when_travel = degrade_when_travel
@@ -65,7 +68,7 @@ class DamageSprite(pygame.sprite.Sprite):
         self.random_move = random_move
 
         self.aoe = False  # TODO add condition
-        self.deal_dmg = True
+        self.effect_stat = None
 
         self.scale_size = 1
         self.frame_timer = 0
@@ -81,47 +84,65 @@ class DamageSprite(pygame.sprite.Sprite):
         self.attacker_sprite_direction = self.attacker.sprite_direction
         self.already_hit = []  # list of subunit already got hit by sprite for sprite with no duration
 
-        self.dmg = {key: random.uniform(value[0], value[1]) for key, value in dmg.items()}
-        if self.attacker.release_timer > 1 and \
-                self.attacker.current_action["weapon"] in self.attacker.equipped_power_weapon:  # apply power hold buff
-            for key in self.dmg:
-                self.dmg[key] *= 1.5
+        self.dmg = dmg
+        self.deal_dmg = False
+        if dmg:  # has damage to deal
+            self.deal_dmg = True
+            self.dmg = {key: random.uniform(value[0], value[1]) for key, value in dmg.items()}
+            if self.attacker.release_timer > 1 and \
+                    self.attacker.current_action["weapon"] in self.attacker.equipped_power_weapon:  # apply power hold buff
+                for key in self.dmg:
+                    self.dmg[key] *= 1.5
 
         self.penetrate = penetrate
-        self.knock_power = weapon_stat["Impact"]
+        self.knock_power = stat["Impact"]
 
         self.pass_subunit = None  # subunit that damage sprite passing through, receive damage if movement stop
 
         self.base_target = base_target
 
         if self.attack_type == "charge":  # charge attack use subunit hitbox as damage sprite with no its own image
-            self.base_pos = self.attacker.base_pos  # always move along with attacker
+            self.base_pos = base_pos  # always move along with attacker
             self.angle = self.attacker.angle
             self.rect = self.attacker.hitbox.rect
 
             self.battle.battle_camera.remove(self)
 
+        elif self.attack_type == "effect":
+            self.base_pos = pygame.Vector2(base_pos)
+            self.angle = self.attacker.angle
+            self.effect_stat = self.effect_list[weapon]
+
+            if "(team)" in weapon:
+                self.current_animation = self.effect_animation_pool[weapon][self.attacker.team][weapon]
+            else:
+                self.current_animation = self.effect_animation_pool[weapon][weapon]
+
+            self.image = self.current_animation[self.show_frame]
+            self.pos = pygame.Vector2(self.attacker.pos)
+            self.rect = self.image.get_rect(center=self.pos)
+
         else:
             if self.attack_type == "range":
                 self.repeat_animation = True
-                self.base_pos = pygame.Vector2(self.attacker.front_pos)
+                self.base_pos = pygame.Vector2(base_pos)
                 self.angle = self.set_rotate(self.base_target)
 
-                self.speed = weapon_stat["Travel Speed"]  # bullet travel speed
+                self.speed = stat["Travel Speed"]  # bullet travel speed
 
-                if weapon_stat["Damage Sprite"] != "self":
-                    sprite_name = weapon_stat["Damage Sprite"]
+                if stat["Damage Sprite"] != "self":
+                    sprite_name = stat["Damage Sprite"]
                     self.image = self.bullet_sprite_pool[sprite_name]["base"]
                 else:  # use weapon image itself as bullet image
-                    sprite_name = weapon_stat["Name"]
+                    sprite_name = stat["Name"]
                     image_name = "base_main"
                     if weapon == 1:
                         image_name = "base_sub"
                     self.image = self.bullet_weapon_sprite_pool[sprite_name][
                         attacker.weapon_version[attacker.equipped_weapon][weapon]][image_name]
                 if sprite_name in self.sound_effect_pool:
-                    self.travel_sound_distance = weapon_stat["Bullet Sound Distance"]
-                    self.travel_shake_power = weapon_stat["Bullet Shake Power"]
+                    self.travel_sound_distance = stat["Bullet Sound Distance"]
+                    self.travel_shake_power = stat["Bullet Shake Power"]
                     self.sound_effect_name = random.choice(self.sound_effect_pool[sprite_name])
                     self.sound_duration = pygame.mixer.Sound(self.sound_effect_name).get_length() * 1000 / self.speed
                     self.sound_timer = self.sound_duration / 1.5  # wait a bit before start playing
@@ -129,7 +150,7 @@ class DamageSprite(pygame.sprite.Sprite):
                     if self.sound_duration > 2:
                         self.sound_timer = self.sound_duration / 0.5
 
-            elif isinstance(self.attack_type, (list, tuple, dict)):
+            elif isinstance(self.attack_type, (list, tuple, dict)):  # melee use animation part as attack type
                 self.sprite_direction = self.attacker.sprite_direction
                 self.scale_size = self.attack_type[7]
 
@@ -139,11 +160,11 @@ class DamageSprite(pygame.sprite.Sprite):
                 else:
                     animation_name = self.attack_type[1]
 
-                self.current_animation = self.effect_animation_pool[weapon_stat["Damage Sprite"]][self.attacker.team][animation_name]
+                self.current_animation = self.effect_animation_pool[stat["Damage Sprite"]][self.attacker.team][animation_name]
 
                 self.image = self.current_animation[self.show_frame]
 
-                self.base_pos = self.attacker.base_pos
+                self.base_pos = base_pos  # for setting angle first
                 self.angle = self.set_rotate(self.base_target)
                 self.base_pos = base_target
 
@@ -172,6 +193,25 @@ class DamageSprite(pygame.sprite.Sprite):
 
         self.base_image = self.image.copy()
 
+    def reach_target(self):
+        self.deal_dmg = False
+        if self.reach_effect:
+            effect_stat = self.effect_list[self.reach_effect]
+            dmg = {key.split("Damage")[0]: (value / 2, value) for key, value in effect_stat.items() if " Damage" in key}
+            DamageSprite(self, self.reach_effect, dmg, effect_stat["Armour Penetration"], effect_stat, "effect",
+                         self.base_pos, self.base_pos, reach_effect=effect_stat["After Reach Effect"])
+
+        if self.effect_stat:
+            finish_effect = self.effect_stat["End Effect"]
+            if finish_effect:
+                effect_stat = self.effect_list[finish_effect]
+                dmg = {key.split("Damage")[0]: (value / 2, value) for key, value in effect_stat.items() if
+                       " Damage" in key}
+                DamageSprite(self, self.effect_stat["End Effect"], dmg, effect_stat["Armour Penetration"],
+                             effect_stat, "effect", self.base_pos, self.base_pos,
+                             reach_effect=effect_stat["After Reach Effect"])
+        self.clean_object()
+
     def update(self, subunit_list, dt):
         done = False
         just_start = False
@@ -190,12 +230,20 @@ class DamageSprite(pygame.sprite.Sprite):
             done, just_start = self.play_animation(0.05, dt, False)
             if just_start:
                 self.adjust_sprite()
-
-        # Check for collision with subunit and deal damage
-        if self.deal_dmg:  # sprite can still deal damage
-            for this_subunit in subunit_list:  # collide check
-                if this_subunit.team != self.attacker.team and this_subunit.game_id not in self.already_hit and \
-                        this_subunit.hitbox.rect.colliderect(self.rect):
+        if self.attack_type == "effect":  # effect type can affect any subunit
+            for this_subunit in subunit_list:
+                if this_subunit.game_id not in self.already_hit and this_subunit.hitbox.rect.colliderect(self.rect):
+                    this_subunit.apply_effect(self.weapon, self.effect_stat,
+                                              this_subunit.status_effect, this_subunit.status_duration)
+                    if self.effect_stat["Status"]:
+                        for status in self.effect_stat["Status"]:
+                            this_subunit.apply_effect(status, this_subunit.status_list[status],
+                                                      this_subunit.status_effect, this_subunit.status_duration)
+                    self.already_hit.append(this_subunit.game_id)
+        else:
+            for subunit in self.attacker.near_enemy:  # collide check
+                this_subunit = subunit[0]
+                if this_subunit.alive and this_subunit.game_id not in self.already_hit and this_subunit.hitbox.rect.colliderect(self.rect):
                     if self.full_distance:  # range attack
                         if self.arc_shot:  # arc shot does not hit during travel
                             pass_subunit = this_subunit
@@ -203,20 +251,19 @@ class DamageSprite(pygame.sprite.Sprite):
                             self.hit_register(this_subunit)
                             self.already_hit.append(this_subunit.game_id)
                             if self.penetrate <= 0:
-                                self.deal_dmg = False
-                                self.clean_object()
+                                self.reach_target()
                                 return
-                    else:
+                    else:  # melee attack
                         self.hit_register(this_subunit)
                         self.already_hit.append(this_subunit.game_id)
-                        if self.penetrate <= 0:
-                            self.deal_dmg = False
-                            break
+                        if self.attack_type == "melee" and self.penetrate <= 0:
+                            self.reach_target()
+                            break  # use break for melee to last until animation done
 
         if self.distance_progress >= 100:  # attack reach target pos
             if self.arc_shot and pass_subunit:  # arc shot hit last pass when land
                 self.hit_register(pass_subunit)
-            self.clean_object()  # remove sprite
+            self.reach_target()
             return
 
         if self.full_distance:  # damage sprite that can move like range attack or spell
@@ -241,7 +288,7 @@ class DamageSprite(pygame.sprite.Sprite):
                     self.base_pos += move
                     if not self.arc_shot and not self.height_ignore and \
                             self.height_map.get_height(self.base_pos) > self.height + 20:
-                        self.clean_object()  # direct shot will not be able to shoot pass higher height terrain midway
+                        self.reach_target()  # direct shot will not be able to shoot pass higher height terrain midway
                         return
 
                     self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
@@ -251,7 +298,7 @@ class DamageSprite(pygame.sprite.Sprite):
                     if not self.random_move and (
                             self.base_pos[0] <= 0 or self.base_pos[0] >= self.battle.map_corner[0] or
                             self.base_pos[1] <= 0 or self.base_pos[1] >= self.battle.map_corner[1]):  # pass outside of map
-                        self.clean_object()
+                        self.reach_target()
                         return
 
                     if self.degrade_when_travel:  # dmg and penetration power drop the longer damage sprite travel
@@ -261,7 +308,7 @@ class DamageSprite(pygame.sprite.Sprite):
                         if self.penetrate > 1:
                             self.penetrate -= 0.1
                         else:  # no more penetrate power to move on
-                            self.clean_object()  # remove sprite
+                            self.reach_target()  # remove sprite
                             return
                 else:  # reach target
                     self.base_pos = self.base_target

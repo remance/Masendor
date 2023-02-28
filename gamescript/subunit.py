@@ -90,6 +90,7 @@ class Subunit(pygame.sprite.Sprite):
     height_map = None  # height map
     troop_data = None
     leader_data = None
+    effect_list = None
     troop_sprite_list = None
     leader_sprite_list = None
     status_list = None
@@ -248,7 +249,7 @@ class Subunit(pygame.sprite.Sprite):
         self.idle_action = {}  # action that is performed when subunit is idle such as hold spear wall when skill active
 
         self.near_ally = []
-        self.nearest_enemy = []
+        self.near_enemy = []
         self.nearest_enemy = []
         self.nearest_ally = []
 
@@ -547,11 +548,17 @@ class Subunit(pygame.sprite.Sprite):
         self.trait_enemy_status = {"Original": {}, "Weapon": {}, "Final": {}}
 
         self.armour_gear = stat["Armour"]  # armour equipment
-        armour_stat = self.troop_data.armour_list[self.armour_gear[0]]
-        armour_grade_mod = self.troop_data.equipment_grade_list[self.armour_gear[1]]["Modifier"]
-        for element in self.original_element_resistance:  # resistance from race and armour
-            self.original_element_resistance[element] = race_stat[element + " Resistance"]
-            self.original_element_resistance[element] += (armour_stat[element + " Resistance"] * armour_grade_mod)
+        self.armour_id = 0
+        if self.armour_gear:
+            self.armour_id = self.armour_gear[0]
+            self.weight += self.troop_data.armour_list[self.armour_id]["Weight"]  # Add weight from both armour
+            armour_stat = self.troop_data.armour_list[self.armour_id]
+            armour_grade_mod = self.troop_data.equipment_grade_list[self.armour_gear[1]]["Modifier"]
+            for element in self.original_element_resistance:  # resistance from race and armour
+                self.original_element_resistance[element] = race_stat[element + " Resistance"]
+                self.original_element_resistance[element] += (armour_stat[element + " Resistance"] * armour_grade_mod)
+            self.trait["Original"] += self.troop_data.armour_list[self.armour_id][
+                "Trait"]  # add armour trait to subunit
 
         self.original_skill = skill.copy()  # Skill that the subunit processes
         if "" in self.original_skill:
@@ -568,9 +575,17 @@ class Subunit(pygame.sprite.Sprite):
 
         # Add equipment stat
         self.primary_main_weapon = stat["Primary Main Weapon"]
+        if not self.primary_main_weapon:  # replace empty with standard unarmed
+            self.primary_main_weapon = (1, 3)
         self.primary_sub_weapon = stat["Primary Sub Weapon"]
+        if not self.primary_sub_weapon:  # replace empty with standard unarmed
+            self.primary_sub_weapon = (1, 3)
         self.secondary_main_weapon = stat["Secondary Main Weapon"]
+        if not self.secondary_main_weapon:  # replace empty with standard unarmed
+            self.secondary_main_weapon = (1, 3)
         self.secondary_sub_weapon = stat["Secondary Sub Weapon"]
+        if not self.secondary_sub_weapon:  # replace empty with standard unarmed
+            self.secondary_sub_weapon = (1, 3)
         self.melee_weapon_set = {}
         self.range_weapon_set = {}
         self.power_weapon = {}
@@ -601,22 +616,33 @@ class Subunit(pygame.sprite.Sprite):
                             (self.troop_data.weapon_list[self.secondary_main_weapon[0]]["Name"],
                              self.troop_data.weapon_list[self.secondary_sub_weapon[0]]["Name"]))
 
-        self.mount_gear = stat["Mount"]
-        self.mount = self.troop_data.mount_list[self.mount_gear[0]]  # stat of mount this subunit use
-        self.mount_race_name = self.troop_data.race_list[self.mount["Race"]]["Name"]
-        self.mount_grade = self.troop_data.mount_grade_list[self.mount_gear[1]]
-        self.mount_armour = self.troop_data.mount_armour_list[self.mount_gear[2]]
-
         self.animation_race_name = self.race_name
-        if self.mount_race_name != "None":
-            self.animation_race_name += "&" + self.mount_race_name
-
         self.troop_size = race_stat["Size"]
 
-        self.head_height = self.height + (self.troop_size / 10)  # height for checking line of sight
+        self.mount_gear = stat["Mount"]
+        self.mount_race_name = "None"
+        self.mount_armour_id = 0
+        if self.mount_gear:
+            self.mount = self.troop_data.mount_list[self.mount_gear[0]]  # stat of mount this subunit use
+            self.mount_race_name = self.troop_data.race_list[self.mount["Race"]]["Name"]
+            self.mount_grade = self.troop_data.mount_grade_list[self.mount_gear[1]]
+            self.mount_armour_id = self.mount_gear[2]
+            self.mount_armour = self.troop_data.mount_armour_list[self.mount_armour_id]
+            self.weight += self.mount_armour["Weight"]  # Add weight from mount armour
+            self.animation_race_name += "&" + self.mount_race_name
 
-        if self.mount_gear[0] != 1:  # have a mount, add mount stat with its grade to subunit stat
-            self.add_mount_stat()
+            if self.mount_gear[0] != 1:  # have a mount, add mount stat with its grade to subunit stat
+                self.add_mount_stat()
+
+        self.body_weapon_stat = self.troop_data.weapon_list[1]
+        self.body_weapon_damage = element_dict.copy()  # weapon use when charge with no weapon, use unarmed as stat and will not be affected by status, skill or anything else
+        for key in self.body_weapon_damage:  # add strength as damage bonus
+            self.body_weapon_damage[key] = ((self.body_weapon_damage[key] * self.body_weapon_stat["Damage Balance"]) +
+                                            self.body_weapon_damage[key] * (self.strength / 100),
+                                            self.body_weapon_damage[key] +
+                                            self.body_weapon_damage[key] * (self.strength / 100))
+        # add troop size as pure bonus
+        self.body_weapon_penetrate = self.troop_data.weapon_list[1]["Armour Penetration"] + self.troop_size
 
         self.troop_mass = self.troop_size
 
@@ -630,9 +656,6 @@ class Subunit(pygame.sprite.Sprite):
         self.leader_social_buff = 0
         self.authority = 0
         self.original_hidden = 1000 / self.troop_mass  # hidden based on size, use size after add mount
-
-        self.trait["Original"] += self.troop_data.armour_list[self.armour_gear[0]][
-            "Trait"]  # add armour trait to subunit
 
         self.trait["Original"] = tuple(
             set([trait for trait in self.trait["Original"] if trait != 0]))  # remove empty and duplicate traits
@@ -661,11 +684,12 @@ class Subunit(pygame.sprite.Sprite):
                                                        self.troop_data.skill_list[skill]["Troop Type"] == 0 or
                                                        self.troop_data.skill_list[skill]["Troop Type"] == self.subunit_type))]
 
-        # Weight calculation
-        self.weight += self.troop_data.armour_list[self.armour_gear[0]]["Weight"] + self.mount_armour[
-            "Weight"]  # Weight from both melee and range weapon and armour
         if self.subunit_type == 2:  # cavalry has half weight penalty
             self.weight = self.weight / 2
+
+        self.original_speed = (self.original_speed * ((100 - self.weight) / 100)) + grade_stat[
+            "Speed Bonus"]  # finalise base speed with weight and grade bonus
+        self.acceleration = self.original_speed  # determine how long it takes to reach full speed when run
 
         # Stat after applying trait and gear
         self.base_melee_attack = self.original_melee_attack
@@ -724,9 +748,6 @@ class Subunit(pygame.sprite.Sprite):
         self.max_health20 = self.max_health * 0.2
         self.max_health50 = self.max_health * 0.5
 
-        self.base_speed = (self.base_speed * ((100 - self.weight) / 100)) + grade_stat[
-            "Speed Bonus"]  # finalise base speed with weight and grade bonus
-        self.acceleration = self.base_speed / 2  # determine how long it takes to reach full speed when run
         self.description = lore[1]  # subunit description for inspect ui
 
         self.max_morale = self.base_morale
@@ -935,7 +956,7 @@ class Subunit(pygame.sprite.Sprite):
                             self.current_animation[self.show_frame]["dmg_sprite"]:
                         # perform melee attack when frame that produce dmg effect starts
                         self.attack(self.current_animation[self.show_frame]["dmg_sprite"])
-                    elif self.charging is False and "charge" in self.current_action and self.momentum == 1:
+                    elif self.charging is False and self.momentum == 1:
                         # add charge damage effect
                         self.charging = True
                         self.attack("charge")

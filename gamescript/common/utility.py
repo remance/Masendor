@@ -511,7 +511,7 @@ def popup_list_open(self, new_rect, new_list, ui_type, rect_pos, updater):
 
 
 def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tuple_column=(), int_column=(),
-                 float_column=(), true_empty=False):
+                 float_column=()):
     """
     Convert string value to another type
     :param row: row that contains value
@@ -523,7 +523,6 @@ def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tu
     :param tuple_column: list of value header that should be in tuple type, for value that is static
     :param int_column: list of value header that should be in int number type
     :param float_column: list of value header that should be in float number type
-    :param true_empty: Value can be empty string
     :return: converted row
     """
     if n in percent_column:
@@ -551,9 +550,8 @@ def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tu
                 row[n] = [int(i)]
         else:
             row[n] = [i]
-            if true_empty:
-                if i == "":
-                    row[n] = []
+            if i == "":
+                row[n] = []
 
     elif n in tuple_column:
         if "," in i:
@@ -569,9 +567,8 @@ def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tu
                 row[n] = tuple([int(i)])
         else:
             row[n] = tuple([i])
-            if true_empty:
-                if i == "":
-                    row[n] = ()
+            if i == "":
+                row[n] = ()
 
     elif n in int_column:
         if i != "" and re.search("[a-zA-Z]", i) is None:

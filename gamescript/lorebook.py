@@ -405,24 +405,30 @@ class Lorebook(pygame.sprite.Sprite):
                                 create_text = ""
                             if self.section == self.troop_section or self.section == self.leader_section:  # troop section
                                 if "Weapon" in key:  # weapon text with quality
-                                    create_text = key + ": " + self.troop_data.equipment_grade_list[value[1]]["Name"] \
-                                                  + " " + self.troop_data.weapon_list[value[0]]["Name"]
+                                    if value:
+                                        create_text = key + ": " + self.troop_data.equipment_grade_list[value[1]]["Name"] \
+                                                      + " " + self.troop_data.weapon_list[value[0]]["Name"]
+                                    else:
+                                        create_text = key + ": Standard Unarmed"
 
                                 elif key == "Armour":  # armour text with quality
-                                    create_text = key + ": " + self.troop_data.equipment_grade_list[value[1]]["Name"] \
-                                                  + " " + self.troop_data.armour_list[value[0]]["Name"]
+                                    if value:
+                                        create_text = key + ": " + self.troop_data.equipment_grade_list[value[1]]["Name"] \
+                                                      + " " + self.troop_data.armour_list[value[0]]["Name"]
+                                    else:
+                                        create_text = key + ": No Armour"
 
                                 elif key == "Race":
                                     create_text = key + ": " + self.troop_data.race_list[value]["Name"]
 
                                 elif key == "Mount":  # mount text with grade
-                                    create_text = key + ": " + self.troop_data.mount_grade_list[value[1]][
-                                        "Name"] + " " + \
-                                                  self.troop_data.mount_list[value[0]]["Name"] + "//" + \
-                                                  self.troop_data.mount_armour_list[value[2]]["Name"]
-                                    if self.troop_data.mount_list[value[0]]["Name"] == "None":
-                                        create_text = ""
-                                        pass
+                                    if value:
+                                        create_text = key + ": " + self.troop_data.mount_grade_list[value[1]][
+                                            "Name"] + " " + \
+                                                      self.troop_data.mount_list[value[0]]["Name"] + "//" + \
+                                                      self.troop_data.mount_armour_list[value[2]]["Name"]
+                                    else:
+                                        create_text = key + ": No Mount"
 
                                 elif key == "Trait":  # troop properties list
                                     trait_list = ""

@@ -52,13 +52,16 @@ def move_logic(self, dt):
 
                     # momentum calculation
                     if "use momentum" in self.current_action:
+                        self.stamina -= 1  # use stamina when run or charge
+                        if self.stamina < 0:
+                            self.stamina = 0
                         if self.momentum < 1:
                             self.momentum += dt * self.acceleration / 100
                             if self.momentum > 1:
                                 self.momentum = 1
 
                     elif self.momentum:  # reset charge momentum when not running
-                        self.momentum -= dt
+                        self.momentum -= dt * 2
                         if self.momentum < 0:
                             self.momentum = 0
 
@@ -78,6 +81,6 @@ def move_logic(self, dt):
         if "movable" in self.current_action:  # in moving animation, interrupt it
             self.interrupt_animation = True
         if self.momentum:  # reduce charge momentum when not moving
-            self.momentum -= dt
+            self.momentum -= dt * 2
             if self.momentum < 0:
                 self.momentum = 0

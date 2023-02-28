@@ -498,23 +498,37 @@ class ArmyStat(pygame.sprite.Sprite):
         for skill in who.skill:
             leader_skill += leader_data.skill_list[skill]["Name"] + ", "
         leader_skill = leader_skill[:-2]
-        self.primary_main_weapon = stat["Primary Main Weapon"]
-        self.primary_sub_weapon = stat["Primary Sub Weapon"]
-        self.secondary_main_weapon = stat["Secondary Main Weapon"]
-        self.secondary_sub_weapon = stat["Secondary Sub Weapon"]
-        leader_primary_weapon = troop_data.equipment_grade_list[stat["Primary Main Weapon"][1]]["Name"] + " " + \
-                                troop_data.weapon_list[stat["Primary Main Weapon"][0]]["Name"] + ", " + \
-                                troop_data.equipment_grade_list[stat["Primary Sub Weapon"][1]]["Name"] + " " + \
-                                troop_data.weapon_list[stat["Primary Sub Weapon"][0]]["Name"]
-        leader_secondary_weapon = troop_data.equipment_grade_list[stat["Secondary Main Weapon"][1]]["Name"] + " " + \
-                                  troop_data.weapon_list[stat["Secondary Main Weapon"][0]]["Name"] + ", " + \
-                                  troop_data.equipment_grade_list[stat["Secondary Sub Weapon"][1]]["Name"] + " " + \
-                                  troop_data.weapon_list[stat["Secondary Sub Weapon"][0]]["Name"]
-        leader_armour = troop_data.equipment_grade_list[stat["Armour"][1]]["Name"] + " " + \
-                        troop_data.armour_list[stat["Armour"][0]]["Name"]
-        leader_mount = troop_data.mount_grade_list[stat["Mount"][1]]["Name"] + ", " + \
-                       troop_data.mount_list[stat["Mount"][0]]["Name"] + ", " + \
-                       troop_data.mount_armour_list[stat["Mount"][2]]["Name"]
+        primary_main_weapon = stat["Primary Main Weapon"]
+        if not primary_main_weapon:  # replace empty with standard unarmed
+            primary_main_weapon = (1, 3)
+        primary_sub_weapon = stat["Primary Sub Weapon"]
+        if not primary_sub_weapon:  # replace empty with standard unarmed
+            primary_sub_weapon = (1, 3)
+        secondary_main_weapon = stat["Secondary Main Weapon"]
+        if not secondary_main_weapon:  # replace empty with standard unarmed
+            secondary_main_weapon = (1, 3)
+        secondary_sub_weapon = stat["Secondary Sub Weapon"]
+        if not secondary_sub_weapon:  # replace empty with standard unarmed
+            secondary_sub_weapon = (1, 3)
+
+        leader_primary_weapon = troop_data.equipment_grade_list[primary_main_weapon[1]]["Name"] + " " + \
+                                troop_data.weapon_list[primary_main_weapon[0]]["Name"] + ", " + \
+                                troop_data.equipment_grade_list[primary_sub_weapon[1]]["Name"] + " " + \
+                                troop_data.weapon_list[primary_sub_weapon[0]]["Name"]
+        leader_secondary_weapon = troop_data.equipment_grade_list[secondary_main_weapon[1]]["Name"] + " " + \
+                                  troop_data.weapon_list[secondary_main_weapon[0]]["Name"] + ", " + \
+                                  troop_data.equipment_grade_list[secondary_sub_weapon[1]]["Name"] + " " + \
+                                  troop_data.weapon_list[secondary_sub_weapon[0]]["Name"]
+        leader_armour = "No Armour"
+        if stat["Armour"]:
+            leader_armour = troop_data.equipment_grade_list[stat["Armour"][1]]["Name"] + " " + \
+                            troop_data.armour_list[stat["Armour"][0]]["Name"]
+
+        leader_mount = "None"
+        if stat["Mount"]:
+            leader_mount = troop_data.mount_grade_list[stat["Mount"][1]]["Name"] + ", " + \
+                           troop_data.mount_list[stat["Mount"][0]]["Name"] + ", " + \
+                           troop_data.mount_armour_list[stat["Mount"][2]]["Name"]
 
         leader_stat = {"Health: ": who.health, "Authority: ": who.authority,
                        "Melee Command: ": self.leader_text[who.melee_command],

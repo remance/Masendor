@@ -312,9 +312,9 @@ def status_update(self):
     troop_mass = self.troop_mass
     if "less mass" in self.current_action:  # knockdown reduce mass
         troop_mass = int(self.troop_mass / self.current_action["less mass"])
-    self.charge_power = ((self.charge * self.momentum) / 2) * troop_mass
+    self.charge_power = (self.charge * self.momentum) + troop_mass
 
-    self.charge_def_power = self.charge_def * troop_mass
+    self.charge_def_power = self.charge_def + troop_mass
     if self.move_speed:  # reduce charge def by half when moving
         self.charge_def_power /= 2
 

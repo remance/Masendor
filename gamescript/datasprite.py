@@ -79,7 +79,7 @@ class TroopAnimationData:
                         row = stat_convert(row, n, i, list_column=list_column)
                         key = row[0].split("/")[0]
                     position = row[1]
-                    if position == ["center"] or position == [""]:
+                    if position == ["center"] or not position:
                         position = "center"
                     else:
                         position = pygame.Vector2(position[0], position[1])
