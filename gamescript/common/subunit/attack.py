@@ -75,7 +75,7 @@ def attack(self, attack_type):
                             accuracy -= 15
 
             if self.check_special_effect("Cone Shot"):
-                accuracy /= 1.5
+                accuracy /= 1.25
 
             if accuracy < 0:
                 accuracy = 0

@@ -345,12 +345,14 @@ class EffectDamageSprite(DamageSprite):
                  arc_shot=False, height_ignore=False, degrade_when_travel=True,
                  degrade_when_hit=True, random_direction=False, random_move=False, reach_effect=None):
         """Effect damage sprite"""
-        self.effect_stat = self.effect_list[weapon]
+        effect_stat = self.effect_list[weapon]
         DamageSprite.__init__(self, attacker, weapon, dmg, penetrate, stat, attack_type, base_pos, base_target,
                               arc_shot=arc_shot, height_ignore=height_ignore, degrade_when_travel=degrade_when_travel,
                               degrade_when_hit=degrade_when_hit, random_direction=random_direction,
                               random_move=random_move, accuracy=accuracy, reach_effect=reach_effect,
-                              height_type=self.effect_stat["Height Type"])
+                              height_type=effect_stat["Height Type"])
+
+        self.effect_stat = effect_stat  # reassign
         self.base_pos = pygame.Vector2(base_pos)
         self.angle = self.attacker.angle
 

@@ -70,8 +70,7 @@ def move_logic(self, dt):
                     self.move_path = self.move_path[1:]
 
             else:  # reach target, interrupt moving animation
-                if "movable" in self.current_action:  # in moving animation, interrupt it
-                    self.interrupt_animation = True
+                self.interrupt_animation = True  # in moving animation, interrupt it
                 self.move_speed = 0
 
         elif "movable" not in self.command_action:  # has move speed but not movable animation, reset speed

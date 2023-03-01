@@ -37,6 +37,7 @@ charge = indicate charging action
 less mass = subunit has mass is divided during animation based on value provide
 walk, run, flee, indicate movement type for easy checking
 weapon = weapon index of action for easy checking
+freeze until cancel = not restart animation or start next one until current one is canceled or interrupted
 """
 
 skill_command_action_0 = {"name": "Skill 0"}
@@ -75,7 +76,7 @@ heavy_damaged_command_action = {"name": "HeavyDamaged", "uncontrollable": True, 
 damaged_command_action = {"name": "Damaged", "uncontrollable": True, "movable": True,
                           "forced move": True, "less mass": 1.2, "damaged": True}
 knockdown_command_action = {"name": "Knockdown", "uncontrollable": True, "movable": True, "forced move": True,
-                            "less mass": 2, "uninterruptible": True,
+                            "freeze until cancel": True, "less mass": 2,
                             "next action": {"name": "Standup", "uncontrollable": True, "damaged": True}}
 
 die_command_action = {"name": "Die", "uninterruptible": True, "uncontrollable": True}
@@ -965,7 +966,8 @@ class Subunit(pygame.sprite.Sprite):
                 # low level animation got replace with more important one, finish playing, skill animation and its effect end
                 if self.top_interrupt_animation or \
                         (self.interrupt_animation and "uninterruptible" not in self.current_action) or \
-                        (((not self.current_action and self.command_action) or done or
+                        (((not self.current_action and self.command_action) or
+                          (done and "freeze until cancel" not in self.current_action) or
                           (self.idle_action and self.idle_action != self.command_action))):
                     if done:
                         if "range attack" in self.current_action:  # shoot bullet only when animation finish

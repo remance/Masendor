@@ -36,7 +36,7 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
             hit_chance = 200
 
     combat_score = round(hit_chance / 100, 1)
-    if combat_score == 0 and not not getrandbits(1):  # 50/50 chance to scrape instead of no damage
+    if combat_score == 0:  # scrape instead of no damage
         combat_score = 0.1
 
     impact = self.knock_power * combat_score
@@ -63,7 +63,7 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
                             attacker.momentum = 0
                         impact *= 2
                 else:
-                    troop_dmg += attacker.charge_power * 2
+                    troop_dmg += attacker.charge_power
             else:
                 troop_dmg, element_effect = cal_dmg_penetrate(self, target, reduce_penetrate=False)
                 self.penetrate -= target.troop_mass
@@ -73,7 +73,7 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
                     charge_def_cal = attacker.charge_def_power - target.charge_power
                     if charge_def_cal > 0:  # charge def is higher than enemy charge then deal additional dmg
                         impact *= 1.5
-                        troop_dmg += (charge_def_cal * 2)
+                        troop_dmg += charge_def_cal
 
             troop_dmg *= combat_score
 
