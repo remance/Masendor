@@ -89,9 +89,10 @@ def attack(self, attack_type):
                 base_target = pygame.Vector2(base_target[0] * (100 + random.choice((accuracy / 50, -accuracy / 50))) / 100,
                                              base_target[1] * (100 + random.choice((accuracy / 50, -accuracy / 50))) / 100)
 
-                damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
-                                          self.weapon_penetrate[self.equipped_weapon][weapon], equipped_weapon_data,
-                                          attack_type, self.front_pos, base_target, accuracy=accuracy, arc_shot=arc_shot)
+                damagesprite.RangeDamageSprite(self, weapon, self.weapon_dmg[weapon],
+                                               self.weapon_penetrate[self.equipped_weapon][weapon], equipped_weapon_data,
+                                               attack_type, self.front_pos, base_target,
+                                               accuracy=accuracy, arc_shot=arc_shot)
 
             self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
 
@@ -112,15 +113,15 @@ def attack(self, attack_type):
 
         elif attack_type == "charge":
             if weapon:
-                damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
-                                          self.weapon_penetrate[self.equipped_weapon][weapon],
-                                          equipped_weapon_data, "charge", self.base_pos, self.base_pos,
-                                          accuracy=self.melee_attack)
+                damagesprite.ChargeDamageSprite(self, weapon, self.weapon_dmg[weapon],
+                                                self.weapon_penetrate[self.equipped_weapon][weapon],
+                                                equipped_weapon_data, "charge", self.base_pos, self.base_pos,
+                                                accuracy=self.melee_attack)
             else:  # charge without using weapon (by running)
-                damagesprite.DamageSprite(self, weapon, self.body_weapon_damage,
-                                          self.body_weapon_penetrate,
-                                          self.body_weapon_stat, "charge", self.base_pos, self.base_pos,
-                                          accuracy=self.melee_attack)
+                damagesprite.ChargeDamageSprite(self, weapon, self.body_weapon_damage,
+                                                self.body_weapon_penetrate,
+                                                self.body_weapon_stat, "charge", self.base_pos, self.base_pos,
+                                                accuracy=self.melee_attack)
 
         else:  # melee attack
             accuracy = self.melee_attack
@@ -135,10 +136,10 @@ def attack(self, attack_type):
                                                                   math.sin(math.radians(base_angle))),
                                              self.front_pos[1] - (self.melee_range[weapon] *
                                                                   math.cos(math.radians(base_angle))))
-            damagesprite.DamageSprite(self, weapon, self.weapon_dmg[weapon],
-                                      self.weapon_penetrate[self.equipped_weapon][weapon],
-                                      equipped_weapon_data, attack_type, self.base_pos,
-                                      base_target, accuracy=accuracy)
+            damagesprite.MeleeDamageSprite(self, weapon, self.weapon_dmg[weapon],
+                                           self.weapon_penetrate[self.equipped_weapon][weapon],
+                                           equipped_weapon_data, attack_type, self.base_pos,
+                                           base_target, accuracy=accuracy)
 
             self.weapon_cooldown[weapon] = 0  # melee weapon use cooldown for attack
 
@@ -162,8 +163,12 @@ def attack(self, attack_type):
                     dmg = {key: (value / 2, value) for key, value in dmg.items()}
 
                 # use end of sprite instead of front_pos so effect not show up inside troop body sprite
+                base_target = pygame.Vector2(self.base_pos[0] - (self.attack_effect_spawn_distance *
+                                                                 math.sin(math.radians(self.angle))),
+                                             self.base_pos[1] - (self.attack_effect_spawn_distance *
+                                                                 math.cos(math.radians(self.angle))))
 
-                damagesprite.DamageSprite(self, equipped_weapon_data["After Attack Effect"], dmg,
-                                          effect_stat["Armour Penetration"], effect_stat, "effect",
-                                          self.front_pos, self.front_pos,
-                                          reach_effect=effect_stat["After Reach Effect"])
+                damagesprite.EffectDamageSprite(self, equipped_weapon_data["After Attack Effect"], dmg,
+                                                effect_stat["Armour Penetration"], effect_stat, "effect",
+                                                base_target, base_target,
+                                                reach_effect=effect_stat["After Reach Effect"])

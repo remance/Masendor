@@ -433,7 +433,7 @@ class TroopData:
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
-            tuple_column = ("Status", "Properties")  # value in tuple only
+            tuple_column = ("Status Conflict", "Status", "Special Effect", "Properties")  # value in tuple only
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect",
                           "Speed Effect", "Accuracy Effect", "Reload Effect",
                           "Charge Effect")  # need to be calculated to percentage

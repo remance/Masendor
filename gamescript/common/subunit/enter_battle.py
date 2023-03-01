@@ -49,5 +49,6 @@ def enter_battle(self, animation_pool):
 
     self.default_sprite_size = (self.animation_pool[self.animation_race_name + "_Default"]["r_side"][0]["sprite"].get_width() / 5,
                                 self.animation_pool[self.animation_race_name + "_Default"]["r_side"][0]["sprite"].get_height() / 5)
+    self.attack_effect_spawn_distance = self.default_sprite_size[0] * 2
 
     self.pick_animation()

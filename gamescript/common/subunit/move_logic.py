@@ -52,7 +52,7 @@ def move_logic(self, dt):
 
                     # momentum calculation
                     if "use momentum" in self.current_action:
-                        self.stamina -= 1  # use stamina when run or charge
+                        self.stamina -= 0.1  # use stamina when run or charge
                         if self.stamina < 0:
                             self.stamina = 0
                         if self.momentum < 1:

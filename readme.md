@@ -202,7 +202,7 @@ historical information to players.
 preparation and result screen, custom battle, improve the main menu, Battle of Megiddo, Battle of
 Mohács
 
-**0.6.4:** skill perform system, skill placement for both player and AI, AOE attack and after impact effect, ground effect like smoke,
+**0.6.4:** skill perform system, skill placement for both player and AI, AOE attack
 
 **0.6.5 - 0.6.7:** Leader command, hidden stat, stat effect battle ui, line of sight, start working on Battle of Mohács
 

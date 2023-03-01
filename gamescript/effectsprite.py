@@ -3,7 +3,7 @@ import random
 
 from gamescript.common import utility
 
-from gamescript.common.damagesprite import play_animation
+from gamescript.common.damagesprite import play_animation, adjust_sprite
 
 
 class EffectSprite(pygame.sprite.Sprite):
@@ -18,6 +18,7 @@ class EffectSprite(pygame.sprite.Sprite):
     clean_object = utility.clean_object
 
     play_animation = play_animation.play_animation  # use play_animation from damage sprite
+    adjust_sprite = adjust_sprite.adjust_sprite
 
     def __init__(self, attacker, base_pos, pos, target, angle, duration, sprite_type, sprite_name):
         """Effect sprite that does not affect subunit in any way"""
@@ -39,6 +40,7 @@ class EffectSprite(pygame.sprite.Sprite):
         self.sound_timer = 0
         self.sound_duration = 0
         self.repeat_animation = False
+        self.scale_size = 1
 
         animation_name = "".join(sprite_name[1].split("_"))[-1]
         if animation_name.isdigit():
@@ -90,6 +92,3 @@ class EffectSprite(pygame.sprite.Sprite):
             if self.show_frame:
                 self.clean_object()
                 return
-
-        if just_start:
-            self.rect = self.image.get_rect(center=self.pos)

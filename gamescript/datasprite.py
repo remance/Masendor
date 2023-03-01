@@ -189,12 +189,12 @@ class TroopAnimationData:
                 true_name_list.append(true_name)
 
             for team in team_colour:
-                self.effect_animation_pool[folder[-1]][team] = {}
                 for true_name in set(true_name_list):  # create effect animation list
-                    if "#" in true_name:
+                    if "#" in true_name:  # has animation to play
                         animation_list = [value for key, value in images.items() if true_name[:-2] ==
                                           "".join([string + "_" for string in key.split("_")[:-1]])[:-1]]
                         if " (team)" in folder[-1]:
+                            self.effect_animation_pool[folder[-1]][team] = {}
                             animation_list = [apply_sprite_colour(item, team_colour[team], None, keep_white=False) for
                                               item in animation_list]
                             self.effect_animation_pool[folder[-1]][team][true_name[:-2]] = tuple(animation_list)
@@ -203,6 +203,9 @@ class TroopAnimationData:
                     else:
                         animation_list = [value for key, value in images.items() if true_name == key]
                         if " (team)" in folder[-1]:
+                            self.effect_animation_pool[folder[-1]][team] = {}
                             animation_list = [apply_sprite_colour(item, team_colour[team], None, keep_white=False) for
                                               item in animation_list]
-                        self.effect_animation_pool[folder[-1]][team][true_name] = tuple(animation_list)
+                            self.effect_animation_pool[folder[-1]][team][true_name] = tuple(animation_list)
+                        else:
+                            self.effect_animation_pool[folder[-1]][true_name] = tuple(animation_list)
