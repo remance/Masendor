@@ -5,7 +5,7 @@
 "4","Frenzied Charge","Mindless and aggressive make the most powerful charge."
 "5","Devastating Charge","What is a better objective of a charge aside to devastate the enemies utterly?"
 "6","Stampede","Under the iron hooves and beneath the blazing sun, only the strongest can rise up again."
-"7",,
+"7","Valiant Charge",
 "8","Cover Charge","Risky yet safe. Shield at the front and no archer or spearman can halt your advance."
 "9","Agile Charge","Agility is the most important aspect of a charge. You do not really charge by standing still, do you?"
 "10","Highland Charge",
@@ -22,25 +22,25 @@
 "21","Leading Charge",
 "22","Reconnaissance","Only the very best of plans can be created from the most thorough information gathering process."
 "23","Berserk",
-"24","Spear Schiltron",
-"25","Spearwall","Spearwall is a simple yet effective method to counter a charging unit. It is difficult to dodge an object when you are rushing at full speed, after all."
-"26","Spearguard","Due to the length of the spear, a well-positioned spear stance can already improve the defence ability significantly."
-"27","Shieldwall","What is the most common tactic used in the most disciplined troops by every world-conquering empire? The answer is always shieldwall. The key basis of winning the war is to avoid having the soldiers die in senseless deaths. The longer the soldiers survive in the war, the more experience in killing they become. And a more experienced soldier make a more effective army."
-"28","Shield Turtle","Defensive yet still mobile. This tactic is superb against approaching enemy armies that excel in range attacks."
-"29","Shield Dome","The ultimate defence tactic. This shield dome leaves no vulnerable spot for an enemy to attack."
+"24",,
+"25",,
+"26",,
+"27",,
+"28",,
+"29",,
 "30","Shield Barrier",
 "31","Shield Fortress",
 "32","Rapid Shots","Opportunity to attack is of the essence, especially for archers on a battlefield. The more arrows remain in the quiver equate to the less enemy killed."
-"33","Rapid Defense",
+"33","Rapid Defence",
 "34","Rapid Attack","Strike fast enough, and the enemy will never know what hit them."
 "35","Rapid Advance","Speed can often determine the fate of a battle and even war. Being faster than the enemy is never a disadvantage."
 "36","Steady Aims","The most important part of range weaponry is to hit the target. Arrows missed are arrow wasted."
 "37","Steady Shield","The art of defence begins with stability. No unsteady shield can defend against harm for its user."
 "38","Ruthless Pursuit",
-"39","Cantabrian Circle","A manoeuvre that is only possible with the mastery of both equitation and archery. To attack even when moving is the pinnacle of warfare."
+"39",,
 "40","Hold Ground","""Hold your ground men! No enemy will pass through this place as long as we are here.""  "
-"41","Pikewall","The deadly charge of cavalry was the domination tactic on the battlefield until the invention of the pikewall tactic. By simply having infantries holding pikes in line, an impregnable wall is created, "
-"42","Hidden Pike","A nasty surprise. Who can expect a complete death trap in their charge to glory? Only fool fight a fair fight."
+"41",,
+"42",,
 "43","Warcry",
 "44",,
 "45",,
@@ -54,7 +54,7 @@
 "53",,
 "54","Unwavering Resolve","Never give up, never surrender!"
 "55","Heroic Resolve","Always prevail, always resolute!"
-"56","Stalwart Defense",
+"56","Stalwart Defence",
 "57","Sudden Fortitude","A sudden burst of life will catch anyone off-guard."
 "58","Iron Wall","None shall pass!"
 "59","Focus Strike","Focus and steady!"

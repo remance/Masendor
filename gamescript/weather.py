@@ -1,7 +1,7 @@
-import random
-
 import pygame
 import pygame.freetype
+
+from random import randint
 from gamescript.common import utility
 
 
@@ -12,7 +12,7 @@ class Weather:
     def __init__(self, time_ui, weather_type, wind_direction, level, weather_data):
         self.weather_type = weather_type
         if self.weather_type == 0:
-            self.weather_type = random.randint(1, len(weather_data) - 1)
+            self.weather_type = randint(1, len(weather_data) - 1)
         self.has_stat_effect = False
         if weather_data:
             self.has_stat_effect = True

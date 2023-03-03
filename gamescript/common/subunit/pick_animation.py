@@ -1,4 +1,4 @@
-import random
+from random import choice
 
 equip_set = ("Main", "Sub")
 
@@ -32,7 +32,7 @@ def pick_animation(self):
     self.current_animation = {key: value for key, value in self.current_animation.items() if "/" not in key or
                               "/" + str(self.equipped_weapon) == key[-2:]}  # pick animation of current weapon set
     if self.current_animation:
-        self.current_animation = self.current_animation[random.choice(list(self.current_animation.keys()))]
+        self.current_animation = self.current_animation[choice(list(self.current_animation.keys()))]
     else:  # animation not found, use default
         self.current_animation = self.animation_pool[self.animation_race_name + "_Default"]
         # print(animation_name)

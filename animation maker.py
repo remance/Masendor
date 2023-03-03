@@ -1,5 +1,4 @@
 import csv
-import math
 import os
 import random
 import re
@@ -8,6 +7,7 @@ import time
 from pathlib import Path
 
 import pygame
+from math import atan2, degrees, radians
 from PIL import Image, ImageFilter, ImageEnhance
 
 from gamescript import datastat, menu, battleui, popup
@@ -1327,7 +1327,7 @@ class Model:
                                 else:
                                     target = hand_pos
                                 if self.animation_part_list[edit_frame][part_index][3] != 0:
-                                    radians_angle = math.radians(360 - self.animation_part_list[edit_frame][part_index][3])
+                                    radians_angle = radians(360 - self.animation_part_list[edit_frame][part_index][3])
                                     target = rotation_xy(hand_pos, target, radians_angle)  # find new point with rotation
 
                                 self.animation_part_list[edit_frame][part_index][2] = target
@@ -1400,8 +1400,8 @@ class Model:
 
                         elif edit_type == "rotate":  # mouse rotate
                             base_pos = self.animation_part_list[edit_frame][part_index][2]
-                            radians = math.atan2(mouse_pos[1] - base_pos[1], mouse_pos[0] - base_pos[0])
-                            new_angle = math.degrees(radians)
+                            radians = atan2(mouse_pos[1] - base_pos[1], mouse_pos[0] - base_pos[0])
+                            new_angle = degrees(radians)
                             # """upper left -"""
                             if -180 <= new_angle <= -90:
                                 new_angle = -new_angle - 90

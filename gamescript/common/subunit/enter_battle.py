@@ -1,6 +1,3 @@
-import pygame
-
-
 def enter_battle(self, animation_pool):
     """run once when battle start or subunit just get created"""
 

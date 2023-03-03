@@ -1,4 +1,4 @@
-import time
+from time import sleep
 import threading
 import pygame
 
@@ -13,7 +13,7 @@ class PathfindingAI:
     def _loop(self):
         while True:
             # Check for commands
-            time.sleep(0.01)  # Limit the logic loop running to every 10ms
+            sleep(0.01)  # Limit the logic loop running to every 10ms
 
             if self.input_list:
                 subunit = self.input_list[0]

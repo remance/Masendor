@@ -5,7 +5,7 @@
 "4","Zealous","Being zealous for one's belief can make soldiers less susceptible to fear."
 "5","Poor Morale","Either from poor training or by its nature, these soldiers have poorer morale making them unfit for prolonged or serious engagements."
 "6","Charge Expert","A charge is one of the most powerful tactics in battles in the past that can decide the battle. Being well-versed in charging is never a disadvantage."
-"7","Charge Defense Expert","Why settle for just defending when you can turn the enemies' charge into their own demise."
+"7","Charge Defence Expert","Why settle for just defending when you can turn the enemies' charge into their own demise."
 "8","Weapon Expert","Decades of perfection the weapon make these soldiers a pinnacle of all warriors. "
 "9","Arc Shot","Arc shot allows archers to shoot past the obstacle to hit the target they aiming for. *This trait can be obtained from certain weapons."
 "10","Agile Aims","These troops can shoot while moving and at moving enemy without penalty. A feat only the greatest archer can achieve. This property also helps improve accuracy against moving targets."
@@ -14,11 +14,11 @@
 "13","Anti-Infantry","These troops are specialised in combat against enemy infantries *This trait can be obtained from certain weapons."
 "14","Anti-Cavalry","These troops are specialised in combat against enemy cavalries. Bring an end to the age of cavalry one step at a time. *This trait can be obtained from certain weapons."
 "15","Anti-Structure","Tear down the wall! No structure can withstand such strong force."
-"16","Defiant Defense","Only the strongest force can take down these troops. They will struggle to the end, and for every one man killed, they will take down 10 enemies with them."
+"16","Defiant Defence","Only the strongest force can take down these troops. They will struggle to the end, and for every one man killed, they will take down 10 enemies with them."
 "17","Battle Master","These troops can fully attack enemies in all directions and suffer no defence penalty from being flanked."
-"18","Absolute Defense","The best defence is a good offence. It may be important to kill the enemy to win the battle, but it is more important to survive to win a war."
+"18","Absolute Defence","The best defence is a good offence. It may be important to kill the enemy to win the battle, but it is more important to survive to win a war."
 "19","Patriotic","It is the duty of every citizen to fight for the country they live in. These troops fight much better in friendly territory and require less upkeep."
-"20","Siege Expert","No wall is safe from these soldiers! They can fight much better in siege combat. All defense +15% during siege, siege progression speed +50%."
+"20","Siege Expert","No wall is safe from these soldiers! They can fight much better in siege combat. All defence +15% during siege, siege progression speed +50%."
 "21","Famed","These troops have been fighting through many battles and wars, gaining them the fame they deserve. Increase some morale for allies nearby while reducing for enemies."
 "22","Shield Expert","Survive to fight another day by improving your defence is never a bad idea."
 "23","Superb Flanker","These troops fight better against enemies from flanking positions."
@@ -28,7 +28,7 @@
 "27","Inspires Bravery","Bravery is a rare luxury in a place like a battlefield. To share such rarity with others is a noble deed indeed."
 "28","Glorious Appearance","These troops’ appearances are so dashing and inspiring that nearby allies will be in awe while leaving enemies in fear."
 "29","Long Range Accuracy","Death from afar, the end of the chivalric era is near."
-"30","Royal Banner",""
+"30","Royal Banner",
 "31","Cold Resistance","Cold resistance allows these troops to resist the negative effect of cold terrain and weather."
 "32","Heat Resistance","Heat resistance allows these troops to resist the negative effect of hot terrain and weather."
 "33","Battle Preparation","These troops receive a combat bonus when their stamina is at a fresh level."
@@ -40,7 +40,7 @@
 "39","Impetuous","Whether from pride or arrogance, these troops have a tendency to follow orders even less when the leader makes a mistake or issue a command they do not like."
 "40","Fragile Will","These troops will be affected by negative psychological effects even more than usual."
 "41","Personal Escort","Trained to escort important people to safety, these troops will allow any leader they protect to survive for much longer in a chaotic battle."
-"42","Gallant Example",""
+"42","Gallant Example",
 "43","Field Medic","These troops can heal nearby allies when both are not in melee combat."
 "44","Forestry","No penalty in forest terrain for these troops."
 "45","Seamate","Ahoy matey! Less movement and combat penalty on sea terrain for these troops."
@@ -51,7 +51,7 @@
 "50","Heat Exposure","The cloth or armour these troops are wearing is not suitable for the hot climate. The heat will render the body reaching a mortality state eventually."
 "51","Cowardice","Craven! Useless! These troops are comprised of cowards and their morale will decrease even more from any factors."
 "52","Treachery","Betrayal! These wretch troops are more likely to surrender and change side right away in dire situations. But, they will still try to flee instead if the enemy force will not accept surrender."
-"53","Stationary Placement",""
+"53","Stationary Placement",
 "54","Mountain Hiding","These troops can hide better in mountain terrain."
 "55","Hill Hiding","These troops can hide better in hill terrain."
 "56","Forest Hiding","These troops can hide better in forest terrain."
@@ -67,8 +67,8 @@
 "66","Assassination","These troops can stay hidden while attacking if no enemy can spot them."
 "67","Sniping","These troops can stay hidden while shooting."
 "68","Partial Awareness","These troops can detect enemies from any direction when not fighting."
-"69","Swift Swimmer",""
-"70","Landlubber",""
+"69","Swift Swimmer",
+"70","Landlubber",
 "71","Immortal","These troops are immortal and cannot be killed by any means. Not even magic can harm them."
 "72","Gunpowder Weapon","These troops carry a weapon that requires gunpowder to operate. The wet or water-related status will reduce the weapon's performance."
-"73","Camouflage",""
+"73","Camouflage",

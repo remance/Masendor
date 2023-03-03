@@ -1,15 +1,15 @@
-import math
 import os
-import random
+from math import cos, sin, radians
+from random import choice
 from pathlib import Path
 
 import pygame
 import pygame.freetype
 from gamescript.common import utility
 
-direction_angle = {"r_side": math.radians(90), "l_side": math.radians(270), "back": math.radians(180),
-                   "front": math.radians(0), "r_sidedown": math.radians(135), "l_sidedown": math.radians(225),
-                   "r_sideup": math.radians(45), "l_sideup": math.radians(315)}
+direction_angle = {"r_side": radians(90), "l_side": radians(270), "back": radians(180),
+                   "front": radians(0), "r_sidedown": radians(135), "l_sidedown": radians(225),
+                   "r_sideup": radians(45), "l_sideup": radians(315)}
 
 
 class DamageSprite(pygame.sprite.Sprite):
@@ -87,13 +87,8 @@ class DamageSprite(pygame.sprite.Sprite):
 
         self.dmg = dmg
         self.deal_dmg = False
-        if dmg:  # has damage to deal
+        if self.dmg:  # has damage to deal
             self.deal_dmg = True
-            self.dmg = {key: random.uniform(value[0], value[1]) for key, value in dmg.items()}
-            if self.attacker.release_timer > 1 and \
-                    self.attacker.current_action["weapon"] in self.attacker.equipped_power_weapon:  # apply power hold buff
-                for key in self.dmg:
-                    self.dmg[key] *= 1.5
 
         self.penetrate = penetrate
         self.knock_power = stat["Impact"]
@@ -175,8 +170,8 @@ class MeleeDamageSprite(DamageSprite):
                     this_subunit.hitbox.rect.colliderect(self.rect):
                 self.hit_register(this_subunit)
                 self.already_hit.append(this_subunit.game_id)
-                if self.penetrate <= 0:
-                    break  # use break for melee to last until animation done
+            if self.penetrate <= 0:
+                break  # use break for melee to last until animation done
 
         if done:
             self.reach_target()
@@ -211,7 +206,7 @@ class RangeDamageSprite(DamageSprite):
         if sprite_name in self.sound_effect_pool:
             self.travel_sound_distance = stat["Bullet Sound Distance"]
             self.travel_shake_power = stat["Bullet Shake Power"]
-            self.sound_effect_name = random.choice(self.sound_effect_pool[sprite_name])
+            self.sound_effect_name = choice(self.sound_effect_pool[sprite_name])
             self.sound_duration = pygame.mixer.Sound(self.sound_effect_name).get_length() * 1000 / self.speed
             self.sound_timer = self.sound_duration / 1.5  # wait a bit before start playing
             self.travel_sound_distance_check = self.travel_sound_distance * 2
@@ -320,9 +315,12 @@ class ChargeDamageSprite(DamageSprite):
 
         self.battle.battle_camera.remove(self)  # no sprite to play since it use subunit sprite as damage sprite
 
-    def update(self, subunit_list, dt):
-        done = False
+    def change_weapon(self, dmg, penetrate, stat):
+        self.dmg = dmg
+        self.penetrate = penetrate
+        self.knock_power = stat["Impact"]
 
+    def update(self, subunit_list, dt):
         self.timer += dt
         if self.timer > 1:  # reset timer and list of subunit already hit
             self.timer -= 1
@@ -336,6 +334,7 @@ class ChargeDamageSprite(DamageSprite):
                 self.already_hit.append(this_subunit.game_id)
 
         if not self.attacker.charging:  # remove sprite when attacker no longer charge
+            self.attacker.charge_sprite = None
             self.clean_object()
             return
 
@@ -362,7 +361,7 @@ class EffectDamageSprite(DamageSprite):
         if weapon in self.sound_effect_pool:
             self.travel_sound_distance = stat["Sound Distance"]
             self.travel_shake_power = stat["Shake Power"]
-            self.sound_effect_name = random.choice(self.sound_effect_pool[weapon])
+            self.sound_effect_name = choice(self.sound_effect_pool[weapon])
             self.sound_duration = pygame.mixer.Sound(self.sound_effect_name).get_length()
             self.sound_timer = self.sound_duration / 1.5  # wait a bit before start playing
             self.travel_sound_distance_check = self.travel_sound_distance * 2
@@ -391,8 +390,8 @@ class EffectDamageSprite(DamageSprite):
         if self.timer > 1:  # reset timer
             if self.wind_disperse:
                 self.speed = self.battle.current_weather.wind_strength
-                self.base_target = pygame.Vector2(self.base_pos[0] + (self.speed * math.sin(math.radians(self.battle.current_weather.wind_direction))),
-                                                  self.base_pos[1] - (self.speed * math.cos(math.radians(self.battle.current_weather.wind_direction))))
+                self.base_target = pygame.Vector2(self.base_pos[0] + (self.speed * sin(radians(self.battle.current_weather.wind_direction))),
+                                                  self.base_pos[1] - (self.speed * cos(radians(self.battle.current_weather.wind_direction))))
                 self.full_distance = self.base_pos.distance_to(self.base_target)
                 self.duration -= self.speed
             if self.duration > 0:  # only clear for sprite with duration or charge

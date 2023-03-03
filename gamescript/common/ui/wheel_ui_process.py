@@ -1,4 +1,4 @@
-import pygame
+from pygame import Vector2
 
 from gamescript import battleui
 
@@ -56,7 +56,7 @@ def wheel_ui_process(self, choice):
             self.previous_player_input_state = self.player_input_state
             self.player_input_state = None
             self.camera_mode = "Free"
-            self.true_camera_pos = pygame.Vector2(self.player_char.base_pos)
+            self.true_camera_pos = Vector2(self.player_char.base_pos)
             for shoot_line in self.shoot_lines:
                 shoot_line.delete()  # reset shoot guide lines
             self.cursor.change_image("aim")

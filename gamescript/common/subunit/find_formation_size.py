@@ -1,9 +1,9 @@
-import math
+from math import sqrt
 
 
 def find_formation_size(self, troop=False, leader=False):
     if troop:
-        self.troop_follower_size = math.sqrt(len(self.alive_troop_follower))
+        self.troop_follower_size = sqrt(len(self.alive_troop_follower))
         if self.troop_follower_size > 0:
             if self.troop_follower_size.is_integer():
                 self.troop_follower_size = int(self.troop_follower_size)
@@ -18,7 +18,7 @@ def find_formation_size(self, troop=False, leader=False):
                                 key=lambda item: item[1])[0][0]  # sort the highest troop type
 
     if leader:
-        self.leader_follower_size = math.sqrt(len(self.alive_leader_follower))
+        self.leader_follower_size = sqrt(len(self.alive_leader_follower))
         if self.leader_follower_size > 0:
             if self.leader_follower_size.is_integer():
                 self.leader_follower_size = int(self.leader_follower_size)

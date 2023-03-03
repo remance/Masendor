@@ -1,6 +1,6 @@
-import math
 import os
-import random
+from math import radians
+from random import random
 from pathlib import Path
 
 import pygame
@@ -233,6 +233,7 @@ class Subunit(pygame.sprite.Sprite):
         self.taking_damage_angle = None
 
         self.hitbox = None
+        self.charge_sprite = None
 
         self.sprite_troop_size = 1
         self.subunit_type = 1
@@ -317,7 +318,7 @@ class Subunit(pygame.sprite.Sprite):
         self.attack_pos = None
         self.alive = True
         self.in_melee_combat_timer = 0
-        self.timer = random.random()  # may need to use random.random()
+        self.timer = random()
         self.momentum = 0.1  # charging momentum
         self.max_melee_attack_range = 0
         self.melee_distance_zone = 1
@@ -482,7 +483,7 @@ class Subunit(pygame.sprite.Sprite):
         # Get troop stat
 
         attribute_stat = race_stat
-        if type(troop_id) is str and "h" in troop_id:  # use leader stat for hero (leader) subunit
+        if self.is_leader:  # use leader stat for leader subunit
             attribute_stat = stat
 
         max_scale = sum(training_scale)
@@ -548,6 +549,9 @@ class Subunit(pygame.sprite.Sprite):
         self.trait_ally_status = {"Original": {}, "Weapon": {}, "Final": {}}
         self.trait_enemy_status = {"Original": {}, "Weapon": {}, "Final": {}}
 
+        for element in self.original_element_resistance:  # resistance from
+            self.original_element_resistance[element] = race_stat[element + " Resistance"]
+
         self.armour_gear = stat["Armour"]  # armour equipment
         self.armour_id = 0
         if self.armour_gear:
@@ -555,8 +559,7 @@ class Subunit(pygame.sprite.Sprite):
             self.weight += self.troop_data.armour_list[self.armour_id]["Weight"]  # Add weight from both armour
             armour_stat = self.troop_data.armour_list[self.armour_id]
             armour_grade_mod = self.troop_data.equipment_grade_list[self.armour_gear[1]]["Modifier"]
-            for element in self.original_element_resistance:  # resistance from race and armour
-                self.original_element_resistance[element] = race_stat[element + " Resistance"]
+            for element in self.original_element_resistance:  # resistance from armour
                 self.original_element_resistance[element] += (armour_stat[element + " Resistance"] * armour_grade_mod)
             self.trait["Original"] += self.troop_data.armour_list[self.armour_id][
                 "Trait"]  # add armour trait to subunit
@@ -631,17 +634,20 @@ class Subunit(pygame.sprite.Sprite):
             self.mount_armour = self.troop_data.mount_armour_list[self.mount_armour_id]
             self.weight += self.mount_armour["Weight"]  # Add weight from mount armour
             self.animation_race_name += "&" + self.mount_race_name
-
-            if self.mount_gear[0] != 1:  # have a mount, add mount stat with its grade to subunit stat
-                self.add_mount_stat()
+            self.add_mount_stat()
 
         self.body_weapon_stat = self.troop_data.weapon_list[1]
         self.body_weapon_damage = element_dict.copy()  # weapon use when charge with no weapon, use unarmed as stat and will not be affected by status, skill or anything else
+        body_strength = self.strength
+        if self.mount_gear:  # use mount strength instead
+            body_strength = self.troop_data.race_list[self.mount["Race"]]["Strength"]
         for key in self.body_weapon_damage:  # add strength as damage bonus
-            self.body_weapon_damage[key] = ((self.body_weapon_damage[key] * self.body_weapon_stat["Damage Balance"]) +
-                                            self.body_weapon_damage[key] * (self.strength / 100),
-                                            self.body_weapon_damage[key] +
-                                            self.body_weapon_damage[key] * (self.strength / 100))
+            if key + " Damage" in self.body_weapon_stat:
+                dmg = self.body_weapon_stat[key + " Damage"]
+                if dmg > 0:
+                    self.body_weapon_damage[key] = (dmg * self.body_weapon_stat["Damage Balance"]) + \
+                                                   (dmg * (body_strength / 100))
+        self.body_weapon_damage = {key: value for key, value in self.body_weapon_damage.items() if value}
         # add troop size as pure bonus
         self.body_weapon_penetrate = self.troop_data.weapon_list[1]["Armour Penetration"] + self.troop_size
 
@@ -651,7 +657,11 @@ class Subunit(pygame.sprite.Sprite):
         self.knock_down_sound_shake = self.knock_down_sound_shake * self.troop_mass
         self.heavy_dmg_sound_distance = self.heavy_dmg_sound_distance * self.troop_mass
         self.dmg_sound_distance = self.dmg_sound_distance * self.troop_mass
-        self.hit_volume_mod = self.troop_mass / 50
+
+        if self.player_manual_control:
+            self.hit_volume_mod = 1
+        else:
+            self.hit_volume_mod = (self.troop_mass - 10) / 100
 
         self.command_buff = 1
         self.leader_social_buff = 0
@@ -710,6 +720,7 @@ class Subunit(pygame.sprite.Sprite):
         self.base_charge_def = self.original_charge_def
         self.skill = self.original_skill.copy()
         self.input_skill = self.skill.copy()  # skill dict without charge skill
+        self.perform_skill = self.input_skill.copy()
 
         self.leader_skill = {x: self.leader_data.skill_list[x] for x in self.skill if x in self.leader_data.skill_list}
         if not self.leader:  # no higher leader, count as commander tier
@@ -734,22 +745,18 @@ class Subunit(pygame.sprite.Sprite):
         self.add_weapon_stat()
         self.action_list = {}  # get added in change_equipment
 
-        self.last_health_state = 0  # state start at full
-        self.last_stamina_state = 0
-
         self.max_stamina = self.stamina
+        self.stamina_state = self.stamina / self.max_stamina
+
         self.stamina75 = self.stamina * 0.75
         self.stamina50 = self.stamina * 0.5
         self.stamina25 = self.stamina * 0.25
         self.stamina5 = self.stamina * 0.05
-        self.stamina_list = (self.stamina75, self.stamina50, self.stamina25, self.stamina5, -1)
 
         self.max_health = self.health  # health percentage
         self.max_health10 = self.max_health * 0.1
         self.max_health20 = self.max_health * 0.2
         self.max_health50 = self.max_health * 0.5
-
-        self.description = lore[1]  # subunit description for inspect ui
 
         self.max_morale = self.base_morale
 
@@ -800,7 +807,7 @@ class Subunit(pygame.sprite.Sprite):
 
         self.angle = start_angle
         self.new_angle = self.angle
-        self.radians_angle = math.radians(360 - self.angle)  # radians for apply angle to position
+        self.radians_angle = radians(360 - self.angle)  # radians for apply angle to position
         self.sprite_direction = rotation_dict[min(rotation_list,
                                                   key=lambda x: abs(
                                                       x - self.angle))]  # find closest in list of rotation for sprite direction
@@ -899,6 +906,15 @@ class Subunit(pygame.sprite.Sprite):
                     if self not in self.battle.troop_ai_logic_queue:
                         self.battle.troop_ai_logic_queue.append(self)
 
+                    if self.charging:  # keep checking for charge type in case subunit stop or start using weapon charge
+                        if "weapon" in self.current_action:
+                            if self.charging == "run":
+                                self.charging = "charge"
+                                self.attack("charge")
+                        else:  # no longer use weapon
+                            if self.charging == "charge":
+                                self.charging = "run"
+                                self.attack("charge")
                     self.timer -= 1
 
                 self.taking_damage_angle = None
@@ -949,7 +965,7 @@ class Subunit(pygame.sprite.Sprite):
 
                 done, frame_start = self.play_animation(dt, hold_check)
 
-                if self.charging and "charge" not in self.current_action:  # no longer charge
+                if self.charging and self.momentum != 1:  # no longer charge
                     self.charging = False
 
                 if frame_start:
@@ -957,9 +973,11 @@ class Subunit(pygame.sprite.Sprite):
                             self.current_animation[self.show_frame]["dmg_sprite"]:
                         # perform melee attack when frame that produce dmg effect starts
                         self.attack(self.current_animation[self.show_frame]["dmg_sprite"])
-                    elif self.charging is False and self.momentum == 1:
+                    elif self.momentum == 1 and not self.charging:
                         # add charge damage effect
-                        self.charging = True
+                        self.charging = "run"
+                        if "weapon" in self.current_action:
+                            self.charging = "charge"
                         self.attack("charge")
 
                 # Pick new animation, condition to stop animation: get interrupt,
@@ -1003,5 +1021,6 @@ class Subunit(pygame.sprite.Sprite):
             if self.alive:  # enter dead state
                 self.alive = False  # enter dead state
                 self.die("dead")
+
             if self.show_frame < self.max_show_frame:
                 self.play_animation(dt, False)

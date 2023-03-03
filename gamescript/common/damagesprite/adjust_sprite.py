@@ -1,4 +1,4 @@
-import pygame
+from pygame.transform import rotate
 
 
 def adjust_sprite(self):
@@ -7,6 +7,6 @@ def adjust_sprite(self):
     #                                                            self.image.get_height() * self.scale_size))
 
     if self.angle:
-        self.image = pygame.transform.rotate(self.image, self.angle)
+        self.image = rotate(self.image, self.angle)
 
     self.rect = self.image.get_rect(center=self.pos)

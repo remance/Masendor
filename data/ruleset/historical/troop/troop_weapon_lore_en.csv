@@ -44,7 +44,7 @@
 43,"Heater Shield",
 44,"Pavise Shield",
 45,"Spiked Shield",
-46,"Aspis Shield",
+46,"Bouche Shield",
 47,"Oval Shield",
 48,"Parry Dagger",
 49,"Parry Club",
@@ -53,16 +53,19 @@
 52,,
 53,,
 54,,
-55,"Light Crossbow (Heavy)","Arrow specifically made to pierce heavy armour. Less ideal for other uses due to its weight."
+55,"Light Crossbow (Heavy)","Light crossbow equipped with bolts specifically made to pierce heavy armour. Less ideal for other uses due to its weight."
 56,"Light Crossbow (Poison)",
 57,"Heavy Crossbow (Heavy)",
 58,"Heavy Crossbow (Poison)",
 59,"Longbow (Fire)",
 60,"Shortbow (Fire)",
 61,"Greatbow (Fire)","A fire arrow tactic is often used to ignite a structure, ship or siege machine. It is also used to inflict damage to enemy morale."
-62,"Longbow (Poison)","The greatest tool of cowardice. Unleash hell to the enemy from safety and see them suffer."
-63,"Shortbow (Poison)",
-64,"Greatbow (Poison)",
-65,"Longbow (Whistle)",
-66,"Greatbow (Whistle)","Whistle arrow by itself does little to no physical damage. The sound, though, does have a superstitious belief attached to it."
-67,"Throwing Knife",
+62,"Composite Bow (Fire)","The greatest tool of cowardice. Unleash hell to the enemy from safety and see them suffer."
+63,"Longbow (Poison)",
+64,"Shortbow (Poison)",
+65,"Greatbow (Poison)",
+66,"Composite Bow (Poison)","Whistle arrow by itself does little to no physical damage. The sound, though, does have a superstitious belief attached to it."
+67,"Longbow (Whistle)",
+68,"Greatbow (Whistle)",
+69,"Throwing Knife",
+70,"Throwing Knife (Poison)",

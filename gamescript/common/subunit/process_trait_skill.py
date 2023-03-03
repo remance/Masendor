@@ -30,6 +30,7 @@ def process_trait_skill(self):
     self.skill = skill_convert(self, self.skill, add_charge_skill=True)
     self.input_skill = self.skill.copy()
     self.input_skill.pop(self.charge_skill)
+    self.perform_skill = self.input_skill.copy()
 
     ai_skill_condition_list = {"move": [], "melee": [], "range": [], "enemy_near": [], "damaged": [], "retreat": [],
                                "idle": [], "unit_melee": [], "unit_range": [], "troop_melee": [], "troop_range": [],

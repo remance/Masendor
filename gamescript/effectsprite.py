@@ -1,5 +1,6 @@
 import pygame
-import random
+
+from random import choice
 
 from gamescript.common import utility
 
@@ -51,7 +52,7 @@ class EffectSprite(pygame.sprite.Sprite):
         if sprite_type in self.sound_effect_pool:
             self.travel_sound_distance = self.effect_list[sprite_type]["Sound Distance"]
             self.travel_shake_power = self.effect_list[sprite_type]["Shake Power"]
-            self.sound_effect_name = random.choice(self.sound_effect_pool[sprite_type])
+            self.sound_effect_name = choice(self.sound_effect_pool[sprite_type])
             self.sound_duration = pygame.mixer.Sound(self.sound_effect_name).get_length()
             self.sound_timer = 0  # start playing right away when first update
 

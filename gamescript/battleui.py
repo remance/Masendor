@@ -1,8 +1,8 @@
 import datetime
-import math
 
 import pygame
 import pygame.freetype
+from math import cos, sin, radians
 from gamescript.common import utility
 
 apply_sprite_colour = utility.apply_sprite_colour
@@ -834,9 +834,9 @@ class WheelUI(pygame.sprite.Sprite):
         angle = 0
         for wheel_button in range(len(blit_list)):
             base_target = pygame.Vector2(image_center[0] - (image_center[0] / 2 *
-                                                            math.sin(math.radians(angle))),
+                                                            sin(radians(angle))),
                                          image_center[1] + (image_center[1] / 2 *
-                                                            math.cos(math.radians(angle))))
+                                                            cos(radians(angle))))
             angle += angle_space
 
             self.wheel_image_with_stuff.append(self.wheel_button_image.copy())

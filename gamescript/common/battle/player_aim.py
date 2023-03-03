@@ -1,11 +1,9 @@
-import math
-
 import pygame
+from math import cos, sin, radians
 
-
-def manual_aim(self, mouse_left_up, mouse_right_up, key_state, key_press):
+def player_aim(self, mouse_left_up, mouse_right_up, key_state, key_press):
     """
-    Range attack aim with player manual control.
+    Manual player aim control for range attack
     """
     shoot_text = ""
     shoot_ready = [0, 0]
@@ -24,18 +22,17 @@ def manual_aim(self, mouse_left_up, mouse_right_up, key_state, key_press):
     for this_subunit in who_shoot:
         range_weapon_check = [False, False]
         can_shoot = [False, False]
-        arc_shot = [False, False]
+        this_subunit.manual_shoot = True
         if this_subunit.in_melee_combat_timer == 0 and "uncontrollable" not in this_subunit.current_action and \
                 "uncontrollable" not in this_subunit.command_action and "weapon" not in this_subunit.current_action and \
                 "weapon" not in this_subunit.command_action:
-            this_subunit.manual_shoot = True
 
             if self.player_input_state == "line aim":
                 angle = self.player_char.set_rotate(self.command_mouse_pos)
                 distance = self.player_char.base_pos.distance_to(self.command_mouse_pos)
                 base_target_pos = pygame.Vector2(
-                    this_subunit.base_pos[0] - (distance * math.sin(math.radians(angle))),
-                    this_subunit.base_pos[1] - (distance * math.cos(math.radians(angle))))
+                    this_subunit.base_pos[0] - (distance * sin(radians(angle))),
+                    this_subunit.base_pos[1] - (distance * cos(radians(angle))))
                 target_pos = (base_target_pos[0] * 5 * self.screen_scale[0],
                               base_target_pos[1] * 5 * self.screen_scale[1])
 
@@ -44,9 +41,11 @@ def manual_aim(self, mouse_left_up, mouse_right_up, key_state, key_press):
                     if weapon in this_subunit.ammo_now[this_subunit.equipped_weapon]:
                         range_weapon_check[weapon] = True
                         has_ammo[weapon] += 1
-                        if this_subunit.ammo_now[this_subunit.equipped_weapon][weapon] > 0:
+                        if this_subunit.ammo_now[this_subunit.equipped_weapon][weapon] > 0 and \
+                                (this_subunit.move_speed and this_subunit.shoot_while_moving and
+                                 not self.check_special_effect("Stationary", weapon=weapon)) or \
+                                not this_subunit.move_speed:
                             if this_subunit.shoot_range[weapon] >= this_subunit.base_pos.distance_to(base_target_pos):
-                                arc_shot[weapon] = this_subunit.check_special_effect("Arc Shot", weapon=weapon)
                                 shoot_ready_list[weapon].append(this_subunit)
                                 shoot_ready[weapon] += 1
                                 can_shoot[weapon] = True
@@ -63,15 +62,8 @@ def manual_aim(self, mouse_left_up, mouse_right_up, key_state, key_press):
 
     self.single_text_popup.pop(self.cursor.rect.bottomright, shoot_text)
 
-    if key_press == pygame.K_TAB or not self.player_char.alive:  # Cancel manual aim when move or player die
-        if self.player_char.alive:
-            self.camera_mode = "Follow"
-        self.cursor.change_image("normal")
-        self.battle_ui_updater.remove(self.single_text_popup)
-        self.previous_player_input_state = self.player_input_state
-        self.player_input_state = None
-        for shoot_line in self.shoot_lines:
-            shoot_line.delete()  # reset shoot guide lines
+    if key_press == pygame.K_TAB or not self.player_char.alive:  # Cancel manual aim when move or player die)
+        self.player_cancel_input()
 
     elif mouse_left_up or mouse_right_up:
         weapon = 0
@@ -79,9 +71,17 @@ def manual_aim(self, mouse_left_up, mouse_right_up, key_state, key_press):
             weapon = 1
         if shoot_ready[weapon] > 0:
             for this_subunit in shoot_ready_list[weapon]:
-                this_subunit.new_angle = this_subunit.set_rotate(this_subunit.shoot_line.base_target_pos)
-                this_subunit.command_action = this_subunit.range_attack_command_action[weapon]
-                this_subunit.attack_pos = this_subunit.shoot_line.base_target_pos
+                if "movable" in this_subunit.current_action and "charge" not in this_subunit.current_action:
+                    # shoot while moving
+                    self.show_frame = 0  # just restart frame
+                    if "walk" in self.current_action:
+                        self.current_action = self.range_walk_command_action[weapon]
+                    elif "run" in self.current_action:
+                        self.current_action = self.range_run_command_action[weapon]
+                else:
+                    this_subunit.new_angle = this_subunit.set_rotate(this_subunit.shoot_line.base_target_pos)
+                    this_subunit.command_action = this_subunit.range_attack_command_action[weapon]
+                    this_subunit.attack_pos = this_subunit.shoot_line.base_target_pos
 
     else:
         self.camera_process(key_state)

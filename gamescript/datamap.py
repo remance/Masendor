@@ -50,9 +50,9 @@ class BattleMapData:
         with open(os.path.join(main_dir, "data", "ruleset", ruleset, "map", "terrain_effect.csv"), encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
-            mod_column = ("Infantry Speed/Charge Effect", "Infantry Combat Effect", "Infantry Defense Effect",
-                          "Cavalry Speed/Charge Effect", "Cavalry Combat Effect", "Cavalry Defense Effect")
-            int_column = ("ID", "Range Defense Bonus", "Hide Bonus", "Discipline Bonus",
+            mod_column = ("Infantry Speed/Charge Effect", "Infantry Combat Effect", "Infantry Defence Effect",
+                          "Cavalry Speed/Charge Effect", "Cavalry Combat Effect", "Cavalry Defence Effect")
+            int_column = ("ID", "Range Defence Bonus", "Hide Bonus", "Discipline Bonus",
                           "Day Temperature", "Night Temperature", "Dust")  # value int only
             tuple_column = ("Status",)
             mod_column = [index for index, item in enumerate(header) if item in mod_column]

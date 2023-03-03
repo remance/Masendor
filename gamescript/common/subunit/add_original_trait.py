@@ -1,4 +1,4 @@
-import random
+from random import randint
 
 
 def add_original_trait(self):
@@ -44,18 +44,20 @@ def add_original_trait(self):
         for effect in trait["Special Effect"]:  # trait from sources other than weapon activate permanent special status
             self.special_effect[self.troop_data.special_effect_list[effect]["Name"]][0][0] = True
 
-    if self.check_special_effect("Varied Training"):  # Varied training
-        self.original_melee_attack *= (random.randint(70, 120) / 100)
-        self.original_melee_def *= (random.randint(70, 120) / 100)
-        self.original_range_def *= (random.randint(70, 120) / 100)
-        self.original_melee_dodge *= (random.randint(70, 120) / 100)
-        self.original_range_dodge *= (random.randint(70, 120) / 100)
-        self.original_speed *= (random.randint(70, 120) / 100)
-        self.original_accuracy *= (random.randint(70, 120) / 100)
-        self.original_reload *= (random.randint(70, 120) / 100)
-        self.original_charge *= (random.randint(70, 120) / 100)
-        self.original_charge_def *= (random.randint(70, 120) / 100)
-        self.original_discipline += random.randint(-20, 0)
+    random_stat = (95, 105)
+    if self.check_special_effect("Varied Training"):  # Varied training more random stat
+        random_stat = (70, 120)
+        self.original_discipline += randint(-20, 0)
+    self.original_melee_attack *= (randint(random_stat[0], random_stat[1]) / 100)
+    self.original_melee_def *= (randint(random_stat[0], random_stat[1]) / 100)
+    self.original_range_def *= (randint(random_stat[0], random_stat[1]) / 100)
+    self.original_melee_dodge *= (randint(random_stat[0], random_stat[1]) / 100)
+    self.original_range_dodge *= (randint(random_stat[0], random_stat[1]) / 100)
+    self.original_speed *= (randint(random_stat[0], random_stat[1]) / 100)
+    self.original_accuracy *= (randint(random_stat[0], random_stat[1]) / 100)
+    self.original_reload *= (randint(random_stat[0], random_stat[1]) / 100)
+    self.original_charge *= (randint(random_stat[0], random_stat[1]) / 100)
+    self.original_charge_def *= (randint(random_stat[0], random_stat[1]) / 100)
 
     self.original_melee_attack *= melee_attack_modifier
     self.original_melee_def *= melee_def_modifier

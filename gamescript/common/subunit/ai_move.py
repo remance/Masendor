@@ -1,5 +1,5 @@
-import math
-import pygame
+from math import cos, sin, radians
+from pygame import Vector2
 
 follow_distance = 30
 stay_formation_distance = 1
@@ -41,11 +41,13 @@ def ai_move(self):
                     run_speed = self.run_speed
                     if run_speed > self.unit_leader.run_speed:  # use unit leader run speed instead if faster
                         run_speed = self.unit_leader.run_speed
-
-                    charge_target = pygame.Vector2(self.base_pos[0] -
-                                                   (run_speed * math.sin(math.radians(self.leader.angle))),
-                                                   self.base_pos[1] -
-                                                   (run_speed * math.cos(math.radians(self.leader.angle))))
+                    if self.is_leader:
+                        charge_target = self.nearest_enemy[0].base_pos
+                    else:
+                        charge_target = Vector2(self.base_pos[0] -
+                                                       (run_speed * sin(radians(self.leader.angle))),
+                                                       self.base_pos[1] -
+                                                       (run_speed * cos(radians(self.leader.angle))))
                     if charge_target.distance_to(self.base_pos) > 0:
                         self.command_target = charge_target
                         attack_index = 0
@@ -98,47 +100,47 @@ def ai_move(self):
 
                         # move enough to be in melee attack range
                         base_angle = self.set_rotate(self.attack_subunit.base_pos)
-                        self.command_target = pygame.Vector2(self.base_pos[0] -
-                                                             (move_distance * math.sin(math.radians(base_angle))),
-                                                             self.base_pos[1] -
-                                                             (move_distance * math.cos(math.radians(base_angle))))
+                        self.command_target = Vector2(self.base_pos[0] - (move_distance * sin(radians(base_angle))),
+                                                      self.base_pos[1] - (move_distance * cos(radians(base_angle))))
                         self.move_speed = self.run_speed
 
     else:  # move to attack nearby enemy in free order
         if not self.attack_subunit:  # no enemy to hit yet
-            distance = self.nearest_enemy[0].base_pos.distance_to(self.front_pos)
+            move_distance = self.nearest_enemy[0].base_pos.distance_to(self.front_pos)
             if self.shoot_range[0] + self.shoot_range[1] > 0:  # has range weapon, move to maximum shoot range position
-                max_shoot = max(self.shoot_range[0], self.shoot_range[1]) * 1.1
-                if distance > max_shoot:  # further than can shoot
-                    distance -= max_shoot
-                    if distance > 100 and self.is_leader and self.available_move_far_skill and not self.command_action:  # use move far skill first if leader
+                max_shoot = max(self.shoot_range[0], self.shoot_range[1])
+                if self.leader:  # use distance of formation to make subunit not cluster at same distance
+                    max_shoot -= self.leader.troop_distance_list[self][1]
+                if move_distance > max_shoot:  # further than can shoot
+                    move_distance -= max_shoot
+                    if move_distance > 100 and self.is_leader and self.available_move_far_skill and not self.command_action:  # use move far skill first if leader
                         self.skill_command_input(0, self.available_move_far_skill)
                     elif self.available_move_skill and not self.command_action:  # use move skill first
                         self.skill_command_input(0, self.available_move_skill)
                     else:
                         angle = self.set_rotate(self.nearest_enemy[0].base_pos)
                         self.command_action = self.run_command_action
-                        self.command_target = pygame.Vector2(self.base_pos[0] - (distance * math.sin(math.radians(angle))),
-                                                             self.base_pos[1] - (distance * math.cos(math.radians(angle))))
+                        self.command_target = Vector2(self.base_pos[0] - (move_distance * sin(radians(angle))),
+                                                      self.base_pos[1] - (move_distance * cos(radians(angle))))
                         self.move_speed = self.run_speed
 
             else:  # no range weapon, move to melee
-                distance = self.nearest_enemy[0].base_pos.distance_to(self.base_pos)
-                if distance > self.max_melee_range > 0:  # too far move closer
-                    if distance > 100 and self.is_leader and self.available_move_far_skill and not self.command_action:
+                move_distance = self.nearest_enemy[0].base_pos.distance_to(self.base_pos)
+                if move_distance > self.max_melee_range > 0:  # too far move closer
+                    if move_distance > 100 and self.is_leader and self.available_move_far_skill and not self.command_action:
                         # use move far skill first if leader
                         self.skill_command_input(0, self.available_move_far_skill)
                     elif self.available_move_skill and not self.command_action:  # use move skill first
                         self.skill_command_input(0, self.available_move_skill)
                     else:
-                        if distance > self.charge_melee_range:
+                        if move_distance > self.charge_melee_range:
                             if "movable" in self.current_action and "charge" in self.current_action:  # run instead
                                 self.interrupt_animation = True
                             self.command_action = self.run_command_action
                         else:
                             if "movable" in self.current_action and "charge" not in self.current_action:
                                 self.interrupt_animation = True
-                            if distance > self.melee_range[0] > 0:
+                            if move_distance > self.melee_range[0] > 0:
                                 self.command_action = self.charge_command_action[0]
                             else:
                                 self.command_action = self.charge_command_action[1]

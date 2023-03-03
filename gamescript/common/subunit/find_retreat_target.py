@@ -1,12 +1,12 @@
-import math
+from math import radians
 
 from gamescript.common import utility
 
 rotation_xy = utility.rotation_xy
 travel_to_map_border = utility.travel_to_map_border
 
-retreat_angle = (math.radians(90), math.radians(270), math.radians(180), math.radians(0), math.radians(135),
-                 math.radians(225), math.radians(45), math.radians(315))
+retreat_angle = (radians(90), radians(270), radians(180), radians(0), radians(135),
+                 radians(225), radians(45), radians(315))
 
 
 def find_retreat_target(self):

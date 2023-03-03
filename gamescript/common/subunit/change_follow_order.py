@@ -1,4 +1,4 @@
-import pygame
+from pygame import Vector2
 
 
 def change_follow_order(self, new_order, which):
@@ -13,7 +13,7 @@ def change_follow_order(self, new_order, which):
 
     if new_order == "Stay Here":  # assign current pos to current spot
         for who in follower_list:
-            who.follow_target = pygame.Vector2(who.base_pos)
+            who.follow_target = Vector2(who.base_pos)
         if which == "troop":  # leader follower also change troop formation order
             for who in self.alive_leader_follower:
                 who.change_follow_order(new_order, "troop")

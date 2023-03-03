@@ -1,5 +1,3 @@
-import random
-
 infinity = float("inf")
 
 

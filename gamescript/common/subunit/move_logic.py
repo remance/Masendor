@@ -1,6 +1,4 @@
-import random
-
-import pygame
+from pygame import Vector2
 from gamescript.common import utility
 
 rotation_xy = utility.rotation_xy
@@ -35,8 +33,8 @@ def move_logic(self, dt):
                         if "forced move" not in self.current_action:  # damaged or knockdown does not change direction
                             self.new_angle = self.set_rotate(new_pos)
 
-                    self.pos = pygame.Vector2((self.base_pos[0] * self.screen_scale[0],
-                                               self.base_pos[1] * self.screen_scale[1])) * 5
+                    self.pos = Vector2((self.base_pos[0] * self.screen_scale[0],
+                                        self.base_pos[1] * self.screen_scale[1])) * 5
                     self.offset_pos = self.pos - self.current_animation[self.sprite_direction][self.show_frame][
                         "center_offset"]
                     self.rect.center = self.offset_pos

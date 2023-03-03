@@ -1,4 +1,4 @@
-import random
+from random import choice
 
 from gamescript import effectsprite
 
@@ -11,7 +11,7 @@ def use_skill(self, which_skill):
         effectsprite.EffectSprite(self, self.base_pos, self.pos, self.pos, 0, 0, skill_stat["Effect Sprite"],
                                   self.current_animation[self.show_frame]["dmg_sprite"])
     if skill_stat["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
-        self.battle.add_sound_effect_queue(random.choice(self.sound_effect_pool[skill_stat["Sound Effect"]]),
+        self.battle.add_sound_effect_queue(choice(self.sound_effect_pool[skill_stat["Sound Effect"]]),
                                            self.base_pos, skill_stat["Sound Distance"],
                                            skill_stat["Shake Power"])
 

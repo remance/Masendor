@@ -1,8 +1,8 @@
-import random
 import threading
 
 import pygame
 import pygame.freetype
+from random import randint
 from PIL import Image, ImageFilter, ImageOps
 
 
@@ -200,13 +200,13 @@ class BeautifulMap(pygame.sprite.Sprite):
         for row_pos in range(0, len(base_map.map_array)):
             for col_pos in range(0, len(base_map.map_array[0])):
                 if row_pos % 20 == 0 and col_pos % 20 == 0:
-                    random_pos = (row_pos + random.randint(0, 19), col_pos + random.randint(0, 19))
+                    random_pos = (row_pos + randint(0, 19), col_pos + randint(0, 19))
                     terrain, this_feature = feature_map.get_feature(random_pos, base_map)
                     feature = self.texture_images[
                         self.load_texture_list.index(self.battle_map_colour[this_feature][0])]
 
-                    choose = random.randint(0, len(feature) - 1)
-                    if random.randint(0, 100) < feature_map.feature_mod[this_feature]["Texture Density"]:
+                    choose = randint(0, len(feature) - 1)
+                    if randint(0, 100) < feature_map.feature_mod[this_feature]["Texture Density"]:
                         this_texture = self.empty_texture  # empty texture
                     else:
                         this_texture = feature[choose]

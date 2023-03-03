@@ -1,4 +1,4 @@
-from gamescript import battleui
+from gamescript.battleui import SpriteIndicator
 
 
 def change_battle_state(self):
@@ -19,7 +19,7 @@ def change_battle_state(self):
         # Run enter_battle method
         for this_subunit in self.subunit_updater:
             this_subunit.enter_battle(self.subunit_animation_pool)
-            battleui.SpriteIndicator(this_subunit.hitbox_image, this_subunit, self)
+            SpriteIndicator(this_subunit.hitbox_image, this_subunit, self)
 
         # Setup formation for leader
         for this_subunit in self.subunit_updater:

@@ -1,7 +1,7 @@
-import math
-import random
+from pygame import Vector2
+from math import cos, sin, radians
+from random import choice, uniform, randint
 
-import pygame
 from gamescript import damagesprite, effectsprite
 from gamescript.common import utility
 
@@ -57,10 +57,8 @@ def attack(self, attack_type):
 
             arc_shot = self.check_special_effect("Arc Shot", weapon=weapon)
             if not arc_shot:  # direct shot just move until it reach max range
-                base_target = pygame.Vector2(self.base_pos[0] - (max_range *
-                                                                 math.sin(math.radians(base_angle))),
-                                             self.base_pos[1] - (max_range *
-                                                                 math.cos(math.radians(base_angle))))
+                base_target = Vector2(self.base_pos[0] - (max_range * sin(radians(base_angle))),
+                                      self.base_pos[1] - (max_range * cos(radians(base_angle))))
 
             if self.attack_subunit:
                 how_long = attack_range / self.speed  # shooting distance divide damage sprite speed to find travel time
@@ -84,14 +82,19 @@ def attack(self, attack_type):
                 # Calculate accuracy and final base_target where damage sprite will land
                 # The further accuracy from 0 the further damage sprite will land from base_target
                 if accuracy < 100:
-                    accuracy = random.randint(int(accuracy), 100)  # random hit chance using accuracy as minimum value
+                    accuracy = randint(int(accuracy), 100)  # random hit chance using accuracy as minimum value
                 # target deviation as to percentage from base_target
-                base_target = pygame.Vector2(base_target[0] * (100 + random.choice((accuracy / 50, -accuracy / 50))) / 100,
-                                             base_target[1] * (100 + random.choice((accuracy / 50, -accuracy / 50))) / 100)
+                base_target = Vector2(base_target[0] * (100 + choice((accuracy / 100, -accuracy / 100))) / 100,
+                                      base_target[1] * (100 + choice((accuracy / 100, -accuracy / 100))) / 100)
 
-                damagesprite.RangeDamageSprite(self, weapon, self.weapon_dmg[weapon],
-                                               self.weapon_penetrate[self.equipped_weapon][weapon], equipped_weapon_data,
-                                               attack_type, self.front_pos, base_target,
+                dmg = {key: uniform(value[0], value[1]) for key, value in self.weapon_dmg[weapon].items()}
+                if self.release_timer > 1 and self.current_action["weapon"] in self.equipped_power_weapon:
+                    # apply power hold buff
+                    for key in self.dmg:
+                        dmg[key] *= 1.5
+
+                damagesprite.RangeDamageSprite(self, weapon, dmg, self.weapon_penetrate[self.equipped_weapon][weapon],
+                                               equipped_weapon_data, attack_type, self.front_pos, base_target,
                                                accuracy=accuracy, arc_shot=arc_shot)
 
             self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
@@ -107,21 +110,25 @@ def attack(self, attack_type):
 
             if equipped_weapon_data["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
                 self.battle.add_sound_effect_queue(
-                    random.choice(self.sound_effect_pool[equipped_weapon_data["Sound Effect"]]),
+                    choice(self.sound_effect_pool[equipped_weapon_data["Sound Effect"]]),
                     self.base_pos, equipped_weapon_data["Sound Distance"],
                     equipped_weapon_data["Shake Power"])
 
         elif attack_type == "charge":
             if weapon:
-                damagesprite.ChargeDamageSprite(self, weapon, self.weapon_dmg[weapon],
-                                                self.weapon_penetrate[self.equipped_weapon][weapon],
-                                                equipped_weapon_data, "charge", self.base_pos, self.base_pos,
-                                                accuracy=self.melee_attack)
+                dmg = {key: value[0] for key, value in self.weapon_dmg[weapon].items()}
+                penetrate = self.weapon_penetrate[self.equipped_weapon][weapon]
+                stat = equipped_weapon_data
             else:  # charge without using weapon (by running)
-                damagesprite.ChargeDamageSprite(self, weapon, self.body_weapon_damage,
-                                                self.body_weapon_penetrate,
-                                                self.body_weapon_stat, "charge", self.base_pos, self.base_pos,
-                                                accuracy=self.melee_attack)
+                dmg = self.body_weapon_damage
+                penetrate = self.body_weapon_penetrate
+                stat = self.body_weapon_stat
+            if self.charge_sprite:  # charge sprite already existed
+                self.charge_sprite.change_weapon(dmg, penetrate, stat)
+            else:
+                self.charge_sprite = damagesprite.ChargeDamageSprite(self, weapon, dmg, penetrate, stat,
+                                                                     "charge", self.base_pos, self.base_pos,
+                                                                     accuracy=self.melee_attack)
 
         else:  # melee attack
             accuracy = self.melee_attack
@@ -132,22 +139,25 @@ def attack(self, attack_type):
 
             if self.front_pos.distance_to(base_target) > self.melee_range[weapon]:  # target exceed weapon range, use max
                 base_angle = self.set_rotate(base_target)
-                base_target = pygame.Vector2(self.front_pos[0] - (self.melee_range[weapon] *
-                                                                  math.sin(math.radians(base_angle))),
-                                             self.front_pos[1] - (self.melee_range[weapon] *
-                                                                  math.cos(math.radians(base_angle))))
-            damagesprite.MeleeDamageSprite(self, weapon, self.weapon_dmg[weapon],
-                                           self.weapon_penetrate[self.equipped_weapon][weapon],
+                base_target = Vector2(self.front_pos[0] - (self.melee_range[weapon] * sin(radians(base_angle))),
+                                      self.front_pos[1] - (self.melee_range[weapon] * cos(radians(base_angle))))
+
+            dmg = {key: uniform(value[0], value[1]) for key, value in self.weapon_dmg[weapon].items()}
+            if self.release_timer > 1 and self.current_action["weapon"] in self.equipped_power_weapon:
+                # apply power hold buff
+                for key in self.dmg:
+                    dmg[key] *= 1.5
+
+            damagesprite.MeleeDamageSprite(self, weapon, dmg, self.weapon_penetrate[self.equipped_weapon][weapon],
                                            equipped_weapon_data, attack_type, self.base_pos,
                                            base_target, accuracy=accuracy)
 
             self.weapon_cooldown[weapon] = 0  # melee weapon use cooldown for attack
 
             if equipped_weapon_data["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
-                self.battle.add_sound_effect_queue(
-                    random.choice(self.sound_effect_pool[equipped_weapon_data["Sound Effect"]]),
-                    self.base_pos, equipped_weapon_data["Sound Distance"],
-                    equipped_weapon_data["Shake Power"])
+                self.battle.add_sound_effect_queue(choice(self.sound_effect_pool[equipped_weapon_data["Sound Effect"]]),
+                                                   self.base_pos, equipped_weapon_data["Sound Distance"],
+                                                   equipped_weapon_data["Shake Power"])
 
         self.release_timer = 0  # reset release timer after attack
 
@@ -163,10 +173,8 @@ def attack(self, attack_type):
                     dmg = {key: (value / 2, value) for key, value in dmg.items()}
 
                 # use end of sprite instead of front_pos so effect not show up inside troop body sprite
-                base_target = pygame.Vector2(self.base_pos[0] - (self.attack_effect_spawn_distance *
-                                                                 math.sin(math.radians(self.angle))),
-                                             self.base_pos[1] - (self.attack_effect_spawn_distance *
-                                                                 math.cos(math.radians(self.angle))))
+                base_target = Vector2(self.base_pos[0] - (self.attack_effect_spawn_distance * sin(radians(self.angle))),
+                                      self.base_pos[1] - (self.attack_effect_spawn_distance * cos(radians(self.angle))))
 
                 damagesprite.EffectDamageSprite(self, equipped_weapon_data["After Attack Effect"], dmg,
                                                 effect_stat["Armour Penetration"], effect_stat, "effect",

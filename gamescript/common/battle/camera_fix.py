@@ -1,4 +1,4 @@
-import pygame
+from pygame import Vector2
 
 
 def camera_fix(self):
@@ -12,8 +12,8 @@ def camera_fix(self):
     elif self.true_camera_pos[1] < 0:
         self.true_camera_pos[1] = 0
 
-    self.camera_pos = pygame.Vector2(self.true_camera_pos * self.screen_scale[0],
-                                     self.true_camera_pos * self.screen_scale[1]) * 5
+    self.camera_pos = Vector2(self.true_camera_pos * self.screen_scale[0],
+                              self.true_camera_pos * self.screen_scale[1]) * 5
 
     self.camera_topleft_corner = (self.camera_pos[0] - self.center_screen[0],
                                   self.camera_pos[1] - self.center_screen[

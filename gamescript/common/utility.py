@@ -1,13 +1,13 @@
-import ast
 import csv
 import datetime
-import inspect
-import math
 import os
 import re
 
 import pygame
 import pygame.freetype
+from ast import literal_eval
+from inspect import stack
+from math import cos, sin, atan2, degrees
 from PIL import Image, ImageOps
 from gamescript import menu
 
@@ -18,8 +18,8 @@ def empty_method(self, *args):
     if hasattr(self, 'error_log'):
         error_text = "{0} -- {1}\n".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
                                            "Empty method is called") + \
-                     str(inspect.stack()[1][1]) + "At Line" + str(inspect.stack()[1][2]) + ":" + \
-                     str(inspect.stack()[1][3])
+                     str(stack()[1][1]) + "At Line" + str(stack()[1][2]) + ":" + \
+                     str(stack()[1][3])
         # print(error_text)
         self.error_log.write(error_text)
 
@@ -77,7 +77,7 @@ def load_images(main_dir, screen_scale=(1, 1), subfolder=(), load_order=False, r
     try:
         if load_order:  # load in the order of load_order file
             load_order_file = open(os.path.join(dir_path, "load_order.txt"), "r")
-            load_order_file = ast.literal_eval(load_order_file.read())
+            load_order_file = literal_eval(load_order_file.read())
         else:  # load every file
             load_order_file = [f for f in os.listdir(dir_path) if f.endswith(".png")]  # read all file
             try:  # sort file name if all in number only
@@ -322,8 +322,8 @@ def rotation_xy(origin, point, angle):
     """
     ox, oy = origin
     px, py = point
-    x = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)
-    y = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy)
+    x = ox + cos(angle) * (px - ox) - sin(angle) * (py - oy)
+    y = oy + sin(angle) * (px - ox) + cos(angle) * (py - oy)
     return pygame.Vector2(x, y)
 
 
@@ -335,8 +335,8 @@ def set_rotate(self, base_target, convert=True):
     :param convert: convert degree for rotation
     :return: new angle
     """
-    my_radians = math.atan2(base_target[1] - self.base_pos[1], base_target[0] - self.base_pos[0])
-    new_angle = math.degrees(my_radians)
+    my_radians = atan2(base_target[1] - self.base_pos[1], base_target[0] - self.base_pos[0])
+    new_angle = degrees(my_radians)
     if convert:
         # """upper left and upper right"""
         if -180 <= new_angle < 0:
@@ -371,8 +371,8 @@ def travel_to_map_border(pos, angle, map_size):
     :param map_size: Size of map (width, height)
     :return: target pos on map border
     """
-    dx = math.cos(angle)
-    dy = math.sin(angle)
+    dx = cos(angle)
+    dy = sin(angle)
 
     if dx < 1.0e-16:  # left border
         y = (-pos[0]) * dy / dx + pos[1]

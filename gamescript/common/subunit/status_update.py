@@ -1,5 +1,3 @@
-import math
-
 infinity = float("inf")
 
 dodge_formation_bonus = {"Very Tight": -30, "Tight": -15,
@@ -85,6 +83,8 @@ def status_update(self):
     self.shoot_range = self.original_shoot_range[self.equipped_weapon].copy()
     self.weapon_speed = self.original_weapon_speed[self.equipped_weapon].copy()
     self.weapon_dmg = self.original_weapon_dmg[self.equipped_weapon].copy()
+
+    self.element_resistance = self.base_element_resistance.copy()
 
     self.hp_regen = self.base_hp_regen
     self.stamina_regen = self.base_stamina_regen
@@ -259,31 +259,33 @@ def status_update(self):
 
     self.check_element_effect()  # elemental effect
 
-    self.morale_state = self.morale / self.max_morale  # for using as modifier to stat
-    if self.morale_state > 3 or math.isnan(self.morale_state):  # morale state more than 3 give no more benefit
-        self.morale_state = 3
+    self.morale_state = self.morale / 1000  # for using as modifier to stat
+    if self.morale_state > 1:  # morale state can give no more than double bonus
+        self.morale_state = 1
     elif self.morale_state < 0:
         self.morale_state = 0
 
+    self.stamina_state = self.stamina / self.max_stamina
+    if self.stamina_state < 0.5:
+        self.stamina_state = 0.5
+
     # Apply morale, and leader buff to stat
-    self.discipline = (self.discipline * self.morale_state) + self.leader_social_buff + \
-                      (self.authority / 10)  # use morale, stamina, leader social vs grade and authority
-    self.melee_attack = (self.melee_attack * (self.morale_state + 0.1)) * self.command_buff
-    self.melee_def = (self.melee_def * (self.morale_state + 0.1)) * self.command_buff
-    self.range_def = (self.range_def * (self.morale_state + 0.1)) * self.command_buff
+    self.discipline = (self.discipline + (self.discipline * self.morale_state * self.stamina_state)) + \
+                       self.leader_social_buff + (self.authority / 10)  # use morale, leader social and authority
+    self.melee_attack = (self.melee_attack + (self.melee_attack * self.morale_state)) * self.command_buff
+    self.melee_def = (self.melee_def + (self.melee_def * self.morale_state)) * self.command_buff
+    self.range_def = (self.range_def + (self.range_def * self.morale_state)) * self.command_buff
     self.accuracy = self.accuracy * self.command_buff
-    self.charge_def = (self.charge_def * (
-            self.morale_state + 0.1)) * self.command_buff  # use morale, stamina and command buff
+    self.charge_def = (self.charge_def + (self.charge_def * self.morale_state)) * self.command_buff
     height_diff = (self.height / self.front_height) ** 2  # walk down hill increase speed, walk up hill reduce speed
-    self.speed = self.speed * height_diff
-    self.charge = (self.charge + self.speed) * (self.morale_state + 0.1) * self.command_buff
+    self.speed = (self.speed * self.stamina_state) * height_diff
+    self.charge = ((self.charge + self.speed) + (self.charge * self.morale_state)) * self.command_buff
 
     # Add discipline to stat
-    discipline_cal = self.discipline / 200
+    discipline_cal = self.discipline / 1000
     self.melee_attack += (self.melee_attack * discipline_cal)
     self.melee_def += (self.melee_def * discipline_cal)
     self.range_def += (self.range_def * discipline_cal)
-    self.speed += (self.speed * discipline_cal / 2)
     self.charge_def += (self.charge_def * discipline_cal)
     self.charge += (self.charge * discipline_cal)
 

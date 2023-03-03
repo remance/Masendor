@@ -1,6 +1,6 @@
-import math
-import pygame
+from pygame import Vector2
 
+from math import cos, sin, radians
 infinity = float("inf")
 
 
@@ -17,14 +17,16 @@ def cal_loss(self, target, final_dmg, impact, final_morale_dmg, element_effect, 
     if final_dmg > target.health:  # dmg cannot be higher than remaining health
         final_dmg = target.health
 
-    impact_check = final_dmg + impact - target.troop_mass
+    impact_check = impact - target.troop_mass
 
     if impact_check > target.max_health50:
         target.interrupt_animation = True
         target.command_action = self.knockdown_command_action
         target.move_speed = impact_check
-        target.forced_target = pygame.Vector2(target.base_pos[0] - (impact_check * math.sin(math.radians(hit_angle))),
-                                              target.base_pos[1] - (impact_check * math.cos(math.radians(hit_angle))))
+        target.momentum = 0
+        target.charging = False
+        target.forced_target = Vector2(target.base_pos[0] - (impact_check / 2 * sin(radians(hit_angle))),
+                                       target.base_pos[1] - (impact_check / 2 * cos(radians(hit_angle))))
         self.battle.add_sound_effect_queue(self.sound_effect_pool["KnockDown"][0], target.base_pos,
                                            target.knock_down_sound_distance,
                                            target.knock_down_sound_shake,
@@ -34,8 +36,10 @@ def cal_loss(self, target, final_dmg, impact, final_morale_dmg, element_effect, 
         target.interrupt_animation = True
         target.command_action = self.heavy_damaged_command_action
         target.move_speed = target.walk_speed
-        target.forced_target = pygame.Vector2(target.base_pos[0] - (impact_check * math.sin(math.radians(hit_angle))),
-                                              target.base_pos[1] - (impact_check * math.cos(math.radians(hit_angle))))
+        target.momentum = 0
+        target.charging = False
+        target.forced_target = Vector2(target.base_pos[0] - (impact_check * sin(radians(hit_angle))),
+                                       target.base_pos[1] - (impact_check * cos(radians(hit_angle))))
         self.battle.add_sound_effect_queue(self.sound_effect_pool["HeavyDamaged"][0], target.base_pos,
                                            target.heavy_dmg_sound_distance,
                                            target.heavy_dmg_sound_shake,
@@ -45,15 +49,18 @@ def cal_loss(self, target, final_dmg, impact, final_morale_dmg, element_effect, 
         target.interrupt_animation = True
         target.command_action = self.damaged_command_action
         target.move_speed = target.walk_speed
-        target.forced_target = pygame.Vector2(target.base_pos[0] - (impact_check * math.sin(math.radians(hit_angle))),
-                                              target.base_pos[1] - (impact_check * math.cos(math.radians(hit_angle))))
+        target.momentum = 0
+        target.charging = False
+        target.forced_target = Vector2(target.base_pos[0] - (impact_check * sin(radians(hit_angle))),
+                                       target.base_pos[1] - (impact_check * cos(radians(hit_angle))))
 
         self.battle.add_sound_effect_queue(self.sound_effect_pool["Damaged"][0], target.base_pos,
                                            target.dmg_sound_distance,
                                            target.dmg_sound_shake,
                                            volume_mod=target.hit_volume_mod)
 
-    else:  # use damaged skill
+    else:  # take damage but not high enough to play animation
+        self.angle = self.set_rotate(self.nearest_enemy[0].base_pos)
         if self.available_damaged_skill and not self.current_action and not self.command_action:  # use damaged skill
             self.command_action = {"skill": self.available_damaged_skill[0]}
 

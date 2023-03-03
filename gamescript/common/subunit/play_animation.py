@@ -1,6 +1,3 @@
-import pygame
-
-
 def play_animation(self, dt, hold_check):
     """
     Play troop sprite animation

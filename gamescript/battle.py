@@ -1,12 +1,10 @@
-import datetime
 import glob
 import os
 import sys
 
-import threading
-
 import pygame
 import pygame.freetype
+from datetime import datetime, timedelta
 
 from gamescript import camera, weather, battleui, menu, subunit, datasprite, damagesprite, effectsprite, ai
 from gamescript.common import utility
@@ -44,9 +42,11 @@ class Battle:
     change_battle_state = empty_method
     check_subunit_collision = empty_method
     generate_unit = empty_method
-    manual_aim = empty_method
     mouse_scrolling_process = empty_method
     play_sound_effect = empty_method
+    player_aim = empty_method
+    player_cancel_input = empty_method
+    player_skill_perform = empty_method
     setup_battle_troop = empty_method
     setup_battle_ui = empty_method
     shake_camera = empty_method
@@ -331,8 +331,8 @@ class Battle:
             utility.convert_str_time(self.weather_event)
         except (FileNotFoundError,
                 TypeError):  # If no weather found or no map use light sunny weather start at 9:00 and wind direction at 0 angle
-            new_time = datetime.datetime.strptime("09:00:00", "%H:%M:%S").time()
-            new_time = datetime.timedelta(hours=new_time.hour, minutes=new_time.minute, seconds=new_time.second)
+            new_time = datetime.strptime("09:00:00", "%H:%M:%S").time()
+            new_time = timedelta(hours=new_time.hour, minutes=new_time.minute, seconds=new_time.second)
             self.weather_event = ((4, new_time, 0, 0),)  # default weather light sunny all day
         self.weather_playing = self.weather_event[0][1]  # used as the reference for map starting time
 
@@ -574,7 +574,7 @@ class Battle:
                                     self.player_input_state = self.previous_player_input_state
                                     self.previous_player_input_state = old_player_input_state
                         elif "aim" in self.player_input_state:
-                            self.manual_aim(mouse_left_up, mouse_right_up, key_state, event_key_press)
+                            self.player_aim(mouse_left_up, mouse_right_up, key_state, event_key_press)
 
 
                     # Drama text function
