@@ -1,6 +1,7 @@
 import pygame
 from math import cos, sin, radians
 
+
 def player_aim(self, mouse_left_up, mouse_right_up, key_state, key_press):
     """
     Manual player aim control for range attack
@@ -42,13 +43,14 @@ def player_aim(self, mouse_left_up, mouse_right_up, key_state, key_press):
                         range_weapon_check[weapon] = True
                         has_ammo[weapon] += 1
                         if this_subunit.ammo_now[this_subunit.equipped_weapon][weapon] > 0 and \
-                                (this_subunit.move_speed and this_subunit.shoot_while_moving and
-                                 not self.check_special_effect("Stationary", weapon=weapon)) or \
-                                not this_subunit.move_speed:
-                            if this_subunit.shoot_range[weapon] >= this_subunit.base_pos.distance_to(base_target_pos):
-                                shoot_ready_list[weapon].append(this_subunit)
-                                shoot_ready[weapon] += 1
-                                can_shoot[weapon] = True
+                                this_subunit.shoot_range[weapon] >= this_subunit.base_pos.distance_to(base_target_pos) and \
+                                ((this_subunit.move_speed and this_subunit.shoot_while_moving and
+                                 not self.check_special_effect("Stationary", weapon=weapon)) or
+                                 not this_subunit.move_speed):
+
+                            shoot_ready_list[weapon].append(this_subunit)
+                            shoot_ready[weapon] += 1
+                            can_shoot[weapon] = True
 
         if True in range_weapon_check:
             if this_subunit.shoot_line not in self.battle_camera:  # add back shoot line

@@ -145,7 +145,7 @@ def attack(self, attack_type):
             dmg = {key: uniform(value[0], value[1]) for key, value in self.weapon_dmg[weapon].items()}
             if self.release_timer > 1 and self.current_action["weapon"] in self.equipped_power_weapon:
                 # apply power hold buff
-                for key in self.dmg:
+                for key in dmg:
                     dmg[key] *= 1.5
 
             damagesprite.MeleeDamageSprite(self, weapon, dmg, self.weapon_penetrate[self.equipped_weapon][weapon],
