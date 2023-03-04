@@ -11,15 +11,15 @@ def battle_keyboard_process(self, key_press):
     elif key_press == pygame.K_F1:
         self.drama_text.queue.append("Hello and Welcome to update video")
     elif key_press == pygame.K_F2:
-        self.drama_text.queue.append("Showcase: Just having fun with cannon")
+        self.drama_text.queue.append("Showcase: New stuffs so far (see video description for detail)")
     elif key_press == pygame.K_F3:
-        self.drama_text.queue.append("Leader can has multiple troop and leader followers forming a unit")
+        self.drama_text.queue.append("Manual aim system")
     elif key_press == pygame.K_F4:
-        self.drama_text.queue.append("Followers will try to act according to the orders given")
+        self.drama_text.queue.append("Attack effect, effect sprite that can affect troop, aoe")
     elif key_press == pygame.K_F5:
-        self.drama_text.queue.append("Troops and leaders may also have skills they can use")
+        self.drama_text.queue.append("Very simple leader AI")
     elif key_press == pygame.K_F6:
-        self.drama_text.queue.append("And here is example of early charge implementation")
+        self.drama_text.queue.append("Observation mode")
 
     # elif key_press == pygame.K_PAGEUP:  # Go to top of event log
     #     self.event_log.current_start_row = 0

@@ -568,10 +568,10 @@ class Subunit(pygame.sprite.Sprite):
         if "" in self.original_skill:
             self.original_skill.remove("")
 
-        self.health = ((self.strength * 0.2) + (self.constitution * 0.8)) * (grade_stat[
-            "Health Effect"] / 100) * (start_hp / 100)  # Health of troop
-        self.stamina = ((self.strength * 0.2) + (self.constitution * 0.8)) * (grade_stat["Stamina Effect"] / 100) * (
-                start_stamina / 100)  # starting stamina with grade
+        self.health = int(((self.strength * 0.2) + (self.constitution * 0.8)) * (grade_stat[
+            "Health Effect"] / 100) * (start_hp / 100))  # Health of troop
+        self.stamina = int(((self.strength * 0.2) + (self.constitution * 0.8)) * (grade_stat["Stamina Effect"] / 100) * (
+                start_stamina / 100))  # starting stamina with grade
 
         self.original_mana = 0
         if "Mana" in stat:
@@ -700,6 +700,7 @@ class Subunit(pygame.sprite.Sprite):
 
         self.original_speed = (self.original_speed * ((100 - self.weight) / 100)) + grade_stat[
             "Speed Bonus"]  # finalise base speed with weight and grade bonus
+
         self.acceleration = self.original_speed  # determine how long it takes to reach full speed when run
 
         # Stat after applying trait and gear

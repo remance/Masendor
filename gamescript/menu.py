@@ -530,7 +530,7 @@ class ArmyStat(pygame.sprite.Sprite):
                            troop_data.mount_list[stat["Mount"][0]]["Name"] + ", " + \
                            troop_data.mount_armour_list[stat["Mount"][2]]["Name"]
 
-        leader_stat = {"Health: ": who.health, "Authority: ": who.authority,
+        leader_stat = {"Health: ": who.health, "Authority: ": who.leader_authority,
                        "Melee Command: ": self.leader_text[who.melee_command],
                        "Range Command: ": self.leader_text[who.range_command],
                        "Cavalry Command: ": self.leader_text[who.cav_command],

@@ -21,7 +21,6 @@ def player_aim(self, mouse_left_up, mouse_right_up, key_state, key_press):
         who_shoot = self.player_char.alive_troop_follower
 
     for this_subunit in who_shoot:
-        range_weapon_check = [False, False]
         can_shoot = [False, False]
         this_subunit.manual_shoot = True
         if this_subunit.in_melee_combat_timer == 0 and "uncontrollable" not in this_subunit.current_action and \
@@ -40,7 +39,6 @@ def player_aim(self, mouse_left_up, mouse_right_up, key_state, key_press):
             for weapon in (0, 1):
                 if this_subunit.equipped_weapon in this_subunit.ammo_now:
                     if weapon in this_subunit.ammo_now[this_subunit.equipped_weapon]:
-                        range_weapon_check[weapon] = True
                         has_ammo[weapon] += 1
                         if this_subunit.ammo_now[this_subunit.equipped_weapon][weapon] > 0 and \
                                 this_subunit.shoot_range[weapon] >= this_subunit.base_pos.distance_to(base_target_pos) and \
@@ -52,7 +50,7 @@ def player_aim(self, mouse_left_up, mouse_right_up, key_state, key_press):
                             shoot_ready[weapon] += 1
                             can_shoot[weapon] = True
 
-        if True in range_weapon_check:
+        if True in can_shoot:
             if this_subunit.shoot_line not in self.battle_camera:  # add back shoot line
                 self.battle_camera.add(this_subunit.shoot_line)
             this_subunit.shoot_line.update(base_target_pos, target_pos, can_shoot)
