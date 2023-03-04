@@ -32,6 +32,6 @@ def cal_range_hit(self, attacker, target, target_side, hit_angle):
             attacker_dmg, attacker_morale_dmg, element_effect, impact = \
                 self.cal_dmg(attacker, target, attacker_hit, target_def, self.weapon)
 
-            self.attacker.cal_loss(target, attacker_dmg, impact, attacker_morale_dmg, element_effect, hit_angle)
+            target.cal_loss(attacker_dmg, impact, attacker_morale_dmg, element_effect, hit_angle)
 
             target.take_range_dmg = 3

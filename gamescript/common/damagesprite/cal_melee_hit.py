@@ -35,7 +35,7 @@ def cal_melee_hit(self, attacker, weapon, target, hit_side, hit_angle):
                                                                                  target_defence,
                                                                                  weapon, hit_side=hit_side)
 
-        attacker.cal_loss(target, attacker_dmg, impact, attacker_morale_dmg, element_effect, hit_angle)  # inflict dmg to defender
+        target.cal_loss(attacker_dmg, impact, attacker_morale_dmg, element_effect, hit_angle)  # inflict dmg to defender
         target.take_melee_dmg = 3
 
         if attacker.check_special_effect("Reflect Damage"):
@@ -44,4 +44,4 @@ def cal_melee_hit(self, attacker, weapon, target, hit_side, hit_angle):
             if target.full_reflect:
                 target_dmg = attacker_dmg
                 target_morale_dmg = attacker_dmg / 10
-            target.cal_loss(attacker, target_dmg, target_morale_dmg, element_effect, hit_angle)  # inflict dmg to attacker
+            attacker.cal_loss(target_dmg, target_morale_dmg, element_effect, hit_angle)  # inflict dmg to attacker

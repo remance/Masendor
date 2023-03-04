@@ -1,6 +1,6 @@
 import os
 from math import cos, sin, radians
-from random import choice
+from random import choice, uniform
 from pathlib import Path
 
 import pygame
@@ -30,6 +30,8 @@ class DamageSprite(pygame.sprite.Sprite):
 
     # Import from common.damagesprite
     adjust_sprite = empty_method
+    cal_dmg = empty_method
+    cal_effect_hit = empty_method
     cal_melee_hit = empty_method
     cal_range_hit = empty_method
     find_random_direction = empty_method
@@ -68,8 +70,11 @@ class DamageSprite(pygame.sprite.Sprite):
         self.random_direction = random_direction
         self.random_move = random_move
 
-        self.aoe = False  # TODO add condition
-        self.effect_stat = None
+        self.stat = stat
+
+        self.aoe = 0
+        if "Area Of Effect" in self.stat:
+            self.aoe = self.stat["Area Of Effect"]
 
         self.scale_size = 1
         self.frame_timer = 0
@@ -80,6 +85,7 @@ class DamageSprite(pygame.sprite.Sprite):
         self.sound_effect_name = None
         self.sound_timer = 0
         self.sound_duration = 0
+        self.stamina_dmg_bonus = 0
         self.repeat_animation = False
         self.sprite_direction = ""
         self.attacker_sprite_direction = self.attacker.sprite_direction
@@ -109,24 +115,24 @@ class DamageSprite(pygame.sprite.Sprite):
         self.deal_dmg = False
         if self.reach_effect:
             effect_stat = self.effect_list[self.reach_effect]
-            dmg = {key.split("Damage")[0]: value for key, value in effect_stat.items() if " Damage" in key}
+            dmg = {key.split(" ")[0]: value for key, value in effect_stat.items() if " Damage" in key}
             if sum(dmg.values()) <= 0:
                 dmg = None
             else:
-                dmg = {key.split("Damage")[0]: (value / 2, value) for key, value in dmg}
+                dmg = {key.split(" ")[0]: uniform(value / 2, value) for key, value in dmg.items()}
             EffectDamageSprite(self, self.reach_effect, dmg, effect_stat["Armour Penetration"], effect_stat, "effect",
                                self.base_pos, self.base_pos, reach_effect=effect_stat["After Reach Effect"])
 
-        if self.effect_stat:
-            finish_effect = self.effect_stat["End Effect"]
+        if "End Effect" in self.stat:
+            finish_effect = self.stat["End Effect"]
             if finish_effect:
                 effect_stat = self.effect_list[finish_effect]
-                dmg = {key.split("Damage")[0]: value for key, value in effect_stat.items() if " Damage" in key}
+                dmg = {key.split(" ")[0]: value for key, value in effect_stat.items() if " Damage" in key}
                 if sum(dmg.values()) <= 0:
                     dmg = None
                 else:
-                    dmg = {key.split("Damage")[0]: (value / 2, value) for key, value in dmg}
-                EffectDamageSprite(self, self.effect_stat["End Effect"], dmg, effect_stat["Armour Penetration"],
+                    dmg = {key.split(" ")[0]: uniform(value / 2, value) for key, value in dmg}
+                EffectDamageSprite(self, self.stat["End Effect"], dmg, effect_stat["Armour Penetration"],
                                    effect_stat, "effect", self.base_pos, self.base_pos,
                                    reach_effect=effect_stat["After Reach Effect"])
         self.clean_object()
@@ -237,8 +243,8 @@ class RangeDamageSprite(DamageSprite):
             this_subunit = subunit[0]
             if this_subunit.alive and this_subunit.game_id not in self.already_hit and this_subunit.hitbox.rect.colliderect(
                     self.rect):
-                if self.arc_shot:  # arc shot does not hit during travel
-                    pass_subunit = this_subunit
+                if self.arc_shot and self.distance_progress >= 100:  # arc shot only hit when reach target
+                    self.hit_register(this_subunit)
                 else:
                     self.hit_register(this_subunit)
                     self.already_hit.append(this_subunit.game_id)
@@ -247,8 +253,6 @@ class RangeDamageSprite(DamageSprite):
                         return
 
         if self.distance_progress >= 100:  # attack reach target pos
-            if self.arc_shot and pass_subunit:  # arc shot hit last pass when land
-                self.hit_register(pass_subunit)
             self.reach_target()
             return
 
@@ -344,19 +348,17 @@ class EffectDamageSprite(DamageSprite):
                  arc_shot=False, height_ignore=False, degrade_when_travel=True,
                  degrade_when_hit=True, random_direction=False, random_move=False, reach_effect=None):
         """Effect damage sprite"""
-        effect_stat = self.effect_list[weapon]
         DamageSprite.__init__(self, attacker, weapon, dmg, penetrate, stat, attack_type, base_pos, base_target,
                               arc_shot=arc_shot, height_ignore=height_ignore, degrade_when_travel=degrade_when_travel,
                               degrade_when_hit=degrade_when_hit, random_direction=random_direction,
                               random_move=random_move, accuracy=accuracy, reach_effect=reach_effect,
-                              height_type=effect_stat["Height Type"])
+                              height_type=stat["Height Type"])
 
-        self.effect_stat = effect_stat  # reassign
         self.base_pos = pygame.Vector2(base_pos)
         self.angle = self.attacker.angle
 
-        self.duration = self.effect_stat["Duration"]
-        self.wind_disperse = self.effect_stat["Wind Dispersion"]
+        self.duration = self.stat["Duration"]
+        self.wind_disperse = self.stat["Wind Dispersion"]
 
         if weapon in self.sound_effect_pool:
             self.travel_sound_distance = stat["Sound Distance"]
@@ -403,13 +405,17 @@ class EffectDamageSprite(DamageSprite):
             done, just_start = self.play_animation(0.05, dt, False)
 
         for this_subunit in subunit_list:
-            if this_subunit.game_id not in self.already_hit and this_subunit.hitbox.rect.colliderect(self.rect):
-                this_subunit.apply_effect(self.weapon, self.effect_stat,
+            if this_subunit.game_id not in self.already_hit and \
+                ((self.aoe == 0 and this_subunit.hitbox.rect.colliderect(self.rect)) or
+                 (self.aoe and this_subunit.base_pos.distance_to(self.base_pos) <= self.aoe)):
+                this_subunit.apply_effect(self.weapon, self.stat,
                                           this_subunit.status_effect, this_subunit.status_duration)
-                if self.effect_stat["Status"]:
-                    for status in self.effect_stat["Status"]:
+                if self.stat["Status"]:
+                    for status in self.stat["Status"]:
                         this_subunit.apply_effect(status, this_subunit.status_list[status],
                                                   this_subunit.status_effect, this_subunit.status_duration)
+                if self.dmg:
+                    self.hit_register(this_subunit)
                 self.already_hit.append(this_subunit.game_id)
 
         if self.full_distance:  # damage sprite that can move

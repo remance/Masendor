@@ -65,6 +65,9 @@ def die(self, how):
     self.battle.active_subunit_list.remove(self)
 
     if how == "dead":
+        if self.is_leader and self.leader is None:
+            self.battle.drama_text.queue.append(str(self.name) + " is Dead")  # play drama text when unit leader die
+
         if self in self.battle.battle_camera:
             self.battle.battle_camera.change_layer(sprite=self, new_layer=1)
 

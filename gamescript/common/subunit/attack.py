@@ -95,7 +95,8 @@ def attack(self, attack_type):
 
                 damagesprite.RangeDamageSprite(self, weapon, dmg, self.weapon_penetrate[self.equipped_weapon][weapon],
                                                equipped_weapon_data, attack_type, self.front_pos, base_target,
-                                               accuracy=accuracy, arc_shot=arc_shot)
+                                               accuracy=accuracy, arc_shot=arc_shot,
+                                               reach_effect=equipped_weapon_data["After Reach Effect"])
 
             self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
 

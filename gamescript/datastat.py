@@ -65,7 +65,7 @@ class TroopData:
 
         # Add map and element effect status if exist in ruleset
         require_effect_list = ("Wet", "Drench", "Cold", "Hot", "Heatstroke", "Sink", "Drown", "Swimming", "Muddy Leg",
-                               "Decay", "Severe Burning", "Shock", "Electrocution", "Stun", "Petrify",
+                               "Decay", "Burn", "Severe Burning", "Shock", "Electrocution", "Stun", "Petrify",
                                "Poison", "Deadly Poison")
         for key, value in self.status_list.copy().items():
             if value["Name"] in require_effect_list:
