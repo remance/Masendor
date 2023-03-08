@@ -28,8 +28,8 @@ def attack(self, attack_type):
 
             accuracy = self.accuracy
             sight_penalty = 1
-            if weapon in self.equipped_timing_weapon and \
-                self.equipped_timing_start_weapon[weapon] < self.release_timer < self.equipped_timing_end_weapon[weapon]:
+            if self.equipped_timing_start_weapon[weapon] and \
+                    self.equipped_timing_start_weapon[weapon] < self.release_timer < self.equipped_timing_end_weapon[weapon]:
                 # release in timing bonus time, get accuracy boost
                 accuracy *= 1.5
 
@@ -133,7 +133,7 @@ def attack(self, attack_type):
 
         else:  # melee attack
             accuracy = self.melee_attack
-            if weapon in self.equipped_timing_weapon and \
+            if self.equipped_timing_start_weapon[weapon] and \
                 self.equipped_timing_start_weapon[weapon] < self.release_timer < self.equipped_timing_end_weapon[weapon]:
                 # release in timing bonus time, get accuracy boost
                 accuracy *= 1.5

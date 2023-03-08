@@ -44,7 +44,7 @@ def change_to_source_selection_menu(self):
 
     team_troop, team_leader = self.read_battle_source(
         [self.source_scale_text[self.map_source], self.source_text[self.map_source]])
-    self.change_battle_source(team_troop, team_leader)
+    self.change_battle_source(self.source_scale[self.map_source], team_troop, team_leader)
 
     self.menu_button.add(*self.team_select_button)
     self.main_ui_updater.add(*self.team_select_button, self.map_option_box, self.observe_mode_tick_box,

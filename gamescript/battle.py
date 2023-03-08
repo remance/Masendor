@@ -648,15 +648,15 @@ class Battle:
 
                     # Run troop ai logic no more than limit number of subunit per update to prevent stutter
                     if self.troop_ai_logic_queue:
-                        limit = int(len(self.troop_ai_logic_queue) / 10)
+                        limit = int(len(self.troop_ai_logic_queue) / 20)
                         if limit < 10:
                             limit = 10
-                        for index, this_subunit in enumerate(self.troop_ai_logic_queue):
+                        for index in range(limit):
+                            this_subunit = self.troop_ai_logic_queue[index]
                             if this_subunit.alive:  # in case subunit die or flee during queue
                                 this_subunit.ai_subunit()
-                            if index == limit:
-                                break
-                        self.troop_ai_logic_queue = self.troop_ai_logic_queue[10:]
+
+                        self.troop_ai_logic_queue = self.troop_ai_logic_queue[limit:]
 
                     # Battle related updater
                     self.subunit_updater.update(self.dt)

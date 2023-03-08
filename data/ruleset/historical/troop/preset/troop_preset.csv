@@ -27,15 +27,15 @@
 26,"Saxon Huscarl",2,1,34,,0,0,45,55,0,100,19,100,70,150,"Heavy Infantry","14,4","41,4",,,"5,4",,"Saxon Heavy","1,2,4"
 27,"Veteran Huscarl",3,1,34,4,0,0,45,55,0,100,19,100,80,170,"Heavy Infantry","14,4","41,4",,,"5,4",,"Saxon Heavy","1,2,4"
 28,"Huscarl Bodyguard",4,1,34,43,0,0,40,60,0,100,19,100,90,190,"Heavy Infantry","14,5","41,5",,,"5,5",,"Saxon Heavy","1,2,4"
-29,"New Kingdom Archers",1,1,,,0,0,17,23,60,100,17,100,40,100,"Range Infantry","32,3",,"5,3",,"15,1",,"Old Egyptian Range",3
-30,"Egyptian Slingers",1,1,,,0,0,17,23,60,100,17,100,50,100,"Range Infantry","20,3",,"5,3",,"15,1",,"Old Egyptian Range",3
-31,"New Kingdom Spearmen",1,1,,,0,0,50,50,0,100,19,100,50,100,"Light Infantry","6,3","47,2",,,"15,3",,"Old Egyptian Melee",2
-32,"New Kingdom Swordsmen",2,1,,,0,0,55,45,0,100,19,100,60,100,"Light Infantry","2,3","47,2",,,"15,3",,"Old Egyptian Melee",0
-33,"Egyptian War Chariots",2,1,11,,0,0,20,35,45,130,19,100,60,100,"Chariot","32,4",,"6,3","47,3","15,3","100,4,13","Old Egyptian Range","1,4"
-34,"African Spearmen",10,1,,,0,0,60,40,0,100,19,100,30,100,"Light Infantry","6,2","47,2",,,"15,3",,"Tribal African Light",2
+29,"New Kingdom Archers",1,1,,,0,0,17,23,60,100,17,100,40,100,"Range Infantry","32,3",,"5,3",,"15,2",,"Old Egyptian Range",3
+30,"Egyptian Slingers",1,1,,,0,0,17,23,60,100,17,100,50,100,"Range Infantry","20,3",,"5,3",,"15,2",,"Old Egyptian Range",3
+31,"New Kingdom Spearmen",1,1,,,0,0,50,50,0,100,19,100,50,100,"Light Infantry","6,3","47,2",,,"30,3",,"Old Egyptian Melee",2
+32,"New Kingdom Swordsmen",2,1,,,0,0,55,45,0,100,19,100,60,100,"Light Infantry","2,3","47,2",,,"30,3",,"Old Egyptian Melee",0
+33,"Egyptian War Chariots",2,1,11,,0,0,20,35,45,130,19,100,60,100,"Chariot","32,4",,"6,3","47,3","30,3","100,4,13","Old Egyptian Range","1,4"
+34,"African Spearmen",10,1,,,0,0,60,40,0,100,19,100,30,100,"Light Infantry","6,2","47,2",,,"15,2",,"Tribal African Light",2
 35,"Egyptian Pitati",10,1,,36,0,0,25,15,60,120,19,100,30,100,"Light Infantry","32,4",,"14,3",,"15,2",,"Old Egyptian Mercenary Archer",3
-36,"Royal War Chariots",11,1,11,35,0,0,25,35,40,150,19,100,80,120,"Chariot","32,5",,"2,4","47,3","15,4","100,5,13","Old Egyptian Noble","1,3,4"
-37,"Mycenaean Promachois ",10,1,24,37,0,0,60,55,5,100,19,120,70,130,"Heavy Infantry","15,3","41,2",,,"15,3",,"Old Greek Heavy","1,2,4"
+36,"Royal War Chariots",11,1,11,35,0,0,25,35,40,150,19,100,80,120,"Chariot","32,5",,"2,4","47,3","30,4","100,5,13","Old Egyptian Noble","1,3,4"
+37,"Mycenaean Promachoi",10,1,24,37,0,0,60,55,5,100,19,120,70,130,"Heavy Infantry","6,3","41,2",,,"30,4",,"Old Greek Heavy","1,2,4"
 38,"Canaanite Archers",1,1,,,0,0,5,5,45,100,17,100,30,100,"Range Infantry","25,3",,"5,3",,"15,1",,"Old Desert Light",3
 39,"Canaanite Slingers",1,1,,,0,0,5,5,45,100,17,100,40,100,"Range Infantry","20,3",,"5,3",,"15,1",,"Old Desert Light",3
 40,"Canaanite Spearmen",1,1,,,0,0,20,10,20,100,19,100,40,100,"Light Infantry","6,3","47,1",,,"15,3",,"Old Desert Light",2

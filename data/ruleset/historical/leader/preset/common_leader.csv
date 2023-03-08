@@ -1,10 +1,13 @@
 "ID","Name","Race","Strength","Dexterity","Agility","Constitution","Intelligence","Wisdom","Charisma","Melee Speciality","Range Speciality","Cavalry Speciality","Social Class","Primary Main Weapon","Primary Sub Weapon","Secondary Main Weapon","Secondary Sub Weapon","Armour","Mount","Charge Skill","Skill","Trait","Formation","Sprite ID","Type"
-"L10000","Huscarl Captain",1,80,70,70,80,50,55,30,7,4,3,3,"14,4","41,4",,,"5,4,1",,19,"L26",,"Line,Square","Early Saxon","Warrior"
-"L10001","Thane",1,65,55,60,60,60,65,40,4,4,2,4,"2,4",,,,"5,4,1",,21,"L1",,"Line","Early Saxon","Leader"
-"L10002","High Medieval Minor Noble",1,58,52,50,55,55,60,50,4,3,4,4,"2,4",,,,"5,4,1","2,3,14",21,,,"Line","Early Noble","Leader"
-"L10003","High Medieval Noble",1,60,53,50,55,60,65,60,5,5,5,4,"2,4",,,,"5,4,1","2,3,14",21,"L1",,"Line","Early Noble","Leader"
-"L10004","imy-rA mSa",1,,,,,,,,,,,,,,,,,"2,3,14",21,,,,,
-"L10005","Ur",1,,,,,,,,,,,,,,,,,"2,3,14",21,,,,,
-"L10006","Late Medieval Minor Noble",1,,,,,,,50,,,,,,,,,,"2,3,14",21,,,,,"Leader"
-"L10007","Late Medieval Noble",1,,,,,,,60,,,,,,,,,,"2,3,14",21,,,,,"Leader"
-"L10008","Muru-u",1,,,,,,,,,,,,,,,,,"2,3,14",21,,,,,
+"C1","Huscarl Captain",1,80,70,70,80,50,55,30,7,4,3,3,"14,4","41,4",,,"5,4,1",,19,"L26",,"Line,Square","Early Saxon","Warrior"
+"C2","Thane",1,65,55,60,60,60,65,40,4,4,2,4,"2,4","41,3",,,"5,4,1",,21,"L1",,"Line","Early Saxon","Leader"
+"C3","High Medieval Norman Noble",1,58,52,50,55,55,60,50,4,3,4,4,"2,4","39,4",,,"5,4,1","2,3,14",21,,,"Line","Early Noble","Leader"
+"C4","High Medieval Breton Noble",1,58,52,50,55,55,60,50,3,4,4,4,"2,4","39,4",,,"5,4,1","2,3,14",21,,,"Line","Early Noble","Leader"
+"C5","High Medieval Frankish Noble",1,58,52,50,55,55,60,50,4,4,3,4,"2,4","39,4",,,"5,4,1","2,3,14",21,,,"Line","Early Noble","Leader"
+"C6","imy-rA mSa",1,,,,,,,,,,,,,,,,,"2,3,14",21,,,,,"Leader"
+"C7","Ur",1,,,,,,,,,,,,,,,,,"2,3,14",21,,,,,"Leader"
+"C8",,,,,,,,,,,,,,,,,,,,,,,,,"Leader"
+"C9",,,,,,,,,,,,,,,,,,,,,,,,,"Leader"
+"C10","Late Medieval Minor Noble",1,,,,,,,50,,,,,,,,,,"2,3,14",21,,,,,"Leader"
+"C11","Late Medieval Noble",1,,,,,,,60,,,,,,,,,,"2,3,14",21,,,,,"Leader"
+"C12","Muru-u",1,,,,,,,,,,,,,,,,,"2,3,14",21,,,,,

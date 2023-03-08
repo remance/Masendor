@@ -1,3 +1,13 @@
+import os
+import csv
+
+from gamescript.common import utility
+
+csv_read = utility.csv_read
+
+stat_convert = utility.stat_convert
+
+
 def read_battle_source(self, description_text):
     """Change battle source description and add new subunit dot when select new source"""
     self.source_description.change_text(description_text)
@@ -9,20 +19,19 @@ def read_battle_source(self, description_text):
     unit_info = self.read_selected_map_data(openfolder, "troop_pos.csv", source=True)
     self.team_pos = {row["Team"]: {"Troop": [], "Leader": []} for row in list(unit_info.values())}
     for row in list(unit_info.values()):
-        if type(row["Troop ID"]) is str:
-            self.team_pos[row["Team"]]["Leader"].append([int(item) for item in row["POS"].split(",")])
-        else:
-            self.team_pos[row["Team"]]["Troop"].append([int(item) for item in row["POS"].split(",")])
+        self.team_pos[row["Team"]]["Leader"].append([int(item) for item in row["POS"].split(",")])
 
     self.map_show.change_mode(1, team_pos_list=self.team_pos)
 
     team_troop = {row["Team"]: {} for row in list(unit_info.values())}
     team_leader = {row["Team"]: [] for row in list(unit_info.values())}
     for row in list(unit_info.values()):
-        if type(row["Troop ID"]) is str:
-            team_leader[row["Team"]].append(row["Troop ID"])
-        else:
-            if int(row["Troop ID"]) not in team_troop[row["Team"]]:
-                team_troop[row["Team"]][int(row["Troop ID"])] = 0
-            team_troop[row["Team"]][int(row["Troop ID"])] += row["How Many"]
+        team_leader[row["Team"]].append(row["Leader ID"])
+        for item in row["Troop"].split(","):
+            troop_id = int(item.split(":")[0])
+            number = item.split(":")[1].split("/")
+            if troop_id not in team_troop[row["Team"]]:
+                team_troop[row["Team"]][troop_id] = [0, 0]
+            team_troop[row["Team"]][troop_id][0] += int(number[0])
+            team_troop[row["Team"]][troop_id][1] += int(number[1])
     return team_troop, team_leader

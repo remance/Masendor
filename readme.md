@@ -24,7 +24,7 @@ For game update showcase video: [![github](https://github.com/remance/preview/bl
     - [Compile](#compile)
 - [Latest Update](#latest-update)
 - [Key features so far](#key-features-so-far)
-    - [History is told by the victor, but sometimes the words of the loser do not fade away](#history-is-told-by-the-victor-but-sometimes-the-words-of-the-loser-do-not-fade-away)
+    - [History is told by the victor, but sometimes the words of the defeated do not fade away](#history-is-told-by-the-victor-but-sometimes-the-words-of-the-loser-do-not-fade-away)
     - [Army is led by more than just a king](#army-is-led-by-more-than-just-a-king)
     - [Complex troop Statistic System](#complex-troop-statistic-system)
     - [Custom Unit Creator](#custom-unit-creator)
@@ -102,12 +102,11 @@ Refocus the game to arcade mode style for now to ensure that the game will ever 
 > rightful king of England refused to cover in a castle before the pretender and bravely marched his army to crush the
 > enemy head-on.
 
-Have you ever find it weird that most historical games follow only a specific version of the story? Even a single battle
-may have more than one side of the story.<br>
-For example, the Normans say they are the underdog in the Battle of Hastings, while the Saxons also say they are the
-underdog.<br>
-Well in this game, all versions of the story are accepted and represented. Every preset historical map will have more
-than 1 source of information that dictates the story tone, army composition, size, even formation and possibly more.
+Have you ever found it weird that most historical games follow only a specific version of the story? Even a single battle may have more than one side of the story. 
+
+For example, the Normans say they are the underdog in the Battle of Hastings, while the Saxons also say they are the underdog. 
+Well in this game, all versions of the story are accepted and represented. 
+Every preset historical map will have more than 1 source of information that dictates the story tone, army composition, size, even formation and possibly more.
 
 ![Image showing information about the Battle of Hastings](https://github.com/remance/preview/blob/main/source.gif?raw=true)
 
@@ -131,10 +130,10 @@ historical battle will have all the named people that participated in the battle
 
 ## Extremely easy map creation
 
-Most of the battle map creator requires a degree of learning to use effectively. Well in this game you just need to
-use MS Paint or any drawing software ([GIMP](https://www.gimp.org/)
-, [Adobe Photoshop](https://www.adobe.com/products/photoshop.html), etc.) to create a map.<br>
-Draw the image with the right colour set and the game will convert them into a playable map. Most other map functions
+Map creator in most games requires a degree of learning to use effectively. In this game, you just need to use MS Paint or any drawing software
+([GIMP](https://www.gimp.org/), [Adobe Photoshop](https://www.adobe.com/products/photoshop.html), etc.) to create a map.<br>
+
+Draw the image with the right colour set, and the game will convert them into a playable map. Most other map functions
 are also very easy to create and modify.
 
 [Video](https://www.youtube.com/watch?v=8Omm-o6Dy60) demonstration: https://www.youtube.com/watch?v=8Omm-o6Dy60
@@ -146,8 +145,8 @@ that is.
 
 ![alt text](https://github.com/remance/preview/blob/main/lore.gif?raw=true)
 
-This function is going to be a headache to write and research. But hopefully, it will provide useful and interesting
-historical information to players.
+This function is going to be a headache to write and research. But hopefully, it will provide useful and interesting historical information to players.
+
 
 ---------------
 
@@ -202,9 +201,9 @@ historical information to players.
 preparation and result screen, custom battle, improve the main menu, Battle of Megiddo, Battle of
 Mohács
 
-**0.6.4:** skill perform system, skill placement for both player and AI, AOE attack
+**0.6.4:** skill perform system, skill placement for both player and AI
 
-**0.6.5 - 0.6.7:** Leader command, hidden stat, stat effect battle ui, line of sight, start working on Battle of Mohács
+**0.6.5 - 0.6.7:** Leader command, reserve system, hidden stat, stat effect battle ui, line of sight, start working on Battle of Mohács
 
 **0.6.8 and 0.6.9:** random map generator and custom battle
 

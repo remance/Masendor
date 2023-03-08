@@ -35,5 +35,5 @@ def ai_subunit(self):
             self.unit_pos_list[leader][0] = new_target[0]
             self.unit_pos_list[leader][1] = new_target[1]
 
-    if self.is_unit_leader:  # run planning
+    if self.is_unit_leader:  # run leader planning
         self.ai_leader()

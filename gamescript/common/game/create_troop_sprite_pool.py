@@ -57,6 +57,7 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
             skill_data = self.troop_data.skill_list
         else:
             skill_data = self.leader_data.skill_list
+
         skill_list = [skill_data[skill]["Action"][0] for skill in this_subunit["Skill"] if skill in skill_data]
 
         weapon_skill_list = weapon_list[primary_main_weapon]["Skill"] + \

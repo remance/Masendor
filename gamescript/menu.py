@@ -386,9 +386,8 @@ class DescriptionBox(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
 
     def change_text(self, text):
-        make_long_text = utility.make_long_text
         self.image = self.base_image.copy()  # reset self.image to new one from the loaded image
-        make_long_text(self.image, text,
+        utility.make_long_text(self.image, text,
                        (int(self.text_size * self.screen_scale[0]), int(self.text_size * self.screen_scale[1])),
                        self.font)
 
@@ -456,8 +455,8 @@ class ArmyStat(pygame.sprite.Sprite):
 
         self.type_number_pos = ((self.image.get_width() / 4.5, self.image.get_height() / 3),  # infantry melee
                                 (self.image.get_width() / 4.5, self.image.get_height() / 1.8),  # infantry range
-                                (self.image.get_width() / 1.3, self.image.get_height() / 3),  # cav melee
-                                (self.image.get_width() / 1.3, self.image.get_height() / 1.8),  # cav range
+                                (self.image.get_width() / 1.4, self.image.get_height() / 3),  # cav melee
+                                (self.image.get_width() / 1.4, self.image.get_height() / 1.8),  # cav range
                                 (self.image.get_width() / 3, self.image.get_height() / 1.32))  # total subunit
 
         self.leader_text = (
@@ -476,7 +475,9 @@ class ArmyStat(pygame.sprite.Sprite):
         self.image.blit(text_surface, text_rect)
 
         for index, text in enumerate(troop_number):
-            text_surface = self.font.render("{:,}".format(text), True, (0, 0, 0))
+            text = str(text).replace("[", "").replace("]", "").split(",")
+            text = str([utility.minimise_number_text(item) for item in text]).replace("'", "").replace("[", "").replace("]", "").replace(",", " +")
+            text_surface = self.font.render(text, True, (0, 0, 0))
             text_rect = text_surface.get_rect(midleft=self.type_number_pos[index])
             self.image.blit(text_surface, text_rect)
 
@@ -541,7 +542,8 @@ class ArmyStat(pygame.sprite.Sprite):
                        "Armour: ": leader_armour,
                        "Mount: ": leader_mount,
                        "Followers": " Leaders: " + str(len(who.alive_leader_follower)) +
-                                    "    Troops: " + str(len(who.alive_troop_follower))}
+                                    "    Troops: " + str(len(who.alive_troop_follower)) + " + " +
+                                    str(sum(who.troop_reserve_list.values()))}
         text_surface = self.font.render(str(leader_name), True, (0, 0, 0))
         text_rect = text_surface.get_rect(topleft=(self.font_size, self.font_size))
         self.image.blit(text_surface, text_rect)

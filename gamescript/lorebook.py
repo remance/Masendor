@@ -749,35 +749,28 @@ def lorebook_process(self, ui, mouse_up, mouse_down, mouse_scroll_up, mouse_scro
 
     elif mouse_scroll_up:
         if self.lore_name_list.rect.collidepoint(self.mouse_pos):  # Scrolling at lore book subsection list
-            self.encyclopedia.current_subsection_row -= 1
-            if self.encyclopedia.current_subsection_row < 0:
-                self.encyclopedia.current_subsection_row = 0
-            else:
+            if self.encyclopedia.current_subsection_row > 0:
+                self.encyclopedia.current_subsection_row -= 1
                 self.encyclopedia.setup_subsection_list(self.lore_name_list, self.subsection_name, "subsection")
                 self.lore_name_list.scroll.change_image(new_row=self.encyclopedia.current_subsection_row)
         elif self.filter_tag_list.rect.collidepoint(self.mouse_pos):  # Scrolling at lore book subsection list
-            self.encyclopedia.current_filter_row -= 1
-            if self.encyclopedia.current_filter_row < 0:
-                self.encyclopedia.current_filter_row = 0
-            else:
+            if self.encyclopedia.current_filter_row > 0:
+                self.encyclopedia.current_filter_row -= 1
                 self.encyclopedia.setup_subsection_list(self.filter_tag_list, self.tag_filter_name, "tag")
                 self.filter_tag_list.scroll.change_image(new_row=self.encyclopedia.current_filter_row)
 
     elif mouse_scroll_down:
         if self.lore_name_list.rect.collidepoint(self.mouse_pos):  # Scrolling at lore book subsection list
-            self.encyclopedia.current_subsection_row += 1
             if self.encyclopedia.current_subsection_row + self.encyclopedia.max_row_show - 1 < self.encyclopedia.row_size:
+                self.encyclopedia.current_subsection_row += 1
                 self.encyclopedia.setup_subsection_list(self.lore_name_list, self.subsection_name, "subsection")
                 self.lore_name_list.scroll.change_image(new_row=self.encyclopedia.current_subsection_row)
-            else:
-                self.encyclopedia.current_subsection_row -= 1
+
         elif self.filter_tag_list.rect.collidepoint(self.mouse_pos):  # Scrolling at lore book subsection list
-            self.encyclopedia.current_filter_row += 1
             if self.encyclopedia.current_filter_row + self.encyclopedia.max_row_show - 1 < self.encyclopedia.row_size:
+                self.encyclopedia.current_filter_row += 1
                 self.encyclopedia.setup_subsection_list(self.filter_tag_list, self.tag_filter_name, "tag")
                 self.filter_tag_list.scroll.change_image(new_row=self.encyclopedia.current_filter_row)
-            else:
-                self.encyclopedia.current_filter_row -= 1
 
     if close or esc_press:
         self.portrait = None

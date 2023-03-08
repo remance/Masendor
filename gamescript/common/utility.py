@@ -182,6 +182,16 @@ def load_sound(main_dir, file):
     return sound
 
 
+def minimise_number_text(text):
+    num_text = int(text)
+    if num_text >= 1000000:
+        return str(round(num_text / 1000000, 1)) + "M"
+    elif num_text >= 1000:
+        return str(round(num_text / 1000, 1)) + "K"
+    else:
+        return str(num_text)
+
+
 def edit_config(section, option, value, filename, config):
     """
     Edit config file at specific section
@@ -511,7 +521,7 @@ def popup_list_open(self, new_rect, new_list, ui_type, rect_pos, updater):
 
 
 def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tuple_column=(), int_column=(),
-                 float_column=()):
+                 float_column=(), dict_column=()):
     """
     Convert string value to another type
     :param row: row that contains value
@@ -523,6 +533,7 @@ def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tu
     :param tuple_column: list of value header that should be in tuple type, for value that is static
     :param int_column: list of value header that should be in int number type
     :param float_column: list of value header that should be in float number type
+    :param dict_column: list of value header that should be in dict type
     :return: converted row
     """
     if n in percent_column:
@@ -571,16 +582,27 @@ def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tu
                 row[n] = ()
 
     elif n in int_column:
-        if i != "" and re.search("[a-zA-Z]", i) is None:
+        if i != "":
             row[n] = int(i)
         elif i == "":
             row[n] = 0
 
     elif n in float_column:
-        if i != "" and re.search("[a-zA-Z]", i) is None:
+        if i != "":
             row[n] = float(i)
         elif i == "":
             row[n] = 0
+
+    elif n in dict_column:
+        if i != "":
+            new_i = i.split(",")
+            result_i = {}
+            for item in new_i:
+                new_i2 = item.split(":")
+                result_i[new_i2[0]] = new_i2[1]
+            row[n] = result_i
+        else:
+            row[n] = {}
 
     else:
         if i == "":

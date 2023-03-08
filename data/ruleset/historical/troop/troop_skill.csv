@@ -1,71 +1,71 @@
-"ID","Name","Troop Type","Area of Effect","Receiver","Duration","Cooldown","Discipline Requirement","Stamina Cost","Melee Attack Effect","Melee Defence Effect","Ranged Defence Effect","Speed Effect","Accuracy Effect","Range Effect","Reload Effect","Charge Effect","Charge Defence Bonus","HP Regeneration Bonus","Stamina Regeneration Bonus","Morale Bonus","Discipline Bonus","Critical Effect","Physical Damage Effect","Fire Damage Extra","Water Damage Extra","Air Damage Extra","Earth Damage Extra","Poison Damage Extra","Magic Damage Extra","Sight Bonus","Hidden Bonus","Stamina Damage Bonus","Morale Damage Bonus","Status","Enemy Status","Action","Additional Damage Sprite","Special Effect","Effect Sprite","Sound Effect","Sound Distance","AI Use Condition","AI Use Restriction","AI Use Restriction","Type"
-1,"Fearless Charge",0,1,,10,0,10,0,105,90,90,120,,,,160,0,0,-2,0,0,,,,,,,,,,0,0,0,1,,"Charge,movable",,,,,,,,,"Charge"
-2,"Glorious Charge",0,1,,10,0,30,0,,,,,,,,160,0,0,-2,10,0,,,,,,,,,,-50,0,4,,,"Charge,movable",,,,,,,,,"Charge"
-3,"Steady Charge",0,1,,10,0,40,0,,115,115,80,,,,140,10,0,-1.5,10,0,,,,,,,,,,0,0,0,,,"Charge,movable",,,,,,,,,"Charge"
-4,"Frenzied Charge",0,1,,10,0,10,0,160,50,50,130,,,,175,-50,0,-4,0,0,115,,,,,,,,,-40,0,0,1,,"Charge,movable",,,,,,,,,"Charge"
-5,"Devastating Charge",0,1,,10,0,10,0,110,,,105,,,,200,0,0,-3,0,0,120,,,,,,,,,-30,0,2,,,"Charge,movable",,,,,,,,,"Charge"
-6,"Stampede",0,1,,10,0,10,0,,,,,,,,250,0,0,-2.5,0,0,,,,,,,,,,-40,0,1,,4,"Charge,movable",,,,,,,,,"Charge"
-7,"Valiant Charge",2,1,,10,0,30,0,115,,,,,,,180,,,,5,5,,,,,,,,,,-10,0,5,1,,"Charge,movable",,,,,,,,,"Charge"
-8,"Cover Charge",0,1,,10,0,10,0,,130,130,85,,,,140,20,0,-2,0,0,,,,,,,,,,10,0,0,,,"Charge,movable",,,,,,,,,"Charge"
-9,"Agile Charge",0,1,,10,0,25,0,,120,120,120,,,,160,0,0,-2.5,0,0,,,,,,,,,,0,0,0,,,"Charge,movable",,,,,,,,,"Charge"
-10,"Highland Charge",1,1,,10,0,30,0,,,,,110,,110,170,,,,,,,,,,,,,,,0,0,0,,,"Charge,movable",,,,,,,,,"Charge"
-11,"Dread Charge",0,1,,10,0,10,0,110,,,,,,,165,0,0,-2.5,0,0,,,,,,,,,,0,0,10,,2,"Charge,movable",,,,,,,,,"Charge"
-12,"Banzai Charge",0,1,,10,0,15,0,,,,,,,,170,,,,,,,,,,,,,,,-20,0,0,,,"Charge,movable",,,,,,,,,"Charge"
-13,"Reckless Charge",0,1,,10,0,0,0,,,,,,,,180,-10,,,,-5,,,,,,,,,,-20,0,0,,,"Charge,movable",,,,,,,,,"Charge"
-14,"Hidden Charge",0,1,,10,0,10,0,,,,90,,,,130,0,0,-2,0,0,,,,,,,,,,30,0,0,6,,"Charge,movable",,,,,,,,,"Charge"
-15,"Clumsy Charge",0,1,,10,0,10,0,,,,90,,,,110,0,0,-2,0,0,,,,,,,,,,0,0,0,,,"Charge,movable",,,,,,,,,"Charge"
-16,"Heroic Charge",0,50,,10,0,10,0,110,,,110,,,,190,0,0,-2.5,20,0,,,,,,,,,,0,0,1,,,"Charge,movable",,,,,,,,,"Charge"
-17,"Weak Charge",0,1,,10,0,10,0,,,,,,,,110,0,0,-2,0,0,,,,,,,,,,0,0,0,,,"Charge,movable",,,,,,,,,"Charge"
-18,"Slow Charge",0,1,,10,0,10,0,,115,115,70,,,,135,110,0,-2,0,5,,,,,,,,,110,0,0,0,,,"Charge,movable",,,,,,,,,"Charge"
-19,"Charge",0,1,,10,0,10,0,,,,110,,,,150,0,0,-2,0,0,,,,,,,,,,0,0,0,,,"Charge,movable",,,,,,,,,"Charge"
-20,"Chanting Charge",0,80,,10,0,10,0,,,,,,,,150,,,,,,,,,,,,,,,-40,0,0,,2,"Charge,movable",,,,,,,,,"Charge"
-21,"Leading Charge",0,1,,10,0,30,0,120,,,125,,,,120,0,0,-1,10,0,,,,,,,,,,0,0,0,,,"Charge,movable",,,,,,,,,"Charge"
-22,"Reconnaissance",0,1,,100,,50,15,,,,,,,,,20,0,,,,,,,,,,,,125,,0,0,,,"BuffSelf",,,,,,"move",,,"Buff"
-23,"Berserk",0,1,,2,240,30,15,,,,,,,,,,,,,,,,,,,,,,,,0,0,11,,"Shout",,,,,,"melee",,,"Buff"
-24,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-25,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-26,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-27,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-28,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-29,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-30,"Shield Barrier",1,1,0,60,80,64,15,50,165,250,0,,,,,70,0,-1,25,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"enemy_near",,,"Buff"
-31,"Shield Fortress",1,1,0,60,80,72,25,30,250,200,0,,,,,100,0,-1,0,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"enemy_near",,,"Buff"
-32,"Rapid Shots",0,1,0,30,120,35,10,,,,,,,120,,0,0,-2,0,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"range",,,"Buff"
-33,"Rapid Defence",0,1,0,30,120,45,10,,110,,110,,,,,0,0,-1,0,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"enemy_near,damaged",,,"Buff"
-34,"Rapid Attack",0,1,0,30,120,50,10,110,,,110,,,,,0,0,-1.5,0,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"enemy_near",,,"Buff"
-35,"Rapid Advance",0,1,0,30,120,41,10,,,,125,,,,,0,0,-1,0,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"move,retreat",,,"Buff"
-36,"Steady Aims",1,1,0,60,150,44,10,,,,,120,,,,0,0,-1,0,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"range",,,"Buff"
-37,"Steady Shield",1,1,0,60,90,48,10,,120,120,,,,,,30,0,-1,0,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"melee,damaged",,,"Buff"
-38,"Ruthless Pursuit",0,1,0,80,140,30,15,,,,150,,,,130,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Buff"
-39,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-40,"Hold Ground",0,1,0,30,60,58,10,,125,125,,,,,,40,0,0,0,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"melee,damaged",,,"Buff"
-41,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-42,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-43,"Warcry",0,100,1,1,40,38,30,,,,,,,,,0,0,0,0,0,,,,,,,,,,0,0,6,,,"Shout",,,,,,"enemy_near",,,"Perform"
-44,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-45,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-46,"Second Wind",0,1,0,30,70,60,0,,,,,,,,,0,0,1,10,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"melee",,,"Buff"
-47,"Random Throwing",0,1,0,5,15,20,5,,,,,,,,,0,0,-0.5,0,0,,30,,,,,,,,0,0,0,,,"BuffGear",,,,,,"range",,,"Perform"
-48,"Sand Pocket",1,1,0,1,15,30,20,,,,,,,,,0,0,0,0,0,,10,,,,,,,,0,1,1,,7,"SandPocket",,,,,,"melee",,,"Perform"
-49,"Arrow Shower",0,1,0,10,50,55,60,,,,,70,,200,,0,0,-4,0,0,,,,,,,,,,0,0,0,,,"BuffGear",,,,,,"range",,,"Target"
-50,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-51,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-52,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-53,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-54,"Unwavering Resolve",0,1,0,30,120,55,0,,,,,,,,,0,0,0,80,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"melee",,,"Buff"
-55,"Heroic Resolve",0,1,0,45,120,75,0,,,,,,,,,0,0,0,150,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"melee",,,"Buff"
-56,"Stalwart Defence",0,1,0,60,90,60,20,,130,130,,,,,,20,0,-1,0,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"melee,damaged",,,"Buff"
-57,"Sudden Fortitude",0,1,0,10,130,70,0,,,,,,,,,0,0,50,0,0,,0,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"melee",,,"Buff"
-58,"Iron Wall",1,1,0,80,120,50,15,,150,150,,,,,,80,0,-1,0,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"melee,damaged",,,"Buff"
-59,"Focus Strike",0,1,0,1,30,75,10,200,,,,,,,,0,0,0,0,0,,,,,,,,,,0,0,0,,,"Action",,,,,,"melee",,,"Perform"
-60,"Absolute Devotion",0,1,0,150,500,70,0,,,,,,,,,0,0,0,100,20,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,,,,"Buff"
-61,"Provoke",0,60,1,30,60,50,10,,,,,,,,,0,0,0,0,0,,,,,,,,,,0,0,0,,89,"Shout",,,,,,"enemy_near",,,"Target"
-62,"Pinpoint Shot",0,1,0,1,45,70,20,,,,,200,,,,0,0,-1,0,0,,,,,,,,,,0,0,0,,,"Action",,,,,,"range",,,"Perform"
-63,"Swift Thrusts",0,1,0,,45,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Action",,,,,,"melee",,,"Perform"
-64,"Poison Attack",0,1,0,1,60,50,10,,,,,,,,,0,0,,0,0,,,,,,,160,,,0,1,2,,26,"Action",,,,,,"melee",,,"Perform"
-65,"Suppressing Fire",1,1,0,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Action",,,,,,"range",,,"Perform"
-66,"Impact Slam",0,,0,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Action",,,,,,"melee",,,"Perform"
-67,"Callback Companion",0,1,,1,,40,0,,,,,,,,,0,0,,,,,,,,,,,,,,0,0,,,,,,,,,,,,"Perform"
-68,"Unleash Companion",0,1,,,,40,0,,,,,,,,,70,0,,,,,,,,,,,,,,0,0,,70,,,,,,,,,,"Perform"
-69,"Battle Prayer",0,1,0,200,,65,5,105,105,105,105,105,105,105,,0,0,,10,5,,,,,,,,,,,0,0,,,"Bless",,,,,,"enemy_near",,,"Buff"
-70,"Healing Support",0,10,0,,,68,,,,,,,,,,0,10,,,,,,,,,,,,,,0,0,,,,,,,,,,,,"Perform"
+"ID","Name","Troop Type","Area of Effect","Receiver","Duration","Cooldown","Discipline Requirement","Stamina Cost","Melee Attack Effect","Melee Defence Effect","Ranged Defence Effect","Speed Effect","Accuracy Effect","Range Effect","Melee Speed Effect","Reload Effect","Charge Effect","Charge Defence Bonus","HP Regeneration Bonus","Stamina Regeneration Bonus","Morale Bonus","Discipline Bonus","Critical Effect","Physical Damage Effect","Fire Damage Extra","Water Damage Extra","Air Damage Extra","Earth Damage Extra","Poison Damage Extra","Magic Damage Extra","Sight Bonus","Hidden Bonus","Stamina Damage Bonus","Morale Damage Bonus","Status","Enemy Status","Action","Additional Damage Sprite","Special Effect","Effect Sprite","Sound Effect","Sound Distance","AI Use Condition","AI Use Restriction","AI Use Restriction","Type"
+1,"Fearless Charge",0,1,,10,0,10,0,105,90,90,120,,,,,160,0,0,-2,0,0,,,,,,,,,,0,0,0,1,,"Charge,movable",,,,,,,,,"Charge"
+2,"Glorious Charge",0,1,,10,0,30,0,,,,,,,,,160,0,0,-2,10,0,,,,,,,,,,-50,0,4,,,"Charge,movable",,,,,,,,,"Charge"
+3,"Steady Charge",0,1,,10,0,40,0,,115,115,80,,,,,140,10,0,-1.5,10,0,,,,,,,,,,0,0,0,,,"Charge,movable",,,,,,,,,"Charge"
+4,"Frenzied Charge",0,1,,10,0,10,0,160,50,50,130,,,,,175,-50,0,-4,0,0,115,,,,,,,,,-40,0,0,1,,"Charge,movable",,,,,,,,,"Charge"
+5,"Devastating Charge",0,1,,10,0,10,0,110,,,105,,,,,200,0,0,-3,0,0,120,,,,,,,,,-30,0,2,,,"Charge,movable",,,,,,,,,"Charge"
+6,"Stampede",0,1,,10,0,10,0,,,,,,,,,250,0,0,-2.5,0,0,,,,,,,,,,-40,0,1,,4,"Charge,movable",,,,,,,,,"Charge"
+7,"Valiant Charge",2,1,,10,0,30,0,115,,,,,,,,180,,,,5,5,,,,,,,,,,-10,0,5,1,,"Charge,movable",,,,,,,,,"Charge"
+8,"Cover Charge",0,1,,10,0,10,0,,130,130,85,,,,,140,20,0,-2,0,0,,,,,,,,,,10,0,0,,,"Charge,movable",,,,,,,,,"Charge"
+9,"Agile Charge",0,1,,10,0,25,0,,120,120,120,,,,,160,0,0,-2.5,0,0,,,,,,,,,,0,0,0,,,"Charge,movable",,,,,,,,,"Charge"
+10,"Highland Charge",1,1,,10,0,30,0,,,,,110,,,110,170,,,,,,,,,,,,,,,0,0,0,,,"Charge,movable",,,,,,,,,"Charge"
+11,"Dread Charge",0,1,,10,0,10,0,110,,,,,,,,165,0,0,-2.5,0,0,,,,,,,,,,0,0,10,,2,"Charge,movable",,,,,,,,,"Charge"
+12,"Banzai Charge",0,1,,10,0,15,0,,,,,,,,,170,,,,,,,,,,,,,,,-20,0,0,,,"Charge,movable",,,,,,,,,"Charge"
+13,"Reckless Charge",0,1,,10,0,0,0,,,,,,,,,180,-10,,,,-5,,,,,,,,,,-20,0,0,,,"Charge,movable",,,,,,,,,"Charge"
+14,"Hidden Charge",0,1,,10,0,10,0,,,,90,,,,,130,0,0,-2,0,0,,,,,,,,,,30,0,0,6,,"Charge,movable",,,,,,,,,"Charge"
+15,"Clumsy Charge",0,1,,10,0,10,0,,,,90,,,,,110,0,0,-2,0,0,,,,,,,,,,0,0,0,,,"Charge,movable",,,,,,,,,"Charge"
+16,"Heroic Charge",0,50,,10,0,10,0,110,,,110,,,,,190,0,0,-2.5,20,0,,,,,,,,,,0,0,1,,,"Charge,movable",,,,,,,,,"Charge"
+17,"Weak Charge",0,1,,10,0,10,0,,,,,,,,,110,0,0,-2,0,0,,,,,,,,,,0,0,0,,,"Charge,movable",,,,,,,,,"Charge"
+18,"Slow Charge",0,1,,10,0,10,0,,115,115,70,,,,,135,110,0,-2,0,5,,,,,,,,,110,0,0,0,,,"Charge,movable",,,,,,,,,"Charge"
+19,"Charge",0,1,,10,0,10,0,,,,110,,,,,150,0,0,-2,0,0,,,,,,,,,,0,0,0,,,"Charge,movable",,,,,,,,,"Charge"
+20,"Chanting Charge",0,80,,10,0,10,0,,,,,,,,,150,,,,,,,,,,,,,,,-40,0,0,,2,"Charge,movable",,,,,,,,,"Charge"
+21,"Leading Charge",0,1,,10,0,30,0,120,,,125,,,,,120,0,0,-1,10,0,,,,,,,,,,0,0,0,,,"Charge,movable",,,,,,,,,"Charge"
+22,"Reconnaissance",0,1,,100,,50,15,,,,,,,,,,20,0,,,,,,,,,,,,125,,0,0,,,"BuffSelf",,,,,,"move",,,"Buff"
+23,"Berserk",0,1,,2,240,30,15,,,,,,,,,,,,,,,,,,,,,,,,,0,0,11,,"Shout",,,,,,"melee",,,"Buff"
+24,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+25,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+26,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+27,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+28,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+29,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+30,"Shield Barrier",1,1,0,60,80,64,15,50,165,250,0,,,,,,70,0,-1,25,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"enemy_near",,,"Buff"
+31,"Shield Fortress",1,1,0,60,80,72,25,30,250,200,0,,,,,,100,0,-1,0,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"enemy_near",,,"Buff"
+32,"Rapid Shots",0,1,0,30,120,35,10,,,,,,,,120,,0,0,-2,0,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"range",,,"Buff"
+33,"Rapid Defence",0,1,0,30,120,45,10,,110,,110,,,,,,0,0,-1,0,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"enemy_near,damaged",,,"Buff"
+34,"Rapid Attack",0,1,0,30,120,50,10,110,,,110,,,110,,,0,0,-1.5,0,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"enemy_near",,,"Buff"
+35,"Rapid Advance",0,1,0,30,120,41,10,,,,125,,,,,,0,0,-1,0,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"move,retreat",,,"Buff"
+36,"Steady Aims",1,1,0,60,150,44,10,,,,,120,,,,,0,0,-1,0,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"range",,,"Buff"
+37,"Steady Shield",1,1,0,60,90,48,10,,120,120,,,,,,,30,0,-1,0,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"melee,damaged",,,"Buff"
+38,"Ruthless Pursuit",0,1,0,80,140,30,15,,,,150,,,,,130,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Buff"
+39,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+40,"Hold Ground",0,1,0,30,60,58,10,,125,125,,,,,,,40,0,0,0,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"melee,damaged",,,"Buff"
+41,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+42,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+43,"Warcry",0,100,1,1,40,38,30,,,,,,,,,,0,0,0,0,0,,,,,,,,,,0,0,6,,,"Shout",,,,,,"enemy_near",,,"Perform"
+44,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+45,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+46,"Second Wind",0,1,0,30,70,60,0,,,,,,,,,,0,0,1,10,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"melee",,,"Buff"
+47,"Random Throwing",0,1,0,5,15,20,5,,,,,,,,,,0,0,-0.5,0,0,,30,,,,,,,,0,0,0,,,"BuffGear",,,,,,"range",,,"Perform"
+48,"Sand Pocket",1,1,0,1,15,30,20,,,,,,,,,,0,0,0,0,0,,10,,,,,,,,0,1,1,,7,"SandPocket",,,,,,"melee",,,"Perform"
+49,"Arrow Shower",0,1,0,10,50,55,60,,,,,70,,,200,,0,0,-4,0,0,,,,,,,,,,0,0,0,,,"BuffGear",,,,,,"range",,,"Target"
+50,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+51,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+52,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+53,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+54,"Unwavering Resolve",0,1,0,30,120,55,0,,,,,,,,,,0,0,0,80,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"melee",,,"Buff"
+55,"Heroic Resolve",0,1,0,45,120,75,0,,,,,,,,,,0,0,0,150,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"melee",,,"Buff"
+56,"Stalwart Defence",0,1,0,60,90,60,20,,130,130,,,,,,,20,0,-1,0,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"melee,damaged",,,"Buff"
+57,"Sudden Fortitude",0,1,0,10,130,70,0,,,,,,,,,,0,0,50,0,0,,0,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"melee",,,"Buff"
+58,"Iron Wall",1,1,0,80,120,50,15,,150,150,,,,,,,80,0,-1,0,0,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,"melee,damaged",,,"Buff"
+59,"Focus Strike",0,1,0,1,30,75,10,200,,,,,,,,,0,0,0,0,0,,,,,,,,,,0,0,0,,,"Action",,,,,,"melee",,,"Perform"
+60,"Absolute Devotion",0,1,0,150,500,70,0,,,,,,,,,,0,0,0,100,20,,,,,,,,,,0,0,0,,,"BuffSelf",,,,,,,,,"Buff"
+61,"Provoke",0,60,1,30,60,50,10,,,,,,,,,,0,0,0,0,0,,,,,,,,,,0,0,0,,89,"Shout",,,,,,"enemy_near",,,"Target"
+62,"Pinpoint Shot",0,1,0,1,45,70,20,,,,,200,,,,,0,0,-1,0,0,,,,,,,,,,0,0,0,,,"Action",,,,,,"range",,,"Perform"
+63,"Swift Thrusts",0,1,0,,45,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Action",,,,,,"melee",,,"Perform"
+64,"Poison Attack",0,1,0,1,60,50,10,,,,,,,,,,0,0,,0,0,,,,,,,160,,,0,1,2,,26,"Action",,,,,,"melee",,,"Perform"
+65,"Suppressing Fire",1,1,0,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Action",,,,,,"range",,,"Perform"
+66,"Impact Slam",0,,0,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Action",,,,,,"melee",,,"Perform"
+67,"Callback Companion",0,1,,1,,40,0,,,,,,,,,,0,0,,,,,,,,,,,,,,0,0,,,,,,,,,,,,"Perform"
+68,"Unleash Companion",0,1,,,,40,0,,,,,,,,,,70,0,,,,,,,,,,,,,,0,0,,70,,,,,,,,,,"Perform"
+69,"Battle Prayer",0,1,0,200,,65,5,105,105,105,105,105,105,,105,,0,0,,10,5,,,,,,,,,,,0,0,,,"Bless",,,,,,"enemy_near",,,"Buff"
+70,"Healing Support",0,10,0,,,68,,,,,,,,,,,0,10,,,,,,,,,,,,,,0,0,,,,,,,,,,,,"Perform"

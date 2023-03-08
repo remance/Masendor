@@ -59,6 +59,5 @@ def swap_weapon(self, new_weapon_set):
     self.equipped_power_weapon = self.power_weapon[self.equipped_weapon]
     self.equipped_block_weapon = self.block_weapon[self.equipped_weapon]
     self.equipped_charge_block_weapon = self.charge_block_weapon[self.equipped_weapon]
-    self.equipped_timing_weapon = self.timing_weapon[self.equipped_weapon]
     self.equipped_timing_start_weapon = self.timing_start_weapon[self.equipped_weapon]
     self.equipped_timing_end_weapon = self.timing_end_weapon[self.equipped_weapon]

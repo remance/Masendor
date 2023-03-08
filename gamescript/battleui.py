@@ -565,12 +565,11 @@ class UIScroll(pygame.sprite.Sprite):
 
     def change_image(self, new_row=None, row_size=None):
         """New row is input of scrolling by user to new row, row_size is changing based on adding more log or clear"""
-        if row_size and self.row_size != row_size:
+        if row_size is not None:
             self.row_size = row_size
-            self.create_new_image()
-        if new_row and self.current_row != new_row:  # accept from both wheeling scroll and drag scroll bar
+        if new_row is not None:  # accept from both wheeling scroll and drag scroll bar
             self.current_row = new_row
-            self.create_new_image()
+        self.create_new_image()
 
     def player_input(self, mouse_pos, mouse_scroll_up=False, mouse_scroll_down=False):
         """Player input update via click or scrolling"""
@@ -611,10 +610,9 @@ class UnitSelector(pygame.sprite.Sprite):
 
         if subunit_list:
             for this_subunit in subunit_list:
-                if this_subunit.is_leader:
-                    max_column_show = int(
-                        self.image.get_width() / ((this_subunit.portrait.get_width() * self.icon_scale * 1.5)))
-                    break
+                max_column_show = int(
+                    self.image.get_width() / ((this_subunit.portrait.get_width() * self.icon_scale * 1.5)))
+                break
             current_index = int(self.current_row * max_column_show)  # the first index of current row
             self.row_size = len(subunit_list) / max_column_show
 
@@ -624,7 +622,6 @@ class UnitSelector(pygame.sprite.Sprite):
             if self.current_row > self.row_size - 1:
                 self.current_row = self.row_size - 1
                 current_index = int(self.current_row * max_column_show)
-                self.scroll.change_image(new_row=self.current_row)
 
             for index, this_subunit in enumerate(
                     subunit_list):  # add unit icon for drawing according to appropriated current row
@@ -644,7 +641,7 @@ class UnitSelector(pygame.sprite.Sprite):
                             column = start_column
                         if row > self.rect.bottomright[1] - ((new_icon.image.get_height() / 2) * self.icon_scale):
                             break  # do not draw for row that exceed the box
-        self.scroll.change_image(row_size=self.row_size)
+        self.scroll.change_image(new_row=self.current_row, row_size=self.row_size)
 
 
 class CharIcon(pygame.sprite.Sprite):

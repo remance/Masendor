@@ -23,7 +23,7 @@ def ai_combat(self):
                 return
 
             if self.hold_timer > 1:
-                if (weapon in self.equipped_timing_weapon and
+                if (self.equipped_timing_start_weapon[weapon] and
                     self.hold_timer > self.equipped_timing_start_weapon[weapon]) or \
                         weapon in self.equipped_power_weapon:  # wait till timing reach
                     if "range attack" in self.current_action:
@@ -35,7 +35,6 @@ def ai_combat(self):
                             self.current_action = self.melee_attack_command_action[weapon]
                             self.release_timer = self.hold_timer
                     return
-
         else:
             if self.in_melee_combat_timer > 0 and self.attack_subunit:  # enemy in subunit's melee zone
                 if not self.current_action:  # only rotate to enemy when no current action
@@ -54,7 +53,7 @@ def ai_combat(self):
                                     if self.attack_subunit.base_pos.distance_to(self.front_pos) <= self.melee_range[weapon]:
                                         if weapon in self.equipped_block_weapon and self.weapon_cooldown[opposite_index[weapon]] > 1:  # consider blocking first
                                             self.command_action = self.melee_hold_command_action[weapon]
-                                        elif (weapon in self.equipped_power_weapon or weapon in self.equipped_timing_weapon) and not not getrandbits(1):
+                                        elif (weapon in self.equipped_power_weapon or self.equipped_timing_start_weapon[weapon]) and not not getrandbits(1):
                                             # random chance to hold
                                             self.command_action = self.melee_hold_command_action[weapon]
                                         else:  # perform normal attack
@@ -106,7 +105,7 @@ def ai_combat(self):
                                                     elif "run" in self.current_action:
                                                         self.current_action = self.range_run_command_action[weapon]
                                         else:
-                                            if weapon in self.equipped_timing_weapon or weapon in self.equipped_power_weapon:
+                                            if self.equipped_timing_start_weapon[weapon] or weapon in self.equipped_power_weapon:
                                                 # consider using hold for power or timing
                                                 self.command_action = self.range_hold_command_action[weapon]
                                             else:

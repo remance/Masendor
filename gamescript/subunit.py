@@ -199,7 +199,7 @@ class Subunit(pygame.sprite.Sprite):
     dmg_sound_distance = 1
     dmg_sound_shake = 0
 
-    def __init__(self, troop_id, game_id, pos_id, team, start_pos, start_angle, start_hp, start_stamina,
+    def __init__(self, troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
                  leader_subunit, coa):
         """
         Subunit object represent a group of troop or leader
@@ -209,7 +209,7 @@ class Subunit(pygame.sprite.Sprite):
         third: stat with all effect (e.g., melee_attack), this is their stat after calculating terrain, weather, and status effect
         :param troop_id: ID of the troop or leader in data
         :param game_id: ID of the subunit as object
-        :param pos_id: ID in map pos data
+        :param map_id: ID in map pos data
         :param team: Team index that this subunit belongs to
         :param start_angle: Starting angle
         :param start_hp: Starting health or troop number percentage
@@ -240,7 +240,6 @@ class Subunit(pygame.sprite.Sprite):
         self.animation_play_time = self.default_animation_play_time
         self.animation_pool = {}  # list of animation sprite this subunit can play with its action
         self.current_animation = {}  # list of animation frames playing
-        self.animation_queue = []  # list of animation queue
         self.show_frame = 0  # current animation frame
         self.max_show_frame = 0
         self.frame_timer = 0
@@ -256,10 +255,11 @@ class Subunit(pygame.sprite.Sprite):
         self.nearest_ally = []
 
         self.game_id = game_id  # ID of this subunit
-        self.pos_id = pos_id
+        self.map_id = map_id
         self.team = team
         self.coa = coa
 
+        self.troop_reserve_list = None
         self.alive_troop_follower = []  # list of alive troop subordinate subunits
         self.troop_follower_size = 0
         self.alive_leader_follower = []  # list of alive leader subordinate subunits

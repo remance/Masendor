@@ -120,6 +120,7 @@ def status_update(self):
     shoot_range_modifier = 1
     weapon_dmg_modifier = 1
     crit_effect_modifier = 1
+    melee_weapon_speed_modifier = 1
 
     # Apply status effect from trait
     for status, aoe in self.trait_ally_status["Final"].items():
@@ -189,6 +190,7 @@ def status_update(self):
             range_def_modifier += cal_effect["Ranged Defence Effect"]
             speed_modifier += cal_effect["Speed Effect"]
             accuracy_modifier += cal_effect["Accuracy Effect"]
+            melee_weapon_speed_modifier += cal_effect["Melee Speed Effect"]
             shoot_range_modifier += cal_effect["Range Effect"]
             reload_modifier += cal_effect[
                 "Reload Effect"]
@@ -226,6 +228,7 @@ def status_update(self):
             accuracy_modifier += cal_effect["Accuracy Effect"]
             reload_modifier += cal_effect["Reload Effect"]
             charge_modifier += cal_effect["Charge Effect"]
+            melee_weapon_speed_modifier += cal_effect["Melee Speed Effect"]
             charge_def_bonus += cal_effect["Charge Defence Bonus"]
             hp_regen_bonus += cal_effect["HP Regeneration Bonus"]
             stamina_regen_bonus += cal_effect["Stamina Regeneration Bonus"]
@@ -259,6 +262,8 @@ def status_update(self):
 
     self.check_element_effect()  # elemental effect
 
+    self.morale = (self.morale * morale_modifier) + morale_bonus
+
     self.morale_state = self.morale / 1000  # for using as modifier to stat
     if self.morale_state > 1:  # morale state can give no more than double bonus
         self.morale_state = 1
@@ -282,6 +287,10 @@ def status_update(self):
     self.charge = ((self.charge + self.speed) + (self.charge * self.morale_state)) * self.command_buff
 
     # Add discipline to stat
+    self.discipline += discipline_bonus
+    if self.discipline < 0:
+        self.discipline = 0
+
     discipline_cal = self.discipline / 1000
     self.melee_attack += (self.melee_attack * discipline_cal)
     self.melee_def += (self.melee_def * discipline_cal)
@@ -290,8 +299,6 @@ def status_update(self):
     self.charge += (self.charge * discipline_cal)
 
     # Apply bonus and modifier to stat
-    self.morale = (self.morale * morale_modifier) + morale_bonus
-    self.discipline += discipline_bonus
     self.melee_attack = (self.melee_attack * melee_attack_modifier) + melee_attack_bonus
     self.shoot_range = {key: (shoot_range * shoot_range_modifier) + shoot_range_bonus for key, shoot_range in
                         self.shoot_range.items()}
@@ -310,6 +317,10 @@ def status_update(self):
     self.sight += sight_bonus
     self.hidden += hidden_bonus
     self.crit_effect *= crit_effect_modifier
+
+    for key, value in self.melee_range.items():
+        if value > 0:
+            self.weapon_speed[key] *= melee_weapon_speed_modifier
 
     troop_mass = self.troop_mass
     if "less mass" in self.current_action:  # knockdown reduce mass
@@ -336,9 +347,6 @@ def status_update(self):
                 self.weapon_dmg[weapon][element][0] *= weapon_dmg_modifier
                 self.weapon_dmg[weapon][element][1] *= weapon_dmg_modifier
 
-    # include all penalties to morale like remaining health, battle situation scale
-    self.morale -= ((20 - (20 * self.battle.battle_scale[self.team] / 100)) * self.mental)
-
     if self.melee_attack < 0:  # seem like using if 0 is faster than max(0,)
         self.melee_attack = 0
     if self.melee_def < 0:
@@ -359,8 +367,6 @@ def status_update(self):
         self.charge_power = 0
     if self.charge_def_power < 0:
         self.charge_def_power = 0
-    if self.discipline < 0:
-        self.discipline = 0
     if self.equipped_weapon in self.magazine_count:  # add reload speed skill to reduce ranged weapon cooldown
         for weapon in self.magazine_count[self.equipped_weapon]:
             self.weapon_speed[weapon] += ((100 - self.reload) * self.weapon_speed[weapon] / 100)

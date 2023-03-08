@@ -123,7 +123,7 @@ class TroopData:
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
-            int_column = ("ID", "Troop Type", "Type", "Area of Effect", "Cost", "Charge Skill")  # value int only
+            int_column = ("ID", "Area of Effect", "Cost", "Charge Skill")  # value int only
             list_column = ("Action",)
             tuple_column = ("Status", "Enemy Status", "AI Use Condition")  # value in tuple only
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
@@ -156,8 +156,8 @@ class TroopData:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             int_column = ("ID", "Area of Effect", "Cost", "Upkeep", "Element", "Charge Defence Bonus",
-                          "HP Regeneration Bonus", "Stamina Regeneration Bonus", "Morale Bonus", "Discipline Bonus",
-                          "Critical Bonus", "Sight Bonus", "Hidden Bonus", "Physical Resistance Bonus",
+                          "Morale Bonus", "Discipline Bonus", "Critical Bonus", "Sight Bonus",
+                          "Hidden Bonus", "Physical Resistance Bonus",
                           "Fire Resistance Bonus", "Water Resistance Bonus", "Air Resistance Bonus",
                           "Earth Resistance Bonus", "Poison Resistance Bonus", "Magic Resistance Bonus",
                           "Heat Resistance Bonus", "Cold Resistance Bonus")  # value int only
@@ -221,7 +221,7 @@ class TroopData:
                                    weapon_list + ".csv"), encoding="utf-8", mode="r") as edit_file:
                 rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
                 header = rd[0]
-                int_column = ("ID", "Strength Bonus Scale", "Dexterity Bonus Scale", "Physical Damage",
+                int_column = ("Strength Bonus Scale", "Dexterity Bonus Scale", "Physical Damage",
                               "Fire Damage", "Water Damage", "Air Damage", "Earth Damage", "Poison Damage", "Magic Damage",
                               "Armour Penetration", "Defence", "Weight", "Speed", "Ammunition", "Magazine", "Shot Number",
                               "Range", "Travel Speed", "Learning Difficulty", "Mastery Difficulty", "Learning Difficulty",
@@ -357,8 +357,7 @@ class TroopData:
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
-            int_column = (
-                "ID", "Grade", "Race", "Cost", "Upkeep", "Troop", "Sprite ID")  # value int only
+            int_column = ("ID", "Grade", "Race", "Cost", "Upkeep", "Troop")  # value int only
             list_column = ("Trait", "Skill",)  # value in list only
             tuple_column = ("Armour", "Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon",
                             "Secondary Sub Weapon", "Mount", "Role")  # value in tuple only
@@ -464,7 +463,7 @@ class LeaderData:
                   mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
-            int_column = ("Troop Type", "Type", "Range", "Area of Effect", "Cost")  # value int only
+            int_column = ("Troop Type", "Range", "Area of Effect", "Cost")  # value int only
             list_column = ("Action",)
             tuple_column = ("Status", "Enemy Status", "AI Use Condition")  # value in tuple only
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
@@ -496,7 +495,7 @@ class LeaderData:
                   mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
-            int_column = ("Troop Type", "Type", "Area of Effect", "Cost")  # value int only
+            int_column = ("Troop Type", "Area of Effect", "Cost")  # value int only
             list_column = ("Action", "Replace")
             tuple_column = ("Status", "Enemy Status", "AI Use Condition")  # value in tuple only
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
@@ -547,9 +546,9 @@ class LeaderData:
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
-            int_column = ("ID", "Race", "Strength", "Dexterity", "Agility", "Constitution", "Intelligence",
+            int_column = ("Race", "Strength", "Dexterity", "Agility", "Constitution", "Intelligence",
                           "Wisdom", "Charisma", "Melee Speciality", "Range Speciality", "Cavalry Speciality",
-                          "Social Class", "Faction", "Sprite ID")  # value int only
+                          "Social Class", "Faction")  # value int only
             list_column = ("Skill", "Trait", "Formation")
             tuple_column = ("Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon",
                             "Secondary Sub Weapon", "Armour", "Mount")
@@ -563,7 +562,7 @@ class LeaderData:
                 self.leader_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
-        # Add common leader to the leader list with game_id 10000+
+        # Add common leader to the leader list
         with open(
                 os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader", "preset", "common_leader.csv"),
                 encoding="utf-8", mode="r") as edit_file:

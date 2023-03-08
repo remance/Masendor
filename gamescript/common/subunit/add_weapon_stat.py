@@ -4,9 +4,8 @@ def add_weapon_stat(self):
     self.power_weapon = {0: [], 1: []}
     self.block_weapon = {0: [], 1: []}
     self.charge_block_weapon = {0: [], 1: []}
-    self.timing_weapon = {0: [], 1: []}
-    self.timing_start_weapon = {0: [], 1: []}
-    self.timing_end_weapon = {0: [], 1: []}
+    self.timing_start_weapon = {0: [0, 0], 1: [0, 0]}
+    self.timing_end_weapon = {0: [0, 0], 1: [0, 0]}
     self.weapon_type = {0: ["melee", "melee"], 1: ["melee", "melee"]}
 
     for set_index, weapon_set in enumerate(self.weapon_set):
@@ -76,9 +75,8 @@ def add_weapon_stat(self):
                 if any("timing" in ext for ext in weapon_stat["Properties"]):
                     for prop in weapon_stat["Properties"]:
                         if "timing" in prop:
-                            self.timing_weapon[set_index].append(weapon_index)
-                            self.timing_start_weapon[set_index].append(int(prop.split("_")[1]))
-                            self.timing_end_weapon[set_index].append(int(prop.split("_")[2]))
+                            self.timing_start_weapon[set_index][weapon_index] = int(prop.split("_")[1])
+                            self.timing_end_weapon[set_index][weapon_index] = int(prop.split("_")[2])
                             break
                 else:  # add 0 to make index match with timing weapon set
                     self.timing_start_weapon[set_index].append(0)
@@ -87,7 +85,6 @@ def add_weapon_stat(self):
     self.power_weapon = {0: tuple(self.power_weapon[0]), 1: tuple(self.power_weapon[1])}
     self.block_weapon = {0: tuple(self.block_weapon[0]), 1: tuple(self.block_weapon[1])}
     self.charge_block_weapon = {0: tuple(self.charge_block_weapon[0]), 1: tuple(self.charge_block_weapon[1])}
-    self.timing_weapon = {0: tuple(self.timing_weapon[0]), 1: tuple(self.timing_weapon[1])}
     self.timing_start_weapon = {0: tuple(self.timing_start_weapon[0]), 1: tuple(self.timing_start_weapon[1])}
     self.timing_end_weapon = {0: tuple(self.timing_end_weapon[0]), 1: tuple(self.timing_end_weapon[1])}
 
