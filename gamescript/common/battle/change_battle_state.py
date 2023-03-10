@@ -33,7 +33,7 @@ def change_battle_state(self):
             if self.char_selected:  # select player char by default if control only one
                 if this_subunit.map_id == self.char_selected:  # get player char
                     self.player_char = this_subunit
-                    self.player_char.player_manual_control = True
+                    self.player_char.player_control = True
                     self.battle_camera.change_layer(self.player_char, 999999)
                     self.command_ui.add_leader_image(this_subunit.portrait)
                     if self.camera_mode == "Follow":

@@ -123,7 +123,7 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
                                                    (0, subunit_weapon_list[0],
                                                     (self.troop_data.weapon_list[primary_main_weapon]["Hand"],
                                                      self.troop_data.weapon_list[primary_sub_weapon]["Hand"])), armour_name,
-                                                   self.generic_animation_pool[idle_animation_name][0])
+                                                   self.generic_animation_pool[idle_animation_name][0], False)
             sprite_pic, center_offset = crop_sprite(sprite_dict["sprite"])
 
             scale = min(max_preview_size * self.screen_scale[0] / sprite_pic.get_width(),
@@ -197,6 +197,7 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
                     animation_list += temp_list
 
             animation_list = tuple(set(animation_list))
+            # print(subunit_id, animation_list)
             for animation in animation_list:  # use one side in the list for finding animation name
                 animation_property = self.generic_animation_pool[animation][0]["animation_property"].copy()
                 for weapon_set_index, weapon_set in enumerate(
@@ -205,6 +206,7 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
                     for weapon_index, weapon in enumerate(weapon_set):
                         make_animation = False
                         both_weapon_set = False
+                        both_main_sub_weapon = False
                         name_input = animation + "/" + str(weapon_set_index)
                         # TODO consider later whether to make any animation mean no weapon at all so keep only as one for all set
                         if "_any_" in name_input:  # replace any type to weapon action name for reading later
@@ -212,6 +214,7 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
                                 weapon_index] + "_")
                         if "_Both_" in name_input:
                             name_input = name_input.replace("_Both_", ("_Main_", "_Sub_")[weapon_index])
+                            both_main_sub_weapon = True
                         if "_Skill_" in name_input:  # skill animation
                             for skill in skill_list:  # not make animation for troop with no related skill animation
                                 if skill in name_input:
@@ -231,20 +234,26 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
                                   "_Charge" in name_input) and ("_Main_", "_Sub_")[weapon_index] in name_input:  # attack animation and charge
                                 make_animation = True
                         if make_animation and name_input not in current_in_pool:
-                            current_in_pool[name_input] = {}
+                            final_name = name_input
+                            final_name = "_".join(final_name.split("_")[1:])  # remove race name
+                            if weapon_common_action[weapon_set_index][weapon_index] in name_input:
+                                # remove common action name
+                                final_name = final_name.replace(weapon_common_action[weapon_set_index][weapon_index] + "_", "")
+                            current_in_pool[final_name] = {}
                             if both_weapon_set:
-                                next_level[weapon_key[1]][name_input] = {}
+                                next_level[weapon_key[1]][final_name] = {}
                         else:
                             make_animation = False
                         if make_animation:
                             new_direction = "r_side"
                             opposite_direction = "l_side"
-                            current_in_pool[name_input][new_direction] = {}
+                            current_in_pool[final_name][new_direction] = {}
                             if both_weapon_set:
-                                next_level[weapon_key[1]][name_input][new_direction] = {}
-                            current_in_pool[name_input][opposite_direction] = {}
+                                next_level[weapon_key[1]][final_name][new_direction] = {}
+                            current_in_pool[final_name][opposite_direction] = {}
                             if both_weapon_set:
-                                next_level[weapon_key[1]][name_input][opposite_direction] = {}
+                                next_level[weapon_key[1]][final_name][opposite_direction] = {}
+                            current_in_pool[final_name]["frame_number"] = len(self.generic_animation_pool[animation]) - 1
                             for frame_num, frame_data in enumerate(
                                     self.generic_animation_pool[animation]):
                                 if type(subunit_id) is int:
@@ -259,6 +268,14 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
                                     idle_animation = self.generic_animation_pool[
                                         final_race_name + "any_Idle"]
 
+                                if both_main_sub_weapon:
+                                    for key in frame_data:
+                                        if "_Sub_" in name_input:
+                                            if "main_weapon" in key:
+                                                old_main_weapon_stat = frame_data[key].copy()
+                                                frame_data[key] = frame_data[key.replace("main", "sub")].copy()
+                                                frame_data[key.replace("main", "sub")] = old_main_weapon_stat
+
                                 sprite_dict = self.create_troop_sprite(name_input, this_subunit["Size"],
                                                                        frame_data, sprite_data, animation_property,
                                                                        (weapon_set_index, weapon_set,
@@ -268,7 +285,8 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
                                                                          self.troop_data.weapon_list[
                                                                              hand_weapon_list[weapon_set_index][
                                                                                  1]]["Hand"])),
-                                                                       armour_name, idle_animation[0])
+                                                                       armour_name, idle_animation[0],
+                                                                       both_main_sub_weapon)
                                 sprite_pic = sprite_dict["sprite"]
                                 sprite_pic, center_offset = crop_sprite(sprite_pic)
                                 sprite_pic = pygame.transform.smoothscale(sprite_pic, (
@@ -283,33 +301,32 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
                                     for this_property in sprite_dict["animation_property"]:
                                         if "play_time_mod_" in this_property:
                                             play_time_mod = float(this_property.split("_")[-1])
-
-                                current_in_pool[name_input][frame_num] = \
+                                current_in_pool[final_name][frame_num] = \
                                     {"animation_property": sprite_dict["animation_property"],
                                      "frame_property": sprite_dict["frame_property"],
                                      "dmg_sprite": sprite_dict["dmg_sprite"]}
                                 if play_time_mod != 1:
-                                    current_in_pool[name_input][frame_num]["play_time_mod"] = play_time_mod
-                                current_in_pool[name_input][new_direction][frame_num] = \
+                                    current_in_pool[final_name][frame_num]["play_time_mod"] = play_time_mod
+                                current_in_pool[final_name][new_direction][frame_num] = \
                                     {"sprite": sprite_pic, "center_offset": center_offset}
 
                                 if both_weapon_set:
-                                    next_level[weapon_key[1]][name_input][frame_num] = \
+                                    next_level[weapon_key[1]][final_name][frame_num] = \
                                         {"animation_property": sprite_dict["animation_property"],
                                          "frame_property": sprite_dict["frame_property"],
                                          "dmg_sprite": sprite_dict["dmg_sprite"]}
                                     if play_time_mod != 1:
-                                        next_level[weapon_key[1]][name_input][frame_num]["play_time_mod"] = play_time_mod
+                                        next_level[weapon_key[1]][final_name][frame_num]["play_time_mod"] = play_time_mod
 
-                                    next_level[weapon_key[1]][name_input][new_direction][frame_num] = \
+                                    next_level[weapon_key[1]][final_name][new_direction][frame_num] = \
                                         {"sprite": sprite_pic, "center_offset": center_offset}
                                 if opposite_direction is not None:  # flip sprite for opposite direction
-                                    current_in_pool[name_input][opposite_direction][frame_num] = {
+                                    current_in_pool[final_name][opposite_direction][frame_num] = {
                                         "sprite": pygame.transform.flip(sprite_pic,
                                                                         True, False),
                                         "center_offset": (-center_offset[0], center_offset[1])}
                                     if both_weapon_set:
-                                        next_level[weapon_key[1]][name_input][opposite_direction][frame_num] = {
+                                        next_level[weapon_key[1]][final_name][opposite_direction][frame_num] = {
                                             "sprite": pygame.transform.flip(sprite_pic,
                                                                             True, False),
                                             "center_offset": (-center_offset[0], center_offset[1])}

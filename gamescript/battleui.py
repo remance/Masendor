@@ -394,7 +394,7 @@ class MiniMap(pygame.sprite.Sprite):
         for subunit in subunit_list:
             scaled_pos = (subunit.base_pos[0] / self.map_scale_width, subunit.base_pos[1] / self.map_scale_height)
             if subunit.is_leader:
-                if subunit.player_manual_control:
+                if subunit.player_control:
                     rect = self.player_dot_images[subunit.team].get_rect(center=scaled_pos)
                     self.image.blit(self.player_dot_images[subunit.team], rect)
                 else:

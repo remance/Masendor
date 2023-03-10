@@ -22,12 +22,28 @@ def check_skill_usage(self):
                 return
 
             if skill in self.available_skill:
-                action = self.input_skill[skill]["Action"].copy()
+                skill_data = self.input_skill[skill]
+                action = skill_data["Action"].copy()
+                weapon = None
                 if "Action" in action[0]:
                     action[0] += " 0"  # use main hand by default for Action type animation skill
+                    weapon = 0
                 else:
                     action[0] = "Skill_" + action[0]
                 self.command_action = {"name": action[0], "skill": skill}
+                for key in self.weapon_skill:
+                    if skill == self.weapon_skill[key]:
+                        weapon = key
+
+                if "Action" in skill_data["Type"]:
+                    if "Melee" in skill_data["Type"]:
+                        self.active_action_skill["melee"].append(skill)
+                    elif "Range" in skill_data["Type"]:
+                        self.active_action_skill["range"].append(skill)
+
+                if weapon is not None:  # skill use weapon
+                    self.command_action["weapon"] = weapon
+
                 self.available_skill.remove(skill)
                 if len(action) > 1:
                     self.command_action |= {this_prop: True for this_prop in action[1:]}

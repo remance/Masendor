@@ -4,7 +4,7 @@
 "L3","Rally",0,100,0,60,120,20,10,,,,,,,,,,0,0,0,50,0,,,,,,-30,0,0,,,"WarHorn","Sound Burst Small (team)","warhorn_small",250,"troop_melee","Buff"
 "L4","Entrap",100,50,1,20,80,40,5,80,,,30,,,,,70,0,0,0,,0,,,,,,,0,20,,,"DebuffEnemy",,,150,"enemy_near","Debuff"
 "L5","Lure",100,50,1,15,80,30,5,,,,,,,,,,0,0,0,,0,,,,,,,0,15,,,"DebuffEnemy",,,,"enemy_near","Debuff"
-"L6","Prayer",0,100,0,120,240,46,10,,,,,,,,,,0,0,0,35,0,,,,,,,0,0,,,"Prayer",,,100,"enemy_near","Buff"
+"L6","Prayer",0,100,0,120,240,46,10,,,,,,,,,,0,0,0,35,0,,,,,,,0,0,,,"Bless",,,100,"enemy_near","Buff"
 "L7","Misinformation",100,50,1,30,120,60,5,,,,,,,,,,0,0,0,-30,-20,,,,,,,0,2,,,"DebuffEnemy",,,,"enemy_near","Debuff"
 "L8","Incite Panic",70,50,1,15,120,55,5,,,,,,,,,,0,0,0,-10,0,,,,,,,0,0,,10,"DebuffEnemy",,,,"enemy_near","Debuff"
 "L9","Order Disruption",60,30,1,25,120,55,5,,,,,,,,,,0,0,0,-40,-30,,,,,,,0,0,,,"DebuffEnemy",,,,"enemy_near","Debuff"

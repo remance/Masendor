@@ -2,7 +2,7 @@ from pygame import Vector2
 from math import cos, sin, radians
 from random import choice, uniform, randint
 
-from gamescript import damagesprite, effectsprite
+from gamescript.damagesprite import MeleeDamageSprite, RangeDamageSprite, ChargeDamageSprite, EffectDamageSprite
 from gamescript.common import utility
 
 convert_degree_to_360 = utility.convert_degree_to_360
@@ -93,10 +93,11 @@ def attack(self, attack_type):
                     for key in self.dmg:
                         dmg[key] *= 1.5
 
-                damagesprite.RangeDamageSprite(self, weapon, dmg, self.weapon_penetrate[self.equipped_weapon][weapon],
-                                               equipped_weapon_data, attack_type, self.front_pos, base_target,
-                                               accuracy=accuracy, arc_shot=arc_shot,
-                                               reach_effect=equipped_weapon_data["After Reach Effect"])
+                RangeDamageSprite(self, weapon, dmg, self.weapon_penetrate[self.equipped_weapon][weapon],
+                                  equipped_weapon_data["Impact"] * self.weapon_impact_effect,
+                                  equipped_weapon_data, attack_type, self.front_pos, base_target,
+                                  accuracy=accuracy, arc_shot=arc_shot,
+                                  reach_effect=equipped_weapon_data["After Reach Effect"])
 
             self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
 
@@ -108,6 +109,14 @@ def attack(self, attack_type):
                     self.ammo_now.pop(self.equipped_weapon)
                     self.magazine_count.pop(self.equipped_weapon)
                     self.range_weapon_set.remove(self.equipped_weapon)
+
+            if self.active_action_skill["range"]:  # check if any skill range action active
+                for skill in self.active_action_skill["range"].copy():
+                    self.skill_duration[skill] -= 1
+                    if self.skill_duration[skill] <= 0:  # skill end
+                        self.skill_duration.pop(skill)
+                        self.skill_effect.pop(skill)
+                        self.active_action_skill["range"].remove(skill)
 
             if equipped_weapon_data["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
                 self.battle.add_sound_effect_queue(
@@ -125,11 +134,11 @@ def attack(self, attack_type):
                 penetrate = self.body_weapon_penetrate
                 stat = self.body_weapon_stat
             if self.charge_sprite:  # charge sprite already existed
-                self.charge_sprite.change_weapon(dmg, penetrate, stat)
+                self.charge_sprite.change_weapon(dmg, penetrate, stat["Impact"])
             else:
-                self.charge_sprite = damagesprite.ChargeDamageSprite(self, weapon, dmg, penetrate, stat,
-                                                                     "charge", self.base_pos, self.base_pos,
-                                                                     accuracy=self.melee_attack)
+                self.charge_sprite = ChargeDamageSprite(self, weapon, dmg, penetrate, stat["Impact"], stat,
+                                                        "charge", self.base_pos, self.base_pos,
+                                                        accuracy=self.melee_attack)
 
         else:  # melee attack
             accuracy = self.melee_attack
@@ -149,9 +158,18 @@ def attack(self, attack_type):
                 for key in dmg:
                     dmg[key] *= 1.5
 
-            damagesprite.MeleeDamageSprite(self, weapon, dmg, self.weapon_penetrate[self.equipped_weapon][weapon],
-                                           equipped_weapon_data, attack_type, self.base_pos,
-                                           base_target, accuracy=accuracy)
+            MeleeDamageSprite(self, weapon, dmg, self.weapon_penetrate[self.equipped_weapon][weapon],
+                              equipped_weapon_data["Impact"] * self.weapon_impact_effect,
+                              equipped_weapon_data, attack_type, self.base_pos,
+                              base_target, accuracy=accuracy)
+
+            if self.active_action_skill["melee"]:  # check if any skill melee action active
+                for skill in self.active_action_skill["melee"].copy():
+                    self.skill_duration[skill] -= 1
+                    if self.skill_duration[skill] <= 0:  # skill end
+                        self.skill_duration.pop(skill)
+                        self.skill_effect.pop(skill)
+                        self.active_action_skill["melee"].remove(skill)
 
             self.weapon_cooldown[weapon] = 0  # melee weapon use cooldown for attack
 
@@ -177,7 +195,6 @@ def attack(self, attack_type):
                 base_target = Vector2(self.base_pos[0] - (self.attack_effect_spawn_distance * sin(radians(self.angle))),
                                       self.base_pos[1] - (self.attack_effect_spawn_distance * cos(radians(self.angle))))
 
-                damagesprite.EffectDamageSprite(self, equipped_weapon_data["After Attack Effect"], dmg,
-                                                effect_stat["Armour Penetration"], effect_stat, "effect",
-                                                base_target, base_target,
-                                                reach_effect=effect_stat["After Reach Effect"])
+                EffectDamageSprite(self, equipped_weapon_data["After Attack Effect"], dmg,
+                                   effect_stat["Armour Penetration"], effect_stat["Impact"], effect_stat, "effect",
+                                   base_target, base_target, reach_effect=effect_stat["After Reach Effect"])

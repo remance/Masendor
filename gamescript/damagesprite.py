@@ -48,8 +48,8 @@ class DamageSprite(pygame.sprite.Sprite):
             exec(f"from gamescript.common.damagesprite import " + file_name)
             exec(f"" + file_name + " = " + file_name + "." + file_name)
 
-    def __init__(self, attacker, weapon, dmg, penetrate, stat, attack_type, base_pos, base_target, accuracy=None,
-                 arc_shot=False, height_ignore=False, degrade_when_travel=True,
+    def __init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
+                 accuracy=None, arc_shot=False, height_ignore=False, degrade_when_travel=True,
                  degrade_when_hit=True, random_direction=False, random_move=False, reach_effect=None, height_type=1):
         """Damage or effect sprite that can affect subunit"""
         self._layer = 10000000 + height_type
@@ -97,7 +97,7 @@ class DamageSprite(pygame.sprite.Sprite):
             self.deal_dmg = True
 
         self.penetrate = penetrate
-        self.knock_power = stat["Impact"]
+        self.knock_power = impact
 
         self.pass_subunit = None  # subunit that damage sprite passing through, receive damage if movement stop
 
@@ -120,8 +120,9 @@ class DamageSprite(pygame.sprite.Sprite):
                 dmg = None
             else:
                 dmg = {key.split(" ")[0]: uniform(value / 2, value) for key, value in dmg.items()}
-            EffectDamageSprite(self, self.reach_effect, dmg, effect_stat["Armour Penetration"], effect_stat, "effect",
-                               self.base_pos, self.base_pos, reach_effect=effect_stat["After Reach Effect"])
+            EffectDamageSprite(self, self.reach_effect, dmg, effect_stat["Armour Penetration"], effect_stat["Impact"],
+                               effect_stat, "effect", self.base_pos, self.base_pos,
+                               reach_effect=effect_stat["After Reach Effect"])
 
         if "End Effect" in self.stat:
             finish_effect = self.stat["End Effect"]
@@ -133,16 +134,16 @@ class DamageSprite(pygame.sprite.Sprite):
                 else:
                     dmg = {key.split(" ")[0]: uniform(value / 2, value) for key, value in dmg}
                 EffectDamageSprite(self, self.stat["End Effect"], dmg, effect_stat["Armour Penetration"],
-                                   effect_stat, "effect", self.base_pos, self.base_pos,
+                                   effect_stat["Impact"], effect_stat, "effect", self.base_pos, self.base_pos,
                                    reach_effect=effect_stat["After Reach Effect"])
         self.clean_object()
 
 
 class MeleeDamageSprite(DamageSprite):
-    def __init__(self, attacker, weapon, dmg, penetrate, stat, attack_type, base_pos, base_target, accuracy=None,
-                 reach_effect=None):
+    def __init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
+                 accuracy=None, reach_effect=None):
         """Melee damage sprite"""
-        DamageSprite.__init__(self, attacker, weapon, dmg, penetrate, stat, attack_type, base_pos, base_target,
+        DamageSprite.__init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
                               accuracy=accuracy, reach_effect=reach_effect)
         self.sprite_direction = self.attacker.sprite_direction
 
@@ -185,11 +186,11 @@ class MeleeDamageSprite(DamageSprite):
 
 
 class RangeDamageSprite(DamageSprite):
-    def __init__(self, attacker, weapon, dmg, penetrate, stat, attack_type, base_pos, base_target, accuracy=None,
-                 arc_shot=False, height_ignore=False, degrade_when_travel=True,
+    def __init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
+                 accuracy=None, arc_shot=False, height_ignore=False, degrade_when_travel=True,
                  degrade_when_hit=True, random_direction=False, random_move=False, reach_effect=None):
         """Range damage sprite"""
-        DamageSprite.__init__(self, attacker, weapon, dmg, penetrate, stat, attack_type, base_pos, base_target,
+        DamageSprite.__init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
                               arc_shot=arc_shot, height_ignore=height_ignore, degrade_when_travel=degrade_when_travel,
                               degrade_when_hit=degrade_when_hit, random_direction=random_direction,
                               random_move=random_move, accuracy=accuracy, reach_effect=reach_effect)
@@ -308,10 +309,10 @@ class RangeDamageSprite(DamageSprite):
 
 
 class ChargeDamageSprite(DamageSprite):
-    def __init__(self, attacker, weapon, dmg, penetrate, stat, attack_type, base_pos, base_target, accuracy=None,
-                 reach_effect=None):
+    def __init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
+                 accuracy=None, reach_effect=None):
         """Charge damage sprite"""
-        DamageSprite.__init__(self, attacker, weapon, dmg, penetrate, stat, attack_type, base_pos, base_target,
+        DamageSprite.__init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
                               accuracy=accuracy, reach_effect=reach_effect)
         self.base_pos = base_pos  # always move along with attacker
         self.angle = self.attacker.angle
@@ -319,10 +320,10 @@ class ChargeDamageSprite(DamageSprite):
 
         self.battle.battle_camera.remove(self)  # no sprite to play since it use subunit sprite as damage sprite
 
-    def change_weapon(self, dmg, penetrate, stat):
+    def change_weapon(self, dmg, penetrate, impact):
         self.dmg = dmg
         self.penetrate = penetrate
-        self.knock_power = stat["Impact"]
+        self.knock_power = impact
 
     def update(self, subunit_list, dt):
         self.timer += dt
@@ -344,11 +345,11 @@ class ChargeDamageSprite(DamageSprite):
 
 
 class EffectDamageSprite(DamageSprite):
-    def __init__(self, attacker, weapon, dmg, penetrate, stat, attack_type, base_pos, base_target, accuracy=None,
-                 arc_shot=False, height_ignore=False, degrade_when_travel=True,
+    def __init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
+                 accuracy=None, arc_shot=False, height_ignore=False, degrade_when_travel=True,
                  degrade_when_hit=True, random_direction=False, random_move=False, reach_effect=None):
         """Effect damage sprite"""
-        DamageSprite.__init__(self, attacker, weapon, dmg, penetrate, stat, attack_type, base_pos, base_target,
+        DamageSprite.__init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
                               arc_shot=arc_shot, height_ignore=height_ignore, degrade_when_travel=degrade_when_travel,
                               degrade_when_hit=degrade_when_hit, random_direction=random_direction,
                               random_move=random_move, accuracy=accuracy, reach_effect=reach_effect,

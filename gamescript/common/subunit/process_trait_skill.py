@@ -1,3 +1,8 @@
+from gamescript.common.battle import setup_battle_ui
+
+add_skill_icon = setup_battle_ui.add_skill_icon
+
+
 def process_trait_skill(self):
     """
     Process subunit traits and skills into dict with their stat, occur in swap_weapon
@@ -32,6 +37,8 @@ def process_trait_skill(self):
     self.input_skill.pop(self.charge_skill)
     self.perform_skill = self.input_skill.copy()
 
+    self.weapon_skill = {key: value for key, value in self.weapon_skill.items() if value in self.skill}
+
     ai_skill_condition_list = {"move": [], "melee": [], "range": [], "enemy_near": [], "damaged": [], "retreat": [],
                                "idle": [], "unit_melee": [], "unit_range": [], "troop_melee": [], "troop_range": [],
                                "move_far": []}
@@ -53,6 +60,9 @@ def process_trait_skill(self):
         self.unit_range_skill = ai_skill_condition_list["unit_range"]
         self.troop_range_skill = ai_skill_condition_list["troop_range"]
         self.move_far_skill = ai_skill_condition_list["move_far"]
+
+    if self.player_control:  # change skill ui
+        add_skill_icon(self.battle)
 
 
 def skill_convert(self, skill_list, add_charge_skill=False):

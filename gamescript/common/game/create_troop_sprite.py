@@ -11,7 +11,7 @@ default_sprite_size = (200, 200)
 
 
 def create_troop_sprite(self, animation_name, troop_size, animation_part_list, troop_sprite_list,
-                        animation_property, weapon, armour, idle_animation):
+                        animation_property, weapon, armour, idle_animation, both_main_sub_weapon):
     frame_property = animation_part_list["frame_property"].copy()
     animation_property = animation_property.copy()
     check_prop = frame_property + animation_property
@@ -118,8 +118,9 @@ def create_troop_sprite(self, animation_name, troop_size, animation_part_list, t
                             use_center = True
                     elif p + "sub_weapon" in layer:  # sub weapon
                         if "sheath" not in part[0]:  # change weapon pos to hand, if part is not sheath
-                            if "_Sub_" in animation_name and weapon[2][
-                                1] == 2:  # two-handed sub weapon use same animation as main for attack so put sub weapon in man hand, remove code if different
+                            if "_Sub_" in animation_name and both_main_sub_weapon:
+                                # sub animation from shared '_Both_' animation name as main for attack
+                                # so put sub weapon in man hand, remove code if different
                                 target = (animation_part_list[p + "r_hand"][2], animation_part_list[p + "r_hand"][3])
                             else:
                                 target = (animation_part_list[p + "l_hand"][2], animation_part_list[p + "l_hand"][3])

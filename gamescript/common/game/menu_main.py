@@ -32,8 +32,7 @@ def menu_main(self, mouse_left_up):
         self.map_selected = self.custom_map_folder[self.current_map_select]
 
         self.custom_map_button.event = False
-        self.main_ui_updater.remove(*self.start_menu_ui_only, self.popup_list_box, self.popup_list_box.scroll,
-                                    *self.popup_namegroup)
+        self.main_ui_updater.remove(*self.start_menu_ui_only, self.popup_list_box, self.popup_list_box.scroll)
         self.menu_button.remove(*self.menu_button)
 
         setup_list(self.screen_scale, menu.NameList, self.current_map_row, self.custom_map_list, self.map_namegroup,

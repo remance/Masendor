@@ -24,25 +24,25 @@ def setup_formation(self, which, phase=None, style=None, density=None, position=
             self.troop_formation_phase = phase
             if self.unit_follow_order != "Free":  # leader follower also change troop formation setting to match higher leader when not in free order
                 for leader in self.alive_leader_follower:
-                    if not leader.player_manual_control:
+                    if not leader.player_control:
                         leader.setup_formation("troop", phase=phase)
         if style:
             self.troop_formation_style = style
             if self.unit_follow_order != "Free":
                 for leader in self.alive_leader_follower:
-                    if not leader.player_manual_control:
+                    if not leader.player_control:
                         leader.setup_formation("troop", style=style)
         if density:
             self.troop_formation_density = density
             if self.unit_follow_order != "Free":
                 for leader in self.alive_leader_follower:
-                    if not leader.player_manual_control:
+                    if not leader.player_control:
                         leader.setup_formation("troop", density=density)
         if position:
             self.troop_formation_position = position
             if self.unit_follow_order != "Free":
                 for leader in self.alive_leader_follower:
-                    if not leader.player_manual_control:
+                    if not leader.player_control:
                         leader.setup_formation("troop", position=position)
 
         follower_size = self.troop_follower_size

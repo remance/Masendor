@@ -1400,8 +1400,8 @@ class Model:
 
                         elif edit_type == "rotate":  # mouse rotate
                             base_pos = self.animation_part_list[edit_frame][part_index][2]
-                            radians = atan2(mouse_pos[1] - base_pos[1], mouse_pos[0] - base_pos[0])
-                            new_angle = degrees(radians)
+                            rotate_radians = atan2(mouse_pos[1] - base_pos[1], mouse_pos[0] - base_pos[0])
+                            new_angle = degrees(rotate_radians)
                             # """upper left -"""
                             if -180 <= new_angle <= -90:
                                 new_angle = -new_angle - 90

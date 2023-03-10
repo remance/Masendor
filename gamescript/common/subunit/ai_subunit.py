@@ -16,7 +16,7 @@ def ai_subunit(self):
     self.nearest_enemy = self.near_enemy[0]
     self.nearest_ally = self.near_ally[0]
 
-    if not self.player_manual_control:
+    if not self.player_control:
         layer = int(self.base_pos[0] + (self.base_pos[1] * 10))
         if layer < 2:
             layer = 2

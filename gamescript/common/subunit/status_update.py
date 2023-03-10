@@ -16,17 +16,9 @@ def status_update(self):
             self.skill_cooldown.pop(key)
 
     self.idle_action = {}
-    for key, value in self.skill_effect.copy().items():
-        if value["Type"] != "Perform":  # perform skill type duration mean per action instead of time
-            self.skill_duration[key] -= self.timer
-            if self.skill_duration[key] <= 0:  # skill end
-                self.skill_duration.pop(key)
-                self.skill_effect.pop(key)
-            elif "hold" in value["Action"] or "repeat" in value["Action"]:
-                self.idle_action = self.command_action
 
     # skill is considered available if not in cooldown, has enough discipline and stamina, not already in used
-    self.available_skill = [skill for skill in self.input_skill if skill not in self.skill_cooldown.keys()
+    self.available_skill = [skill for skill in self.input_skill if skill not in self.skill_cooldown
                             and self.discipline >= self.input_skill[skill]["Discipline Requirement"]
                             and self.stamina > self.input_skill[skill]["Stamina Cost"] and
                             ("skill" not in self.current_action or self.current_action["skill"] != skill)]
@@ -91,6 +83,7 @@ def status_update(self):
 
     self.morale_dmg_bonus = 0
     self.stamina_dmg_bonus = 0
+    self.weapon_impact_effect = 1
 
     morale_bonus = 0
     discipline_bonus = 0
@@ -184,6 +177,15 @@ def status_update(self):
 
     # Apply effect from skill
     if self.skill_effect:
+        for key, value in self.skill_effect.copy().items():
+            if "Action" not in value["Type"]:  # action skill type duration mean per attack action instead of time
+                self.skill_duration[key] -= self.timer
+                if self.skill_duration[key] <= 0:  # skill end
+                    self.skill_duration.pop(key)
+                    self.skill_effect.pop(key)
+                elif "hold" in value["Action"] or "repeat" in value["Action"]:
+                    self.idle_action = self.command_action
+
         for cal_effect in self.skill_effect.values():  # apply elemental effect to melee_dmg if skill has element
             melee_attack_modifier += cal_effect["Melee Attack Effect"]
             melee_def_modifier += cal_effect["Melee Defence Effect"]
@@ -217,6 +219,7 @@ def status_update(self):
             crit_effect_modifier += cal_effect["Critical Effect"]
             self.morale_dmg_bonus += cal_effect["Morale Damage Bonus"]
             self.stamina_dmg_bonus += cal_effect["Stamina Damage Bonus"]
+            self.weapon_impact_effect += cal_effect["Weapon Impact Effect"]
 
     # Apply effect and modifier from status effect
     if self.status_effect:
@@ -320,7 +323,7 @@ def status_update(self):
 
     for key, value in self.melee_range.items():
         if value > 0:
-            self.weapon_speed[key] *= melee_weapon_speed_modifier
+            self.weapon_speed[key] /= melee_weapon_speed_modifier
 
     troop_mass = self.troop_mass
     if "less mass" in self.current_action:  # knockdown reduce mass
@@ -367,11 +370,10 @@ def status_update(self):
         self.charge_power = 0
     if self.charge_def_power < 0:
         self.charge_def_power = 0
-    if self.equipped_weapon in self.magazine_count:  # add reload speed skill to reduce ranged weapon cooldown
-        for weapon in self.magazine_count[self.equipped_weapon]:
-            self.weapon_speed[weapon] += ((100 - self.reload) * self.weapon_speed[weapon] / 100)
-            if self.weapon_speed[weapon] < 1:  # weapon speed can not be less than 0.1 second per hit
-                self.weapon_speed[weapon] = 1
+
+    if self.equipped_weapon in self.ammo_now:  # add reload speed skill to reduce ranged weapon cooldown
+        for weapon in self.ammo_now[self.equipped_weapon]:
+            self.weapon_speed[weapon] /= (self.reload / 50)
 
     self.run_speed = self.speed / 2
     self.walk_speed = self.speed / 4

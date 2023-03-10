@@ -7,13 +7,14 @@ def use_skill(self, which_skill):
     skill_stat = self.skill[which_skill]
     aoe = skill_stat["Area of Effect"]
 
-    if self.current_animation[self.show_frame]["dmg_sprite"] and which_skill != self.charge_skill:
+    if self.current_animation[self.show_frame]["dmg_sprite"] and which_skill != self.charge_skill and \
+            "weapon" not in self.current_action:
         effectsprite.EffectSprite(self, self.base_pos, self.pos, self.pos, 0, 0, skill_stat["Effect Sprite"],
                                   self.current_animation[self.show_frame]["dmg_sprite"])
-    if skill_stat["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
-        self.battle.add_sound_effect_queue(choice(self.sound_effect_pool[skill_stat["Sound Effect"]]),
-                                           self.base_pos, skill_stat["Sound Distance"],
-                                           skill_stat["Shake Power"])
+        if skill_stat["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
+            self.battle.add_sound_effect_queue(choice(self.sound_effect_pool[skill_stat["Sound Effect"]]),
+                                               self.base_pos, skill_stat["Sound Distance"],
+                                               skill_stat["Shake Power"])
 
     if skill_stat["Receiver"] in (0, 2):
         self.apply_effect(which_skill, skill_stat, self.skill_effect, self.skill_duration)

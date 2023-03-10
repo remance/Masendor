@@ -4,10 +4,13 @@ swap_weapon_command_action = {"name": "SwapGear"}
 def swap_weapon(self, new_weapon_set):
     """Change weapon, adjust stat, trait and skill"""
     self.equipped_weapon = new_weapon_set
+    self.equipped_weapon_str = str(new_weapon_set)
     if not self.command_action:  # play swap animation if nothing in queue
         self.command_action = swap_weapon_command_action
     self.weapon_cooldown[0] = 0  # reset weapon attack cooldown time
     self.weapon_cooldown[1] = 0
+
+    self.weapon_skill = {}
 
     # Reset base stat first
     self.base_melee_attack = self.original_melee_attack
@@ -46,8 +49,9 @@ def swap_weapon(self, new_weapon_set):
         weapon_stat = self.equipped_weapon_data[weapon_index]
         self.base_melee_def += weapon_stat["Defence"] * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]
         self.base_range_def += weapon_stat["Defence"] * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]
-        if len(weapon_stat["Skill"]) > 0:
+        if weapon_stat["Skill"]:
             self.skill.append(weapon_stat["Skill"][0])  # take only first skill
+            self.weapon_skill[weapon_index] = weapon_stat["Skill"][0]
 
     self.process_trait_skill()
 

@@ -45,10 +45,10 @@ skill_command_action_1 = {"name": "Skill 1"}
 skill_command_action_2 = {"name": "Skill 2"}
 skill_command_action_3 = {"name": "Skill 3"}
 
-walk_command_action = {"name": "Walk", "movable": True, "main_weapon": True, "repeat": True, "walk": True}
-run_command_action = {"name": "Run", "movable": True, "main_weapon": True, "repeat": True,
+walk_command_action = {"name": "WalkMove", "movable": True, "repeat": True, "walk": True}
+run_command_action = {"name": "RunMove", "movable": True, "repeat": True,
                       "use momentum": True, "run": True}
-flee_command_action = {"name": "Flee", "movable": True, "repeat": True, "flee": True}
+flee_command_action = {"name": "FleeMove", "movable": True, "repeat": True, "flee": True}
 
 melee_attack_command_action = ({"name": "Action 0", "melee attack": True, "weapon": 0},
                                {"name": "Action 1", "melee attack": True, "weapon": 1})
@@ -73,13 +73,13 @@ charge_command_action = ({"name": "Charge 0", "movable": True, "repeat": True,
 
 heavy_damaged_command_action = {"name": "HeavyDamaged", "uncontrollable": True, "movable": True,
                                 "forced move": True, "less mass": 1.5, "damaged": True}
-damaged_command_action = {"name": "Damaged", "uncontrollable": True, "movable": True,
+damaged_command_action = {"name": "SmallDamaged", "uncontrollable": True, "movable": True,
                           "forced move": True, "less mass": 1.2, "damaged": True}
 knockdown_command_action = {"name": "Knockdown", "uncontrollable": True, "movable": True, "forced move": True,
                             "freeze until cancel": True, "less mass": 2,
                             "next action": {"name": "Standup", "uncontrollable": True, "damaged": True}}
 
-die_command_action = {"name": "Die", "uninterruptible": True, "uncontrollable": True}
+die_command_action = {"name": "DieDown", "uninterruptible": True, "uncontrollable": True}
 
 
 class Subunit(pygame.sprite.Sprite):
@@ -226,7 +226,7 @@ class Subunit(pygame.sprite.Sprite):
         self.charging = False
         self.attack_subunit = None  # target for attacking
         self.melee_target = None  # current target of melee combat
-        self.player_manual_control = False  # subunit controlled by player
+        self.player_control = False  # subunit controlled by player
         self.formation_add_change = False  # subordinate die in last update, reset formation, this is to avoid high workload when multiple die at once
         self.unit_add_change = False
         self.retreat_start = False
@@ -274,8 +274,9 @@ class Subunit(pygame.sprite.Sprite):
 
         self.weapon_cooldown = {0: 0, 1: 0}  # subunit can attack with weapon only when cooldown reach attack speed
         self.flank_bonus = 1  # combat bonus when flanking
-        self.morale_dmg_bonus = 0
-        self.stamina_dmg_bonus = 0  # extra stamina melee_dmg
+        self.morale_dmg_bonus = 0  # extra morale damage
+        self.stamina_dmg_bonus = 0  # extra stamina damage
+        self.weapon_impact_effect = 1  # extra impact for weapon attack
         self.original_hp_regen = 0  # health regeneration modifier, will not resurrect dead troop by default
         self.original_stamina_regen = 4  # stamina regeneration modifier
         self.original_morale_regen = 2  # morale regeneration modifier
@@ -285,7 +286,9 @@ class Subunit(pygame.sprite.Sprite):
         self.skill_effect = {}  # activate skill effect
         self.skill_duration = {}  # current active skill duration
         self.skill_cooldown = {}
+        self.active_action_skill = {"melee": [], "range": []}
 
+        self.weapon_skill = {}
         self.move_skill = []
         self.melee_skill = []
         self.range_skill = []
@@ -468,6 +471,7 @@ class Subunit(pygame.sprite.Sprite):
         self.weight = 0
         self.original_weapon_dmg = {index: {0: element_dict.copy(), 1: element_dict.copy()} for index in range(0, 2)}
         self.weapon_penetrate = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
+        self.base_weapon_impact = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
         self.weapon_weight = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
         self.range_dmg = {index: {0: element_dict.copy(), 1: element_dict.copy()} for index in range(0, 2)}
         self.original_shoot_range = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
@@ -478,6 +482,7 @@ class Subunit(pygame.sprite.Sprite):
         self.magazine_size = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}  # can shoot how many times before have to reload
         self.ammo_now = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}  # ammunition count in the current magazine
         self.equipped_weapon = 0
+        self.equipped_weapon_str = "0"
         self.swap_weapon_list = (1, 0)  # for swapping to other set
 
         # Get troop stat
@@ -658,7 +663,7 @@ class Subunit(pygame.sprite.Sprite):
         self.heavy_dmg_sound_distance = self.heavy_dmg_sound_distance * self.troop_mass
         self.dmg_sound_distance = self.dmg_sound_distance * self.troop_mass
 
-        if self.player_manual_control:
+        if self.player_control:
             self.hit_volume_mod = 1
         else:
             self.hit_volume_mod = (self.troop_mass - 10) / 100
@@ -901,7 +906,7 @@ class Subunit(pygame.sprite.Sprite):
                     if self.take_aoe_dmg < 0:
                         self.take_aoe_dmg = 0
 
-                if self.timer > 1:  # Update status and skill use around every 1 second
+                if self.timer > 0.5:  # Update status and skill use around every 1 second
                     self.status_update()
 
                     if self not in self.battle.troop_ai_logic_queue:
@@ -916,11 +921,11 @@ class Subunit(pygame.sprite.Sprite):
                             if self.charging == "charge":
                                 self.charging = "run"
                                 self.attack("charge")
-                    self.timer -= 1
+                    self.timer -= 0.5
 
                 self.taking_damage_angle = None
 
-                if not self.player_manual_control:
+                if not self.player_control:
                     if self.not_broken:
                         if "uncontrollable" not in self.current_action and "uncontrollable" not in self.command_action:
                             self.ai_combat()
@@ -999,7 +1004,7 @@ class Subunit(pygame.sprite.Sprite):
                     elif "damaged" in self.current_action and self.available_damaged_skill and \
                             not self.command_action:  # use skill after playing damaged animation
                         self.current_action = {}  # idle first to check for skill next update
-                        self.command_action = {"skill": self.available_damaged_skill[0]}
+                        self.skill_command_input(0, self.available_damaged_skill)
                     else:
                         self.current_action = self.command_action  # continue next action when animation finish
                         self.command_action = self.idle_action

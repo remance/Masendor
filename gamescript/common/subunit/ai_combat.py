@@ -60,12 +60,12 @@ def ai_combat(self):
                                             self.command_action = self.melee_attack_command_action[weapon]
 
                                         # leader troop and unit melee condition skill check
-                                        if self.unit_leader and not self.unit_leader.player_manual_control and \
+                                        if self.unit_leader and not self.unit_leader.player_control and \
                                                 not self.unit_leader.command_action and \
                                                 not self.unit_leader.current_action:
                                             if self.unit_leader.available_unit_melee_skill:
                                                 self.unit_leader.skill_command_input(0, self.unit_leader.available_unit_melee_skill)
-                                        elif self.leader and not self.leader.player_manual_control and \
+                                        elif self.leader and not self.leader.player_control and \
                                                 not self.leader.command_action and not self.leader.current_action:
                                             if self.leader.available_troop_melee_skill:
                                                 self.leader.skill_command_input(0, self.leader.available_troop_melee_skill)
@@ -112,10 +112,10 @@ def ai_combat(self):
                                                 self.command_action = self.range_attack_command_action[weapon]
                                             self.new_angle = self.set_rotate(self.attack_subunit.base_pos)
 
-                                        if self.unit_leader and not self.unit_leader.player_manual_control and not self.unit_leader.command_action and not self.unit_leader.current_action:
+                                        if self.unit_leader and not self.unit_leader.player_control and not self.unit_leader.command_action and not self.unit_leader.current_action:
                                             if self.unit_leader.available_unit_range_skill:
                                                 self.unit_leader.skill_command_input(0, self.unit_leader.available_unit_range_skill)
-                                        elif self.leader and not self.leader.player_manual_control and not self.leader.command_action and not self.leader.current_action:
+                                        elif self.leader and not self.leader.player_control and not self.leader.command_action and not self.leader.current_action:
                                             if self.leader.available_troop_range_skill:
                                                 self.leader.skill_command_input(0, self.leader.available_troop_range_skill)
 

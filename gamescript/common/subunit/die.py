@@ -88,5 +88,5 @@ def die(self, how):
     if self.is_leader:
         self.battle.event_log.add_log((0, str(self.name) + " is Dead."))  # add log to say this leader is destroyed
 
-    if self.player_manual_control:
+    if self.player_control:
         self.battle.camera_mode = "Free"  # camera become free when player char die so can look over the battle
