@@ -1012,7 +1012,7 @@ class BattleDone(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.pos)
 
 
-class ShootLine(pygame.sprite.Sprite):
+class AimTarget(pygame.sprite.Sprite):
     aim_images = None
 
     def __init__(self, screen_scale, who):
@@ -1052,6 +1052,29 @@ class ShootLine(pygame.sprite.Sprite):
     def delete(self):
         self.who.shoot_line = None
         self.kill()
+
+
+class SkillAimTarget(AimTarget):
+    base_image = pygame.Surface((1000, 1000), pygame.SRCALPHA)
+    pygame.draw.circle(base_image, (0, 0, 0, 155), (base_image.get_width() / 2, base_image.get_height() / 2),
+                       base_image.get_width() / 2, width=2)
+    pygame.draw.circle(base_image, (125, 125, 125, 155), (base_image.get_width() / 2, base_image.get_height() / 2),
+                       base_image.get_width() / 4, width=1)
+
+    def __init__(self, screen_scale, who, aoe_size):
+        AimTarget.__init__(screen_scale, who)
+        self.image = pygame.transform.smoothscale(self.base_image,
+                                                  (aoe_size * self.screen_scale[0], aoe_size * self.screen_scale[1]))
+
+    def update(self, base_target_pos, target_pos, can_shoot):
+        if not self.who.alive:
+            self.who.shoot_line = None
+            self.kill()
+
+        if self.pos != target_pos:
+            self.base_target_pos = base_target_pos
+            self.pos = target_pos
+            self.rect.center = self.pos
 
 
 class SpriteIndicator(pygame.sprite.Sprite):

@@ -35,8 +35,8 @@ def process_trait_skill(self):
     self.skill = skill_convert(self, self.skill, add_charge_skill=True)
     self.input_skill = self.skill.copy()
     self.input_skill.pop(self.charge_skill)
-    self.perform_skill = self.input_skill.copy()
 
+    self.target_skill = {key: value for key, value in self.input_skill.items() if value["Type"] == "Target"}
     self.weapon_skill = {key: value for key, value in self.weapon_skill.items() if value in self.skill}
 
     ai_skill_condition_list = {"move": [], "melee": [], "range": [], "enemy_near": [], "damaged": [], "retreat": [],

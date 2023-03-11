@@ -64,15 +64,15 @@ def wheel_ui_process(self, choice):
             self.battle_ui_updater.add(self.single_text_popup)
             if choice == "Leader Aim":
                 self.player_input_state = "leader aim"
-                battleui.ShootLine(self.screen_scale, self.player_char)
+                battleui.AimTarget(self.screen_scale, self.player_char)
             elif choice == "Line Aim":
                 self.player_input_state = "line aim"
                 for this_subunit in self.player_char.alive_troop_follower:
-                    battleui.ShootLine(self.screen_scale, this_subunit)
+                    battleui.AimTarget(self.screen_scale, this_subunit)
             elif choice == "Focus Aim":
                 self.player_input_state = "focus aim"
                 for this_subunit in self.player_char.alive_troop_follower:
-                    battleui.ShootLine(self.screen_scale, this_subunit)
+                    battleui.AimTarget(self.screen_scale, this_subunit)
 
 
 def renew_wheel(self, choice):

@@ -574,7 +574,10 @@ class Battle:
                                     self.player_input_state = self.previous_player_input_state
                                     self.previous_player_input_state = old_player_input_state
                         elif "aim" in self.player_input_state:
-                            self.player_aim(mouse_left_up, mouse_right_up, key_state, event_key_press)
+                            if "skill" not in self.player_input_state:
+                                self.player_aim(mouse_left_up, mouse_right_up, key_state, event_key_press)
+                            else:  # skill that require player to input target
+                                self.player_skill_perform(mouse_left_up, mouse_right_up, key_state)
 
 
                     # Drama text function

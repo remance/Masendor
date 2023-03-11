@@ -15,8 +15,6 @@ def status_update(self):
         if self.skill_cooldown[key] <= 0:  # remove cooldown if time reach 0
             self.skill_cooldown.pop(key)
 
-    self.idle_action = {}
-
     # skill is considered available if not in cooldown, has enough discipline and stamina, not already in used
     self.available_skill = [skill for skill in self.input_skill if skill not in self.skill_cooldown
                             and self.discipline >= self.input_skill[skill]["Discipline Requirement"]
@@ -183,8 +181,8 @@ def status_update(self):
                 if self.skill_duration[key] <= 0:  # skill end
                     self.skill_duration.pop(key)
                     self.skill_effect.pop(key)
-                elif "hold" in value["Action"] or "repeat" in value["Action"]:
-                    self.idle_action = self.command_action
+                # elif "hold" in value["Action"] or "repeat" in value["Action"]:
+                #     self.idle_action = self.command_action
 
         for cal_effect in self.skill_effect.values():  # apply elemental effect to melee_dmg if skill has element
             melee_attack_modifier += cal_effect["Melee Attack Effect"]

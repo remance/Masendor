@@ -258,7 +258,7 @@ class Game:
         battleui.EffectCardIcon.containers = self.effect_icon, self.battle_ui_updater
         battleui.CharIcon.containers = self.char_icon, self.main_ui_updater, self.battle_ui_updater
         battleui.SpriteIndicator.containers = self.effect_updater, self.battle_camera
-        battleui.ShootLine.containers = self.shoot_lines, self.battle_camera
+        battleui.AimTarget.containers = self.shoot_lines, self.battle_camera
 
         damagesprite.DamageSprite.containers = self.effect_updater, self.battle_camera
         effectsprite.EffectSprite.containers = self.effect_updater, self.battle_camera
@@ -498,7 +498,7 @@ class Game:
                                                "wind_arrow": battle_ui_image["wind_arrow"]}
 
         empty_aim = pygame.Surface((0, 0))
-        battleui.ShootLine.aim_images = {0: battle_ui_image["aim_0"], 1: battle_ui_image["aim_1"],
+        battleui.AimTarget.aim_images = {0: battle_ui_image["aim_0"], 1: battle_ui_image["aim_1"],
                                          2: battle_ui_image["aim_2"], 3: empty_aim}
 
         box_image = load_image(main_dir, self.screen_scale, "unit_presetbox.png", ("ui", "mainmenu_ui"))

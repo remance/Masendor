@@ -6,6 +6,7 @@ from pathlib import Path
 import pygame
 import pygame.freetype
 
+from gamescript.battleui import SkillAimTarget
 from gamescript.common import utility
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
@@ -38,6 +39,8 @@ less mass = subunit has mass is divided during animation based on value provide
 walk, run, flee, indicate movement type for easy checking
 weapon = weapon index of action for easy checking
 freeze until cancel = not restart animation or start next one until current one is canceled or interrupted
+pos = specific target pos
+require input = animation action require input first and will keep holding first frame until this condition is removed or interupt
 """
 
 skill_command_action_0 = {"name": "Skill 0"}
@@ -247,7 +250,6 @@ class Subunit(pygame.sprite.Sprite):
         self.top_interrupt_animation = False  # interrupt animation regardless of property
         self.current_action = {}  # action being performed
         self.command_action = {}  # next action to be performed
-        self.idle_action = {}  # action that is performed when subunit is idle such as hold spear wall when skill active
 
         self.near_ally = []
         self.near_enemy = []
@@ -726,7 +728,7 @@ class Subunit(pygame.sprite.Sprite):
         self.base_charge_def = self.original_charge_def
         self.skill = self.original_skill.copy()
         self.input_skill = self.skill.copy()  # skill dict without charge skill
-        self.perform_skill = self.input_skill.copy()
+        self.target_skill = self.input_skill.copy()
 
         self.leader_skill = {x: self.leader_data.skill_list[x] for x in self.skill if x in self.leader_data.skill_list}
         if not self.leader:  # no higher leader, count as commander tier
@@ -961,9 +963,10 @@ class Subunit(pygame.sprite.Sprite):
                 #     self.countup_trigger_time = 0
 
                 hold_check = False
-                if "hold" in self.current_action and \
-                        "hold" in self.current_animation[self.show_frame]["frame_property"] and \
-                        "hold" in self.action_list[self.current_action["weapon"]]["Properties"]:
+                if "require input" in self.current_action or \
+                        ("hold" in self.current_action and
+                         "hold" in self.current_animation[self.show_frame]["frame_property"] and
+                         "hold" in self.action_list[self.current_action["weapon"]]["Properties"]):
                     hold_check = True
                     self.hold_timer += dt
                 elif self.hold_timer > 0:  # no longer holding, reset timer
@@ -990,9 +993,8 @@ class Subunit(pygame.sprite.Sprite):
                 # low level animation got replace with more important one, finish playing, skill animation and its effect end
                 if self.top_interrupt_animation or \
                         (self.interrupt_animation and "uninterruptible" not in self.current_action) or \
-                        (((not self.current_action and self.command_action) or
-                          (done and "freeze until cancel" not in self.current_action) or
-                          (self.idle_action and self.idle_action != self.command_action))):
+                        ((not self.current_action and self.command_action) or
+                         (done and "freeze until cancel" not in self.current_action)):
                     if done:
                         if "range attack" in self.current_action:  # shoot bullet only when animation finish
                             self.attack("range")
@@ -1001,13 +1003,14 @@ class Subunit(pygame.sprite.Sprite):
 
                     if "next action" in self.current_action:  # play next action first instead of command
                         self.current_action = self.current_action["next action"]
-                    elif "damaged" in self.current_action and self.available_damaged_skill and \
-                            not self.command_action:  # use skill after playing damaged animation
+                    elif not self.player_control and "damaged" in self.current_action and \
+                            self.available_damaged_skill and not self.command_action:
+                        # use damaged skill after playing damaged animation for subunit AI
                         self.current_action = {}  # idle first to check for skill next update
                         self.skill_command_input(0, self.available_damaged_skill)
                     else:
                         self.current_action = self.command_action  # continue next action when animation finish
-                        self.command_action = self.idle_action
+                        self.command_action = {}
 
                     if self.interrupt_animation:
                         self.interrupt_animation = False
@@ -1020,6 +1023,14 @@ class Subunit(pygame.sprite.Sprite):
                     self.pick_animation()
 
                     self.animation_play_time = self.default_animation_play_time
+
+                    if self.player_control and "require input" in self.current_action and "skill" in self.current_action:
+                        self.battle.previous_player_input_state = self.battle.player_input_state
+                        self.battle.player_input_state = "skill aim"
+                        self.battle.camera_mode = "Free"
+                        self.battle.true_camera_pos = pygame.Vector2(self.base_pos)
+                        SkillAimTarget(self.screen_scale, self,
+                                       self.skill[self.current_action["skill"]]["Area Of Effect"])
 
                     self.rect = self.image.get_rect(center=self.offset_pos)
 

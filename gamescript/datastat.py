@@ -128,7 +128,7 @@ class TroopData:
             tuple_column = ("Status", "Enemy Status", "AI Use Condition")  # value in tuple only
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
                           "Accuracy Effect", "Range Effect", "Melee Speed Effect", "Reload Effect", "Charge Effect",
-                          "Critical Effect", "Physical Damage Effect")
+                          "Critical Effect", "Physical Damage Effect", "Weapon Impact Effect")
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
@@ -470,7 +470,7 @@ class LeaderData:
             tuple_column = ("Status", "Enemy Status", "AI Use Condition")  # value in tuple only
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
                           "Accuracy Effect", "Range Effect", "Melee Speed Effect", "Reload Effect", "Charge Effect",
-                          "Critical Effect", "Physical Damage Effect")
+                          "Critical Effect", "Physical Damage Effect", "Weapon Impact Effect")
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
@@ -502,7 +502,7 @@ class LeaderData:
             tuple_column = ("Status", "Enemy Status", "AI Use Condition")  # value in tuple only
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
                           "Accuracy Effect", "Range Effect", "Melee Speed Effect", "Reload Effect", "Charge Effect",
-                          "Critical Effect", "Physical Damage Effect")
+                          "Critical Effect", "Physical Damage Effect", "Weapon Impact Effect")
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]

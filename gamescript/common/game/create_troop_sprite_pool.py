@@ -185,8 +185,9 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
                                     "_any_" in this_animation) and weapon_index == 0:  # keep only for main weapon
                                 temp_list.append(this_animation)
                         elif ((weapon_common_action[weapon_set_index][weapon_index] in this_animation and
-                                weapon_attack_action[weapon_set_index][weapon_index] in this_animation) or
-                              "_Charge" in this_animation):  # attack animation
+                                weapon_attack_action[weapon_set_index][weapon_index] in this_animation and
+                               (("_Main_", "_Sub_")[weapon_index] in this_animation or "_Both_" in this_animation) or
+                              "_Charge" in this_animation)):  # attack animation
                             temp_list.append(this_animation)
                     for this_animation in reversed(
                             temp_list):  # check if weapon common type and "any" for same animation exist, remove any
@@ -197,7 +198,7 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
                     animation_list += temp_list
 
             animation_list = tuple(set(animation_list))
-            # print(subunit_id, animation_list)
+
             for animation in animation_list:  # use one side in the list for finding animation name
                 animation_property = self.generic_animation_pool[animation][0]["animation_property"].copy()
                 for weapon_set_index, weapon_set in enumerate(
@@ -220,7 +221,8 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
                                 if skill in name_input:
                                     make_animation = True
                                     break
-                        elif any(ext in name_input for ext in weapon_common_type_list) is False:  # animation with no weapon like die, damaged
+                        elif any(ext in name_input for ext in weapon_common_type_list) is False:
+                            # animation with no weapon like die, damaged
                             if any(ext in name_input for ext in weapon_attack_type_list) is False:
                                 name_input = name_input[:-2]  # no need to make it into 2 sets since no weapon
                             make_animation = True
