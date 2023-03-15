@@ -44,9 +44,9 @@ def ai_combat(self):
                         self.swap_weapon(self.melee_weapon_set[0])
                     else:
                         if self.available_enemy_near_skill:  # use enemy near skill first
-                            self.skill_command_input(0, self.available_enemy_near_skill)
+                            self.skill_command_input(0, self.available_enemy_near_skill, pos_target=self.attack_subunit.base_pos)
                         elif self.available_melee_skill:  # then consider melee skill
-                            self.skill_command_input(0, self.available_melee_skill)
+                            self.skill_command_input(0, self.available_melee_skill, pos_target=self.attack_subunit.base_pos)
                         else:
                             for weapon in self.weapon_cooldown:
                                 if self.weapon_cooldown[weapon] >= self.weapon_speed[weapon]:
@@ -64,11 +64,11 @@ def ai_combat(self):
                                                 not self.unit_leader.command_action and \
                                                 not self.unit_leader.current_action:
                                             if self.unit_leader.available_unit_melee_skill:
-                                                self.unit_leader.skill_command_input(0, self.unit_leader.available_unit_melee_skill)
+                                                self.unit_leader.skill_command_input(0, self.unit_leader.available_unit_melee_skill, pos_target=self.base_pos)
                                         elif self.leader and not self.leader.player_control and \
                                                 not self.leader.command_action and not self.leader.current_action:
                                             if self.leader.available_troop_melee_skill:
-                                                self.leader.skill_command_input(0, self.leader.available_troop_melee_skill)
+                                                self.leader.skill_command_input(0, self.leader.available_troop_melee_skill, pos_target=self.base_pos)
 
                                     else:  # still too far consider using chargeblock
                                         if weapon in self.equipped_charge_block_weapon:  # consider blocking first
@@ -86,7 +86,7 @@ def ai_combat(self):
                                 return
                     else:
                         if self.available_range_skill:  # use range skill first
-                            self.skill_command_input(0, self.available_range_skill)
+                            self.skill_command_input(0, self.available_range_skill, pos_target=self.base_pos)
                         elif "range attack" not in self.current_action and "range attack" not in self.command_action and \
                                 (not self.move_speed or self.shoot_while_moving):  # Find target to shoot
                             if self.shoot_range[0] >= self.nearest_enemy[1] or self.shoot_range[1] >= self.nearest_enemy[1]:  # has enemy in range
@@ -114,10 +114,10 @@ def ai_combat(self):
 
                                         if self.unit_leader and not self.unit_leader.player_control and not self.unit_leader.command_action and not self.unit_leader.current_action:
                                             if self.unit_leader.available_unit_range_skill:
-                                                self.unit_leader.skill_command_input(0, self.unit_leader.available_unit_range_skill)
+                                                self.unit_leader.skill_command_input(0, self.unit_leader.available_unit_range_skill, pos_target=self.base_pos)
                                         elif self.leader and not self.leader.player_control and not self.leader.command_action and not self.leader.current_action:
                                             if self.leader.available_troop_range_skill:
-                                                self.leader.skill_command_input(0, self.leader.available_troop_range_skill)
+                                                self.leader.skill_command_input(0, self.leader.available_troop_range_skill, pos_target=self.base_pos)
 
                                         return
 

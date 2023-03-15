@@ -1055,16 +1055,18 @@ class AimTarget(pygame.sprite.Sprite):
 
 
 class SkillAimTarget(AimTarget):
-    base_image = pygame.Surface((1000, 1000), pygame.SRCALPHA)
-    pygame.draw.circle(base_image, (0, 0, 0, 155), (base_image.get_width() / 2, base_image.get_height() / 2),
-                       base_image.get_width() / 2, width=2)
-    pygame.draw.circle(base_image, (125, 125, 125, 155), (base_image.get_width() / 2, base_image.get_height() / 2),
-                       base_image.get_width() / 4, width=1)
+    base_image = pygame.Surface((500, 500), pygame.SRCALPHA)
+    pygame.draw.circle(base_image, (0, 0, 0, 200), (base_image.get_width() / 2, base_image.get_height() / 2),
+                       base_image.get_width() / 2, width=20)
+    pygame.draw.circle(base_image, (125, 125, 125, 200), (base_image.get_width() / 2, base_image.get_height() / 2),
+                       base_image.get_width() / 4, width=20)
 
     def __init__(self, screen_scale, who, aoe_size):
-        AimTarget.__init__(screen_scale, who)
+        AimTarget.__init__(self, screen_scale, who)
         self.image = pygame.transform.smoothscale(self.base_image,
-                                                  (aoe_size * self.screen_scale[0], aoe_size * self.screen_scale[1]))
+                                                  (aoe_size * 5 * self.screen_scale[0],
+                                                   aoe_size * 5 * self.screen_scale[1]))
+        self.rect = self.image.get_rect(center=self.pos)
 
     def update(self, base_target_pos, target_pos, can_shoot):
         if not self.who.alive:

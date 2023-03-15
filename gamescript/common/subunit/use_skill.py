@@ -1,19 +1,25 @@
 from random import choice
 
+from pygame import Vector2
 from gamescript import effectsprite
 
 
 def use_skill(self, which_skill):
     skill_stat = self.skill[which_skill]
-    aoe = skill_stat["Area of Effect"]
+    aoe = skill_stat["Area Of Effect"]
 
-    if self.current_animation[self.show_frame]["dmg_sprite"] and which_skill != self.charge_skill and \
-            "weapon" not in self.current_action:
-        effectsprite.EffectSprite(self, self.base_pos, self.pos, self.pos, 0, 0, skill_stat["Effect Sprite"],
-                                  self.current_animation[self.show_frame]["dmg_sprite"])
+    if which_skill != self.charge_skill and "weapon" not in self.current_action:
+        base_pos = self.base_pos
+        pos = self.pos
+        if "pos" in self.current_action:
+            base_pos = self.current_action["pos"]
+            pos = Vector2(base_pos[0] * self.screen_scale[0], base_pos[1] * self.screen_scale[1]) * 5
+        if skill_stat["Effect Sprite"]:
+            effectsprite.EffectSprite(self, base_pos, pos, pos, skill_stat["Effect Sprite"][0],
+                                      skill_stat["Effect Sprite"][1])
         if skill_stat["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
             self.battle.add_sound_effect_queue(choice(self.sound_effect_pool[skill_stat["Sound Effect"]]),
-                                               self.base_pos, skill_stat["Sound Distance"],
+                                               base_pos, skill_stat["Sound Distance"],
                                                skill_stat["Shake Power"])
 
     group_to_do = []

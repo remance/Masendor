@@ -1,4 +1,4 @@
-def play_animation(self, speed, dt, hold_check):
+def play_animation(self, speed, dt, hold_check=False):
     """
     Play damage sprite animation
     :param self: Object of the animation sprite

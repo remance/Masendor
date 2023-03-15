@@ -242,6 +242,7 @@ class Subunit(pygame.sprite.Sprite):
         self.subunit_type = 1
         self.animation_play_time = self.default_animation_play_time
         self.animation_pool = {}  # list of animation sprite this subunit can play with its action
+        self.status_effect_animation_pool = {}  # list of status effect animation sprite that play on specific event
         self.current_animation = {}  # list of animation frames playing
         self.show_frame = 0  # current animation frame
         self.max_show_frame = 0
@@ -329,6 +330,7 @@ class Subunit(pygame.sprite.Sprite):
         self.melee_distance_zone = 1
         self.default_sprite_size = 1
         self.manual_shoot = False
+        self.shoot_line = None
         self.take_melee_dmg = 0
         self.take_range_dmg = 0
         self.take_aoe_dmg = 0
@@ -733,8 +735,8 @@ class Subunit(pygame.sprite.Sprite):
         self.leader_skill = {x: self.leader_data.skill_list[x] for x in self.skill if x in self.leader_data.skill_list}
         if not self.leader:  # no higher leader, count as commander tier
             for key, value in self.leader_skill.items():  # replace leader skill with commander skill version
-                for key2, value2 in self.leader_data.commander_skill_list.items():
-                    if key in value2["Replace"]:
+                for key2, value2 in self.leader_data.skill_list.items():
+                    if "Replace" in value2 and key in value2["Replace"]:
                         old_action = self.leader_skill[key]["Action"]
                         self.leader_skill[key] = value2
                         self.leader_skill[key]["Action"] = old_action  # get action from normal leader skill
@@ -988,6 +990,9 @@ class Subunit(pygame.sprite.Sprite):
                         if "weapon" in self.current_action:
                             self.charging = "charge"
                         self.attack("charge")
+                    elif "skill" in self.current_action and self.current_animation[self.show_frame]["dmg_sprite"]:
+                        # spawn skill effect and sound
+                        self.use_skill(self.current_action["skill"])
 
                 # Pick new animation, condition to stop animation: get interrupt,
                 # low level animation got replace with more important one, finish playing, skill animation and its effect end
@@ -998,8 +1003,6 @@ class Subunit(pygame.sprite.Sprite):
                     if done:
                         if "range attack" in self.current_action:  # shoot bullet only when animation finish
                             self.attack("range")
-                        elif "skill" in self.current_action:  # spawn skill effect and sound
-                            self.use_skill(self.current_action["skill"])
 
                     if "next action" in self.current_action:  # play next action first instead of command
                         self.current_action = self.current_action["next action"]
@@ -1025,12 +1028,13 @@ class Subunit(pygame.sprite.Sprite):
                     self.animation_play_time = self.default_animation_play_time
 
                     if self.player_control and "require input" in self.current_action and "skill" in self.current_action:
-                        self.battle.previous_player_input_state = self.battle.player_input_state
-                        self.battle.player_input_state = "skill aim"
-                        self.battle.camera_mode = "Free"
-                        self.battle.true_camera_pos = pygame.Vector2(self.base_pos)
-                        SkillAimTarget(self.screen_scale, self,
-                                       self.skill[self.current_action["skill"]]["Area Of Effect"])
+                        if not self.shoot_line:
+                            self.battle.previous_player_input_state = self.battle.player_input_state
+                            self.battle.player_input_state = "skill aim"
+                            self.battle.camera_mode = "Free"
+                            self.battle.true_camera_pos = pygame.Vector2(self.base_pos)
+                            SkillAimTarget(self.screen_scale, self,
+                                           self.skill[self.current_action["skill"]]["Area Of Effect"])
 
                     self.rect = self.image.get_rect(center=self.offset_pos)
 

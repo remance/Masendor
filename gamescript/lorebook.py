@@ -124,7 +124,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.skill_id_reindex = {}
         run = 1
         for stat_list in (
-                self.troop_data.skill_list, self.leader_data.skill_list, self.leader_data.commander_skill_list):
+                self.troop_data.skill_list, self.leader_data.skill_list):
             for index in stat_list:
                 self.skill_stat[run] = stat_list[index]
                 self.skill_id_reindex[index] = run
@@ -133,7 +133,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.skill_lore = {}
         run = 1
         for stat_list in (
-                self.troop_data.skill_lore, self.leader_data.skill_lore, self.leader_data.commander_skill_lore):
+                self.troop_data.skill_lore, self.leader_data.skill_lore):
             for index in stat_list:
                 self.skill_lore[run] = stat_list[index]
                 run += 1

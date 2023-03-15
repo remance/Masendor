@@ -123,9 +123,9 @@ class TroopData:
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
-            int_column = ("ID", "Area of Effect", "Cost", "Charge Skill")  # value int only
+            int_column = ("ID", "Troop Type", "Area of Effect", "Cost", "Charge Skill")  # value int only
             list_column = ("Action",)
-            tuple_column = ("Status", "Enemy Status", "AI Use Condition")  # value in tuple only
+            tuple_column = ("Status", "Enemy Status", "Effect Sprite", "AI Use Condition")  # value in tuple only
             mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
                           "Accuracy Effect", "Range Effect", "Melee Speed Effect", "Reload Effect", "Charge Effect",
                           "Critical Effect", "Physical Damage Effect", "Weapon Impact Effect")
@@ -460,72 +460,37 @@ class LeaderData:
         self.images = images
 
         self.skill_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "leader", "leader_skill.csv"),
-                  encoding="utf-8",
-                  mode="r") as edit_file:
-            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
-            header = rd[0]
-            int_column = ("Troop Type", "Range", "Area of Effect", "Cost")  # value int only
-            list_column = ("Action",)
-            tuple_column = ("Status", "Enemy Status", "AI Use Condition")  # value in tuple only
-            mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
-                          "Accuracy Effect", "Range Effect", "Melee Speed Effect", "Reload Effect", "Charge Effect",
-                          "Critical Effect", "Physical Damage Effect", "Weapon Impact Effect")
-            int_column = [index for index, item in enumerate(header) if item in int_column]
-            list_column = [index for index, item in enumerate(header) if item in list_column]
-            tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
-            mod_column = [index for index, item in enumerate(header) if item in mod_column]
-            for index, row in enumerate(rd[1:]):
-                for n, i in enumerate(row):
-                    row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
-                                       tuple_column=tuple_column, int_column=int_column)
-                self.skill_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
-                self.skill_list[row[0]]["Shake Power"] = int(self.skill_list[row[0]]["Sound Distance"] / 10)
-        edit_file.close()
+        for index, skill_list in enumerate(("leader_skill", "commander_skill")):
+            with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "leader",
+                                   skill_list + ".csv"), encoding="utf-8", mode="r") as edit_file:
+                rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
+                header = rd[0]
+                int_column = ("Troop Type", "Range", "Area of Effect", "Cost")  # value int only
+                list_column = ("Action",)
+                tuple_column = ("Replace", "Status", "Enemy Status", "Effect Sprite", "AI Use Condition")
+                mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
+                              "Accuracy Effect", "Range Effect", "Melee Speed Effect", "Reload Effect", "Charge Effect",
+                              "Critical Effect", "Physical Damage Effect", "Weapon Impact Effect")
+                int_column = [index for index, item in enumerate(header) if item in int_column]
+                list_column = [index for index, item in enumerate(header) if item in list_column]
+                tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
+                mod_column = [index for index, item in enumerate(header) if item in mod_column]
+                for index, row in enumerate(rd[1:]):
+                    for n, i in enumerate(row):
+                        row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
+                                           tuple_column=tuple_column, int_column=int_column)
+                    self.skill_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
+                    self.skill_list[row[0]]["Shake Power"] = int(self.skill_list[row[0]]["Sound Distance"] / 10)
+            edit_file.close()
 
         self.skill_lore = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "leader",
-                               "leader_skill_lore_" + language + ".csv"), encoding="utf-8",
-                  mode="r") as edit_file:
-            lore_csv_read(edit_file, self.skill_lore)
-            self.skill_lore = {key: value for key, value in self.skill_lore.items() if key in self.skill_list}
-        edit_file.close()
-
-        self.commander_skill_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "leader", "commander_skill.csv"),
-                  encoding="utf-8",
-                  mode="r") as edit_file:
-            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
-            header = rd[0]
-            int_column = ("Troop Type", "Area of Effect", "Cost")  # value int only
-            list_column = ("Action", "Replace")
-            tuple_column = ("Status", "Enemy Status", "AI Use Condition")  # value in tuple only
-            mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
-                          "Accuracy Effect", "Range Effect", "Melee Speed Effect", "Reload Effect", "Charge Effect",
-                          "Critical Effect", "Physical Damage Effect", "Weapon Impact Effect")
-            int_column = [index for index, item in enumerate(header) if item in int_column]
-            list_column = [index for index, item in enumerate(header) if item in list_column]
-            tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
-            mod_column = [index for index, item in enumerate(header) if item in mod_column]
-            for index, row in enumerate(rd[1:]):
-                for n, i in enumerate(
-                        row):
-                    row = stat_convert(row, n, i, mod_column=mod_column, list_column=list_column,
-                                       tuple_column=tuple_column, int_column=int_column)
-                self.commander_skill_list[row[0]] = {header[index + 1]: stuff for index, stuff in
-                                                     enumerate(row[1:])}
-                self.commander_skill_list[row[0]]["Shake Power"] = int(self.commander_skill_list[row[0]]["Sound Distance"] / 10)
-
-        edit_file.close()
-
-        self.commander_skill_lore = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "leader",
-                               "commander_skill_lore_" + language + ".csv"),
-                  encoding="utf-8", mode="r") as edit_file:
-            lore_csv_read(edit_file, self.commander_skill_lore)
-            self.commander_skill_lore = {key: value for key, value in self.commander_skill_lore.items() if
-                                         key in self.commander_skill_list}
-        edit_file.close()
+        for index, skill_lore in enumerate(("leader_skill_lore_", "commander_skill_lore_")):
+            with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "leader",
+                                   skill_lore + language + ".csv"), encoding="utf-8",
+                      mode="r") as edit_file:
+                lore_csv_read(edit_file, self.skill_lore)
+                self.skill_lore = {key: value for key, value in self.skill_lore.items() if key in self.skill_list}
+            edit_file.close()
 
         # Leader class dict
         self.leader_class = {}

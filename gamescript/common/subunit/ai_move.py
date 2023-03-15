@@ -36,7 +36,7 @@ def ai_move(self):
             else:  # already equipped melee weapon
                 # charge movement based on angle instead of formation pos
                 if self.available_move_skill and not self.command_action:  # use move skill first
-                    self.skill_command_input(0, self.available_move_skill)
+                    self.skill_command_input(0, self.available_move_skill, pos_target=self.base_pos)
                 else:
                     run_speed = self.run_speed
                     if run_speed > self.unit_leader.run_speed:  # use unit leader run speed instead if faster
@@ -70,9 +70,9 @@ def ai_move(self):
             else:  # run if too far
                 if move_distance > 100 and self.is_leader and self.available_move_far_skill and not self.command_action:
                     # use move far skill first if leader
-                    self.skill_command_input(0, self.available_move_far_skill)
+                    self.skill_command_input(0, self.available_move_far_skill, pos_target=self.base_pos)
                 elif self.available_move_skill and not self.command_action:  # use move skill
-                    self.skill_command_input(0, self.available_move_skill)
+                    self.skill_command_input(0, self.available_move_skill, pos_target=self.base_pos)
                 else:
                     if ("movable" in self.current_action and "run" not in self.current_action) or "hold" in self.current_action:
                         self.interrupt_animation = True
@@ -86,9 +86,9 @@ def ai_move(self):
                 if move_distance > self.max_melee_range:  # move closer to enemy in range
                     # charge to front of near target
                     if move_distance > 100 and self.is_leader and self.available_move_far_skill and not self.command_action:  # use move far skill first if leader
-                        self.skill_command_input(0, self.available_move_far_skill)
+                        self.skill_command_input(0, self.available_move_far_skill, pos_target=self.base_pos)
                     elif self.available_move_skill and not self.command_action:  # use move skill
-                        self.skill_command_input(0, self.available_move_skill)
+                        self.skill_command_input(0, self.available_move_skill, pos_target=self.base_pos)
                     else:
                         if "movable" in self.current_action and "charge" not in self.current_action:
                             self.interrupt_animation = True
@@ -114,9 +114,9 @@ def ai_move(self):
                 if move_distance > max_shoot:  # further than can shoot
                     move_distance -= max_shoot
                     if move_distance > 100 and self.is_leader and self.available_move_far_skill and not self.command_action:  # use move far skill first if leader
-                        self.skill_command_input(0, self.available_move_far_skill)
+                        self.skill_command_input(0, self.available_move_far_skill, pos_target=self.base_pos)
                     elif self.available_move_skill and not self.command_action:  # use move skill first
-                        self.skill_command_input(0, self.available_move_skill)
+                        self.skill_command_input(0, self.available_move_skill, pos_target=self.base_pos)
                     else:
                         angle = self.set_rotate(self.nearest_enemy[0].base_pos)
                         self.command_action = self.run_command_action
@@ -129,9 +129,9 @@ def ai_move(self):
                 if move_distance > self.max_melee_range > 0:  # too far move closer
                     if move_distance > 100 and self.is_leader and self.available_move_far_skill and not self.command_action:
                         # use move far skill first if leader
-                        self.skill_command_input(0, self.available_move_far_skill)
+                        self.skill_command_input(0, self.available_move_far_skill, pos_target=self.base_pos)
                     elif self.available_move_skill and not self.command_action:  # use move skill first
-                        self.skill_command_input(0, self.available_move_skill)
+                        self.skill_command_input(0, self.available_move_skill, pos_target=self.base_pos)
                     else:
                         if move_distance > self.charge_melee_range:
                             if "movable" in self.current_action and "charge" in self.current_action:  # run instead
@@ -148,4 +148,4 @@ def ai_move(self):
                         self.move_speed = self.run_speed
 
     if not self.current_action and not self.command_action and self.available_idle_skill:  # idle, use idle skill
-        self.skill_command_input(0, self.available_idle_skill)
+        self.skill_command_input(0, self.available_idle_skill, pos_target=self.base_pos)

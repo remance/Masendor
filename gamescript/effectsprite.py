@@ -21,33 +21,31 @@ class EffectSprite(pygame.sprite.Sprite):
     play_animation = play_animation.play_animation  # use play_animation from damage sprite
     adjust_sprite = adjust_sprite.adjust_sprite
 
-    def __init__(self, attacker, base_pos, pos, target, angle, duration, sprite_type, sprite_name):
+    def __init__(self, attacker, base_pos, pos, target, sprite_type, sprite_name):
         """Effect sprite that does not affect subunit in any way"""
         self._layer = 10000000
         pygame.sprite.Sprite.__init__(self, self.containers)
 
         self.show_frame = 0
         self.frame_timer = 0
-        self.angle = angle
         self.rotate = False
         self.repeat_animation = False
 
         self.base_pos = base_pos
         self.pos = pos
         self.base_target = target
-        self.duration = duration
 
         self.sound_effect_name = None
         self.sound_timer = 0
         self.sound_duration = 0
-        self.repeat_animation = False
         self.scale_size = 1
+        self.angle = 0
 
-        animation_name = "".join(sprite_name[1].split("_"))[-1]
+        animation_name = "".join(sprite_name.split("_"))[-1]
         if animation_name.isdigit():
-            animation_name = "".join([string + "_" for string in sprite_name[1].split("_")[:-1]])[:-1]
+            animation_name = "".join([string + "_" for string in sprite_name.split("_")[:-1]])[:-1]
         else:
-            animation_name = sprite_name[1]
+            animation_name = sprite_name
 
         if sprite_type in self.sound_effect_pool:
             self.travel_sound_distance = self.effect_list[sprite_type]["Sound Distance"]
@@ -65,13 +63,10 @@ class EffectSprite(pygame.sprite.Sprite):
 
         self.base_image = self.image.copy()
 
-        if self.angle != 0:
-            self.image = pygame.transform.rotate(self.angle)
-
         self.rect = self.image.get_rect(center=self.pos)
 
     def update(self, subunit_list, dt):
-        done, just_start = self.play_animation(0.1, dt, False)
+        done, just_start = self.play_animation(0.1, dt)
 
         if self.sound_effect_name and self.sound_timer < self.sound_duration:
             self.sound_timer += dt
@@ -84,12 +79,6 @@ class EffectSprite(pygame.sprite.Sprite):
                                                self.travel_shake_power)
             self.sound_timer = 0
 
-        if self.duration:
-            self.duration -= dt
-            if self.duration <= 0:  # kill effect when duration end
-                self.clean_object()
-                return
-        elif done:  # no duration, kill effect when animation end
-            if self.show_frame:
-                self.clean_object()
-                return
+        if done:  # no duration, kill effect when animation end
+            self.clean_object()
+            return

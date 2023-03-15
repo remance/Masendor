@@ -61,7 +61,7 @@ def cal_loss(self, final_dmg, impact, final_morale_dmg, element_effect, hit_angl
     elif not self.player_control:  # AI subunit take damage but not high enough to play animation
         self.angle = self.set_rotate(self.nearest_enemy[0].base_pos)
         if self.available_damaged_skill and not self.current_action and not self.command_action:  # use damaged skill
-            self.skill_command_input(0, self.available_damaged_skill)
+            self.skill_command_input(0, self.available_damaged_skill, pos_target=self.base_pos)
 
     self.health -= final_dmg
     health_check = 0.1
