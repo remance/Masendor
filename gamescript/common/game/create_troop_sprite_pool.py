@@ -312,6 +312,15 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
                                 current_in_pool[final_name][new_direction][frame_num] = \
                                     {"sprite": sprite_pic, "center_offset": center_offset}
 
+                                for status in self.troop_animation.status_animation_pool:
+                                    current_in_pool[final_name][new_direction][frame_num][status] = []
+                                    for index, frame in enumerate(self.troop_animation.status_animation_pool[status]):
+                                        current_in_pool[final_name][new_direction][frame_num][status].append(pygame.transform.smoothscale(
+                                            self.troop_animation.status_animation_pool[status][index],
+                                            sprite_pic.get_size()))
+                                    current_in_pool[final_name][new_direction][frame_num][status] = \
+                                        tuple(current_in_pool[final_name][new_direction][frame_num][status])
+
                                 if both_weapon_set:
                                     next_level[weapon_key[1]][final_name][frame_num] = \
                                         {"animation_property": sprite_dict["animation_property"],

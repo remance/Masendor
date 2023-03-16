@@ -201,9 +201,7 @@ This function is going to be a headache to write and research. But hopefully, it
 preparation and result screen, custom battle, improve the main menu, Battle of Megiddo, Battle of
 Mohács
 
-**0.6.4:** skill placement for both player and AI
-
-**0.6.5 - 0.6.7:** Leader command, status effect aniamtion for subunit, reserve system, hidden stat, stat effect battle ui, line of sight, start working on Battle of Mohács
+**0.6.5 - 0.6.7:** Leader command, reserve system, hidden stat, stat effect battle ui, line of sight, start working on Battle of Mohács
 
 **0.6.8 and 0.6.9:** random map generator and custom battle
 

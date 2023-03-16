@@ -209,3 +209,12 @@ class TroopAnimationData:
                             self.effect_animation_pool[folder[-1]][team][true_name] = tuple(animation_list)
                         else:
                             self.effect_animation_pool[folder[-1]][true_name] = tuple(animation_list)
+
+        self.status_animation_pool = {}
+        part_folder = Path(os.path.join(main_dir, "data", "sprite", "status"))
+        subdirectories = [os.path.split(
+            os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x
+            in part_folder.iterdir() if x.is_dir()]
+        for folder in subdirectories:
+            images = load_images(main_dir, subfolder=folder)
+            self.status_animation_pool[folder[-1]] = tuple(images.values())

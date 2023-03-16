@@ -39,6 +39,7 @@ def move_logic(self, dt):
                         "center_offset"]
                     self.rect.center = self.offset_pos
                     self.hitbox.rect.midtop = self.pos
+                    self.effectbox.rect.center = self.offset_pos
 
                     self.move = True
 

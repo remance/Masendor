@@ -218,6 +218,7 @@ class Subunit(pygame.sprite.Sprite):
         :param start_hp: Starting health or troop number percentage
         :param start_stamina: Starting maximum stamina percentage
         :param coa: Coat of arms image, used as shadow and flag
+        :param effect_pool: Effect animation image
         """
         self._layer = 4
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -236,17 +237,21 @@ class Subunit(pygame.sprite.Sprite):
         self.taking_damage_angle = None
 
         self.hitbox = None
+        self.effectbox = None
         self.charge_sprite = None
 
         self.sprite_troop_size = 1
         self.subunit_type = 1
         self.animation_play_time = self.default_animation_play_time
         self.animation_pool = {}  # list of animation sprite this subunit can play with its action
-        self.status_effect_animation_pool = {}  # list of status effect animation sprite that play on specific event
         self.current_animation = {}  # list of animation frames playing
         self.show_frame = 0  # current animation frame
         self.max_show_frame = 0
         self.frame_timer = 0
+        self.effect_timer = 0
+        self.effect_frame = 0
+        self.max_effect_frame = 0
+        self.current_effect = None
         self.interrupt_animation = False
         self.top_interrupt_animation = False  # interrupt animation regardless of property
         self.current_action = {}  # action being performed

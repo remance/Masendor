@@ -1080,12 +1080,11 @@ class SkillAimTarget(AimTarget):
 
 
 class SpriteIndicator(pygame.sprite.Sprite):
-    def __init__(self, image, who, battle):
+    def __init__(self, image, who, battle, layer=1):
         """Indicator for subunit (coa) and effect sprite (shadow), also serve as hitbox"""
         self.who = who
-        self._layer = 1
+        self._layer = layer
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.battle = battle
         self.image = image
-        self.who.hitbox = self
         self.rect = self.image.get_rect(midtop=self.who.pos)

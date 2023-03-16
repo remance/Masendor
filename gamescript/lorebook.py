@@ -395,8 +395,7 @@ class Lorebook(pygame.sprite.Sprite):
                     self.troop_section, self.equipment_section, self.status_section, self.skill_section,
                     self.trait_section,
                     self.leader_section, self.terrain_section, self.weather_section):
-                front_text = {key: value for key, value in stat.items() if
-                              key not in ("Name", "Description", "Forcedimageid")}
+                front_text = {key: value for key, value in stat.items() if key != "Name"}
                 for key, value in front_text.items():
                     if value != "":
                         if self.section != self.equipment_section:  # equipment section need to be processed differently

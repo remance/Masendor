@@ -15,6 +15,7 @@ def player_skill_perform(self, mouse_left_up, mouse_right_up, key_state):
         self.player_char.current_action.pop("require input")
         self.player_cancel_input()
     elif mouse_right_up:
+        self.player_char.current_action = {}
         self.player_cancel_input()
     else:
         self.camera_process(key_state)

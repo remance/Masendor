@@ -8,7 +8,7 @@ def play_animation(self, dt, hold_check):
     """
     done = False
     frame_start = False  # check if new frame just start playing this call
-    current_animation = self.current_animation[self.sprite_direction]
+    current_animation = self.current_animation[self.sprite_direction][self.show_frame]
     if not hold_check:  # not holding current frame
         self.frame_timer += dt
         if self.frame_timer >= self.animation_play_time:
@@ -28,9 +28,23 @@ def play_animation(self, dt, hold_check):
                     self.animation_play_time = self.default_animation_play_time * \
                                                self.current_animation[self.show_frame]["play_time_mod"]
 
-    self.image = current_animation[self.show_frame]["sprite"]
+    self.image = current_animation["sprite"]
 
-    self.offset_pos = self.pos - current_animation[self.show_frame]["center_offset"]
+    if self.current_effect and self.current_effect in current_animation:  # play effect animation
+        self.effectbox.image = current_animation[self.current_effect][self.effect_frame]
+        self.effectbox.rect = self.effectbox.image.get_rect(center=self.offset_pos)
+        self.effect_timer += dt
+        if self.effect_timer >= 0.2:
+            self.effect_timer = 0
+            if self.effect_frame < self.max_effect_frame:
+                self.effect_frame += 1
+            else:
+                self.effect_frame = 0
+                self.max_effect_frame = 0
+                self.current_effect = None
+                self.battle.battle_camera.remove(self.effectbox)
+
+    self.offset_pos = self.pos - current_animation["center_offset"]
     self.rect = self.image.get_rect(center=self.offset_pos)
 
     return done, frame_start

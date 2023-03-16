@@ -1,3 +1,5 @@
+import pygame
+
 from gamescript.battleui import SpriteIndicator
 
 
@@ -19,7 +21,8 @@ def change_battle_state(self):
         # Run enter_battle method
         for this_subunit in self.subunit_updater:
             this_subunit.enter_battle(self.subunit_animation_pool)
-            SpriteIndicator(this_subunit.hitbox_image, this_subunit, self)
+            this_subunit.hitbox = SpriteIndicator(this_subunit.hitbox_image, this_subunit, self)
+            this_subunit.effectbox = SpriteIndicator(pygame.Surface((0, 0)), this_subunit, self, layer=10000001)
 
         # Setup formation for leader
         for this_subunit in self.subunit_updater:

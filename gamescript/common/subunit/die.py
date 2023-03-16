@@ -19,6 +19,9 @@ def die(self, how):
     self.hitbox.who = None
     self.hitbox.kill()
     self.hitbox = None
+    self.effectbox.who = None
+    self.effectbox.kill()
+    self.effectbox = None
 
     for group in (self.alive_troop_follower, self.alive_leader_follower):  # change subordinate in list
         for this_subunit in group:
