@@ -84,7 +84,7 @@ huge size battle)
 
 # Latest Update
 
-![alt text](https://www.youtube.com/watch?v=O-Aq4B0c6Uc)
+![alt text](https://github.com/remance/preview/blob/main/preview.png?raw=true)
 
 Refocus the game to arcade mode style for now to ensure that the game will ever be finished. 
 

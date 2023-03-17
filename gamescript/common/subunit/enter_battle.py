@@ -1,4 +1,4 @@
-def enter_battle(self, animation_pool):
+def enter_battle(self, animation_pool, status_animation_pool):
     """run once when battle start or subunit just get created"""
 
     self.terrain, self.feature = self.get_feature(self.base_pos,
@@ -49,3 +49,5 @@ def enter_battle(self, animation_pool):
     self.attack_effect_spawn_distance = self.default_sprite_size[0] * 1.5
 
     self.pick_animation()
+
+    self.status_animation_pool = status_animation_pool[self.troop_size / 10]

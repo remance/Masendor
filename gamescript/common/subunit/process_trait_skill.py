@@ -36,6 +36,11 @@ def process_trait_skill(self):
     self.input_skill = self.skill.copy()
     self.input_skill.pop(self.charge_skill)
 
+    self.available_skill = [skill for skill in self.input_skill if skill not in self.skill_cooldown
+                            and self.discipline >= self.input_skill[skill]["Discipline Requirement"]
+                            and self.stamina > self.input_skill[skill]["Stamina Cost"] and
+                            ("skill" not in self.current_action or self.current_action["skill"] != skill)]
+
     self.target_skill = {key: value for key, value in self.input_skill.items() if value["Type"] == "Target"}
     self.weapon_skill = {key: value for key, value in self.weapon_skill.items() if value in self.skill}
 

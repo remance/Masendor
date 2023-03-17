@@ -1,13 +1,16 @@
-import random
-
-from PIL import Image
 
 import pygame
+
+from PIL import Image
+from random import choice
+
+from gamescript.common.game import create_troop_sprite
 
 
 def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200):
     weapon_list = self.troop_data.weapon_list
     animation_sprite_pool = {}  # TODO need to add for subunit creator
+    status_animation_pool = {}
     weapon_common_type_list = tuple(set(["_" + value["Common"] + "_" for key, value in weapon_list.items() if
                                          key != "" and type(value["Common"]) is not int]))  # common type animation set
     weapon_attack_type_list = tuple(set(["_" + value["Attack"] + "_" for key, value in weapon_list.items() if
@@ -103,10 +106,10 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
                              ("_Default", "_Die", "_Flee", "_Damaged", "KnockDown",
                               "_Standup", "_HeavyDamaged")) is False and "_Sub_" not in this_animation]
             if len(animation) > 0:
-                animation = random.choice(animation)  # random animation
+                animation = choice(animation)  # random animation
             else:  # no animation found, use race default
                 animation = race + "_Default"
-            frame_data = random.choice(self.generic_animation_pool[animation])  # random frame
+            frame_data = choice(self.generic_animation_pool[animation])  # random frame
             animation_property = self.generic_animation_pool[animation][0]["animation_property"].copy()
 
             if type(subunit_id) is int:
@@ -312,15 +315,6 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
                                 current_in_pool[final_name][new_direction][frame_num] = \
                                     {"sprite": sprite_pic, "center_offset": center_offset}
 
-                                for status in self.troop_animation.status_animation_pool:
-                                    current_in_pool[final_name][new_direction][frame_num][status] = []
-                                    for index, frame in enumerate(self.troop_animation.status_animation_pool[status]):
-                                        current_in_pool[final_name][new_direction][frame_num][status].append(pygame.transform.smoothscale(
-                                            self.troop_animation.status_animation_pool[status][index],
-                                            sprite_pic.get_size()))
-                                    current_in_pool[final_name][new_direction][frame_num][status] = \
-                                        tuple(current_in_pool[final_name][new_direction][frame_num][status])
-
                                 if both_weapon_set:
                                     next_level[weapon_key[1]][final_name][frame_num] = \
                                         {"animation_property": sprite_dict["animation_property"],
@@ -331,18 +325,36 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
 
                                     next_level[weapon_key[1]][final_name][new_direction][frame_num] = \
                                         {"sprite": sprite_pic, "center_offset": center_offset}
+
                                 if opposite_direction is not None:  # flip sprite for opposite direction
                                     current_in_pool[final_name][opposite_direction][frame_num] = {
                                         "sprite": pygame.transform.flip(sprite_pic,
                                                                         True, False),
                                         "center_offset": (-center_offset[0], center_offset[1])}
+
                                     if both_weapon_set:
                                         next_level[weapon_key[1]][final_name][opposite_direction][frame_num] = {
                                             "sprite": pygame.transform.flip(sprite_pic,
                                                                             True, False),
                                             "center_offset": (-center_offset[0], center_offset[1])}
 
-    return animation_sprite_pool
+            if this_subunit["Size"] not in status_animation_pool:
+                status_animation_pool[this_subunit["Size"]] = {}
+                for status in self.troop_animation.status_animation_pool:
+
+                    status_animation_pool[this_subunit["Size"]][status] = {}
+                    status_animation_pool[this_subunit["Size"]][status]["frame"] = []
+                    for index, frame in enumerate(self.troop_animation.status_animation_pool[status]):
+                        status_animation_pool[this_subunit["Size"]][status]["frame"].append(pygame.transform.smoothscale(
+                            self.troop_animation.status_animation_pool[status][index],
+                            (create_troop_sprite.default_sprite_size[0] * this_subunit["Size"] / 4,
+                             create_troop_sprite.default_sprite_size[1] * this_subunit["Size"] / 4)))
+                    status_animation_pool[this_subunit["Size"]][status]["frame"] = \
+                        tuple(status_animation_pool[this_subunit["Size"]][status]["frame"])
+                    status_animation_pool[this_subunit["Size"]][status]["frame_number"] = len(
+                        status_animation_pool[this_subunit["Size"]][status]["frame"]) - 1
+
+    return animation_sprite_pool, status_animation_pool
 
 
 def crop_sprite(sprite_pic):

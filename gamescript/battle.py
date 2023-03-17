@@ -236,6 +236,7 @@ class Battle:
 
         self.generic_action_data = None
         self.subunit_animation_pool = None
+        self.status_animation_pool = None
 
         self.game_speed = 0
         self.game_speed_list = (0, 0.5, 1, 2, 4, 6)  # available game speed
@@ -427,7 +428,7 @@ class Battle:
         subunit_to_make = tuple(set([this_subunit.troop_id for this_subunit in self.subunit_updater]))
         who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key in subunit_to_make}
         who_todo |= {key: value for key, value in self.leader_data.leader_list.items() if key in subunit_to_make}
-        self.subunit_animation_pool = self.main.create_troop_sprite_pool(who_todo)
+        self.subunit_animation_pool, self.status_animation_pool = self.main.create_troop_sprite_pool(who_todo)
 
     def run_game(self):
         # Create Starting Values
@@ -804,6 +805,7 @@ class Battle:
         self.command_ui.__init__(self.screen_scale, self.command_ui.weapon_box_images)  # reset command ui
 
         self.subunit_animation_pool = None
+        self.status_animation_pool = None
         self.generic_action_data = None
 
         self.sound_effect_queue = {}

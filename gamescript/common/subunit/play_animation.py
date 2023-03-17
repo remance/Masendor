@@ -30,11 +30,11 @@ def play_animation(self, dt, hold_check):
 
     self.image = current_animation["sprite"]
 
-    if self.current_effect and self.current_effect in current_animation:  # play effect animation
-        self.effectbox.image = current_animation[self.current_effect][self.effect_frame]
+    if self.current_effect:  # play effect animation
+        self.effectbox.image = self.status_animation_pool[self.current_effect]["frame"][self.effect_frame]
         self.effectbox.rect = self.effectbox.image.get_rect(center=self.offset_pos)
         self.effect_timer += dt
-        if self.effect_timer >= 0.2:
+        if self.effect_timer >= 0.1:
             self.effect_timer = 0
             if self.effect_frame < self.max_effect_frame:
                 self.effect_frame += 1

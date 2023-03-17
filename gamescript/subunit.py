@@ -851,7 +851,7 @@ class Subunit(pygame.sprite.Sprite):
         if self.is_leader:
             if (self.troop_size * 5, self.troop_size * 5) not in self.hitbox_image_list[self.team]["leader"]:
                 self.hitbox_image = pygame.Surface((self.troop_size * 5, self.troop_size * 5), pygame.SRCALPHA)
-                pygame.draw.circle(self.hitbox_image, (120, 128, 0, 150),
+                pygame.draw.circle(self.hitbox_image, (220, 120, 20, 150),
                                    (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
                                    self.hitbox_image.get_width() / 2)
 
@@ -865,7 +865,7 @@ class Subunit(pygame.sprite.Sprite):
         else:
             if (self.troop_size * 5, self.troop_size * 5) not in self.hitbox_image_list[self.team]["troop"]:
                 self.hitbox_image = pygame.Surface((self.troop_size * 5, self.troop_size * 5), pygame.SRCALPHA)
-                pygame.draw.circle(self.hitbox_image, (0, 0, 0, 150),
+                pygame.draw.circle(self.hitbox_image, (100, 100, 100, 150),
                                    (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
                                    self.hitbox_image.get_width() / 2)
 
