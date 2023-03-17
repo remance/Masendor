@@ -138,7 +138,7 @@ are also very easy to create and modify.
 
 [Video](https://www.youtube.com/watch?v=8Omm-o6Dy60) demonstration: https://www.youtube.com/watch?v=8Omm-o6Dy60
 
-## Encyclopedia and stuff
+## Encyclopedia and stuffs
 
 This game's encyclopedia will have more information than just from the Wikipedia website as long as they can be found
 that is.

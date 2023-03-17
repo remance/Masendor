@@ -75,16 +75,16 @@ class HeroUI(pygame.sprite.Sprite):
         self.weapon_image = pygame.Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]),
                                            pygame.SRCALPHA)
 
-        self.prim_main_weapon_box_rect = self.weapon_box_images[0].get_rect(midleft=(0, self.image.get_height() / 2))
+        self.prim_main_weapon_box_rect = self.weapon_box_images[0].get_rect(topleft=(0, 0))
         self.weapon_image.blit(self.weapon_box_images[0], self.prim_main_weapon_box_rect)
-        self.prim_sub_weapon_box_rect = self.weapon_box_images[0].get_rect(midleft=(self.weapon_box_images[0].get_width(), self.image.get_height() / 2))
+        self.prim_sub_weapon_box_rect = self.weapon_box_images[0].get_rect(topleft=(self.weapon_box_images[0].get_width(), 0))
         self.weapon_image.blit(pygame.transform.flip(self.weapon_box_images[0], True, False),
                                self.prim_sub_weapon_box_rect)
 
         self.sec_main_weapon_box_rect = self.weapon_box_images[1].get_rect(topleft=(self.weapon_box_images[0].get_width() * 2, 0))
         self.weapon_image.blit(self.weapon_box_images[1], self.sec_main_weapon_box_rect)
         self.sec_sub_weapon_box_rect = self.weapon_box_images[1].get_rect(topleft=(self.weapon_box_images[0].get_width() * 2,
-                                                                                   self.weapon_box_images[1].get_height() * 1.5))
+                                                                                   self.weapon_box_images[1].get_height()))
 
         self.weapon_cooldown_rect = (self.weapon_box_images[0].get_rect(midbottom=self.prim_main_weapon_box_rect.midbottom),
                                      self.weapon_box_images[0].get_rect(midbottom=self.prim_sub_weapon_box_rect.midbottom))
@@ -107,6 +107,12 @@ class HeroUI(pygame.sprite.Sprite):
         self.ammo_text_box = self.font.render("999", True, (0, 0, 0))  # make text box for ammo
         self.ammo_text_box.fill((0, 0, 0))
         self.ammo_text_box_original = self.ammo_text_box.copy()
+
+        self.status_effect_image = pygame.Surface((100 * self.screen_scale[0], 40 * self.screen_scale[1]))
+        self.status_effect_image_rect = self.status_effect_image.get_rect(topleft=(self.prim_main_weapon_box_rect.bottomleft[0],
+                                                                                   self.prim_main_weapon_box_rect.bottomleft[1]))
+
+        self.base_image.blit(self.status_effect_image, self.status_effect_image_rect)
 
         self.equipped_weapon = None
         self.magazine_count = None

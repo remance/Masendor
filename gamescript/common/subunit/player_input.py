@@ -69,7 +69,18 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                             self.interrupt_animation = True
 
             if not self.move_speed:  # attack while stationary
-                if mouse_left_down or mouse_right_down:
+                if mouse_left_up or mouse_right_up:
+                    action_num = 0
+                    if mouse_right_up:
+                        action_num = 1
+                    if "hold" in self.current_action:  # release holding
+                        self.release_timer = self.hold_timer
+                        if "melee attack" in self.current_action:
+                            self.current_action = self.melee_attack_command_action[action_num]
+                        elif "range attack" in self.current_action:
+                            self.current_action = self.range_attack_command_action[action_num]
+
+                elif mouse_left_down or mouse_right_down:
                     action_num = 0
                     str_action_num = "0"
                     if mouse_right_down:
@@ -94,10 +105,12 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                             elif "range attack" in self.current_action:
                                 self.current_action = self.range_hold_command_action[action_num]
 
-                elif mouse_left_up or mouse_right_up:
+            else:  # attack while moving
+                if mouse_left_up or mouse_right_up:  # perform attack
                     action_num = 0
                     if mouse_right_up:
                         action_num = 1
+
                     if "hold" in self.current_action:  # release holding
                         self.release_timer = self.hold_timer
                         if "melee attack" in self.current_action:
@@ -105,8 +118,15 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                         elif "range attack" in self.current_action:
                             self.current_action = self.range_attack_command_action[action_num]
 
-            else:  # attack while moving
-                if mouse_left_down or mouse_right_down:
+                    elif "charge" in self.current_action:
+                        self.interrupt_animation = True
+                        self.command_action = self.melee_attack_command_action[action_num]
+                        self.attack_pos = cursor_pos
+
+                    elif "range attack" in self.current_action:  # update new range attack pos
+                        self.attack_pos = cursor_pos
+
+                elif mouse_left_down or mouse_right_down:
                     action_num = 0
                     str_action_num = "0"
                     if mouse_right_down:
@@ -145,24 +165,4 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                     else:  # normal melee attack
                         self.interrupt_animation = True
                         self.command_action = self.melee_attack_command_action[action_num]
-                        self.attack_pos = cursor_pos
-
-                elif mouse_left_up or mouse_right_up:  # perform attack
-                    action_num = 0
-                    if mouse_right_up:
-                        action_num = 1
-
-                    if "hold" in self.current_action:  # release holding
-                        self.release_timer = self.hold_timer
-                        if "melee attack" in self.current_action:
-                            self.current_action = self.melee_attack_command_action[action_num]
-                        elif "range attack" in self.current_action:
-                            self.current_action = self.range_attack_command_action[action_num]
-
-                    elif "charge" in self.current_action:
-                        self.interrupt_animation = True
-                        self.command_action = self.melee_attack_command_action[action_num]
-                        self.attack_pos = cursor_pos
-
-                    elif "range attack" in self.current_action:  # update new range attack pos
                         self.attack_pos = cursor_pos

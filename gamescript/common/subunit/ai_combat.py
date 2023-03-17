@@ -85,41 +85,42 @@ def ai_combat(self):
                                 self.swap_weapon(this_set)
                                 return
                     else:
-                        if self.available_range_skill:  # use range skill first
-                            self.skill_command_input(0, self.available_range_skill, pos_target=self.base_pos)
-                        elif "range attack" not in self.current_action and "range attack" not in self.command_action and \
+                        if "range attack" not in self.current_action and "range attack" not in self.command_action and \
                                 (not self.move_speed or self.shoot_while_moving):  # Find target to shoot
                             if self.shoot_range[0] >= self.nearest_enemy[1] or self.shoot_range[1] >= self.nearest_enemy[1]:  # has enemy in range
-                                for weapon in self.ammo_now[self.equipped_weapon]:
-                                    # can shoot if reload finish, in shoot range and attack pos target exist
-                                    if self.ammo_now[self.equipped_weapon][weapon] > 0 and self.shoot_range[weapon] >= self.nearest_enemy[1]:
-                                        self.attack_subunit = self.nearest_enemy[0]  # replace with enemy object
-                                        self.attack_pos = self.attack_subunit.base_pos  # replace with enemy pos
-                                        if self.move_speed:  # moving
-                                            if not self.check_special_effect("Stationary", weapon=weapon):
-                                                # weapon can shoot while moving
-                                                if "movable" in self.current_action and "charge" not in self.current_action:
-                                                    self.show_frame = 0  # just restart frame
-                                                    if "walk" in self.current_action:
-                                                        self.current_action = self.range_walk_command_action[weapon]
-                                                    elif "run" in self.current_action:
-                                                        self.current_action = self.range_run_command_action[weapon]
-                                        else:
-                                            if self.equipped_timing_start_weapon[weapon] or weapon in self.equipped_power_weapon:
-                                                # consider using hold for power or timing
-                                                self.command_action = self.range_hold_command_action[weapon]
+                                if self.available_range_skill:  # use range skill first
+                                    self.skill_command_input(0, self.available_range_skill, pos_target=self.base_pos)
+                                else:
+                                    for weapon in self.ammo_now[self.equipped_weapon]:
+                                        # can shoot if reload finish, in shoot range and attack pos target exist
+                                        if self.ammo_now[self.equipped_weapon][weapon] > 0 and self.shoot_range[weapon] >= self.nearest_enemy[1]:
+                                            self.attack_subunit = self.nearest_enemy[0]  # replace with enemy object
+                                            self.attack_pos = self.attack_subunit.base_pos  # replace with enemy pos
+                                            if self.move_speed:  # moving
+                                                if not self.check_special_effect("Stationary", weapon=weapon):
+                                                    # weapon can shoot while moving
+                                                    if "movable" in self.current_action and "charge" not in self.current_action:
+                                                        self.show_frame = 0  # just restart frame
+                                                        if "walk" in self.current_action:
+                                                            self.current_action = self.range_walk_command_action[weapon]
+                                                        elif "run" in self.current_action:
+                                                            self.current_action = self.range_run_command_action[weapon]
                                             else:
-                                                self.command_action = self.range_attack_command_action[weapon]
-                                            self.new_angle = self.set_rotate(self.attack_subunit.base_pos)
+                                                if self.equipped_timing_start_weapon[weapon] or weapon in self.equipped_power_weapon:
+                                                    # consider using hold for power or timing
+                                                    self.command_action = self.range_hold_command_action[weapon]
+                                                else:
+                                                    self.command_action = self.range_attack_command_action[weapon]
+                                                self.new_angle = self.set_rotate(self.attack_subunit.base_pos)
 
-                                        if self.unit_leader and not self.unit_leader.player_control and not self.unit_leader.command_action and not self.unit_leader.current_action:
-                                            if self.unit_leader.available_unit_range_skill:
-                                                self.unit_leader.skill_command_input(0, self.unit_leader.available_unit_range_skill, pos_target=self.base_pos)
-                                        elif self.leader and not self.leader.player_control and not self.leader.command_action and not self.leader.current_action:
-                                            if self.leader.available_troop_range_skill:
-                                                self.leader.skill_command_input(0, self.leader.available_troop_range_skill, pos_target=self.base_pos)
+                                            if self.unit_leader and not self.unit_leader.player_control and not self.unit_leader.command_action and not self.unit_leader.current_action:
+                                                if self.unit_leader.available_unit_range_skill:
+                                                    self.unit_leader.skill_command_input(0, self.unit_leader.available_unit_range_skill, pos_target=self.base_pos)
+                                            elif self.leader and not self.leader.player_control and not self.leader.command_action and not self.leader.current_action:
+                                                if self.leader.available_troop_range_skill:
+                                                    self.leader.skill_command_input(0, self.leader.available_troop_range_skill, pos_target=self.base_pos)
 
-                                        return
+                                            return
 
                 else:
                     if self.equipped_weapon != self.melee_weapon_set[0] and not self.current_action:
