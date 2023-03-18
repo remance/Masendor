@@ -99,8 +99,6 @@ class DamageSprite(pygame.sprite.Sprite):
         self.penetrate = penetrate
         self.knock_power = impact
 
-        self.pass_subunit = None  # subunit that damage sprite passing through, receive damage if movement stop
-
         self.base_pos = base_pos
         self.base_target = base_target
 
@@ -225,8 +223,6 @@ class RangeDamageSprite(DamageSprite):
         self.adjust_sprite()
 
     def update(self, subunit_list, dt):
-        pass_subunit = None
-
         if self.sound_effect_name and self.sound_timer < self.sound_duration:
             self.sound_timer += dt
 
@@ -244,8 +240,9 @@ class RangeDamageSprite(DamageSprite):
             this_subunit = subunit[0]
             if this_subunit.alive and this_subunit.game_id not in self.already_hit and this_subunit.hitbox.rect.colliderect(
                     self.rect):
-                if self.arc_shot and self.distance_progress >= 100:  # arc shot only hit when reach target
-                    self.hit_register(this_subunit)
+                if self.arc_shot:
+                    if self.distance_progress >= 100:  # arc shot only hit when reach target
+                        self.hit_register(this_subunit)
                 else:
                     self.hit_register(this_subunit)
                     self.already_hit.append(this_subunit.game_id)
@@ -257,7 +254,6 @@ class RangeDamageSprite(DamageSprite):
             self.reach_target()
             return
 
-        self.pass_subunit = None  # reset before every movement update and after collide check
         move = self.base_target - self.base_pos
         require_move_length = move.length()
 
@@ -420,7 +416,6 @@ class EffectDamageSprite(DamageSprite):
                 self.already_hit.append(this_subunit.game_id)
 
         if self.full_distance:  # damage sprite that can move
-            self.pass_subunit = None  # reset before every movement update and after collide check
             move = self.base_target - self.base_pos
             require_move_length = move.length()
 

@@ -123,7 +123,6 @@ def status_update(self):
         self.apply_effect(status, self.status_list[status], self.status_effect, self.status_duration)
         if aoe > 1:  # status buff range to nearby friend
             self.apply_status_to_nearby(self.near_enemy, aoe, status)
-
     # Apply effect from weather
     weather = self.battle.current_weather
     weather_temperature = 0

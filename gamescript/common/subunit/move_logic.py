@@ -38,7 +38,7 @@ def move_logic(self, dt):
                     self.offset_pos = self.pos - self.current_animation[self.sprite_direction][self.show_frame][
                         "center_offset"]
                     self.rect.center = self.offset_pos
-                    self.hitbox.rect.midtop = self.pos
+                    self.hitbox.rect.center = self.pos
                     self.effectbox.rect.center = self.offset_pos
 
                     self.move = True

@@ -8,7 +8,7 @@ def play_animation(self, dt, hold_check):
     """
     done = False
     frame_start = False  # check if new frame just start playing this call
-    current_animation = self.current_animation[self.sprite_direction][self.show_frame]
+
     if not hold_check:  # not holding current frame
         self.frame_timer += dt
         if self.frame_timer >= self.animation_play_time:
@@ -28,6 +28,7 @@ def play_animation(self, dt, hold_check):
                     self.animation_play_time = self.default_animation_play_time * \
                                                self.current_animation[self.show_frame]["play_time_mod"]
 
+    current_animation = self.current_animation[self.sprite_direction][self.show_frame]
     self.image = current_animation["sprite"]
 
     if self.current_effect:  # play effect animation

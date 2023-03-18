@@ -802,7 +802,8 @@ class Battle:
         clean_group_object((self.shoot_lines, self.subunit_updater, self.char_icon,
                             self.effect_updater, self.weather_matter))
 
-        self.command_ui.__init__(self.screen_scale, self.command_ui.weapon_box_images)  # reset command ui
+        self.command_ui.__init__(self.screen_scale, self.command_ui.weapon_box_images,
+                                 self.command_ui.status_effect_image)  # reset command ui
 
         self.subunit_animation_pool = None
         self.status_animation_pool = None

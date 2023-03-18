@@ -244,6 +244,7 @@ class Subunit(pygame.sprite.Sprite):
         self.subunit_type = 1
         self.animation_play_time = self.default_animation_play_time
         self.animation_pool = {}  # list of animation sprite this subunit can play with its action
+        self.status_animation_pool = {}
         self.current_animation = {}  # list of animation frames playing
         self.show_frame = 0  # current animation frame
         self.max_show_frame = 0
@@ -861,13 +862,13 @@ class Subunit(pygame.sprite.Sprite):
         if self.is_leader:
             if (self.troop_size * 5, self.troop_size * 5) not in self.hitbox_image_list[self.team]["leader"]:
                 self.hitbox_image = pygame.Surface((self.troop_size * 5, self.troop_size * 5), pygame.SRCALPHA)
-                pygame.draw.circle(self.hitbox_image, (220, 120, 20, 150),
+                pygame.draw.circle(self.hitbox_image, (self.team_colour[self.team][0], self.team_colour[self.team][1],
+                                    self.team_colour[self.team][2], 150),
                                    (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
                                    self.hitbox_image.get_width() / 2)
 
                 pygame.draw.circle(self.hitbox_image,
-                                   (self.team_colour[self.team][0], self.team_colour[self.team][1],
-                                    self.team_colour[self.team][2], 150),
+                                   (220, 120, 20, 150),
                                    (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
                                    self.hitbox_image.get_width() / 2.4)
             else:
@@ -875,13 +876,13 @@ class Subunit(pygame.sprite.Sprite):
         else:
             if (self.troop_size * 5, self.troop_size * 5) not in self.hitbox_image_list[self.team]["troop"]:
                 self.hitbox_image = pygame.Surface((self.troop_size * 5, self.troop_size * 5), pygame.SRCALPHA)
-                pygame.draw.circle(self.hitbox_image, (100, 100, 100, 150),
+                pygame.draw.circle(self.hitbox_image, (self.team_colour[self.team][0], self.team_colour[self.team][1],
+                                    self.team_colour[self.team][2], 150),
                                    (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
                                    self.hitbox_image.get_width() / 2)
 
                 pygame.draw.circle(self.hitbox_image,
-                                   (self.team_colour[self.team][0], self.team_colour[self.team][1],
-                                    self.team_colour[self.team][2], 150),
+                                   (100, 100, 100, 150),
                                    (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
                                    self.hitbox_image.get_width() / 2.4)
             else:
@@ -1057,6 +1058,5 @@ class Subunit(pygame.sprite.Sprite):
             if self.alive:  # enter dead state
                 self.alive = False  # enter dead state
                 self.die("dead")
-
             if self.show_frame < self.max_show_frame:
                 self.play_animation(dt, False)
