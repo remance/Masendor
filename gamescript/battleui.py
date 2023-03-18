@@ -47,13 +47,14 @@ class PopupIcon(pygame.sprite.Sprite):
 class HeroUI(pygame.sprite.Sprite):
     weapon_sprite_pool = None
 
-    def __init__(self, screen_scale, weapon_box_images, text_size=24):
+    def __init__(self, screen_scale, weapon_box_images, status_box_image, text_size=24):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self)
         self.screen_scale = screen_scale
         self.font = pygame.font.SysFont("helvetica", int(text_size * screen_scale[1]))
 
-        self.image = pygame.Surface((420 * self.screen_scale[0], 200 * self.screen_scale[1]), pygame.SRCALPHA)
+        self.image = pygame.Surface((420 * self.screen_scale[0], 200 * self.screen_scale[1]))
+        self.image.fill((255, 255, 255))
         self.base_image = self.image.copy()
 
         self.health_bar_size = (10 * self.screen_scale[0], self.image.get_height())
@@ -108,13 +109,38 @@ class HeroUI(pygame.sprite.Sprite):
         self.ammo_text_box.fill((0, 0, 0))
         self.ammo_text_box_original = self.ammo_text_box.copy()
 
-        self.status_effect_image = pygame.Surface((100 * self.screen_scale[0], 40 * self.screen_scale[1]))
-        self.status_effect_image_rect = self.status_effect_image.get_rect(topleft=(self.prim_main_weapon_box_rect.bottomleft[0],
-                                                                                   self.prim_main_weapon_box_rect.bottomleft[1]))
+        self.status_effect_image = status_box_image
+        self.status_effect_image_rect = self.status_effect_image.get_rect(bottomright=(self.health_bar_rect.bottomleft[0],
+                                                                                       self.health_bar_rect.bottomleft[1]))
+
+        bar_bad = pygame.Surface((18 * self.screen_scale[0], 13 * self.screen_scale[1]))
+        bar_bad.fill((100, 0, 0))
+        bar_worst = pygame.Surface((18 * self.screen_scale[0], 13 * self.screen_scale[1]))
+        bar_worst.fill((200, 0, 0))
+
+        bar_good = pygame.Surface((18 * self.screen_scale[0], 13 * self.screen_scale[1]))
+        bar_good.fill((0, 100, 0))
+        bar_best = pygame.Surface((18 * self.screen_scale[0], 13 * self.screen_scale[1]))
+        bar_best.fill((0, 200, 0))
+
+        bar_normal = pygame.Surface((18 * self.screen_scale[0], 13 * self.screen_scale[1]))
+        bar_normal.fill((100, 100, 100))
+
+        self.status_bar_image = {-1: bar_worst, 0: bar_bad, 1: bar_normal, 2: bar_good, 3: bar_best}
+        self.status_bar_rect = (self.status_bar_image[0].get_rect(midbottom=(13 * self.screen_scale[0], 16 * self.screen_scale[1])),
+                                self.status_bar_image[0].get_rect(midbottom=(37 * self.screen_scale[0], 16 * self.screen_scale[1])),
+                                self.status_bar_image[0].get_rect(midbottom=(61 * self.screen_scale[0], 16 * self.screen_scale[1])),
+                                self.status_bar_image[0].get_rect(midbottom=(85 * self.screen_scale[0], 16 * self.screen_scale[1])),
+                                self.status_bar_image[0].get_rect(midbottom=(109 * self.screen_scale[0], 16 * self.screen_scale[1])),
+                                self.status_bar_image[0].get_rect(midbottom=(132 * self.screen_scale[0], 16 * self.screen_scale[1])),
+                                self.status_bar_image[0].get_rect(midbottom=(155 * self.screen_scale[0], 16 * self.screen_scale[1])),
+                                self.status_bar_image[0].get_rect(midbottom=(179 * self.screen_scale[0], 16 * self.screen_scale[1])),
+                                self.status_bar_image[0].get_rect(midbottom=(203 * self.screen_scale[0], 16 * self.screen_scale[1])))
 
         self.base_image.blit(self.status_effect_image, self.status_effect_image_rect)
 
         self.equipped_weapon = None
+        self.status = None
         self.magazine_count = None
         self.weapon_cooldown = None
         self.weapon_holding = [False, False]
@@ -124,6 +150,16 @@ class HeroUI(pygame.sprite.Sprite):
 
         self.last_health = 0
         self.last_stamina = 0
+
+        self.melee_attack_mod = 3
+        self.melee_def_mod = 3
+        self.range_attack_mod = 3
+        self.range_def_mod = 3
+        self.speed_mod = 3
+        self.morale_mod = 3
+        self.discipline_mod = 3
+        self.hidden_mod = 3
+        self.temperature_mod = 3
 
         self.pos = (0, 0)
         self.rect = self.image.get_rect(topleft=self.pos)
@@ -135,7 +171,6 @@ class HeroUI(pygame.sprite.Sprite):
         self.image = self.base_image.copy()
 
     def value_input(self, who, *args):
-
         if self.last_health != who.health:
             self.last_health = who.health
             self.health_bar = self.health_bar_original.copy()
@@ -244,6 +279,56 @@ class HeroUI(pygame.sprite.Sprite):
 
         if self.equipped_weapon != who.equipped_weapon or who.magazine_count != self.magazine_count or weapon_filter_change:
             self.image.blit(self.weapon_image, self.weapon_image_rect)
+
+        status_change = False
+        if who.melee_attack_mod != self.melee_attack_mod:
+            self.melee_attack_mod = who.melee_attack_mod
+            self.status_effect_image.blit(self.status_bar_image[self.melee_attack_mod], self.status_bar_rect[0])
+            status_change = True
+
+        if who.melee_def_mod != self.melee_def_mod:
+            self.melee_def_mod = who.melee_def_mod
+            self.status_effect_image.blit(self.status_bar_image[self.melee_def_mod], self.status_bar_rect[1])
+            status_change = True
+
+        if who.range_attack_mod != self.range_attack_mod:
+            self.range_attack_mod = who.range_attack_mod
+            self.status_effect_image.blit(self.status_bar_image[self.range_attack_mod], self.status_bar_rect[2])
+            status_change = True
+
+        if who.range_def_mod != self.range_def_mod:
+            self.range_def_mod = who.range_def_mod
+            self.status_effect_image.blit(self.status_bar_image[self.range_def_mod], self.status_bar_rect[3])
+            status_change = True
+
+        if who.speed_mod != self.speed_mod:
+            self.speed_mod = who.speed_mod
+            self.status_effect_image.blit(self.status_bar_image[self.speed_mod], self.status_bar_rect[4])
+            status_change = True
+
+        if who.morale_mod != self.morale_mod:
+            self.morale_mod = who.morale_mod
+            self.status_effect_image.blit(self.status_bar_image[self.morale_mod], self.status_bar_rect[5])
+            status_change = True
+
+        if who.discipline_mod != self.discipline_mod:
+            self.discipline_mod = who.discipline_mod
+            self.status_effect_image.blit(self.status_bar_image[self.discipline_mod], self.status_bar_rect[6])
+            status_change = True
+
+        if who.hidden_mod != self.hidden_mod:
+            self.hidden_mod = who.hidden_mod
+            self.status_effect_image.blit(self.status_bar_image[self.hidden_mod], self.status_bar_rect[7])
+            status_change = True
+
+        if who.temperature_mod != self.temperature_mod:
+            self.temperature_mod = who.temperature_mod
+            self.status_effect_image.blit(self.status_bar_image[self.temperature_mod], self.status_bar_rect[8])
+            status_change = True
+
+        if status_change:
+            self.base_image.blit(self.status_effect_image, self.status_effect_image_rect)
+            self.image.blit(self.status_effect_image, self.status_effect_image_rect)
 
 
 class SkillCardIcon(pygame.sprite.Sprite):

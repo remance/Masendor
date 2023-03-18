@@ -474,7 +474,7 @@ class Subunit(pygame.sprite.Sprite):
 
         self.original_heat_resistance = 0  # resistance to heat temperature
         self.original_cold_resistance = 0  # Resistance to cold temperature
-        self.temperature_count = 0  # temperature threshold count
+        self.temperature = 0  # temperature threshold count
 
         # initiate equipment stat
         self.weight = 0
@@ -819,6 +819,16 @@ class Subunit(pygame.sprite.Sprite):
             self.mental = 200
 
         self.mental = (200 - self.mental) / 100  # convert to percentage
+
+        self.melee_attack_mod = 0
+        self.melee_def_mod = 0
+        self.range_attack_mod = 0
+        self.range_def_mod = 0
+        self.speed_mod = 0
+        self.morale_mod = 0
+        self.discipline_mod = 0
+        self.hidden_mod = 0
+        self.temperature_mod = 0
 
         self.angle = start_angle
         self.new_angle = self.angle

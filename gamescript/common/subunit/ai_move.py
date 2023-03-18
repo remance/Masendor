@@ -61,7 +61,7 @@ def ai_move(self):
 
         elif move_distance > follow:  # too far from follow target pos, start moving toward it
             self.command_target = move_target
-            if 0 < move_distance < 20:  # only walk if not too far
+            if 0 < move_distance < 20:  # walk if not too far
                 if ("movable" in self.current_action and "walk" not in self.current_action) or \
                         "hold" in self.current_action:
                     self.interrupt_animation = True

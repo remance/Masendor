@@ -574,19 +574,6 @@ class LeaderData:
                 self.leader_sprite_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
 
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "leader", "preset",
-                               "common_leader_sprite.csv"),
-                  encoding="utf-8", mode="r") as edit_file:
-            rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
-            header = rd[0]
-            for row_index, row in enumerate(rd[1:]):
-                for n, i in enumerate(row):
-                    if "," in i:
-                        row[n] = i.split(",")
-                self.leader_sprite_list[row[0]] = {header[index + 1]: stuff for index, stuff in
-                                                   enumerate(row[1:])}
-            edit_file.close()
-
 
 class FactionData:
     images = []

@@ -16,7 +16,8 @@ def make_battle_ui(battle_ui_image, battle_icon_image, team_colour, screen_size,
 
     # Hero ui that show leader weapon, health, and portrait
     command_ui = battleui.HeroUI(screen_scale, (battle_ui_image["weapon_box_primary"],
-                                                battle_ui_image["weapon_box_secondary"]))
+                                                battle_ui_image["weapon_box_secondary"]),
+                                 battle_ui_image["status_box"])
 
     return {"time_ui": time_ui, "time_number": time_number, "battle_scale_ui": battle_scale_ui,
             "wheel_ui": wheel_ui, "command_ui": command_ui}

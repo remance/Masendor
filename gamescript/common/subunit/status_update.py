@@ -375,3 +375,50 @@ def status_update(self):
 
     self.run_speed = self.speed / 2
     self.walk_speed = self.speed / 4
+
+    if self.player_control:  # cal status for command ui value
+        self.melee_attack_mod = int(melee_attack_modifier + (melee_attack_bonus / 10))
+        if self.melee_attack_mod > 3:
+            self.melee_attack_mod = 3
+        elif self.melee_attack_mod < -1:
+            self.melee_attack_mod = -1
+        self.melee_def_mod = int(melee_def_modifier + (melee_def_bonus / 10))
+        if self.melee_def_mod > 3:
+            self.melee_def_mod = 3
+        elif self.melee_def_mod < -1:
+            self.melee_def_mod = -1
+        self.range_attack_mod = int(accuracy_modifier + (accuracy_bonus / 10))
+        if self.range_attack_mod > 3:
+            self.range_attack_mod = 3
+        elif self.range_attack_mod < -1:
+            self.range_attack_mod = -1
+        self.range_def_mod = int(range_def_modifier + (range_def_bonus / 10))
+        if self.range_def_mod > 3:
+            self.range_def_mod = 3
+        elif self.range_def_mod < -1:
+            self.range_def_mod = -1
+        self.speed_mod = int(speed_modifier + (speed_bonus / 10))
+        if self.speed_mod > 3:
+            self.speed_mod = 3
+        elif self.speed_mod < -1:
+            self.speed_mod = -1
+        self.morale_mod = int(morale_modifier + (morale_bonus / 10))
+        if self.morale_mod > 3:
+            self.morale_mod = 3
+        elif self.morale_mod < -1:
+            self.morale_mod = -1
+        self.discipline_mod = int(discipline_bonus / 20) + 1
+        if self.discipline_mod > 3:
+            self.discipline_mod = 3
+        elif self.discipline_mod < -1:
+            self.discipline_mod = -1
+        self.hidden_mod = int(hidden_bonus / 40) + 1
+        if self.hidden_mod > 3:
+            self.hidden_mod = 3
+        elif self.hidden_mod < -1:
+            self.hidden_mod = -1
+        self.temperature_mod = int(self.temperature / 50) + 1
+        if self.temperature_mod > 3:
+            self.temperature_mod = 3
+        elif self.temperature_mod < -1:
+            self.temperature_mod = -1
