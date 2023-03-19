@@ -1,5 +1,5 @@
-
 import pygame
+import threading
 
 from PIL import Image
 from random import choice
@@ -9,14 +9,44 @@ from gamescript.common.game import create_troop_sprite
 
 def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200):
     weapon_list = self.troop_data.weapon_list
-    animation_sprite_pool = {}  # TODO need to add for subunit creator
+    animation_sprite_pool = {}
     status_animation_pool = {}
     weapon_common_type_list = tuple(set(["_" + value["Common"] + "_" for key, value in weapon_list.items() if
                                          key != "" and type(value["Common"]) is not int]))  # common type animation set
     weapon_attack_type_list = tuple(set(["_" + value["Attack"] + "_" for key, value in weapon_list.items() if
                                          key != "" and type(value["Attack"]) is not int]))  # attack animation set
-    who_todo = {key: value for key, value in who_todo.items() if key not in (0, "h1") and
-                value["Sprite ID"] != ""}  # skip None troop or one with no sprite data
+    who_todo = {key: value for key, value in who_todo.items() if value["Sprite ID"] != ""}  # skip one with no ID
+    if not preview and len(who_todo) > 10:
+        jobs = []
+        new_who_todo = []
+        sprite_id_list = tuple(set([value["Sprite ID"] for value in who_todo.values()]))
+        for sprite_id in sprite_id_list:
+            new_who_todo.append({key: value for key, value in who_todo.items() if value["Sprite ID"] == sprite_id})
+        while len(new_who_todo) > 5:  # merge the smallest list together until only 5 remains
+            least_len = min(new_who_todo, key=len)
+            new_who_todo.remove(least_len)
+            next_least_len = min(new_who_todo, key=len)
+            next_least_len |= least_len
+
+        for who in new_who_todo:
+            p = threading.Thread(target=create_sprite,
+                                 args=(self, who, preview, max_preview_size, weapon_list,
+                                       weapon_common_type_list, weapon_attack_type_list,
+                                       animation_sprite_pool, status_animation_pool),
+                                 daemon=True)
+            jobs.append(p)
+            p.start()
+        for job in jobs:
+            job.join()
+    else:
+        create_sprite(self, who_todo, preview, max_preview_size, weapon_list,
+                      weapon_common_type_list, weapon_attack_type_list, animation_sprite_pool, status_animation_pool)
+
+    return animation_sprite_pool, status_animation_pool
+
+
+def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon_common_type_list,
+                  weapon_attack_type_list, animation_sprite_pool, status_animation_pool):
     for subunit_id, this_subunit in who_todo.items():
         sprite_id = str(this_subunit["Sprite ID"])
         race = self.troop_data.race_list[this_subunit["Race"]]["Name"]
@@ -145,28 +175,29 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
         else:
             if sprite_id not in animation_sprite_pool:  # troop can share sprite preset id but different gear
                 animation_sprite_pool[sprite_id] = {}
+            next_level = animation_sprite_pool[sprite_id]  # sprite ID
 
-            next_level = animation_sprite_pool[sprite_id]
-            if race not in next_level:
+            if race not in next_level:  # troop race
                 next_level[race] = {}
-
             next_level = next_level[race]
-            if mount_race not in next_level:
+
+            if mount_race not in next_level:  # mount race
                 next_level[mount_race] = {}
-
             next_level = next_level[mount_race]
-            if armour_id[0] not in next_level:
+
+            if armour_id[0] not in next_level:  # troop armour ID
                 next_level[armour_id[0]] = {}
-
             next_level = next_level[armour_id[0]]
-            if armour_id[1] not in next_level:
-                next_level[armour_id[1]] = {}
 
+            if armour_id[1] not in next_level:  # mount armour
+                next_level[armour_id[1]] = {}
             next_level = next_level[armour_id[1]]
-            if weapon_key[0] not in next_level:
+
+            if weapon_key[0] not in next_level:  # main weapon
                 next_level[weapon_key[0]] = {}
-            if weapon_key[1] not in next_level:
+            if weapon_key[1] not in next_level:  # sub weapon
                 next_level[weapon_key[1]] = {}
+
             animation_list = list(self.generic_animation_pool.keys())
             animation_list = [item for item in animation_list if "_Default" in item] + \
                              [item for item in animation_list if "_Default" not in item]  # move default to first
@@ -187,11 +218,13 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
                             if (weapon_common_action[weapon_set_index][weapon_index] in this_animation or
                                     "_any_" in this_animation) and weapon_index == 0:  # keep only for main weapon
                                 temp_list.append(this_animation)
-                        elif ((weapon_common_action[weapon_set_index][weapon_index] in this_animation and
-                                weapon_attack_action[weapon_set_index][weapon_index] in this_animation and
-                               (("_Main_", "_Sub_")[weapon_index] in this_animation or "_Both_" in this_animation) or
-                              "_Charge" in this_animation)):  # attack animation
+                        elif (weapon_common_action[weapon_set_index][weapon_index] in this_animation and
+                              (weapon_attack_action[weapon_set_index][weapon_index] in this_animation or
+                               "_Charge" in this_animation) and
+                              (("_Main_", "_Sub_")[weapon_index] in this_animation or "_Both_" in this_animation)):
+                            # attack animation
                             temp_list.append(this_animation)
+
                     for this_animation in reversed(
                             temp_list):  # check if weapon common type and "any" for same animation exist, remove any
                         if "_any_" in this_animation and any(weapon_common_action[weapon_set_index][weapon_index] in
@@ -233,10 +266,12 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
                                 both_weapon_set = True
                         elif weapon_common_action[weapon_set_index][weapon_index] in name_input:
                             if any(ext in name_input for ext in weapon_attack_type_list) is False and \
-                                    "_Charge" not in name_input:  # common animation with weapon like idle
+                                    "_Charge" not in name_input and weapon_index == 0:
+                                # common animation with weapon like idle, make only for main weapon
                                 make_animation = True
                             elif (weapon_attack_action[weapon_set_index][weapon_index] in name_input or
-                                  "_Charge" in name_input) and ("_Main_", "_Sub_")[weapon_index] in name_input:  # attack animation and charge
+                                  "_Charge" in name_input) and ("_Main_", "_Sub_")[weapon_index] in name_input:
+                                # attack animation and charge
                                 make_animation = True
                         if make_animation and name_input not in current_in_pool:
                             final_name = name_input

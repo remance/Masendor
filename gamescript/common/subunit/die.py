@@ -23,6 +23,8 @@ def die(self, how):
     self.effectbox.kill()
     self.effectbox = None
 
+    self.current_effect = None
+
     for group in (self.alive_troop_follower, self.alive_leader_follower):  # change subordinate in list
         for this_subunit in group:
             if self.leader:  # move subordinate to its higher leader

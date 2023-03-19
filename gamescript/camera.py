@@ -20,4 +20,5 @@ class Camera:
             surface_w, surface_h = surface.image.get_rect().size
             rect = Rect(surface_x - camera_x, surface_y - camera_y, surface_w,
                         surface_h)  # get rect that shown inside camera
+            # if rect.x + surface_w > 0 and rect.y + surface_h > 0:
             self.image.blit(surface.image, rect)

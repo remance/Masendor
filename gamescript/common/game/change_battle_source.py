@@ -1,4 +1,4 @@
-def change_battle_source(self, troop_scale, team_troop, team_commander):
+def change_battle_source(self, team_troop, team_commander):
     """change army stat when select new source"""
 
     team_total_troop = {key: 0 for key in team_troop.keys()}  # total troop number in army
@@ -15,10 +15,10 @@ def change_battle_source(self, troop_scale, team_troop, team_commander):
             if self.troop_data.troop_list[this_troop]["Troop Class"] in ("Light Cavalry", "Heavy Cavalry", "Chariot"):  # cavalry
                 troop_type += 2
             troop_type_list[index][troop_type][0] += team[this_troop][0]
-            troop_type_list[index][troop_type][1] += int(team[this_troop][1] * troop_scale[index])
+            troop_type_list[index][troop_type][1] += int(team[this_troop][1])
             # add total
             troop_type_list[index][-1][0] += team[this_troop][0]
-            troop_type_list[index][-1][1] += int(team[this_troop][1] * troop_scale[index])
+            troop_type_list[index][-1][1] += int(team[this_troop][1])
 
     army_loop_list = {key: self.leader_data.leader_list[leader_name_list[key]]["Name"]
                       for key in team_total_troop}

@@ -15,7 +15,7 @@ def menu_team_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
                     self.map_source = index
                     team_army, team_leader = self.read_battle_source(
                         [self.source_scale_text[self.map_source], self.source_text[self.map_source]])
-                    self.change_battle_source(self.source_scale[self.map_source], team_army, team_leader)
+                    self.change_battle_source(team_army, team_leader)
                     break
 
             for box in self.tick_box:

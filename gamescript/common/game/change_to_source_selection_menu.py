@@ -17,9 +17,6 @@ def change_to_source_selection_menu(self):
         self.source_list = self.read_selected_map_data(openfolder, "source_" + self.language + ".csv")
         self.source_name_list = [value["Source"] for value in list(self.source_list.values())]
         self.source_scale_text = [value["Number Text"] for value in list(self.source_list.values())]
-        self.source_scale = [{0: float(value["Team 0 Scale"]), 1: float(value["Team 1 Scale"]),
-                              2: float(value["Team 2 Scale"]), 3: float(value["Team 3 Scale"])}
-                             for value in list(self.source_list.values())]
         self.source_text = [value["Description"] for value in list(self.source_list.values())]
     except FileNotFoundError:  # no source file, crash game
         self.error_log.write("\n No source for map: " + str(self.map_title.name))
@@ -44,7 +41,7 @@ def change_to_source_selection_menu(self):
 
     team_troop, team_leader = self.read_battle_source(
         [self.source_scale_text[self.map_source], self.source_text[self.map_source]])
-    self.change_battle_source(self.source_scale[self.map_source], team_troop, team_leader)
+    self.change_battle_source(team_troop, team_leader)
 
     self.menu_button.add(*self.team_select_button)
     self.main_ui_updater.add(*self.team_select_button, self.map_option_box, self.observe_mode_tick_box,

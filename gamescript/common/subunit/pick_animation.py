@@ -34,6 +34,8 @@ def pick_animation(self):
         # print(list(self.animation_pool.keys()))
         # asdf
 
+    self.current_animation_direction = self.current_animation[self.sprite_direction]
+
     self.max_show_frame = self.current_animation["frame_number"]
 
     self.animation_play_time = self.default_animation_play_time  # get new play speed

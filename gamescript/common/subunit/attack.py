@@ -56,7 +56,7 @@ def attack(self, attack_type):
             accuracy -= round(angel_dif)
 
             arc_shot = self.check_special_effect("Arc Shot", weapon=weapon)
-            print(self.name, arc_shot)
+
             if not arc_shot:  # direct shot just move until it reach max range
                 base_target = Vector2(self.base_pos[0] - (max_range * sin(radians(base_angle))),
                                       self.base_pos[1] - (max_range * cos(radians(base_angle))))

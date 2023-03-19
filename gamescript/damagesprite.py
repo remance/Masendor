@@ -243,6 +243,9 @@ class RangeDamageSprite(DamageSprite):
                 if self.arc_shot:
                     if self.distance_progress >= 100:  # arc shot only hit when reach target
                         self.hit_register(this_subunit)
+                        if self.penetrate <= 0:
+                            self.reach_target()
+                            return
                 else:
                     self.hit_register(this_subunit)
                     self.already_hit.append(this_subunit.game_id)

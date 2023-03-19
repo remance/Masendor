@@ -246,6 +246,7 @@ class Subunit(pygame.sprite.Sprite):
         self.animation_pool = {}  # list of animation sprite this subunit can play with its action
         self.status_animation_pool = {}
         self.current_animation = {}  # list of animation frames playing
+        self.current_animation_direction = {}
         self.show_frame = 0  # current animation frame
         self.max_show_frame = 0
         self.frame_timer = 0
@@ -276,7 +277,7 @@ class Subunit(pygame.sprite.Sprite):
         self.leader = leader_subunit  # leader of the sub-subunit if there is one
         self.unit_leader = None  # leader at the top hierarchy in the unit
         self.is_unit_leader = False
-        self.tactic = "attack"  # tactic for unit leader
+        self.tactic = "Attack"  # tactic for unit leader
 
         self.feature_mod = "Infantry"  # the terrain feature that will be used on this subunit
         self.move_speed = 0  # speed of current movement
