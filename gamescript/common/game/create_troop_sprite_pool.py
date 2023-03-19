@@ -389,8 +389,6 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                     status_animation_pool[this_subunit["Size"]][status]["frame_number"] = len(
                         status_animation_pool[this_subunit["Size"]][status]["frame"]) - 1
 
-    return animation_sprite_pool, status_animation_pool
-
 
 def crop_sprite(sprite_pic):
     low_x0 = float("inf")  # lowest x0
