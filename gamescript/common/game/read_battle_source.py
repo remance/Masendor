@@ -27,11 +27,12 @@ def read_battle_source(self, description_text):
     team_leader = {row["Team"]: [] for row in list(unit_info.values())}
     for row in list(unit_info.values()):
         team_leader[row["Team"]].append(row["Leader ID"])
-        for item in row["Troop"].split(","):
-            troop_id = int(item.split(":")[0])
-            number = item.split(":")[1].split("/")
-            if troop_id not in team_troop[row["Team"]]:
-                team_troop[row["Team"]][troop_id] = [0, 0]
-            team_troop[row["Team"]][troop_id][0] += int(number[0])
-            team_troop[row["Team"]][troop_id][1] += int(number[1])
+        if row["Troop"]:
+            for item in row["Troop"].split(","):
+                troop_id = int(item.split(":")[0])
+                number = item.split(":")[1].split("/")
+                if troop_id not in team_troop[row["Team"]]:
+                    team_troop[row["Team"]][troop_id] = [0, 0]
+                team_troop[row["Team"]][troop_id][0] += int(number[0])
+                team_troop[row["Team"]][troop_id][1] += int(number[1])
     return team_troop, team_leader

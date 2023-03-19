@@ -717,7 +717,7 @@ class Battle:
                     else:
                         if mouse_left_up and self.battle_done_button.rect.collidepoint(self.mouse_pos):
                             coa_list = [self.coa_list[self.map_info[key]] for key in self.map_info if "Team " in key if
-                                        self.map_info[key] != 0]
+                                        self.map_info[key]]
                             if not self.battle_done_box.result_showing:  # show battle result stat
                                 faction_name = {key: self.faction_data.faction_list[self.map_info[
                                     "Team " + str(key)]]["Name"] for key in self.all_team_subunit}

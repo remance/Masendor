@@ -855,6 +855,7 @@ class Subunit(pygame.sprite.Sprite):
         self.impetuous = self.check_special_effect("Impetuous")
         self.night_vision = self.check_special_effect("Night Vision")
         self.day_blindness = self.check_special_effect("Day Blindness")
+        self.double_terrain_penalty = self.check_special_effect("Double Terrain Penalty")
 
         # Create hitbox sprite
         self.hitbox_front_distance = self.troop_size

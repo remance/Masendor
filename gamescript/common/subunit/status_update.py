@@ -146,10 +146,16 @@ def status_update(self):
 
     # Map feature modifier to stat
     map_feature_mod = self.feature_map.feature_mod[self.feature]
+
     if map_feature_mod[self.feature_mod + " Speed/Charge Effect"] != 1:  # speed/charge
         speed_modifier += map_feature_mod[
             self.feature_mod + " Speed/Charge Effect"]  # get the speed mod appropriate to subunit type
         charge_modifier += map_feature_mod[self.feature_mod + " Speed/Charge Effect"]
+
+        if self.double_terrain_penalty and map_feature_mod[self.feature_mod + " Speed/Charge Effect"] < 1:
+            speed_modifier += map_feature_mod[
+                self.feature_mod + " Speed/Charge Effect"]  # double negative effect
+            charge_modifier += map_feature_mod[self.feature_mod + " Speed/Charge Effect"]
 
     if map_feature_mod[self.feature_mod + " Combat Effect"] != 1:  # melee melee_attack
         # combat_mod = self.unit.feature_map.feature_mod[self.unit.feature][self.feature_mod + 1]
@@ -161,10 +167,10 @@ def status_update(self):
             self.feature_mod + " Defence Effect"]  # get the defence mod appropriate to subunit type
         charge_def_modifier += map_feature_mod[self.feature_mod + " Defence Effect"]
 
-    range_def_bonus += map_feature_mod["Range Defence Bonus"]  # range defence bonus from terrain bonus
+    range_def_bonus += map_feature_mod["Range Defence Bonus"]  # range defence bonus from terrain
     accuracy_bonus -= (map_feature_mod[
                            "Range Defence Bonus"] / 2)  # range def bonus block subunit sight as well so less accuracy
-    discipline_bonus += map_feature_mod["Discipline Bonus"]  # discipline defence bonus from terrain bonus
+    discipline_bonus += map_feature_mod["Discipline Bonus"]  # discipline bonus from terrain
 
     self.apply_map_status(map_feature_mod)
     # self.hidden += self.unit.feature_map[self.unit.feature][6]
