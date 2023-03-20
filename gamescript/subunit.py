@@ -1101,8 +1101,6 @@ class Subunit(pygame.sprite.Sprite):
                             SkillAimTarget(self.screen_scale, self,
                                            self.skill[self.current_action["skill"]]["Area Of Effect"])
 
-                    self.rect = self.image.get_rect(center=self.offset_pos)
-
         else:  # dead
             if self.alive:  # enter dead state
                 self.alive = False  # enter dead state

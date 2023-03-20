@@ -38,6 +38,11 @@ def pick_animation(self):
 
     self.max_show_frame = self.current_animation["frame_number"]
 
+    current_animation = self.current_animation_direction[self.show_frame]
+    self.image = current_animation["sprite"]
+    self.offset_pos = self.pos - current_animation["center_offset"]
+    self.rect = self.image.get_rect(center=self.offset_pos)
+
     self.animation_play_time = self.default_animation_play_time  # get new play speed
     if "play_time_mod" in self.current_animation[self.show_frame]["frame_property"]:
         self.animation_play_time *= self.current_animation[self.show_frame]["frame_property"]["play_time_mod"]

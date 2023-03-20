@@ -2,7 +2,7 @@ iniconfig==2.0.0
 numpy~=1.22.2
 pandas~=1.4.1
 Pillow~=9.4.0
-pygame~=2.2.0
+pygame~=2.3.0
 pyperclip==1.8.2
 pywin32-ctypes==0.2.0
 screeninfo~=0.8.1
