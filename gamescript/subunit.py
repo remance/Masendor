@@ -6,7 +6,7 @@ from pathlib import Path
 import pygame
 import pygame.freetype
 
-from gamescript.battleui import SkillAimTarget
+from gamescript.battleui import SkillAimTarget, SpriteIndicator
 from gamescript.common import utility
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
@@ -269,9 +269,17 @@ class Subunit(pygame.sprite.Sprite):
         self.game_id = game_id  # ID of this subunit
         self.map_id = map_id
         self.team = team
+        self.start_hp = start_hp
+        self.start_stamina = start_stamina
         self.coa = coa
 
-        self.troop_reserve_list = None
+        self.camp_pos = None
+        self.camp_radius = None
+        self.current_camp_pos = None
+        self.current_camp_radius = None
+
+        self.troop_reserve_list = {}
+        self.troop_dead_list = {}  # for checking how many to replenish from reserve
         self.alive_troop_follower = []  # list of alive troop subordinate subunits
         self.troop_follower_size = 0
         self.alive_leader_follower = []  # list of alive leader subordinate subunits
@@ -343,6 +351,8 @@ class Subunit(pygame.sprite.Sprite):
         self.take_melee_dmg = 0
         self.take_range_dmg = 0
         self.take_aoe_dmg = 0
+
+        self.reserve_ready_timer = 0
 
         self.terrain = 0
         self.feature = 0
@@ -587,9 +597,10 @@ class Subunit(pygame.sprite.Sprite):
             self.original_skill.remove("")
 
         self.health = int(((self.strength * 0.2) + (self.constitution * 0.8)) * (grade_stat[
-            "Health Effect"] / 100) * (start_hp / 100))  # Health of troop
-        self.stamina = int(((self.strength * 0.2) + (self.constitution * 0.8)) * (grade_stat["Stamina Effect"] / 100) * (
-                start_stamina / 100))  # starting stamina with grade
+            "Health Effect"] / 100) * (self.start_hp / 100))  # Health of troop
+        self.stamina = int(((self.strength * 0.2) + (self.constitution * 0.8)) *
+                           (grade_stat["Stamina Effect"] / 100) *
+                           (self.start_stamina / 100))  # starting stamina with grade
 
         self.original_mana = 0
         if "Mana" in stat:
@@ -917,6 +928,30 @@ class Subunit(pygame.sprite.Sprite):
                     if self.in_melee_combat_timer < 0:
                         self.in_melee_combat_timer = 0
 
+                if self.reserve_ready_timer > 0:
+                    if self.base_pos.distance_to(self.current_camp_pos) <= self.current_camp_radius:
+                        if not self.take_melee_dmg and not self.take_aoe_dmg and not self.take_range_dmg:
+                            self.reserve_ready_timer += dt
+                        if self.reserve_ready_timer > 5:  # troop reinforcement take 5 seconds
+                            for troop_id, number in self.troop_dead_list.items():
+                                for _ in range(number):
+                                    add_subunit = Subunit(troop_id, self.battle.last_troop_game_id, None, self.team,
+                                                          self.base_pos, self.angle, self.start_hp, self.start_stamina,
+                                                          self, self.coa)
+                                    add_subunit.hitbox = SpriteIndicator(add_subunit.hitbox_image, add_subunit, self)
+                                    add_subunit.effectbox = SpriteIndicator(pygame.Surface((0, 0)), add_subunit, self,
+                                                                            layer=10000001)
+                                    add_subunit.enter_battle(self.battle.subunit_animation_pool,
+                                                             self.battle.status_animation_pool)
+                                    self.troop_dead_list[troop_id] -= 1
+                                    self.battle.last_troop_game_id += 1
+
+                            self.find_formation_size(troop=True)
+                            self.change_formation("troop")
+                            self.reserve_ready_timer = 0
+                    else:
+                        self.reserve_ready_timer = 0
+
                 if self.take_melee_dmg > 0:
                     self.take_melee_dmg -= dt
                     if self.take_melee_dmg < 0:
@@ -945,6 +980,16 @@ class Subunit(pygame.sprite.Sprite):
                             if self.charging == "charge":
                                 self.charging = "run"
                                 self.attack("charge")
+
+                    if self.is_leader and self.camp_pos and self.reserve_ready_timer == 0 and \
+                            any(value > 0 for value in self.troop_dead_list.values()):
+                        for index, camp_pos in enumerate(self.camp_pos):
+                            if self.base_pos.distance_to(camp_pos) <= self.camp_radius[index]:
+                                self.current_camp_pos = camp_pos
+                                self.current_camp_radius = self.camp_radius[index]
+                                self.reserve_ready_timer = 0.1  # start respawning troop
+                                break
+
                     self.timer -= 0.5
 
                 self.taking_damage_angle = None

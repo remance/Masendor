@@ -250,7 +250,7 @@ class Lorebook(pygame.sprite.Sprite):
 
         if self.section == self.leader_section:  # leader section exclusive for now (will merge with other section when add portrait for others)
             try:
-                image_name = str(self.subsection)
+                image_name = "L" + str(self.subsection)
                 self.portrait = self.leader_data.images[
                     image_name]  # get leader portrait based on subsection number
             except KeyError:

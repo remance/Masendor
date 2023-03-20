@@ -1,5 +1,8 @@
 def enter_battle(self, animation_pool, status_animation_pool):
     """run once when battle start or subunit just get created"""
+    if self.team in self.battle.camp_pos:
+        self.camp_pos = [item[0] for item in self.battle.camp_pos[self.team]]
+        self.camp_radius = [item[1] for item in self.battle.camp_pos[self.team]]
 
     self.terrain, self.feature = self.get_feature(self.base_pos,
                                                   self.base_map)  # Get new terrain and feature at each subunit position

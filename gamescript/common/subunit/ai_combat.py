@@ -4,7 +4,7 @@ opposite_index = (1, 0)
 
 
 def ai_combat(self):
-    if "charge" not in self.current_action:
+    if "charge" not in self.current_action and self.nearest_enemy:
         if self.nearest_enemy[1] < self.melee_distance_zone:  # enemy in subunit's melee zone
             self.attack_subunit = self.nearest_enemy[0]
             self.in_melee_combat_timer = 3  # consider to be in melee for 3 seconds before reset

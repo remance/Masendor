@@ -34,7 +34,7 @@ def setup_battle_troop(self, team_subunit_list, specific_team=None):
         float_column = [index for index, item in enumerate(header) if item in float_column]
         dict_column = [index for index, item in enumerate(header) if item in dict_column]
         leader_subunit = {}
-        game_id = 0
+        self.last_troop_game_id = 0
         for data in rd[1:]:  # skip header
             for n, i in enumerate(data):
                 data = stat_convert(data, n, i, list_column=list_column, int_column=int_column,
@@ -54,19 +54,21 @@ def setup_battle_troop(self, team_subunit_list, specific_team=None):
 
                 troop_number_list = {int(key): [int(num) for num in value.split("/")] for key, value in data["Troop"].items()}
 
-                add_leader = subunit.Subunit(data["Leader ID"], game_id, data["ID"], data["Team"], data["POS"],
-                                              data["Angle"], data["Start Health"], data["Start Stamina"], leader,
-                                              self.faction_data.coa_list[data["Faction"]])
+                add_leader = subunit.Subunit(data["Leader ID"], self.last_troop_game_id, data["ID"], data["Team"],
+                                             data["POS"],  data["Angle"], data["Start Health"], data["Start Stamina"],
+                                             leader, self.faction_data.coa_list[data["Faction"]])
                 add_leader.troop_reserve_list = {key: value[1] for key, value in troop_number_list.items()}
+                add_leader.troop_dead_list = {key: 0 for key, value in troop_number_list.items()}
+
                 which_team.add(add_leader)
-                leader_subunit[data["ID"]] = add_leader  # leader subunit from L string leader id as troop id
-                game_id += 1
+                leader_subunit[data["ID"]] = add_leader  # leader subunit
+                self.last_troop_game_id += 1
                 for key, value in troop_number_list.items():
                     for _ in range(value[0]):
-                        subunit.Subunit(int(key), game_id, None, data["Team"],
+                        subunit.Subunit(int(key), self.last_troop_game_id, None, data["Team"],
                                         data["POS"], data["Angle"], data["Start Health"],
                                         data["Start Stamina"], add_leader,
                                         self.faction_data.coa_list[data["Faction"]])
-                        game_id += 1
+                        self.last_troop_game_id += 1
 
     unit_file.close()
