@@ -596,8 +596,8 @@ class Subunit(pygame.sprite.Sprite):
         if "" in self.original_skill:
             self.original_skill.remove("")
 
-        self.health = int(((self.strength * 0.2) + (self.constitution * 0.8)) * (grade_stat[
-            "Health Effect"] / 100) * (self.start_hp / 100))  # Health of troop
+        self.health = int(((self.strength * 0.2) + (self.constitution * 0.8)) *
+                          (grade_stat["Health Effect"] / 100) * (self.start_hp / 100))  # Health of troop
         self.stamina = int(((self.strength * 0.2) + (self.constitution * 0.8)) *
                            (grade_stat["Stamina Effect"] / 100) *
                            (self.start_stamina / 100))  # starting stamina with grade
