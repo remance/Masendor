@@ -88,6 +88,7 @@ class Battle:
         self.battle_ui_updater = main.battle_ui_updater
 
         self.subunit_updater = main.subunit_updater
+        self.all_subunits = main.all_subunits
         self.ui_updater = main.ui_updater
         self.weather_updater = main.weather_updater
         self.effect_updater = main.effect_updater
@@ -802,7 +803,7 @@ class Battle:
 
         self.troop_ai_logic_queue = []
 
-        clean_group_object((self.shoot_lines, self.subunit_updater, self.char_icon,
+        clean_group_object((self.shoot_lines, self.all_subunits, self.char_icon,
                             self.effect_updater, self.weather_matter))
 
         self.command_ui.__init__(self.screen_scale, self.command_ui.weapon_box_images,

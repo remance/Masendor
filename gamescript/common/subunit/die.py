@@ -80,6 +80,9 @@ def die(self, how):
     self.alive_troop_follower = []
     self.alive_leader_follower = []
 
+    if self in self.battle.troop_ai_logic_queue:
+        self.battle.troop_ai_logic_queue.remove(self)
+
     self.battle.all_team_subunit[self.team].remove(self)
     self.battle.active_subunit_list.remove(self)
 

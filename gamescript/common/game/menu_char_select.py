@@ -13,7 +13,7 @@ def menu_char_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
                                     list(self.char_stat.values()), *self.char_select_button)
         self.menu_button.remove(*self.char_select_button)
 
-        clean_group_object((self.subunit_updater, self.preview_char, self.char_icon))
+        clean_group_object((self.subunit_updater, self.all_subunits, self.preview_char, self.char_icon))
 
         self.change_to_source_selection_menu()
 

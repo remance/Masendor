@@ -233,6 +233,8 @@ class Game:
         self.weather_updater = pygame.sprite.Group()  # updater for weather objects
         self.effect_updater = pygame.sprite.Group()  # updater for effect objects (e.g. range melee_attack sprite)
 
+        self.all_subunits = pygame.sprite.Group()
+
         self.preview_char = pygame.sprite.Group()  # group for char list in char select screen
 
         self.sprite_indicator = pygame.sprite.Group()
@@ -278,7 +280,7 @@ class Game:
         weather.MatterSprite.containers = self.weather_matter, self.battle_ui_updater, self.weather_updater
         weather.SpecialEffect.containers = self.weather_effect, self.battle_ui_updater, self.weather_updater
 
-        subunit.Subunit.containers = self.subunit_updater, self.battle_camera
+        subunit.Subunit.containers = self.subunit_updater, self.all_subunits, self.battle_camera
 
         # game cursor
         cursor_images = load_images(self.main_dir, subfolder=("ui", "cursor"))  # no need to scale cursor

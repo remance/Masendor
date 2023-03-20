@@ -200,14 +200,14 @@ This function is going to be a headache to write and research. But hopefully, it
 **Ver 0.6 Dream Decision:** Battle selection(with different estimation source),
 preparation and result screen, custom battle, improve the main menu, Battle of Megiddo, Battle of Mohács
 
-**0.6.5 - 0.6.7:** reserve system, Battle of Mohács
+**0.6.6 - 0.6.7:** reserve system, Battle of Mohács
 
 **0.6.8 and 0.6.9:** random map generator and custom battle
 
 **Ver 0.7 Future Visionary:**  battle information based on hidden vs sight, march sound system, raise flag/ light torch, ambush bonus, 
 Battle of Walaja, Battle of Dorylaeum
 
-**0.7.1 and 0.7.2:** hidden stat, line of sight,
+**0.7.1 and 0.7.2:** hidden stat, line of sight, leader respawn system
 
 **0.7.3:** march sound system
 

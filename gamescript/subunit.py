@@ -1115,4 +1115,5 @@ class Subunit(pygame.sprite.Sprite):
                     self.battle.battle_map.image.blit(self.image, self.rect)
                     if self.player_control:
                         self.battle.player_char = None
-                    clean_object(self)
+                    self.battle.battle_camera.remove(self)
+                    self.battle.subunit_updater.remove(self)
