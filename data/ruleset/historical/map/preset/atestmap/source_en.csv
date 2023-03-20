@@ -1,2 +1,2 @@
-"ID","Source","Number Text","Description"
-0,"Test","Some number","Test source and map."
+"ID","Source","Number Text","Description","Camp Team 1","Camp Team 2"
+0,"Test","Some number","Test source and map.","(960,600,50);(570,600,50)","(550,200,80)"

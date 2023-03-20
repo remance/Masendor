@@ -677,12 +677,11 @@ class MapOptionBox(pygame.sprite.Sprite):
 
 
 class MapPreview(pygame.sprite.Sprite):
-    colour = {0: (50, 50, 50), 1: (0, 0, 200), 2: (200, 0, 0)}
-    selected_colour = {0: (200, 200, 200), 1: (150, 150, 255), 2: (255, 150, 150)}
-    leader_dot = {team: {True: None, False: None} for team in colour.keys()}
     terrain_colour = None
     feature_colour = None
     battle_map_colour = None
+    colour = None
+    selected_colour = None
 
     def __init__(self, main_dir, screen_scale, pos):
         self.main_dir = main_dir
@@ -693,6 +692,7 @@ class MapPreview(pygame.sprite.Sprite):
 
         self.image = pygame.Surface((450 * self.screen_scale[0], 450 * self.screen_scale[1]))
         self.image.fill((0, 0, 0))  # draw black colour for black corner
+        self.leader_dot = {team: {True: None, False: None} for team in self.colour.keys()}
 
         leader_dot = pygame.Surface((10 * self.screen_scale[0], 10 * self.screen_scale[1]))  # dot for team subunit
         leader_dot.fill((0, 0, 0))  # black corner
@@ -740,10 +740,17 @@ class MapPreview(pygame.sprite.Sprite):
         self.image.blit(map_image, image_rect)
         self.base_image = self.image.copy()
 
-    def change_mode(self, mode, team_pos_list=None, selected=None):
+    def change_mode(self, mode, team_pos_list=None, camp_pos_list=None, selected=None):
         """map mode: 0 = map without army dot, 1 = with army dot"""
         self.image = self.base_image.copy()
         if mode == 1:
+            for team, pos_list in camp_pos_list.items():
+                for pos in pos_list:
+                    pygame.draw.circle(self.image, self.colour[team],
+                                       (pos[0][0] * ((440 * self.screen_scale[0]) / 1000),
+                                        pos[0][1] * ((440 * self.screen_scale[1]) / 1000)),
+                                       pos[1] * ((440 * self.screen_scale[0]) / 1000),
+                                       int(5 * self.screen_scale[0]))
             for team, pos_list in team_pos_list.items():
                 for pos in pos_list["Leader"]:
                     select = False
@@ -753,5 +760,4 @@ class MapPreview(pygame.sprite.Sprite):
                                                 pos[1] * ((440 * self.screen_scale[1]) / 1000))
                     rect = self.leader_dot[team][select].get_rect(center=scaled_pos)
                     self.image.blit(self.leader_dot[team][select], rect)
-
         self.rect = self.image.get_rect(center=self.pos)

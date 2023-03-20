@@ -406,7 +406,7 @@ def travel_to_map_border(pos, angle, map_size):
             return pygame.Vector2((x, map_size[1]))
 
 
-def apply_sprite_colour(surface, colour, colour_list, keep_white=True, keep_old_colour=False):
+def apply_sprite_colour(surface, colour, colour_list=None, keep_white=True, keep_old_colour=False):
     """Colorise body part sprite"""
     if colour is not None and colour != "none":
         if colour_list is None:

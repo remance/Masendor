@@ -258,8 +258,8 @@ def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool
     head_rect = head.get_rect(topleft=(0, 0))
     head_sprite_surface.blit(head, head_rect)
     if sprite_list[p + "_skin"] not in ("", "none"):
-        head_sprite_surface = apply_sprite_colour(head_sprite_surface, sprite_list[p + "_skin"], colour_list,
-                                                  keep_white=False)
+        head_sprite_surface = apply_sprite_colour(head_sprite_surface, sprite_list[p + "_skin"],
+                                                  colour_list=colour_list, keep_white=False)
     face = [grab_face_part(body_pool, head_race, "eyebrow", sprite_list[p + "_eyebrow"]),
             grab_face_part(body_pool, head_race, "eye", animation_part_list[p + "_eye"],
                            part_default=sprite_list[p + "_eye"]),
@@ -269,7 +269,8 @@ def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool
 
     for face_index, face_part in enumerate(("_eyebrow", "_eye", "_beard")):
         if face[face_index] is not None:
-            face[face_index] = apply_sprite_colour(face[face_index], sprite_list[p + face_part][1], colour_list)
+            face[face_index] = apply_sprite_colour(face[face_index], sprite_list[p + face_part][1],
+                                                   colour_list=colour_list)
 
     for index, item in enumerate(face):
         if item is not None:
@@ -278,7 +279,7 @@ def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool
 
     if sprite_list[p + "_hair"][0] not in ("", "none") and "hair" in body_pool[head_race]["head"]:
         hair_sprite = body_pool[head_race]["head"]["hair"][sprite_list[p + "_hair"][0]].copy()
-        hair_sprite = apply_sprite_colour(hair_sprite, sprite_list[p + "_hair"][1], colour_list)
+        hair_sprite = apply_sprite_colour(hair_sprite, sprite_list[p + "_hair"][1], colour_list=colour_list)
         head_sprite_surface.blit(hair_sprite, rect)
 
     if sprite_list[p + "_head"] != "none":
@@ -338,7 +339,7 @@ def generate_body(part, body_part_list, troop_sprite_list, sprite_pool, armour_s
                     hair_sprite = sprite_pool[body_part_list[0]][new_part_name]["hair " + body_part_list[1]][
                         troop_sprite_list[part[:3] + "hair"][0]].copy()
                     hair_sprite = apply_sprite_colour(hair_sprite, troop_sprite_list[part[:3] + "hair"][1],
-                                                      colour_list, keep_white=False)
+                                                      colour_list=colour_list, keep_white=False)
                     rect = hair_sprite.get_rect(
                         center=(sprite_image.get_width() / 2, sprite_image.get_height() / 2))
                     sprite_image.blit(hair_sprite, rect)
@@ -347,7 +348,7 @@ def generate_body(part, body_part_list, troop_sprite_list, sprite_pool, armour_s
                 sprite_image = sprite_pool[body_part_list[0]][body_part_list[1]].copy()
 
         if colour is not None:  # apply colour, maybe add for armour colour later
-            sprite_image = apply_sprite_colour(sprite_image, colour, colour_list, keep_white=False)
+            sprite_image = apply_sprite_colour(sprite_image, colour, colour_list=colour_list, keep_white=False)
 
         if armour is not None and armour != "None":  # add armour if there is one
             part_name = part

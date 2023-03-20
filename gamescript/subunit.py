@@ -16,6 +16,8 @@ rotation_list = (90, -90)
 rotation_name = ("l_side", "r_side")
 rotation_dict = {key: rotation_name[index] for index, key in enumerate(rotation_list)}
 
+clean_object = utility.clean_object
+
 infinity = float("inf")
 
 weapon_set = ("Main_", "Sub_")
@@ -1062,3 +1064,10 @@ class Subunit(pygame.sprite.Sprite):
                 self.die("dead")
             if self.show_frame < self.max_show_frame:
                 self.play_animation(dt, False)
+            else:  # finish playing dead animation, blit troop into map sprite and remove it from camera
+                if self in self.battle.battle_camera:
+                    self.battle.battle_map.true_image.blit(self.image, self.rect)
+                    self.battle.battle_map.image.blit(self.image, self.rect)
+                    if self.player_control:
+                        self.battle.player_char = None
+                    clean_object(self)

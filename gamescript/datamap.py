@@ -2,6 +2,8 @@ import csv
 import os
 import ast
 
+import pygame
+
 from gamescript import weather, battlemap
 from gamescript.common import utility
 
@@ -76,8 +78,10 @@ class BattleMapData:
             lore_csv_read(edit_file, self.feature_mod_lore)
         edit_file.close()
 
-        self.empty_image = load_image(main_dir, (1, 1), "empty.png",
-                                      ("ruleset", ruleset, "map", "texture"))  # empty texture image
+        self.empty_image = pygame.Surface((0, 0))  # empty texture image
+        self.camp_image = load_image(main_dir, (1, 1), "camp.png",
+                                     ("ruleset", ruleset, "map", "texture"))  # war camp texture image
+
         self.map_texture = []
         self.texture_folder = [item["Name"] for item in self.feature_mod.values() if
                                item["Name"] != ""]  # For now remove terrain with no planned name/folder yet

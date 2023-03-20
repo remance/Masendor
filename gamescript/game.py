@@ -106,7 +106,11 @@ class Game:
     troop_sprite_size = (200, 200)
     start_zoom_mode = "Follow"
 
-    team_colour = {0: (200, 200, 200), 1: (144, 167, 255), 2: (255, 114, 114)}
+    team_colour = {0: (50, 50, 50), 1: (0, 0, 200), 2: (200, 0, 0), 3: (200, 200, 0), 4: (0, 200, 0), 5: (200, 0, 200),
+                   6: (140, 90, 40), 7: (100, 170, 170), 8: (230, 120, 0), 9: (230, 60, 110), 10: (130, 120, 200)}
+    selected_team_colour = {0: (200, 200, 200), 1: (150, 150, 255), 2: (255, 40, 40), 3: (255, 255, 150),
+                            4: (150, 255, 150), 5: (255, 150, 255), 6: (200, 140, 70), 7: (160, 200, 200),
+                            8: (255, 150, 45), 9: (230, 140, 160), 10: (200, 190, 230)}
 
     def __init__(self, main_dir, error_log):
         pygame.init()  # Initialize pygame
@@ -156,9 +160,6 @@ class Game:
         # Set the display mode
         self.screen_rect = Rect(0, 0, self.screen_width, self.screen_height)
         self.screen_scale = (self.screen_rect.width / 1920, self.screen_rect.height / 1080)
-        subunit.Subunit.screen_scale = self.screen_scale
-        subunit.Subunit.team_colour = self.team_colour
-        damagesprite.DamageSprite.screen_scale = self.screen_scale
 
         self.window_style = 0
         if self.full_screen == 1:
@@ -166,6 +167,14 @@ class Game:
         self.best_depth = pygame.display.mode_ok(self.screen_rect.size, self.window_style, 32)
         self.screen = pygame.display.set_mode(self.screen_rect.size, self.window_style | pygame.RESIZABLE,
                                               self.best_depth)
+
+        subunit.Subunit.screen_scale = self.screen_scale
+        subunit.Subunit.team_colour = self.team_colour
+        menu.MapPreview.colour = self.team_colour
+        menu.MapPreview.selected_colour = self.selected_team_colour
+        damagesprite.DamageSprite.screen_scale = self.screen_scale
+        battlemap.BeautifulMap.team_colour = self.team_colour
+        battlemap.BeautifulMap.selected_team_colour = self.selected_team_colour
 
         self.clock = pygame.time.Clock()
 
@@ -180,7 +189,8 @@ class Game:
         self.team_selected = 1
         self.char_selected = 0
         self.current_popup_row = 0
-        self.team_pos = {}  # for saving preview map unit pos
+        self.team_pos = {}  # for saving preview map subunit pos
+        self.camp_pos = {}  # for saving preview map camp pos
 
         self.dt = 0
         self.text_delay = 0
@@ -602,6 +612,7 @@ class Game:
         self.battle.battle_map.texture_images = self.battle_map_data.map_texture
         self.battle.battle_map.load_texture_list = self.battle_map_data.texture_folder
         self.battle.battle_map.empty_texture = self.battle_map_data.empty_image
+        self.battle.battle_map.camp_texture = self.battle_map_data.camp_image
 
         self.map_show.terrain_colour = self.battle_map_data.terrain_colour
         self.map_show.feature_colour = self.battle_map_data.feature_colour

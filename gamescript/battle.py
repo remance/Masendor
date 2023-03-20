@@ -242,6 +242,7 @@ class Battle:
         self.game_speed_list = (0, 0.5, 1, 2, 4, 6)  # available game speed
         self.day_time = "Day"
         self.old_day_time = self.day_time
+        self.camp = {}
         self.all_team_subunit = {1: pygame.sprite.Group(),
                                  2: pygame.sprite.Group()}  # more team can be added later
         self.team_troop_number = []  # list of troop number in each team, minimum at one because percentage can't divide by 0
@@ -295,7 +296,7 @@ class Battle:
         self.command_mouse_pos = [0, 0]  # with zoom and screen scale for unit command
 
     def prepare_new_game(self, ruleset, ruleset_folder, team_selected, map_type, map_selected,
-                         map_source, char_selected, map_info):
+                         map_source, char_selected, map_info, camp_pos):
         """Setup stuff when start new battle"""
         self.language = self.main.language
 
@@ -307,6 +308,7 @@ class Battle:
 
         self.char_selected = char_selected
         self.map_info = map_info
+        self.camp_pos = camp_pos
 
         self.faction_data = self.main.faction_data
         self.coa_list = self.faction_data.coa_list
@@ -393,12 +395,11 @@ class Battle:
         self.battle_map_feature.draw_image(images["feature"])
         self.battle_map_height.draw_image(images["height"])
 
-
         if "place_name" in images:  # place_name map layer is optional, if not existed in folder then assign None
             place_name_map = images["place_name"]
         else:
             place_name_map = None
-        self.battle_map.draw_image(self.battle_map_base, self.battle_map_feature, place_name_map, self)
+        self.battle_map.draw_image(self.battle_map_base, self.battle_map_feature, place_name_map, self.camp_pos, self)
 
         self.map_corner = (
             len(self.battle_map_base.map_array[0]),
@@ -414,8 +415,10 @@ class Battle:
         if not self.char_selected:
             self.camera_mode = "Free"
         self.setup_battle_troop(self.subunit_updater)
-        self.all_team_subunit = {1: pygame.sprite.Group(),
-                                 2: pygame.sprite.Group()}  # more team can be added later
+        for this_group in self.all_team_subunit.values():
+            this_group.empty()
+        self.all_team_subunit = {int(key[-1]): pygame.sprite.Group() for key in self.map_info if "Team " in key}
+        self.camp = {key: {} for key in self.all_team_subunit.keys()}
         self.team_troop_number = [0 for _ in range(len(self.all_team_subunit) + 1)]  # reset list of troop number in each team
         self.battle_scale = [1 for _ in self.team_troop_number]
         self.start_troop_number = [0 for _ in self.team_troop_number]
