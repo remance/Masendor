@@ -46,9 +46,10 @@ def battle_keyboard_process(self, key_press):
     elif key_press == pygame.K_m and self.player_char is not None:
         for follower in self.player_char.alive_troop_follower:
             follower.health = 0
-    # elif key_press == pygame.K_n and self.player_char is not None:
-    #     self.player_char.leader_subunit.interrupt_animation = True
-    #     self.player_char.leader_subunit.command_action = {"name": "HeavyDamaged", "uninterruptible": True}
-        # elif key_press == pygame.K_COMMA and self.current_selected is not None:
-    #     for index, subunit in enumerate(self.current_selected.subunit_sprite):
-    #         subunit.stamina -= subunit.stamina
+    elif key_press == pygame.K_n and self.player_char is not None:
+        for follower in self.player_char.alive_leader_follower:
+            follower.health = 0
+    elif key_press == pygame.K_b and self.player_char is not None:
+        for follower in self.player_char.alive_leader_follower:
+            for follower2 in follower.alive_troop_follower:
+                follower2.health = 0

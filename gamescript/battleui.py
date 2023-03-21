@@ -7,6 +7,7 @@ from gamescript.common import utility
 
 apply_sprite_colour = utility.apply_sprite_colour
 text_render = utility.text_render
+minimise_number_text = utility.minimise_number_text
 
 
 def change_number(number):
@@ -53,7 +54,7 @@ class HeroUI(pygame.sprite.Sprite):
         self.screen_scale = screen_scale
         self.font = pygame.font.SysFont("helvetica", int(text_size * screen_scale[1]))
 
-        self.image = pygame.Surface((420 * self.screen_scale[0], 200 * self.screen_scale[1]))
+        self.image = pygame.Surface((400 * self.screen_scale[0], 200 * self.screen_scale[1]))
         self.image.fill((255, 255, 255))
         self.base_image = self.image.copy()
 
@@ -106,8 +107,16 @@ class HeroUI(pygame.sprite.Sprite):
         self.leader_image_rect = self.weapon_image.get_rect(topleft=(0, 0))
 
         self.ammo_text_box = self.font.render("999", True, (0, 0, 0))  # make text box for ammo
-        self.ammo_text_box.fill((0, 0, 0))
-        self.ammo_text_box_original = self.ammo_text_box.copy()
+        self.ammo_text_box.fill((255, 255, 255))
+        self.ammo_text_box_base = self.ammo_text_box.copy()
+
+        self.leader_count_text_box_base = self.font.render("L:999", True, (0, 0, 0))
+        self.leader_count_text_box_base.fill((255, 255, 255))
+        self.leader_count_text_rect = self.leader_count_text_box_base.get_rect(midleft=(0, self.image.get_height() - (self.leader_count_text_box_base.get_height() * 1.5)))
+
+        self.troop_count_text_box_base = self.font.render("T:999/999 + 999", True, (0, 0, 0))
+        self.troop_count_text_box_base.fill((255, 255, 255))
+        self.troop_count_text_rect = self.leader_count_text_box_base.get_rect(midleft=(0, self.image.get_height() - (self.troop_count_text_box_base.get_height() / 2)))
 
         self.status_effect_image = status_box_image
         self.status_effect_image_rect = self.status_effect_image.get_rect(bottomright=(self.health_bar_rect.bottomleft[0],
@@ -144,6 +153,8 @@ class HeroUI(pygame.sprite.Sprite):
         self.magazine_count = None
         self.weapon_cooldown = None
         self.weapon_holding = [False, False]
+        self.troop_follower_size = None
+        self.leader_follower_size = None
 
         self.base_image.blit(self.health_bar, self.health_bar_rect)
         self.base_image.blit(self.stamina_bar, self.stamina_bar_rect)
@@ -166,7 +177,7 @@ class HeroUI(pygame.sprite.Sprite):
 
     def add_leader_image(self, leader_image):
         self.base_image.blit(pygame.transform.smoothscale(leader_image,
-                                                          (200 * self.screen_scale[0], self.image.get_height())),
+                                                          (150 * self.screen_scale[0], 150 * self.screen_scale[1])),
                              self.leader_image_rect)
         self.image = self.base_image.copy()
 
@@ -196,6 +207,28 @@ class HeroUI(pygame.sprite.Sprite):
 
             self.base_image.blit(self.stamina_bar, self.stamina_bar_rect)
             self.image.blit(self.stamina_bar, self.stamina_bar_rect)
+
+        if self.leader_follower_size != len(who.alive_leader_follower):
+            self.leader_follower_size = len(who.alive_leader_follower)
+            leader_count_text_box = self.leader_count_text_box_base.copy()
+            leader_count_text = self.font.render("L:" + str(len(who.alive_leader_follower)), True, (0, 0, 0))
+            leader_count_text_box.blit(leader_count_text,
+                                       leader_count_text.get_rect(midleft=(0,
+                                                                          leader_count_text_box.get_height() / 2)))
+            self.image.blit(leader_count_text_box, self.leader_count_text_rect)
+
+        if self.troop_follower_size != len(who.alive_troop_follower):
+            self.troop_follower_size = len(who.alive_troop_follower)
+            troop_count_text_box = self.troop_count_text_box_base.copy()
+            troop_count_text = self.font.render("T:" + minimise_number_text(self.troop_follower_size) + "/" +
+                                                minimise_number_text(sum(who.troop_dead_list.values()) +
+                                                                     self.troop_follower_size) + " + " +
+                                                minimise_number_text(sum(who.troop_reserve_list.values())), True,
+                                                (0, 0, 0))
+            troop_count_text_box.blit(troop_count_text,
+                                      troop_count_text.get_rect(midleft=(0,
+                                                                        troop_count_text_box.get_height() / 2)))
+            self.image.blit(troop_count_text_box, self.troop_count_text_rect)
 
         weapon_filter_change = False
         if (who.hold_timer > 1 or who.charging) and "weapon" in who.current_action and True not in self.weapon_holding:
@@ -228,8 +261,7 @@ class HeroUI(pygame.sprite.Sprite):
                         weapon_image = pygame.transform.scale(weapon_image,
                                                               (self.weapon_image.get_width() / 5,
                                                                self.weapon_image.get_height() / 5))
-                    weapon_image_rect = weapon_image.get_rect(center=self.weapon_image_set_pos[index][index2])
-                    self.weapon_image.blit(weapon_image, weapon_image_rect)
+                    self.weapon_image.blit(weapon_image, weapon_image.get_rect(center=self.weapon_image_set_pos[index][index2]))
             self.weapon_base_image2 = self.weapon_image.copy()
 
         if self.equipped_weapon != who.equipped_weapon or weapon_filter_change:  # add weapon filter and ammo
@@ -266,14 +298,12 @@ class HeroUI(pygame.sprite.Sprite):
                             text_colour = (200, 100, 100)
                         else:
                             ammo_count = who.magazine_count[true_weapon_set_index][index2]
-                            text_colour = (255, 255, 255)
+                            text_colour = (0, 0, 0)
                         ammo_text_surface = self.font.render(str(ammo_count), True, text_colour)  # ammo number
-                        ammo_text_rect = ammo_text_surface.get_rect(center=(self.ammo_text_box.get_width() / 2,
-                                                                            self.ammo_text_box.get_height() / 2))
-                        self.ammo_text_box = self.ammo_text_box_original.copy()
-                        self.ammo_text_box.blit(ammo_text_surface, ammo_text_rect)
-                        ammo_text_rect = self.ammo_text_box.get_rect(midtop=self.ammo_count_rect[index][index2])
-                        self.weapon_image.blit(self.ammo_text_box, ammo_text_rect)
+                        self.ammo_text_box = self.ammo_text_box_base.copy()
+                        self.ammo_text_box.blit(ammo_text_surface, ammo_text_surface.get_rect(center=(self.ammo_text_box.get_width() / 2,
+                                                                            self.ammo_text_box.get_height() / 2)))
+                        self.weapon_image.blit(self.ammo_text_box, self.ammo_text_box.get_rect(midtop=self.ammo_count_rect[index][index2]))
 
             self.magazine_count = {key: value.copy() for key, value in who.magazine_count.items()}
 

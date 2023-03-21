@@ -281,9 +281,9 @@ class Subunit(pygame.sprite.Sprite):
         self.troop_reserve_list = {}
         self.troop_dead_list = {}  # for checking how many to replenish from reserve
         self.alive_troop_follower = []  # list of alive troop subordinate subunits
-        self.troop_follower_size = 0
+        self.troop_follower_size = 0  # size for formation square calculation
         self.alive_leader_follower = []  # list of alive leader subordinate subunits
-        self.leader_follower_size = 0
+        self.leader_follower_size = 0  # size for formation square calculation
         self.leader = leader_subunit  # leader of the sub-subunit if there is one
         self.unit_leader = None  # leader at the top hierarchy in the unit
         self.is_unit_leader = False
@@ -935,16 +935,21 @@ class Subunit(pygame.sprite.Sprite):
                         if self.reserve_ready_timer > 5:  # troop reinforcement take 5 seconds
                             for troop_id, number in self.troop_dead_list.items():
                                 for _ in range(number):
-                                    add_subunit = Subunit(troop_id, self.battle.last_troop_game_id, None, self.team,
-                                                          self.base_pos, self.angle, self.start_hp, self.start_stamina,
-                                                          self, self.coa)
-                                    add_subunit.hitbox = SpriteIndicator(add_subunit.hitbox_image, add_subunit, self)
-                                    add_subunit.effectbox = SpriteIndicator(pygame.Surface((0, 0)), add_subunit, self,
-                                                                            layer=10000001)
-                                    add_subunit.enter_battle(self.battle.subunit_animation_pool,
-                                                             self.battle.status_animation_pool)
-                                    self.troop_dead_list[troop_id] -= 1
-                                    self.battle.last_troop_game_id += 1
+                                    if self.troop_reserve_list[troop_id] > 0:
+                                        add_subunit = Subunit(troop_id, self.battle.last_troop_game_id, None, self.team,
+                                                              self.base_pos, self.angle, self.start_hp, self.start_stamina,
+                                                              self, self.coa)
+                                        add_subunit.hitbox = SpriteIndicator(add_subunit.hitbox_image, add_subunit, self)
+                                        add_subunit.effectbox = SpriteIndicator(pygame.Surface((0, 0)), add_subunit, self,
+                                                                                layer=10000001)
+                                        add_subunit.enter_battle(self.battle.subunit_animation_pool,
+                                                                 self.battle.status_animation_pool)
+                                        self.troop_dead_list[troop_id] -= 1
+                                        self.battle.last_troop_game_id += 1
+                                        self.troop_reserve_list[troop_id] -= 1
+                                    else:
+                                        self.troop_reserve_list.pop(troop_id)
+                                        break
 
                             self.find_formation_size(troop=True)
                             self.change_formation("troop")
@@ -982,7 +987,7 @@ class Subunit(pygame.sprite.Sprite):
                                 self.attack("charge")
 
                     if self.is_leader and self.camp_pos and self.reserve_ready_timer == 0 and \
-                            any(value > 0 for value in self.troop_dead_list.values()):
+                            any(value > 0 for value in self.troop_dead_list.values()) and self.troop_reserve_list:
                         for index, camp_pos in enumerate(self.camp_pos):
                             if self.base_pos.distance_to(camp_pos) <= self.camp_radius[index]:
                                 self.current_camp_pos = camp_pos
