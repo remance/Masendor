@@ -277,7 +277,8 @@ def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool
             rect = item.get_rect(center=(head_sprite_surface.get_width() / 2, head_sprite_surface.get_height() / 2))
             head_sprite_surface.blit(item, rect)
 
-    if sprite_list[p + "_hair"][0] not in ("", "none") and "hair" in body_pool[head_race]["head"]:
+    if sprite_list[p + "_hair"] and sprite_list[p + "_hair"][0] not in ("", "none") and \
+            "hair" in body_pool[head_race]["head"]:
         hair_sprite = body_pool[head_race]["head"]["hair"][sprite_list[p + "_hair"][0]].copy()
         hair_sprite = apply_sprite_colour(hair_sprite, sprite_list[p + "_hair"][1], colour_list=colour_list)
         head_sprite_surface.blit(hair_sprite, rect)

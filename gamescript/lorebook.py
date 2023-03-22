@@ -468,7 +468,7 @@ class Lorebook(pygame.sprite.Sprite):
 
                                     elif key == "Role":  # Replace imageid to subunit role in troop section
                                         role_list = {0: "None", 1: "Offensive", 2: "Defensive", 3: "Skirmisher",
-                                                     4: "Shock", 5: "Support", 6: "Magic",
+                                                     4: "Shock", 5: "Support", 6: "Artillery",
                                                      7: "Ambusher", 8: "Sniper", 9: "Recon", "": ""}
                                         role = [role_list[item] for item in
                                                 value]  # role is not type, it represents subunit classification from base stat to tell what it excels

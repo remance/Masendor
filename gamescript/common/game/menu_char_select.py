@@ -6,7 +6,7 @@ clean_group_object = utility.clean_group_object
 def menu_char_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
     if self.char_back_button.event or esc_press or self.start_button.event:  # go back to team/source selection screen
         self.current_source_row = 0
-        self.menu_state = "team_select"
+        self.menu_state = "preset_team_select"
         self.char_back_button.event = False
 
         self.main_ui_updater.remove(self.char_selector, self.char_selector.scroll,
@@ -28,7 +28,6 @@ def menu_char_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
         if mouse_scroll_up:
             if self.char_selector.current_row > 0:
                 self.char_selector.current_row -= 1
-                print(self.char_selector.current_row)
                 self.char_selector.scroll.change_image(new_row=self.char_selector.current_row,
                                                        row_size=self.char_selector.row_size)
                 self.char_selector.setup_char_icon(self.char_icon, self.preview_char)

@@ -409,7 +409,7 @@ class TeamCoa(pygame.sprite.Sprite):
         self.selected_image.blit(white_body, white_rect)
 
         # v Coat of arm image to image
-        coa_image = pygame.transform.scale(image, (int(200 * screen_scale[0]), int(200 * screen_scale[1])))
+        coa_image = pygame.transform.smoothscale(image, (int(200 * screen_scale[0]), int(200 * screen_scale[1])))
         coa_rect = coa_image.get_rect(
             center=(self.selected_image.get_width() / 2, self.selected_image.get_height() / 2))
         self.not_selected_image.blit(coa_image, coa_rect)
@@ -716,9 +716,13 @@ class MapPreview(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect(center=self.pos)
 
-    def change_map(self, base_map, feature_map):
+    def change_map(self, base_map, feature_map, height_map):
+
+        from gamescript.battlemap import topology_map_creation
+
         new_base_map = pygame.transform.scale(base_map, (300, 300))
         new_feature_map = pygame.transform.scale(feature_map, (300, 300))
+        new_height_map = topology_map_creation(pygame.transform.scale(height_map, (300, 300)), 4)
 
         map_image = pygame.Surface((300, 300))
         for row_pos in range(0, 300):  # recolour the map
@@ -734,6 +738,8 @@ class MapPreview(pygame.sprite.Sprite):
                 new_colour = self.battle_map_colour[feature_index][1]
                 rect = pygame.Rect(row_pos, col_pos, 1, 1)
                 map_image.fill(new_colour, rect)
+
+        map_image.blit(new_height_map, map_image.get_rect(topleft=(0, 0)))
 
         map_image = pygame.transform.scale(map_image, (440 * self.screen_scale[0], 440 * self.screen_scale[1]))
         image_rect = map_image.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))

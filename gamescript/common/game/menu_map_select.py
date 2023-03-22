@@ -16,7 +16,7 @@ def menu_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse
                         self.create_preview_map(self.preset_map_folder, self.preset_map_list)
                     else:
                         self.map_selected = self.custom_map_folder[self.current_map_select]
-                        self.create_preview_map(self.custom_map_folder, self.custom_map_list)
+                        self.create_preview_map(self.custom_map_folder, self.custom_map_list, custom_map=True)
                     break
 
         if self.map_list_box.scroll.rect.collidepoint(self.mouse_pos):  # click on subsection list scroll
@@ -46,9 +46,8 @@ def menu_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse
         self.back_mainmenu()
 
     elif self.select_button.event:  # select this map, go to team/source selection screen
-        if self.menu_state == "preset_map":
+        if self.menu_state == "preset_map": #or self.menu_state == "custom_map":
             self.current_source_row = 0
-            self.menu_state = "team_select"
             self.select_button.event = False
 
             self.main_ui_updater.remove(*self.map_select_button, self.map_list_box, self.map_list_box.scroll,
@@ -58,5 +57,11 @@ def menu_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse
             for stuff in self.map_namegroup:  # remove map name item
                 stuff.kill()
                 del stuff
+            if self.menu_state == "preset_map":
+                self.change_to_source_selection_menu()
+                self.menu_state = "preset_team_select"
+            # else:
+            #     self.change_to_team_selection_menu()
+            #     self.menu_state = "custom_team_select"
 
-            self.change_to_source_selection_menu()
+

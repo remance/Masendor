@@ -6,7 +6,7 @@ list_scroll = utility.list_scroll
 load_image = utility.load_image
 
 
-def menu_team_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
+def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
     if mouse_left_up or mouse_left_down:
         if mouse_left_up:
             change_team_coa(self)
@@ -116,16 +116,3 @@ def menu_team_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
         self.main_ui_updater.add(self.char_selector, self.char_selector.scroll,
                                  tuple(self.char_stat.values()), *self.char_select_button)
         self.menu_button.add(*self.char_select_button)
-
-
-def change_team_coa(self):
-    for this_team in self.team_coa:  # User select any team by clicking on coat of arm
-        if this_team.rect.collidepoint(self.mouse_pos):
-            self.team_selected = this_team.team
-            this_team.change_select(True)
-
-            # Reset team selected on team user not currently selected
-            for this_team2 in self.team_coa:
-                if self.team_selected != this_team2.team and this_team2.selected:
-                    this_team2.change_select(False)
-            break

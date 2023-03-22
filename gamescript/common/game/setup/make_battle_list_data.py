@@ -24,8 +24,8 @@ def make_battle_list_data(main_dir, ruleset_folder, language):
     read_folder = Path(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "map", "custom"))
     subdirectories = [x for x in read_folder.iterdir() if x.is_dir()]
 
-    custom_map_list = []
-    custom_map_folder = []
+    custom_map_list = preset_map_list.copy() + ["Random"]
+    custom_map_folder = preset_map_folder.copy() + ["Random"]
 
     for file_map in subdirectories:
         custom_map_folder.append(os.sep.join(os.path.normpath(file_map).split(os.sep)[-1:]))

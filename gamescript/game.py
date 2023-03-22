@@ -72,6 +72,7 @@ class Game:
     back_mainmenu = empty_method
     change_battle_source = empty_method
     change_to_source_selection_menu = empty_method
+    change_to_team_selection_menu = empty_method
     change_sound_volume = empty_method
     create_preview_map = empty_method
     create_sound_effect_pool = empty_method
@@ -83,7 +84,7 @@ class Game:
     menu_main = empty_method
     menu_map_select = empty_method
     menu_option = empty_method
-    menu_team_select = empty_method
+    menu_preset_team_select = empty_method
     read_battle_source = empty_method
     read_selected_map_data = empty_method
     start_battle = empty_method
@@ -830,8 +831,11 @@ class Game:
                     self.map_type = self.menu_state[:-4]
                     self.menu_map_select(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press)
 
-                elif self.menu_state == "team_select":
-                    self.menu_team_select(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press)
+                elif self.menu_state == "preset_team_select":
+                    self.menu_preset_team_select(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press)
+
+                elif self.menu_state == "custom_team_select":
+                    self.menu_custom_team_select(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "char_select":
                     self.menu_char_select(mouse_left_up, mouse_left_down, mouse_scroll_up,

@@ -11,8 +11,7 @@ def change_to_source_selection_menu(self):
             team.change_select(True)
 
     openfolder = self.preset_map_folder
-    if self.last_select == "custom":
-        openfolder = self.custom_map_folder
+
     try:
         self.source_list = self.read_selected_map_data(openfolder, "source_" + self.language + ".csv")
         self.source_name_list = [value["Source"] for value in self.source_list.values()]

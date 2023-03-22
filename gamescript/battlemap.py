@@ -2,7 +2,7 @@ import threading
 
 import pygame
 import pygame.freetype
-from random import randint
+from random import randint, random, randrange
 from PIL import Image, ImageFilter, ImageOps
 
 from gamescript.common import utility
@@ -94,31 +94,7 @@ class HeightMap(pygame.sprite.Sprite):
         self.image = image.copy()
         self.map_array = tuple([[256 - col[2] for col in row] for row in pygame.surfarray.array3d(image).tolist()])
         if self.topology:
-            data = pygame.image.tostring(self.image, "RGB")  # convert image to string data for filtering effect
-            img = Image.frombytes("RGB", (self.image.get_width(), self.image.get_height()),
-                                  data)  # use PIL to get image data
-            img = ImageOps.grayscale(img)  # grey scale the image
-            img = img.filter(ImageFilter.GaussianBlur(radius=2))  # blur Image
-            img = ImageOps.posterize(img, self.poster_level)  # posterise
-            img = img.filter(ImageFilter.FIND_EDGES)  # get edge
-            # images = ImageOps.invert(images)  # invert
-            # enhancer = ImageEnhance.Contrast(images)
-            # images = enhancer.enhance(5)
-
-            # replace black background with transparent
-            img = img.convert("RGBA")
-            data = img.getdata()
-            new_data = []
-            for item in data:
-                if item == (0, 0, 0, 255):
-                    new_data.append((255, 255, 255, 0))
-                else:
-                    new_data.append(item)
-            img.putdata(new_data)
-
-            img = img.tobytes()
-            self.topology_image = pygame.image.fromstring(img, (self.image.get_width(), self.image.get_height()),
-                                                          "RGBA")  # convert image back to a pygame surface
+            self.topology_image = topology_map_creation(self.image, self.poster_level)
 
     def get_height(self, pos):
         """get the terrain height at that exact position"""
@@ -272,3 +248,111 @@ class BeautifulMap(pygame.sprite.Sprite):
         self.image = None
         self.base_image = None
         self.true_image = None
+
+
+def topology_map_creation(image, poster_level):
+    data = pygame.image.tostring(image, "RGB")  # convert image to string data for filtering effect
+    img = Image.frombytes("RGB", (image.get_width(), image.get_height()),
+                          data)  # use PIL to get image data
+    img = ImageOps.grayscale(img)  # grey scale the image
+    img = img.filter(ImageFilter.GaussianBlur(radius=2))  # blur Image
+    img = ImageOps.posterize(img, poster_level)  # posterise
+    img = img.filter(ImageFilter.FIND_EDGES)  # get edge
+    # images = ImageOps.invert(images)  # invert
+    # enhancer = ImageEnhance.Contrast(images)
+    # images = enhancer.enhance(5)
+
+    # replace black background with transparent
+    img = img.convert("RGBA")
+    data = img.getdata()
+    new_data = []
+    for item in data:
+        if item == (0, 0, 0, 255):
+            new_data.append((255, 255, 255, 0))
+        else:
+            new_data.append(item)
+    img.putdata(new_data)
+
+    img = img.tobytes()
+    return pygame.image.fromstring(img, (image.get_width(), image.get_height()), "RGBA")  # convert to a pygame surface
+
+
+# Random map creation
+
+def random_matrix(matrix, max_random):
+    for i in range(len(matrix)):
+        for j in (range(len(matrix[i]))):
+            matrix[i][j] = int(round(random() * max_random, 0))
+    return matrix
+
+
+def rrange(value_1, value_2):
+    if value_1 == value_2:
+        return value_1
+    if value_1 - value_2 > 0:
+        return randrange(value_2, value_1, 1)
+    else:
+        return randrange(value_1, value_2, 1)
+
+
+def arm_horizontal(matrix):
+    result = []
+    temp = []
+    for i in range(len(matrix)):
+        for j in (range(len(matrix[i]) - 1)):
+            temp.append(matrix[i][j])
+            temp.append(int(rrange(int(matrix[i][j]), int(matrix[i][j + 1]))))
+        temp.append(matrix[i][-1])
+        result.append(temp)
+        temp = []
+    return result
+
+
+def arm_vertical(matrix):
+    result = []
+    temp = []
+    for i in range(len(matrix) - 1):
+        result.append(matrix[i])
+        for j in (range(len(matrix[i]))):
+            temp.append(int(rrange(int(matrix[i][j]), int(matrix[i + 1][j]))))
+        result.append(temp)
+        temp = []
+    result.append(matrix[-1])
+    return result
+
+
+def create_matrix(seed, rounds, max_value):
+    r = random_matrix([[0] * seed for _ in range(seed)], max_value)
+    for i in range(rounds):
+        r = arm_horizontal(r)
+        r = arm_vertical(r)
+    return r
+
+
+def create_random_map(terrain_list, feature_list, terrain_random, feature_random, height_random, map_size=(1000, 1000)):
+    terrain = create_matrix(terrain_random, 5, (len(terrain_list) - 1) * 10)
+    terrain = matrix_to_map(terrain, False, map_size, colour_list=terrain_list)
+    feature = create_matrix(feature_random, 5, (len(feature_list) - 1) * 10)
+    feature = matrix_to_map(feature, False, map_size, colour_list=feature_list)
+    height = create_matrix(height_random, 5, 200)
+    height = matrix_to_map(height, True, map_size)
+    return terrain, feature, height
+
+
+def matrix_to_map(matrix, alpha, map_size, colour_list=None):
+    if alpha:
+        map_image = pygame.Surface((len(matrix[0]), len(matrix)), pygame.SRCALPHA)
+    else:
+        map_image = pygame.Surface((len(matrix[0]), len(matrix)))
+    k = pygame.Surface((1, 1), pygame.SRCALPHA)
+    for y_index, y in enumerate(matrix):
+        for x_index, x in enumerate(y):
+            if alpha:  # only height map has alpha
+                k.fill((255, x, x, 200))
+            else:
+                k.fill(colour_list[int(round(x, 0) / 10)])
+            map_image.blit(k, k.get_rect(center=(x_index, y_index)))
+    if alpha:
+        return pygame.transform.smoothscale(map_image, map_size)
+    else:
+        return pygame.transform.scale(map_image, map_size)

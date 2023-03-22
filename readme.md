@@ -200,9 +200,7 @@ This function is going to be a headache to write and research. But hopefully, it
 **Ver 0.6 Dream Decision:** Battle selection(with different estimation source),
 preparation and result screen, custom battle, improve the main menu, Battle of Megiddo, Battle of Mohács
 
-**0.6.6 - 0.6.7:** reserve system, Battle of Mohács
-
-**0.6.8 and 0.6.9:** random map generator and custom battle
+**0.6.7 and 0.6.9:** unit editor and custom battle, Battle of Mohács
 
 **Ver 0.7 Future Visionary:**  battle information based on hidden vs sight, march sound system, raise flag/ light torch, ambush bonus, 
 Battle of Walaja, Battle of Dorylaeum
@@ -215,7 +213,7 @@ Battle of Walaja, Battle of Dorylaeum
 
 **0.7.7:**  Battle of Dorylaeum
 
-**0.7.8 and 0.7.9:** Leader command, console stick, control key binding, Minor battle: 764 Irish
+**0.7.8 and 0.7.9:** specific Leader command, console stick, control key binding, Minor battle: 764 Irish
 abbey war
 
 **Ver 0.8 Authentic Attraction:** In-game art, custom troop editor, better-looking UI, add intro screen, Battle of Isandlwana, Battle of Hwangsanbeol
@@ -231,7 +229,7 @@ Encyclopedia at main menu + more historical battles
 
 **Ver 1.1:** Add dynamic terrain/feature change based on battle effect (damage) and weather
 
-**Ver 1.2:** Siege battle and siege equipment, Minor battle: Wolf of Paris
+**Ver 1.2:** Urban map, Siege battle and siege equipment, Minor battle: Wolf of Paris
 
 **Ver 1.3:** Deception, False information, scout, espionage warfare, information, Minor battle: Siege of Orleans
 
