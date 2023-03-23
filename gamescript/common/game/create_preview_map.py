@@ -43,5 +43,5 @@ def create_preview_map(self, map_folder_list, map_list, custom_map=False):
     self.main_ui_updater.add(self.map_description)
 
     if custom_map is False:
-        self.create_team_coa([self.map_data[self.map_title.name]["Team 1"],
-                              self.map_data[self.map_title.name]["Team 2"]], self.main_ui_updater)
+        self.create_team_coa([self.map_data[self.map_title.name][data] for data in self.map_data[self.map_title.name] if
+                              "Team " in data], self.main_ui_updater)

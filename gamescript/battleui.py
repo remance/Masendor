@@ -469,8 +469,8 @@ class SelectedSquad(pygame.sprite.Sprite):
 
 
 class MiniMap(pygame.sprite.Sprite):
-    colour = {0: (50, 50, 50), 1: (0, 0, 200), 2: (200, 0, 0)}
-    selected_colour = {0: (200, 200, 200), 1: (150, 150, 255), 2: (255, 150, 150)}
+    colour = None
+    selected_colour = None
 
     def __init__(self, pos, screen_scale):
         self._layer = 10

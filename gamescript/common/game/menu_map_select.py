@@ -46,7 +46,7 @@ def menu_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse
         self.back_mainmenu()
 
     elif self.select_button.event:  # select this map, go to team/source selection screen
-        if self.menu_state == "preset_map": #or self.menu_state == "custom_map":
+        if self.menu_state == "preset_map" or self.menu_state == "custom_map":
             self.current_source_row = 0
             self.select_button.event = False
 
@@ -60,8 +60,8 @@ def menu_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse
             if self.menu_state == "preset_map":
                 self.change_to_source_selection_menu()
                 self.menu_state = "preset_team_select"
-            # else:
-            #     self.change_to_team_selection_menu()
-            #     self.menu_state = "custom_team_select"
+            else:
+                self.change_to_team_selection_menu()
+                self.menu_state = "custom_team_select"
 
 

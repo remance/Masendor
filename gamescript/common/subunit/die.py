@@ -84,6 +84,9 @@ def die(self, how):
         self.battle.troop_ai_logic_queue.remove(self)
 
     self.battle.all_team_subunit[self.team].remove(self)
+    for team in self.battle.all_team_enemy:
+        if team != self.team:
+            self.battle.all_team_enemy[team].remove(self)
     self.battle.active_subunit_list.remove(self)
 
     if how == "dead":

@@ -36,6 +36,9 @@ def enter_battle(self, animation_pool, status_animation_pool):
     # Add troop number to counter how many troop join battle
     self.battle.active_subunit_list.append(self)
     self.battle.all_team_subunit[self.team].add(self)
+    for team in self.battle.all_team_enemy:
+        if team != self.team:
+            self.battle.all_team_enemy[team].add(self)
     self.battle.team_troop_number[self.team] += 1
     self.battle.start_troop_number[self.team] += 1
 

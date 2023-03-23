@@ -43,6 +43,15 @@ def menu_main(self, mouse_left_up):
         self.menu_button.add(*self.map_select_button)
         self.main_ui_updater.add(*self.map_select_button, self.map_list_box, self.map_title, self.map_list_box.scroll)
 
+    elif self.game_edit_button.event:  # custom subunit/sub-subunit editor menu
+        self.menu_state = "game_creator"
+        self.game_edit_button.event = False
+        self.main_ui_updater.remove(*self.start_menu_ui_only)
+        self.menu_button.remove(*self.menu_button)
+
+        self.menu_button.add(*self.editor_button)
+        self.main_ui_updater.add(*self.editor_button)
+
     elif self.lore_button.event:  # open encyclopedia
         self.before_lore_state = self.menu_state
         self.menu_state = "encyclopedia"

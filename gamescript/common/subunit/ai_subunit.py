@@ -4,8 +4,7 @@ rotation_xy = utility.rotation_xy
 
 
 def ai_subunit(self):
-    nearest_enemy = {key: key.base_pos.distance_to(self.base_pos) for team in
-                     self.battle.all_team_subunit for key in self.battle.all_team_subunit[team] if team != self.team}
+    nearest_enemy = {key: key.base_pos.distance_to(self.base_pos) for key in self.battle.all_team_enemy[self.team]}
     nearest_friend = {key: key.base_pos.distance_to(self.base_pos) for key in
                       self.battle.all_team_subunit[self.team]}
     self.near_enemy = sorted(nearest_enemy.items(),

@@ -43,7 +43,7 @@ def menu_preset_team_select(self, mouse_left_up, mouse_left_down, mouse_scroll_u
         self.map_back_button.event = False
         self.main_ui_updater.remove(*self.menu_button, self.map_list_box, self.map_option_box,
                                     self.observe_mode_tick_box, self.source_list_box, self.source_list_box.scroll,
-                                    self.source_description)
+                                    self.source_description, self.army_stat)
         self.menu_button.remove(*self.menu_button)
 
         # Reset selected team
@@ -54,10 +54,9 @@ def menu_preset_team_select(self, mouse_left_up, mouse_left_down, mouse_scroll_u
         self.map_source = 0
         self.map_show.change_mode(0)  # revert map preview back to without unit dot
 
-        for group in (self.source_namegroup, self.army_stat):
-            for stuff in group:  # remove map name item
-                stuff.kill()
-                del stuff
+        for stuff in self.source_namegroup:  # remove map name item
+            stuff.kill()
+            del stuff
 
         if self.menu_state == "preset_map":  # regenerate map name list
             setup_list(self.screen_scale, menu.NameList, self.current_map_row, self.preset_map_list, self.map_namegroup,
@@ -88,11 +87,11 @@ def menu_preset_team_select(self, mouse_left_up, mouse_left_down, mouse_scroll_u
                 del stuff
 
         self.char_stat["char"] = menu.ArmyStat(self.screen_scale,
-                                               (self.screen_rect.center[0] / 2.5, self.screen_rect.height / 2.5),
+                                               (self.screen_rect.center[0] / 9, self.screen_rect.height / 8),
                                                load_image(self.main_dir, self.screen_scale,
                                                           "char_stat.png", ("ui", "mapselect_ui")))  # char stat
         self.char_stat["model"] = menu.ArmyStat(self.screen_scale,
-                                                (self.screen_rect.center[0] * 1.6, self.screen_rect.height / 2.5),
+                                                (self.screen_rect.center[0] * 1.3, self.screen_rect.height / 8),
                                                 load_image(self.main_dir, self.screen_scale,
                                                            "char_stat.png", ("ui", "mapselect_ui")))  # troop stat
 
@@ -123,6 +122,9 @@ def change_team_coa(self):
         if this_team.rect.collidepoint(self.mouse_pos):
             self.team_selected = this_team.team
             this_team.change_select(True)
+            team_army, team_leader = self.read_battle_source(
+                [self.source_scale_text[self.map_source], self.source_text[self.map_source]])
+            self.change_battle_source(team_army, team_leader)
 
             # Reset team selected on team user not currently selected
             for this_team2 in self.team_coa:

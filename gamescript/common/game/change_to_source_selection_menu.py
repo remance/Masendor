@@ -20,6 +20,7 @@ def change_to_source_selection_menu(self):
 
         self.camp_pos = [{int(value2[-1]): value[value2] for value2 in value if "Camp" in value2} for
                          value in self.source_list.values()]
+        print(self.camp_pos)
         for value in self.camp_pos:
             for team, pos_list in value.items():
                 if ";" in pos_list:
@@ -36,20 +37,6 @@ def change_to_source_selection_menu(self):
 
     setup_list(self.screen_scale, menu.NameList, self.current_source_row, self.source_name_list,
                self.source_namegroup, self.source_list_box, self.main_ui_updater)
-
-    for index, team in enumerate(self.team_coa):
-        if index == 0:
-            self.army_stat.add(
-                menu.ArmyStat(self.screen_scale,
-                              (team.rect.bottomleft[0], self.screen_rect.height / 1.5),
-                              load_image(self.main_dir, self.screen_scale, "stat.png",
-                                         ("ui", "mapselect_ui"))))  # left army stat
-        else:
-            self.army_stat.add(
-                menu.ArmyStat(self.screen_scale,
-                              (team.rect.bottomright[0], self.screen_rect.height / 1.5),
-                              load_image(self.main_dir, self.screen_scale, "stat.png",
-                                         ("ui", "mapselect_ui"))))  # right army stat
 
     team_troop, team_leader = self.read_battle_source(
         [self.source_scale_text[self.map_source], self.source_text[self.map_source]])

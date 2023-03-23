@@ -286,7 +286,7 @@ def random_matrix(matrix, max_random):
     return matrix
 
 
-def rrange(value_1, value_2):
+def random_range(value_1, value_2):
     if value_1 == value_2:
         return value_1
     if value_1 - value_2 > 0:
@@ -301,7 +301,7 @@ def arm_horizontal(matrix):
     for i in range(len(matrix)):
         for j in (range(len(matrix[i]) - 1)):
             temp.append(matrix[i][j])
-            temp.append(int(rrange(int(matrix[i][j]), int(matrix[i][j + 1]))))
+            temp.append(int(random_range(int(matrix[i][j]), int(matrix[i][j + 1]))))
         temp.append(matrix[i][-1])
         result.append(temp)
         temp = []
@@ -314,7 +314,7 @@ def arm_vertical(matrix):
     for i in range(len(matrix) - 1):
         result.append(matrix[i])
         for j in (range(len(matrix[i]))):
-            temp.append(int(rrange(int(matrix[i][j]), int(matrix[i + 1][j]))))
+            temp.append(int(random_range(int(matrix[i][j]), int(matrix[i + 1][j]))))
         result.append(temp)
         temp = []
     result.append(matrix[-1])

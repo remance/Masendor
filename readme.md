@@ -200,23 +200,23 @@ This function is going to be a headache to write and research. But hopefully, it
 **Ver 0.6 Dream Decision:** Battle selection(with different estimation source),
 preparation and result screen, custom battle, improve the main menu, Battle of Megiddo, Battle of Mohács
 
-**0.6.7 and 0.6.9:** unit editor and custom battle, Battle of Mohács
+**0.6.7 and 0.6.9:** custom battle, Battle of Mohács
 
 **Ver 0.7 Future Visionary:**  battle information based on hidden vs sight, march sound system, raise flag/ light torch, ambush bonus, 
 Battle of Walaja, Battle of Dorylaeum
 
 **0.7.1 and 0.7.2:** hidden stat, line of sight, leader respawn system
 
-**0.7.3:** march sound system
+**0.7.3:** unit editor and march sound system
 
-**0.7.4:** Battle of Walaja
+**0.7.4:** custom troop editor, Battle of Walaja
 
 **0.7.7:**  Battle of Dorylaeum
 
 **0.7.8 and 0.7.9:** specific Leader command, console stick, control key binding, Minor battle: 764 Irish
 abbey war
 
-**Ver 0.8 Authentic Attraction:** In-game art, custom troop editor, better-looking UI, add intro screen, Battle of Isandlwana, Battle of Hwangsanbeol
+**Ver 0.8 Authentic Attraction:** In-game art, better-looking UI, add intro screen, Battle of Isandlwana, Battle of Hwangsanbeol
 
 **Ver 0.9 Gaze of New Life:** AI and pathfinding (The most challenging step unless cut corner to the point of braindead
 AI), final code optimisation before full 1.0

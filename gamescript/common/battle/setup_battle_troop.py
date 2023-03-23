@@ -49,7 +49,8 @@ def setup_battle_troop(self, team_subunit_list, specific_team=None):
                     which_team = team_subunit_list
 
                 leader = None
-                if data["Leader"] != 0:
+                if data["Leader"] != 0 and leader_subunit[data["Leader"]].team == data["Team"]:
+                    # avoid different team leader assign, in case of data mistake
                     leader = leader_subunit[data["Leader"]]
 
                 troop_number_list = {int(key): [int(num) for num in value.split("/")] for key, value in data["Troop"].items()}

@@ -14,7 +14,7 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
     default_button = menu.MenuButton(screen_scale, image_list, (screen_rect.width / 1.5, screen_rect.height / 1.2),
                                      updater, text="Default")
 
-    fullscreen_box = menu.TickBox(screen_scale, (screen_rect.width / 2, screen_rect.height / 6.5),
+    fullscreen_box = menu.TickBox((screen_rect.width / 2, screen_rect.height / 6.5),
                                   battle_select_image["untick"], battle_select_image["tick"], "fullscreen")
     if full_screen == 1:
         fullscreen_box.change_tick(True)

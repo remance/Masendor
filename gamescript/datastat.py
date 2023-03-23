@@ -590,7 +590,7 @@ class FactionData:
                   mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
-            for row in rd:
+            for row in rd[1:]:
                 for n, i in enumerate(row):
                     if i.isdigit():
                         row[n] = int(i)
@@ -602,7 +602,7 @@ class FactionData:
                 self.faction_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
             edit_file.close()
 
-        self.faction_name_list = [value["Name"] for value in self.faction_list.values()][1:]
+        self.faction_name_list = [value["Name"] for value in self.faction_list.values()]
 
         self.faction_lore = {}
         with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "faction",

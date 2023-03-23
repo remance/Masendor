@@ -357,6 +357,9 @@ class MapTitle(pygame.sprite.Sprite):
         self.screen_scale = screen_scale
         self.pos = pos
         self.name = ""
+        text_surface = self.font.render(str(self.name), True, (0, 0, 0))
+        self.image = pygame.Surface((int(text_surface.get_width() + (20 * self.screen_scale[0])),
+                                     int(text_surface.get_height() + (20 * self.screen_scale[1]))))
 
     def change_name(self, name):
         self.name = name
@@ -388,44 +391,56 @@ class DescriptionBox(pygame.sprite.Sprite):
     def change_text(self, text):
         self.image = self.base_image.copy()  # reset self.image to new one from the loaded image
         utility.make_long_text(self.image, text,
-                       (int(self.text_size * self.screen_scale[0]), int(self.text_size * self.screen_scale[1])),
-                       self.font)
+                               (int(self.text_size * self.screen_scale[0]), int(self.text_size * self.screen_scale[1])),
+                               self.font)
 
 
 class TeamCoa(pygame.sprite.Sprite):
-    def __init__(self, screen_scale, pos, image, team, name):
+    def __init__(self, coa_size, pos, coa_images, team, team_colour, name):
+        text_render = utility.text_render
+
         pygame.sprite.Sprite.__init__(self, self.containers)
 
-        self.selected_image = pygame.Surface((int(300 * screen_scale[0]), int(300 * screen_scale[1])))
+        self.selected_image = pygame.Surface((coa_size[0] * 2.5, coa_size[1]))
         self.not_selected_image = self.selected_image.copy()
         self.not_selected_image.fill((0, 0, 0))  # black border when not selected
-        self.selected_image.fill((230, 200, 15))  # gold border when selected
+        self.selected_image.fill((255, 255, 255))  # white border when selected
 
-        white_body = pygame.Surface((int(285 * screen_scale[0]), int(285 * screen_scale[1])))
-        white_body.fill((255, 255, 255))
-        white_rect = white_body.get_rect(
+        team_body = pygame.Surface((self.selected_image.get_width() * 0.95,
+                                    self.selected_image.get_height() * 0.95))
+        team_body.fill(team_colour)
+        white_rect = team_body.get_rect(
             center=(self.selected_image.get_width() / 2, self.selected_image.get_height() / 2))
-        self.not_selected_image.blit(white_body, white_rect)
-        self.selected_image.blit(white_body, white_rect)
+        self.not_selected_image.blit(team_body, white_rect)
+        self.selected_image.blit(team_body, white_rect)
 
-        # v Coat of arm image to image
-        coa_image = pygame.transform.smoothscale(image, (int(200 * screen_scale[0]), int(200 * screen_scale[1])))
-        coa_rect = coa_image.get_rect(
-            center=(self.selected_image.get_width() / 2, self.selected_image.get_height() / 2))
-        self.not_selected_image.blit(coa_image, coa_rect)
-        self.selected_image.blit(coa_image, coa_rect)
-        # ^ End Coat of arm
+        # Coat of arm image to image
+        small_coa_pos = [int(coa_size[0] * 0.2), int(coa_size[1] * 0.2)]
+        for index, image in enumerate(coa_images):
+            if index == 0:  # first one as main faction coa
+                coa_image = pygame.transform.smoothscale(image, (int(coa_size[0] * 0.65), int(coa_size[1] * 0.65)))
+                coa_rect = coa_image.get_rect(
+                    midtop=(self.selected_image.get_width() / 2, coa_size[1] * 0.05))
+            else:
+                coa_image = pygame.transform.smoothscale(image, (int(coa_size[0] * 0.3), int(coa_size[1] * 0.3)))
+                coa_rect = coa_image.get_rect(center=small_coa_pos)
+                small_coa_pos[1] += int(coa_size[1] * 0.3)
+                if index % 3 == 0:
+                    small_coa_pos = [small_coa_pos[0] + int(coa_size[0] * 0.4), int(coa_size[1] * 0.2)]
+                if index == 6:
+                    small_coa_pos[0] = int(coa_size[0] * 1.8)
+            self.not_selected_image.blit(coa_image, coa_rect)
+            self.selected_image.blit(coa_image, coa_rect)
 
-        # v Faction name to image
+        # Faction name to image
         self.name = name
-        font_size = 32
-        self.font = pygame.font.SysFont("oldenglishtext", int(font_size * screen_scale[1]))
-        text_surface = self.font.render(str(self.name), True, (0, 0, 0))
+        font_size = int(coa_size[1] / 5)
+        self.font = pygame.font.SysFont("oldenglishtext", font_size)
+        text_surface = text_render(str(self.name), self.font, pygame.Color("black"))
         text_rect = text_surface.get_rect(
-            center=(int(self.selected_image.get_width() / 2), self.selected_image.get_height() - (font_size / 1.5)))
+            center=(int(self.selected_image.get_width() / 2), self.selected_image.get_height() - font_size))
         self.not_selected_image.blit(text_surface, text_rect)
         self.selected_image.blit(text_surface, text_rect)
-        # ^ End faction name
 
         self.image = self.not_selected_image
         self.rect = self.image.get_rect(center=pos)
@@ -463,7 +478,7 @@ class ArmyStat(pygame.sprite.Sprite):
             "Detrimental", "Incompetent", "Inferior", "Unskilled", "Dull", "Average", "Decent", "Skilled", "Master",
             "Genius", "Unmatched")
 
-        self.rect = self.image.get_rect(center=pos)
+        self.rect = self.image.get_rect(topleft=pos)
 
     def add_army_stat(self, troop_number, leader_name):
         """troop_number need to be in list format as follows:[total, melee infantry, range infantry,
@@ -618,7 +633,7 @@ class NameList(pygame.sprite.Sprite):
 
 
 class TickBox(pygame.sprite.Sprite):
-    def __init__(self, screen_scale, pos, image, tick_image, option):
+    def __init__(self, pos, image, tick_image, option):
         """option is in str text for identifying what kind of tick_box it is"""
         self._layer = 14
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -714,7 +729,7 @@ class MapPreview(pygame.sprite.Sprite):
             add_dot.blit(new_selected_dot, rect)
             self.leader_dot[team][True] = add_dot
 
-        self.rect = self.image.get_rect(center=self.pos)
+        self.rect = self.image.get_rect(midtop=self.pos)
 
     def change_map(self, base_map, feature_map, height_map):
 
@@ -766,4 +781,24 @@ class MapPreview(pygame.sprite.Sprite):
                                                 pos[1] * ((440 * self.screen_scale[1]) / 1000))
                     rect = self.leader_dot[team][select].get_rect(center=scaled_pos)
                     self.image.blit(self.leader_dot[team][select], rect)
-        self.rect = self.image.get_rect(center=self.pos)
+        self.rect = self.image.get_rect(midtop=self.pos)
+
+
+class SelectedPresetBorder(pygame.sprite.Sprite):
+    def __init__(self, size):
+        self._layer = 16
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((size[0] + 1, size[1] + 1), pygame.SRCALPHA)
+        pygame.draw.rect(self.image, (203, 176, 99), (0, 0, self.image.get_width(), self.image.get_height()), 3)
+        self.rect = self.image.get_rect(topleft=(0, 0))
+
+    def change_pos(self, pos):
+        self.rect = self.image.get_rect(topleft=pos)
+
+
+class FilterBox(pygame.sprite.Sprite):
+    def __init__(self, screen_scale, pos, image):
+        self._layer = 10
+        pygame.sprite.Sprite.__init__(self)
+        self.image = image
+        self.rect = self.image.get_rect(topleft=pos)

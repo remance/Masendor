@@ -246,6 +246,8 @@ class Battle:
         self.camp = {}
         self.all_team_subunit = {1: pygame.sprite.Group(),
                                  2: pygame.sprite.Group()}  # more team can be added later
+        self.all_team_enemy = {1: pygame.sprite.Group(),
+                               2: pygame.sprite.Group()}
         self.team_troop_number = []  # list of troop number in each team, minimum at one because percentage can't divide by 0
         self.last_team_troop_number = []
         self.battle_scale = []
@@ -418,7 +420,10 @@ class Battle:
         self.setup_battle_troop(self.subunit_updater)
         for this_group in self.all_team_subunit.values():
             this_group.empty()
+        for this_group in self.all_team_enemy.values():
+            this_group.empty()
         self.all_team_subunit = {int(key[-1]): pygame.sprite.Group() for key in self.map_info if "Team " in key}
+        self.all_team_enemy = {int(key[-1]): pygame.sprite.Group() for key in self.map_info if "Team " in key}
         self.camp = {key: {} for key in self.all_team_subunit.keys()}
         self.team_troop_number = [0 for _ in range(len(self.all_team_subunit) + 1)]  # reset list of troop number in each team
         self.battle_scale = [1 for _ in self.team_troop_number]

@@ -10,15 +10,15 @@ def menu_char_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
         self.char_back_button.event = False
 
         self.main_ui_updater.remove(self.char_selector, self.char_selector.scroll,
-                                    list(self.char_stat.values()), *self.char_select_button)
+                                    tuple(self.char_stat.values()), *self.char_select_button)
         self.menu_button.remove(*self.char_select_button)
 
         clean_group_object((self.subunit_updater, self.all_subunits, self.preview_char, self.char_icon))
 
         self.change_to_source_selection_menu()
 
-        self.create_team_coa([self.map_data[self.map_title.name]["Team 1"],
-                              self.map_data[self.map_title.name]["Team 2"]], self.main_ui_updater)
+        self.create_team_coa([self.map_data[self.map_title.name][data] for data in self.map_data[self.map_title.name] if
+                              "Team " in data], self.main_ui_updater)
 
         if self.start_button.event:  # start battle button
             self.start_button.event = False
