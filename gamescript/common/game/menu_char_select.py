@@ -60,9 +60,9 @@ def menu_char_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
                         preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True, max_preview_size=400)
                         self.char_stat["model"].add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"],
                                                                   icon.who.coa)
-                        self.map_show.change_mode(1, team_pos_list=self.team_pos,
-                                                  camp_pos_list=self.camp_pos[self.map_source],
-                                                  selected=icon.who.base_pos)
+                        self.map_preview.change_mode(1, team_pos_list=self.team_pos,
+                                                     camp_pos_list=self.camp_pos[self.map_source],
+                                                     selected=icon.who.base_pos)
 
                         self.char_selected = icon.who.map_id
                         break

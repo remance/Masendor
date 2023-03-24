@@ -824,6 +824,20 @@ class CharIcon(pygame.sprite.Sprite):
             self.image = self.selected_image
 
 
+class CampIcon(pygame.sprite.Sprite):
+    def __init__(self, screen_scale, team, camp_size):
+        pygame.sprite.Sprite.__init__(self)
+        self.team = team
+        self.screen_scale = screen_scale
+        self.portrait = pygame.Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]), pygame.SRCALPHA)
+        self.font = pygame.font.SysFont("helvetica", int(100 * self.screen_scale[1]))
+        self.camp_size = str(camp_size)
+        text_surface = self.font.render(self.camp_size, True, (0, 0, 0))
+        text_rect = text_surface.get_rect(center=(self.portrait.get_width() / 2, self.portrait.get_height() / 2))
+        self.portrait.blit(text_surface, text_rect)
+        self.is_leader = True
+
+
 class Timer(pygame.sprite.Sprite):
     def __init__(self, pos, text_size=20):
         self._layer = 11

@@ -35,7 +35,7 @@ def ai_combat(self):
                             self.current_action = self.melee_attack_command_action[weapon]
                             self.release_timer = self.hold_timer
                     return
-        else:
+        else:  # not already holding attack
             if self.in_melee_combat_timer > 0 and self.attack_subunit:  # enemy in subunit's melee zone
                 if not self.current_action:  # only rotate to enemy when no current action
                     self.new_angle = self.set_rotate(self.attack_subunit.base_pos)

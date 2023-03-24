@@ -20,7 +20,6 @@ def change_to_source_selection_menu(self):
 
         self.camp_pos = [{int(value2[-1]): value[value2] for value2 in value if "Camp" in value2} for
                          value in self.source_list.values()]
-        print(self.camp_pos)
         for value in self.camp_pos:
             for team, pos_list in value.items():
                 if ";" in pos_list:

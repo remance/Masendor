@@ -21,7 +21,7 @@ def read_battle_source(self, description_text):
     for row in list(unit_info.values()):
         self.team_pos[row["Team"]]["Leader"].append([int(item) for item in row["POS"].split(",")])
 
-    self.map_show.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos[self.map_source])
+    self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos[self.map_source])
 
     team_troop = {row["Team"]: {} for row in list(unit_info.values())}
     team_leader = {row["Team"]: [] for row in list(unit_info.values())}

@@ -9,18 +9,20 @@ def create_team_coa(self, data, ui_class):
     pos = [self.screen_rect.width / 10, self.screen_rect.height / 8]
 
     for team, coa in enumerate(data):
-        if type(data[team]) == str and "," in data[team]:
-            faction_coa_list = data[team].split(",")
-            first_faction = int(faction_coa_list[0])
+        if type(coa) is str and "," in coa:
+            faction_coa_list = coa.split(",")
+            faction_name = self.faction_data.faction_list[int(faction_coa_list[0])]["Name"]
             faction_coa_list = [self.faction_data.coa_list[int(faction)] for faction in faction_coa_list]
-        else:
-            faction_coa_list = [self.faction_data.coa_list[data[team]]]
-            first_faction = data[team]
+        elif coa:
+            faction_coa_list = [self.faction_data.coa_list[coa]]
+            faction_name = self.faction_data.faction_list[coa]["Name"]
+        else:  # empty team for custom map
+            faction_coa_list = [None]
+            faction_name = "None"
         self.team_coa.add(menu.TeamCoa((int(120 * self.screen_scale[0]), int(120 * self.screen_scale[1])),
-                                       pos, faction_coa_list, coa, self.team_colour[team + 1],
-                                       self.faction_data.faction_list[first_faction]["Name"]))
+                                       pos, faction_coa_list, team + 1, self.team_colour[team + 1], faction_name))
         pos[1] += 130 * self.screen_scale[1]
-        if team == 6:
-            pos = [self.screen_rect.width / 9, self.screen_rect.height / 8]
+        if team == 4:
+            pos = [self.screen_rect.width / 3.5, self.screen_rect.height / 8]
 
     ui_class.add(self.team_coa)

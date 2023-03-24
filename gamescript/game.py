@@ -87,6 +87,7 @@ class Game:
     menu_map_select = empty_method
     menu_option = empty_method
     menu_preset_team_select = empty_method
+    menu_unit_setup = empty_method
     read_battle_source = empty_method
     read_selected_map_data = empty_method
     start_battle = empty_method
@@ -342,9 +343,8 @@ class Game:
 
         self.map_description = menu.DescriptionBox(battle_select_image["map_description"], self.screen_scale,
                                                    (self.screen_rect.width / 2, self.screen_rect.height / 1.2))
-        self.map_show = menu.MapPreview(self.main_dir, self.screen_scale,
-                                        (self.screen_rect.width / 2, self.map_title.image.get_height()))
-
+        self.map_preview = menu.MapPreview(self.main_dir, self.screen_scale,
+                                           (self.screen_rect.width / 2, self.map_title.image.get_height()))
         self.source_description = menu.DescriptionBox(battle_select_image["source_description"], self.screen_scale,
                                                       (self.screen_rect.width / 2, self.screen_rect.height / 1.3),
                                                       text_size=24)
@@ -380,7 +380,7 @@ class Game:
         battleui.UIScroll(self.map_list_box, self.map_list_box.rect.topright)  # scroll bar for map list
 
         self.source_list_box = menu.ListBox(self.screen_scale, (self.screen_width -
-                                                                battle_select_image["name_list"].get_width(), 0),
+                                                                (battle_select_image["name_list"].get_width() * 1.2), 0),
                                             battle_select_image["top_box"])  # source list ui box
         battleui.UIScroll(self.source_list_box, self.source_list_box.rect.topright)  # scroll bar for source list
         self.map_option_box = menu.MapOptionBox(self.screen_scale, (self.source_list_box.rect.x, 0),
@@ -391,6 +391,7 @@ class Game:
                                        load_image(self.main_dir, self.screen_scale, "stat.png",
                                                   ("ui", "mapselect_ui")))  # army stat
         self.char_stat = {}
+        self.camp_icon = [{}]
 
         self.observe_mode_tick_box = menu.TickBox((self.map_option_box.rect.topleft[0] * 1.05,
                                                    self.map_option_box.image.get_height() * 0.2),
@@ -645,9 +646,9 @@ class Game:
         self.battle.battle_map.empty_texture = self.battle_map_data.empty_image
         self.battle.battle_map.camp_texture = self.battle_map_data.camp_image
 
-        self.map_show.terrain_colour = self.battle_map_data.terrain_colour
-        self.map_show.feature_colour = self.battle_map_data.feature_colour
-        self.map_show.battle_map_colour = self.battle_map_data.battle_map_colour
+        self.map_preview.terrain_colour = self.battle_map_data.terrain_colour
+        self.map_preview.feature_colour = self.battle_map_data.feature_colour
+        self.map_preview.battle_map_colour = self.battle_map_data.battle_map_colour
 
         self.battle.battle_map_data = self.battle_map_data
         self.battle.weather_data = self.battle_map_data.weather_data
@@ -822,6 +823,16 @@ class Game:
 
                         edit_config("USER", "player_name", self.profile_name, "configuration.ini", self.config)
 
+                    elif "custom_camp_size" in self.input_popup[1] and self.input_box.text.isdigit():
+                        pos = self.input_popup[1].split("/")[1]
+                        pos = pos.replace("(", "").replace(")", "").split(", ")
+                        pos = [float(item) for item in pos]
+                        self.camp_pos[0][int(self.input_popup[1][-1])].insert(0, [pos, int(self.input_box.text)])
+                        self.camp_icon.insert(0, battleui.CampIcon(self.screen_scale, int(self.input_popup[1][-1]),
+                                                                   self.input_box.text))
+                        self.char_selector.setup_char_icon(self.char_icon, self.camp_icon)
+                        self.map_preview.change_mode(1, camp_pos_list=self.camp_pos[0])
+
                     elif self.input_popup[1] == "quit":
                         pygame.time.wait(1000)
                         if pygame.mixer:
@@ -868,6 +879,10 @@ class Game:
 
                 elif self.menu_state == "char_select":
                     self.menu_char_select(mouse_left_up, mouse_left_down, mouse_scroll_up,
+                                          mouse_scroll_down, esc_press)
+
+                elif self.menu_state == "unit_setup":
+                    self.menu_unit_setup(mouse_left_up, mouse_left_down, mouse_scroll_up,
                                           mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "game_creator":

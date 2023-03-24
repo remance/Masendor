@@ -540,19 +540,19 @@ class Subunit(pygame.sprite.Sprite):
                                                            ((training_scale[0] + training_scale[1]) / 2))
 
         self.original_melee_dodge = ((self.dexterity * 0.1) + (self.agility * 0.3) + (self.wisdom * 0.1)) + \
-                                    (grade_stat["Training Score"] * training_scale[1])
+                                    (grade_stat["Training Score"] / 5 * training_scale[1])
 
         self.original_range_def = ((self.dexterity * 0.4) + (self.agility * 0.2) + (self.constitution * 0.3) +
                                    (self.wisdom * 0.1)) + (grade_stat["Training Score"] *
                                                            ((training_scale[1] + training_scale[2]) / 2))
 
         self.original_range_dodge = ((self.dexterity * 0.2) + (self.agility * 0.2) + (self.wisdom * 0.1)) + \
-                                    (grade_stat["Training Score"] * training_scale[1])
+                                    (grade_stat["Training Score"] / 10 * training_scale[1])
 
         self.original_accuracy = ((self.strength * 0.1) + (self.dexterity * 0.6) + (self.wisdom * 0.3)) + \
-                                 (grade_stat["Training Score"] * training_scale[2]) / 4
+                                 (grade_stat["Training Score"] / 2 * training_scale[2])
 
-        self.original_sight = ((self.dexterity * 0.8) + (self.wisdom * 0.2)) + (grade_stat["Training Score"] *
+        self.original_sight = ((self.dexterity * 0.8) + (self.wisdom * 0.2)) + (grade_stat["Training Score"] / 2 *
                                                                                 training_scale[2])
 
         self.original_reload = ((self.strength * 0.1) + (self.dexterity * 0.4) + (self.agility * 0.4) +
