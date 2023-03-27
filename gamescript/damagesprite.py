@@ -203,8 +203,12 @@ class RangeDamageSprite(DamageSprite):
             self.image = self.bullet_sprite_pool[sprite_name]["base"]
         else:  # use weapon image itself as bullet image
             sprite_name = stat["Name"]
-            self.image = self.bullet_weapon_sprite_pool[sprite_name][
-                attacker.weapon_version[attacker.equipped_weapon][weapon]]["base_main"]
+            if attacker.weapon_version[attacker.equipped_weapon][weapon] in self.bullet_weapon_sprite_pool[sprite_name]:
+                self.image = self.bullet_weapon_sprite_pool[sprite_name][
+                    attacker.weapon_version[attacker.equipped_weapon][weapon]]["base_main"]
+            else:
+                self.image = self.bullet_weapon_sprite_pool[sprite_name]["Common"]["base_main"]
+
         if sprite_name in self.sound_effect_pool:
             self.travel_sound_distance = stat["Bullet Sound Distance"]
             self.travel_shake_power = stat["Bullet Shake Power"]
