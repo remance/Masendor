@@ -53,8 +53,8 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
     resolution_drop = menu.MenuButton(screen_scale, image_list, (screen_rect.width / 2, screen_rect.height / 1.8),
                                       updater, text=str(screen_width) + " x " + str(screen_height),
                                       size=int(30 * screen_scale[1]))
-    resolution_list = ("2560 x 1440", "2048 x 1080", "1920 x 1080",
-                       "1600 x 900", "1366 x 768", "1280 x 720", "1024 x 768", "800 x 600")  # add more here
+    resolution_list = ("2560 x 1440", "2048 x 1152", "1920 x 1080", "1600 x 900", "1366 x 768",
+                       "1280 x 720", "1136 x 640", "1024 x 600", "960 x 540", "848 x 480")  # add more here
     resolution_bar = make_bar_list(main_dir, screen_scale, resolution_list, resolution_drop, updater)
 
     resolution_text = menu.OptionMenuText((resolution_drop.pos[0] - (resolution_drop.pos[0] / 4.5),

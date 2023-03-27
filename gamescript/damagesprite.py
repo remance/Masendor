@@ -207,7 +207,7 @@ class RangeDamageSprite(DamageSprite):
                 self.image = self.bullet_weapon_sprite_pool[sprite_name][
                     attacker.weapon_version[attacker.equipped_weapon][weapon]]["base_main"]
             else:
-                self.image = self.bullet_weapon_sprite_pool[sprite_name]["Common"]["base_main"]
+                self.image = self.bullet_weapon_sprite_pool[sprite_name]["common"]["base_main"]
 
         if sprite_name in self.sound_effect_pool:
             self.travel_sound_distance = stat["Bullet Sound Distance"]
@@ -356,7 +356,7 @@ class EffectDamageSprite(DamageSprite):
                               height_type=stat["Height Type"])
 
         self.base_pos = pygame.Vector2(base_pos)
-        self.angle = self.attacker.angle
+        self.angle = 0
 
         self.duration = self.stat["Duration"]
         self.wind_disperse = self.stat["Wind Dispersion"]

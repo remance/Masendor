@@ -161,7 +161,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
 
             scale = min(max_preview_size * self.screen_scale[0] / sprite_pic.get_width(),
                         max_preview_size * self.screen_scale[1] / sprite_pic.get_height())
-            if scale < 1:  # scale down to fit ui like encyclopedia
+            if scale != 1:  # scale down to fit ui like encyclopedia
                 sprite_pic = pygame.transform.smoothscale(sprite_pic, (
                     sprite_pic.get_width() * scale,
                     sprite_pic.get_height() * scale))
