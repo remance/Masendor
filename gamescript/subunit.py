@@ -620,6 +620,7 @@ class Subunit(pygame.sprite.Sprite):
         if not self.secondary_sub_weapon:  # replace empty with standard unarmed
             self.secondary_sub_weapon = (1, 3)
         self.melee_weapon_set = {}
+        self.charge_weapon_set = {}  # TODO change AI to consider this
         self.range_weapon_set = {}
         self.power_weapon = {}
         self.block_weapon = {}
@@ -848,6 +849,7 @@ class Subunit(pygame.sprite.Sprite):
         self.angle = start_angle
         self.new_angle = self.angle
         self.radians_angle = radians(360 - self.angle)  # radians for apply angle to position
+        self.run_direction = 0  # direction check to prevent subunit able to run in opposite direction right away TODO change for player and AI
         self.sprite_direction = rotation_dict[min(rotation_list,
                                                   key=lambda x: abs(
                                                       x - self.angle))]  # find closest in list of rotation for sprite direction

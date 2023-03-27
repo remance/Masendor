@@ -51,11 +51,11 @@
 50,"Landsknecht Halberdier",10,1,,,,,55,45,0,100,19,125,55,130,"Heavy Infantry","15,3",,"5,3",,"12,3",,"Landsknecht",2
 51,"Landsknecht Arquebusier",10,1,,,,,25,25,50,120,19,125,55,130,"Range Infantry","34,3",,"5,3",,"12,3",,"Landsknecht",3
 52,"Landsknecht Musketeer",10,1,,,,,20,20,60,120,19,125,55,130,"Range Infantry","33,3",,"5,3",,"12,3",,"Landsknecht",3
-53,"Hungarian Knight",2,1,,,,,65,35,0,100,19,,,,"Heavy Cavalry",,,,,,"2,2,1","Hungarian Medieval Knight","1,4"
+53,"Hungarian Knight",2,1,,,,,65,35,0,100,19,,,,"Heavy Cavalry","51,3",,"2,3",,"8,3","2,2,7","Hungarian Medieval Knight","1,4"
 54,"Hungarian Heavy Spearman",2,1,,,,,40,60,0,100,19,,,,"Heavy Infantry",,,,,,,"Hungarian Medieval Heavy",2
 55,"Hungarian Arquebusier",2,1,,,,,20,30,50,100,19,100,,,"Range Infantry","34,3",,"5,3",,"12,3",,"Hungarian Medieval Light",3
-56,"Hungarian Banderium",3,1,,,,,65,35,0,100,19,,,,"Heavy Cavalry",,,,,,"2,2,1","Hungarian Medieval Knight","1,4"
-57,"Hungarian Royal Guard",4,1,,,,,50,50,0,100,19,,,,"Heavy Infantry",,,,,,"2,3,1","Hungarian Medieval Knight","1,4"
+56,"Hungarian Banderium",3,1,,,,,65,35,0,100,19,,,,"Heavy Cavalry","51,4",,"2,4",,"8,4","2,2,7","Hungarian Medieval Knight","1,4"
+57,"Hungarian Royal Guard",4,1,,,,,50,50,0,100,19,,,,"Heavy Infantry","51,4",,"2,4",,"8,4","2,3,7","Hungarian Medieval Knight","1,4"
 58,"Hungarian Pikeman",1,1,,,,,,,,,,,,,"Heavy Infantry",,,,,,,"Hungarian Medieval Heavy",2
 59,"Hungarian Hussar",,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
 60,,,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
@@ -104,3 +104,4 @@
 103,,,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
 104,,,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
 105,"French Gendarme",2,1,,,,,,,,,,,,,"Heavy Cavalry",,,,,,"2,2,1","Medieval Knight",
+106,"Hamster Boy",4,1,,,,,2,3,8,150,19,150,150,150,"Light Infantry","71,4",,,,"20,3",,"Hamster",1

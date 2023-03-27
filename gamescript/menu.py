@@ -414,6 +414,7 @@ class TeamCoa(pygame.sprite.Sprite):
         self.not_selected_image_base.blit(team_body, white_rect)
         self.selected_image_base.blit(team_body, white_rect)
 
+        self.coa_images = coa_images
         self.change_coa(coa_images, name)
 
         self.image = self.not_selected_image
@@ -428,6 +429,7 @@ class TeamCoa(pygame.sprite.Sprite):
             self.image = self.not_selected_image
 
     def change_coa(self, coa_images, name):
+        self.coa_images = coa_images
         text_render = utility.text_render
 
         self.not_selected_image = self.not_selected_image_base.copy()
@@ -435,7 +437,7 @@ class TeamCoa(pygame.sprite.Sprite):
 
         # Coat of arm image to image
         small_coa_pos = [int(self.coa_size[0] * 0.2), int(self.coa_size[1] * 0.2)]
-        for index, image in enumerate(coa_images):
+        for index, image in enumerate(self.coa_images.values()):
             if image:
                 if index == 0:  # first one as main faction coa
                     coa_image = pygame.transform.smoothscale(image, (int(self.coa_size[0] * 0.65), int(self.coa_size[1] * 0.65)))
@@ -593,7 +595,7 @@ class ListBox(pygame.sprite.Sprite):
         self.pos = pos
         self.rect = self.image.get_rect(topleft=self.pos)
 
-        image_height = int(28 * screen_scale[1])
+        image_height = int(24 * screen_scale[1])
         self.max_row_show = int(
             self.image.get_height() / (image_height + (6 * screen_scale[1])))  # max number of map on list can be shown
 
@@ -750,7 +752,6 @@ class MapPreview(pygame.sprite.Sprite):
         new_feature_map = pygame.transform.scale(feature_map, (300, 300))
         new_height_map = topology_map_creation(pygame.transform.scale(height_map, (300, 300)), 4)
 
-        print(base_map.get_size(), 450 * self.screen_scale[0], 450 * self.screen_scale[1])
         self.map_scale_width = base_map.get_width() / (450 * self.screen_scale[0])
         self.map_scale_height = base_map.get_height() / (450 * self.screen_scale[1])
 
@@ -793,10 +794,15 @@ class MapPreview(pygame.sprite.Sprite):
                                            int(5 * self.screen_scale[0]))
             if team_pos_list:
                 for team, pos_list in team_pos_list.items():
-                    for pos in pos_list["Leader"]:
+                    if type(pos_list) is dict:
+                        new_pos_list = pos_list.values()
+                    else:
+                        new_pos_list = pos_list
+                    for pos in new_pos_list:
                         select = False
                         if pos == selected:
                             select = True
+                        print(pos)
                         scaled_pos = pygame.Vector2(pos[0] * ((450 * self.screen_scale[0]) / 1000),
                                                     pos[1] * ((450 * self.screen_scale[1]) / 1000))
                         rect = self.leader_dot[team][select].get_rect(center=scaled_pos)

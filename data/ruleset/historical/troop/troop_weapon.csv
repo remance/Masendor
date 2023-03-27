@@ -46,13 +46,13 @@
 45,"Spiked Shield",5,5,65,7,0,0,20,18,9,10,11,,,1,0,0,0,7,,1,"TRUE","Crush Medium (team)",0,,,,,8,,"shield","Bash",,"hold,block","Shield"
 46,"Bouche Shield",,,,,,,,20,13,3,8,,,,,,,,,,"TRUE","Crush Medium (team)",0,,,,,8,,"shield","Bash",,"hold,block","Shield"
 47,"Oval Shield",7,3,85,4,0,0,4,22,17,5,8,29,,1.5,0,0,0,7,,1,"TRUE","Crush Medium (team)",0,,,,,8,,"shield","Bash",,"hold,block","Shield"
-48,"Parry Dagger",1,9,70,4,0,0,40,6,5,1,1,,,0.5,0,0,0,6,,1,"TRUE","Slash Small (team)",0,,,,,5,,"shield","Slash",,"parry","Melee"
-49,"Parry Club",3,7,,,0,0,30,16,7,2,5,,,1.2,0,0,0,9,,1,"TRUE","Crush Medium (team)",0,,,,,8,,"shield","Smash",,"parry","Melee"
+48,"Parry Dagger",1,9,70,4,0,0,40,6,5,1,1,,,0.5,0,0,0,6,,1,"TRUE","Slash Small (team)",0,,,,,5,,"1hand","Slash",,"parry","Melee"
+49,"Parry Club",3,7,,,0,0,30,16,7,2,5,,,1.2,0,0,0,9,,1,"TRUE","Crush Medium (team)",0,,,,,8,,"1hand","Smash",,"parry","Melee"
 50,"Barrier Shield",10,0,90,1,0,0,0,20,40,1,30,30,,2.5,0,0,0,7,,2,"TRUE","Crush Big (team)",0,,,,,10,,"shield","Bash",,"hold,block","Shield"
-51,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash",,"hold,block",
-52,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash",,"hold,block",
-53,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash",,"hold,block",
-54,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"shield","Bash",,"hold,block",
+51,"Lance",1,9,40,16,,,,12,4,45,12,,14,3,0,0,0,25,,1,"TRUE","Pierce Big (team)",0,,,,,8,,"1hand","Pierce",,,"Melee"
+52,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+53,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+54,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 55,"Light Crossbow (Heavy)",1,9,80,22,0,0,40,19,0,0,15,,,11,,1,1,90,,2,"FALSE","Bolt",180,,,,"crossbow_small_shot",5,24,"2gun","Shoot","Light Crossbow","hold","Long Range"
 56,"Light Crossbow (Poison)",1,9,90,22,0,10,40,14,0,0,13,,,15,,1,1,120,,2,"FALSE","Poison Bolt",200,,,,"crossbow_small_shot",5,24,"2gun","Shoot","Light Crossbow","hold","Long Range"
 57,"Heavy Crossbow (Heavy)",2,8,75,30,0,0,60,25,0,0,25,,,13,,1,1,120,,2,"FALSE","Bolt",200,,,,"crossbow_big_shot",7,28,"2gun","Shoot","Heavy Crossbow","hold","Long Range"
@@ -69,3 +69,4 @@
 68,"Greatbow (Whistle)",4,6,55,40,0,0,15,30,0,0,30,,,15,,1,1,350,,2,"FALSE",,220,,,,"bow_big_loose",10,120,"bow","Draw","Greatbow","hold,power,timing_2_3","Long Range"
 69,"Throwing Knife",3,7,,10,0,0,20,7,0,0,6,,,5,30,1,1,50,,1,"TRUE","self",90,"spin",,,,5,20,"1hand","Throw",,"hold,timing_1_2","Short Range"
 70,"Throwing Knife (Poison)",3,7,,10,0,10,20,7,0,0,7,,,8,20,1,1,50,,1,"TRUE","self",90,"spin",,,,5,20,"1hand","Throw",,"hold,timing_1_2","Short Range"
+71,"Hamster Food",2,8,50,20,0,0,50,5,0,0,5,,,3,50,3,3,100,,1,"TRUE","self",150,,"Hamster",,"hamster",15,5,"1hand","Throw",,,"Joke"

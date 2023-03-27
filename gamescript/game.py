@@ -178,6 +178,7 @@ class Game:
         menu.MapPreview.selected_colour = self.selected_team_colour
         battleui.MiniMap.colour = self.team_colour
         battleui.MiniMap.selected_colour = self.selected_team_colour
+        battleui.CharIcon.colour = self.team_colour
         damagesprite.DamageSprite.screen_scale = self.screen_scale
         battlemap.BeautifulMap.team_colour = self.team_colour
         battlemap.BeautifulMap.selected_team_colour = self.selected_team_colour
@@ -197,6 +198,7 @@ class Game:
         self.current_popup_row = 0
         self.team_pos = {}  # for saving preview map subunit pos
         self.camp_pos = {}  # for saving preview map camp pos
+        self.custom_map_data = {"info": {}, "unit": {"pos": {}}}
 
         self.dt = 0
         self.text_delay = 0
@@ -378,6 +380,11 @@ class Game:
                                                              battle_select_image["name_list"].get_width(), 0),
                                          battle_select_image["name_list"])
         battleui.UIScroll(self.map_list_box, self.map_list_box.rect.topright)  # scroll bar for map list
+
+        self.unit_list_box = menu.ListBox(self.screen_scale, (self.screen_width -
+                                                              battle_select_image["unit_list"].get_width(), 0),
+                                         battle_select_image["unit_list"])
+        battleui.UIScroll(self.unit_list_box, self.unit_list_box.rect.topright)  # scroll bar for map list
 
         self.source_list_box = menu.ListBox(self.screen_scale, (self.screen_width -
                                                                 (battle_select_image["name_list"].get_width() * 1.2), 0),
@@ -828,8 +835,8 @@ class Game:
                         pos = pos.replace("(", "").replace(")", "").split(", ")
                         pos = [float(item) for item in pos]
                         self.camp_pos[0][int(self.input_popup[1][-1])].insert(0, [pos, int(self.input_box.text)])
-                        self.camp_icon.insert(0, battleui.CampIcon(self.screen_scale, int(self.input_popup[1][-1]),
-                                                                   self.input_box.text))
+                        self.camp_icon.insert(0, battleui.TempCharIcon(self.screen_scale, int(self.input_popup[1][-1]),
+                                                                       self.input_box.text))
                         self.char_selector.setup_char_icon(self.char_icon, self.camp_icon)
                         self.map_preview.change_mode(1, camp_pos_list=self.camp_pos[0])
 
@@ -882,7 +889,7 @@ class Game:
                                           mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "unit_setup":
-                    self.menu_unit_setup(mouse_left_up, mouse_left_down, mouse_scroll_up,
+                    self.menu_unit_setup(mouse_left_up, mouse_left_down, mouse_right_up, mouse_scroll_up,
                                           mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "game_creator":

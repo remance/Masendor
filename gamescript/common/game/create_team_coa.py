@@ -12,12 +12,12 @@ def create_team_coa(self, data, ui_class):
         if type(coa) is str and "," in coa:
             faction_coa_list = coa.split(",")
             faction_name = self.faction_data.faction_list[int(faction_coa_list[0])]["Name"]
-            faction_coa_list = [self.faction_data.coa_list[int(faction)] for faction in faction_coa_list]
+            faction_coa_list = {int(faction): self.faction_data.coa_list[int(faction)] for faction in faction_coa_list}
         elif coa:
-            faction_coa_list = [self.faction_data.coa_list[coa]]
+            faction_coa_list = {coa: self.faction_data.coa_list[coa]}
             faction_name = self.faction_data.faction_list[coa]["Name"]
         else:  # empty team for custom map
-            faction_coa_list = [None]
+            faction_coa_list = {0: None}
             faction_name = "None"
         self.team_coa.add(menu.TeamCoa((int(120 * self.screen_scale[0]), int(120 * self.screen_scale[1])),
                                        pos, faction_coa_list, team + 1, self.team_colour[team + 1], faction_name))

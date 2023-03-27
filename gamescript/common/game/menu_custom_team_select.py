@@ -23,25 +23,25 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                                             self.custom_map_data["info"]["Team " + str(coa.team)].append(faction_index)
                                     else:
                                         self.custom_map_data["info"]["Team " + str(coa.team)] = [faction_index]
-                                    coa.change_coa([self.faction_data.coa_list[int(faction)] for faction in
-                                                    self.custom_map_data["info"]["Team " + str(coa.team)]],
+                                    coa.change_coa({int(faction): self.faction_data.coa_list[int(faction)] for faction in
+                                                    self.custom_map_data["info"]["Team " + str(coa.team)]},
                                                    self.faction_data.faction_list[self.custom_map_data["info"][
                                                        "Team " + str(coa.team)][0]]["Name"])
                                 elif mouse_right_up:
                                     if faction_index in self.custom_map_data["info"]["Team " + str(coa.team)]:
                                         self.custom_map_data["info"]["Team " + str(coa.team)].remove(faction_index)
                                     if self.custom_map_data["info"]["Team " + str(coa.team)]:  # still not empty
-                                        coa.change_coa([self.faction_data.coa_list[int(faction)] for faction in
-                                                        self.custom_map_data["info"]["Team " + str(coa.team)]],
+                                        coa.change_coa({int(faction): self.faction_data.coa_list[int(faction)] for faction in
+                                                        self.custom_map_data["info"]["Team " + str(coa.team)]},
                                                        self.faction_data.faction_list[self.custom_map_data["info"][
                                                            "Team " + str(coa.team)][0]]["Name"])
                                     else:  # list empty remove data
                                         self.custom_map_data["info"].pop("Team " + str(coa.team))
-                                        coa.change_coa([None], "None")
+                                        coa.change_coa({0: None}, "None")
                             else:
                                 if mouse_left_up and "Team " + str(coa.team) in self.custom_map_data["info"]:
                                     self.custom_map_data["info"].pop("Team " + str(coa.team))
-                                coa.change_coa([None], "None")
+                                coa.change_coa({0: None}, "None")
 
                             if "Team " + str(coa.team) in self.custom_map_data["info"]:  # camp, team exist
                                 if coa.team not in self.camp_pos[0]:  # new team, camp not exist
@@ -51,9 +51,9 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                                     self.camp_icon = []
                                 else:
                                     for camp in self.camp_pos[0][coa.team]:
-                                        self.camp_icon.append(battleui.CampIcon(self.screen_scale, coa.team, camp[1]))
-                                if not self.camp_icon or self.camp_icon[-1].camp_size != "+":
-                                    self.camp_icon.append(battleui.CampIcon(self.screen_scale, coa.team, "+"))
+                                        self.camp_icon.append(battleui.TempCharIcon(self.screen_scale, coa.team, camp[1]))
+                                if not self.camp_icon or self.camp_icon[-1].name != "+":
+                                    self.camp_icon.append(battleui.TempCharIcon(self.screen_scale, coa.team, "+"))
 
                             else:  # team no longer exist
                                 if coa.team in self.camp_pos[0]:
@@ -63,9 +63,6 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                                     self.camp_icon = []
                             self.char_selector.setup_char_icon(self.char_icon, self.camp_icon)
                             break
-                    # team_army, team_leader = self.read_battle_source(
-                    #     [self.source_scale_text[self.map_source], self.source_text[self.map_source]])
-                    # self.change_battle_source(team_army, team_leader)
 
             for box in self.tick_box:
                 if box in self.main_ui_updater and box.rect.collidepoint(self.mouse_pos):
@@ -82,13 +79,12 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                         map_pos = (
                         (int(self.mouse_pos[0] - self.map_preview.rect.x) * self.map_preview.map_scale_width),
                         int((self.mouse_pos[1] - self.map_preview.rect.y) * self.map_preview.map_scale_height))
-                        if icon.who.camp_size == "+":
+                        if icon.who.name == "+":
                             self.input_popup = ("text_input", "custom_camp_size/" + str(map_pos) + "/" +
                                                     str(icon.who.team))
                             self.input_ui.change_instruction("Camp Size Value:")
                             self.main_ui_updater.add(self.input_ui_popup)
                         else:
-                            print(self.camp_pos[0][icon.who.team], index)
                             self.camp_pos[0][icon.who.team][index][0] = map_pos
                         self.map_preview.change_mode(1, camp_pos_list=self.camp_pos[0])
                         break
@@ -138,21 +134,23 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                                 if other_icon.selected:  # unselected all others first
                                     other_icon.selection()
                             icon.selection()
-                        else:
-                            if icon.who.camp_size != "+":
+                        else:  # right click remove icon
+                            if icon.who.name != "+":
+                                self.camp_pos[0][icon.who.team].pop(index)
                                 icon.kill()
-
+                                self.camp_icon.pop(index)
+                                self.char_selector.setup_char_icon(self.char_icon, self.camp_icon)
                         self.map_preview.change_mode(1, camp_pos_list=self.camp_pos[0])
                         break
 
     if self.map_back_button.event or esc_press:
-        self.custom_map_data = {"info": {}, "unit": {}}
+        self.custom_map_data = {"info": {}, "unit": {"pos": {}}}
         self.camp_pos = [{}]
         self.menu_state = self.last_select
         self.map_back_button.event = False
         self.main_ui_updater.remove(*self.menu_button, self.map_list_box, self.map_option_box,
                                     self.observe_mode_tick_box, self.source_list_box, self.source_list_box.scroll,
-                                    self.source_description,  self.char_selector, self.char_selector.scroll,
+                                    self.char_selector, self.char_selector.scroll,
                                     self.char_icon, self.team_coa)
         self.menu_button.remove(*self.menu_button)
 
@@ -161,7 +159,6 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
             team.change_select(False)
         self.team_selected = 1
 
-        self.map_source = 0
         self.map_preview.change_mode(0)  # revert map preview back to without unit dot
 
         for stuff in self.source_namegroup:  # remove map name item
@@ -177,22 +174,41 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
         self.main_ui_updater.add(*self.map_select_button, self.map_list_box, self.map_list_box.scroll,
                                  self.map_description)
 
-    elif self.select_button.event:  # go to character select screen
-        # self.menu_state = "unit_setup"
+    elif self.select_button.event:  # go to unit setup screen
         self.select_button.event = False
-        # self.char_select_row = 0
-        #
-        # self.main_ui_updater.remove(*self.team_select_button, self.map_option_box, self.observe_mode_tick_box,
-        #                             self.source_list_box, self.source_list_box.scroll)
-        # self.menu_button.remove(*self.map_select_button)
-        #
-        # for stuff in self.source_namegroup:  # remove map name item
-        #     stuff.kill()
-        #     del stuff
-        #
-        # self.char_selector.setup_char_icon(self.char_icon, self.preview_char)
-        #
-        # self.menu_button.add(*self.char_select_button)
+        if len([coa for coa in self.team_coa if coa.name is not None and coa.name != "None"]) > 1:
+            self.menu_state = "unit_setup"
+            self.char_select_row = 0
+
+            self.main_ui_updater.remove(self.map_option_box, self.observe_mode_tick_box,
+                                        self.source_list_box, self.source_list_box.scroll)
+
+            for stuff in self.source_namegroup:  # remove map name item
+                stuff.kill()
+                del stuff
+
+            self.main_ui_updater.add(self.unit_list_box, self.unit_list_box.scroll)
+            for coa in self.team_coa:
+                if coa.selected:  # get unit for selected team
+                    unit_list = []
+                    for faction in coa.coa_images:
+                        if faction == 0:  # all faction
+                            for this_faction in self.faction_data.faction_unit_list:
+                                unit_list += list(self.faction_data.faction_unit_list[this_faction].keys())
+                        else:
+                            unit_list += list(self.faction_data.faction_unit_list[faction].keys())
+
+                        unit_list = sorted((set(unit_list)), key=unit_list.index)
+
+                    setup_list(self.screen_scale, menu.NameList, self.current_map_row, unit_list,
+                               self.map_namegroup, self.unit_list_box, self.main_ui_updater)
+                    break
+
+            # self.char_selector.setup_char_icon(self.char_icon, self.preview_char)
+        else:
+            self.input_popup = ("confirm_input", "warning")
+            self.input_ui.change_instruction("Require at least 2 teams")
+            self.main_ui_updater.add(self.input_ui_popup)
 
 
 def change_team_coa(self):
@@ -206,8 +222,8 @@ def change_team_coa(self):
             self.camp_icon = []
             if this_team.team in self.camp_pos[0]:
                 for camp in self.camp_pos[0][this_team.team]:
-                    self.camp_icon.append(battleui.CampIcon(self.screen_scale, this_team.team, camp[1]))
-                self.camp_icon.append(battleui.CampIcon(self.screen_scale, this_team.team, "+"))
+                    self.camp_icon.append(battleui.TempCharIcon(self.screen_scale, this_team.team, camp[1]))
+                self.camp_icon.append(battleui.TempCharIcon(self.screen_scale, this_team.team, "+"))
             self.char_selector.setup_char_icon(self.char_icon, self.camp_icon)
 
             for this_team2 in self.team_coa:

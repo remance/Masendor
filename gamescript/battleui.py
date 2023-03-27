@@ -766,11 +766,14 @@ class UnitSelector(pygame.sprite.Sprite):
 
 
 class CharIcon(pygame.sprite.Sprite):
+    colour = None
+
     def __init__(self, pos, char, size):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.who = char  # link subunit object so when click can correctly select or go to position
         self.pos = pos  # position on unit selector ui
+        self.name = ""  # not used for char icon, for checking with CampIcon
         self.selected = False
 
         self.leader_image = pygame.transform.scale(char.portrait,
@@ -779,16 +782,14 @@ class CharIcon(pygame.sprite.Sprite):
                                                   self.leader_image.get_height() + (
                                                           self.leader_image.get_height() / 7)))  # create image black corner block
         self.selected_image = self.not_selected_image.copy()
-        self.selected_image.fill((200, 200, 0))  # fill gold corner
-        self.not_selected_image.fill((0, 0, 0))  # fill black corner
+        self.selected_image.fill((0, 0, 0))  # fill white corner
+        self.not_selected_image.fill((255, 255, 255))  # fill black corner
 
         for image in (self.not_selected_image, self.selected_image):  # add team colour and leader image
             center_image = pygame.Surface((self.leader_image.get_width() + (self.leader_image.get_width() / 14),
                                            self.leader_image.get_height() + (
                                                    self.leader_image.get_height() / 14)))  # create image block
-            center_image.fill((144, 167, 255))  # fill colour according to team, blue for team 1
-            if self.who.team == 2:
-                center_image.fill((255, 114, 114))  # red colour for team 2
+            center_image.fill(self.colour[self.who.team])  # fill colour according to team
             image_rect = center_image.get_rect(center=((image.get_width() / 2),
                                                        (image.get_height() / 2)))
             image.blit(center_image, image_rect)  # blit colour block into border image
@@ -824,17 +825,22 @@ class CharIcon(pygame.sprite.Sprite):
             self.image = self.selected_image
 
 
-class CampIcon(pygame.sprite.Sprite):
-    def __init__(self, screen_scale, team, camp_size):
+class TempCharIcon(pygame.sprite.Sprite):
+    def __init__(self, screen_scale, team, image):
         pygame.sprite.Sprite.__init__(self)
         self.team = team
         self.screen_scale = screen_scale
         self.portrait = pygame.Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]), pygame.SRCALPHA)
         self.font = pygame.font.SysFont("helvetica", int(100 * self.screen_scale[1]))
-        self.camp_size = str(camp_size)
-        text_surface = self.font.render(self.camp_size, True, (0, 0, 0))
-        text_rect = text_surface.get_rect(center=(self.portrait.get_width() / 2, self.portrait.get_height() / 2))
-        self.portrait.blit(text_surface, text_rect)
+        if type(image) is float or type(image) is int or type(image) is str:
+            self.name = str(image)
+            image_surface = self.font.render(self.name, True, (0, 0, 0))
+            image_rect = image_surface.get_rect(center=(self.portrait.get_width() / 2, self.portrait.get_height() / 2))
+            self.portrait.blit(image_surface, image_rect)
+        else:
+            self.name = image
+            image_rect = image.get_rect(center=(self.portrait.get_width() / 2, self.portrait.get_height() / 2))
+            self.portrait.blit(image, image_rect)
         self.is_leader = True
 
 

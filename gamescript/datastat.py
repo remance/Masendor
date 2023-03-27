@@ -385,6 +385,8 @@ class TroopData:
                     else:
                         self.troop_list[key]["size"] = self.race_list[self.troop_list[key]["Race"]]["Size"] / 10
 
+        self.troop_name_list = [value["Name"] for value in self.troop_list.values()]
+
         # Lore of the troop
         self.troop_lore = {}
         with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "preset",
@@ -508,7 +510,6 @@ class LeaderData:
 
         # Leader preset
         self.leader_list = {}
-
         with open(os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader", "preset", "leader.csv"),
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
@@ -603,6 +604,28 @@ class FactionData:
             edit_file.close()
 
         self.faction_name_list = [value["Name"] for value in self.faction_list.values()]
+
+        self.faction_unit_list = {}
+        part_folder = Path(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "faction", "unit"))
+        subdirectories = [os.sep.join(os.path.normpath(x).split(os.sep)[-1:]) for x in
+                          part_folder.iterdir()]
+        for folder in subdirectories:
+            self.faction_unit_list[int(folder[-1])] = {}
+            with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "faction", "unit", folder[-1],
+                                   "unit.csv"), encoding="utf-8", mode="r") as edit_file:
+                rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
+                header = rd[0]
+                for row in rd[1:]:
+                    for n, i in enumerate(row):
+                        if header[n] == "Troop":
+                            if "," in i:
+                                row[n] = i.split(",")
+                            else:
+                                row[n] = [i]
+                            row[n] = {int(item.split(":")[0]):
+                                          [int(item2) for item2 in item.split(":")[1].split("/")] for item in row[n]}
+                    self.faction_unit_list[int(folder[-1])][row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
+                edit_file.close()
 
         self.faction_lore = {}
         with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "faction",

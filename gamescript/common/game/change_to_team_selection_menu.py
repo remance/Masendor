@@ -16,7 +16,7 @@ def change_to_team_selection_menu(self):
 
     self.create_team_coa([None for _ in range(10)], self.main_ui_updater)
 
-    self.custom_map_data = {"info": {}, "unit": {}}
+    self.custom_map_data = {"info": {}, "unit": {"pos": {}}}
 
     self.main_ui_updater.add(*self.team_select_button, self.map_option_box, self.observe_mode_tick_box,
                              self.map_back_button, self.map_select_button, self.source_list_box,
