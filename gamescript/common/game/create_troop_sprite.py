@@ -146,7 +146,7 @@ def create_troop_sprite(self, animation_name, troop_size, animation_part_list, t
 
             if angle != 0:
                 part_rotated = pygame.transform.rotate(part_rotated, angle)  # rotate part sprite
-            if "weapon" in layer and self.weapon_joint_list[
+            if "weapon" in layer and part_name in self.weapon_joint_list and self.weapon_joint_list[
                 part_name] != "center" and use_center is False:  # use weapon joint pos and hand pos for weapon position blit
                 main_joint_pos = [self.weapon_joint_list[part_name][0],
                                   self.weapon_joint_list[part_name][1]]

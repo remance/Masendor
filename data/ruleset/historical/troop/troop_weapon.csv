@@ -69,4 +69,4 @@
 68,"Greatbow (Whistle)",4,6,55,40,0,0,15,30,0,0,30,,,15,,1,1,350,,2,"FALSE",,220,,,,"bow_big_loose",10,120,"bow","Draw","Greatbow","hold,power,timing_2_3","Long Range"
 69,"Throwing Knife",3,7,,10,0,0,20,7,0,0,6,,,5,30,1,1,50,,1,"TRUE","self",90,"spin",,,,5,20,"1hand","Throw",,"hold,timing_1_2","Short Range"
 70,"Throwing Knife (Poison)",3,7,,10,0,10,20,7,0,0,7,,,8,20,1,1,50,,1,"TRUE","self",90,"spin",,,,5,20,"1hand","Throw",,"hold,timing_1_2","Short Range"
-71,"Hamster Food",2,8,50,20,0,0,50,5,0,0,5,,,3,50,3,3,100,,1,"TRUE","self",150,,"Hamster",,"hamster",15,5,"1hand","Throw",,,"Joke"
+71,"Hamster Food",2,8,50,20,0,0,50,5,0,0,5,,9,3,50,3,3,100,,1,"TRUE","self",150,,"Hamster",,"hamster",15,5,"1hand","Throw",,,"Joke"

@@ -802,7 +802,6 @@ class MapPreview(pygame.sprite.Sprite):
                         select = False
                         if pos == selected:
                             select = True
-                        print(pos)
                         scaled_pos = pygame.Vector2(pos[0] * ((450 * self.screen_scale[0]) / 1000),
                                                     pos[1] * ((450 * self.screen_scale[1]) / 1000))
                         rect = self.leader_dot[team][select].get_rect(center=scaled_pos)
