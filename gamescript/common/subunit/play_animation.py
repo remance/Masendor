@@ -22,13 +22,15 @@ def play_animation(self, dt, hold_check):
                 else:
                     frame_start = False
                     done = True
-            if not done:  # check if new frame has play speed mod
-                self.animation_play_time = self.default_animation_play_time
-                if "play_time_mod" in self.current_animation[self.show_frame]:
-                    self.animation_play_time = self.default_animation_play_time * \
-                                               self.current_animation[self.show_frame]["play_time_mod"]
 
             current_animation = self.current_animation_direction[self.show_frame]
+
+            if not done:  # check if new frame has play speed mod
+                self.animation_play_time = self.default_animation_play_time
+                if "play_time_mod" in current_animation[self.show_frame]:
+                    self.animation_play_time = self.default_animation_play_time * \
+                                               current_animation[self.show_frame]["play_time_mod"]
+
             self.image = current_animation["sprite"]
 
             self.offset_pos = self.pos - current_animation["center_offset"]

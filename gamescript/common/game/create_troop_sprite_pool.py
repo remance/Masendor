@@ -245,7 +245,6 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                         both_weapon_set = False
                         both_main_sub_weapon = False
                         name_input = animation + "/" + str(weapon_set_index)
-                        # TODO consider later whether to make any animation mean no weapon at all so keep only as one for all set
                         if "_any_" in name_input:  # replace any type to weapon action name for reading later
                             name_input = name_input.replace("_any_", "_" + weapon_common_action[weapon_set_index][
                                 weapon_index] + "_")

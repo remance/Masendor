@@ -40,8 +40,8 @@ def ai_combat(self):
                 if not self.current_action:  # only rotate to enemy when no current action
                     self.new_angle = self.set_rotate(self.attack_subunit.base_pos)
                 if "weapon" not in self.current_action:
-                    if self.equipped_weapon != self.melee_weapon_set[0]:  # swap to melee weapon when enemy near
-                        self.swap_weapon(self.melee_weapon_set[0])
+                    if self.equipped_weapon != self.melee_weapon_set:  # swap to melee weapon when enemy near
+                        self.swap_weapon(self.melee_weapon_set)
                     else:
                         if self.available_enemy_near_skill:  # use enemy near skill first
                             self.skill_command_input(0, self.available_enemy_near_skill, pos_target=self.attack_subunit.base_pos)
@@ -123,5 +123,5 @@ def ai_combat(self):
                                             return
 
                 else:
-                    if self.equipped_weapon != self.melee_weapon_set[0] and not self.current_action:
-                        self.swap_weapon(self.melee_weapon_set[0])  # swap to melee weapon by default
+                    if self.equipped_weapon != self.melee_weapon_set and not self.current_action:
+                        self.swap_weapon(self.melee_weapon_set)  # swap to melee weapon by default

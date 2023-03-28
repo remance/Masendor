@@ -316,6 +316,10 @@ class ChargeDamageSprite(DamageSprite):
                               accuracy=accuracy, reach_effect=reach_effect)
         self.base_pos = base_pos  # always move along with attacker
         self.angle = self.attacker.angle
+        self.charge_power = 0
+        if weapon:
+            self.charge_power = self.attacker.weapon_data[self.attacker.equipped_weapon][weapon]["Charge"]
+
         self.rect = self.attacker.hitbox.rect
 
         self.battle.battle_camera.remove(self)  # no sprite to play since it use subunit sprite as damage sprite

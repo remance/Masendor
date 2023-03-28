@@ -47,7 +47,7 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
                 if target.check_special_effect("All Side Full Defence"):  # defence all side
                     side_cal = 1
                 target_charge_def = target.charge_def_power * side_cal
-                charge_power_diff = attacker.charge_power - target_charge_def
+                charge_power_diff = attacker.charge_power + self.charge_power - target_charge_def
                 if charge_power_diff > 0:
                     troop_dmg += troop_dmg * charge_power_diff / 100
                     impact *= 2

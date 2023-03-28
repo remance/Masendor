@@ -620,7 +620,7 @@ class Subunit(pygame.sprite.Sprite):
         if not self.secondary_sub_weapon:  # replace empty with standard unarmed
             self.secondary_sub_weapon = (1, 3)
         self.melee_weapon_set = {}
-        self.charge_weapon_set = {}  # TODO change AI to consider this
+        self.charge_weapon_set = {}
         self.range_weapon_set = {}
         self.power_weapon = {}
         self.block_weapon = {}
@@ -874,12 +874,12 @@ class Subunit(pygame.sprite.Sprite):
 
         # Create hitbox sprite
         self.hitbox_front_distance = self.troop_size
+        hitbox_size = (self.troop_size * 10 * self.screen_scale[0], self.troop_size * 10 * self.screen_scale[1])
         if self.team not in self.hitbox_image_list:
             self.hitbox_image_list[self.team] = {"troop": {}, "leader": {}}
-        if self.is_leader:
-            if (self.troop_size * 5, self.troop_size * 5) not in self.hitbox_image_list[self.team]["leader"]:
-                self.hitbox_image = pygame.Surface((self.troop_size * 5 * self.screen_scale[0], self.troop_size * 5 * self.screen_scale[1]),
-                                                   pygame.SRCALPHA)
+        if self.is_leader:  # leader subunit
+            if hitbox_size not in self.hitbox_image_list[self.team]["leader"]:
+                self.hitbox_image = pygame.Surface(hitbox_size, pygame.SRCALPHA)
                 pygame.draw.circle(self.hitbox_image, (self.team_colour[self.team][0], self.team_colour[self.team][1],
                                     self.team_colour[self.team][2], 150),
                                    (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
@@ -890,10 +890,10 @@ class Subunit(pygame.sprite.Sprite):
                                    (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
                                    self.hitbox_image.get_width() / 2.4)
             else:
-                self.hitbox_image = self.hitbox_image_list[self.team]["leader"][(self.troop_size * 5, self.troop_size * 5)]
-        else:
-            if (self.troop_size * 5, self.troop_size * 5) not in self.hitbox_image_list[self.team]["troop"]:
-                self.hitbox_image = pygame.Surface((self.troop_size * 5 * self.screen_scale[0], self.troop_size * 5 * self.screen_scale[1]),
+                self.hitbox_image = self.hitbox_image_list[self.team]["leader"][hitbox_size]
+        else:  # troop subunit
+            if hitbox_size not in self.hitbox_image_list[self.team]["troop"]:
+                self.hitbox_image = pygame.Surface(hitbox_size,
                                                    pygame.SRCALPHA)
                 pygame.draw.circle(self.hitbox_image, (self.team_colour[self.team][0], self.team_colour[self.team][1],
                                     self.team_colour[self.team][2], 150),
@@ -905,8 +905,7 @@ class Subunit(pygame.sprite.Sprite):
                                    (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
                                    self.hitbox_image.get_width() / 2.4)
             else:
-                self.hitbox_image = self.hitbox_image_list[self.team]["troop"][
-                    (self.troop_size * 5, self.troop_size * 5)]
+                self.hitbox_image = self.hitbox_image_list[self.team]["troop"][hitbox_size]
 
         self.rect = self.image.get_rect(center=self.offset_pos)  # for blit into screen
 

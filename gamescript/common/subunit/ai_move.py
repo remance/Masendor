@@ -30,8 +30,8 @@ def ai_move(self):
     if follow_order != "Free":  # move to assigned location
         if self.leader and "charge" in self.leader.current_action and follow_order != "Stay Here":  # charge
             # leader charging, charge with leader do not auto move to enemy on its own
-            if self.equipped_weapon != self.melee_weapon_set[0]:  # swap to melee weapon for charge
-                self.swap_weapon(self.melee_weapon_set[0])
+            if self.equipped_weapon != self.charge_weapon_set:  # swap to best charge weapon set for charge
+                self.swap_weapon(self.charge_weapon_set)
                 self.in_melee_combat_timer = 3  # consider as in melee to prevent swap back to range weapon
             else:  # already equipped melee weapon
                 # charge movement based on angle instead of formation pos
