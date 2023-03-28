@@ -254,7 +254,6 @@ class HeroUI(pygame.sprite.Sprite):
                     index = len(self.weapon_name_set) - 1
                 true_weapon_set_index = self.weapon_set_index[index]
                 for index2, this_weapon in enumerate(this_weapon_set):
-                    print(who.weapon_version[true_weapon_set_index])
                     if who.weapon_version[true_weapon_set_index][index2] in self.weapon_sprite_pool[this_weapon]:
                         weapon_image = self.weapon_sprite_pool[this_weapon][who.weapon_version[
                             true_weapon_set_index][index2]]["icon"].copy()
