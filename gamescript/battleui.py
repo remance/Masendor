@@ -829,10 +829,11 @@ class CharIcon(pygame.sprite.Sprite):
 
 
 class TempCharIcon(pygame.sprite.Sprite):
-    def __init__(self, screen_scale, team, image):
+    def __init__(self, screen_scale, team, image, index):
         pygame.sprite.Sprite.__init__(self)
         self.team = team
         self.screen_scale = screen_scale
+        self.index = index
         self.portrait = pygame.Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]), pygame.SRCALPHA)
         self.font = pygame.font.SysFont("helvetica", int(100 * self.screen_scale[1]))
         if type(image) is float or type(image) is int or type(image) is str:

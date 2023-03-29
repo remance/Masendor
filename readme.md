@@ -216,7 +216,7 @@ Battle of Walaja, Battle of Dorylaeum
 **0.7.8 and 0.7.9:** specific Leader command, console stick, control key binding, Minor battle: 764 Irish
 abbey war
 
-**Ver 0.8 Authentic Attraction:** In-game art, better-looking UI, add intro screen, Battle of Isandlwana, Battle of Hwangsanbeol
+**Ver 0.8 Authentic Attraction:** Companion system, In-game art, better-looking UI, add intro screen, Battle of Isandlwana, Battle of Hwangsanbeol
 
 **Ver 0.9 Gaze of New Life:** AI and pathfinding (The most challenging step unless cut corner to the point of braindead
 AI), final code optimisation before full 1.0

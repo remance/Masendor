@@ -441,10 +441,10 @@ def setup_list(screen_scale, item_class, current_row, show_list, item_group, box
     if current_row > len(show_list) - box.max_row_show:
         current_row = len(show_list) - box.max_row_show
 
-    if len(item_group) > 0:  # remove previous sprite in the group before generate new one
-        for stuff in item_group:
-            stuff.kill()
-            del stuff
+    for stuff in item_group:  # remove previous sprite in the group before generate new one
+        stuff.kill()
+        del stuff
+    item_group.empty()
 
     for index, item in enumerate(show_list):
         if index >= current_row:

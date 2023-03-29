@@ -51,9 +51,10 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                                     self.camp_icon = []
                                 else:
                                     for camp in self.camp_pos[0][coa.team]:
-                                        self.camp_icon.append(battleui.TempCharIcon(self.screen_scale, coa.team, camp[1]))
+                                        self.camp_icon.append(battleui.TempCharIcon(self.screen_scale, coa.team,
+                                                                                    camp[1], 0))
                                 if not self.camp_icon or self.camp_icon[-1].name != "+":
-                                    self.camp_icon.append(battleui.TempCharIcon(self.screen_scale, coa.team, "+"))
+                                    self.camp_icon.append(battleui.TempCharIcon(self.screen_scale, coa.team, "+", 0))
 
                             else:  # team no longer exist
                                 if coa.team in self.camp_pos[0]:
@@ -187,6 +188,14 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                 stuff.kill()
                 del stuff
 
+            for coa in self.team_coa:
+                if coa.coa_images and coa.team not in self.custom_map_data["unit"]:
+                    self.custom_map_data["unit"][coa.team] = []
+                    self.custom_map_data["unit"]["pos"][coa.team] = {}
+                elif coa.team in self.custom_map_data["unit"]:  # non existence team
+                    self.custom_map_data["unit"].pop(coa.team)
+                    self.custom_map_data["unit"]["pos"].pop(coa.team)
+
             self.main_ui_updater.add(self.unit_list_box, self.unit_list_box.scroll)
             for coa in self.team_coa:
                 if coa.selected:  # get unit for selected team
@@ -222,8 +231,8 @@ def change_team_coa(self):
             self.camp_icon = []
             if this_team.team in self.camp_pos[0]:
                 for camp in self.camp_pos[0][this_team.team]:
-                    self.camp_icon.append(battleui.TempCharIcon(self.screen_scale, this_team.team, camp[1]))
-                self.camp_icon.append(battleui.TempCharIcon(self.screen_scale, this_team.team, "+"))
+                    self.camp_icon.append(battleui.TempCharIcon(self.screen_scale, this_team.team, camp[1], 0))
+                self.camp_icon.append(battleui.TempCharIcon(self.screen_scale, this_team.team, "+", 0))
             self.char_selector.setup_char_icon(self.char_icon, self.camp_icon)
 
             for this_team2 in self.team_coa:

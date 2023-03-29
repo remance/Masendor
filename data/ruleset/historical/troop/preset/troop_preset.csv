@@ -52,11 +52,11 @@
 51,"Landsknecht Arquebusier",10,1,,,,,25,25,50,120,19,125,55,130,"Range Infantry","34,3",,"5,3",,"12,2",,"Landsknecht",3
 52,"Landsknecht Crossbowman",10,1,,,,,20,20,60,120,19,125,55,130,"Range Infantry","28,3",,"5,3",,"12,2",,"Landsknecht",3
 53,"Hungarian Knight",2,1,,,,,65,35,0,100,19,110,60,125,"Heavy Cavalry","51,3","47,3","2,3",,"8,3","2,2,7","Hungarian Medieval Knight","1,4"
-54,"Hungarian Heavy Spearman",2,1,,,,,40,60,0,100,19,,,,"Heavy Infantry","6,3","47,3",,,"12,2",,"Hungarian Medieval Infantry",2
-55,"Hungarian Arquebusier",2,1,,,,,20,30,50,100,19,100,,,"Range Infantry","34,3",,"5,3",,"5,3",,"Hungarian Medieval Infantry",3
-56,"Hungarian Banderium",3,1,,,,,65,35,0,100,19,,,,"Heavy Cavalry","51,4","47,3","2,4",,"8,4","2,2,7","Hungarian Medieval Knight","1,4"
-57,"Hungarian Royal Guard",4,1,,,,,50,50,0,100,19,,,,"Heavy Infantry","51,4","47,3","2,4",,"8,4","2,3,7","Hungarian Medieval Knight","1,4"
-58,"Hungarian Pikeman",1,1,,,,,,,,,,,,,"Heavy Infantry","16,3",,"4,3",,"12,2",,"Hungarian Medieval Infantry",2
+54,"Hungarian Heavy Spearman",2,1,,,,,40,60,0,100,19,100,50,100,"Heavy Infantry","6,3","44,3",,,"12,2",,"Hungarian Medieval Infantry",2
+55,"Hungarian Arquebusier",2,1,,,,,20,30,50,100,19,100,50,100,"Range Infantry","34,3",,"5,3",,"5,3",,"Hungarian Medieval Infantry",3
+56,"Hungarian Banderium",3,1,,,,,65,35,0,100,19,130,60,120,"Heavy Cavalry","51,4","47,3","2,4",,"8,4","2,2,7","Hungarian Medieval Knight","1,4"
+57,"Hungarian Royal Guard",4,1,,,,,50,50,0,100,19,140,70,130,"Heavy Cavalry","51,4","47,3","2,4",,"8,4","2,3,7","Hungarian Medieval Knight","1,4"
+58,"Hungarian Pikeman",1,1,,,,,55,45,0,100,19,100,50,100,"Heavy Infantry","16,3",,"4,3",,"12,2",,"Hungarian Medieval Infantry",2
 59,"Hungarian Hussar",1,1,,,,,60,40,0,100,19,100,50,100,"Light Cavalry","51,3","47,3","2,3",,"10,3","2,2,14","Hungarian Hussar","1,4"
 60,"Hungarian Crossbowman",,1,,,,,,,,,,,,,,,,,,"5,3",,"Hungarian Medieval Light",3
 61,,,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
@@ -64,10 +64,10 @@
 63,"Polish Heavy Spearman",,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
 64,"Polish Pikeman",,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
 65,,,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
-66,,,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
-67,"Pontifical Swiss Guard",,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
-68,,,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
-69,,,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
+66,"Medieval Crossbow Mercenary",10,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
+67,"Medieval Light Mercenary",10,1,,,,,,,,,,,,,,,,,,,,,
+68,"Medieval Heavy Mercenary",10,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
+69,"Medieval Arquebus Mercenary",10,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
 70,,,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
 71,,,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
 72,,,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
@@ -75,7 +75,7 @@
 74,,,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
 75,,,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
 76,,,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
-77,,,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
+77,"Pontifical Swiss Guard",,1,,,,,,,,,,,,,,"15,4",,,,,,"Swiss Guard",2
 78,,,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
 79,,,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
 80,"European Early Light Cannon",2,1,,,,,2,10,88,100,,,,,"Artillery","M14,3",,,,,"81,0,1","Medieval Early Cannon",6
