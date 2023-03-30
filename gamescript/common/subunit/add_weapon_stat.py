@@ -44,7 +44,7 @@ def add_weapon_stat(self):
                 self.original_weapon_speed[set_index][weapon_index] = 0
 
             if weapon_stat["Magazine"] == 0:  # weapon is melee weapon with no magazine to load ammo
-                self.melee_weapon_set[set_index] += (dmg_sum * self.original_weapon_speed[set_index][weapon_index]) + weapon_stat["Defence"]
+                self.melee_weapon_set[set_index] += (dmg_sum / self.original_weapon_speed[set_index][weapon_index]) + weapon_stat["Defence"]
                 self.magazine_count[set_index][weapon_index] = 0  # remove modifier
                 self.original_melee_range[set_index][weapon_index] = weapon_stat["Range"]
                 self.original_melee_def_range[set_index][weapon_index] = weapon_stat["Range"] * 3
@@ -63,7 +63,7 @@ def add_weapon_stat(self):
                                                                      self.troop_data.equipment_grade_list[weapon[1]][
                                                                    "Modifier"]
 
-                self.range_weapon_set[set_index] += dmg_sum * self.original_weapon_speed[set_index][weapon_index]  # add weapon damage for sort
+                self.range_weapon_set[set_index] += dmg_sum / self.original_weapon_speed[set_index][weapon_index]  # add weapon damage for sort
 
             self.trait["Weapon"][set_index][weapon_index] += weapon_stat["Trait"]
             self.weapon_weight[set_index][weapon_index] = weapon_stat["Weight"]

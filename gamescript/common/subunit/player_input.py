@@ -47,8 +47,12 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                     elif key_state[pygame.K_d]:  # move right
                         new_pos[0] += speed
 
-                    self.command_target = new_pos
                     if new_pos != self.base_pos:
+                        new_angle = self.set_rotate(new_pos)
+
+                        if abs(self.run_direction - new_angle) < 90:
+                            self.run_direction = new_angle
+
                         if not self.current_action:
                             self.command_action = self.walk_command_action
                             if key_state[pygame.K_LSHIFT]:
@@ -67,6 +71,8 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                             self.move_speed = speed
                         elif "hold" in self.current_action:  # cancel hold animation by moving
                             self.interrupt_animation = True
+
+                    self.command_target = new_pos
 
             if not self.move_speed:  # attack while stationary
                 if mouse_left_up or mouse_right_up:
