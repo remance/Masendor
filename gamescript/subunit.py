@@ -849,7 +849,7 @@ class Subunit(pygame.sprite.Sprite):
         self.angle = start_angle
         self.new_angle = self.angle
         self.radians_angle = radians(360 - self.angle)  # radians for apply angle to position
-        self.run_direction = 0  # direction check to prevent subunit able to run in opposite direction right away TODO change for player and AI
+        self.run_direction = 0  # direction check to prevent subunit able to run in opposite direction right away
         self.sprite_direction = rotation_dict[min(rotation_list,
                                                   key=lambda x: abs(
                                                       x - self.angle))]  # find closest in list of rotation for sprite direction

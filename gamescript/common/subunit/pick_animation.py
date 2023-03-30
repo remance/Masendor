@@ -42,7 +42,6 @@ def pick_animation(self):
     self.image = current_animation["sprite"]
     self.offset_pos = self.pos - current_animation["center_offset"]
     self.rect = self.image.get_rect(center=self.offset_pos)
-    self.effectbox.rect.center = self.offset_pos
 
     self.animation_play_time = self.default_animation_play_time  # get new play speed
     if "play_time_mod" in self.current_animation[self.show_frame]["frame_property"]:

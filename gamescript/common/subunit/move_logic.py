@@ -51,6 +51,11 @@ def move_logic(self, dt):
 
                     # momentum calculation
                     if "use momentum" in self.current_action:
+                        if abs(self.run_direction - self.new_angle) > 90:
+                            # reset momentum if going opposite direction midrun
+                            self.run_direction = self.new_angle
+                            self.momentum = 0
+
                         self.stamina -= 0.1  # use stamina when run or charge
                         if self.stamina < 0:
                             self.stamina = 0

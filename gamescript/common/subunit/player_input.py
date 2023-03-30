@@ -48,11 +48,6 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                         new_pos[0] += speed
 
                     if new_pos != self.base_pos:
-                        new_angle = self.set_rotate(new_pos)
-
-                        if abs(self.run_direction - new_angle) < 90:
-                            self.run_direction = new_angle
-
                         if not self.current_action:
                             self.command_action = self.walk_command_action
                             if key_state[pygame.K_LSHIFT]:
