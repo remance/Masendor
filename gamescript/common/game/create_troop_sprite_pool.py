@@ -327,6 +327,19 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                                                                        armour_name, idle_animation[0],
                                                                        both_main_sub_weapon)
                                 sprite_pic = sprite_dict["sprite"]
+
+                                # Add white border
+                                new_surface = pygame.Surface(sprite_pic.get_size(), pygame.SRCALPHA)
+                                mask = pygame.mask.from_surface(sprite_pic)
+                                mask_outline = mask.outline()
+                                n = 0
+                                for point in mask_outline:
+                                    mask_outline[n] = (point[0], point[1])
+                                    n += 1
+                                pygame.draw.polygon(new_surface, (240, 240, 240), mask_outline, 10)
+                                new_surface.blit(sprite_pic, (0, 0))
+                                sprite_pic = new_surface
+
                                 sprite_pic, center_offset = crop_sprite(sprite_pic)
                                 sprite_pic = pygame.transform.smoothscale(sprite_pic, (
                                     sprite_pic.get_width() * self.screen_scale[0],

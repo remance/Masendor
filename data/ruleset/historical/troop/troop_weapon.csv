@@ -1,5 +1,5 @@
 "ID","Name","Strength Bonus Scale","Dexterity Bonus Scale","Damage Balance","Physical Damage","Fire Damage","Poison Damage","Armour Penetration","Impact","Defence","Charge","Weight","Skill","Trait","Cooldown","Ammunition","Magazine","Shot Number","Range","Cost","Hand","Damage Stat Scaling","Damage Sprite","Travel Speed","Damage Sprite Effect","After Reach Effect","After Attack Effect","Sound Effect","Sound Distance","Bullet Sound Distance","Common","Attack","Replace Sprite","Properties","Type"
-1,"Unarmed",5,5,80,2,0,0,10,11,0,0,0,,,0.1,0,0,0,3,0,1,"TRUE","Crush Small (team)",0,,,,,3,,"1hand","Punch",,,"Melee"
+1,"Unarmed",5,5,80,1,0,0,10,11,0,0,0,,,0.1,0,0,0,3,0,1,"TRUE","Crush Small (team)",0,,,,,3,,"1hand","Punch",,,"Melee"
 2,"Sword",4,6,65,10,0,0,17,8,5,5,5,,,1,0,0,0,10,,1,"TRUE","Slash Medium (team)",0,,,,"swing_flat",7,,"1hand","Slash",,,"Melee"
 3,"Greatsword",6,4,50,25,0,0,45,13,3,12,10,24,14,2,0,0,0,17,,2,"TRUE","Slash Big (team)",0,,,,"swing_flat_large",11,,"2hand","Slash",,"hold,power","Melee"
 4,"Shortsword",3,7,70,7,0,0,11,5,2,2,2,63,,0.8,0,0,0,9,,1,"TRUE","Slash Small (team)",0,,,,"swing_flat_small",6,,"1hand","Pierce",,,"Melee"

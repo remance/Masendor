@@ -212,18 +212,7 @@ def create_troop_sprite(self, animation_name, troop_size, animation_part_list, t
             if prop in animation_property:
                 animation_property.remove(prop)
 
-    # Add white border
-    new_surface = pygame.Surface(surface.get_size(), pygame.SRCALPHA)
-    mask = pygame.mask.from_surface(surface)
-    mask_outline = mask.outline()
-    n = 0
-    for point in mask_outline:
-        mask_outline[n] = (point[0], point[1])
-        n += 1
-    pygame.draw.polygon(new_surface, (240, 240, 240), mask_outline, 10)
-    new_surface.blit(surface, (0, 0))
-
-    return {"sprite": new_surface, "animation_property": tuple(animation_property), "frame_property": tuple(frame_property),
+    return {"sprite": surface, "animation_property": tuple(animation_property), "frame_property": tuple(frame_property),
             "dmg_sprite": dmg_sprite}
 
 
