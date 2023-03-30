@@ -485,9 +485,7 @@ class ArmyStat(pygame.sprite.Sprite):
                                 (self.image.get_width() / 1.4, self.image.get_height() / 1.8),  # cav range
                                 (self.image.get_width() / 3, self.image.get_height() / 1.32))  # total subunit
 
-        self.leader_text = (
-            "Detrimental", "Incompetent", "Inferior", "Unskilled", "Dull", "Average", "Decent", "Skilled", "Master",
-            "Genius", "Unmatched")
+        self.leader_text = ("E", "E+", "D", "D+", "C", "C+", "B", "B+", "A", "A+", "S")
 
         self.rect = self.image.get_rect(topleft=pos)
 
@@ -538,14 +536,14 @@ class ArmyStat(pygame.sprite.Sprite):
         if not secondary_sub_weapon:  # replace empty with standard unarmed
             secondary_sub_weapon = (1, 3)
 
-        leader_primary_weapon = troop_data.equipment_grade_list[primary_main_weapon[1]]["Name"] + " " + \
-                                troop_data.weapon_list[primary_main_weapon[0]]["Name"] + ", " + \
-                                troop_data.equipment_grade_list[primary_sub_weapon[1]]["Name"] + " " + \
-                                troop_data.weapon_list[primary_sub_weapon[0]]["Name"]
-        leader_secondary_weapon = troop_data.equipment_grade_list[secondary_main_weapon[1]]["Name"] + " " + \
-                                  troop_data.weapon_list[secondary_main_weapon[0]]["Name"] + ", " + \
-                                  troop_data.equipment_grade_list[secondary_sub_weapon[1]]["Name"] + " " + \
-                                  troop_data.weapon_list[secondary_sub_weapon[0]]["Name"]
+        leader_primary_main_weapon = troop_data.equipment_grade_list[primary_main_weapon[1]]["Name"] + " " + \
+                                     troop_data.weapon_list[primary_main_weapon[0]]["Name"] + ", "
+        leader_primary_sub_weapon = troop_data.equipment_grade_list[primary_sub_weapon[1]]["Name"] + " " + \
+                                    troop_data.weapon_list[primary_sub_weapon[0]]["Name"]
+        leader_secondary_main_weapon = troop_data.equipment_grade_list[secondary_main_weapon[1]]["Name"] + " " + \
+                                       troop_data.weapon_list[secondary_main_weapon[0]]["Name"] + ", "
+        leader_secondary_sub_weapon = troop_data.equipment_grade_list[secondary_sub_weapon[1]]["Name"] + " " + \
+                                       troop_data.weapon_list[secondary_sub_weapon[0]]["Name"]
         leader_armour = "No Armour"
         if stat["Armour"]:
             leader_armour = troop_data.equipment_grade_list[stat["Armour"][1]]["Name"] + " " + \
@@ -558,17 +556,19 @@ class ArmyStat(pygame.sprite.Sprite):
                            troop_data.mount_armour_list[stat["Mount"][2]]["Name"]
 
         leader_stat = {"Health: ": who.health, "Authority: ": who.leader_authority,
-                       "Melee Command: ": self.leader_text[who.melee_command],
-                       "Range Command: ": self.leader_text[who.range_command],
-                       "Cavalry Command: ": self.leader_text[who.cav_command],
                        "Social Class: ": who.social["Leader Social Class"],
+                       "Command: ": "M:" + self.leader_text[who.melee_command] +
+                                    " R:" + self.leader_text[who.range_command] +
+                                    " C:" + self.leader_text[who.cav_command],
                        "Skill: ": leader_skill,
-                       "Primary Weapon: ": leader_primary_weapon,
-                       "Secondary Weapon: ": leader_secondary_weapon,
+                       "1st Main Weapon: ": leader_primary_main_weapon,
+                       "1st Sub Weapon: ": leader_primary_sub_weapon,
+                       "2nd Main Weapon: ": leader_secondary_main_weapon,
+                       "2nd Sub Weapon: ": leader_secondary_sub_weapon,
                        "Armour: ": leader_armour,
                        "Mount: ": leader_mount,
-                       "Followers": " Leaders: " + str(len(who.alive_leader_follower)) +
-                                    "    Troops: " + str(len(who.alive_troop_follower)) + " + " +
+                       "Follower": " Leaders: " + str(len(who.alive_leader_follower)) +
+                                   "    Troops: " + str(len(who.alive_troop_follower)) + " + " +
                                     str(sum(who.troop_reserve_list.values()))}
         text_surface = self.font.render(str(leader_name), True, (0, 0, 0))
         text_rect = text_surface.get_rect(topleft=(self.font_size, self.font_size))
@@ -807,6 +807,24 @@ class MapPreview(pygame.sprite.Sprite):
                         rect = self.leader_dot[team][select].get_rect(center=scaled_pos)
                         self.image.blit(self.leader_dot[team][select], rect)
         self.rect = self.image.get_rect(midtop=self.pos)
+
+
+class OrgChart(pygame.sprite.Sprite):
+    def __init__(self, image, pos):
+        pygame.sprite.Sprite.__init__(self)
+        self.node_rect = {}
+        self.image = image
+        self.base_image = self.image.copy()
+        self.size = self.image.get_size()
+        self.rect = self.image.get_rect(topleft=pos)
+
+    def add_chart(self, unit_data, char_icon, preview_char, selected):
+        org = {selected: {index: subunit for index, subunit in enumerate(unit_data) if subunit["Leader"] == selected}}
+        # while follower:
+        #     pass
+        # self.node_rect[preview_char] = char_icon[].get_rect(center=())
+        #
+        # pygame.draw.line(self.image, (0, 0, 0), leader.midbottom, follower.midtop)
 
 
 class SelectedPresetBorder(pygame.sprite.Sprite):

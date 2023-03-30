@@ -775,7 +775,8 @@ class CharIcon(pygame.sprite.Sprite):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.who = char  # link subunit object so when click can correctly select or go to position
-        self.pos = pos  # position on unit selector ui
+        self.pos = pos  # pos on unit selector ui
+        self.place_pos = pos  # pos when drag by mouse
         self.name = ""  # not used for char icon, for checking with CampIcon
         self.selected = False
 
@@ -805,8 +806,7 @@ class CharIcon(pygame.sprite.Sprite):
 
     def change_pos(self, pos):
         """change position of icon to new one"""
-        self.pos = pos
-        self.rect = self.image.get_rect(center=self.pos)
+        self.rect = self.image.get_rect(center=pos)
 
     def change_image(self, new_image=None, change_side=False):
         """For changing side"""

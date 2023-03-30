@@ -87,6 +87,7 @@ class Game:
     menu_map_select = empty_method
     menu_option = empty_method
     menu_preset_team_select = empty_method
+    menu_leader_setup = empty_method
     menu_unit_setup = empty_method
     read_battle_source = empty_method
     read_selected_map_data = empty_method
@@ -394,6 +395,10 @@ class Game:
         self.map_option_box = menu.MapOptionBox(self.screen_scale, (self.source_list_box.rect.x, 0),
                                                 battle_select_image["top_box"],
                                                 0)  # ui box for battle option during preparation screen
+
+        self.org_chart = menu.OrgChart(load_image(self.main_dir, self.screen_scale,
+                                                  "org.png", ("ui", "mapselect_ui")),
+                                       (self.screen_rect.center[0] * 1.3, self.screen_rect.height / 12))
 
         self.army_stat = menu.ArmyStat(self.screen_scale, self.map_option_box.rect.bottomleft,
                                        load_image(self.main_dir, self.screen_scale, "stat.png",
@@ -891,6 +896,10 @@ class Game:
 
                 elif self.menu_state == "unit_setup":
                     self.menu_unit_setup(mouse_left_up, mouse_left_down, mouse_right_up, mouse_scroll_up,
+                                          mouse_scroll_down, esc_press)
+
+                elif self.menu_state == "unit_leader_setup":
+                    self.menu_leader_setup(mouse_left_up, mouse_left_down, mouse_right_up, mouse_scroll_up,
                                           mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "game_creator":

@@ -72,49 +72,7 @@ def menu_preset_team_select(self, mouse_left_up, mouse_left_down, mouse_scroll_u
                                  self.map_description)
 
     elif self.select_button.event:  # go to character select screen
-        self.menu_state = "char_select"
-        self.select_button.event = False
-        self.char_select_row = 0
-
-        self.main_ui_updater.remove(*self.map_select_button, self.map_option_box, self.source_list_box,
-                                    self.observe_mode_tick_box, self.source_list_box.scroll,
-                                    self.source_description, self.army_stat)
-        self.menu_button.remove(*self.map_select_button)
-
-        for group in (self.map_namegroup, self.team_coa):  # remove no longer related sprites in group
-            for stuff in group:
-                stuff.kill()
-                del stuff
-
-        self.char_stat["char"] = menu.ArmyStat(self.screen_scale,
-                                               (self.screen_rect.center[0] / 9, self.screen_rect.height / 8),
-                                               load_image(self.main_dir, self.screen_scale,
-                                                          "char_stat.png", ("ui", "mapselect_ui")))  # char stat
-        self.char_stat["model"] = menu.ArmyStat(self.screen_scale,
-                                                (self.screen_rect.center[0] * 1.3, self.screen_rect.height / 8),
-                                                load_image(self.main_dir, self.screen_scale,
-                                                           "char_stat.png", ("ui", "mapselect_ui")))  # troop stat
-
-        team_selected = self.team_selected
-
-        self.setup_battle_troop(self.preview_char, specific_team=team_selected)
-
-        self.char_selector.setup_char_icon(self.char_icon, self.preview_char)
-
-        for index, icon in enumerate(self.char_icon):  # select first char
-            self.char_selected = icon.who.map_id
-            icon.selection()
-            self.char_stat["char"].add_leader_stat(icon.who, self.leader_data, self.troop_data)
-            who_todo = {key: value for key, value in self.leader_data.leader_list.items() if key == icon.who.troop_id}
-            preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True)
-            self.char_stat["model"].add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"], icon.who.coa)
-            self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos[self.map_source],
-                                         selected=icon.who.base_pos)
-            break
-
-        self.main_ui_updater.add(self.char_selector, self.char_selector.scroll,
-                                 tuple(self.char_stat.values()), *self.char_select_button)
-        self.menu_button.add(*self.char_select_button)
+        change_to_char_select_menu(self)
 
 
 def change_team_coa(self):
@@ -131,3 +89,49 @@ def change_team_coa(self):
                 if self.team_selected != this_team2.team and this_team2.selected:
                     this_team2.change_select(False)
             break
+
+
+def change_to_char_select_menu(self):
+    self.menu_state = "char_select"
+    self.select_button.event = False
+    self.char_select_row = 0
+
+    self.main_ui_updater.remove(*self.map_select_button, self.map_option_box, self.source_list_box,
+                                self.observe_mode_tick_box, self.source_list_box.scroll,
+                                self.source_description, self.army_stat)
+    self.menu_button.remove(*self.map_select_button)
+
+    for group in (self.map_namegroup, self.team_coa):  # remove no longer related sprites in group
+        for stuff in group:
+            stuff.kill()
+            del stuff
+
+    self.char_stat["char"] = menu.ArmyStat(self.screen_scale,
+                                           (self.screen_rect.center[0] / 9, self.screen_rect.height / 8),
+                                           load_image(self.main_dir, self.screen_scale,
+                                                      "char_stat.png", ("ui", "mapselect_ui")))  # char stat
+    self.char_stat["model"] = menu.ArmyStat(self.screen_scale,
+                                            (self.screen_rect.center[0] * 1.3, self.screen_rect.height / 8),
+                                            load_image(self.main_dir, self.screen_scale,
+                                                       "char_stat.png", ("ui", "mapselect_ui")))  # troop stat
+
+    team_selected = self.team_selected
+
+    self.setup_battle_troop(self.preview_char, specific_team=team_selected)
+
+    self.char_selector.setup_char_icon(self.char_icon, self.preview_char)
+
+    for index, icon in enumerate(self.char_icon):  # select first char
+        self.char_selected = icon.who.map_id
+        icon.selection()
+        self.char_stat["char"].add_leader_stat(icon.who, self.leader_data, self.troop_data)
+        who_todo = {key: value for key, value in self.leader_data.leader_list.items() if key == icon.who.troop_id}
+        preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True)
+        self.char_stat["model"].add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"], icon.who.coa)
+        self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos[self.map_source],
+                                     selected=icon.who.base_pos)
+        break
+
+    self.main_ui_updater.add(self.char_selector, self.char_selector.scroll,
+                             tuple(self.char_stat.values()), *self.char_select_button)
+    self.menu_button.add(*self.char_select_button)

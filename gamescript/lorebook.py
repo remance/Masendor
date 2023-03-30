@@ -38,8 +38,7 @@ class Lorebook(pygame.sprite.Sprite):
     leader_section = 8
     terrain_section = 9
     weather_section = 10
-    leader_text = ("Detrimental", "Incompetent", "Inferior", "Unskilled", "Dull", "Average", "Decent", "Skilled",
-                   "Master", "Genius", "Unmatched")
+    leader_text = ("E", "E+", "D", "D+", "C", "C+", "B", "B+", "A", "A+", "S")
 
     def __init__(self, main, image, text_size=24):
         self.main = main
