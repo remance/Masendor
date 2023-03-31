@@ -818,11 +818,52 @@ class OrgChart(pygame.sprite.Sprite):
         self.size = self.image.get_size()
         self.rect = self.image.get_rect(topleft=pos)
 
-    def add_chart(self, unit_data, char_icon, preview_char, selected):
-        org = {selected: {index: subunit for index, subunit in enumerate(unit_data) if subunit["Leader"] == selected}}
+    def add_chart(self, unit_data, preview_char, selected=None):
+        self.image = self.base_image.copy()
+        self.node_rect = {}
+        org = {}
+        max_row = 0
+        max_column = 0
+        if selected is not None:
+            next_level = org
+            next_leader_batch = [selected]
+            while next_leader_batch:
+                column_count = 0
+                for search_leader in next_leader_batch:
+                    next_level[search_leader] = {index: {} for index, subunit in enumerate(unit_data) if
+                                                 subunit["Leader"] == search_leader}
+                    next_level[search_leader]["follower"] = len(next_level[search_leader])
+                    column_count += next_level[search_leader]["follower"]
+                    next_leader_batch = [index for index in next_level[search_leader] if index != "follower"]
+                    next_level = next_level[search_leader]
+                    max_row += 1
+
+                if column_count > max_column:
+                    max_column = column_count
+
+            max_scale = max(max_column, max_row)
+            image_size = (self.image.get_width() / max_scale, self.image.get_height() / max_scale)
+            start_icon_pos = [self.image.get_width() / 2, image_size[1]]
+            icon_pos = [self.image.get_width() / 2, image_size[1]]
+
+            print(org)
+            # next_leader_batch = [item for item in org]
+            # while next_leader_batch:
+            #     for index, leader in enumerate(next_leader_batch):
+            #         for char_index, icon in enumerate(preview_char):
+            #             if char_index == leader:
+            #                 image = pygame.transform.smoothscale(icon.portrait, image_size)
+            #                 self.node_rect[leader] = image.get_rect(center=icon_pos)
+            #                 self.image.blit(image, self.node_rect[leader])
+            #                 if index % 2 == 0:  # even index go right
+            #                     icon_pos[0] = start_icon_pos[0] + icon.portrait.get_width() * index
+            #                 else:  # go left
+            #                     icon_pos[0] = start_icon_pos[0] - icon.portrait.get_width() * index
+            #                 next_leader_batch = [index for index in next_level[leader] if index != "follower"]
+            #                 break
         # while follower:
         #     pass
-        # self.node_rect[preview_char] = char_icon[].get_rect(center=())
+
         #
         # pygame.draw.line(self.image, (0, 0, 0), leader.midbottom, follower.midtop)
 

@@ -779,6 +779,7 @@ class CharIcon(pygame.sprite.Sprite):
         self.place_pos = pos  # pos when drag by mouse
         self.name = ""  # not used for char icon, for checking with CampIcon
         self.selected = False
+        self.right_selected = False
 
         self.leader_image = pygame.transform.scale(char.portrait,
                                                    size)  # scale leader image to fit the icon
@@ -786,10 +787,12 @@ class CharIcon(pygame.sprite.Sprite):
                                                   self.leader_image.get_height() + (
                                                           self.leader_image.get_height() / 7)))  # create image black corner block
         self.selected_image = self.not_selected_image.copy()
-        self.selected_image.fill((0, 0, 0))  # fill white corner
-        self.not_selected_image.fill((255, 255, 255))  # fill black corner
+        self.selected_image.fill((0, 0, 0))  # fill black corner
+        self.right_selected_image = self.not_selected_image.copy()
+        self.right_selected_image.fill((150, 150, 150))  # fill grey corner
+        self.not_selected_image.fill((255, 255, 255))  # fill white corner
 
-        for image in (self.not_selected_image, self.selected_image):  # add team colour and leader image
+        for image in (self.not_selected_image, self.selected_image, self.right_selected_image):  # add team colour and leader image
             center_image = pygame.Surface((self.leader_image.get_width() + (self.leader_image.get_width() / 14),
                                            self.leader_image.get_height() + (
                                                    self.leader_image.get_height() / 14)))  # create image block
@@ -819,13 +822,23 @@ class CharIcon(pygame.sprite.Sprite):
             self.leader_image = new_image
             self.image.blit(self.leader_image, self.leader_image_rect)
 
-    def selection(self):
-        if self.selected:
-            self.selected = False
-            self.image = self.not_selected_image
+    def selection(self, how="left"):
+        if how == "left":
+            if self.selected:
+                self.selected = False
+                self.image = self.not_selected_image
+            else:
+                self.selected = True
+                self.right_selected = False
+                self.image = self.selected_image
         else:
-            self.selected = True
-            self.image = self.selected_image
+            if self.right_selected:
+                self.right_selected = False
+                self.image = self.not_selected_image
+            else:
+                self.right_selected = True
+                self.selected = False
+                self.image = self.right_selected_image
 
 
 class TempCharIcon(pygame.sprite.Sprite):

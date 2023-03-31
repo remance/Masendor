@@ -780,6 +780,7 @@ class Game:
             mouse_left_up = False
             mouse_left_down = False
             mouse_right_up = False
+            mouse_right_down = False
             mouse_scroll_down = False
             mouse_scroll_up = False
             esc_press = False
@@ -787,6 +788,8 @@ class Game:
             key_press = pygame.key.get_pressed()
             if pygame.mouse.get_pressed()[0]:  # Hold left click
                 mouse_left_down = True
+            elif pygame.mouse.get_pressed()[2]:  # Hold left click
+                mouse_right_down = True
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:  # left click
@@ -899,8 +902,8 @@ class Game:
                                           mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "unit_leader_setup":
-                    self.menu_leader_setup(mouse_left_up, mouse_left_down, mouse_right_up, mouse_scroll_up,
-                                          mouse_scroll_down, esc_press)
+                    self.menu_leader_setup(mouse_left_up, mouse_left_down, mouse_right_up, mouse_right_down,
+                                           mouse_scroll_up, mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "game_creator":
                     self.menu_game_editor(mouse_left_up, mouse_left_down, mouse_scroll_up,
