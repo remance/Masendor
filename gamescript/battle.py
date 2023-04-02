@@ -699,7 +699,7 @@ class Battle:
                         if self.player_char:
                             self.command_ui.value_input(who=self.player_char)
                             self.countdown_skill_icon()
-                        self.battle_scale = [(value / sum(self.team_troop_number) * 100) for value in
+                        self.battle_scale = [value / sum(self.team_troop_number) for value in
                                              self.team_troop_number]
                         self.battle_scale_ui.change_fight_scale(
                             self.battle_scale)  # change fight colour scale on time_ui bar

@@ -947,7 +947,8 @@ class BattleScaleUI(pygame.sprite.Sprite):
             percent_scale = 0  # start point fo fill colour of team scale
             for team, value in enumerate(self.battle_scale_list):
                 if value > 0:
-                    self.image.fill(self.team_colour[team], (percent_scale, 0, self.image_width, self.image_height))
+                    self.image.fill(self.team_colour[team], (self.image_width * percent_scale, 0,
+                                                             self.image_width, self.image_height))
                     # team_text = self.font.render("{:,}".format(int(value - 1)), True, (0, 0, 0))  # add troop number text
                     # team_text_rect = team_text.get_rect(topleft=(percent_scale, 0))
                     # self.image.blit(team_text, team_text_rect)
