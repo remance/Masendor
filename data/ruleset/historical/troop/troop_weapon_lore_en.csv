@@ -20,7 +20,7 @@
 19,"Quarterstaff","Quarterstaff is not a common weapon in warfare. It is a practical weapon for self-defence and a non-lethal weapon seen used by militia or religious troops. Skilled use of this weapon can still incapacitate a lightly armoured enemy with ease, though."
 20,"Sling","Sling weapon is highly mobile and versatile enough that it can be classified as both skirmish and range. Its reload speed and ammunition are extremely high while also having decent armour penetration. It has lower damage outputs than other ranged weapons, though, so make up for this by attacking the enemy from behind or something."
 21,"Blowgun","A somewhat primitive weapon that has seen its use in combat mainly in tribal and Native American warfare. Mostly effective against lightly armoured troops because of its low penetration power, a blowgun is still extremely light to carry around and very easy to use. The darts are typically coated with deadly poison to incapacitate a foe even if the projectile only graze the body."
-22,"Javelin",
+22,"Javelin","Javelin is a light spear specifically designed to be thrown rather than used in melee combat. The light weight makes it somewhat fragile for lengthened uses, but it can travel much further than common spears. Many cultures throughout the world used javelins both for hunting and warfare throughout history."
 23,"Throwing Axe",
 24,"Longbow","Longbow "
 25,"Shortbow","Bow is one of the most versatile ranged weapons available. The unit can switch between different arrow types to inflict the most effective result or status. Although bow is not a weapon that is easy to use and even harder to master, this makes bow unit somewhat more expensive than sling and crossbow unit. Shortbow is a variant of bow that is specialised for swift shooting but with somewhat lacking in range and firepower. "
@@ -28,7 +28,7 @@
 27,"Light Crossbow","The pinnacle of medieval warfare. Easier to use than bows that any peasant can use after a few days of training to kill a knight that trains for their whole life. Crossbow weapon has extremely high armour penetration than other range class but much slower reload. It is also relatively useless in melee combat, so use it wisely. Light crossbow is much easier to reload and carry, making it more suitable for skirmish tactic and medium armour targets."
 28,"Heavy Crossbow","Heavy crossbow can be regarded as the first-ever weapon that can effectively kill a knight. At short range, it can penetrate chainmail easily and may even injure a knight in his plate mail. Its large size makes it cumbersome to carry around and reload though."
 29,"Repeater Crossbow","The first automatic hand-held weapon in the history of warfare. Ineffective at long range but devastating at short range, especially against lightly armoured troops. A repeating crossbow is often seen as an unconventional weapon that has never seen use outside of Ancient China, but truly an ingenious piece of engineering nevertheless."
-30,"Arbalest",
+30,"Arbalest","Arbalest is one of the heaviest versions of the late medieval crossbow. They are designed to be much larger and have more penetrative power compared to the earlier version. Although this also makes them much more difficult to reload and typically requires other tools such as windlass. They are one of the first weapons that let less-trained warriors reliably fight against heavily armoured opponents."
 31,"Stone","Nothing is more simple than a stick and stone to break some bones. Existed since the dawn of time as a preferred ranged weapon, throwing stones can hurt someone without armour or even kill them instantly if hit in the head with strong enough force."
 32,"Composite Bow",
 33,"Matchlock Musket",
@@ -37,7 +37,7 @@
 36,"Flintlock Musket",
 37,"Flintlock Pistol",
 38,"Matchlock Pistol",
-39,"Kite Shield",
+39,"Kite Shield","The kite-shaped shield is one of the most popular variations used in high Medieval Europe. Most suitable for cavalry force due to its tall structure (from 90 centimetres to 120 centimetres) to protect the wielder's leg while having lightweight compared to other types of large shields."
 40,"Buckler",
 41,"Round Shield",
 42,"Tower Shield",
@@ -54,9 +54,9 @@
 53,,
 54,,
 55,"Light Crossbow (Heavy)","Light crossbow equipped with bolts specifically made to pierce heavy armour. Less ideal for other uses due to its weight."
-56,"Light Crossbow (Poison)",
-57,"Heavy Crossbow (Heavy)",
-58,"Heavy Crossbow (Poison)",
+56,"Light Crossbow (Poison)","Light crossbow equipped with poison-coated bolts. If these bolts penetrate armour, expect the wearer to die a slow death."
+57,"Heavy Crossbow (Heavy)","Heavy crossbow equipped with heavy bolts. Can penetrate almost every kind of armour with ease."
+58,"Heavy Crossbow (Poison)","Heavy crossbow equipped with poison-coated bolts. Good for both light and heavy armour-wearing troops as they all die just the same."
 59,"Longbow (Fire)",
 60,"Shortbow (Fire)",
 61,"Greatbow (Fire)","A fire arrow tactic is often used to ignite a structure, ship or siege machine. It is also used to inflict damage to enemy morale."

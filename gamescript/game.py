@@ -688,7 +688,7 @@ class Game:
         self.troop_animation = datasprite.TroopAnimationData(self.main_dir,
                                                              [str(self.troop_data.race_list[key]["Name"]) for key in
                                                               self.troop_data.race_list], self.team_colour)
-        self.generic_animation_pool = self.troop_animation.generic_animation_pool  # animation data pool
+        self.subunit_animation_data = self.troop_animation.subunit_animation_data  # animation data pool
         self.gen_body_sprite_pool = self.troop_animation.gen_body_sprite_pool  # body sprite pool
         self.gen_weapon_sprite_pool = self.troop_animation.gen_weapon_sprite_pool  # weapon sprite pool
         self.gen_armour_sprite_pool = self.troop_animation.gen_armour_sprite_pool  # armour sprite pool

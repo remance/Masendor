@@ -1,6 +1,7 @@
 import csv
 import os
 import sys
+from pathlib import Path
 
 import pygame
 
@@ -15,39 +16,43 @@ from gamescript import datastat
 stat_convert = datastat.stat_convert
 
 
-def read_anim_data(pool_type, anim_column_header):
-    with open(os.path.join(main_dir, "data", "animation", pool_type, "side.csv"), encoding="utf-8",
-              mode="r") as edit_file:
-        rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-        rd = [row for row in rd]
-        part_name_header = rd[0]
-        list_column = anim_column_header  # value in list only
-        list_exclude = ["Name", "size", "eye", "mouth"]
-        list_column = [item for item in list_column if
-                       item not in list_exclude and any(ext in item for ext in list_exclude) is False]
-        list_column = [index for index, item in enumerate(part_name_header) if item in list_column]
-        part_name_header = part_name_header[1:]  # keep only part name for list ref later
-        animation_pool = {}
-        for row_index, row in enumerate(rd):
-            if row_index > 0:
-                key = row[0].split("/")[0]
-                for n, i in enumerate(row):
-                    row = stat_convert(row, n, i, list_column=list_column)
-                row = row[1:]
-                if key in animation_pool:
-                    animation_pool[key].append(
-                        {part_name_header[item_index]: item for item_index, item in enumerate(row)})
-                else:
-                    animation_pool[key] = [
-                        {part_name_header[item_index]: item for item_index, item in enumerate(row)}]
-        pool = animation_pool
-        part_name_header = [item for item in part_name_header if item != "effect" and "property" not in item]
-        edit_file.close()
+def read_anim_data(anim_column_header):
+    pool = {}
+    part_folder = Path(os.path.join(main_dir, "data", "animation"))
+    files = [os.path.split(x)[-1].replace(".csv", "") for x in part_folder.iterdir() if ".csv" in os.path.split(x)[-1]]
+    for file in files:
+        with open(os.path.join(main_dir, "data", "animation", file + ".csv"), encoding="utf-8",
+                  mode="r") as edit_file:
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+            rd = [row for row in rd]
+            part_name_header = rd[0]
+            list_column = anim_column_header  # value in list only
+            list_exclude = ["Name", "size", "eye", "mouth"]
+            list_column = [item for item in list_column if
+                           item not in list_exclude and any(ext in item for ext in list_exclude) is False]
+            list_column = [index for index, item in enumerate(part_name_header) if item in list_column]
+            part_name_header = part_name_header[1:]  # keep only part name for list ref later
+            animation_pool = {}
+            for row_index, row in enumerate(rd):
+                if row_index > 0:
+                    key = row[0].split("/")[0]
+                    for n, i in enumerate(row):
+                        row = stat_convert(row, n, i, list_column=list_column)
+                    row = row[1:]
+                    if key in animation_pool:
+                        animation_pool[key].append(
+                            {part_name_header[item_index]: item for item_index, item in enumerate(row)})
+                    else:
+                        animation_pool[key] = [
+                            {part_name_header[item_index]: item for item_index, item in enumerate(row)}]
+            pool[file] = animation_pool
+            part_name_header = [item for item in part_name_header if item != "effect" and "property" not in item]
+            edit_file.close()
     return pool, part_name_header
 
 
 def read_joint_data():
-    with open(os.path.join(main_dir, "data", "sprite", "generic", "weapon", "joint.csv"), encoding="utf-8",
+    with open(os.path.join(main_dir, "data", "sprite", "subunit", "weapon", "joint.csv"), encoding="utf-8",
               mode="r") as edit_file:
         rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
         rd = [row for row in rd]
@@ -91,9 +96,9 @@ def anim_to_pool(animation_name, pool, char, activate_list, new=False, replace=N
                                     frame != {} and activate_list[index]]
 
 
-def anim_save_pool(pool, pool_name, anim_column_header):
+def anim_save_pool(pool, race_name, anim_column_header):
     """Save animation pool data"""
-    with open(os.path.join(main_dir, "data", "animation", pool_name, "side.csv"), mode="w",
+    with open(os.path.join(main_dir, "data", "animation", race_name + ".csv"), mode="w",
               encoding='utf-8', newline="") as edit_file:
         filewriter = csv.writer(edit_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_ALL)
         save_list = pool

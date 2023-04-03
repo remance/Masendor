@@ -32,10 +32,10 @@
 31,"Egyptian Slinger",1,1,,,0,0,17,23,60,100,17,100,50,100,"Range Infantry","20,3",,"5,3",,"15,2",,"Old Egyptian Range",3
 32,"New Kingdom Spearman",1,1,,,0,0,50,50,0,100,19,100,50,100,"Light Infantry","6,3","47,2",,,"30,3",,"Old Egyptian Melee",2
 33,"New Kingdom Swordsman",2,1,,,0,0,55,45,0,100,19,100,60,100,"Light Infantry","2,3","47,2",,,"30,3",,"Old Egyptian Melee",1
-34,"Egyptian War Chariot",2,1,11,,0,0,20,35,45,130,19,100,60,100,"Chariot","32,3",,"6,3","47,3","6,2","100,3,13","Old Egyptian Chariot","1,4"
+34,"Egyptian War Chariot",2,1,11,,0,0,20,35,45,130,19,100,60,100,"Chariot","32,3","22,3","6,3","47,3","6,2","100,3,13","Old Egyptian Chariot","1,4"
 35,"African Spearman",10,1,,,0,0,60,40,0,100,19,100,30,100,"Light Infantry","6,2","47,2",,,"15,2",,"Tribal African Light",2
 36,"Egyptian Pitati",10,1,,36,0,0,25,15,60,120,19,100,30,100,"Light Infantry","32,3",,"13,3",,"15,2",,"Old Egyptian Mercenary Archer",3
-37,"Royal War Chariot",11,1,11,35,0,0,25,35,40,150,19,100,80,120,"Chariot","32,5",,"2,4","47,3","6,3","100,5,13","Old Egyptian Noble","1,3,4"
+37,"Royal War Chariot",11,1,11,35,0,0,25,35,40,150,19,100,80,120,"Chariot","32,5","22,3","2,4","47,3","6,3","100,5,13","Old Egyptian Noble","1,3,4"
 38,"Mycenaean Promachoi",11,1,24,37,0,0,60,40,0,100,19,120,70,130,"Heavy Infantry","6,3","41,2",,,"30,4",,"Old Greek Heavy","1,2,4"
 39,"Kenyt-­Nesu",4,1,,,0,0,55,45,0,100,19,140,80,140,"Heavy Infantry","2,4","47,3",,,"30,4",,"Old Egyptian Melee",1
 40,"Nakhtu-aa",3,1,,,0,0,40,60,0,100,19,125,60,120,"Heavy Infantry","2,3","47,3","22,3",,"30,4",,"Old Egyptian Melee",1

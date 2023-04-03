@@ -51,7 +51,7 @@
 "50","Heat Exposure","The cloth or armour these troops are wearing is not suitable for the hot climate. The heat will render the body reaching a mortality state eventually."
 "51","Cowardice","Craven! Useless! These troops are comprised of cowards and their morale will decrease even more from any factors."
 "52","Treachery","Betrayal! These wretch troops are more likely to surrender and change side right away in dire situations. But, they will still try to flee instead if the enemy force will not accept surrender."
-"53","Stationary Placement",
+"53","Stationary Placement","These troops' weapons can only attack while remaining stationary."
 "54","Mountain Hiding","These troops can hide better in mountain terrain."
 "55","Hill Hiding","These troops can hide better in hill terrain."
 "56","Forest Hiding","These troops can hide better in forest terrain."
