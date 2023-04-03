@@ -3,6 +3,7 @@ import pygame.freetype
 import pygame.freetype
 import pygame.transform
 import pyperclip
+
 from gamescript.common import utility
 
 
@@ -440,11 +441,13 @@ class TeamCoa(pygame.sprite.Sprite):
         for index, image in enumerate(self.coa_images.values()):
             if image:
                 if index == 0:  # first one as main faction coa
-                    coa_image = pygame.transform.smoothscale(image, (int(self.coa_size[0] * 0.65), int(self.coa_size[1] * 0.65)))
+                    coa_image = pygame.transform.smoothscale(image, (
+                    int(self.coa_size[0] * 0.65), int(self.coa_size[1] * 0.65)))
                     coa_rect = coa_image.get_rect(
                         midtop=(self.selected_image.get_width() / 2, self.coa_size[1] * 0.05))
                 else:
-                    coa_image = pygame.transform.smoothscale(image, (int(self.coa_size[0] * 0.3), int(self.coa_size[1] * 0.3)))
+                    coa_image = pygame.transform.smoothscale(image,
+                                                             (int(self.coa_size[0] * 0.3), int(self.coa_size[1] * 0.3)))
                     coa_rect = coa_image.get_rect(center=small_coa_pos)
                     small_coa_pos[1] += int(self.coa_size[1] * 0.3)
                     if index % 3 == 0:
@@ -500,7 +503,8 @@ class ArmyStat(pygame.sprite.Sprite):
 
         for index, text in enumerate(troop_number):
             text = str(text).replace("[", "").replace("]", "").split(",")
-            text = str([utility.minimise_number_text(item) for item in text]).replace("'", "").replace("[", "").replace("]", "").replace(",", " +")
+            text = str([utility.minimise_number_text(item) for item in text]).replace("'", "").replace("[", "").replace(
+                "]", "").replace(",", " +")
             text_surface = self.font.render(text, True, (0, 0, 0))
             text_rect = text_surface.get_rect(midleft=self.type_number_pos[index])
             self.image.blit(text_surface, text_rect)
@@ -543,7 +547,7 @@ class ArmyStat(pygame.sprite.Sprite):
         leader_secondary_main_weapon = troop_data.equipment_grade_list[secondary_main_weapon[1]]["Name"] + " " + \
                                        troop_data.weapon_list[secondary_main_weapon[0]]["Name"] + ", "
         leader_secondary_sub_weapon = troop_data.equipment_grade_list[secondary_sub_weapon[1]]["Name"] + " " + \
-                                       troop_data.weapon_list[secondary_sub_weapon[0]]["Name"]
+                                      troop_data.weapon_list[secondary_sub_weapon[0]]["Name"]
         leader_armour = "No Armour"
         if stat["Armour"]:
             leader_armour = troop_data.equipment_grade_list[stat["Armour"][1]]["Name"] + " " + \
@@ -569,7 +573,7 @@ class ArmyStat(pygame.sprite.Sprite):
                        "Mount: ": leader_mount,
                        "Follower": " Leaders: " + str(len(who.alive_leader_follower)) +
                                    "    Troops: " + str(len(who.alive_troop_follower)) + " + " +
-                                    str(sum(who.troop_reserve_list.values()))}
+                                   str(sum(who.troop_reserve_list.values()))}
         text_surface = self.font.render(str(leader_name), True, (0, 0, 0))
         text_rect = text_surface.get_rect(topleft=(self.font_size, self.font_size))
         self.image.blit(text_surface, text_rect)

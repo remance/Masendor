@@ -7,6 +7,7 @@ import re
 from pathlib import Path
 
 import numpy as np
+
 from gamescript.common import utility
 
 stat_convert = utility.stat_convert
@@ -222,11 +223,14 @@ class TroopData:
                 rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
                 header = rd[0]
                 int_column = ("Strength Bonus Scale", "Dexterity Bonus Scale", "Physical Damage",
-                              "Fire Damage", "Water Damage", "Air Damage", "Earth Damage", "Poison Damage", "Magic Damage",
-                              "Armour Penetration", "Defence", "Weight", "Speed", "Ammunition", "Magazine", "Shot Number",
-                              "Range", "Travel Speed", "Learning Difficulty", "Mastery Difficulty", "Learning Difficulty",
+                              "Fire Damage", "Water Damage", "Air Damage", "Earth Damage", "Poison Damage",
+                              "Magic Damage",
+                              "Armour Penetration", "Defence", "Weight", "Speed", "Ammunition", "Magazine",
+                              "Shot Number",
+                              "Range", "Travel Speed", "Learning Difficulty", "Mastery Difficulty",
+                              "Learning Difficulty",
                               "Cost", "ImageID", "Speed", "Hand")  # value int only
-                float_column = ("Cooldown", )
+                float_column = ("Cooldown",)
                 list_column = ("Skill", "Trait", "Properties")  # value in list only
                 tuple_column = ("Damage Sprite Effect",)  # value in tuple only
                 percent_column = ("Damage Balance",)
@@ -241,7 +245,8 @@ class TroopData:
                                            tuple_column=tuple_column, int_column=int_column, float_column=float_column)
                     self.weapon_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
                     self.weapon_list[row[0]]["Shake Power"] = int(self.weapon_list[row[0]]["Sound Distance"] / 10)
-                    self.weapon_list[row[0]]["Bullet Shake Power"] = int(self.weapon_list[row[0]]["Bullet Sound Distance"] / 10)
+                    self.weapon_list[row[0]]["Bullet Shake Power"] = int(
+                        self.weapon_list[row[0]]["Bullet Sound Distance"] / 10)
             edit_file.close()
 
         self.weapon_lore = {}
@@ -624,7 +629,8 @@ class FactionData:
                                 row[n] = [i]
                             row[n] = {int(item.split(":")[0]):
                                           [int(item2) for item2 in item.split(":")[1].split("/")] for item in row[n]}
-                    self.faction_unit_list[int(folder[-1])][row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
+                    self.faction_unit_list[int(folder[-1])][row[0]] = {header[index + 1]: stuff for index, stuff in
+                                                                       enumerate(row[1:])}
                 edit_file.close()
 
         self.faction_lore = {}

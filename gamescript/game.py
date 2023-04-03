@@ -7,12 +7,12 @@ from pathlib import Path
 import pygame
 import pygame.freetype
 import screeninfo
+from pygame.locals import *
+
 from gamescript import battlemap, weather, battleui, menu, damagesprite, effectsprite, battle, subunit, datasprite, \
     datamap, lorebook, drama, popup
-
 from gamescript.common import utility
 from gamescript.common.battle import setup_battle_troop
-from pygame.locals import *
 
 direction_list = datasprite.direction_list
 
@@ -385,11 +385,12 @@ class Game:
 
         self.unit_list_box = menu.ListBox(self.screen_scale, (self.screen_width -
                                                               battle_select_image["unit_list"].get_width(), 0),
-                                         battle_select_image["unit_list"])
+                                          battle_select_image["unit_list"])
         battleui.UIScroll(self.unit_list_box, self.unit_list_box.rect.topright)  # scroll bar for map list
 
         self.source_list_box = menu.ListBox(self.screen_scale, (self.screen_width -
-                                                                (battle_select_image["name_list"].get_width() * 1.2), 0),
+                                                                (battle_select_image["name_list"].get_width() * 1.2),
+                                                                0),
                                             battle_select_image["top_box"])  # source list ui box
         battleui.UIScroll(self.source_list_box, self.source_list_box.rect.topright)  # scroll bar for source list
         self.map_option_box = menu.MapOptionBox(self.screen_scale, (self.source_list_box.rect.x, 0),
@@ -458,7 +459,7 @@ class Game:
 
         self.option_text_list = tuple(
             [self.resolution_text, self.fullscreen_text] + [value for value in
-                                                                                 self.volume_texts.values()])
+                                                            self.volume_texts.values()])
         self.option_menu_button = (
             self.back_button, self.default_button, self.resolution_drop, self.fullscreen_box)
 
@@ -524,13 +525,17 @@ class Game:
 
         # 4 Skill icons near hero ui, TODO change key later when can set keybind
         battleui.SkillCardIcon(self.screen_scale, self.skill_images["0"], (self.command_ui.image.get_width() +
-                                                        self.skill_images["0"].get_width() / 2, 0), "Q")
+                                                                           self.skill_images["0"].get_width() / 2, 0),
+                               "Q")
         battleui.SkillCardIcon(self.screen_scale, self.skill_images["0"], (self.command_ui.image.get_width() +
-                                                        self.skill_images["0"].get_width() * 2, 0), "E")
+                                                                           self.skill_images["0"].get_width() * 2, 0),
+                               "E")
         battleui.SkillCardIcon(self.screen_scale, self.skill_images["0"], (self.command_ui.image.get_width() +
-                                                        self.skill_images["0"].get_width() * 3.5, 0), "R")
+                                                                           self.skill_images["0"].get_width() * 3.5, 0),
+                               "R")
         battleui.SkillCardIcon(self.screen_scale, self.skill_images["0"], (self.command_ui.image.get_width() +
-                                                        self.skill_images["0"].get_width() * 5, 0), "T")
+                                                                           self.skill_images["0"].get_width() * 5, 0),
+                               "T")
 
         weather.Weather.wind_compass_images = {"wind_compass": battle_ui_image["wind_compass"],
                                                "wind_arrow": battle_ui_image["wind_arrow"]}
@@ -887,7 +892,8 @@ class Game:
                     self.menu_map_select(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "preset_team_select":
-                    self.menu_preset_team_select(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press)
+                    self.menu_preset_team_select(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down,
+                                                 esc_press)
 
                 elif self.menu_state == "custom_team_select":
                     self.menu_custom_team_select(mouse_left_up, mouse_left_down, mouse_right_up,
@@ -899,7 +905,7 @@ class Game:
 
                 elif self.menu_state == "unit_setup":
                     self.menu_unit_setup(mouse_left_up, mouse_left_down, mouse_right_up, mouse_scroll_up,
-                                          mouse_scroll_down, esc_press)
+                                         mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "unit_leader_setup":
                     self.menu_leader_setup(mouse_left_up, mouse_left_down, mouse_right_up, mouse_right_down,

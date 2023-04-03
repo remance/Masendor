@@ -3,13 +3,14 @@ import os
 from pathlib import Path
 
 import pygame
+
 from gamescript.common import utility
 
 apply_sprite_colour = utility.apply_sprite_colour
 load_images = utility.load_images
 stat_convert = utility.stat_convert
 
-direction_list = ("side", )
+direction_list = ("side",)
 
 
 class TroopAnimationData:
@@ -37,7 +38,8 @@ class TroopAnimationData:
 
         self.subunit_animation_data = {}
         part_folder = Path(os.path.join(main_dir, "data", "animation"))
-        files = [os.path.split(x)[-1].replace(".csv", "") for x in part_folder.iterdir() if ".csv" in os.path.split(x)[-1]]
+        files = [os.path.split(x)[-1].replace(".csv", "") for x in part_folder.iterdir() if
+                 ".csv" in os.path.split(x)[-1]]
         for file in files:
             with open(os.path.join(main_dir, "data", "animation", file + ".csv"), encoding="utf-8",
                       mode="r") as edit_file:
@@ -107,7 +109,8 @@ class TroopAnimationData:
                         self.gen_body_sprite_pool[race][folder[-1]] = imgs
                         part_subfolder = Path(os.path.join(main_dir, "data", "sprite", "subunit", race, folder[-1]))
                         subsubdirectories = [os.path.split(os.sep.join(
-                            os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x
+                            os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for
+                            x
                             in part_subfolder.iterdir() if x.is_dir()]
                         for subfolder in subsubdirectories:
                             imgs = load_images(main_dir, subfolder=subfolder)

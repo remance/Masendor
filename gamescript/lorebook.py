@@ -268,7 +268,8 @@ class Lorebook(pygame.sprite.Sprite):
         elif self.section == self.troop_section:
             try:
                 who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key == self.subsection}
-                preview_sprite_pool, _ = self.main.create_troop_sprite_pool(who_todo, preview=True, max_preview_size=200)
+                preview_sprite_pool, _ = self.main.create_troop_sprite_pool(who_todo, preview=True,
+                                                                            max_preview_size=200)
                 self.portrait = preview_sprite_pool[self.subsection]["sprite"]
 
             except KeyError:
@@ -404,14 +405,16 @@ class Lorebook(pygame.sprite.Sprite):
                             if self.section == self.troop_section or self.section == self.leader_section:  # troop section
                                 if "Weapon" in key:  # weapon text with quality
                                     if value:
-                                        create_text = key + ": " + self.troop_data.equipment_grade_list[value[1]]["Name"] \
+                                        create_text = key + ": " + self.troop_data.equipment_grade_list[value[1]][
+                                            "Name"] \
                                                       + " " + self.troop_data.weapon_list[value[0]]["Name"]
                                     else:
                                         create_text = key + ": Standard Unarmed"
 
                                 elif key == "Armour":  # armour text with quality
                                     if value:
-                                        create_text = key + ": " + self.troop_data.equipment_grade_list[value[1]]["Name"] \
+                                        create_text = key + ": " + self.troop_data.equipment_grade_list[value[1]][
+                                            "Name"] \
                                                       + " " + self.troop_data.armour_list[value[0]]["Name"]
                                     else:
                                         create_text = key + ": No Armour"

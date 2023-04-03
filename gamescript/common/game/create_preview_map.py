@@ -1,7 +1,6 @@
 import random
 
 from gamescript import battlemap
-
 from gamescript.common import utility
 
 load_images = utility.load_images

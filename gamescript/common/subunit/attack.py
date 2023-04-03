@@ -1,9 +1,10 @@
-from pygame import Vector2
 from math import cos, sin, radians
 from random import choice, uniform, randint
 
-from gamescript.damagesprite import MeleeDamageSprite, RangeDamageSprite, ChargeDamageSprite, EffectDamageSprite
+from pygame import Vector2
+
 from gamescript.common import utility
+from gamescript.damagesprite import MeleeDamageSprite, RangeDamageSprite, ChargeDamageSprite, EffectDamageSprite
 
 convert_degree_to_360 = utility.convert_degree_to_360
 
@@ -29,7 +30,8 @@ def attack(self, attack_type):
             accuracy = self.accuracy
             sight_penalty = 1
             if self.equipped_timing_start_weapon[weapon] and \
-                    self.equipped_timing_start_weapon[weapon] < self.release_timer < self.equipped_timing_end_weapon[weapon]:
+                    self.equipped_timing_start_weapon[weapon] < self.release_timer < self.equipped_timing_end_weapon[
+                weapon]:
                 # release in timing bonus time, get accuracy boost
                 accuracy *= 1.5
 
@@ -144,11 +146,13 @@ def attack(self, attack_type):
         else:  # melee attack
             accuracy = self.melee_attack
             if self.equipped_timing_start_weapon[weapon] and \
-                self.equipped_timing_start_weapon[weapon] < self.release_timer < self.equipped_timing_end_weapon[weapon]:
+                    self.equipped_timing_start_weapon[weapon] < self.release_timer < self.equipped_timing_end_weapon[
+                weapon]:
                 # release in timing bonus time, get accuracy boost
                 accuracy *= 1.5
 
-            if self.front_pos.distance_to(base_target) > self.melee_range[weapon]:  # target exceed weapon range, use max
+            if self.front_pos.distance_to(base_target) > self.melee_range[
+                weapon]:  # target exceed weapon range, use max
                 base_angle = self.set_rotate(base_target)
                 base_target = Vector2(self.front_pos[0] - (self.melee_range[weapon] * sin(radians(base_angle))),
                                       self.front_pos[1] - (self.melee_range[weapon] * cos(radians(base_angle))))

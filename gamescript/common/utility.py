@@ -2,13 +2,14 @@ import csv
 import datetime
 import os
 import re
-
-import pygame
-import pygame.freetype
 from ast import literal_eval
 from inspect import stack
 from math import cos, sin, atan2, degrees
+
+import pygame
+import pygame.freetype
 from PIL import Image, ImageOps
+
 from gamescript import menu
 
 accept_image_types = ("png", "jpg", "jpeg", "svg", "gif", "bmp")
@@ -412,14 +413,22 @@ def apply_sprite_colour(surface, colour, colour_list=None, keep_white=True, keep
         if colour_list is None:
             white_colour = colour
         else:
-            white_colour = colour_list[colour]
-        mid_colour = [int(c / 2) for c in white_colour]
+            if "true" in colour:
+                white_colour = colour_list[colour.replace("true ", "")]
+            else:
+                white_colour = colour_list[colour]
+        if "true" not in colour:
+            mid_colour = [int(c / 2) for c in white_colour]
+        else:  # completely specified colour with no shade
+            mid_colour = white_colour
+
         if keep_white:
             if colour_list is None:
                 mid_colour = colour
             else:
-                mid_colour = colour_list[colour]
+                mid_colour = white_colour
             white_colour = "white"
+
         size = surface.get_size()
         data = pygame.image.tostring(surface, "RGBA")  # convert image to string data for filtering effect
         surface = Image.frombytes("RGBA", size, data)  # use PIL to get image data

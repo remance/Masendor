@@ -28,7 +28,8 @@ def play_animation(self, dt, hold_check):
             if not done:  # check if new frame has play speed mod
                 self.animation_play_time = self.default_animation_play_time
                 if "play_time_mod" in self.current_animation[self.show_frame]:
-                    self.animation_play_time = self.default_animation_play_time * self.current_animation[self.show_frame]["play_time_mod"]
+                    self.animation_play_time = self.default_animation_play_time * \
+                                               self.current_animation[self.show_frame]["play_time_mod"]
 
             self.image = current_animation["sprite"]
 

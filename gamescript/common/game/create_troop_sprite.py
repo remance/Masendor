@@ -2,6 +2,7 @@ import math
 
 import pygame
 from PIL import Image, ImageFilter, ImageEnhance
+
 from gamescript.common import utility
 
 rotation_xy = utility.rotation_xy

@@ -1,6 +1,7 @@
+from math import cos, sin, radians
+
 from pygame import Vector2
 
-from math import cos, sin, radians
 infinity = float("inf")
 
 
@@ -25,7 +26,7 @@ def cal_loss(self, final_dmg, impact, final_morale_dmg, element_effect, hit_angl
         self.momentum = 0
         self.charging = False
         self.forced_target = Vector2(self.base_pos[0] - (impact_check / 2 * sin(radians(hit_angle))),
-                                       self.base_pos[1] - (impact_check / 2 * cos(radians(hit_angle))))
+                                     self.base_pos[1] - (impact_check / 2 * cos(radians(hit_angle))))
         self.battle.add_sound_effect_queue(self.sound_effect_pool["KnockDown"][0], self.base_pos,
                                            self.knock_down_sound_distance,
                                            self.knock_down_sound_shake,
@@ -38,7 +39,7 @@ def cal_loss(self, final_dmg, impact, final_morale_dmg, element_effect, hit_angl
         self.momentum = 0
         self.charging = False
         self.forced_target = Vector2(self.base_pos[0] - (impact_check * sin(radians(hit_angle))),
-                                       self.base_pos[1] - (impact_check * cos(radians(hit_angle))))
+                                     self.base_pos[1] - (impact_check * cos(radians(hit_angle))))
         self.battle.add_sound_effect_queue(self.sound_effect_pool["HeavyDamaged"][0], self.base_pos,
                                            self.heavy_dmg_sound_distance,
                                            self.heavy_dmg_sound_shake,
@@ -51,7 +52,7 @@ def cal_loss(self, final_dmg, impact, final_morale_dmg, element_effect, hit_angl
         self.momentum = 0
         self.charging = False
         self.forced_target = Vector2(self.base_pos[0] - (impact_check * sin(radians(hit_angle))),
-                                       self.base_pos[1] - (impact_check * cos(radians(hit_angle))))
+                                     self.base_pos[1] - (impact_check * cos(radians(hit_angle))))
 
         self.battle.add_sound_effect_queue(self.sound_effect_pool["Damaged"][0], self.base_pos,
                                            self.dmg_sound_distance,

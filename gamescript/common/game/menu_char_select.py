@@ -66,7 +66,8 @@ def menu_char_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
                                 other_icon.selection()
                         icon.selection()
                         self.char_stat["char"].add_leader_stat(icon.who, self.leader_data, self.troop_data)
-                        who_todo = {key: value for key, value in self.leader_data.leader_list.items() if key == icon.who.troop_id}
+                        who_todo = {key: value for key, value in self.leader_data.leader_list.items() if
+                                    key == icon.who.troop_id}
                         preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True)
                         self.char_stat["model"].add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"],
                                                                   icon.who.coa)

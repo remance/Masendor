@@ -1,16 +1,16 @@
 import os
 from math import radians
-from random import random
 from pathlib import Path
+from random import random
 
 import pygame
 import pygame.freetype
-
-from gamescript.battleui import SkillAimTarget, SpriteIndicator
-from gamescript.common import utility
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
+
+from gamescript.battleui import SkillAimTarget, SpriteIndicator
+from gamescript.common import utility
 
 rotation_list = (90, -90)
 rotation_name = ("l_side", "r_side")
@@ -375,7 +375,7 @@ class Subunit(pygame.sprite.Sprite):
         self.front_pos = (0, 0)  # pos of this subunit for finding height of map at the front
         self.front_height = 0
 
-        self.move_path = (self.base_pos, )
+        self.move_path = (self.base_pos,)
 
         # Set up special effect variable, first main item is for effect from troop/trait, second main item is for weapon
         # first sub item is permanent effect from trait, second sub item from temporary status or skill
@@ -723,7 +723,8 @@ class Subunit(pygame.sprite.Sprite):
         self.original_skill = [skill for skill in self.original_skill if
                                (type(skill) is str or (skill in self.troop_data.skill_list and
                                                        self.troop_data.skill_list[skill]["Troop Type"] == 0 or
-                                                       self.troop_data.skill_list[skill]["Troop Type"] == self.subunit_type))]
+                                                       self.troop_data.skill_list[skill][
+                                                           "Troop Type"] == self.subunit_type))]
 
         if self.subunit_type == 2:  # cavalry has half weight penalty
             self.weight = self.weight / 2
@@ -881,7 +882,7 @@ class Subunit(pygame.sprite.Sprite):
             if hitbox_size not in self.hitbox_image_list[self.team]["leader"]:
                 self.hitbox_image = pygame.Surface(hitbox_size, pygame.SRCALPHA)
                 pygame.draw.circle(self.hitbox_image, (self.team_colour[self.team][0], self.team_colour[self.team][1],
-                                    self.team_colour[self.team][2], 150),
+                                                       self.team_colour[self.team][2], 150),
                                    (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
                                    self.hitbox_image.get_width() / 2)
 
@@ -896,7 +897,7 @@ class Subunit(pygame.sprite.Sprite):
                 self.hitbox_image = pygame.Surface(hitbox_size,
                                                    pygame.SRCALPHA)
                 pygame.draw.circle(self.hitbox_image, (self.team_colour[self.team][0], self.team_colour[self.team][1],
-                                    self.team_colour[self.team][2], 150),
+                                                       self.team_colour[self.team][2], 150),
                                    (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
                                    self.hitbox_image.get_width() / 2)
 
@@ -940,10 +941,13 @@ class Subunit(pygame.sprite.Sprite):
                                 for _ in range(number):
                                     if self.troop_reserve_list[troop_id] > 0:
                                         add_subunit = Subunit(troop_id, self.battle.last_troop_game_id, None, self.team,
-                                                              self.base_pos, self.angle, self.start_hp, self.start_stamina,
+                                                              self.base_pos, self.angle, self.start_hp,
+                                                              self.start_stamina,
                                                               self, self.coa)
-                                        add_subunit.hitbox = SpriteIndicator(add_subunit.hitbox_image, add_subunit, self)
-                                        add_subunit.effectbox = SpriteIndicator(pygame.Surface((0, 0)), add_subunit, self,
+                                        add_subunit.hitbox = SpriteIndicator(add_subunit.hitbox_image, add_subunit,
+                                                                             self)
+                                        add_subunit.effectbox = SpriteIndicator(pygame.Surface((0, 0)), add_subunit,
+                                                                                self,
                                                                                 layer=10000001)
                                         add_subunit.enter_battle(self.battle.subunit_animation_pool,
                                                                  self.battle.status_animation_pool)

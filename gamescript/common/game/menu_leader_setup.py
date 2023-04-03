@@ -1,9 +1,8 @@
 import pygame
 
-from gamescript import menu, battleui
+from gamescript import menu
 from gamescript.common import utility
 from gamescript.common.game import menu_preset_team_select
-
 from gamescript.common.game import menu_unit_setup
 
 unit_change_team_unit = menu_unit_setup.unit_change_team_unit
@@ -68,7 +67,8 @@ def menu_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mous
                             self.map_preview.change_mode(1, team_pos_list=self.custom_map_data["unit"]["pos"],
                                                          camp_pos_list=self.camp_pos[0],
                                                          selected=
-                                                         self.custom_map_data["unit"]["pos"][icon.who.team][icon.who.index])
+                                                         self.custom_map_data["unit"]["pos"][icon.who.team][
+                                                             icon.who.index])
                         self.org_chart.add_chart(self.custom_map_data["unit"][icon.who.team], self.preview_char,
                                                  selected=icon.who.index)
                     elif mouse_right_up:
@@ -148,5 +148,3 @@ def menu_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mous
 
     elif self.select_button.event:  # go to character select screen
         change_to_char_select_menu(self)
-
-

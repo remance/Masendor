@@ -63,5 +63,3 @@ def menu_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse
             else:
                 self.change_to_team_selection_menu()
                 self.menu_state = "custom_team_select"
-
-

@@ -23,18 +23,20 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                                             self.custom_map_data["info"]["Team " + str(coa.team)].append(faction_index)
                                     else:
                                         self.custom_map_data["info"]["Team " + str(coa.team)] = [faction_index]
-                                    coa.change_coa({int(faction): self.faction_data.coa_list[int(faction)] for faction in
-                                                    self.custom_map_data["info"]["Team " + str(coa.team)]},
-                                                   self.faction_data.faction_list[self.custom_map_data["info"][
-                                                       "Team " + str(coa.team)][0]]["Name"])
+                                    coa.change_coa(
+                                        {int(faction): self.faction_data.coa_list[int(faction)] for faction in
+                                         self.custom_map_data["info"]["Team " + str(coa.team)]},
+                                        self.faction_data.faction_list[self.custom_map_data["info"][
+                                            "Team " + str(coa.team)][0]]["Name"])
                                 elif mouse_right_up:
                                     if faction_index in self.custom_map_data["info"]["Team " + str(coa.team)]:
                                         self.custom_map_data["info"]["Team " + str(coa.team)].remove(faction_index)
                                     if self.custom_map_data["info"]["Team " + str(coa.team)]:  # still not empty
-                                        coa.change_coa({int(faction): self.faction_data.coa_list[int(faction)] for faction in
-                                                        self.custom_map_data["info"]["Team " + str(coa.team)]},
-                                                       self.faction_data.faction_list[self.custom_map_data["info"][
-                                                           "Team " + str(coa.team)][0]]["Name"])
+                                        coa.change_coa(
+                                            {int(faction): self.faction_data.coa_list[int(faction)] for faction in
+                                             self.custom_map_data["info"]["Team " + str(coa.team)]},
+                                            self.faction_data.faction_list[self.custom_map_data["info"][
+                                                "Team " + str(coa.team)][0]]["Name"])
                                     else:  # list empty remove data
                                         self.custom_map_data["info"].pop("Team " + str(coa.team))
                                         coa.change_coa({0: None}, "None")
@@ -78,11 +80,11 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                 for index, icon in enumerate(self.char_icon):
                     if icon.selected:
                         map_pos = (
-                        (int(self.mouse_pos[0] - self.map_preview.rect.x) * self.map_preview.map_scale_width),
-                        int((self.mouse_pos[1] - self.map_preview.rect.y) * self.map_preview.map_scale_height))
+                            (int(self.mouse_pos[0] - self.map_preview.rect.x) * self.map_preview.map_scale_width),
+                            int((self.mouse_pos[1] - self.map_preview.rect.y) * self.map_preview.map_scale_height))
                         if icon.who.name == "+":
                             self.input_popup = ("text_input", "custom_camp_size/" + str(map_pos) + "/" +
-                                                    str(icon.who.team))
+                                                str(icon.who.team))
                             self.input_ui.change_instruction("Camp Size Value:")
                             self.main_ui_updater.add(self.input_ui_popup)
                         else:

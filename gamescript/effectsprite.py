@@ -1,9 +1,8 @@
-import pygame
-
 from random import choice
 
-from gamescript.common import utility
+import pygame
 
+from gamescript.common import utility
 from gamescript.common.damagesprite import play_animation, adjust_sprite
 
 

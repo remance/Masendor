@@ -11,7 +11,8 @@ def read_selected_map_data(self, map_list, file, source=False):
                              str(self.map_source)))
         else:
             data = csv_read(self.main_dir, file,
-                            ("data", "ruleset", self.ruleset_folder, "map", "preset", map_list[self.current_map_select]))
+                            (
+                            "data", "ruleset", self.ruleset_folder, "map", "preset", map_list[self.current_map_select]))
     else:
         if map_list[self.current_map_select] != "Random":
             try:

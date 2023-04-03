@@ -18,5 +18,3 @@ def health_stamina_logic(self, dt):
                 self.stamina = 0
         else:  # stamina cannot exceed the max stamina
             self.stamina = self.max_stamina
-
-

@@ -1,8 +1,8 @@
 import threading
+from random import randint, random, randrange
 
 import pygame
 import pygame.freetype
-from random import randint, random, randrange
 from PIL import Image, ImageFilter, ImageOps
 
 from gamescript.common import utility
@@ -239,13 +239,17 @@ class BeautifulMap(pygame.sprite.Sprite):
         if self.mode == 1:  # with topology map
             rect = self.image.get_rect(topleft=(0, 0))
             self.image.blit(pygame.transform.smoothscale(self.height_map.topology_image,
-                                                         (self.height_map.topology_image.get_width() * self.screen_scale[0] * 5,
-                                                          self.height_map.topology_image.get_height() * self.screen_scale[1] * 5)), rect)
+                                                         (
+                                                         self.height_map.topology_image.get_width() * self.screen_scale[
+                                                             0] * 5,
+                                                         self.height_map.topology_image.get_height() *
+                                                         self.screen_scale[1] * 5)), rect)
         elif self.mode == 2:  # with height map
             rect = self.image.get_rect(topleft=(0, 0))
             self.image.blit(pygame.transform.smoothscale(self.height_map.image,
                                                          (self.height_map.image.get_width() * self.screen_scale[0] * 5,
-                                                          self.height_map.image.get_height() * self.screen_scale[1] * 5)), rect)
+                                                          self.height_map.image.get_height() * self.screen_scale[
+                                                              1] * 5)), rect)
 
     def clear_image(self):
         self.image = None

@@ -154,7 +154,8 @@ def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mo
                             self.command_action = self.charge_command_action[action_num]
                             self.move_speed = self.run_speed
 
-                    elif self.current_action and "Action " + str_action_num in self.current_action["name"]:  # No new attack command if already doing it
+                    elif self.current_action and "Action " + str_action_num in self.current_action[
+                        "name"]:  # No new attack command if already doing it
                         if "hold" not in self.current_action:  # start holding
                             if "melee attack" in self.current_action:
                                 self.current_action = self.melee_hold_command_action[action_num]

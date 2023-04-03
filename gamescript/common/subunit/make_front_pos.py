@@ -1,4 +1,5 @@
 from math import cos, sin
+
 from pygame import Vector2
 
 from gamescript.common import utility

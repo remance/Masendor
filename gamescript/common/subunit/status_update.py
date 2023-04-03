@@ -282,7 +282,7 @@ def status_update(self):
 
     # Apply morale, and leader buff to stat
     self.discipline = (self.discipline + (self.discipline * self.morale_state * self.stamina_state)) + \
-                       self.leader_social_buff + (self.authority / 10)  # use morale, leader social and authority
+                      self.leader_social_buff + (self.authority / 10)  # use morale, leader social and authority
     self.melee_attack = (self.melee_attack + (self.melee_attack * self.morale_state)) * self.command_buff
     self.melee_def = (self.melee_def + (self.melee_def * self.morale_state)) * self.command_buff
     self.range_def = (self.range_def + (self.range_def * self.morale_state)) * self.command_buff

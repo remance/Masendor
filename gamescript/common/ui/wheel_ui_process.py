@@ -48,7 +48,8 @@ def wheel_ui_process(self, choice):
             self.player_char.setup_formation("unit", position=choice[5:])
         elif choice in self.unit_behaviour_wheel["Unit Order"]:
             self.player_char.change_follow_order(choice[5:], "unit")
-        elif "Unit Formation List" in self.unit_behaviour_wheel and choice in self.unit_behaviour_wheel["Unit Formation List"]:
+        elif "Unit Formation List" in self.unit_behaviour_wheel and choice in self.unit_behaviour_wheel[
+            "Unit Formation List"]:
             self.player_char.change_formation("unit", formation=choice)
 
         elif choice in self.unit_behaviour_wheel["Range Attack"]:
