@@ -54,9 +54,9 @@ def load_image(main_dir, screen_scale, file, subfolder=""):
             new_subfolder = os.path.join(new_subfolder, folder)
     this_file = os.path.join(main_dir, "data", new_subfolder, file)
     surface = pygame.image.load(this_file).convert_alpha()
-    surface = pygame.transform.scale(surface,
-                                     (surface.get_width() * screen_scale[0],
-                                      surface.get_height() * screen_scale[1]))
+    surface = pygame.transform.smoothscale(surface,
+                                           (surface.get_width() * screen_scale[0],
+                                            surface.get_height() * screen_scale[1]))
     return surface
 
 
@@ -212,7 +212,7 @@ def make_long_text(surface, text, pos, font, color=pygame.Color("black")):
     """
     Blit long text into separate row of text
     :param surface: Input Pygame Surface
-    :param text: Bunch of texts
+    :param text: Text in either list or string format
     :param pos: Starting position
     :param font: Pygame Font
     :param color: Text colour

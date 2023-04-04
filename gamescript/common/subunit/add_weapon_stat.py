@@ -44,8 +44,12 @@ def add_weapon_stat(self):
                 self.original_weapon_speed[set_index][weapon_index] = 0
 
             if weapon_stat["Magazine"] == 0:  # weapon is melee weapon with no magazine to load ammo
-                self.melee_weapon_set[set_index] += (dmg_sum / self.original_weapon_speed[set_index][weapon_index]) + \
-                                                    weapon_stat["Defence"]
+                if weapon_stat["Name"] != "Unarmed":
+                    self.melee_weapon_set[set_index] += ((dmg_sum + self.weapon_penetrate[set_index][weapon_index]) /
+                                                         self.original_weapon_speed[set_index][weapon_index]) + \
+                                                        weapon_stat["Defence"]
+                else:  # give minimum score for unarmed weapon
+                    self.melee_weapon_set[set_index] += 1
                 self.magazine_count[set_index][weapon_index] = 0  # remove modifier
                 self.original_melee_range[set_index][weapon_index] = weapon_stat["Range"]
                 self.original_melee_def_range[set_index][weapon_index] = weapon_stat["Range"] * 3

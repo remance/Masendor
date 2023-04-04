@@ -14,17 +14,18 @@ class Cursor(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.images = images
         self.image = images["normal"]
-        self.state = "normal"
-        self.rect = self.image.get_rect(topleft=(0, 0))
+        self.pos = (0, 0)
+        self.rect = self.image.get_rect(topleft=self.pos)
 
     def update(self, mouse_pos):
         """Update cursor position based on mouse position"""
-        self.rect = self.image.get_rect(topleft=mouse_pos)
+        self.pos = mouse_pos
+        self.rect.topleft = self.pos
 
     def change_image(self, image_name):
         """Change cursor image to whatever input name"""
-        self.state = image_name
-        self.image = self.images[self.state]
+        self.image = self.images[image_name]
+        self.rect = self.image.get_rect(topleft=self.pos)
 
 
 class EscBox(pygame.sprite.Sprite):
