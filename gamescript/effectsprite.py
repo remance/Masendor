@@ -10,7 +10,7 @@ class EffectSprite(pygame.sprite.Sprite):
     effect_sprite_pool = None
     effect_animation_pool = None
     effect_list = None
-    sound_effect_pool = None
+    sound_effect_pool = {}
     battle = None
     screen_scale = (1, 1)
 

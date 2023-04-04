@@ -161,7 +161,7 @@ class Game:
         self.play_voice_volume = self.master_volume * self.voice_volume / 10000
         self.profile_name = str(self.config["USER"]["player_Name"])
         self.language = str(self.config["USER"]["language"])
-        self.ruleset = 1  # for now default historical ruleset only
+        self.ruleset = 0  # for now default historical ruleset only
 
         # Set the display mode
         self.screen_rect = Rect(0, 0, self.screen_width, self.screen_height)
@@ -191,7 +191,7 @@ class Game:
         self.loading = pygame.transform.scale(self.loading, self.screen_rect.size)
 
         self.ruleset_list = csv_read(self.main_dir, "ruleset_list.csv", ("data", "ruleset"))  # get ruleset list
-        self.ruleset_folder = str(self.ruleset_list[self.ruleset][1]).strip("/")
+        self.ruleset_folder = str(self.ruleset_list[self.ruleset][0]).strip("/")
 
         self.map_type = ""
         self.map_source = 0  # current selected map source

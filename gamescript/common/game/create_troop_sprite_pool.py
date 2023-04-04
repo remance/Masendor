@@ -7,7 +7,7 @@ from PIL import Image
 from gamescript.common.game import create_troop_sprite
 
 
-def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200):
+def create_troop_sprite_pool(self, who_todo, preview=False, specific_preview=None, max_preview_size=200):
     weapon_list = self.troop_data.weapon_list
     animation_sprite_pool = {}
     status_animation_pool = {}
@@ -40,13 +40,28 @@ def create_troop_sprite_pool(self, who_todo, preview=False, max_preview_size=200
             job.join()
     else:
         create_sprite(self, who_todo, preview, max_preview_size, weapon_list,
-                      weapon_common_type_list, weapon_attack_type_list, animation_sprite_pool, status_animation_pool)
+                      weapon_common_type_list, weapon_attack_type_list, animation_sprite_pool, status_animation_pool,
+                      specific_preview=specific_preview)
 
     return animation_sprite_pool, status_animation_pool
 
 
 def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon_common_type_list,
-                  weapon_attack_type_list, animation_sprite_pool, status_animation_pool):
+                  weapon_attack_type_list, animation_sprite_pool, status_animation_pool, specific_preview=None):
+    """
+    Create subunit troop sprite
+    :param self: Battle object
+    :param who_todo: List of subunit data
+    :param preview: Boolean indicating whether to create full set of animation for battle or just one for preview
+    :param max_preview_size: Size of preview sprite if preview mode
+    :param weapon_list: Weapon data
+    :param weapon_common_type_list: Weapon common action data
+    :param weapon_attack_type_list: Weapon attack action data
+    :param animation_sprite_pool: Animation pool data
+    :param status_animation_pool: Status animation pool data
+    :param specific_preview: list array containing animation name, frame number and direction of either l_side or r_side for flipping
+    """
+
     for subunit_id, this_subunit in who_todo.items():
         sprite_id = str(this_subunit["Sprite ID"])
         race = self.troop_data.race_list[this_subunit["Race"]]["Name"]
@@ -134,29 +149,45 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                     if replaced_animation in animation:
                         animation[animation.index(replaced_animation)] = this_animation
 
-            # get animation with weapon
-            animation = [this_animation for this_animation in animation
-                         if (any(ext in this_animation for ext in weapon_common_type_list) is False or
-                             "_any_" in this_animation or weapon_common_action[0][0] in this_animation) and
-                         (any(ext in this_animation for ext in weapon_attack_type_list) is False or
-                          (weapon_attack_action[0][0] in this_animation and ("_Main_" in this_animation or
-                                                                             "_Both_" in this_animation)))]
-            # remove animation not suitable for preview
-            animation = [this_animation for this_animation in animation if
-                         any(ext in this_animation for ext in
-                             ("_Default", "_Die", "_Flee", "_Damaged", "KnockDown",
-                              "_Standup", "_HeavyDamaged")) is False and "_Sub_" not in this_animation]
-            if len(animation) > 0:
-                animation = choice(animation)  # random animation
-            else:  # no animation found, use race default
-                animation = race + "_Default"
+            if specific_preview:  # get specific animation
+                weapon_set = int(specific_preview[0][-1])
+                animation = [this_animation for this_animation in animation
+                             if (any(ext in this_animation for ext in weapon_common_type_list) is False or
+                                 "_any_" in this_animation or weapon_common_action[0][0] in this_animation) and
+                             (any(ext in this_animation for ext in weapon_attack_type_list) is False or
+                              ("_Both_" in this_animation or (weapon_attack_action[weapon_set][0] in this_animation and "_Main_" in this_animation)
+                               or weapon_attack_action[weapon_set][1] in this_animation and "_Sub_" in this_animation))]
+                # print(animation)
+                # print(specific_preview)
+                animation = [this_animation for this_animation in animation if this_animation == specific_preview[0][:-2]]
+                animation = animation[0]
+            else:
+                animation = [this_animation for this_animation in animation
+                             if (any(ext in this_animation for ext in weapon_common_type_list) is False or
+                                 "_any_" in this_animation or weapon_common_action[0][0] in this_animation) and
+                             (any(ext in this_animation for ext in weapon_attack_type_list) is False or
+                              (weapon_attack_action[0][0] in this_animation and ("_Main_" in this_animation or
+                                                                                 "_Both_" in this_animation)))]
+                weapon_set = 0
+                # remove animation not suitable for preview
+                animation = [this_animation for this_animation in animation if
+                             any(ext in this_animation for ext in
+                                 ("_Default", "_Die", "_Flee", "_Damaged", "KnockDown",
+                                  "_Standup", "_HeavyDamaged")) is False and "_Sub_" not in this_animation]
+                if len(animation) > 0:
+                    animation = choice(animation)  # random animation
+                else:  # no animation found, use race default
+                    animation = race + "_Default"
 
             if final_char_name[:-1] == animation.split("_")[0]:
                 race_type = char_name
             else:
                 race_type = race
 
-            frame_data = choice(self.subunit_animation_data[race_type][animation])  # random frame
+            if specific_preview:
+                frame_data = self.subunit_animation_data[race_type][animation][specific_preview[1]]
+            else:
+                frame_data = choice(self.subunit_animation_data[race_type][animation])  # random frame
             animation_property = self.subunit_animation_data[race_type][animation][0]["animation_property"].copy()
 
             if type(subunit_id) is int:
@@ -170,19 +201,24 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
 
             sprite_dict = self.create_troop_sprite(animation, this_subunit["Size"], frame_data,
                                                    sprite_data, animation_property,
-                                                   (0, subunit_weapon_list[0],
+                                                   (weapon_set, subunit_weapon_list[weapon_set],
                                                     (self.troop_data.weapon_list[primary_main_weapon]["Hand"],
                                                      self.troop_data.weapon_list[primary_sub_weapon]["Hand"])),
                                                    armour_name,
                                                    self.subunit_animation_data[race][idle_animation_name][0], False)
             sprite_pic, center_offset = crop_sprite(sprite_dict["sprite"])
 
-            scale = min(max_preview_size * self.screen_scale[0] / sprite_pic.get_width(),
-                        max_preview_size * self.screen_scale[1] / sprite_pic.get_height())
-            if scale != 1:  # scale down to fit ui like encyclopedia
-                sprite_pic = pygame.transform.smoothscale(sprite_pic, (
-                    sprite_pic.get_width() * scale,
-                    sprite_pic.get_height() * scale))
+            if max_preview_size:
+                scale = min(max_preview_size * self.screen_scale[0] / sprite_pic.get_width(),
+                            max_preview_size * self.screen_scale[1] / sprite_pic.get_height())
+                if scale != 1:  # scale down to fit ui like encyclopedia
+                    sprite_pic = pygame.transform.smoothscale(sprite_pic, (
+                        sprite_pic.get_width() * scale,
+                        sprite_pic.get_height() * scale))
+
+            if specific_preview:
+                if specific_preview[2][0:2] == "l_":
+                    sprite_pic = pygame.transform.flip(sprite_pic, True, False)
 
             animation_sprite_pool[subunit_id] = {"sprite": sprite_pic,
                                                  "animation_property": sprite_dict["animation_property"],

@@ -268,8 +268,7 @@ class Lorebook(pygame.sprite.Sprite):
         elif self.section == self.troop_section:
             try:
                 who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key == self.subsection}
-                preview_sprite_pool, _ = self.main.create_troop_sprite_pool(who_todo, preview=True,
-                                                                            max_preview_size=200)
+                preview_sprite_pool, _ = self.main.create_troop_sprite_pool(who_todo, preview=True)
                 self.portrait = preview_sprite_pool[self.subsection]["sprite"]
 
             except KeyError:

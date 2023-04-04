@@ -19,7 +19,8 @@ stat_convert = datastat.stat_convert
 def read_anim_data(anim_column_header):
     pool = {}
     part_folder = Path(os.path.join(main_dir, "data", "animation"))
-    files = [os.path.split(x)[-1].replace(".csv", "") for x in part_folder.iterdir() if ".csv" in os.path.split(x)[-1]]
+    files = [os.path.split(x)[-1].replace(".csv", "") for x in part_folder.iterdir() if ".csv" in os.path.split(x)[-1] and
+             "lock." not in os.path.split(x)[-1]]
     for file in files:
         with open(os.path.join(main_dir, "data", "animation", file + ".csv"), encoding="utf-8",
                   mode="r") as edit_file:

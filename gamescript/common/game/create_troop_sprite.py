@@ -63,7 +63,7 @@ def create_troop_sprite(self, animation_name, troop_size, animation_part_list, t
         if "head" in layer:
             image_part = generate_head(layer[:2], animation_part_list, part[:2], troop_sprite_list,
                                        self.gen_body_sprite_pool, self.gen_armour_sprite_pool,
-                                       this_armour, self.colour_list)
+                                       this_armour, self.colour_list, animation_property)
         elif "weapon" in layer:
             new_part.insert(1, "Dummy")  # insert dummy value for weapon list so can use indexing similar as other part
             image_part = generate_body(layer, part[:1], troop_sprite_list, self.gen_weapon_sprite_pool, weapon=weapon)
@@ -240,8 +240,7 @@ def grab_face_part(pool, race, part, part_check, part_default=None):
 
 
 def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool, armour_pool, armour,
-                  colour_list):
-    head_sprite_surface = None
+                  colour_list, animation_property):
     head_race = body_part_list[0]
     head = body_pool[head_race]["head"][body_part_list[1]].copy()
     head_sprite_surface = pygame.Surface((head.get_width(), head.get_height()), pygame.SRCALPHA)
@@ -273,7 +272,7 @@ def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool
         hair_sprite = apply_sprite_colour(hair_sprite, sprite_list[p + "_hair"][1], colour_list=colour_list)
         head_sprite_surface.blit(hair_sprite, rect)
 
-    if sprite_list[p + "_head"] != "none":
+    if sprite_list[p + "_head"] != "none" and p + "_no_helmet" not in animation_property:
         try:
             gear_image = armour_pool[head_race][armour][sprite_list[p + "_head"]]["head"][
                 body_part_list[1]]

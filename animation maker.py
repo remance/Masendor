@@ -59,8 +59,8 @@ anim_column_header += ["effect_1", "effect_2", "effect_3", "effect_4", "dmg_effe
                        "dmg_effect_4",
                        "size", "frame_property", "animation_property"]  # For csv saving and accessing
 frame_property_list = ["hold", "p1_fix_main_weapon", "p1_fix_sub_weapon", "p2_fix_main_weapon", "p2_fix_sub_weapon",
-                       "p3_fix_main_weapon",
-                       "p3_fix_sub_weapon", "p4_fix_main_weapon", "p4_fix_sub_weapon", "play_time_mod_", "effect_blur_",
+                       "p3_fix_main_weapon", "p3_fix_sub_weapon", "p4_fix_main_weapon", "p4_fix_sub_weapon",
+                       "p1_no_helmet", "p2_no_helmet", "p3_no_helmet", "p4_no_helmet", "play_time_mod_", "effect_blur_",
                        "effect_contrast_", "effect_brightness_",
                        "effect_fade_", "effect_grey", "effect_colour_"]  # starting property list
 

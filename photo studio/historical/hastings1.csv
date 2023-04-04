@@ -1,0 +1,6 @@
+"Type","ID","POS","Angle","Animation","Frame","Other Data"
+"subunit","L2","500,500",0,"Human&Horse_1hand_Preview_3_0",0,"Team:1"
+"subunit",6,"500,520",0,"Human&Horse_Main_1pole_Pierce_1",4,"Team:1"
+"effect","Explosion Large","520,500",0,"Explosion Large",3,
+"subunit","L26","450,500",-90,"Human_1hand_Preview_1_0",0,"Team:2"
+"subunit",26,"450,520",-90,"Human_Both_2pole_Slash_1_0",4,"Team:2"
