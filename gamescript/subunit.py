@@ -494,7 +494,7 @@ class Subunit(pygame.sprite.Sprite):
         self.weight = 0
         self.original_weapon_dmg = {index: {0: element_dict.copy(), 1: element_dict.copy()} for index in range(0, 2)}
         self.weapon_penetrate = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
-        self.base_weapon_impact = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
+        self.weapon_impact = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
         self.weapon_weight = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
         self.range_dmg = {index: {0: element_dict.copy(), 1: element_dict.copy()} for index in range(0, 2)}
         self.original_shoot_range = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
@@ -678,7 +678,8 @@ class Subunit(pygame.sprite.Sprite):
                     self.body_weapon_damage[key] = (dmg * self.body_weapon_stat["Damage Balance"]) + \
                                                    (dmg * (body_strength / 100))
         self.body_weapon_damage = {key: value for key, value in self.body_weapon_damage.items() if value}
-        # add troop size as pure bonus
+        # add troop size as pure bonus for impact and penetrate
+        self.body_weapon_impact = self.troop_data.weapon_list[1]["Impact"] + self.troop_size
         self.body_weapon_penetrate = self.troop_data.weapon_list[1]["Armour Penetration"] + self.troop_size
 
         self.troop_mass = self.troop_size
@@ -936,6 +937,10 @@ class Subunit(pygame.sprite.Sprite):
                     if self.base_pos.distance_to(self.current_camp_pos) <= self.current_camp_radius:
                         if not self.take_melee_dmg and not self.take_aoe_dmg and not self.take_range_dmg:
                             self.reserve_ready_timer += dt
+                            if self.health < self.max_health:  # leader regen health in camp
+                                self.health += dt
+                                if self.health > self.max_health:
+                                    self.health = self.max_health
                         if self.reserve_ready_timer > 5:  # troop reinforcement take 5 seconds
                             for troop_id, number in self.troop_dead_list.items():
                                 for _ in range(number):
@@ -953,6 +958,7 @@ class Subunit(pygame.sprite.Sprite):
                                         self.troop_dead_list[troop_id] -= 1
                                         self.battle.last_troop_game_id += 1
                                         self.troop_reserve_list[troop_id] -= 1
+
                                     else:
                                         self.troop_reserve_list.pop(troop_id)
                                         break
@@ -993,7 +999,8 @@ class Subunit(pygame.sprite.Sprite):
                                 self.attack("charge")
 
                     if self.is_leader and self.camp_pos and self.reserve_ready_timer == 0 and \
-                            any(value > 0 for value in self.troop_dead_list.values()) and self.troop_reserve_list:
+                            ((any(value > 0 for value in self.troop_dead_list.values()) and self.troop_reserve_list)
+                             or self.health < self.max_health):
                         for index, camp_pos in enumerate(self.camp_pos):
                             if self.base_pos.distance_to(camp_pos) <= self.camp_radius[index]:
                                 self.current_camp_pos = camp_pos

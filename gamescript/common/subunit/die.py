@@ -26,6 +26,19 @@ def die(self, how):
     self.current_effect = None
 
     if self.is_leader:  # leader die
+        if self.leader:
+            for index in self.troop_reserve_list:
+                if index in self.leader.troop_reserve_list:
+                    self.leader.troop_reserve_list[index] += self.troop_reserve_list[index]
+                else:
+                    self.leader.troop_reserve_list[index] = self.troop_reserve_list[index]
+
+            for index in self.troop_dead_list:
+                if index in self.leader.troop_dead_list:
+                    self.leader.troop_dead_list[index] += self.troop_dead_list[index]
+                else:
+                    self.leader.troop_dead_list[index] = self.troop_dead_list[index]
+
         for group in (self.alive_troop_follower, self.alive_leader_follower):  # change follower in to new leader
             for this_subunit in group:
                 if self.leader:  # move subordinate to its higher leader
@@ -39,18 +52,6 @@ def die(self, how):
                         self.leader.alive_troop_follower.append(this_subunit)
                         self.leader.find_formation_size(troop=True)
                         self.leader.formation_add_change = True  # new leader require formation change
-
-                    for index in self.troop_reserve_list:
-                        if index in self.leader.troop_reserve_list:
-                            self.leader.troop_reserve_list[index] += self.troop_reserve_list[index]
-                        else:
-                            self.leader.troop_reserve_list[index] = self.troop_reserve_list[index]
-
-                    for index in self.troop_dead_list:
-                        if index in self.leader.troop_dead_list:
-                            self.leader.troop_dead_list[index] += self.troop_dead_list[index]
-                        else:
-                            self.leader.troop_dead_list[index] = self.troop_dead_list[index]
 
                 else:  # no higher leader to move, assign None
                     this_subunit.leader = None

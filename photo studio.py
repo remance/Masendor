@@ -7,17 +7,14 @@ import glob
 from pathlib import Path
 
 import pygame
-import pygame.freetype
 import screeninfo
 from gamescript import battlemap, weather, battleui, menu, effectsprite, battle, camera, datasprite, datamap, game
 
-from pygame import Vector2
 from gamescript.common.utility import csv_read, load_images, stat_convert
 from gamescript.common.battle import setup_battle_troop
 from gamescript.common.battle.spawn_weather_matter import spawn_weather_matter
 from gamescript.common.game.setup.make_faction_troop_leader_data import make_faction_troop_leader_data
 from gamescript.common.game.create_troop_sprite_pool import create_troop_sprite_pool
-from pygame.locals import *
 
 team_colour = game.Game.team_colour
 
@@ -26,6 +23,14 @@ main_dir = os.path.split(os.path.abspath(__file__))[0]
 rotation_list = (90, -90)
 rotation_name = ("l_side", "r_side")
 rotation_dict = {key: rotation_name[index] for index, key in enumerate(rotation_list)}
+
+
+class DummyTeam:
+    def __init__(self, team):
+        self.team = team
+
+
+dummy_troop = [DummyTeam(team) for team in team_colour]
 
 
 class TroopModel(pygame.sprite.Sprite):
@@ -84,7 +89,7 @@ class Studio(game.Game):
 
     def __init__(self, photo_size, map_name, battle_data_name, ruleset, day_time, weather_event):
         pygame.init()  # Initialize pygame
-        self.screen_rect = Rect(0, 0, photo_size[0], photo_size[1])
+        self.screen_rect = pygame.Rect(0, 0, photo_size[0], photo_size[1])
         camera.Camera.screen_rect = self.screen_rect
         self.screen_scale = (self.screen_rect.width / 1920, self.screen_rect.height / 1080)
         self.best_depth = pygame.display.mode_ok(self.screen_rect.size, 0, 32)
@@ -137,8 +142,8 @@ class Studio(game.Game):
         self.weather_effect = pygame.sprite.Group()  # sprite of special weather effect group such as fog that cover whole screen
 
         self.center_screen = [self.screen_rect.width / 2, self.screen_rect.height / 2]  # center position of the screen
-        self.true_camera_pos = Vector2(500, 500)  # camera pos on map
-        self.camera_pos = Vector2(self.true_camera_pos[0] * self.screen_scale[0],
+        self.true_camera_pos = pygame.Vector2(500, 500)  # camera pos on map
+        self.camera_pos = pygame.Vector2(self.true_camera_pos[0] * self.screen_scale[0],
                                   self.true_camera_pos[1] * self.screen_scale[1]) * 5  # Camera pos with screen scale
 
         self.camera_topleft_corner = (self.camera_pos[0] - self.center_screen[0],
@@ -229,9 +234,17 @@ class Studio(game.Game):
                 # battleui.SpriteIndicator(new_troop.hitbox_image, new_troop, self)
 
             elif stuff["Type"] == "effect":
-                effect = effectsprite.EffectSprite(self, stuff["POS"], (stuff["POS"][0] * 5, stuff["POS"][1] * 5),
-                                                   (stuff["POS"][0] * 5, stuff["POS"][1] * 5), stuff["ID"], stuff["Animation"])
+                if "Team" in stuff["Other Data"]:
+                    effect = effectsprite.EffectSprite(dummy_troop[int(stuff["Other Data"]["Team"])], stuff["POS"],
+                                                       (stuff["POS"][0] * 5, stuff["POS"][1] * 5),
+                                                       (stuff["POS"][0] * 5, stuff["POS"][1] * 5), stuff["ID"], stuff["Animation"])
+                else:
+                    effect = effectsprite.EffectSprite(dummy_troop[0], stuff["POS"], (stuff["POS"][0] * 5, stuff["POS"][1] * 5),
+                                                       (stuff["POS"][0] * 5, stuff["POS"][1] * 5), stuff["ID"], stuff["Animation"])
                 effect.image = effect.current_animation[int(stuff["Frame"])]
+
+                if stuff["Angle"] != 0:
+                    effect.image = pygame.transform.rotate(effect.image, stuff["Angle"])
 
         self.clock = pygame.time.Clock()
         self.run()
@@ -264,7 +277,7 @@ class Studio(game.Game):
         elif self.true_camera_pos[1] < 0:
             self.true_camera_pos[1] = 0
 
-        self.camera_pos = Vector2(self.true_camera_pos * self.screen_scale[0],
+        self.camera_pos = pygame.Vector2(self.true_camera_pos * self.screen_scale[0],
                                   self.true_camera_pos * self.screen_scale[1]) * 5
 
         self.camera_topleft_corner = (self.camera_pos[0] - self.center_screen[0],
@@ -277,7 +290,7 @@ class Studio(game.Game):
             key_state = pygame.key.get_pressed()
 
             for event in pygame.event.get():
-                if (event.type == KEYDOWN and event.key == pygame.K_ESCAPE) or event.type == QUIT:
+                if (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE) or event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
 

@@ -26,6 +26,8 @@ def attack(self, attack_type):
 
         if attack_type == "range":
             max_range = self.shoot_range[weapon]
+            if max_range == 0:
+                print(self.name, weapon, self.shoot_range, self.current_action, self.equipped_weapon)
 
             accuracy = self.accuracy
             sight_penalty = 1
@@ -96,8 +98,9 @@ def attack(self, attack_type):
                     for key in self.dmg:
                         dmg[key] *= 1.5
 
-                RangeDamageSprite(self, weapon, dmg, self.weapon_penetrate[self.equipped_weapon][weapon],
-                                  equipped_weapon_data["Impact"] * self.weapon_impact_effect,
+                impact = self.weapon_impact[self.equipped_weapon][weapon] * self.weapon_impact_effect
+
+                RangeDamageSprite(self, weapon, dmg, self.weapon_penetrate[self.equipped_weapon][weapon], impact,
                                   equipped_weapon_data, attack_type, self.front_pos, base_target,
                                   accuracy=accuracy, arc_shot=arc_shot,
                                   reach_effect=equipped_weapon_data["After Reach Effect"])
@@ -130,16 +133,18 @@ def attack(self, attack_type):
         elif attack_type == "charge":
             if weapon:
                 dmg = {key: value[0] for key, value in self.weapon_dmg[weapon].items()}
+                impact = self.weapon_impact[self.equipped_weapon][weapon]
                 penetrate = self.weapon_penetrate[self.equipped_weapon][weapon]
                 stat = equipped_weapon_data
             else:  # charge without using weapon (by running)
                 dmg = self.body_weapon_damage
+                impact = self.body_weapon_impact
                 penetrate = self.body_weapon_penetrate
                 stat = self.body_weapon_stat
             if self.charge_sprite:  # charge sprite already existed
-                self.charge_sprite.change_weapon(dmg, penetrate, stat["Impact"])
+                self.charge_sprite.change_weapon(dmg, penetrate, impact)
             else:
-                self.charge_sprite = ChargeDamageSprite(self, weapon, dmg, penetrate, stat["Impact"], stat,
+                self.charge_sprite = ChargeDamageSprite(self, weapon, dmg, penetrate, impact, stat,
                                                         "charge", self.base_pos, self.base_pos,
                                                         accuracy=self.melee_attack)
 
@@ -163,8 +168,9 @@ def attack(self, attack_type):
                 for key in dmg:
                     dmg[key] *= 1.5
 
-            MeleeDamageSprite(self, weapon, dmg, self.weapon_penetrate[self.equipped_weapon][weapon],
-                              equipped_weapon_data["Impact"] * self.weapon_impact_effect,
+            impact = self.weapon_impact[self.equipped_weapon][weapon] * self.weapon_impact_effect
+
+            MeleeDamageSprite(self, weapon, dmg, self.weapon_penetrate[self.equipped_weapon][weapon], impact,
                               equipped_weapon_data, attack_type, self.base_pos,
                               base_target, accuracy=accuracy)
 

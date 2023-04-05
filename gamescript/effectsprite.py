@@ -33,12 +33,12 @@ class EffectSprite(pygame.sprite.Sprite):
         self.base_pos = base_pos
         self.pos = pos
         self.base_target = target
+        self.angle = 0
 
         self.sound_effect_name = None
         self.sound_timer = 0
         self.sound_duration = 0
         self.scale_size = 1
-        self.angle = 0
 
         animation_name = "".join(sprite_name.split("_"))[-1]
         if animation_name.isdigit():
@@ -58,9 +58,9 @@ class EffectSprite(pygame.sprite.Sprite):
         else:
             self.current_animation = self.effect_animation_pool[sprite_type][animation_name]
 
-        self.image = self.current_animation[self.show_frame]
+        self.image = self.current_animation[self.show_frame].copy()
 
-        self.base_image = self.image.copy()
+        # self.base_image = self.image.copy()
 
         self.rect = self.image.get_rect(center=self.pos)
 

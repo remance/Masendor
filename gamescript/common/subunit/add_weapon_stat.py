@@ -31,6 +31,12 @@ def add_weapon_stat(self):
                     self.troop_data.equipment_grade_list[weapon[1]]["Modifier"],
                     damage_with_attribute * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]]
                 dmg_sum += self.original_weapon_dmg[set_index][weapon_index][damage][0]
+            if weapon_stat["Damage Stat Scaling"]:  # impact get bonus from quality and strength
+                self.weapon_impact[set_index][weapon_index] = weapon_stat["Impact"] * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"] + \
+                                                              (weapon_stat["Impact"] * (self.strength * dmg_scaling[0] / 100))
+            else:
+                self.weapon_impact[set_index][weapon_index] = weapon_stat["Impact"] * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]
+
             self.weapon_penetrate[set_index][weapon_index] = weapon_stat["Armour Penetration"] * \
                                                              self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]
 

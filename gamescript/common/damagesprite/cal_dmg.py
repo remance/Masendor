@@ -35,6 +35,11 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
 
     impact = self.knock_power
 
+    if hit_score < 0.2:  # reduce impact for low hit score
+        impact /= 2
+    elif hit_score > 1:  # critical hit, double impact
+        impact *= 2
+
     if self.attack_type == "range":  # Range or other type of damage
         troop_dmg, element_effect = cal_dmg_penetrate(self, target)
 
