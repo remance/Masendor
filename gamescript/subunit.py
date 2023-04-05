@@ -947,8 +947,7 @@ class Subunit(pygame.sprite.Sprite):
                                         add_subunit.hitbox = SpriteIndicator(add_subunit.hitbox_image, add_subunit,
                                                                              self)
                                         add_subunit.effectbox = SpriteIndicator(pygame.Surface((0, 0)), add_subunit,
-                                                                                self,
-                                                                                layer=10000001)
+                                                                                self, layer=10000001)
                                         add_subunit.enter_battle(self.battle.subunit_animation_pool,
                                                                  self.battle.status_animation_pool)
                                         self.troop_dead_list[troop_id] -= 1

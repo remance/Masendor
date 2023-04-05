@@ -173,8 +173,7 @@ class BeautifulMap(pygame.sprite.Sprite):
         self.image = pygame.Surface(
             (self.image.get_width(),
              self.image.get_height()))  # using the above surface cause a lot of fps drop so make a new one and blit the above here
-        rect = self.image.get_rect(topleft=(0, 0))
-        self.image.blit(img, rect)
+        self.image.blit(img, (0, 0))
 
         for row_pos in range(0, len(base_map.map_array)):
             for col_pos in range(0, len(base_map.map_array[0])):
@@ -202,7 +201,7 @@ class BeautifulMap(pygame.sprite.Sprite):
         self.mini_map_image = pygame.transform.smoothscale(self.image, (int(size[0]), int(size[1])))
 
         if place_name:
-            self.image.blit(place_name, place_name.get_rect(topleft=(0, 0)))
+            self.image.blit(place_name, (0, 0))
 
         self.image = pygame.transform.smoothscale(self.image, (self.image.get_width() * self.screen_scale[0] * 5,
                                                                self.image.get_height() * self.screen_scale[1] * 5))
@@ -221,35 +220,32 @@ class BeautifulMap(pygame.sprite.Sprite):
 
     def add_effect(self, effect_image=None, time_image=None):
         self.base_image = self.true_image.copy()
-        rect = self.base_image.get_rect(topleft=(0, 0))
         if effect_image:  # add weather filter effect
             self.base_image.blit(pygame.transform.smoothscale(effect_image,
                                                               (effect_image.get_width() * 5,
-                                                               effect_image.get_height() * 5)), rect)
+                                                               effect_image.get_height() * 5)), (0, 0))
 
         if time_image:  # add day time effect
             self.base_image.blit(pygame.transform.smoothscale(time_image,
                                                               (time_image.get_width() * 5,
-                                                               time_image.get_height() * 5)), rect)
+                                                               time_image.get_height() * 5)), (0, 0))
         self.change_mode()
 
     def change_mode(self):
         """Switch between normal, height normal map, topology map mode"""
         self.image = self.base_image.copy()
         if self.mode == 1:  # with topology map
-            rect = self.image.get_rect(topleft=(0, 0))
             self.image.blit(pygame.transform.smoothscale(self.height_map.topology_image,
                                                          (
                                                          self.height_map.topology_image.get_width() * self.screen_scale[
                                                              0] * 5,
                                                          self.height_map.topology_image.get_height() *
-                                                         self.screen_scale[1] * 5)), rect)
+                                                         self.screen_scale[1] * 5)), (0, 0))
         elif self.mode == 2:  # with height map
-            rect = self.image.get_rect(topleft=(0, 0))
             self.image.blit(pygame.transform.smoothscale(self.height_map.image,
                                                          (self.height_map.image.get_width() * self.screen_scale[0] * 5,
                                                           self.height_map.image.get_height() * self.screen_scale[
-                                                              1] * 5)), rect)
+                                                              1] * 5)), (0, 0))
 
     def clear_image(self):
         self.image = None

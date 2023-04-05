@@ -715,6 +715,9 @@ class Battle:
                         else:
                             for key, value in self.all_team_subunit.items():
                                 if value:
+                                    if "wt" + str(key) in self.event_log.map_event:
+                                        self.event_log.add_log(
+                                            (0, self.event_log.map_event["wt" + str(key)]["Text"]))
                                     self.battle_done_box.pop(self.faction_data.faction_list[self.map_info[
                                         "Team " + str(key)]]["Name"], self.coa_list[self.map_info[
                                         "Team " + str(key)]])

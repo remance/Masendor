@@ -90,8 +90,14 @@ def die(self, how):
     self.battle.active_subunit_list.remove(self)
 
     if how == "dead":
-        if self.is_leader and self.leader is None:
-            self.battle.drama_text.queue.append(str(self.name) + " is Dead")  # play drama text when unit leader die
+        if self.is_leader:
+            if self.leader is None:
+                self.battle.drama_text.queue.append(str(self.name) + " is Dead")  # play drama text when unit leader die
+            event_check = {value["Who"]: key for key, value in self.battle.event_log.map_event.items()}
+            if self.troop_id in event_check:  # check if specific dead event for leader exist
+                self.battle.event_log.add_log((0, self.battle.event_log.map_event[event_check[self.troop_id]]["Text"]))
+            else:
+                self.battle.event_log.add_log((0, str(self.name) + " is Dead."))  # add log to say this leader is dead
 
         if self in self.battle.battle_camera:
             self.current_action = die_command_action
@@ -107,9 +113,6 @@ def die(self, how):
     if len([key for key, value in self.battle.all_team_subunit.items() if len(value) > 0]) <= 1:
         self.battle.game_state = "end"
         self.battle.game_speed = 0
-
-    if self.is_leader:
-        self.battle.event_log.add_log((0, str(self.name) + " is Dead."))  # add log to say this leader is dead
 
     if self.player_control:
         self.battle.camera_mode = "Free"  # camera become free when player char die so can look over the battle

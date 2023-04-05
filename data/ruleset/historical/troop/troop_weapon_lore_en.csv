@@ -31,8 +31,8 @@
 30,"Arbalest","Arbalest is one of the heaviest versions of the late medieval crossbow. They are designed to be much larger and have more penetrative power compared to the earlier version. Although this also makes them much more difficult to reload and typically requires other tools such as windlass. They are one of the first weapons that let less-trained warriors reliably fight against heavily armoured opponents."
 31,"Stone","Nothing is more simple than a stick and stone to break some bones. Existed since the dawn of time as a preferred ranged weapon, throwing stones can hurt someone without armour or even kill them instantly if hit in the head with strong enough force."
 32,"Composite Bow",
-33,"Matchlock Musket",
-34,"Arquebus",
+33,"Matchlock Musket","The matchlock musket is one of the earlier types of firearm developed in Europe in the 15th Century. This type of musket is typically much heavier than an arquebus and requires a rest stick to aim. Matchlock muskets are operated by igniting a slow match attached at the end of the lever called serpentine. The musket's trigger lower the serpentine lever so the match reaches the gunpowder holder called a flash pan. This creates an ignition inside the gun troop and propels the bullet inside."
+34,"Arquebus","The arquebus is one of the earlier types of firearm developed in Europe late 14th Century. Light enough to be wielded with two hands without requiring placement, but still inaccurate and unreliable for long-ranged compared to bow and crossbow. Arquebus has enough power to penetrate medium armour like chainmail, but plate armour can still deflect its bullets most of the time."
 35,"Blunderbuss",
 36,"Flintlock Musket",
 37,"Flintlock Pistol",

@@ -107,7 +107,7 @@ def ai_move(self):
                         self.move_speed = self.run_speed
 
     else:  # move to attack nearby enemy in free order
-        if not self.attack_subunit:  # no enemy to hit yet
+        if not self.attack_subunit and self.nearest_enemy:  # no enemy to hit yet
             move_distance = self.nearest_enemy[0].base_pos.distance_to(self.front_pos)
             if self.shoot_range[0] + self.shoot_range[1] > 0:  # has range weapon, move to maximum shoot range position
                 max_shoot = max(self.shoot_range[0], self.shoot_range[1])

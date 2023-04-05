@@ -244,8 +244,7 @@ def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool
     head_race = body_part_list[0]
     head = body_pool[head_race]["head"][body_part_list[1]].copy()
     head_sprite_surface = pygame.Surface((head.get_width(), head.get_height()), pygame.SRCALPHA)
-    head_rect = head.get_rect(topleft=(0, 0))
-    head_sprite_surface.blit(head, head_rect)
+    head_sprite_surface.blit(head, (0, 0))
     if sprite_list[p + "_skin"] not in ("", "none"):
         head_sprite_surface = apply_sprite_colour(head_sprite_surface, sprite_list[p + "_skin"],
                                                   colour_list=colour_list, keep_white=False)
