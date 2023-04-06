@@ -2812,8 +2812,8 @@ while True:
 
                 if showroom.rect.collidepoint(mouse_pos):  # mouse at showroom
                     new_mouse_pos = pygame.Vector2(
-                        (mouse_pos[0] - showroom.rect.topleft[0]) / 2,
-                        (mouse_pos[1] - showroom.rect.topleft[1]) / 2)
+                        (mouse_pos[0] - showroom.rect.topleft[0]) / 2 * model.size,
+                        (mouse_pos[1] - showroom.rect.topleft[1]) / 2 * model.size)
                     if mouse_left_up:  # left click on showroom
                         model.click_part(new_mouse_pos, shift_press, ctrl_press)
                         for index, helper in enumerate(helper_list):

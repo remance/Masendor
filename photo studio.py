@@ -1,7 +1,7 @@
 import os.path
 import sys
 import csv
-import traceback
+import configparser
 
 import glob
 from pathlib import Path
@@ -154,8 +154,9 @@ class Studio(game.Game):
         self.ground_camera = pygame.sprite.LayeredUpdates()  # layer drawer camera
         self.ground_camera.add(self.battle_map)
         self.sky_camera = pygame.sprite.LayeredUpdates()  # layer drawer camera
+        self.troop_model = pygame.sprite.Group()
 
-        TroopModel.containers = self.ground_camera
+        TroopModel.containers = self.troop_model
         weather.MatterSprite.containers = self.weather_matter, self.sky_camera, self.weather_updater
         weather.SpecialEffect.containers = self.weather_effect, self.sky_camera, self.weather_updater
         effectsprite.EffectSprite.containers = self.ground_camera
@@ -242,9 +243,17 @@ class Studio(game.Game):
                     effect = effectsprite.EffectSprite(dummy_troop[0], stuff["POS"], (stuff["POS"][0] * 5, stuff["POS"][1] * 5),
                                                        (stuff["POS"][0] * 5, stuff["POS"][1] * 5), stuff["ID"], stuff["Animation"])
                 effect.image = effect.current_animation[int(stuff["Frame"])]
+                effect.rect = effect.image.get_rect(center=effect.pos)
 
                 if stuff["Angle"] != 0:
                     effect.image = pygame.transform.rotate(effect.image, stuff["Angle"])
+
+        troop_model = {}  # blit troop based on layer to battle map directly to reduce workload
+        for troop in self.troop_model:
+            troop_model[troop] = troop._layer
+        troop_model = sorted(troop_model.items(), key=lambda item: item[1])
+        for new_troop in troop_model:
+            self.battle_map.image.blit(new_troop[0].image, new_troop[0].rect)
 
         self.clock = pygame.time.Clock()
         self.run()
@@ -317,4 +326,21 @@ class Studio(game.Game):
 screen = screeninfo.get_monitors()[0]
 screen_width = int(screen.width)
 screen_height = int(screen.height)
-Studio((screen_width, screen_height), "hastings", "hastings1", 0, "Day", (2, 240, 0))  # change screen width and height for custom screen size
+
+# Read config file
+config = configparser.ConfigParser()
+
+config.read_file(open(os.path.join(main_dir, "photo studio", "configuration.ini")))  # read config file
+
+screen_width = int(config["DEFAULT"]["screen_width"])
+screen_height = int(config["DEFAULT"]["screen_height"])
+photo_map = config["DEFAULT"]["map"]
+battle_data = config["DEFAULT"]["battle_data"]
+ruleset = int(config["DEFAULT"]["ruleset"])
+day_time = config["DEFAULT"]["day_time"]
+weather_type = int(config["DEFAULT"]["weather_type"])
+wind_direction = int(config["DEFAULT"]["wind_direction"])
+weather_strength = int(config["DEFAULT"]["weather_strength"])
+
+Studio((screen_width, screen_height), photo_map, battle_data, ruleset, day_time,
+       (weather_type, wind_direction, weather_strength))  # change screen width and height for custom screen size

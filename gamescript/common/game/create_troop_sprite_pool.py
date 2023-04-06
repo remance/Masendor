@@ -153,12 +153,12 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                 weapon_set = int(specific_preview[0][-1])
                 animation = [this_animation for this_animation in animation
                              if (any(ext in this_animation for ext in weapon_common_type_list) is False or
-                                 "_any_" in this_animation or weapon_common_action[0][0] in this_animation) and
+                                 "_any_" in this_animation or weapon_common_action[weapon_set][0] in this_animation or
+                                 weapon_common_action[weapon_set][1] in this_animation) and
                              (any(ext in this_animation for ext in weapon_attack_type_list) is False or
                               ("_Both_" in this_animation or (weapon_attack_action[weapon_set][0] in this_animation and "_Main_" in this_animation)
                                or weapon_attack_action[weapon_set][1] in this_animation and "_Sub_" in this_animation))]
-                # print(animation)
-                # print(specific_preview)
+
                 animation = [this_animation for this_animation in animation if this_animation == specific_preview[0][:-2]]
                 animation = animation[0]
             else:
