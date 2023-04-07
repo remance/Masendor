@@ -4,19 +4,19 @@
 3,"Norman Spearman",1,1,,,0,0,45,55,0,100,19,100,50,100,"Heavy Infantry","6,3","41,3",,,"5,3",,"Norman Heavy",2
 4,"Norman Archer",1,1,,,0,0,15,25,60,100,17,100,50,100,"Range Infantry","25,3",,"5,3",,"21,3",,"Norman Light",3
 5,"Norman Crossbowman",1,1,,,0,0,15,25,60,100,17,100,50,100,"Range Infantry","27,3",,"5,3",,"21,3",,"Norman Light",3
-6,"Norman Conroi",2,1,11,35,0,0,37,35,28,100,19,100,60,120,"Heavy Cavalry","6,4","39,3","22,3",,"5,4","2,2,14","Norman Heavy","1,4"
+6,"Norman Conroi",2,1,11,35,0,0,37,35,28,100,19,100,60,120,"Heavy Cavalry","51,4","39,3","22,3",,"5,4","2,2,14","Norman Heavy","1,4"
 7,"Frankish Swordsman",1,1,,,0,0,50,50,0,100,19,100,50,100,"Heavy Infantry","2,3","41,3",,,"5,3",,"Norman Heavy",1
 8,"Frankish Axeman",1,1,,,0,0,55,45,0,100,19,100,50,100,"Heavy Infantry","13,3","41,3",,,"5,3",,"Norman Heavy",1
 9,"Frankish Spearman",1,1,,,0,0,40,60,0,100,19,100,50,100,"Heavy Infantry","6,3","41,3",,,"5,3",,"Norman Heavy",2
 10,"Frankish Archer",1,1,,,0,0,20,25,55,100,17,100,50,100,"Range Infantry","25,3",,"5,3",,"21,3",,"Norman Light",3
 11,"Frankish Crossbowman",1,1,,,0,0,20,25,55,100,17,100,50,100,"Range Infantry","27,3",,"5,3",,"21,3",,"Norman Light",3
-12,"Frankish Knight",2,1,,,0,0,40,40,20,100,19,100,60,120,"Heavy Cavalry","6,4","39,3",,,"5,4","2,2,14","Norman Heavy","1,4"
+12,"Frankish Knight",2,1,,,0,0,40,40,20,100,19,100,60,120,"Heavy Cavalry","51,4","39,3",,,"5,4","2,2,14","Norman Heavy","1,4"
 13,"Breton Swordsman",1,1,,,0,0,45,55,0,100,19,100,45,100,"Heavy Infantry","2,3","41,3",,,"5,3",,"Norman Heavy",1
 14,"Breton Axeman",1,1,,,0,0,55,45,0,100,19,100,45,100,"Heavy Infantry","13,3","41,3",,,"5,3",,"Norman Heavy",1
 15,"Breton Spearman",1,1,,,0,0,40,60,0,100,19,100,45,100,"Heavy Infantry","6,3","41,3",,,"5,3",,"Norman Heavy",2
 16,"Breton Archer",1,1,,,0,0,10,25,65,100,17,100,50,100,"Range Infantry","25,3",,"5,3",,"21,3",,"Norman Light",3
 17,"Breton Crossbowman",1,1,,,0,0,10,25,65,100,17,100,50,100,"Range Infantry","27,3",,"5,3",,"21,3",,"Norman Light",3
-18,"Breton Knight",2,1,11,35,0,0,50,10,50,110,19,100,50,120,"Heavy Cavalry","6,4","39,3","22,3",,"5,4","2,2,14","Norman Heavy","1,3,4"
+18,"Breton Knight",2,1,11,35,0,0,50,10,50,110,19,100,50,120,"Heavy Cavalry","51,4","39,3","22,3",,"5,4","2,2,14","Norman Heavy","1,3,4"
 19,"Saxon Fyrd",1,1,,,0,0,40,50,10,100,19,100,50,100,"Light Infantry","6,3",,,,"21,3",,"Saxon Light",2
 20,"Saxon Axeman",1,1,,,0,0,60,40,0,100,19,100,50,100,"Heavy Infantry","13,3","41,3",,,"5,3",,"Saxon Heavy",1
 21,"Saxon Spearman",1,1,,,0,0,45,55,0,100,19,100,50,100,"Heavy Infantry","6,3","41,3",,,"5,3",,"Saxon Heavy",2
@@ -25,8 +25,8 @@
 24,"Saxon Skirmisher",1,1,,47,0,0,35,30,30,100,19,100,50,100,"Range Infantry","22,3",,"5,3","23,3","21,3",,"Saxon Light",3
 25,"Saxon Knight",2,1,,,0,0,55,45,0,100,19,100,50,100,"Heavy Cavalry","2,4","41,4",,,"5,4","2,2,14","Saxon Heavy","1,4"
 26,"Saxon Huscarl",2,1,34,,0,0,45,55,0,100,19,100,70,150,"Heavy Infantry","14,4","41,4",,,"5,4",,"Saxon Heavy","1,2,4"
-27,"Veteran Huscarl",3,1,34,4,0,0,45,55,0,100,19,100,80,170,"Heavy Infantry","14,4","41,4",,,"5,4",,"Saxon Heavy","1,2,4"
-28,"Huscarl Bodyguard",4,1,34,43,0,0,40,60,0,100,19,100,90,190,"Heavy Infantry","14,5","41,5",,,"5,5",,"Saxon Heavy","1,2,4"
+27,"Veteran Huscarl",3,1,34,4,0,0,45,55,0,100,19,100,80,170,"Heavy Infantry","14,4","41,4",,,"5,4",,"Saxon Veteran","1,2,4"
+28,"Huscarl Bodyguard",4,1,34,43,0,0,40,60,0,100,19,100,90,190,"Heavy Infantry","14,5","41,5",,,"5,5",,"Saxon Veteran","1,2,4"
 29,"Christian Warrior Monk",8,1,,69,0,0,35,15,20,100,19,100,50,100,"Light Infantry","8,3",,,,"5,3",,"Christian Monk",5
 30,"New Kingdom Archer",1,1,,,0,0,17,23,60,100,17,100,40,100,"Range Infantry","32,3",,"5,3",,"15,2",,"Old Egyptian Range",3
 31,"Egyptian Slinger",1,1,,,0,0,17,23,60,100,17,100,50,100,"Range Infantry","20,3",,"5,3",,"15,2",,"Old Egyptian Range",3
@@ -80,7 +80,7 @@
 79,"Pontifical Swiss Guard",,1,,,,,,,,,,,,,,"15,4",,,,,,"Swiss Guard",2
 80,,,1,,,,,,,,,,,,,,,,,,,,,
 81,,,1,,,,,,,,,,,,,,,,,,,,,
-82,"European Early Light Cannon",2,1,,,,,2,10,88,100,,,,,"Artillery","M14,3",,,,,"81,0,1","Medieval Early Cannon",6
+82,"European Early Light Cannon",2,1,,,,,2,10,88,100,17,,,,"Artillery","M14,3",,,,,"81,0,1","Medieval Early Cannon",6
 83,"Janissary Archer",2,1,,,,,15,15,70,120,19,125,75,140,"Range Infantry","32,3",,"13,3",,"15,3",,"Janissary Bow",3
 84,"Janissary Arquebusier",2,1,,,,,20,20,60,120,19,125,75,140,"Range Infantry","34,3",,"13,3",,"15,3",,"Janissary Gun",3
 85,"Janissary Halberdier",2,1,,,,,60,40,0,100,19,125,75,140,"Heavy Infantry","15,3",,"2,3",,"15,3",,"Janissary Light",2
@@ -88,22 +88,23 @@
 87,"Janissary Musketeer",2,1,,,,,10,20,70,120,19,125,75,140,"Range Infantry","33,3",,"13,3",,"15,3",,"Janissary Gun",3
 88,"Zirhli Nefer",4,1,34,,,,55,45,0,100,19,150,85,140,"Heavy Infantry","15,3",,"2,3","41,3","5,4",,"Janissary Heavy",1
 89,"Sipahi Horse Archer",2,1,,,,,20,30,50,100,19,145,75,160,"Range Cavalry","32,3",,"2,3","41,4","15,4","2,2,15","Sipahi Light","1,3,4"
-90,"Sipahi Heavy Cavalry",2,1,,,,,60,40,0,100,19,145,75,160,"Heavy Cavalry","6,4","41,4","13,4","8,4","5,4","2,2,15","Sipahi Heavy","1,3,4"
+90,"Sipahi Heavy Cavalry",2,1,,,,,60,40,0,100,19,145,75,160,"Heavy Cavalry","51,4","41,4","13,4","8,4","5,4","2,2,15","Sipahi Heavy","1,3,4"
 91,"Akindji Cavalry",1,1,,,,,30,10,60,120,19,110,55,100,"Light Cavalry","32,3",,"2,3",,"15,3","2,2,15","Azap","1,3"
 92,,,,,,,,,,,,,,,,,,,,,,,,
-93,"Kapikulu Cavalry",3,1,,,,,60,40,0,100,19,,90,,,"6,4","41,4","13,4","8,4","5,5","2,3,7","Kapikulu","1,3,4"
-94,"Kapikulu Infantry",3,1,,,,,50,50,0,100,19,,90,,"Heavy Infantry",,,,,"5,5",,"Kapikulu","1,2"
-95,"Kapikulu Artillery",3,1,,,,,,,,,,,90,,"Artillery","M14,5",,,,"15,4",,"Kapikulu",6
-96,"Silahdar",4,1,,,,,,,,,,,,,,,,,,,,"Kapikulu",
-97,"Topçu Ocağı",2,1,,,,,,,,,,,,,"Artillery","M14,3",,,,"15,3","81,8,20","Ottoman Cannon",6
-98,"Azap Conscript",1,1,,,,,,,,,,,,,"Light Infantry",,,,,"15,3",,"Azap",1
-99,"Azap Skirmisher",1,1,,,,,,,,,,,,,"Light Infantry",,,,,"15,3",,"Azap",3
-100,,,,,,,,,,,,,,,,,,,,,,,,
-101,,,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
+93,"Kapikulu Cavalry",3,1,,,,,60,40,0,100,19,150,90,150,"Heavy Cavalry","51,4","41,4","13,4","8,4","5,5","2,3,7","Kapikulu","1,3,4"
+94,"Kapikulu Infantry",3,1,,,,,50,50,0,100,19,150,90,150,"Heavy Infantry",,,,,"5,5",,"Kapikulu","1,2"
+95,"Kapikulu Artillery",3,1,,,,,5,15,80,125,17,150,90,150,"Artillery","M14,5",,,,"15,4",,"Kapikulu",6
+96,"Silahdar Cavalry",4,1,,,,,50,50,0,100,19,180,100,170,"Heavy Cavalry",,,,,"5,5","2,3,7","Silahdar Cavalry","1,3,4"
+97,"Silahdar Infantry",4,1,,,,,55,45,0,100,19,180,100,170,"Heavy Infantry",,,,,"5,5",,"Silahdar Infantry","1,2"
+98,"Topçu Ocağı",2,1,,,,,5,20,75,100,17,100,65,100,"Artillery","M14,3",,,,"15,3","81,8,20","Ottoman Cannon",6
+99,"Azap Conscript",1,1,,,,,60,40,0,100,19,100,50,100,"Light Infantry",,,,,"15,3",,"Azap",1
+100,"Azap Skirmisher",1,1,,,,,30,30,40,100,19,100,50,100,"Light Infantry",,,,,"15,3",,"Azap",3
+101,,,,,,,,,,,,,,,,,,,,,,,,
 102,,,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
-103,"Medieval Crossbow Mercenary",10,1,,,,,,,,,,,,,,"27,3",,"13,3",,"2,3",,"Medieval Mercenary",3
-104,"Medieval Light Mercenary",10,1,,,,,,,,,,,,,,"13,3","41,3",,,"2,3",,"Medieval Mercenary",1
-105,"Medieval Heavy Mercenary",10,1,,,,,,,,,,,,,,"14,3",,,,"12,2",,"Medieval Mercenary",1
-106,"Medieval Arquebus Mercenary",10,1,,,,,,,,,,,,,,,,,,"2,3",,"Medieval Mercenary",3
-107,"French Gendarme",2,1,,,,,,,,,,,,,"Heavy Cavalry",,,,,,"2,2,1","Medieval Knight",
-108,"Hamster Boy",4,1,,,,,2,3,8,150,19,150,150,150,"Light Infantry","71,4",,,,"20,3",,"Hamster",1
+103,,,1,,,,,,,,,,,,,,,,,,,,"Medieval Knight",
+104,"Medieval Crossbow Mercenary",10,1,,,,,15,25,60,100,19,130,40,130,"Light Infantry","27,3",,"13,3",,"2,3",,"Medieval Mercenary",3
+105,"Medieval Light Mercenary",10,1,,,,,55,45,0,100,19,130,40,130,"Light Infantry","13,3","41,3",,,"2,3",,"Medieval Mercenary",1
+106,"Medieval Heavy Mercenary",10,1,,,,,50,50,0,100,19,130,45,130,"Heavy Infantry","14,3",,,,"12,2",,"Medieval Mercenary",1
+107,"Medieval Arquebus Mercenary",10,1,,,,,20,30,50,100,19,130,40,130,"Light Infantry",,,,,"2,3",,"Medieval Mercenary",3
+108,"French Gendarme",2,1,,,,,,,,,,,,,"Heavy Cavalry",,,,,,"2,2,1","Medieval Knight",
+109,"Hamster Boy",4,1,,,,,2,3,8,150,19,150,150,150,"Light Infantry","71,4",,,,"20,3",,"Hamster",1

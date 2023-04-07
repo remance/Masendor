@@ -1334,15 +1334,26 @@ class Model:
                             if part_image is not None:
                                 center = pygame.Vector2(part_image.get_width() / 2, part_image.get_height() / 2)
                                 if weapon_joint_list[self.weapon[part_index]] != "center":
-                                    pos_different = center - weapon_joint_list[self.weapon[part_index]]  # find distance between image center and connect point main_joint_pos
-                                    target = hand_pos + pos_different
-                                else:
-                                    target = hand_pos
-                                if self.animation_part_list[edit_frame][part_index][3] != 0:
-                                    radians_angle = radians(360 - self.animation_part_list[edit_frame][part_index][3])
-                                    target = rotation_xy(hand_pos, target, radians_angle)  # find new point with rotation
+                                    main_joint_pos = [weapon_joint_list[self.weapon[part_index]][0],
+                                                      weapon_joint_list[self.weapon[part_index]][1]]
+                                    if self.animation_part_list[edit_frame][part_index][4] in (1, 3):  # horizontal flip
+                                        hori_diff = part_image.get_width() - main_joint_pos[0]
+                                        main_joint_pos[0] = hori_diff
+                                    if self.animation_part_list[edit_frame][part_index][4] >= 2:  # vertical flip
+                                        vert_diff = part_image.get_height() - main_joint_pos[1]
+                                        main_joint_pos[1] = vert_diff
+                                    pos_different = center - main_joint_pos  # find distance between image center and connect point main_joint_pos
+                                    new_target = hand_pos + pos_different
 
-                                self.animation_part_list[edit_frame][part_index][2] = target
+                                    if self.animation_part_list[edit_frame][part_index][3] != 0:
+                                        radians_angle = radians(
+                                            360 - self.animation_part_list[edit_frame][part_index][3])
+                                        new_target = rotation_xy(hand_pos, new_target,
+                                                                 radians_angle)  # find new point with rotation
+                                else:
+                                    new_target = hand_pos
+
+                                self.animation_part_list[edit_frame][part_index][2] = new_target
 
         elif self.part_selected:
             if edit_type == "place":  # find center point of all selected parts

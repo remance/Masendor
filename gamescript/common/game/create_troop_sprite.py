@@ -129,6 +129,7 @@ def create_troop_sprite(self, animation_name, troop_size, animation_part_list, t
                             target = (animation_part_list[p + "body"][2],
                                       animation_part_list[p + "body"][3])  # put on back
                             use_center = True
+
                     new_target = target
 
             part_rotated = image_part.copy()
@@ -155,10 +156,10 @@ def create_troop_sprite(self, animation_name, troop_size, animation_part_list, t
                 # change pos from flip
                 if flip in (1, 3):  # horizontal flip
                     hori_diff = image_part.get_width() - main_joint_pos[0]
-                    main_joint_pos = (hori_diff, main_joint_pos[1])
+                    main_joint_pos[0] = hori_diff
                 if flip >= 2:  # vertical flip
                     vert_diff = image_part.get_height() - main_joint_pos[1]
-                    main_joint_pos = (main_joint_pos[0], vert_diff)
+                    main_joint_pos[1] = vert_diff
                 pos_different = center - main_joint_pos  # find distance between image center and connect point main_joint_pos
                 new_target = new_target + pos_different
                 if angle != 0:
