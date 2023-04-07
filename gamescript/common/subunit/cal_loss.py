@@ -19,7 +19,7 @@ def cal_loss(self, final_dmg, impact, final_morale_dmg, element_effect, hit_angl
 
     impact_check = impact - self.troop_mass
 
-    if impact_check > self.max_health50:
+    if impact_check > self.max_health50:  # knockdown
         self.interrupt_animation = True
         self.command_action = self.knockdown_command_action
         self.move_speed = impact_check
@@ -32,7 +32,7 @@ def cal_loss(self, final_dmg, impact, final_morale_dmg, element_effect, hit_angl
                                            self.knock_down_sound_shake,
                                            volume_mod=self.hit_volume_mod)  # larger size play louder sound
 
-    elif impact_check > self.max_health20:
+    elif impact_check > self.max_health20:  # heavy damaged
         self.interrupt_animation = True
         self.command_action = self.heavy_damaged_command_action
         self.move_speed = self.walk_speed
@@ -45,7 +45,7 @@ def cal_loss(self, final_dmg, impact, final_morale_dmg, element_effect, hit_angl
                                            self.heavy_dmg_sound_shake,
                                            volume_mod=self.hit_volume_mod)
 
-    elif impact_check > self.max_health10:  # play damaged animation
+    elif impact_check > self.max_health10:  # damaged
         self.interrupt_animation = True
         self.command_action = self.damaged_command_action
         self.move_speed = self.walk_speed

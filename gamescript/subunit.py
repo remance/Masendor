@@ -677,7 +677,7 @@ class Subunit(pygame.sprite.Sprite):
                 if dmg > 0:
                     self.body_weapon_damage[key] = (dmg * self.body_weapon_stat["Damage Balance"]) + \
                                                    (dmg * (body_strength / 100))
-        self.body_weapon_damage = {key: value for key, value in self.body_weapon_damage.items() if value}
+        self.body_weapon_damage = {key: value for key, value in self.body_weapon_damage.items() if value}  # remove 0 damage element
         # add troop size as pure bonus for impact and penetrate
         self.body_weapon_impact = self.troop_data.weapon_list[1]["Impact"] + self.troop_size
         self.body_weapon_penetrate = self.troop_data.weapon_list[1]["Armour Penetration"] + self.troop_size

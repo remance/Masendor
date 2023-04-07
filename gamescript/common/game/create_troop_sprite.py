@@ -22,7 +22,7 @@ def create_troop_sprite(self, animation_name, troop_size, animation_part_list, t
     surface = pygame.Surface((default_sprite_size[0] * troop_size, default_sprite_size[1] * troop_size),
                              pygame.SRCALPHA)  # default size will scale down later
 
-    except_list = ("eye", "mouth", "size", "property")
+    except_list = ("face", "eye", "mouth", "size", "property")
     pose_layer_list = {k: v[-2] for k, v in animation_part_list.items() if v != [0] and v != "" and v != [""] and
                        any(ext in k for ext in except_list) is False}  # layer list
 
@@ -249,7 +249,8 @@ def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool
     if sprite_list[p + "_skin"] not in ("", "none"):
         head_sprite_surface = apply_sprite_colour(head_sprite_surface, sprite_list[p + "_skin"],
                                                   colour_list=colour_list, keep_white=False)
-    face = [grab_face_part(body_pool, head_race, "eyebrow", sprite_list[p + "_eyebrow"]),
+    face = [grab_face_part(body_pool, head_race, "face", sprite_list[p + "_face"]),
+            grab_face_part(body_pool, head_race, "eyebrow", sprite_list[p + "_eyebrow"]),
             grab_face_part(body_pool, head_race, "eye", animation_part_list[p + "_eye"],
                            part_default=sprite_list[p + "_eye"]),
             grab_face_part(body_pool, head_race, "beard", sprite_list[p + "_beard"]),
@@ -257,9 +258,9 @@ def generate_head(p, animation_part_list, body_part_list, sprite_list, body_pool
                            part_default=sprite_list[p + "_mouth"])]
 
     for face_index, face_part in enumerate(("_eyebrow", "_eye", "_beard")):
-        if face[face_index] is not None:
-            face[face_index] = apply_sprite_colour(face[face_index], sprite_list[p + face_part][1],
-                                                   colour_list=colour_list)
+        if face[face_index + 1] is not None:
+            face[face_index + 1] = apply_sprite_colour(face[face_index + 1], sprite_list[p + face_part][1],
+                                                       colour_list=colour_list)
 
     for index, item in enumerate(face):
         if item is not None:
