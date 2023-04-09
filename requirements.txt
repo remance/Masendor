@@ -1,9 +1,8 @@
-iniconfig==2.0.0
+iniconfig~=2.0.0
 numpy~=1.24.2
 pandas~=2.0.0
 Pillow~=9.5.0
 pygame-ce~=2.2.1
-pyperclip==1.8.2
-pywin32-ctypes==0.2.0
+pyperclip~=1.8.2
 screeninfo~=0.8.1
 pathfinding~=1.0.1

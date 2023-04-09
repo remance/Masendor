@@ -1,11 +1,6 @@
 import sys
 import os
 
-parent_directory = os.path.join( os.path.dirname( os.path.realpath( 
-    os.path.join( os.getcwd(), os.path.expanduser( __file__ )))),'..')
-
-sys.path.append( os.path.normpath( parent_directory ) )
-
 import pygame
 import pygame_gui
 from gamescript.common import utility
@@ -40,11 +35,11 @@ class MinifiedGame( Game ):
             Minified init-method. Prevents the game from starting an only setup a required state.
         """
         self.main_dir = main_dir
-        self.screen_scale = (1,1)
-        self.ruleset = 1
+        self.screen_scale = (1, 1)
+        self.ruleset = 0
         self.ruleset_list = csv_read(
             self.main_dir, "ruleset_list.csv", ("data", "ruleset"))
-        self.ruleset_folder = str(self.ruleset_list[self.ruleset][1]).strip("/")
+        self.ruleset_folder = str(self.ruleset_list[self.ruleset][0]).strip("/")
         self.language = 'en'
 
 
@@ -63,17 +58,17 @@ class MinifiedGame( Game ):
               for key in self.troop_data.race_list ], 
             self.team_colour)
 
-        self.generic_animation_pool = self.troop_animation.generic_animation_pool
+        self.subunit_animation_data = self.troop_animation.subunit_animation_data
         self.gen_body_sprite_pool = self.troop_animation.gen_body_sprite_pool
         self.gen_armour_sprite_pool = self.troop_animation.gen_armour_sprite_pool
         self.colour_list = self.troop_animation.colour_list
         self.gen_weapon_sprite_pool = self.troop_animation.gen_weapon_sprite_pool
         self.weapon_joint_list = self.troop_animation.weapon_joint_list
 
+current_dir = os.path.split(os.path.abspath(__file__))[0]
+main_dir = current_dir[:current_dir.rfind("\\") + 1]
 
-main_dir = parent_directory
 error_log = open(os.path.join(main_dir + "/error_report.txt"), "w")
-
 
 pygame.init()
 
