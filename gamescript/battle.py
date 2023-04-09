@@ -29,6 +29,23 @@ clean_group_object = utility.clean_group_object
 script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
 
 
+# ----
+# perhaps this can be in its own file?
+
+import time
+load_timer = None
+
+def set_start_load(what):
+    globals()['load_timer'] = time.time()
+    return "Loading {0}... ".format(what)
+
+def set_done_load():
+    duration = time.time() - globals()['load_timer']
+    return " DONE ({0}s)\n".format(duration)
+
+# ---
+
+
 class Battle:
     empty_method = utility.empty_method
 
@@ -298,10 +315,19 @@ class Battle:
         self.battle_mouse_pos = [0, 0]  # with camera zoom adjust but without screen scale
         self.command_mouse_pos = [0, 0]  # with zoom and screen scale for unit command
 
+
     def prepare_new_game(self, ruleset, ruleset_folder, team_selected, map_type, map_selected,
                          map_source, char_selected, map_info, camp_pos):
-        """Setup stuff when start new battle"""
+ 
+        for message in self.inner_prepare_new_game(ruleset, ruleset_folder, team_selected, map_type, map_selected,
+                                                   map_source, char_selected, map_info, camp_pos):
+            print(message, end="")
+
+
+    def inner_prepare_new_game(self, ruleset, ruleset_folder, team_selected, map_type, map_selected,
+                               map_source, char_selected, map_info, camp_pos):
         self.language = self.main.language
+        """Setup stuff when start new battle"""
 
         self.ruleset = ruleset  # current ruleset used
         self.ruleset_folder = ruleset_folder  # the folder of rulseset used
@@ -329,6 +355,7 @@ class Battle:
         self.team_colour = self.main.team_colour
 
         # Load weather schedule
+        yield set_start_load("weather")
         try:
             self.weather_event = csv_read(self.main_dir, "weather.csv",
                                           ("data", "ruleset", self.ruleset_folder, "map", map_type, self.map_selected,
@@ -341,8 +368,10 @@ class Battle:
             new_time = timedelta(hours=new_time.hour, minutes=new_time.minute, seconds=new_time.second)
             self.weather_event = ((4, new_time, 0, 0),)  # default weather light sunny all day
         self.weather_playing = self.weather_event[0][1]  # used as the reference for map starting time
+        yield set_done_load()
 
         # Random music played from list
+        yield set_start_load("music")
         if pygame.mixer:
             self.SONG_END = pygame.USEREVENT + 1
             self.music_list = glob.glob(os.path.join(self.main_dir, "data", "sound", "music", "*.ogg"))
@@ -368,7 +397,9 @@ class Battle:
             except:  # any reading error will play random custom music instead
                 self.music_schedule = [self.weather_playing]
                 self.music_event = []  # TODO change later when has custom playlist
+        yield set_done_load()
 
+        yield set_start_load("map events")
         try:  # get new map event for event log
             map_event = csv_read(self.main_dir, "eventlog_" + self.language + ".csv",
                                  ("data", "ruleset", self.ruleset_folder, "map", map_type,
@@ -392,7 +423,9 @@ class Battle:
                 self.event_list.append(event)
 
         self.time_number.start_setup(self.weather_playing)
+        yield set_done_load()
 
+        yield set_start_load("images")
         images = load_images(self.main_dir, subfolder=("ruleset", self.ruleset_folder, "map", map_type, self.map_selected))
         self.battle_map_base.draw_image(images["base"])
         self.battle_map_feature.draw_image(images["feature"])
@@ -402,8 +435,14 @@ class Battle:
             place_name_map = images["place_name"]
         else:
             place_name_map = None
-        self.battle_map.draw_image(self.battle_map_base, self.battle_map_feature, place_name_map, self.camp_pos, self)
+        yield set_done_load()
 
+
+        yield set_start_load("draw map")
+        self.battle_map.draw_image(self.battle_map_base, self.battle_map_feature, place_name_map, self.camp_pos, self)
+        yield set_done_load()
+
+        yield set_start_load("common setup")
         self.map_corner = (
             len(self.battle_map_base.map_array[0]),
             len(self.battle_map_base.map_array))  # get map size that troop can move
@@ -433,11 +472,14 @@ class Battle:
         self.visible_subunit_list = {key: {} for key in self.all_team_subunit.keys()}
 
         self.battle_scale_ui.change_fight_scale(self.battle_scale)
+        yield set_done_load()
 
+        yield set_start_load("sprites")
         subunit_to_make = tuple(set([this_subunit.troop_id for this_subunit in self.subunit_updater]))
         who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key in subunit_to_make}
         who_todo |= {key: value for key, value in self.leader_data.leader_list.items() if key in subunit_to_make}
         self.subunit_animation_pool, self.status_animation_pool = self.main.create_troop_sprite_pool(who_todo)
+        yield set_done_load()
 
     def run_game(self):
         # Create Starting Values
