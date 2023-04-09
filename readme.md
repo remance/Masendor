@@ -152,6 +152,10 @@ This function is going to be a headache to write and research. But hopefully, it
 
 # Credit
 
+## Tool
+
+### Subunit sprite viewer by coppermouse (https://github.com/coppermouse)
+
 ## Game Asset
 
 ### Sprite:

@@ -25,6 +25,9 @@ def get_all_surfaces_recursive( _dict, return_container = None):
 # starts the game, we do not want that, that is why we make use of a custom minified Game class
 # that works better for this script.
 
+# Credit to coppermouse (https://github.com/coppermouse)
+
+
 class MinifiedGame( Game ):
     """
         Like Game but with less functionality but enough to view sprites.
