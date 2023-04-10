@@ -826,7 +826,7 @@ class OrgChart(pygame.sprite.Sprite):
 
     def hierarchy_pos(self, graph_input, root=None, width=1., vert_gap=0.2, y_pos=0, x_pos=0, pos=None, parent=None):
         """
-        From Joel's answer at https://stackoverflow.com/a/29597209/2966723.
+        Adapted from Joel's answer at https://stackoverflow.com/a/29597209/2966723.
         Licensed under Creative Commons Attribution-Share Alike
 
         :param graph_input: the graph (must be a tree)
@@ -872,7 +872,7 @@ class OrgChart(pygame.sprite.Sprite):
                                          vert_gap=-self.image.get_height() * 0.5 / len(edge_list), y_pos=100,
                                          x_pos=self.image.get_width() / 2)
                 image_size = (self.image.get_width() / (len(pos) * 1.5), self.image.get_height() / (len(pos) * 1.5))
-            except (nx.exception.NetworkXError, ZeroDivisionError):  # has only one leader
+            except (nx.exception.NetworkXError, ZeroDivisionError) as b:  # has only one leader
                 pos = {selected: (self.image.get_width() / 2, self.image.get_width() / 2)}
                 image_size = (self.image.get_width() / 2, self.image.get_height() / 2)
 
@@ -883,10 +883,14 @@ class OrgChart(pygame.sprite.Sprite):
                         self.node_rect[subunit] = image.get_rect(center=pos[subunit])
                         self.image.blit(image, self.node_rect[subunit])
                         break
+
             for subunit in pos:
                 if type(unit_data[subunit]["Leader"]) is int:
+                    line_width = int(self.image.get_width() / 100)
+                    if line_width < 1:
+                        line_width = 1
                     pygame.draw.line(self.image, (0, 0, 0), self.node_rect[unit_data[subunit]["Leader"]].midbottom,
-                                     self.node_rect[subunit].midtop)
+                                     self.node_rect[subunit].midtop, width=line_width)
 
 
 class SelectedPresetBorder(pygame.sprite.Sprite):

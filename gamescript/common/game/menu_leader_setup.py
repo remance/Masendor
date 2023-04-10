@@ -24,14 +24,26 @@ def menu_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mous
                 self.char_selector.current_row -= 1
                 self.char_selector.scroll.change_image(new_row=self.char_selector.current_row,
                                                        row_size=self.char_selector.row_size)
-                self.char_selector.setup_char_icon(self.char_icon, self.preview_char)
+                for this_team in self.team_coa:
+                    if this_team.selected:
+                        preview_char = [char for char in self.preview_char if "Leader" not in
+                                        self.custom_map_data["unit"][this_team.team][char.index] or
+                                        self.custom_map_data["unit"][this_team.team][char.index]["Leader"] == ""]
+                        self.char_selector.setup_char_icon(self.char_icon, preview_char)
+                        break
 
         elif mouse_scroll_down:
             if self.char_selector.current_row < self.char_selector.row_size:
                 self.char_selector.current_row += 1
                 self.char_selector.scroll.change_image(new_row=self.char_selector.current_row,
                                                        row_size=self.char_selector.row_size)
-                self.char_selector.setup_char_icon(self.char_icon, self.preview_char)
+                for this_team in self.team_coa:
+                    if this_team.selected:
+                        preview_char = [char for char in self.preview_char if "Leader" not in
+                                        self.custom_map_data["unit"][this_team.team][char.index] or
+                                        self.custom_map_data["unit"][this_team.team][char.index]["Leader"] == ""]
+                        self.char_selector.setup_char_icon(self.char_icon, preview_char)
+                        break
 
         elif self.char_selector.scroll.rect.collidepoint(self.mouse_pos):
             if mouse_left_down or mouse_left_up:
@@ -39,7 +51,13 @@ def menu_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mous
                 if self.char_selector.current_row != new_row:
                     self.char_selector.current_row = new_row
                     self.char_selector.scroll.change_image(new_row=new_row, row_size=self.char_selector.row_size)
-                    self.char_selector.setup_char_icon(self.char_icon, self.preview_char)
+                    for this_team in self.team_coa:
+                        if this_team.selected:
+                            preview_char = [char for char in self.preview_char if "Leader" not in
+                                            self.custom_map_data["unit"][this_team.team][char.index] or
+                                            self.custom_map_data["unit"][this_team.team][char.index]["Leader"] == ""]
+                            self.char_selector.setup_char_icon(self.char_icon, preview_char)
+                            break
 
         else:
             for char in self.char_icon:  # select unit
@@ -63,7 +81,7 @@ def menu_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mous
                         char.selection()
                         if char.who.team in self.custom_map_data["unit"]["pos"] and \
                                 char.who.index in self.custom_map_data["unit"]["pos"][char.who.team]:
-                            # highlight unit in preview map
+                            # highlight subunit in preview map
                             self.map_preview.change_mode(1, team_pos_list=self.custom_map_data["unit"]["pos"],
                                                          camp_pos_list=self.camp_pos[0],
                                                          selected=
@@ -99,23 +117,33 @@ def menu_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mous
                         self.main_ui_updater.add(self.single_text_popup)
 
                         if mouse_right_up:
-                            for char2 in self.preview_char:
+                            for char2 in self.char_icon:
                                 if char2.right_selected and char2 is not char:
                                     not_in_list = False
-                                    self.custom_map_data["unit"][char2.team][char2.index]["Leader"] = char.index
-                                    # self.char_icon.remove(icon2)
-                                    self.org_chart.add_chart(self.custom_map_data["unit"][char.team],
-                                                             self.preview_char,
-                                                             selected=char.index)
+                                    self.custom_map_data["unit"][char2.who.team][char2.who.index]["Leader"] = char.index
+                                    for char3_index, char3 in enumerate(self.char_icon):
+                                        if char3.selected:
+                                            unit_change_team_unit(self, add_plus=False, old_selected=char3.who.index)
+                                            self.org_chart.add_chart(self.custom_map_data["unit"][char.team],
+                                                                     self.preview_char,
+                                                                     selected=char3_index)
+                                            break
                                     break
 
                         break
 
                 if mouse_right_up and not_in_list:
-                    self.custom_map_data["unit"][char.who.team][rect]["Leader"] = ""
-                    self.org_chart.add_chart(self.custom_map_data["unit"][char.who.team],
-                                             self.preview_char,
-                                             selected=char.who.index)
+                    self.custom_map_data["unit"][char.team][rect]["Leader"] = ""
+                    for char3_index, char3 in enumerate(self.char_icon):
+                        if char3.selected:
+                            unit_change_team_unit(self, add_plus=False, old_selected=char3.who.index)
+                            self.org_chart.add_chart(self.custom_map_data["unit"][char.team],
+                                                     self.preview_char,
+                                                     selected=char3_index)
+                            break
+
+
+                    break
 
     elif mouse_left_up:
         for this_team in self.team_coa:  # User select any team by clicking on coat of arm
@@ -128,7 +156,7 @@ def menu_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mous
                         this_team2.change_select(False)
 
                 leader_change_team_unit(self)
-                self.org_chart.add_chart([], self.char_icon)
+                self.org_chart.add_chart([], self.preview_char)
                 break
 
     if self.map_back_button.event or esc_press:
