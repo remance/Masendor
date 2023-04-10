@@ -27,7 +27,7 @@ def test_pickleable_surface():
             assert s1.get_at((x, y)) == s2.get_at((x, y))
 
 
-@patch("gamescript.create_troop_sprite_pool_methods.PickleableSurface.__eq__",
+@patch("gamescript.save_load_pickle_with_surfaces.PickleableSurface.__eq__",
        lambda self, other: self.surface == other.surface)
 def test_recursive_surface_to_pickleable_surface():
     import pygame

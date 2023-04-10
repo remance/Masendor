@@ -2,6 +2,9 @@
 # Surfaces can not directly be stored in pickles. The save_pickle_with_surfaces
 # and load_pickle_with_surfaces methods in this file make use of a solution that
 # makes store pickles through a wrapper class possible.
+#
+# alternative solution: https://github.com/pygame/pygame/issues/3054#issuecomment-1156481897
+# (note that that user uses tostring, I think tobytes is better)
 
 import pygame
 import pickle
