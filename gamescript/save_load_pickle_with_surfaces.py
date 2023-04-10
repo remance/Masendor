@@ -24,6 +24,8 @@ def load_pickle_with_surfaces(file_path):
 # NOTE: PickleableSurface is far from perfect but it works for what is required.
 #       This class has hardcoded format (RGBA) and does not take flags into account
 #       and maybe more.
+
+
 class PickleableSurface:
 
     def __init__(self, surface):
@@ -38,6 +40,7 @@ class PickleableSurface:
 # ---
 # these methods below works what it is required to handle at this moment but it is not guaranteed
 # for all data structures.
+
 
 def recursive_cast_surface_to_pickleable_surface(data):
     f = recursive_cast_surface_to_pickleable_surface
