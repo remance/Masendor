@@ -1,16 +1,13 @@
 import os
 import hashlib
-import pickle
 import pygame
 import threading
 from random import choice
-
-import pygame
 from PIL import Image
 
 from gamescript.common.game import create_troop_sprite
-from gamescript.create_troop_sprite_pool_methods import recursive_cast_surface_to_pickleable_surface
-from gamescript.create_troop_sprite_pool_methods import recursive_cast_pickleable_surface_to_surface
+from gamescript.save_load_pickle_with_surfaces import save_pickle_with_surfaces
+from gamescript.save_load_pickle_with_surfaces import load_pickle_with_surfaces
 
 
 def create_troop_sprite_pool(self, who_todo, preview=False, specific_preview=None, max_preview_size=200):
@@ -18,28 +15,17 @@ def create_troop_sprite_pool(self, who_todo, preview=False, specific_preview=Non
     stringified_arguments = "".join(sorted(map(str, who_todo.keys())))+"p"+str(max_preview_size)
     md5 = hashlib.md5(stringified_arguments.encode()).hexdigest()
 
-    cache_file_path = os.path.join(self.main_dir, 'cache_{0}.pickle'.format(md5))
+    cache_folder_path = os.path.join(self.main_dir, "cache")
+    if not os.path.isdir(cache_folder_path):
+        os.mkdir(cache_folder_path)
+
+    cache_file_path = os.path.join(self.main_dir, "cache", "cache_{0}.pickle".format(md5))
 
     if not os.path.isfile(cache_file_path):
         pool = inner_create_troop_sprite_pool(self, who_todo, preview, specific_preview, max_preview_size)
+        save_pickle_with_surfaces(cache_file_path, pool)
 
-        assert type(pool) == tuple
-        assert len(pool) == 2
-        assert type(pool[0]) == dict
-        assert type(pool[1]) == dict
-
-        recursive_cast_surface_to_pickleable_surface(pool[0])
-        recursive_cast_surface_to_pickleable_surface(pool[1])
-
-        with open(cache_file_path, "wb") as handle:
-            pickle.dump(pool, handle)
-
-    with open(cache_file_path, "rb") as handle:
-        pool = pickle.load(handle)
-
-    recursive_cast_pickleable_surface_to_surface(pool[0])
-    recursive_cast_pickleable_surface_to_surface(pool[1])
-
+    pool = load_pickle_with_surfaces(cache_file_path)
     return pool
 
 
