@@ -104,9 +104,14 @@ class Game:
                 file_name = entry.name[:-4]
             elif ".py" in entry.name:
                 file_name = entry.name[:-3]
+
+                if file_name.startswith("."): continue
+
                 exec(f"from gamescript.common.game import " + file_name)
                 exec(f"" + file_name + " = " + file_name + "." + file_name)
 
+
+    # Will be changed in change_game_genre function depending on selected genre
     troop_sprite_size = (200, 200)
     start_zoom_mode = "Follow"
 

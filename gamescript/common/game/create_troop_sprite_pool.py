@@ -1,3 +1,7 @@
+import os
+import hashlib
+import pickle
+import pygame
 import threading
 from random import choice
 
@@ -5,9 +9,41 @@ import pygame
 from PIL import Image
 
 from gamescript.common.game import create_troop_sprite
+from gamescript.create_troop_sprite_pool_methods import recursive_cast_surface_to_pickleable_surface
+from gamescript.create_troop_sprite_pool_methods import recursive_cast_pickleable_surface_to_surface
 
 
 def create_troop_sprite_pool(self, who_todo, preview=False, specific_preview=None, max_preview_size=200):
+
+    stringified_arguments = "".join(sorted(map(str, who_todo.keys())))+"p"+str(max_preview_size)
+    md5 = hashlib.md5(stringified_arguments.encode()).hexdigest()
+
+    cache_file_path = os.path.join(self.main_dir, 'cache_{0}.pickle'.format(md5))
+
+    if not os.path.isfile(cache_file_path):
+        pool = inner_create_troop_sprite_pool(self, who_todo, preview, specific_preview, max_preview_size)
+
+        assert type(pool) == tuple
+        assert len(pool) == 2
+        assert type(pool[0]) == dict
+        assert type(pool[1]) == dict
+
+        recursive_cast_surface_to_pickleable_surface(pool[0])
+        recursive_cast_surface_to_pickleable_surface(pool[1])
+
+        with open(cache_file_path, "wb") as handle:
+            pickle.dump(pool, handle)
+
+    with open(cache_file_path, "rb") as handle:
+        pool = pickle.load(handle)
+
+    recursive_cast_pickleable_surface_to_surface(pool[0])
+    recursive_cast_pickleable_surface_to_surface(pool[1])
+
+    return pool
+
+
+def inner_create_troop_sprite_pool(self, who_todo, preview=False, specific_preview=None, max_preview_size=200):
     weapon_list = self.troop_data.weapon_list
     animation_sprite_pool = {}
     status_animation_pool = {}
