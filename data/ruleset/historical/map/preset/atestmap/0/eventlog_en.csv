@@ -1,7 +1,7 @@
 "ID","Who","Text","Time"
 "t0",0,"This is a test map.","09:05:00"
 "t1",0,"5 Minutes pass.","09:10:00"
-"ld0",1,,
-"ld1",25,,
+"ld0","NOR-25","Bad dead.",
+"ld1","SAX-1","Good dead.",
 "wt1",2,,
 "wt2",25,,

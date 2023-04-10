@@ -31,20 +31,33 @@ def add_weapon_stat(self):
                     self.troop_data.equipment_grade_list[weapon[1]]["Modifier"],
                     damage_with_attribute * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]]
                 dmg_sum += self.original_weapon_dmg[set_index][weapon_index][damage][0]
+            self.original_weapon_dmg[set_index][weapon_index] = {key: value for key, value in   # remove 0 damage element
+                                                                 self.original_weapon_dmg[set_index][weapon_index].items() if value}
+            if weapon_stat["Damage Stat Scaling"]:  # impact get bonus from quality and strength
+                self.weapon_impact[set_index][weapon_index] = weapon_stat["Impact"] * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"] + \
+                                                              (weapon_stat["Impact"] * (self.strength * dmg_scaling[0] / 100))
+            else:
+                self.weapon_impact[set_index][weapon_index] = weapon_stat["Impact"] * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]
+
             self.weapon_penetrate[set_index][weapon_index] = weapon_stat["Armour Penetration"] * \
                                                              self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]
 
             if weapon_index == 1 and weapon_stat["Hand"] == 2:  # 2 handed weapon as sub weapon get attack speed penalty
                 self.original_weapon_speed[set_index][weapon_index] = (weapon_stat["Cooldown"] - (
-                            weapon_stat["Cooldown"] * speed_scaling / 100)) * 1.5
+                        weapon_stat["Cooldown"] * speed_scaling / 100)) * 1.5
             else:
                 self.original_weapon_speed[set_index][weapon_index] = weapon_stat["Cooldown"] - (
-                            weapon_stat["Cooldown"] * speed_scaling / 100)
+                        weapon_stat["Cooldown"] * speed_scaling / 100)
             if self.original_weapon_speed[set_index][weapon_index] < 0:
                 self.original_weapon_speed[set_index][weapon_index] = 0
 
             if weapon_stat["Magazine"] == 0:  # weapon is melee weapon with no magazine to load ammo
-                self.melee_weapon_set[set_index] += (dmg_sum / self.original_weapon_speed[set_index][weapon_index]) + weapon_stat["Defence"]
+                if weapon_stat["Name"] != "Unarmed":
+                    self.melee_weapon_set[set_index] += ((dmg_sum + self.weapon_penetrate[set_index][weapon_index]) /
+                                                         self.original_weapon_speed[set_index][weapon_index]) + \
+                                                        weapon_stat["Defence"]
+                else:  # give minimum score for unarmed weapon
+                    self.melee_weapon_set[set_index] += 1
                 self.magazine_count[set_index][weapon_index] = 0  # remove modifier
                 self.original_melee_range[set_index][weapon_index] = weapon_stat["Range"]
                 self.original_melee_def_range[set_index][weapon_index] = weapon_stat["Range"] * 3
@@ -61,9 +74,10 @@ def add_weapon_stat(self):
                 self.shot_per_shoot[set_index][weapon_index] = weapon_stat["Shot Number"]
                 self.original_shoot_range[set_index][weapon_index] = weapon_stat["Range"] * \
                                                                      self.troop_data.equipment_grade_list[weapon[1]][
-                                                                   "Modifier"]
+                                                                         "Modifier"]
 
-                self.range_weapon_set[set_index] += dmg_sum / self.original_weapon_speed[set_index][weapon_index]  # add weapon damage for sort
+                self.range_weapon_set[set_index] += dmg_sum / self.original_weapon_speed[set_index][
+                    weapon_index]  # add weapon damage for sort
 
             self.trait["Weapon"][set_index][weapon_index] += weapon_stat["Trait"]
             self.weapon_weight[set_index][weapon_index] = weapon_stat["Weight"]
@@ -95,8 +109,8 @@ def add_weapon_stat(self):
     for key in self.trait["Weapon"]:
         for weapon in self.trait["Weapon"][key]:
             self.trait["Weapon"][key][weapon] = tuple(set([trait for trait in
-                                                          self.trait["Weapon"][key][weapon] if
-                                                          trait != 0]))  # remove empty and duplicate traits
+                                                           self.trait["Weapon"][key][weapon] if
+                                                           trait != 0]))  # remove empty and duplicate traits
             self.trait["Weapon"][key][weapon] = {x: self.troop_data.trait_list[x] for x in
                                                  self.trait["Weapon"][key][weapon] if
                                                  x in self.troop_data.trait_list}  # replace trait index with data

@@ -57,4 +57,3 @@ def enter_battle(self, animation_pool, status_animation_pool):
     self.attack_effect_spawn_distance = self.default_sprite_size[0] * 1.5
 
     self.pick_animation()
-

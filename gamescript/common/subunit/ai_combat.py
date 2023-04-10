@@ -13,7 +13,7 @@ def ai_combat(self):
             weapon = self.current_action["weapon"]
             target_distance = self.nearest_enemy[0].base_pos.distance_to(self.front_pos)
             if ((weapon in self.equipped_block_weapon and self.take_melee_dmg) or \
-                    weapon in self.equipped_charge_block_weapon) and \
+                weapon in self.equipped_charge_block_weapon) and \
                     target_distance <= self.melee_range[weapon] or \
                     (target_distance > self.melee_def_range[weapon] and self.hold_timer > 3):
                 # block take melee dmg or in charge block
@@ -44,16 +44,21 @@ def ai_combat(self):
                         self.swap_weapon(self.melee_weapon_set)
                     else:
                         if self.available_enemy_near_skill:  # use enemy near skill first
-                            self.skill_command_input(0, self.available_enemy_near_skill, pos_target=self.attack_subunit.base_pos)
+                            self.skill_command_input(0, self.available_enemy_near_skill,
+                                                     pos_target=self.attack_subunit.base_pos)
                         elif self.available_melee_skill:  # then consider melee skill
-                            self.skill_command_input(0, self.available_melee_skill, pos_target=self.attack_subunit.base_pos)
+                            self.skill_command_input(0, self.available_melee_skill,
+                                                     pos_target=self.attack_subunit.base_pos)
                         else:
                             for weapon in self.weapon_cooldown:
                                 if self.weapon_cooldown[weapon] >= self.weapon_speed[weapon]:
-                                    if self.attack_subunit.base_pos.distance_to(self.front_pos) <= self.melee_range[weapon]:
-                                        if weapon in self.equipped_block_weapon and self.weapon_cooldown[opposite_index[weapon]] > 1:  # consider blocking first
+                                    if self.attack_subunit.base_pos.distance_to(self.front_pos) <= self.melee_range[
+                                        weapon]:
+                                        if weapon in self.equipped_block_weapon and self.weapon_cooldown[
+                                            opposite_index[weapon]] > 1:  # consider blocking first
                                             self.command_action = self.melee_hold_command_action[weapon]
-                                        elif (weapon in self.equipped_power_weapon or self.equipped_timing_start_weapon[weapon]) and not not getrandbits(1):
+                                        elif (weapon in self.equipped_power_weapon or self.equipped_timing_start_weapon[
+                                            weapon]) and not not getrandbits(1):
                                             # random chance to hold
                                             self.command_action = self.melee_hold_command_action[weapon]
                                         else:  # perform normal attack
@@ -64,11 +69,15 @@ def ai_combat(self):
                                                 not self.unit_leader.command_action and \
                                                 not self.unit_leader.current_action:
                                             if self.unit_leader.available_unit_melee_skill:
-                                                self.unit_leader.skill_command_input(0, self.unit_leader.available_unit_melee_skill, pos_target=self.base_pos)
+                                                self.unit_leader.skill_command_input(0,
+                                                                                     self.unit_leader.available_unit_melee_skill,
+                                                                                     pos_target=self.base_pos)
                                         elif self.leader and not self.leader.player_control and \
                                                 not self.leader.command_action and not self.leader.current_action:
                                             if self.leader.available_troop_melee_skill:
-                                                self.leader.skill_command_input(0, self.leader.available_troop_melee_skill, pos_target=self.base_pos)
+                                                self.leader.skill_command_input(0,
+                                                                                self.leader.available_troop_melee_skill,
+                                                                                pos_target=self.base_pos)
 
                                     else:  # still too far consider using chargeblock
                                         if weapon in self.equipped_charge_block_weapon:  # consider blocking first
@@ -87,13 +96,15 @@ def ai_combat(self):
                     else:
                         if "range attack" not in self.current_action and "range attack" not in self.command_action and \
                                 (not self.move_speed or self.shoot_while_moving):  # Find target to shoot
-                            if self.shoot_range[0] >= self.nearest_enemy[1] or self.shoot_range[1] >= self.nearest_enemy[1]:  # has enemy in range
+                            if self.shoot_range[0] >= self.nearest_enemy[1] or self.shoot_range[1] >= \
+                                    self.nearest_enemy[1]:  # has enemy in range
                                 if self.available_range_skill:  # use range skill first
                                     self.skill_command_input(0, self.available_range_skill, pos_target=self.base_pos)
                                 else:
                                     for weapon in self.ammo_now[self.equipped_weapon]:
                                         # can shoot if reload finish, in shoot range and attack pos target exist
-                                        if self.ammo_now[self.equipped_weapon][weapon] > 0 and self.shoot_range[weapon] >= self.nearest_enemy[1]:
+                                        if self.ammo_now[self.equipped_weapon][weapon] > 0 and self.shoot_range[
+                                            weapon] >= self.nearest_enemy[1]:
                                             self.attack_subunit = self.nearest_enemy[0]  # replace with enemy object
                                             self.attack_pos = self.attack_subunit.base_pos  # replace with enemy pos
                                             if self.move_speed:  # moving
@@ -106,7 +117,8 @@ def ai_combat(self):
                                                         elif "run" in self.current_action:
                                                             self.current_action = self.range_run_command_action[weapon]
                                             else:
-                                                if self.equipped_timing_start_weapon[weapon] or weapon in self.equipped_power_weapon:
+                                                if self.equipped_timing_start_weapon[
+                                                    weapon] or weapon in self.equipped_power_weapon:
                                                     # consider using hold for power or timing
                                                     self.command_action = self.range_hold_command_action[weapon]
                                                 else:
@@ -115,10 +127,14 @@ def ai_combat(self):
 
                                             if self.unit_leader and not self.unit_leader.player_control and not self.unit_leader.command_action and not self.unit_leader.current_action:
                                                 if self.unit_leader.available_unit_range_skill:
-                                                    self.unit_leader.skill_command_input(0, self.unit_leader.available_unit_range_skill, pos_target=self.base_pos)
+                                                    self.unit_leader.skill_command_input(0,
+                                                                                         self.unit_leader.available_unit_range_skill,
+                                                                                         pos_target=self.base_pos)
                                             elif self.leader and not self.leader.player_control and not self.leader.command_action and not self.leader.current_action:
                                                 if self.leader.available_troop_range_skill:
-                                                    self.leader.skill_command_input(0, self.leader.available_troop_range_skill, pos_target=self.base_pos)
+                                                    self.leader.skill_command_input(0,
+                                                                                    self.leader.available_troop_range_skill,
+                                                                                    pos_target=self.base_pos)
 
                                             return
 

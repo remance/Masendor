@@ -1,6 +1,7 @@
 from random import choice
 
 from pygame import Vector2
+
 from gamescript import effectsprite
 
 
@@ -54,7 +55,8 @@ def use_skill(self, which_skill):
                     if "Action" in skill_stat["Type"]:  # effect that is use only when subunit perform attack
                         if "Melee" in skill_stat["Type"] and which_skill not in subunit[0].active_action_skill["melee"]:
                             subunit[0].active_action_skill["melee"].append(which_skill)
-                        elif "Range" in skill_stat["Type"] and which_skill not in subunit[0].active_action_skill["range"]:
+                        elif "Range" in skill_stat["Type"] and which_skill not in subunit[0].active_action_skill[
+                            "range"]:
                             subunit[0].active_action_skill["range"].append(which_skill)
 
                 elif use_center:  # exceed distance from this subunit pos center onward in list

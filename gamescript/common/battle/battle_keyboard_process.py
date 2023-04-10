@@ -9,20 +9,21 @@ def battle_keyboard_process(self, key_press):
         self.wheel_ui.generate(self.unit_behaviour_wheel["Main"])
 
     elif key_press == pygame.K_F1:
-        self.drama_text.queue.append("Hello and Welcome to update video")
+        self.drama_text.queue.append("Hello and welcome to the Tale of Taillefer")
     elif key_press == pygame.K_F2:
-        self.drama_text.queue.append("Showcase: New stuffs so far")
+        self.drama_text.queue.append("That is the name of a legendary minstrel and juggler")
     elif key_press == pygame.K_F3:
-        self.drama_text.queue.append("Status effect animation system")
+        self.drama_text.queue.append("Who fought at the Battle of Hastings in England")
     elif key_press == pygame.K_F4:
-        self.drama_text.queue.append("Target skill system")
+        self.drama_text.queue.append("He juggled his sword and sing the Song of Roland")
     elif key_press == pygame.K_F5:
-        self.drama_text.queue.append("Camp, reserve and troop respawn system")
+        self.drama_text.queue.append("Rushed to the English line, he fought valiantly alone")
     elif key_press == pygame.K_F6:
-        self.drama_text.queue.append("Battle of Hastings (Bad FPS right now)")
+        self.drama_text.queue.append("The Saxon swarmed him and left him death, that they shall atone")
     elif key_press == pygame.K_F7:
-        self.drama_text.queue.append("Battle of Megiddo")
-
+        self.drama_text.queue.append("For his name will be remember in the song singed by people")
+    elif key_press == pygame.K_F8:
+        self.drama_text.queue.append("And that is the end of this tale, don't expect a sequel")
     # elif key_press == pygame.K_PAGEUP:  # Go to top of event log
     #     self.event_log.current_start_row = 0
     #     self.event_log.recreate_image()

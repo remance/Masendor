@@ -21,6 +21,6 @@ def cal_effect_hit(self, target, hit_angle):
         troop_dmg = 0
     if morale_dmg < 0:
         morale_dmg = 0
-        
+
     target.cal_loss(troop_dmg, impact, morale_dmg, element_effect, hit_angle)
     target.take_aoe_dmg = 3

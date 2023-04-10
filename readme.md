@@ -77,7 +77,7 @@ To compile the source code into an executable program, recommend using pyinstall
 
 Check the [`requirements.txt`](requirements.txt) file for dependency requirements if running with the python source
 code.<br>
-Also, the game is now optimised based on the pygame 2.1.2 module and python 3.10. (may have to use cython later for a
+Also, the game is now optimised based on the pygame-ce 2.2.1 module and python 3.11. (may have to use cython later for a
 huge size battle)
 
 ---------------
@@ -86,7 +86,7 @@ huge size battle)
 
 ![alt text](https://github.com/remance/preview/blob/main/preview.png?raw=true)
 
-Refocus the game to arcade mode style for now to ensure that the game will ever be finished. 
+Working on Battle of Mohacs
 
 ---------------
 
@@ -152,11 +152,15 @@ This function is going to be a headache to write and research. But hopefully, it
 
 # Credit
 
+## Tool
+
+### Subunit sprite viewer by coppermouse (https://github.com/coppermouse)
+
 ## Game Asset
 
 ### Sprite:
 
-- inogNate
+- Prototype slash effect sprites by inogNate
 
 ### Sound (Obtained and edited):
 

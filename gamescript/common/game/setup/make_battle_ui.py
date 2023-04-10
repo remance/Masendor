@@ -1,4 +1,5 @@
 import pygame
+
 from gamescript import battleui
 
 
@@ -8,7 +9,6 @@ def make_battle_ui(battle_ui_image, battle_icon_image, team_colour, screen_size,
 
     image = pygame.Surface((battle_ui_image["timebar"].get_width(), 15))
     battle_scale_ui = battleui.BattleScaleUI(image, team_colour)
-
 
     # Right top bar ui that show rough information of selected battalions
     wheel_ui = battleui.WheelUI(battle_ui_image["wheel"], battle_ui_image["wheel_selected"],

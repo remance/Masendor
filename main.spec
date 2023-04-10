@@ -7,7 +7,7 @@ spec_root = os.path.abspath(SPECPATH)
 
 tmp_ret = collect_all('PIL')
 datas = tmp_ret[0]; tmp_ret[1]; tmp_ret[2]
-datas += [('data', 'data'), ('gamescript', 'gamescript'), ('animation maker', 'animation maker')]
+datas += [('data', 'data'), ('gamescript', 'gamescript'), ('animation maker', 'animation maker'), ('photo studio', 'photo studio')]
 
 block_cipher = None
 
@@ -40,6 +40,20 @@ b = Analysis(['animation maker.py'],
     cipher=block_cipher,
     noarchive=False)
 
+c = Analysis(['photo studio.py'],
+pathex=[spec_root],
+binaries=[],
+datas=datas,
+hiddenimports=[],
+hookspath=[],
+hooksconfig=[],
+runtime_hooks=[],
+excludes=[],
+win_no_prefer_redirects=False,
+win_private_assemblies=False,
+cipher=block_cipher,
+noarchive=False)
+
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
 exe = EXE(pyz,
@@ -66,6 +80,19 @@ exe2 = EXE(pyz,
     upx=True,
     console=True)
 
+pyz = PYZ(c.pure, c.zipped_data, cipher=block_cipher)
+
+exe3 = EXE(pyz,
+    c.scripts,
+    [],
+    exclude_binaries=True,
+    name='photo studio',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=True,
+    console=True)
+
 coll = COLLECT(exe,
     a.binaries,
     a.zipfiles,
@@ -74,6 +101,10 @@ coll = COLLECT(exe,
     b.binaries,
     b.zipfiles,
     b.datas,
+    exe3,
+    c.binaries,
+    c.zipfiles,
+    c.datas,
     strip=False,
     upx=True,
     upx_exclude=[],

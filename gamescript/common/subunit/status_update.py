@@ -282,7 +282,7 @@ def status_update(self):
 
     # Apply morale, and leader buff to stat
     self.discipline = (self.discipline + (self.discipline * self.morale_state * self.stamina_state)) + \
-                       self.leader_social_buff + (self.authority / 10)  # use morale, leader social and authority
+                      self.leader_social_buff + (self.authority / 10)  # use morale, leader social and authority
     self.melee_attack = (self.melee_attack + (self.melee_attack * self.morale_state)) * self.command_buff
     self.melee_def = (self.melee_def + (self.melee_def * self.morale_state)) * self.command_buff
     self.range_def = (self.range_def + (self.range_def * self.morale_state)) * self.command_buff
@@ -337,10 +337,10 @@ def status_update(self):
     if self.move_speed:  # reduce charge def by half when moving
         self.charge_def_power /= 2
 
-    if self.hold_timer > 1 and "weapon" in self.current_action:  # holding weapon animation for at least 1 sec, apply buff
+    if self.hold_timer and "weapon" in self.current_action:  # holding weapon
         self.melee_dodge /= 2  # reduce dodge during any holding
         self.range_dodge /= 2
-        if self.current_action["weapon"] in self.equipped_block_weapon:  # double def
+        if self.current_action["weapon"] in self.equipped_block_weapon:  # double def for blocking
             self.melee_def *= 2
             self.range_def *= 2
 

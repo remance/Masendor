@@ -1,10 +1,11 @@
 import os
 from math import cos, sin, radians
-from random import choice, uniform
 from pathlib import Path
+from random import choice, uniform
 
 import pygame
 import pygame.freetype
+
 from gamescript.common import utility
 
 direction_angle = {"r_side": radians(90), "l_side": radians(270), "back": radians(180),
@@ -397,8 +398,9 @@ class EffectDamageSprite(DamageSprite):
         if self.timer > 1:  # reset timer
             if self.wind_disperse:
                 self.speed = self.battle.current_weather.wind_strength
-                self.base_target = pygame.Vector2(self.base_pos[0] + (self.speed * sin(radians(self.battle.current_weather.wind_direction))),
-                                                  self.base_pos[1] - (self.speed * cos(radians(self.battle.current_weather.wind_direction))))
+                self.base_target = pygame.Vector2(
+                    self.base_pos[0] + (self.speed * sin(radians(self.battle.current_weather.wind_direction))),
+                    self.base_pos[1] - (self.speed * cos(radians(self.battle.current_weather.wind_direction))))
                 self.full_distance = self.base_pos.distance_to(self.base_target)
                 self.duration -= self.speed
             if self.duration > 0:  # only clear for sprite with duration or charge
@@ -411,8 +413,8 @@ class EffectDamageSprite(DamageSprite):
 
         for this_subunit in subunit_list:
             if this_subunit.game_id not in self.already_hit and \
-                ((self.aoe == 0 and this_subunit.hitbox.rect.colliderect(self.rect)) or
-                 (self.aoe and this_subunit.base_pos.distance_to(self.base_pos) <= self.aoe)):
+                    ((self.aoe == 0 and this_subunit.hitbox.rect.colliderect(self.rect)) or
+                     (self.aoe and this_subunit.base_pos.distance_to(self.base_pos) <= self.aoe)):
                 this_subunit.apply_effect(self.weapon, self.stat,
                                           this_subunit.status_effect, this_subunit.status_duration)
                 if self.stat["Status"]:
@@ -444,7 +446,8 @@ class EffectDamageSprite(DamageSprite):
 
                     if not self.random_move and (
                             self.base_pos[0] <= 0 or self.base_pos[0] >= self.battle.map_corner[0] or
-                            self.base_pos[1] <= 0 or self.base_pos[1] >= self.battle.map_corner[1]):  # pass outside of map
+                            self.base_pos[1] <= 0 or self.base_pos[1] >= self.battle.map_corner[
+                                1]):  # pass outside of map
                         self.reach_target()
                         return
 
@@ -468,7 +471,7 @@ class EffectDamageSprite(DamageSprite):
             return
 
         if self.sound_effect_name and self.sound_timer >= self.sound_duration and \
-            self.travel_sound_distance_check > self.battle.true_camera_pos.distance_to(self.base_pos):
+                self.travel_sound_distance_check > self.battle.true_camera_pos.distance_to(self.base_pos):
             # play sound, check for distance here to avoid timer reset when not on screen
             self.battle.add_sound_effect_queue(self.sound_effect_name, self.base_pos,
                                                self.travel_sound_distance,

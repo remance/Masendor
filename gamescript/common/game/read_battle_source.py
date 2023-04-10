@@ -1,6 +1,3 @@
-import os
-import csv
-
 from gamescript.common import utility
 
 csv_read = utility.csv_read

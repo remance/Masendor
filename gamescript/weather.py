@@ -1,7 +1,8 @@
+from random import randint
+
 import pygame
 import pygame.freetype
 
-from random import randint
 from gamescript.common import utility
 
 

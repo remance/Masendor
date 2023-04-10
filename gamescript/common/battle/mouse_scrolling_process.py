@@ -20,4 +20,3 @@ def mouse_scrolling_process(self, mouse_scroll_up, mouse_scroll_down):
                 self.event_log.scroll.change_image(new_row=self.event_log.current_start_row)
             else:
                 self.event_log.current_start_row -= 1
-

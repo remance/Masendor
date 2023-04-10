@@ -60,7 +60,8 @@ def convert_formation_preset(follower_size, formation):
     use pillow image resize since it is too much trouble to do it manually.
     Also change placement score to make position near center and front has higher score
     """
-    front_order_to_place, rear_order_to_place, flank_order_to_place, center_order_to_place = calculate_formation_priority(follower_size)
+    front_order_to_place, rear_order_to_place, flank_order_to_place, center_order_to_place = calculate_formation_priority(
+        follower_size)
     image = Image.fromarray((formation * 255).astype(np.uint8))
     image = image.resize((follower_size, follower_size))
     new_value = np.array(image)

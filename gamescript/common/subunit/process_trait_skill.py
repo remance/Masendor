@@ -85,7 +85,8 @@ def skill_convert(self, skill_list, add_charge_skill=False):
 
     troop_skill_dict = {skill: troop_skill_dict[skill] for skill in troop_skill_dict if
                         ((self.troop_data.skill_list[skill]["Troop Type"] == 0 or
-                          self.troop_data.skill_list[skill]["Troop Type"] == self.subunit_type))}  # keep skill if class match
+                          self.troop_data.skill_list[skill][
+                              "Troop Type"] == self.subunit_type))}  # keep skill if class match
 
     skill_dict = troop_skill_dict | self.leader_skill
 

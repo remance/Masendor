@@ -1,4 +1,5 @@
 import pygame
+
 from gamescript.common import utility
 
 edit_config = utility.edit_config

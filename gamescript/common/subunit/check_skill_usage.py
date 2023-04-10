@@ -49,4 +49,3 @@ def check_skill_usage(self):
                     self.command_action |= {this_prop: True for this_prop in action[1:]}
             else:
                 self.command_action = {}
-

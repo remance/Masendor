@@ -4,6 +4,7 @@ clean_group_object = utility.clean_group_object
 
 
 def menu_char_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
+    self.main_ui_updater.remove(self.single_text_popup)
     if self.char_back_button.event or esc_press or self.start_button.event:  # go back to team/source selection screen
         self.current_source_row = 0
         self.menu_state = "preset_team_select"
@@ -48,15 +49,25 @@ def menu_char_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
                     self.char_selector.setup_char_icon(self.char_icon, self.preview_char)
 
         else:
-            if mouse_left_up:
-                for index, icon in enumerate(self.char_icon):
-                    if icon.rect.collidepoint(self.mouse_pos):
+
+            for index, icon in enumerate(self.char_icon):
+                if icon.rect.collidepoint(self.mouse_pos):
+                    popup_text = [icon.who.name]
+                    for troop in icon.who.troop_reserve_list:
+                        popup_text += [self.troop_data.troop_list[troop]["Name"] + ": " +
+                                       str(len([subunit for subunit in icon.who.alive_troop_follower if
+                                                subunit.troop_id == troop])) + " + " +
+                                       str(icon.who.troop_reserve_list[troop])]
+                    self.single_text_popup.pop(self.mouse_pos, popup_text)
+                    self.main_ui_updater.add(self.single_text_popup)
+                    if mouse_left_up:
                         for other_icon in self.char_icon:
                             if other_icon.selected:  # unselected all others first
                                 other_icon.selection()
                         icon.selection()
                         self.char_stat["char"].add_leader_stat(icon.who, self.leader_data, self.troop_data)
-                        who_todo = {key: value for key, value in self.leader_data.leader_list.items() if key == icon.who.troop_id}
+                        who_todo = {key: value for key, value in self.leader_data.leader_list.items() if
+                                    key == icon.who.troop_id}
                         preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True)
                         self.char_stat["model"].add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"],
                                                                   icon.who.coa)
@@ -65,4 +76,4 @@ def menu_char_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
                                                      selected=icon.who.base_pos)
 
                         self.char_selected = icon.who.map_id
-                        break
+                    break

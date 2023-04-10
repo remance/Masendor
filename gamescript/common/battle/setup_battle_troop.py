@@ -3,8 +3,6 @@ import os
 
 import pygame
 
-from random import uniform
-
 from gamescript import subunit
 from gamescript.common import utility
 
@@ -26,9 +24,9 @@ def setup_battle_troop(self, team_subunit_list, specific_team=None):
         rd = tuple(csv.reader(unit_file, quoting=csv.QUOTE_ALL))
         header = rd[0]
         int_column = ("ID", "Faction", "Team", "Leader")  # value int only
-        list_column = ("POS", )  # value in list only
+        list_column = ("POS",)  # value in list only
         float_column = ("Angle", "Start Health", "Start Stamina")  # value in float
-        dict_column = ("Troop", )
+        dict_column = ("Troop",)
         int_column = [index for index, item in enumerate(header) if item in int_column]
         list_column = [index for index, item in enumerate(header) if item in list_column]
         float_column = [index for index, item in enumerate(header) if item in float_column]
@@ -38,7 +36,7 @@ def setup_battle_troop(self, team_subunit_list, specific_team=None):
         for data in rd[1:]:  # skip header
             for n, i in enumerate(data):
                 data = stat_convert(data, n, i, list_column=list_column, int_column=int_column,
-                                     float_column=float_column, dict_column=dict_column)
+                                    float_column=float_column, dict_column=dict_column)
             data = {header[index]: stuff for index, stuff in enumerate(data)}
             if not specific_team or specific_team == data["Team"]:  # check player control
                 if type(team_subunit_list) == dict:
@@ -53,10 +51,11 @@ def setup_battle_troop(self, team_subunit_list, specific_team=None):
                     # avoid different team leader assign, in case of data mistake
                     leader = leader_subunit[data["Leader"]]
 
-                troop_number_list = {int(key): [int(num) for num in value.split("/")] for key, value in data["Troop"].items()}
+                troop_number_list = {int(key): [int(num) for num in value.split("/")] for key, value in
+                                     data["Troop"].items()}
 
                 add_leader = subunit.Subunit(data["Leader ID"], self.last_troop_game_id, data["ID"], data["Team"],
-                                             data["POS"],  data["Angle"], data["Start Health"], data["Start Stamina"],
+                                             data["POS"], data["Angle"], data["Start Health"], data["Start Stamina"],
                                              leader, self.faction_data.coa_list[data["Faction"]])
                 add_leader.troop_reserve_list = {key: value[1] for key, value in troop_number_list.items()}
                 add_leader.troop_dead_list = {key: 0 for key, value in troop_number_list.items()}

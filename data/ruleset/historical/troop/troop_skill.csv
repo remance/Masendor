@@ -61,7 +61,7 @@
 60,"Absolute Devotion",0,,1,0,150,500,70,0,,,,,,,,,,,,,100,20,,,,,,,,,,,,"BuffSelf",,,,,,"Buff",,,,"Buff"
 61,"Provoke",0,30,60,1,30,60,50,10,,,,,,,,,,,,,,,,,,,,,,,,,89,"Shout",,,,,,"Debuff","enemy_near",,,"Debuff"
 62,"Pinpoint Shot",0,,1,0,1,45,70,20,,,,,200,,,,,,,-1,,,,,,,,,,,115,,,"BuffSelf",,,,,,"Range","range",,,"Range Action"
-63,"Swift Attacks",0,,1,0,4,45,,,110,,,,,,200,,,,,,,,,,,,,,,,,,,"BuffSelf",,,,,,"Melee","melee",,,"Melee Action"
+63,"Swift Attacks",0,,1,0,4,45,,,85,,,,,,200,,,,,,,,,,,,,,,,,,,"BuffSelf",,,,,,"Melee","melee",,,"Melee Action"
 64,"Poison Attack",0,,1,0,1,60,50,10,,,,,,,,,,,,,,,,,,160,,,1,2,,,26,"BuffGear",,,,,,"Melee","melee",,,"Melee Action"
 65,"Suppressing Fire",1,,1,0,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffSelf",,,,,,"Range","range",,,"Range Action"
 66,"Impact Slam",0,,,0,1,,,,,,,,,,,,,,,,,,,,,,,,,,150,,,"Action",,,,,,"Melee","melee",,,"Melee Action"

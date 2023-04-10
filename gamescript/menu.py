@@ -1,8 +1,10 @@
 import pygame
+import networkx as nx
 import pygame.freetype
 import pygame.freetype
 import pygame.transform
 import pyperclip
+
 from gamescript.common import utility
 
 
@@ -13,17 +15,18 @@ class Cursor(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.images = images
         self.image = images["normal"]
-        self.state = "normal"
-        self.rect = self.image.get_rect(topleft=(0, 0))
+        self.pos = (0, 0)
+        self.rect = self.image.get_rect(topleft=self.pos)
 
     def update(self, mouse_pos):
         """Update cursor position based on mouse position"""
-        self.rect = self.image.get_rect(topleft=mouse_pos)
+        self.pos = mouse_pos
+        self.rect.topleft = self.pos
 
     def change_image(self, image_name):
         """Change cursor image to whatever input name"""
-        self.state = image_name
-        self.image = self.images[self.state]
+        self.image = self.images[image_name]
+        self.rect = self.image.get_rect(topleft=self.pos)
 
 
 class EscBox(pygame.sprite.Sprite):
@@ -440,11 +443,13 @@ class TeamCoa(pygame.sprite.Sprite):
         for index, image in enumerate(self.coa_images.values()):
             if image:
                 if index == 0:  # first one as main faction coa
-                    coa_image = pygame.transform.smoothscale(image, (int(self.coa_size[0] * 0.65), int(self.coa_size[1] * 0.65)))
+                    coa_image = pygame.transform.smoothscale(image, (
+                    int(self.coa_size[0] * 0.65), int(self.coa_size[1] * 0.65)))
                     coa_rect = coa_image.get_rect(
                         midtop=(self.selected_image.get_width() / 2, self.coa_size[1] * 0.05))
                 else:
-                    coa_image = pygame.transform.smoothscale(image, (int(self.coa_size[0] * 0.3), int(self.coa_size[1] * 0.3)))
+                    coa_image = pygame.transform.smoothscale(image,
+                                                             (int(self.coa_size[0] * 0.3), int(self.coa_size[1] * 0.3)))
                     coa_rect = coa_image.get_rect(center=small_coa_pos)
                     small_coa_pos[1] += int(self.coa_size[1] * 0.3)
                     if index % 3 == 0:
@@ -500,7 +505,8 @@ class ArmyStat(pygame.sprite.Sprite):
 
         for index, text in enumerate(troop_number):
             text = str(text).replace("[", "").replace("]", "").split(",")
-            text = str([utility.minimise_number_text(item) for item in text]).replace("'", "").replace("[", "").replace("]", "").replace(",", " +")
+            text = str([utility.minimise_number_text(item) for item in text]).replace("'", "").replace("[", "").replace(
+                "]", "").replace(",", " +")
             text_surface = self.font.render(text, True, (0, 0, 0))
             text_rect = text_surface.get_rect(midleft=self.type_number_pos[index])
             self.image.blit(text_surface, text_rect)
@@ -543,7 +549,7 @@ class ArmyStat(pygame.sprite.Sprite):
         leader_secondary_main_weapon = troop_data.equipment_grade_list[secondary_main_weapon[1]]["Name"] + " " + \
                                        troop_data.weapon_list[secondary_main_weapon[0]]["Name"] + ", "
         leader_secondary_sub_weapon = troop_data.equipment_grade_list[secondary_sub_weapon[1]]["Name"] + " " + \
-                                       troop_data.weapon_list[secondary_sub_weapon[0]]["Name"]
+                                      troop_data.weapon_list[secondary_sub_weapon[0]]["Name"]
         leader_armour = "No Armour"
         if stat["Armour"]:
             leader_armour = troop_data.equipment_grade_list[stat["Armour"][1]]["Name"] + " " + \
@@ -569,7 +575,7 @@ class ArmyStat(pygame.sprite.Sprite):
                        "Mount: ": leader_mount,
                        "Follower": " Leaders: " + str(len(who.alive_leader_follower)) +
                                    "    Troops: " + str(len(who.alive_troop_follower)) + " + " +
-                                    str(sum(who.troop_reserve_list.values()))}
+                                   str(sum(who.troop_reserve_list.values()))}
         text_surface = self.font.render(str(leader_name), True, (0, 0, 0))
         text_rect = text_surface.get_rect(topleft=(self.font_size, self.font_size))
         self.image.blit(text_surface, text_rect)
@@ -818,54 +824,73 @@ class OrgChart(pygame.sprite.Sprite):
         self.size = self.image.get_size()
         self.rect = self.image.get_rect(topleft=pos)
 
+    def hierarchy_pos(self, graph_input, root=None, width=1., vert_gap=0.2, y_pos=0, x_pos=0, pos=None, parent=None):
+        """
+        Adapted from Joel's answer at https://stackoverflow.com/a/29597209/2966723.
+        Licensed under Creative Commons Attribution-Share Alike
+
+        :param graph_input: the graph (must be a tree)
+        :param root: the root node of current branch
+        :param width: horizontal space allocated for this branch - avoids overlap with other branches
+        :param vert_gap: gap between levels of hierarchy
+        :param y_pos: vertical location of node (assign with root)
+        :param x_pos: horizontal location of node  (assign with root)
+        :param pos: a dict saying where all nodes go if they have been assigned
+        :param parent: parent of this branch. - only affects it if non-directed
+        :return the positions to plot this in a hierarchical layout
+        """
+
+        if pos is None:
+            pos = {root: (x_pos, y_pos)}
+        else:
+            pos[root] = (x_pos, y_pos)
+        children = list(graph_input.neighbors(root))
+        if not isinstance(graph_input, nx.DiGraph) and parent is not None:
+            children.remove(parent)
+        if len(children) != 0:
+            dx = width / len(children)
+            nextx = x_pos - width / 2 - dx / 2
+            for child in children:
+                nextx += dx
+                pos = self.hierarchy_pos(graph_input, root=child, width=dx, vert_gap=vert_gap,
+                                         y_pos=y_pos - vert_gap, x_pos=nextx,
+                                         pos=pos, parent=root)
+        return pos
+
     def add_chart(self, unit_data, preview_char, selected=None):
         self.image = self.base_image.copy()
         self.node_rect = {}
-        org = {}
-        max_row = 0
-        max_column = 0
+
         if selected is not None:
-            next_level = org
-            next_leader_batch = [selected]
-            while next_leader_batch:
-                column_count = 0
-                for search_leader in next_leader_batch:
-                    next_level[search_leader] = {index: {} for index, subunit in enumerate(unit_data) if
-                                                 subunit["Leader"] == search_leader}
-                    next_level[search_leader]["follower"] = len(next_level[search_leader])
-                    column_count += next_level[search_leader]["follower"]
-                    next_leader_batch = [index for index in next_level[search_leader] if index != "follower"]
-                    next_level = next_level[search_leader]
-                    max_row += 1
+            graph_input = nx.Graph()
 
-                if column_count > max_column:
-                    max_column = column_count
+            edge_list = [(subunit["Leader"], index) for index, subunit in enumerate(unit_data) if
+                         type(subunit["Leader"]) is int]
+            try:
+                graph_input.add_edges_from(edge_list)
+                pos = self.hierarchy_pos(graph_input, root=selected,  width=self.image.get_width(),
+                                         vert_gap=-self.image.get_height() * 0.5 / len(edge_list), y_pos=100,
+                                         x_pos=self.image.get_width() / 2)
+                image_size = (self.image.get_width() / (len(pos) * 1.5), self.image.get_height() / (len(pos) * 1.5))
+            except (nx.exception.NetworkXError, ZeroDivisionError) as b:  # has only one leader
+                pos = {selected: (self.image.get_width() / 2, self.image.get_width() / 2)}
+                image_size = (self.image.get_width() / 2, self.image.get_height() / 2)
 
-            max_scale = max(max_column, max_row)
-            image_size = (self.image.get_width() / max_scale, self.image.get_height() / max_scale)
-            start_icon_pos = [self.image.get_width() / 2, image_size[1]]
-            icon_pos = [self.image.get_width() / 2, image_size[1]]
+            for subunit in pos:
+                for char_index, icon in enumerate(preview_char):
+                    if char_index == subunit:
+                        image = pygame.transform.smoothscale(icon.portrait, image_size)
+                        self.node_rect[subunit] = image.get_rect(center=pos[subunit])
+                        self.image.blit(image, self.node_rect[subunit])
+                        break
 
-            print(org)
-            # next_leader_batch = [item for item in org]
-            # while next_leader_batch:
-            #     for index, leader in enumerate(next_leader_batch):
-            #         for char_index, icon in enumerate(preview_char):
-            #             if char_index == leader:
-            #                 image = pygame.transform.smoothscale(icon.portrait, image_size)
-            #                 self.node_rect[leader] = image.get_rect(center=icon_pos)
-            #                 self.image.blit(image, self.node_rect[leader])
-            #                 if index % 2 == 0:  # even index go right
-            #                     icon_pos[0] = start_icon_pos[0] + icon.portrait.get_width() * index
-            #                 else:  # go left
-            #                     icon_pos[0] = start_icon_pos[0] - icon.portrait.get_width() * index
-            #                 next_leader_batch = [index for index in next_level[leader] if index != "follower"]
-            #                 break
-        # while follower:
-        #     pass
-
-        #
-        # pygame.draw.line(self.image, (0, 0, 0), leader.midbottom, follower.midtop)
+            for subunit in pos:
+                if type(unit_data[subunit]["Leader"]) is int:
+                    line_width = int(self.image.get_width() / 100)
+                    if line_width < 1:
+                        line_width = 1
+                    pygame.draw.line(self.image, (0, 0, 0), self.node_rect[unit_data[subunit]["Leader"]].midbottom,
+                                     self.node_rect[subunit].midtop, width=line_width)
 
 
 class SelectedPresetBorder(pygame.sprite.Sprite):

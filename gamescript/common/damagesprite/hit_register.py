@@ -11,6 +11,7 @@ def hit_register(self, subunit):
         hit_side = 1
     else:  # rear
         hit_side = 2
+
     # calculate damage
     if self.attack_type == "range":
         self.cal_range_hit(self.attacker, subunit, hit_side, hit_angle)

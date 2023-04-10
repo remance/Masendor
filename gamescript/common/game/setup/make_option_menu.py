@@ -23,7 +23,6 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
         (fullscreen_box.pos[0] - (fullscreen_box.pos[0] / 4.5), fullscreen_box.pos[1]),
         "Full Screen", int(36 * screen_scale[1]))
 
-
     # Volume change scroll bar
     esc_menu_images = load_images(main_dir, screen_scale=screen_scale, subfolder=("ui", "battlemenu_ui", "slider"))
     scroller_images = (esc_menu_images["scroller_box"], esc_menu_images["scroller"])

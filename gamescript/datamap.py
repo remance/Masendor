@@ -1,10 +1,10 @@
+import ast
 import csv
 import os
-import ast
 
 import pygame
 
-from gamescript import weather, battlemap
+from gamescript import weather
 from gamescript.common import utility
 
 stat_convert = utility.stat_convert
@@ -17,7 +17,7 @@ lore_csv_read = utility.lore_csv_read
 class BattleMapData:
     def __init__(self, main_dir, screen_scale, ruleset, language):
         self.terrain_colour = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset,  "map", "terrain.csv"), encoding="utf-8",
+        with open(os.path.join(main_dir, "data", "ruleset", ruleset, "map", "terrain.csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             for row_index, row in enumerate(rd):
@@ -49,7 +49,8 @@ class BattleMapData:
 
         # read terrain feature mode
         self.feature_mod = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset, "map", "terrain_effect.csv"), encoding="utf-8", mode="r") as edit_file:
+        with open(os.path.join(main_dir, "data", "ruleset", ruleset, "map", "terrain_effect.csv"), encoding="utf-8",
+                  mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             mod_column = ("Infantry Speed/Charge Effect", "Infantry Combat Effect", "Infantry Defence Effect",
@@ -73,7 +74,8 @@ class BattleMapData:
         edit_file.close()
 
         self.feature_mod_lore = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset, "map", "terrain_effect_lore_" + language + ".csv"), encoding="utf-8",
+        with open(os.path.join(main_dir, "data", "ruleset", ruleset, "map", "terrain_effect_lore_" + language + ".csv"),
+                  encoding="utf-8",
                   mode="r") as edit_file:
             lore_csv_read(edit_file, self.feature_mod_lore)
         edit_file.close()
@@ -90,7 +92,8 @@ class BattleMapData:
             images = load_images(main_dir, subfolder=("ruleset", ruleset, "map", "texture", folder))
             self.map_texture.append(list(images.values()))
 
-        self.day_effect_images = load_images(main_dir, screen_scale=screen_scale, subfolder=("ruleset", ruleset, "map", "day"))
+        self.day_effect_images = load_images(main_dir, screen_scale=screen_scale,
+                                             subfolder=("ruleset", ruleset, "map", "day"))
 
         self.battle_map_colour = {}
         with open(os.path.join(main_dir, "data", "ruleset", ruleset, "map", "map_colour.csv"), encoding="utf-8",
@@ -130,7 +133,8 @@ class BattleMapData:
         edit_file.close()
 
         self.weather_lore = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset, "map", "weather", "weather_lore_" + language + ".csv"),
+        with open(os.path.join(main_dir, "data", "ruleset", ruleset, "map", "weather",
+                               "weather_lore_" + language + ".csv"),
                   encoding="utf-8", mode="r") as edit_file:
             lore_csv_read(edit_file, self.weather_lore)
         edit_file.close()

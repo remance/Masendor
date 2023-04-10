@@ -1,8 +1,9 @@
 import datetime
+from math import cos, sin, radians
 
 import pygame
 import pygame.freetype
-from math import cos, sin, radians
+
 from gamescript.common import utility
 
 apply_sprite_colour = utility.apply_sprite_colour
@@ -79,17 +80,21 @@ class HeroUI(pygame.sprite.Sprite):
 
         self.prim_main_weapon_box_rect = self.weapon_box_images[0].get_rect(topleft=(0, 0))
         self.weapon_image.blit(self.weapon_box_images[0], self.prim_main_weapon_box_rect)
-        self.prim_sub_weapon_box_rect = self.weapon_box_images[0].get_rect(topleft=(self.weapon_box_images[0].get_width(), 0))
+        self.prim_sub_weapon_box_rect = self.weapon_box_images[0].get_rect(
+            topleft=(self.weapon_box_images[0].get_width(), 0))
         self.weapon_image.blit(pygame.transform.flip(self.weapon_box_images[0], True, False),
                                self.prim_sub_weapon_box_rect)
 
-        self.sec_main_weapon_box_rect = self.weapon_box_images[1].get_rect(topleft=(self.weapon_box_images[0].get_width() * 2, 0))
+        self.sec_main_weapon_box_rect = self.weapon_box_images[1].get_rect(
+            topleft=(self.weapon_box_images[0].get_width() * 2, 0))
         self.weapon_image.blit(self.weapon_box_images[1], self.sec_main_weapon_box_rect)
-        self.sec_sub_weapon_box_rect = self.weapon_box_images[1].get_rect(topleft=(self.weapon_box_images[0].get_width() * 2,
-                                                                                   self.weapon_box_images[1].get_height()))
+        self.sec_sub_weapon_box_rect = self.weapon_box_images[1].get_rect(
+            topleft=(self.weapon_box_images[0].get_width() * 2,
+                     self.weapon_box_images[1].get_height()))
 
-        self.weapon_cooldown_rect = (self.weapon_box_images[0].get_rect(midbottom=self.prim_main_weapon_box_rect.midbottom),
-                                     self.weapon_box_images[0].get_rect(midbottom=self.prim_sub_weapon_box_rect.midbottom))
+        self.weapon_cooldown_rect = (
+        self.weapon_box_images[0].get_rect(midbottom=self.prim_main_weapon_box_rect.midbottom),
+        self.weapon_box_images[0].get_rect(midbottom=self.prim_sub_weapon_box_rect.midbottom))
 
         self.ammo_count_rect = ((self.prim_main_weapon_box_rect.midbottom, self.prim_sub_weapon_box_rect.midbottom),
                                 (self.sec_main_weapon_box_rect.midbottom, self.sec_sub_weapon_box_rect.midbottom))
@@ -102,7 +107,8 @@ class HeroUI(pygame.sprite.Sprite):
 
         self.weapon_base_image = self.weapon_image.copy()  # after adding weapon image
         self.weapon_base_image2 = self.weapon_image.copy()  # after other effect like ammo count, cooldown, holding
-        self.weapon_image_rect = self.weapon_image.get_rect(topright=(self.image.get_width() - (self.health_bar_size[0] * 2), 0))
+        self.weapon_image_rect = self.weapon_image.get_rect(
+            topright=(self.image.get_width() - (self.health_bar_size[0] * 2), 0))
 
         self.leader_image_rect = self.weapon_image.get_rect(topleft=(0, 0))
 
@@ -112,15 +118,18 @@ class HeroUI(pygame.sprite.Sprite):
 
         self.leader_count_text_box_base = self.font.render("L:999", True, (0, 0, 0))
         self.leader_count_text_box_base.fill((255, 255, 255))
-        self.leader_count_text_rect = self.leader_count_text_box_base.get_rect(midleft=(0, self.image.get_height() - (self.leader_count_text_box_base.get_height() * 1.5)))
+        self.leader_count_text_rect = self.leader_count_text_box_base.get_rect(
+            midleft=(0, self.image.get_height() - (self.leader_count_text_box_base.get_height() * 1.5)))
 
         self.troop_count_text_box_base = self.font.render("T:999/999 + 999", True, (0, 0, 0))
         self.troop_count_text_box_base.fill((255, 255, 255))
-        self.troop_count_text_rect = self.leader_count_text_box_base.get_rect(midleft=(0, self.image.get_height() - (self.troop_count_text_box_base.get_height() / 2)))
+        self.troop_count_text_rect = self.leader_count_text_box_base.get_rect(
+            midleft=(0, self.image.get_height() - (self.troop_count_text_box_base.get_height() / 2)))
 
         self.status_effect_image = status_box_image
-        self.status_effect_image_rect = self.status_effect_image.get_rect(bottomright=(self.health_bar_rect.bottomleft[0],
-                                                                                       self.health_bar_rect.bottomleft[1]))
+        self.status_effect_image_rect = self.status_effect_image.get_rect(
+            bottomright=(self.health_bar_rect.bottomleft[0],
+                         self.health_bar_rect.bottomleft[1]))
 
         bar_bad = pygame.Surface((18 * self.screen_scale[0], 13 * self.screen_scale[1]))
         bar_bad.fill((100, 0, 0))
@@ -136,15 +145,16 @@ class HeroUI(pygame.sprite.Sprite):
         bar_normal.fill((100, 100, 100))
 
         self.status_bar_image = {-1: bar_worst, 0: bar_bad, 1: bar_normal, 2: bar_good, 3: bar_best}
-        self.status_bar_rect = (self.status_bar_image[0].get_rect(midbottom=(13 * self.screen_scale[0], 16 * self.screen_scale[1])),
-                                self.status_bar_image[0].get_rect(midbottom=(37 * self.screen_scale[0], 16 * self.screen_scale[1])),
-                                self.status_bar_image[0].get_rect(midbottom=(61 * self.screen_scale[0], 16 * self.screen_scale[1])),
-                                self.status_bar_image[0].get_rect(midbottom=(85 * self.screen_scale[0], 16 * self.screen_scale[1])),
-                                self.status_bar_image[0].get_rect(midbottom=(109 * self.screen_scale[0], 16 * self.screen_scale[1])),
-                                self.status_bar_image[0].get_rect(midbottom=(132 * self.screen_scale[0], 16 * self.screen_scale[1])),
-                                self.status_bar_image[0].get_rect(midbottom=(155 * self.screen_scale[0], 16 * self.screen_scale[1])),
-                                self.status_bar_image[0].get_rect(midbottom=(179 * self.screen_scale[0], 16 * self.screen_scale[1])),
-                                self.status_bar_image[0].get_rect(midbottom=(203 * self.screen_scale[0], 16 * self.screen_scale[1])))
+        self.status_bar_rect = (
+        self.status_bar_image[0].get_rect(midbottom=(13 * self.screen_scale[0], 16 * self.screen_scale[1])),
+        self.status_bar_image[0].get_rect(midbottom=(37 * self.screen_scale[0], 16 * self.screen_scale[1])),
+        self.status_bar_image[0].get_rect(midbottom=(61 * self.screen_scale[0], 16 * self.screen_scale[1])),
+        self.status_bar_image[0].get_rect(midbottom=(85 * self.screen_scale[0], 16 * self.screen_scale[1])),
+        self.status_bar_image[0].get_rect(midbottom=(109 * self.screen_scale[0], 16 * self.screen_scale[1])),
+        self.status_bar_image[0].get_rect(midbottom=(132 * self.screen_scale[0], 16 * self.screen_scale[1])),
+        self.status_bar_image[0].get_rect(midbottom=(155 * self.screen_scale[0], 16 * self.screen_scale[1])),
+        self.status_bar_image[0].get_rect(midbottom=(179 * self.screen_scale[0], 16 * self.screen_scale[1])),
+        self.status_bar_image[0].get_rect(midbottom=(203 * self.screen_scale[0], 16 * self.screen_scale[1])))
 
         self.base_image.blit(self.status_effect_image, self.status_effect_image_rect)
 
@@ -214,7 +224,7 @@ class HeroUI(pygame.sprite.Sprite):
             leader_count_text = self.font.render("L:" + str(len(who.alive_leader_follower)), True, (0, 0, 0))
             leader_count_text_box.blit(leader_count_text,
                                        leader_count_text.get_rect(midleft=(0,
-                                                                          leader_count_text_box.get_height() / 2)))
+                                                                           leader_count_text_box.get_height() / 2)))
             self.image.blit(leader_count_text_box, self.leader_count_text_rect)
 
         if self.troop_follower_size != len(who.alive_troop_follower):
@@ -227,7 +237,7 @@ class HeroUI(pygame.sprite.Sprite):
                                                 (0, 0, 0))
             troop_count_text_box.blit(troop_count_text,
                                       troop_count_text.get_rect(midleft=(0,
-                                                                        troop_count_text_box.get_height() / 2)))
+                                                                         troop_count_text_box.get_height() / 2)))
             self.image.blit(troop_count_text_box, self.troop_count_text_rect)
 
         weapon_filter_change = False
@@ -248,7 +258,8 @@ class HeroUI(pygame.sprite.Sprite):
             self.weapon_name_set.insert(0, self.weapon_name_set.pop(
                 self.weapon_name_set.index(self.weapon_name_set[self.equipped_weapon])))
             self.weapon_set_index = list(range(0, len(who.weapon_name)))
-            self.weapon_set_index.insert(0, self.weapon_set_index.pop(self.weapon_set_index.index(self.equipped_weapon)))
+            self.weapon_set_index.insert(0,
+                                         self.weapon_set_index.pop(self.weapon_set_index.index(self.equipped_weapon)))
             for index, this_weapon_set in enumerate(self.weapon_name_set):
                 if index > len(self.weapon_name_set) - 1:
                     index = len(self.weapon_name_set) - 1
@@ -264,7 +275,8 @@ class HeroUI(pygame.sprite.Sprite):
                         weapon_image = pygame.transform.scale(weapon_image,
                                                               (self.weapon_image.get_width() / 5,
                                                                self.weapon_image.get_height() / 5))
-                    self.weapon_image.blit(weapon_image, weapon_image.get_rect(center=self.weapon_image_set_pos[index][index2]))
+                    self.weapon_image.blit(weapon_image,
+                                           weapon_image.get_rect(center=self.weapon_image_set_pos[index][index2]))
             self.weapon_base_image2 = self.weapon_image.copy()
 
         if self.equipped_weapon != who.equipped_weapon or weapon_filter_change:  # add weapon filter and ammo
@@ -304,9 +316,11 @@ class HeroUI(pygame.sprite.Sprite):
                             text_colour = (0, 0, 0)
                         ammo_text_surface = self.font.render(str(ammo_count), True, text_colour)  # ammo number
                         self.ammo_text_box = self.ammo_text_box_base.copy()
-                        self.ammo_text_box.blit(ammo_text_surface, ammo_text_surface.get_rect(center=(self.ammo_text_box.get_width() / 2,
-                                                                            self.ammo_text_box.get_height() / 2)))
-                        self.weapon_image.blit(self.ammo_text_box, self.ammo_text_box.get_rect(midtop=self.ammo_count_rect[index][index2]))
+                        self.ammo_text_box.blit(ammo_text_surface,
+                                                ammo_text_surface.get_rect(center=(self.ammo_text_box.get_width() / 2,
+                                                                                   self.ammo_text_box.get_height() / 2)))
+                        self.weapon_image.blit(self.ammo_text_box,
+                                               self.ammo_text_box.get_rect(midtop=self.ammo_count_rect[index][index2]))
 
             self.magazine_count = {key: value.copy() for key, value in who.magazine_count.items()}
 
@@ -629,7 +643,7 @@ class EventLog(pygame.sprite.Sprite):
 
     def add_log(self, log, event_id=None):
         """Add log to appropriate event log, the log must be in list format
-        following this rule [attacker (game_id), logtext]"""
+        following this rule [game_id, logtext]"""
         at_last_row = False
         image_change = False
         image_change2 = False
@@ -640,7 +654,8 @@ class EventLog(pygame.sprite.Sprite):
             image_change = self.log_text_process(log[0], text_output)
         if event_id and event_id in self.map_event:  # Process whether there is historical commentary to add to event log
             text_output = self.map_event[event_id]
-            image_change2 = self.log_text_process(text_output["Who"], str(text_output["Time"]) + ": " + text_output["Text"])
+            image_change2 = self.log_text_process(text_output["Who"],
+                                                  str(text_output["Time"]) + ": " + text_output["Text"])
         if image_change or image_change2:
             self.len_check = len(self.battle_log)
             if at_last_row and self.len_check > 9:
@@ -792,7 +807,8 @@ class CharIcon(pygame.sprite.Sprite):
         self.right_selected_image.fill((150, 150, 150))  # fill grey corner
         self.not_selected_image.fill((255, 255, 255))  # fill white corner
 
-        for image in (self.not_selected_image, self.selected_image, self.right_selected_image):  # add team colour and leader image
+        for image in (
+        self.not_selected_image, self.selected_image, self.right_selected_image):  # add team colour and leader image
             center_image = pygame.Surface((self.leader_image.get_width() + (self.leader_image.get_width() / 14),
                                            self.leader_image.get_height() + (
                                                    self.leader_image.get_height() / 14)))  # create image block
@@ -848,10 +864,10 @@ class TempCharIcon(pygame.sprite.Sprite):
         self.screen_scale = screen_scale
         self.index = index
         self.portrait = pygame.Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]), pygame.SRCALPHA)
-        self.font = pygame.font.SysFont("helvetica", int(100 * self.screen_scale[1]))
-        if type(image) is float or type(image) is int or type(image) is str:
+        if type(image) in (int, float, str):
             self.name = str(image)
-            image_surface = self.font.render(self.name, True, (0, 0, 0))
+            font = pygame.font.SysFont("helvetica", int(100 / (len(self.name) / 3) * self.screen_scale[1]))
+            image_surface = font.render(self.name, True, (0, 0, 0))
             image_rect = image_surface.get_rect(center=(self.portrait.get_width() / 2, self.portrait.get_height() / 2))
             self.portrait.blit(image_surface, image_rect)
         else:
@@ -947,7 +963,8 @@ class BattleScaleUI(pygame.sprite.Sprite):
             percent_scale = 0  # start point fo fill colour of team scale
             for team, value in enumerate(self.battle_scale_list):
                 if value > 0:
-                    self.image.fill(self.team_colour[team], (percent_scale, 0, self.image_width, self.image_height))
+                    self.image.fill(self.team_colour[team], (self.image_width * percent_scale, 0,
+                                                             self.image_width, self.image_height))
                     # team_text = self.font.render("{:,}".format(int(value - 1)), True, (0, 0, 0))  # add troop number text
                     # team_text_rect = team_text.get_rect(topleft=(percent_scale, 0))
                     # self.image.blit(team_text, team_text_rect)

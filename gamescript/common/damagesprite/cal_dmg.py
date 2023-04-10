@@ -1,3 +1,6 @@
+from math import sin, cos, radians
+from pygame import Vector2
+
 from gamescript.common.damagesprite import cal_melee_hit
 
 combat_side_cal = cal_melee_hit.combat_side_cal
@@ -35,6 +38,11 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
 
     impact = self.knock_power
 
+    if hit_score < 0.2:  # reduce impact for low hit score
+        impact /= 2
+    elif hit_score > 1:  # critical hit, double impact
+        impact *= 2
+
     if self.attack_type == "range":  # Range or other type of damage
         troop_dmg, element_effect = cal_dmg_penetrate(self, target)
 
@@ -51,6 +59,22 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
                 if charge_power_diff > 0:
                     troop_dmg += troop_dmg * charge_power_diff / 100
                     impact *= 2
+                else:
+                    troop_dmg = 0
+                    impact = 0
+                    attacker.interrupt_animation = True
+                    attacker.command_action = attacker.damaged_command_action
+                    attacker.move_speed = attacker.walk_speed
+                    attacker.momentum = 0
+                    attacker.charging = False
+                    attacker.forced_target = Vector2(attacker.base_pos[0] - (5 * sin(radians(attacker.angle))),
+                                                     attacker.base_pos[1] - (5 * cos(radians(attacker.angle))))
+
+                    attacker.battle.add_sound_effect_queue(attacker.sound_effect_pool["Damaged"][0], attacker.base_pos,
+                                                           attacker.dmg_sound_distance,
+                                                           attacker.dmg_sound_shake,
+                                                           volume_mod=attacker.hit_volume_mod)
+
             else:  # ignore charge defence if have trait
                 troop_dmg += troop_dmg * attacker.charge_power / 100
         else:

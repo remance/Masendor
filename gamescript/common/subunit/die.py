@@ -26,6 +26,19 @@ def die(self, how):
     self.current_effect = None
 
     if self.is_leader:  # leader die
+        if self.leader:
+            for index in self.troop_reserve_list:
+                if index in self.leader.troop_reserve_list:
+                    self.leader.troop_reserve_list[index] += self.troop_reserve_list[index]
+                else:
+                    self.leader.troop_reserve_list[index] = self.troop_reserve_list[index]
+
+            for index in self.troop_dead_list:
+                if index in self.leader.troop_dead_list:
+                    self.leader.troop_dead_list[index] += self.troop_dead_list[index]
+                else:
+                    self.leader.troop_dead_list[index] = self.troop_dead_list[index]
+
         for group in (self.alive_troop_follower, self.alive_leader_follower):  # change follower in to new leader
             for this_subunit in group:
                 if self.leader:  # move subordinate to its higher leader
@@ -39,18 +52,6 @@ def die(self, how):
                         self.leader.alive_troop_follower.append(this_subunit)
                         self.leader.find_formation_size(troop=True)
                         self.leader.formation_add_change = True  # new leader require formation change
-
-                    for index in self.troop_reserve_list:
-                        if index in self.leader.troop_reserve_list:
-                            self.leader.troop_reserve_list[index] += self.troop_reserve_list[index]
-                        else:
-                            self.leader.troop_reserve_list[index] = self.troop_reserve_list[index]
-
-                    for index in self.troop_dead_list:
-                        if index in self.leader.troop_dead_list:
-                            self.leader.troop_dead_list[index] += self.troop_dead_list[index]
-                        else:
-                            self.leader.troop_dead_list[index] = self.troop_dead_list[index]
 
                 else:  # no higher leader to move, assign None
                     this_subunit.leader = None
@@ -90,8 +91,14 @@ def die(self, how):
     self.battle.active_subunit_list.remove(self)
 
     if how == "dead":
-        if self.is_leader and self.leader is None:
-            self.battle.drama_text.queue.append(str(self.name) + " is Dead")  # play drama text when unit leader die
+        if self.is_leader:
+            if self.leader is None:
+                self.battle.drama_text.queue.append(str(self.name) + " is Dead")  # play drama text when unit leader die
+            event_check = {value["Who"]: key for key, value in self.battle.event_log.map_event.items()}
+            if self.troop_id in event_check:  # check if specific dead event for leader exist
+                self.battle.event_log.add_log((0, self.battle.event_log.map_event[event_check[self.troop_id]]["Text"]))
+            else:
+                self.battle.event_log.add_log((0, str(self.name) + " is Dead."))  # add log to say this leader is dead
 
         if self in self.battle.battle_camera:
             self.current_action = die_command_action
@@ -107,9 +114,6 @@ def die(self, how):
     if len([key for key, value in self.battle.all_team_subunit.items() if len(value) > 0]) <= 1:
         self.battle.game_state = "end"
         self.battle.game_speed = 0
-
-    if self.is_leader:
-        self.battle.event_log.add_log((0, str(self.name) + " is Dead."))  # add log to say this leader is dead
 
     if self.player_control:
         self.battle.camera_mode = "Free"  # camera become free when player char die so can look over the battle

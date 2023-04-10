@@ -1,14 +1,19 @@
 "ID","Name","Race","Strength","Dexterity","Agility","Constitution","Intelligence","Wisdom","Charisma","Melee Speciality","Range Speciality","Cavalry Speciality","Social Class","Primary Main Weapon","Primary Sub Weapon","Secondary Main Weapon","Secondary Sub Weapon","Armour","Mount","Charge Skill","Skill","Trait","Formation","Sprite ID","Type"
-"C1","Huscarl Captain",1,80,70,70,80,50,55,30,7,4,3,3,"14,4","41,4",,,"5,4",,19,"L26",,"Line,Square","Saxon Leader","Warrior"
-"C2","Thane",1,65,55,60,60,55,60,40,4,4,2,4,"2,4","41,3",,,"5,4",,21,"L1",,"Line","Saxon Leader","Leader"
-"C3","High Medieval Norman Noble",1,58,52,50,55,55,60,50,4,3,4,4,"2,4","39,4",,,"5,4","2,3,14",21,,,"Line","Norman Leader","Leader"
-"C4","High Medieval Breton Noble",1,58,52,50,55,55,60,50,3,4,4,4,"2,4","39,4",,,"5,4","2,3,14",21,,,"Line","Norman Leader","Leader"
-"C5","High Medieval Frankish Noble",1,58,52,50,55,55,60,50,4,4,3,4,"2,4","39,4",,,"5,4","2,3,14",21,,,"Line","Norman Leader","Leader"
-"C6","Imy-rA mSa",1,55,60,60,50,55,60,60,6,6,6,4,"32,4",,"6,3",,"15,4","100,4,13",21,,,"Line","Old Egyptian Leader","Leader"
-"C7","Ur",1,55,65,60,50,55,60,50,5,4,5,4,"32,4",,"6,3",,"15,4","100,4,13",21,,,"Line","Old Egyptian Leader","Leader"
-"C8","Muru-u",1,60,50,55,50,54,60,60,5,5,5,4,"25,4",,"6,3",,"6,2","100,4,13",21,,,"Line","Canaan Leader","Leader"
-"C9","Akil Narkabti ",1,60,50,55,50,50,57,55,3,3,6,4,"25,4",,"6,3",,"6,2","98,4,13",21,,,"Line","Canaan Leader","Leader"
-"C10","Canaanite Noble",1,50,50,50,55,50,55,53,4,4,4,4,"25,4",,"6,3",,"15,4","98,3,13",21,,,"Line","Canaan Leader","Leader"
-"C11","Renaissance Polish Noble",1,,,,,,,50,,,,,,,,,,"2,3,14",21,,,"Line",,"Leader"
-"C12","Renaissance Hungarian Noble",1,,,,,,,60,,,,,,,,,,"2,3,14",21,,,"Line",,"Leader"
-"C13",,,,,,,,,,,,,,,,,,,,,,,,,
+"CSAX-1","Huscarl Captain",1,80,70,70,80,50,55,30,7,4,3,3,"14,4","41,4",,,"5,4",,19,"L26",,"Line,Square","Saxon Leader","Warrior"
+"CSAX-2","Thane",1,65,55,60,60,55,60,40,4,4,2,4,"2,4","41,3",,,"5,4",,21,"L1",,"Line","Saxon Leader","Leader"
+"CNOR-1","High Medieval Norman Noble",1,58,52,50,55,55,60,50,4,3,4,4,"2,4","39,4",,,"5,4","2,3,14",21,,,"Line","Norman Leader","Leader"
+"CNOR-2","High Medieval Breton Noble",1,58,52,50,55,55,60,50,3,4,4,4,"2,4","39,4",,,"5,4","2,3,14",21,,,"Line","Norman Leader","Leader"
+"CNOR-3","High Medieval Frankish Noble",1,58,52,50,55,55,60,50,4,4,3,4,"2,4","39,4",,,"5,4","2,3,14",21,,,"Line","Norman Leader","Leader"
+"CNK-1","Imy-rA mSa",1,55,60,60,50,55,60,60,6,6,6,4,"32,4",,"6,3",,"15,4","100,4,13",21,,,"Line","Old Egyptian Leader","Leader"
+"CNK-2","Ur",1,55,65,60,50,55,60,50,5,4,5,4,"32,4",,"6,3",,"15,4","100,4,13",21,,,"Line","Old Egyptian Leader","Leader"
+"CCNA-1","Muru-u",1,60,50,55,50,54,60,60,5,5,5,4,"25,4",,"6,3",,"6,2","100,4,13",21,,,"Line","Canaan Leader","Leader"
+"CCNA-2","Akil Narkabti ",1,60,50,55,50,50,57,55,3,3,6,4,"25,4",,"6,3",,"6,2","98,4,13",21,,,"Line","Canaan Leader","Leader"
+"CCNA-3","Canaanite Noble",1,50,50,50,55,50,55,53,4,4,4,4,"25,4",,"6,3",,"15,4","98,3,13",21,,,"Line","Canaan Leader","Leader"
+"CPOL-1","Renaissance Polish Noble",1,,,,,,,50,,,,,,,,,,"2,3,14",21,,,"Line",,"Leader"
+"CHUN-1","Renaissance Hungarian Noble",1,,,,,,,60,,,,,,,,,,"2,3,14",21,,,"Line",,"Leader"
+"CCRT-1","Renaissance Croatian Noble",,,,,,,,,,,,,,,,,,,,,,,,
+"CMC-1","Renaissance Mercenary Captain",,,,,,,,,,,,,,,,,,,,,,,,
+"COTTO-1","Ottoman Bey",1,,,,,,,,,,,,,,,,,,,,,,,
+"COTTO-2","Ottaman Pasha",1,,,,,,,,,,,,,,,,,,,,,,,
+"COTTO-3","Silahdar Agha",1,,,,,,,,,,,,,,,,,,,,,,,
+"COTTO-4","Janissary Agha",1,,,,,,,,,,,,,,,,,,,,,,,

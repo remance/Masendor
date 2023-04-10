@@ -16,7 +16,7 @@ read_anim_data = pool.read_anim_data
 
 direction_list = ("front", "side", "back", "sideup", "sidedown")
 
-with open(os.path.join(main_dir, "data", "animation", "generic", "side.csv"), encoding="utf-8",
+with open(os.path.join(main_dir, "data", "animation", "side.csv"), encoding="utf-8",
           mode="r") as edit_file:
     rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
     rd = [row for row in rd]

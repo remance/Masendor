@@ -1,16 +1,16 @@
 import os
 from math import radians
-from random import random
 from pathlib import Path
+from random import random
 
 import pygame
 import pygame.freetype
-
-from gamescript.battleui import SkillAimTarget, SpriteIndicator
-from gamescript.common import utility
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
+
+from gamescript.battleui import SkillAimTarget, SpriteIndicator
+from gamescript.common import utility
 
 rotation_list = (90, -90)
 rotation_name = ("l_side", "r_side")
@@ -375,7 +375,7 @@ class Subunit(pygame.sprite.Sprite):
         self.front_pos = (0, 0)  # pos of this subunit for finding height of map at the front
         self.front_height = 0
 
-        self.move_path = (self.base_pos, )
+        self.move_path = (self.base_pos,)
 
         # Set up special effect variable, first main item is for effect from troop/trait, second main item is for weapon
         # first sub item is permanent effect from trait, second sub item from temporary status or skill
@@ -394,6 +394,7 @@ class Subunit(pygame.sprite.Sprite):
             sprite_list = self.troop_sprite_list
             stat = self.troop_data.troop_list[self.troop_id].copy()
             lore = self.troop_data.troop_lore[self.troop_id].copy()
+            self.name = lore[0]  # name according to the preset
             self.grade = stat["Grade"]  # training level/class grade
             grade_stat = self.troop_data.grade_list[self.grade]
 
@@ -413,6 +414,7 @@ class Subunit(pygame.sprite.Sprite):
             sprite_list = self.leader_sprite_list
             stat = self.leader_data.leader_list[troop_id].copy()
             lore = self.leader_data.leader_lore[troop_id].copy()
+            self.name = lore[0]  # name according to the preset
             self.grade = 12  # leader grade by default
             grade_stat = self.troop_data.grade_list[self.grade]
 
@@ -463,15 +465,15 @@ class Subunit(pygame.sprite.Sprite):
 
             if self.troop_id in self.leader_data.images:  # Put leader image into leader slot
                 self.portrait = self.leader_data.images[self.troop_id].copy()
-            else:  # Use Unknown leader image if there is none in list
+            else:  # Use Unknown leader image if there is no specific portrait in data
                 self.portrait = self.leader_data.images["other"].copy()
-                font = pygame.font.SysFont("timesnewroman", 50)
-                text_image = font.render(self.troop_id, True, pygame.Color("white"))
+                name = self.name.split(" ")[0]
+                font = pygame.font.SysFont("helvetica", int(90 / (len(name) / 3) * self.screen_scale[1]))
+                text_image = font.render(name, True, pygame.Color("white"))
                 text_rect = text_image.get_rect(center=(self.portrait.get_width() / 2,
                                                         self.portrait.get_height() / 1.3))
                 self.portrait.blit(text_image, text_rect)
 
-        self.name = lore[0]  # name according to the preset
         self.race = stat["Race"]  # creature race
         race_stat = self.troop_data.race_list[stat["Race"]]
         self.race_name = race_stat["Name"]
@@ -494,7 +496,7 @@ class Subunit(pygame.sprite.Sprite):
         self.weight = 0
         self.original_weapon_dmg = {index: {0: element_dict.copy(), 1: element_dict.copy()} for index in range(0, 2)}
         self.weapon_penetrate = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
-        self.base_weapon_impact = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
+        self.weapon_impact = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
         self.weapon_weight = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
         self.range_dmg = {index: {0: element_dict.copy(), 1: element_dict.copy()} for index in range(0, 2)}
         self.original_shoot_range = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
@@ -677,8 +679,9 @@ class Subunit(pygame.sprite.Sprite):
                 if dmg > 0:
                     self.body_weapon_damage[key] = (dmg * self.body_weapon_stat["Damage Balance"]) + \
                                                    (dmg * (body_strength / 100))
-        self.body_weapon_damage = {key: value for key, value in self.body_weapon_damage.items() if value}
-        # add troop size as pure bonus
+        self.body_weapon_damage = {key: value for key, value in self.body_weapon_damage.items() if value}  # remove 0 damage element
+        # add troop size as pure bonus for impact and penetrate
+        self.body_weapon_impact = self.troop_data.weapon_list[1]["Impact"] + self.troop_size
         self.body_weapon_penetrate = self.troop_data.weapon_list[1]["Armour Penetration"] + self.troop_size
 
         self.troop_mass = self.troop_size
@@ -723,7 +726,8 @@ class Subunit(pygame.sprite.Sprite):
         self.original_skill = [skill for skill in self.original_skill if
                                (type(skill) is str or (skill in self.troop_data.skill_list and
                                                        self.troop_data.skill_list[skill]["Troop Type"] == 0 or
-                                                       self.troop_data.skill_list[skill]["Troop Type"] == self.subunit_type))]
+                                                       self.troop_data.skill_list[skill][
+                                                           "Troop Type"] == self.subunit_type))]
 
         if self.subunit_type == 2:  # cavalry has half weight penalty
             self.weight = self.weight / 2
@@ -881,7 +885,7 @@ class Subunit(pygame.sprite.Sprite):
             if hitbox_size not in self.hitbox_image_list[self.team]["leader"]:
                 self.hitbox_image = pygame.Surface(hitbox_size, pygame.SRCALPHA)
                 pygame.draw.circle(self.hitbox_image, (self.team_colour[self.team][0], self.team_colour[self.team][1],
-                                    self.team_colour[self.team][2], 150),
+                                                       self.team_colour[self.team][2], 150),
                                    (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
                                    self.hitbox_image.get_width() / 2)
 
@@ -896,7 +900,7 @@ class Subunit(pygame.sprite.Sprite):
                 self.hitbox_image = pygame.Surface(hitbox_size,
                                                    pygame.SRCALPHA)
                 pygame.draw.circle(self.hitbox_image, (self.team_colour[self.team][0], self.team_colour[self.team][1],
-                                    self.team_colour[self.team][2], 150),
+                                                       self.team_colour[self.team][2], 150),
                                    (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
                                    self.hitbox_image.get_width() / 2)
 
@@ -935,21 +939,28 @@ class Subunit(pygame.sprite.Sprite):
                     if self.base_pos.distance_to(self.current_camp_pos) <= self.current_camp_radius:
                         if not self.take_melee_dmg and not self.take_aoe_dmg and not self.take_range_dmg:
                             self.reserve_ready_timer += dt
+                            if self.health < self.max_health:  # leader regen health in camp
+                                self.health += dt
+                                if self.health > self.max_health:
+                                    self.health = self.max_health
                         if self.reserve_ready_timer > 5:  # troop reinforcement take 5 seconds
                             for troop_id, number in self.troop_dead_list.items():
                                 for _ in range(number):
                                     if self.troop_reserve_list[troop_id] > 0:
                                         add_subunit = Subunit(troop_id, self.battle.last_troop_game_id, None, self.team,
-                                                              self.base_pos, self.angle, self.start_hp, self.start_stamina,
+                                                              self.base_pos, self.angle, self.start_hp,
+                                                              self.start_stamina,
                                                               self, self.coa)
-                                        add_subunit.hitbox = SpriteIndicator(add_subunit.hitbox_image, add_subunit, self)
-                                        add_subunit.effectbox = SpriteIndicator(pygame.Surface((0, 0)), add_subunit, self,
-                                                                                layer=10000001)
+                                        add_subunit.hitbox = SpriteIndicator(add_subunit.hitbox_image, add_subunit,
+                                                                             self)
+                                        add_subunit.effectbox = SpriteIndicator(pygame.Surface((0, 0)), add_subunit,
+                                                                                self, layer=10000001)
                                         add_subunit.enter_battle(self.battle.subunit_animation_pool,
                                                                  self.battle.status_animation_pool)
                                         self.troop_dead_list[troop_id] -= 1
                                         self.battle.last_troop_game_id += 1
                                         self.troop_reserve_list[troop_id] -= 1
+
                                     else:
                                         self.troop_reserve_list.pop(troop_id)
                                         break
@@ -990,7 +1001,8 @@ class Subunit(pygame.sprite.Sprite):
                                 self.attack("charge")
 
                     if self.is_leader and self.camp_pos and self.reserve_ready_timer == 0 and \
-                            any(value > 0 for value in self.troop_dead_list.values()) and self.troop_reserve_list:
+                            ((any(value > 0 for value in self.troop_dead_list.values()) and self.troop_reserve_list)
+                             or self.health < self.max_health):
                         for index, camp_pos in enumerate(self.camp_pos):
                             if self.base_pos.distance_to(camp_pos) <= self.camp_radius[index]:
                                 self.current_camp_pos = camp_pos

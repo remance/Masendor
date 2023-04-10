@@ -1,4 +1,3 @@
-from gamescript import battleui
 from gamescript.common import utility
 
 change_group = utility.change_group

@@ -1,20 +1,18 @@
 import glob
 import os
 import sys
+from datetime import datetime, timedelta
+from random import randint
 
 import pygame
 import pygame.freetype
-from datetime import datetime, timedelta
 
-from gamescript import camera, weather, battleui, menu, subunit, datasprite, damagesprite, effectsprite, ai
+from gamescript import camera, weather, battleui, subunit, datasprite, damagesprite, effectsprite, ai
 from gamescript.common import utility
-
-from random import randint
 
 direction_list = datasprite.direction_list
 
 from pygame.locals import *
-from scipy.spatial import KDTree
 
 from pathlib import Path
 
@@ -203,7 +201,6 @@ class Battle:
              "Unit Density": {"Unit Very Tight": "Very Tight", "Unit Tight": "Tight",
                               "Unit Very Loose": "Very Loose", "Unit Loose": "Loose"},
 
-
              "Formation Phase": {"Skirmish Phase": "Skirmish Phase", "Melee Phase": "Melee Phase",
                                  "Bombard Phase": "Bombard Phase"},
              "Formation Style": {"Infantry Flank": "Infantry Flank", "Cavalry Flank": "Cavalry Flank"},
@@ -243,7 +240,7 @@ class Battle:
 
         self.current_weather = weather.Weather(self.time_ui, 4, 0, 0, self.weather_data)
 
-        self.generic_animation_pool = None
+        self.subunit_animation_data = None
         self.gen_body_sprite_pool = None
         self.gen_weapon_sprite_pool = None
         self.gen_armour_sprite_pool = None
@@ -280,7 +277,8 @@ class Battle:
         self.active_subunit_list = []  # list of all subunit alive in battle, need to be in list for collision check
         self.visible_subunit_list = {}  # list of subunit visible to the team
 
-        self.best_depth = pygame.display.mode_ok(self.screen_rect.size, self.main.window_style, 32)  # Set the display mode
+        self.best_depth = pygame.display.mode_ok(self.screen_rect.size, self.main.window_style,
+                                                 32)  # Set the display mode
         self.screen = pygame.display.set_mode(self.screen_rect.size, self.main.window_style | pygame.RESIZABLE,
                                               self.best_depth)  # set up self screen
 
@@ -293,7 +291,8 @@ class Battle:
         self.camera_mode = "Follow"  # mode of game camera
         self.true_camera_pos = pygame.Vector2(500, 500)  # camera pos on map
         self.camera_pos = pygame.Vector2(self.true_camera_pos[0] * self.screen_scale[0],
-                                         self.true_camera_pos[1] * self.screen_scale[1]) * 5  # Camera pos with screen scale
+                                         self.true_camera_pos[1] * self.screen_scale[
+                                             1]) * 5  # Camera pos with screen scale
 
         self.shown_camera_pos = self.camera_pos  # pos of camera shown to player, in case of screen shaking or other effects
 
@@ -345,7 +344,7 @@ class Battle:
         self.troop_data = self.main.troop_data
         self.leader_data = self.main.leader_data
 
-        self.generic_animation_pool = self.main.generic_animation_pool
+        self.subunit_animation_data = self.main.subunit_animation_data
         self.gen_body_sprite_pool = self.main.gen_body_sprite_pool
         self.gen_weapon_sprite_pool = self.main.gen_weapon_sprite_pool
         self.gen_armour_sprite_pool = self.main.gen_armour_sprite_pool
@@ -426,7 +425,8 @@ class Battle:
         yield set_done_load()
 
         yield set_start_load("images")
-        images = load_images(self.main_dir, subfolder=("ruleset", self.ruleset_folder, "map", map_type, self.map_selected))
+        images = load_images(self.main_dir,
+                             subfolder=("ruleset", self.ruleset_folder, "map", map_type, self.map_selected))
         self.battle_map_base.draw_image(images["base"])
         self.battle_map_feature.draw_image(images["feature"])
         self.battle_map_height.draw_image(images["height"])
@@ -464,7 +464,8 @@ class Battle:
         self.all_team_subunit = {int(key[-1]): pygame.sprite.Group() for key in self.map_info if "Team " in key}
         self.all_team_enemy = {int(key[-1]): pygame.sprite.Group() for key in self.map_info if "Team " in key}
         self.camp = {key: {} for key in self.all_team_subunit.keys()}
-        self.team_troop_number = [0 for _ in range(len(self.all_team_subunit) + 1)]  # reset list of troop number in each team
+        self.team_troop_number = [0 for _ in
+                                  range(len(self.all_team_subunit) + 1)]  # reset list of troop number in each team
         self.battle_scale = [1 for _ in self.team_troop_number]
         self.start_troop_number = [0 for _ in self.team_troop_number]
         self.death_troop_number = [0 for _ in self.team_troop_number]
@@ -631,7 +632,6 @@ class Battle:
                             else:  # skill that require player to input target
                                 self.player_skill_perform(mouse_left_up, mouse_right_up, key_state)
 
-
                     # Drama text function
                     if not self.drama_timer and self.drama_text.queue:  # Start timer and draw if there is event queue
                         self.battle_ui_updater.add(self.drama_text)
@@ -741,7 +741,7 @@ class Battle:
                         if self.player_char:
                             self.command_ui.value_input(who=self.player_char)
                             self.countdown_skill_icon()
-                        self.battle_scale = [(value / sum(self.team_troop_number) * 100) for value in
+                        self.battle_scale = [value / sum(self.team_troop_number) for value in
                                              self.team_troop_number]
                         self.battle_scale_ui.change_fight_scale(
                             self.battle_scale)  # change fight colour scale on time_ui bar
@@ -757,6 +757,9 @@ class Battle:
                         else:
                             for key, value in self.all_team_subunit.items():
                                 if value:
+                                    if "wt" + str(key) in self.event_log.map_event:
+                                        self.event_log.add_log(
+                                            (0, self.event_log.map_event["wt" + str(key)]["Text"]))
                                     self.battle_done_box.pop(self.faction_data.faction_list[self.map_info[
                                         "Team " + str(key)]]["Name"], self.coa_list[self.map_info[
                                         "Team " + str(key)]])
