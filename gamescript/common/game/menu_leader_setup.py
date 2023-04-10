@@ -42,17 +42,17 @@ def menu_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mous
                     self.char_selector.setup_char_icon(self.char_icon, self.preview_char)
 
         else:
-            for icon in self.char_icon:  # select unit
-                if icon.rect.collidepoint(self.mouse_pos):
-                    if icon.who.name != "+":  # add popup showing leader and troop in subunit
+            for char in self.char_icon:  # select unit
+                if char.rect.collidepoint(self.mouse_pos):
+                    if char.who.name != "+":  # add popup showing leader and troop in subunit
                         popup_text = [self.leader_data.leader_list[
-                                          self.custom_map_data["unit"][icon.who.team][icon.who.index]["Leader ID"]][
+                                          self.custom_map_data["unit"][char.who.team][char.who.index]["Leader ID"]][
                                           "Name"]]
-                        for troop in self.custom_map_data["unit"][icon.who.team][icon.who.index]["Troop"]:
+                        for troop in self.custom_map_data["unit"][char.who.team][char.who.index]["Troop"]:
                             popup_text += [self.troop_data.troop_list[troop]["Name"] + ": " +
-                                           str(self.custom_map_data["unit"][icon.who.team][icon.who.index]["Troop"][
+                                           str(self.custom_map_data["unit"][char.who.team][char.who.index]["Troop"][
                                                    troop][0]) + " + " +
-                                           str(self.custom_map_data["unit"][icon.who.team][icon.who.index]["Troop"][
+                                           str(self.custom_map_data["unit"][char.who.team][char.who.index]["Troop"][
                                                    troop][1])]
                         self.single_text_popup.pop(self.mouse_pos, popup_text)
                         self.main_ui_updater.add(self.single_text_popup)
@@ -60,52 +60,62 @@ def menu_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mous
                         for other_icon in self.char_icon:
                             if other_icon.selected:  # unselected all others first
                                 other_icon.selection()
-                        icon.selection()
-                        if icon.who.team in self.custom_map_data["unit"]["pos"] and \
-                                icon.who.index in self.custom_map_data["unit"]["pos"][icon.who.team]:
+                        char.selection()
+                        if char.who.team in self.custom_map_data["unit"]["pos"] and \
+                                char.who.index in self.custom_map_data["unit"]["pos"][char.who.team]:
                             # highlight unit in preview map
                             self.map_preview.change_mode(1, team_pos_list=self.custom_map_data["unit"]["pos"],
                                                          camp_pos_list=self.camp_pos[0],
                                                          selected=
-                                                         self.custom_map_data["unit"]["pos"][icon.who.team][
-                                                             icon.who.index])
-                        self.org_chart.add_chart(self.custom_map_data["unit"][icon.who.team], self.preview_char,
-                                                 selected=icon.who.index)
+                                                         self.custom_map_data["unit"]["pos"][char.who.team][
+                                                             char.who.index])
+                        self.org_chart.add_chart(self.custom_map_data["unit"][char.who.team], self.preview_char,
+                                                 selected=char.who.index)
                     elif mouse_right_up:
                         for other_icon in self.char_icon:
                             if other_icon.right_selected:  # unselected all others first
                                 other_icon.selection(how="right")
-                        icon.selection(how="right")
+                        char.selection(how="right")
                     break
 
     elif self.org_chart.rect.collidepoint(self.mouse_pos):
         mouse_pos = pygame.Vector2((self.mouse_pos[0] - self.org_chart.rect.topleft[0]),
                                    (self.mouse_pos[1] - self.org_chart.rect.topleft[1]))
-        for rect in self.org_chart.node_rect:
+        for rect in self.org_chart.node_rect:  # check for mouse on node in org chart
             if self.org_chart.node_rect[rect].collidepoint(mouse_pos):
-                for icon_index, icon in enumerate(self.char_icon):  # select unit
-                    if icon_index == rect:
+                not_in_list = True
+                for char_index, char in enumerate(self.preview_char):  # check for unit in icon
+                    if char_index == rect:  # found char for data
                         popup_text = [self.leader_data.leader_list[
-                                          self.custom_map_data["unit"][icon.who.team][icon.who.index]["Leader ID"]][
+                                          self.custom_map_data["unit"][char.team][char.index]["Leader ID"]][
                                           "Name"]]
-                        for troop in self.custom_map_data["unit"][icon.who.team][icon.who.index]["Troop"]:
+                        for troop in self.custom_map_data["unit"][char.team][char.index]["Troop"]:
                             popup_text += [self.troop_data.troop_list[troop]["Name"] + ": " +
-                                           str(self.custom_map_data["unit"][icon.who.team][icon.who.index]["Troop"][
+                                           str(self.custom_map_data["unit"][char.team][char.index]["Troop"][
                                                    troop][0]) + " + " +
-                                           str(self.custom_map_data["unit"][icon.who.team][icon.who.index]["Troop"][
+                                           str(self.custom_map_data["unit"][char.team][char.index]["Troop"][
                                                    troop][1])]
                         self.single_text_popup.pop(self.mouse_pos, popup_text)
                         self.main_ui_updater.add(self.single_text_popup)
 
                         if mouse_right_up:
-                            for icon2 in self.char_icon:
-                                if icon2.right_selected and icon2 is not icon:
-                                    self.custom_map_data["unit"][icon2.who.team][icon2.who.index]["Leader"] = icon_index
-                                    self.org_chart.add_chart(self.custom_map_data["unit"][icon.who.team],
+                            for char2 in self.preview_char:
+                                if char2.right_selected and char2 is not char:
+                                    not_in_list = False
+                                    self.custom_map_data["unit"][char2.team][char2.index]["Leader"] = char.index
+                                    # self.char_icon.remove(icon2)
+                                    self.org_chart.add_chart(self.custom_map_data["unit"][char.team],
                                                              self.preview_char,
-                                                             selected=icon.who.index)
+                                                             selected=char.index)
+                                    break
 
                         break
+
+                if mouse_right_up and not_in_list:
+                    self.custom_map_data["unit"][char.who.team][rect]["Leader"] = ""
+                    self.org_chart.add_chart(self.custom_map_data["unit"][char.who.team],
+                                             self.preview_char,
+                                             selected=char.who.index)
 
     elif mouse_left_up:
         for this_team in self.team_coa:  # User select any team by clicking on coat of arm

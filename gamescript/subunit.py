@@ -394,6 +394,7 @@ class Subunit(pygame.sprite.Sprite):
             sprite_list = self.troop_sprite_list
             stat = self.troop_data.troop_list[self.troop_id].copy()
             lore = self.troop_data.troop_lore[self.troop_id].copy()
+            self.name = lore[0]  # name according to the preset
             self.grade = stat["Grade"]  # training level/class grade
             grade_stat = self.troop_data.grade_list[self.grade]
 
@@ -413,6 +414,7 @@ class Subunit(pygame.sprite.Sprite):
             sprite_list = self.leader_sprite_list
             stat = self.leader_data.leader_list[troop_id].copy()
             lore = self.leader_data.leader_lore[troop_id].copy()
+            self.name = lore[0]  # name according to the preset
             self.grade = 12  # leader grade by default
             grade_stat = self.troop_data.grade_list[self.grade]
 
@@ -463,15 +465,15 @@ class Subunit(pygame.sprite.Sprite):
 
             if self.troop_id in self.leader_data.images:  # Put leader image into leader slot
                 self.portrait = self.leader_data.images[self.troop_id].copy()
-            else:  # Use Unknown leader image if there is none in list
+            else:  # Use Unknown leader image if there is no specific portrait in data
                 self.portrait = self.leader_data.images["other"].copy()
-                font = pygame.font.SysFont("timesnewroman", 50)
-                text_image = font.render(self.troop_id, True, pygame.Color("white"))
+                name = self.name.split(" ")[0]
+                font = pygame.font.SysFont("helvetica", int(90 / (len(name) / 3) * self.screen_scale[1]))
+                text_image = font.render(name, True, pygame.Color("white"))
                 text_rect = text_image.get_rect(center=(self.portrait.get_width() / 2,
                                                         self.portrait.get_height() / 1.3))
                 self.portrait.blit(text_image, text_rect)
 
-        self.name = lore[0]  # name according to the preset
         self.race = stat["Race"]  # creature race
         race_stat = self.troop_data.race_list[stat["Race"]]
         self.race_name = race_stat["Name"]

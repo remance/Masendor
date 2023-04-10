@@ -108,8 +108,8 @@ class Lorebook(pygame.sprite.Sprite):
 
         self.leader_stat = {}
         run = 1
-        for value in self.leader_data.leader_list.values():
-            self.leader_stat[run] = value
+        for key, value in self.leader_data.leader_list.items():
+            self.leader_stat[run] = value | {"True ID": key}
             run += 1
 
         self.leader_lore = {}
@@ -249,14 +249,14 @@ class Lorebook(pygame.sprite.Sprite):
 
         if self.section == self.leader_section:  # leader section exclusive for now (will merge with other section when add portrait for others)
             try:
-                image_name = "L" + str(self.subsection)
                 self.portrait = self.leader_data.images[
-                    image_name]  # get leader portrait based on subsection number
+                    self.stat_data[self.subsection]["True ID"]]  # get leader portrait based on subsection number
             except KeyError:
                 self.portrait = self.leader_data.images[
                     "other"].copy()  # Use Unknown leader image if there is none in list
-                font = pygame.font.SysFont("timesnewroman", int(100 * self.screen_scale[1]))
-                text_image = font.render(str(self.subsection), True, pygame.Color("white"))
+                name = self.stat_data[self.subsection]["Name"].split(" ")[0]
+                font = pygame.font.SysFont("timesnewroman", int(100 / (len(name) / 3) * self.screen_scale[1]))
+                text_image = font.render(name, True, pygame.Color("white"))
                 text_rect = text_image.get_rect(
                     center=(self.portrait.get_width() / 2, self.portrait.get_height() / 1.3))
                 self.portrait.blit(text_image, text_rect)

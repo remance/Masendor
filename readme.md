@@ -160,7 +160,7 @@ This function is going to be a headache to write and research. But hopefully, it
 
 ### Sprite:
 
-- inogNate
+- Prototype slash effect sprites by inogNate
 
 ### Sound (Obtained and edited):
 

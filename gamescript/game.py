@@ -107,7 +107,6 @@ class Game:
                 exec(f"from gamescript.common.game import " + file_name)
                 exec(f"" + file_name + " = " + file_name + "." + file_name)
 
-    # Will be changed in change_game_genre function depending on selected genre
     troop_sprite_size = (200, 200)
     start_zoom_mode = "Follow"
 
@@ -697,11 +696,11 @@ class Game:
         self.gen_body_sprite_pool = self.troop_animation.gen_body_sprite_pool  # body sprite pool
         self.gen_weapon_sprite_pool = self.troop_animation.gen_weapon_sprite_pool  # weapon sprite pool
         self.gen_armour_sprite_pool = self.troop_animation.gen_armour_sprite_pool  # armour sprite pool
-        self.weapon_joint_list = self.troop_animation.weapon_joint_list  # weapon joint data
-        self.colour_list = self.troop_animation.colour_list  # skin colour list
+        self.weapon_joint_list = self.troop_animation.weapon_joint_list  # weapon joint data, for placing handle to hand
+        self.colour_list = self.troop_animation.colour_list  # sprite colourising list
 
-        self.effect_sprite_pool = self.troop_animation.effect_sprite_pool
-        self.effect_animation_pool = self.troop_animation.effect_animation_pool
+        self.effect_sprite_pool = self.troop_animation.effect_sprite_pool  # effect sprite pool
+        self.effect_animation_pool = self.troop_animation.effect_animation_pool  # effect sprite animation pool
 
         self.command_ui.weapon_sprite_pool = self.gen_weapon_sprite_pool
 

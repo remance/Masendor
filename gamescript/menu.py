@@ -1,4 +1,5 @@
 import pygame
+import networkx as nx
 import pygame.freetype
 import pygame.freetype
 import pygame.transform
@@ -823,59 +824,69 @@ class OrgChart(pygame.sprite.Sprite):
         self.size = self.image.get_size()
         self.rect = self.image.get_rect(topleft=pos)
 
+    def hierarchy_pos(self, graph_input, root=None, width=1., vert_gap=0.2, y_pos=0, x_pos=0, pos=None, parent=None):
+        """
+        From Joel's answer at https://stackoverflow.com/a/29597209/2966723.
+        Licensed under Creative Commons Attribution-Share Alike
+
+        :param graph_input: the graph (must be a tree)
+        :param root: the root node of current branch
+        :param width: horizontal space allocated for this branch - avoids overlap with other branches
+        :param vert_gap: gap between levels of hierarchy
+        :param y_pos: vertical location of node (assign with root)
+        :param x_pos: horizontal location of node  (assign with root)
+        :param pos: a dict saying where all nodes go if they have been assigned
+        :param parent: parent of this branch. - only affects it if non-directed
+        :return the positions to plot this in a hierarchical layout
+        """
+
+        if pos is None:
+            pos = {root: (x_pos, y_pos)}
+        else:
+            pos[root] = (x_pos, y_pos)
+        children = list(graph_input.neighbors(root))
+        if not isinstance(graph_input, nx.DiGraph) and parent is not None:
+            children.remove(parent)
+        if len(children) != 0:
+            dx = width / len(children)
+            nextx = x_pos - width / 2 - dx / 2
+            for child in children:
+                nextx += dx
+                pos = self.hierarchy_pos(graph_input, root=child, width=dx, vert_gap=vert_gap,
+                                         y_pos=y_pos - vert_gap, x_pos=nextx,
+                                         pos=pos, parent=root)
+        return pos
+
     def add_chart(self, unit_data, preview_char, selected=None):
         self.image = self.base_image.copy()
         self.node_rect = {}
-        org = {}
-        max_row = 0
-        max_column = 0
+
         if selected is not None:
-            next_level = org
-            next_leader_batch = [selected]
-            while next_leader_batch:
-                column_count = 0
-                for search_leader in next_leader_batch:
-                    next_level[search_leader] = {index: {} for index, subunit in enumerate(unit_data) if
-                                                 subunit["Leader"] == search_leader}
-                    next_level[search_leader]["follower"] = len(next_level[search_leader])
-                    column_count += next_level[search_leader]["follower"]
-                next_leader_batch = [index for index in next_level[search_leader] for search_leader in next_leader_batch
-                                     if index != "follower"]
-                next_level = next_level[search_leader]
-                max_row += 1
+            graph_input = nx.Graph()
 
-                if column_count > max_column:
-                    max_column = column_count
+            edge_list = [(subunit["Leader"], index) for index, subunit in enumerate(unit_data) if
+                         type(subunit["Leader"]) is int]
+            try:
+                graph_input.add_edges_from(edge_list)
+                pos = self.hierarchy_pos(graph_input, root=selected,  width=self.image.get_width(),
+                                         vert_gap=-self.image.get_height() * 0.5 / len(edge_list), y_pos=100,
+                                         x_pos=self.image.get_width() / 2)
+                image_size = (self.image.get_width() / (len(pos) * 1.5), self.image.get_height() / (len(pos) * 1.5))
+            except (nx.exception.NetworkXError, ZeroDivisionError):  # has only one leader
+                pos = {selected: (self.image.get_width() / 2, self.image.get_width() / 2)}
+                image_size = (self.image.get_width() / 2, self.image.get_height() / 2)
 
-            max_scale = max(max_column * 2, max_row * 2)
-            image_size = (self.image.get_width() / max_scale, self.image.get_height() / max_scale)
-            start_icon_x = self.image.get_width() / 2
-            icon_pos = [self.image.get_width() / 2, image_size[1]]
-
-            next_level = org
-            next_leader_batch = [item for item in org]
-            while next_leader_batch:
-                for index, leader in enumerate(next_leader_batch):
-                    start_icon_x  # TODO higher leader pos
-                    for char_index, icon in enumerate(preview_char):
-                        if char_index == leader:
-                            image = pygame.transform.smoothscale(icon.portrait, image_size)
-                            self.node_rect[leader] = image.get_rect(center=icon_pos)
-                            self.image.blit(image, self.node_rect[leader])
-                            print(icon_pos)
-                            if index % 2 == 0 or index == 0:  # even index go right
-                                icon_pos[0] = start_icon_x + icon.portrait.get_width() * index
-                            else:  # go left
-                                icon_pos[0] = start_icon_x - icon.portrait.get_width() * index
-                            print(icon_pos)
-                            break
-
-                next_leader_batch = [index for index in next_level[leader] for leader in next_leader_batch if
-                                     index != "follower"]
-                next_level = next_level[leader]
-                icon_pos[1] += image_size[1] * 1.2
-        #
-        # pygame.draw.line(self.image, (0, 0, 0), leader.midbottom, follower.midtop)
+            for subunit in pos:
+                for char_index, icon in enumerate(preview_char):
+                    if char_index == subunit:
+                        image = pygame.transform.smoothscale(icon.portrait, image_size)
+                        self.node_rect[subunit] = image.get_rect(center=pos[subunit])
+                        self.image.blit(image, self.node_rect[subunit])
+                        break
+            for subunit in pos:
+                if type(unit_data[subunit]["Leader"]) is int:
+                    pygame.draw.line(self.image, (0, 0, 0), self.node_rect[unit_data[subunit]["Leader"]].midbottom,
+                                     self.node_rect[subunit].midtop)
 
 
 class SelectedPresetBorder(pygame.sprite.Sprite):

@@ -864,10 +864,10 @@ class TempCharIcon(pygame.sprite.Sprite):
         self.screen_scale = screen_scale
         self.index = index
         self.portrait = pygame.Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]), pygame.SRCALPHA)
-        self.font = pygame.font.SysFont("helvetica", int(100 * self.screen_scale[1]))
-        if type(image) is float or type(image) is int or type(image) is str:
+        if type(image) in (int, float, str):
             self.name = str(image)
-            image_surface = self.font.render(self.name, True, (0, 0, 0))
+            font = pygame.font.SysFont("helvetica", int(100 / (len(self.name) / 3) * self.screen_scale[1]))
+            image_surface = font.render(self.name, True, (0, 0, 0))
             image_rect = image_surface.get_rect(center=(self.portrait.get_width() / 2, self.portrait.get_height() / 2))
             self.portrait.blit(image_surface, image_rect)
         else:
