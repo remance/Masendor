@@ -48,6 +48,10 @@ for entry in os.scandir(Path(script_dir + "/common/game/setup/")):  # load and r
             file_name = entry.name[:-3]
         elif ".pyc" in entry.name:
             file_name = entry.name[:-4]
+
+        if file_name.startswith("."):
+            continue
+
         exec(f"from gamescript.common.game.setup import " + file_name)
         exec(f"" + file_name + " = " + file_name + "." + file_name)
 
