@@ -1,6 +1,7 @@
 import glob
 import os
 import sys
+import time
 from datetime import datetime, timedelta
 from random import randint
 
@@ -10,11 +11,11 @@ import pygame.freetype
 from gamescript import camera, weather, battleui, subunit, datasprite, damagesprite, effectsprite, ai
 from gamescript.common import utility
 
+from pygame.locals import *
+from pathlib import Path
+
 direction_list = datasprite.direction_list
 
-from pygame.locals import *
-
-from pathlib import Path
 
 load_image = utility.load_image
 load_images = utility.load_images
@@ -30,12 +31,13 @@ script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
 # ----
 # perhaps this can be in its own file?
 
-import time
 load_timer = None
+
 
 def set_start_load(what):
     globals()['load_timer'] = time.time()
     return "Loading {0}... ".format(what)
+
 
 def set_done_load():
     duration = time.time() - globals()['load_timer']
@@ -314,14 +316,12 @@ class Battle:
         self.battle_mouse_pos = [0, 0]  # with camera zoom adjust but without screen scale
         self.command_mouse_pos = [0, 0]  # with zoom and screen scale for unit command
 
-
     def prepare_new_game(self, ruleset, ruleset_folder, team_selected, map_type, map_selected,
                          map_source, char_selected, map_info, camp_pos):
- 
+
         for message in self.inner_prepare_new_game(ruleset, ruleset_folder, team_selected, map_type, map_selected,
                                                    map_source, char_selected, map_info, camp_pos):
             print(message, end="")
-
 
     def inner_prepare_new_game(self, ruleset, ruleset_folder, team_selected, map_type, map_selected,
                                map_source, char_selected, map_info, camp_pos):
@@ -436,7 +436,6 @@ class Battle:
         else:
             place_name_map = None
         yield set_done_load()
-
 
         yield set_start_load("draw map")
         self.battle_map.draw_image(self.battle_map_base, self.battle_map_feature, place_name_map, self.camp_pos, self)

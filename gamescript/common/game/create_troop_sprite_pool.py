@@ -13,13 +13,12 @@ from gamescript.create_troop_sprite_pool_methods import recursive_cast_surface_t
 from gamescript.create_troop_sprite_pool_methods import recursive_cast_pickleable_surface_to_surface
 
 
-
 def create_troop_sprite_pool(self, who_todo, preview=False, specific_preview=None, max_preview_size=200):
 
-    stringified_arguments = "".join(sorted(map(str,who_todo.keys())))+"p"+str(max_preview_size)
+    stringified_arguments = "".join(sorted(map(str, who_todo.keys())))+"p"+str(max_preview_size)
     md5 = hashlib.md5(stringified_arguments.encode()).hexdigest()
 
-    cache_file_path = os.path.join(self.main_dir, 'cache_{0}.pickle'.format(md5) )
+    cache_file_path = os.path.join(self.main_dir, 'cache_{0}.pickle'.format(md5))
 
     if not os.path.isfile(cache_file_path):
         pool = inner_create_troop_sprite_pool(self, who_todo, preview, specific_preview, max_preview_size)
@@ -29,19 +28,17 @@ def create_troop_sprite_pool(self, who_todo, preview=False, specific_preview=Non
         assert type(pool[0]) == dict
         assert type(pool[1]) == dict
 
-
         recursive_cast_surface_to_pickleable_surface(pool[0])
         recursive_cast_surface_to_pickleable_surface(pool[1])
 
         with open(cache_file_path, "wb") as handle:
-            pickle.dump(pool,handle)
-
+            pickle.dump(pool, handle)
 
     with open(cache_file_path, "rb") as handle:
         pool = pickle.load(handle)
 
-    recursive_cast_pickleable_surface_to_surface( pool[0])
-    recursive_cast_pickleable_surface_to_surface( pool[1])
+    recursive_cast_pickleable_surface_to_surface(pool[0])
+    recursive_cast_pickleable_surface_to_surface(pool[1])
 
     return pool
 
