@@ -8,6 +8,36 @@ load_image = utility.load_image
 
 def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up, mouse_scroll_up, mouse_scroll_down,
                             esc_press):
+    if self.popup_list_box in self.main_ui_updater:
+        if self.popup_list_box.scroll.rect.collidepoint(self.mouse_pos):
+            new_row = self.popup_list_box.scroll.player_input(self.mouse_pos)
+            if new_row is not None:
+                self.current_popup_row = new_row
+                setup_list(self.screen_scale, menu.NameList, self.current_popup_row,
+                           self.popup_list_box.namelist,
+                           self.popup_namegroup, self.popup_list_box, self.main_ui_updater)
+        elif mouse_left_up:
+            if self.popup_list_box.rect.collidepoint(self.mouse_pos):
+                for index, name in enumerate(self.popup_namegroup):  # click on popup list
+                    if name.rect.collidepoint(self.mouse_pos):
+                        self.weather_custom_select.rename("Weather: " + name.name)
+                        battle_time = "09:00:00"
+                        if self.night_battle_tick_box.tick:  # check for night battle
+                            battle_time = "21:00:00"
+                        self.custom_map_data["info"]["weather"] = \
+                            (battle_time, int(self.battle_map_data.weather_list.index(name.name.split(" ")[1]) / 3),
+                             ("Light ", "Normal ", "Strong ").index(name.name.split(" ")[0]))
+                        for this_name in self.popup_namegroup:  # remove name list
+                            this_name.kill()
+                            del this_name
+                        self.main_ui_updater.remove(self.popup_list_box, self.popup_list_box.scroll)
+                        break
+            else:  # click other stuffs
+                for this_name in self.popup_namegroup:  # remove name list
+                    this_name.kill()
+                    del this_name
+                self.main_ui_updater.remove(self.popup_list_box, self.popup_list_box.scroll)
+
     if mouse_left_up or mouse_left_down or mouse_right_up:
         if mouse_left_up or mouse_right_up:
             change_team_coa(self)
@@ -67,7 +97,7 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                             self.char_selector.setup_char_icon(self.char_icon, self.camp_icon)
                             break
 
-            for box in self.tick_box:
+            for box in (self.observe_mode_tick_box, self.night_battle_tick_box):
                 if box in self.main_ui_updater and box.rect.collidepoint(self.mouse_pos):
                     if box.tick is False:
                         box.change_tick(True)
@@ -104,6 +134,13 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                                               self.source_list_box.scroll, self.source_list_box,
                                               self.current_source_row, ["None"] + self.faction_data.faction_name_list,
                                               self.source_namegroup, self.main_ui_updater)
+
+    elif self.weather_custom_select.rect.collidepoint(self.mouse_pos):
+        if mouse_left_up:
+            self.current_popup_row = 0
+            self.popup_list_open(self.weather_custom_select.rect.bottomleft,
+                                 self.battle_map_data.weather_list, "weather",
+                                 "top", self.main_ui_updater)
 
     elif self.char_selector.rect.collidepoint(self.mouse_pos):
         if mouse_scroll_up:
@@ -151,11 +188,17 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
         self.camp_pos = [{}]
         self.menu_state = self.last_select
         self.map_back_button.event = False
-        self.main_ui_updater.remove(*self.menu_button, self.map_list_box, self.map_option_box,
-                                    self.observe_mode_tick_box, self.source_list_box, self.source_list_box.scroll,
+        self.main_ui_updater.remove(*self.menu_button, self.map_list_box, self.custom_map_option_box,
+                                    self.observe_mode_tick_box, self.night_battle_tick_box,
+                                    self.source_list_box, self.source_list_box.scroll,
                                     self.char_selector, self.char_selector.scroll,
-                                    self.char_icon, self.team_coa)
+                                    self.char_icon, self.team_coa, self.weather_custom_select)
         self.menu_button.remove(*self.menu_button)
+
+        for this_name in self.popup_namegroup:  # remove name list
+            this_name.kill()
+            del this_name
+        self.main_ui_updater.remove(self.popup_list_box, self.popup_list_box.scroll)
 
         # Reset selected team
         for team in self.team_coa:
@@ -183,8 +226,13 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
             self.menu_state = "unit_setup"
             self.char_select_row = 0
 
-            self.main_ui_updater.remove(self.map_option_box, self.observe_mode_tick_box,
-                                        self.source_list_box, self.source_list_box.scroll)
+            self.main_ui_updater.remove(self.custom_map_option_box, self.observe_mode_tick_box, self.night_battle_tick_box,
+                                        self.source_list_box, self.source_list_box.scroll, self.weather_custom_select)
+
+            for this_name in self.popup_namegroup:  # remove name list
+                this_name.kill()
+                del this_name
+            self.main_ui_updater.remove(self.popup_list_box, self.popup_list_box.scroll)
 
             for stuff in self.source_namegroup:  # remove map name item
                 stuff.kill()

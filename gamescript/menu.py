@@ -609,32 +609,35 @@ class ListBox(pygame.sprite.Sprite):
 class NameList(pygame.sprite.Sprite):
     def __init__(self, screen_scale, box, pos, name, text_size=26, layer=15):
         self._layer = layer
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        self.font = pygame.font.SysFont("helvetica", int(screen_scale[1] * text_size))
+        pygame.sprite.Sprite.__init__(self)
+        self.screen_scale = screen_scale
+        self.font = pygame.font.SysFont("helvetica", int(self.screen_scale[1] * text_size))
         self.name = str(name)
 
         self.image = pygame.Surface(
-            (box.image.get_width() - int(18 * screen_scale[0]), int((text_size + 4) * screen_scale[1])))  # black corner
+            (box.image.get_width() - int(18 * self.screen_scale[0]),
+             int((text_size + 4) * self.screen_scale[1])))  # black corner
         self.image.fill((0, 0, 0))
         self.selected_image = self.image.copy()
         self.selected = False
 
-        # v White body square
+        # White body square
         small_image = pygame.Surface(
-            (box.image.get_width() - int(16 * screen_scale[0]), int((text_size + 2) * screen_scale[1])))
+            (box.image.get_width() - int(16 * self.screen_scale[0]), int((text_size + 2) * self.screen_scale[1])))
         small_image.fill((255, 255, 255))
         small_rect = small_image.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
         self.image.blit(small_image, small_rect)
         small_image.fill((255, 255, 128))
         self.selected_image.blit(small_image, small_rect)
-        # ^ End white body
 
-        # v name text
+        self.image_base = self.image.copy()
+
+        # Name text
         text_surface = self.font.render(self.name, True, (0, 0, 0))
-        text_rect = text_surface.get_rect(midleft=(int(3 * screen_scale[0]), self.image.get_height() / 2))
+        text_rect = text_surface.get_rect(midleft=(int(3 * self.screen_scale[0]), self.image.get_height() / 2))
         self.image.blit(text_surface, text_rect)
         self.selected_image.blit(text_surface, text_rect)
-        # ^ End name
+
         self.not_selected_image = self.image.copy()
 
         self.pos = pos
@@ -648,12 +651,22 @@ class NameList(pygame.sprite.Sprite):
             self.selected = True
             self.image = self.selected_image.copy()
 
+    def rename(self, new_name):
+        self.name = new_name
+        self.image = self.image_base.copy()
+        text_surface = self.font.render(self.name, True, (0, 0, 0))
+        text_rect = text_surface.get_rect(midleft=(int(3 * self.screen_scale[0]), self.image.get_height() / 2))
+        self.image.blit(text_surface, text_rect)
+        self.selected_image.blit(text_surface, text_rect)
+
+        self.not_selected_image = self.image.copy()
+
 
 class TickBox(pygame.sprite.Sprite):
     def __init__(self, pos, image, tick_image, option):
         """option is in str text for identifying what kind of tick_box it is"""
         self._layer = 14
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
 
         self.option = option
 
@@ -683,27 +696,17 @@ class MapOptionBox(pygame.sprite.Sprite):
 
         self._layer = 13
         pygame.sprite.Sprite.__init__(self)
-        self.image = image
+        self.image = image.copy()
 
         # Observation mode option text
         text_surface = self.font.render("Observation Mode", True, (0, 0, 0))
         text_rect = text_surface.get_rect(midleft=(self.image.get_width() / 3.5, self.image.get_height() / 5))
         self.image.blit(text_surface, text_rect)
 
-        if mode == 0:  # preset map option
-            pass
-        elif mode == 1:  # custom map option
-            # v enactment option text
-            text_surface = self.font.render("No Duplicated Leader", True, (0, 0, 0))
-            text_rect = text_surface.get_rect(midleft=(self.image.get_width() / 3.5, self.image.get_height() / 3))
+        if mode == 1:  # custom map option
+            text_surface = self.font.render("Night Battle", True, (0, 0, 0))
+            text_rect = text_surface.get_rect(midleft=(self.image.get_width() / 3.5, self.image.get_height() / 2.5))
             self.image.blit(text_surface, text_rect)
-            # ^ end enactment
-
-            # v enactment option text
-            text_surface = self.font.render("Restrict Faction Troop Only", True, (0, 0, 0))
-            text_rect = text_surface.get_rect(midleft=(self.image.get_width() / 3.5, self.image.get_height() / 2))
-            self.image.blit(text_surface, text_rect)
-            # ^ end enactment
 
         self.rect = self.image.get_rect(topright=pos)
 
@@ -864,8 +867,8 @@ class OrgChart(pygame.sprite.Sprite):
         if selected is not None:
             graph_input = nx.Graph()
 
-            edge_list = [(subunit["Leader"], index) for index, subunit in enumerate(unit_data) if
-                         type(subunit["Leader"]) is int]
+            edge_list = [(subunit["Temp Leader"], index) for index, subunit in enumerate(unit_data) if
+                         type(subunit["Temp Leader"]) is int]
             try:
                 graph_input.add_edges_from(edge_list)
                 pos = self.hierarchy_pos(graph_input, root=selected,  width=self.image.get_width(),
@@ -885,11 +888,11 @@ class OrgChart(pygame.sprite.Sprite):
                         break
 
             for subunit in pos:
-                if type(unit_data[subunit]["Leader"]) is int:
+                if type(unit_data[subunit]["Temp Leader"]) is int:
                     line_width = int(self.image.get_width() / 100)
                     if line_width < 1:
                         line_width = 1
-                    pygame.draw.line(self.image, (0, 0, 0), self.node_rect[unit_data[subunit]["Leader"]].midbottom,
+                    pygame.draw.line(self.image, (0, 0, 0), self.node_rect[unit_data[subunit]["Temp Leader"]].midbottom,
                                      self.node_rect[subunit].midtop, width=line_width)
 
 

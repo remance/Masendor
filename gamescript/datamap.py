@@ -124,7 +124,7 @@ class BattleMapData:
         edit_file.close()
 
         weather_list = [item["Name"] for item in self.weather_data.values()]
-        strength_list = ["Light ", "Normal ", "Strong "]
+        strength_list = ("Light ", "Normal ", "Strong ")
         self.weather_list = []
         for item in weather_list:  # list of weather with different strength
             for strength in strength_list:

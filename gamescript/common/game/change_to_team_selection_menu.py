@@ -18,6 +18,7 @@ def change_to_team_selection_menu(self):
 
     self.custom_map_data = {"info": {}, "unit": {"pos": {}}}
 
-    self.main_ui_updater.add(*self.team_select_button, self.map_option_box, self.observe_mode_tick_box,
-                             self.map_back_button, self.map_select_button, self.source_list_box,
-                             self.source_list_box.scroll, self.char_selector, self.char_selector.scroll)
+    self.main_ui_updater.add(*self.team_select_button, self.custom_map_option_box, self.observe_mode_tick_box,
+                             self.night_battle_tick_box, self.map_back_button, self.map_select_button,
+                             self.source_list_box, self.source_list_box.scroll, self.char_selector,
+                             self.char_selector.scroll, self.weather_custom_select)

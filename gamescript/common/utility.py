@@ -513,8 +513,10 @@ def popup_list_open(self, new_rect, new_list, ui_type, rect_pos, updater):
     """
     self.current_popup_row = 0
 
-    new_rect  # use exec here to make rect_pos a keyword argument for get_rect
-    exec(f"" + "self.popup_list_box.rect = self.popup_list_box.image.get_rect(" + rect_pos + "= new_rect)")
+    if rect_pos == "top":
+        self.popup_list_box.rect = self.popup_list_box.image.get_rect(topleft=new_rect)
+    elif rect_pos == "bottom":
+        self.popup_list_box.rect = self.popup_list_box.image.get_rect(bottomleft=new_rect)
 
     setup_list(self.screen_scale, menu.NameList, 0, new_list, self.popup_namegroup,
                self.popup_list_box, self.battle_ui_updater, layer=19)

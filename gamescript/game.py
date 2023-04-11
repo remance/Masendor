@@ -208,7 +208,7 @@ class Game:
         self.current_popup_row = 0
         self.team_pos = {}  # for saving preview map subunit pos
         self.camp_pos = {}  # for saving preview map camp pos
-        self.custom_map_data = {"info": {}, "unit": {"pos": {}}}
+        self.custom_map_data = {"info": {"weather": ("09:00:00", 0, 0)}, "unit": {"pos": {}}}
 
         self.dt = 0
         self.text_delay = 0
@@ -235,9 +235,9 @@ class Game:
 
         # battle select menu
         self.map_namegroup = pygame.sprite.Group()  # map name list group
+        self.popup_namegroup = pygame.sprite.Group()
         self.team_coa = pygame.sprite.Group()  # team coat of arm that also act as team selection icon
         self.source_namegroup = pygame.sprite.Group()  # source name list group
-        self.tick_box = pygame.sprite.Group()  # option tick box
         # battle related
 
         # battle object group
@@ -274,10 +274,7 @@ class Game:
         menu.OptionMenuText.containers = self.menu_icon
         menu.SliderMenu.containers = self.menu_slider, self.slider_menu
 
-        menu.NameList.containers = self.map_namegroup
         menu.TeamCoa.containers = self.team_coa
-
-        menu.TickBox.containers = self.tick_box
 
         lorebook.SubsectionName.containers = self.main_ui_updater, self.battle_ui_updater
 
@@ -377,14 +374,10 @@ class Game:
                                                        self.screen_rect.width - image_list[0].get_width()),
                                                 bottom_height),
                                                self.main_ui_updater, text="Back")
-        self.char_back_button = menu.MenuButton(self.screen_scale, image_list,
-                                                (self.screen_rect.width - (
-                                                        self.screen_rect.width - image_list[0].get_width()),
-                                                 bottom_height),
-                                                self.main_ui_updater, text="Back")
+
         self.map_select_button = (self.select_button, self.map_back_button)
         self.team_select_button = (self.select_button, self.map_back_button)
-        self.char_select_button = (self.start_button, self.char_back_button)
+        self.char_select_button = (self.start_button, self.map_back_button)
 
         self.map_list_box = menu.ListBox(self.screen_scale, (self.screen_width -
                                                              battle_select_image["name_list"].get_width(), 0),
@@ -403,7 +396,10 @@ class Game:
         battleui.UIScroll(self.source_list_box, self.source_list_box.rect.topright)  # scroll bar for source list
         self.map_option_box = menu.MapOptionBox(self.screen_scale, (self.source_list_box.rect.x, 0),
                                                 battle_select_image["top_box"],
-                                                0)  # ui box for battle option during preparation screen
+                                                0)  # ui box for battle option during preset map preparation screen
+        self.custom_map_option_box = menu.MapOptionBox(self.screen_scale, (self.source_list_box.rect.x, 0),
+                                                       battle_select_image["top_box"],
+                                                       1)  # ui box for battle option during preparation screen
 
         self.org_chart = menu.OrgChart(load_image(self.main_dir, self.screen_scale,
                                                   "org.png", ("ui", "mapselect_ui")),
@@ -418,6 +414,13 @@ class Game:
         self.observe_mode_tick_box = menu.TickBox((self.map_option_box.rect.topleft[0] * 1.05,
                                                    self.map_option_box.image.get_height() * 0.2),
                                                   battle_select_image["untick"], battle_select_image["tick"], "observe")
+        self.night_battle_tick_box = menu.TickBox((self.map_option_box.rect.topleft[0] * 1.05,
+                                                   self.map_option_box.image.get_height() * 0.4),
+                                                  battle_select_image["untick"], battle_select_image["tick"], "night")
+        self.weather_custom_select = menu.NameList(self.screen_scale, self.map_option_box,
+                                                   (self.map_option_box.rect.midleft[0],
+                                                    self.map_option_box.rect.midleft[1] + self.map_option_box.image.get_width() / 10),
+                                                   "Weather: Light Random")
 
         self.current_map_row = 0
         self.current_map_select = 0

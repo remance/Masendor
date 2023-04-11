@@ -1,25 +1,48 @@
 from gamescript.common import utility
 
+from gamescript.common.game import menu_unit_setup
+
+leader_change_team_unit = menu_unit_setup.leader_change_team_unit
 clean_group_object = utility.clean_group_object
 
 
 def menu_char_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
     self.main_ui_updater.remove(self.single_text_popup)
-    if self.char_back_button.event or esc_press or self.start_button.event:  # go back to team/source selection screen
-        self.current_source_row = 0
-        self.menu_state = "preset_team_select"
-        self.char_back_button.event = False
 
-        self.main_ui_updater.remove(self.char_selector, self.char_selector.scroll,
-                                    tuple(self.char_stat.values()), *self.char_select_button)
-        self.menu_button.remove(*self.char_select_button)
-
+    if self.map_back_button.event or esc_press or self.start_button.event:  # go back to team/source selection screen
+        self.map_back_button.event = False
         clean_group_object((self.subunit_updater, self.all_subunits, self.preview_char, self.char_icon))
 
-        self.change_to_source_selection_menu()
+        if self.map_type == "preset":
+            self.main_ui_updater.remove(self.char_selector, self.char_selector.scroll,
+                                        tuple(self.char_stat.values()), self.start_button)
+            self.menu_button.remove(self.start_button)
+            self.current_source_row = 0
+            self.menu_state = "preset_team_select"
 
-        self.create_team_coa([self.map_data[self.map_title.name][data] for data in self.map_data[self.map_title.name] if
-                              "Team " in data], self.main_ui_updater)
+            self.change_to_source_selection_menu()
+
+            self.create_team_coa([self.map_data[self.map_title.name][data] for data in self.map_data[self.map_title.name] if
+                                  "Team " in data], self.main_ui_updater)
+
+        elif self.map_type == "custom":
+            self.main_ui_updater.remove(tuple(self.char_stat.values()), self.start_button)
+            self.menu_button.remove(self.start_button)
+            self.menu_state = "unit_leader_setup"
+            self.char_select_row = 0
+            self.current_map_row = 0
+
+            self.menu_button.add(*self.team_select_button)
+
+            self.main_ui_updater.add(*self.team_select_button, self.team_coa)
+
+            self.main_ui_updater.add(self.org_chart)
+
+            for icon in self.preview_char:
+                icon.kill()
+            self.preview_char.empty()
+
+            leader_change_team_unit(self)
 
         if self.start_button.event:  # start battle button
             self.start_button.event = False
@@ -49,7 +72,6 @@ def menu_char_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
                     self.char_selector.setup_char_icon(self.char_icon, self.preview_char)
 
         else:
-
             for index, icon in enumerate(self.char_icon):
                 if icon.rect.collidepoint(self.mouse_pos):
                     popup_text = [icon.who.name]

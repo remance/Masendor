@@ -324,9 +324,9 @@ class Battle:
             print(message, end="")
 
     def inner_prepare_new_game(self, ruleset, ruleset_folder, team_selected, map_type, map_selected,
-                               map_source, char_selected, map_info, camp_pos):
-        self.language = self.main.language
+                               map_source, char_selected, map_info, camp_pos, custom_map_data=None):
         """Setup stuff when start new battle"""
+        self.language = self.main.language
 
         self.ruleset = ruleset  # current ruleset used
         self.ruleset_folder = ruleset_folder  # the folder of rulseset used

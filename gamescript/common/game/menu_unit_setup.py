@@ -212,9 +212,10 @@ def menu_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mouse_
 
         self.char_selector.setup_char_icon(self.char_icon, self.camp_icon)
 
-        self.main_ui_updater.add(*self.menu_button, self.map_option_box, self.observe_mode_tick_box,
-                                 self.source_list_box, self.source_list_box.scroll,
-                                 self.char_selector, self.char_selector.scroll, self.team_coa)
+        self.main_ui_updater.add(*self.menu_button, self.custom_map_option_box, self.observe_mode_tick_box,
+                                 self.night_battle_tick_box, self.source_list_box, self.source_list_box.scroll,
+                                 self.char_selector, self.char_selector.scroll, self.team_coa,
+                                 self.weather_custom_select)
 
     elif self.select_button.event:  # go to unit leader setup screen
         self.select_button.event = False
@@ -246,7 +247,7 @@ def menu_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mouse_
             for team in self.custom_map_data["unit"]:
                 if team != "pos":
                     for subunit in self.custom_map_data["unit"][team]:
-                        subunit["Leader"] = ""
+                        subunit["Temp Leader"] = ""
 
             leader_change_team_unit(self)
 
@@ -265,9 +266,9 @@ def leader_change_team_unit(self):
                     else:
                         image = self.leader_data.leader_list[unit["Leader ID"]]["Name"].split(" ")[0]
                     self.preview_char.add(battleui.TempCharIcon(self.screen_scale, this_team.team, image, unit_index))
-            self.char_selector.setup_char_icon(self.char_icon, [char for char in self.preview_char if char.index is None or "Leader" not in
+            self.char_selector.setup_char_icon(self.char_icon, [char for char in self.preview_char if char.index is None or "Temp Leader" not in
                                                 self.custom_map_data["unit"][this_team.team][char.index] or
-                                                self.custom_map_data["unit"][this_team.team][char.index]["Leader"] == ""])
+                                                self.custom_map_data["unit"][this_team.team][char.index]["Temp Leader"] == ""])
 
             break
 
@@ -321,9 +322,9 @@ def unit_change_team_unit(self, new_faction=False, old_selected=None, add_plus=T
                            self.map_namegroup, self.unit_list_box, self.main_ui_updater)
 
             self.char_selector.setup_char_icon(self.char_icon,
-                                               [char for char in self.preview_char if char.index is None or "Leader" not in
+                                               [char for char in self.preview_char if char.index is None or "Temp Leader" not in
                                                 self.custom_map_data["unit"][this_team.team][char.index] or
-                                                self.custom_map_data["unit"][this_team.team][char.index]["Leader"] == ""])
+                                                self.custom_map_data["unit"][this_team.team][char.index]["Temp Leader"] == ""])
 
             if old_selected is not None:
                 for icon in self.char_icon:

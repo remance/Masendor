@@ -631,6 +631,7 @@ class FactionData:
                                           [int(item2) for item2 in item.split(":")[1].split("/")] for item in row[n]}
                     self.faction_unit_list[int(folder[-1])][row[0]] = {header[index + 1]: stuff for index, stuff in
                                                                        enumerate(row[1:])}
+                    self.faction_unit_list[int(folder[-1])][row[0]]["Faction"] = int(folder[-1])  # add faction iD
                 edit_file.close()
 
         self.faction_lore = {}
