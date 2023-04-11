@@ -12,20 +12,25 @@ from gamescript.save_load_pickle_with_surfaces import load_pickle_with_surfaces
 
 def create_troop_sprite_pool(self, who_todo, preview=False, specific_preview=None, max_preview_size=200):
 
-    stringified_arguments = "".join(sorted(map(str, who_todo.keys())))+"p"+str(max_preview_size)
-    md5 = hashlib.md5(stringified_arguments.encode()).hexdigest()
+    if not preview:
+        stringified_arguments = "".join(sorted(map(str, who_todo.keys())))+"p"+str(max_preview_size)
+        md5 = hashlib.md5(stringified_arguments.encode()).hexdigest()
 
-    cache_folder_path = os.path.join(self.main_dir, "cache")
-    if not os.path.isdir(cache_folder_path):
-        os.mkdir(cache_folder_path)
+        cache_folder_path = os.path.join(self.main_dir, "cache")
+        if not os.path.isdir(cache_folder_path):
+            os.mkdir(cache_folder_path)
 
-    cache_file_path = os.path.join(self.main_dir, "cache", "cache_{0}.pickle".format(md5))
+        cache_file_path = os.path.join(self.main_dir, "cache", "cache_{0}.pickle".format(md5))
 
-    if not os.path.isfile(cache_file_path):
+        if not os.path.isfile(cache_file_path):
+            pool = inner_create_troop_sprite_pool(self, who_todo, preview, specific_preview, max_preview_size)
+            save_pickle_with_surfaces(cache_file_path, pool)
+
+        pool = load_pickle_with_surfaces(cache_file_path)
+
+    else:
         pool = inner_create_troop_sprite_pool(self, who_todo, preview, specific_preview, max_preview_size)
-        save_pickle_with_surfaces(cache_file_path, pool)
 
-    pool = load_pickle_with_surfaces(cache_file_path)
     return pool
 
 
