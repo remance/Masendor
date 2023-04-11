@@ -2,6 +2,14 @@ import pygame
 import os
 
 
+def compare_surfaces(surface_a, surface_b):
+    if surface_a.get_size() != surface_b.get_size(): return False
+    for x in range(surface_a.get_size()[0]):
+        for y in range(surface_a.get_size()[1]):
+            if surface_a.get_at((x, y)) != surface_b.get_at((x, y)): return False
+    return True
+
+
 def test_recolour_man_and_build_move_and_def_arrays():
     from gamescript.battlemap import BeautifulMap
     from gamescript.battlemap import BaseMap
@@ -24,7 +32,7 @@ def test_recolour_man_and_build_move_and_def_arrays():
     battle_map_data = datamap.BattleMapData(main_dir, screen_scale, ruleset_folder, language)
 
     height_map = HeightMap()
-    height_map.draw_image(pygame.image.load(os.path.join(main_dir, 'tests/height_map.png')))
+    height_map.draw_image(pygame.image.load(os.path.join(main_dir, "tests/height_map.png")))
 
     battle_map = BeautifulMap(
         main_dir=main_dir,
@@ -35,17 +43,20 @@ def test_recolour_man_and_build_move_and_def_arrays():
 
     base_map = BaseMap(main_dir=main_dir)
     base_map.terrain_colour = battle_map_data.terrain_colour
-    base_map.draw_image(pygame.image.load(os.path.join(main_dir, 'tests/base_map.png')))
+    base_map.draw_image(pygame.image.load(os.path.join(main_dir, "tests/base_map.png")))
 
     feature_map = FeatureMap(main_dir=main_dir)
     feature_map.feature_colour = battle_map_data.feature_colour
-    feature_map.draw_image(pygame.image.load(os.path.join(main_dir, 'tests/feature_map.png')))
+    feature_map.draw_image(pygame.image.load(os.path.join(main_dir, "tests/feature_map.png")))
     feature_map.feature_mod = battle_map_data.feature_mod
 
     battle_map.image = pygame.Surface((len(base_map.map_array[0]), len(base_map.map_array)))
 
+    mb = MinifiedBattle()
     battle_map.recolour_map_and_build_move_and_def_arrays(
         feature_map=feature_map,
         base_map=base_map,
-        battle=MinifiedBattle(),
+        battle=mb,
     )
+
+    assert compare_surfaces(battle_map.image, pygame.image.load(os.path.join(main_dir, "tests/map1.png")))
