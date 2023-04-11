@@ -37,3 +37,4 @@ __pycache__/
 /error_report.txt
 /configuration.ini
 /pyinstaller.exe
+/cache
