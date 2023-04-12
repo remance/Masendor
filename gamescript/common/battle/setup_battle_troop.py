@@ -43,13 +43,29 @@ def setup_battle_troop(self, team_subunit_list, specific_team=None, custom_data=
         unit_file.close()
     else:
         troop_data = custom_data
-    for data in troop_data:
-        if not specific_team or specific_team == data["Team"]:  # check player control
+
+    new_troop_data = []  # rearrange data list to ensure that leader subunits are made first
+    for data in troop_data:  # unit leader first
+        if data["Leader"] == 0:
+            new_troop_data.append(data)
+
+    for data in troop_data:  # leader with followers next
+        if data["Leader"]:
+            leader = [troop for troop in troop_data if troop["ID"] == data["Leader"]][0]
+            if leader not in new_troop_data:
+                new_troop_data.append(leader)
+
+    for data in troop_data:  # leader with no follower last
+        if data not in new_troop_data:
+            new_troop_data.append(data)
+
+    for data in new_troop_data:
+        if not specific_team or specific_team == data["Team"]:  # check if create subunit only for specific team
             if type(team_subunit_list) == dict:
                 if data["Team"] not in team_subunit_list:
                     team_subunit_list[data["Team"]] = pygame.sprite.Group()
                 which_team = team_subunit_list[data["Team"]]
-            else:  # for character selection
+            else:  # for character selection screen
                 which_team = team_subunit_list
 
             leader = None

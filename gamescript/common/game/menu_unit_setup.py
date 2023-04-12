@@ -184,6 +184,7 @@ def menu_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mouse_
                     break
 
     if self.map_back_button.event or esc_press:
+        self.main_ui_updater.remove(self.single_text_popup)
         self.menu_state = "custom_team_select"
         self.map_back_button.event = False
         self.current_map_row = 0
@@ -215,7 +216,7 @@ def menu_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mouse_
         self.main_ui_updater.add(*self.menu_button, self.custom_map_option_box, self.observe_mode_tick_box,
                                  self.night_battle_tick_box, self.source_list_box, self.source_list_box.scroll,
                                  self.char_selector, self.char_selector.scroll, self.team_coa,
-                                 self.weather_custom_select)
+                                 self.weather_custom_select, self.wind_custom_select)
 
     elif self.select_button.event:  # go to unit leader setup screen
         self.select_button.event = False

@@ -126,13 +126,12 @@ def menu_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mous
                                             unit_change_team_unit(self, add_plus=False, old_selected=subunit3.who.index)
                                             self.org_chart.add_chart(self.custom_map_data["unit"][subunit.team],
                                                                      self.preview_char,
-                                                                     selected=subunit3_index)
+                                                                     selected=subunit3.who.index)
                                             break
                                     break
-
                         break
 
-                if mouse_right_up and not_in_list:
+                if mouse_right_up and not_in_list:  # remove subunit's leader in org chart
                     self.custom_map_data["unit"][subunit.team][rect]["Temp Leader"] = ""
                     for subunit3_index, subunit3 in enumerate(self.char_icon):
                         if subunit3.selected:
@@ -158,6 +157,7 @@ def menu_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mous
                 break
 
     if self.map_back_button.event or esc_press:
+        self.main_ui_updater.remove(self.single_text_popup)
         self.menu_state = "unit_setup"
         self.map_back_button.event = False
         self.current_map_row = 0
@@ -216,14 +216,14 @@ def menu_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mous
         self.preview_char.empty()
         self.main_ui_updater.remove(self.org_chart)
 
-        troop_data = []
+        self.custom_map_data["battle"] = []
         for team, team_data in self.custom_map_data["unit"].items():
             if team != "pos":
                 for value in team_data:
-                    new_value = value.copy()
+                    new_value = {key: {key2: val2.copy() for key2, val2 in val.items()} if type(val) is dict else val for key, val in value.items()}
                     for troop in new_value["Troop"]:
                         troop_value = new_value["Troop"][troop]
                         new_value["Troop"][troop] = str(troop_value[0]) + "/" + str(troop_value[1])
-                    troop_data.append(new_value)
+                    self.custom_map_data["battle"].append(new_value)
         
-        change_to_char_select_menu(self, custom_data=troop_data)
+        change_to_char_select_menu(self, custom_data=self.custom_map_data["battle"])

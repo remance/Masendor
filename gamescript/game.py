@@ -208,7 +208,7 @@ class Game:
         self.current_popup_row = 0
         self.team_pos = {}  # for saving preview map subunit pos
         self.camp_pos = {}  # for saving preview map camp pos
-        self.custom_map_data = {"info": {"weather": ("09:00:00", 0, 0)}, "unit": {"pos": {}}}
+        self.custom_map_data = {"info": {"weather": [[0, "09:00:00", 0, 0]]}, "unit": {"pos": {}}}
 
         self.dt = 0
         self.text_delay = 0
@@ -281,7 +281,7 @@ class Game:
         # battle containers
         battleui.SkillCardIcon.containers = self.skill_icon, self.battle_ui_updater
         battleui.EffectCardIcon.containers = self.effect_icon, self.battle_ui_updater
-        battleui.CharIcon.containers = self.char_icon, self.main_ui_updater, self.battle_ui_updater
+        battleui.CharIcon.containers = self.char_icon, self.main_ui_updater
         battleui.SpriteIndicator.containers = self.effect_updater, self.battle_camera
         battleui.AimTarget.containers = self.shoot_lines, self.battle_camera
 
@@ -419,8 +419,12 @@ class Game:
                                                   battle_select_image["untick"], battle_select_image["tick"], "night")
         self.weather_custom_select = menu.NameList(self.screen_scale, self.map_option_box,
                                                    (self.map_option_box.rect.midleft[0],
-                                                    self.map_option_box.rect.midleft[1] + self.map_option_box.image.get_width() / 10),
+                                                    self.map_option_box.rect.midleft[1] + self.map_option_box.image.get_height() / 4),
                                                    "Weather: Light Random")
+        self.wind_custom_select = menu.NameList(self.screen_scale, self.map_option_box,
+                                                (self.map_option_box.rect.midleft[0],
+                                                 self.map_option_box.rect.midleft[1] + self.map_option_box.image.get_height() / 10),
+                                                "Wind Direction: 0")
 
         self.current_map_row = 0
         self.current_map_select = 0
@@ -861,9 +865,13 @@ class Game:
                         pos = [float(item) for item in pos]
                         self.camp_pos[0][int(self.input_popup[1][-1])].insert(0, [pos, int(self.input_box.text)])
                         self.camp_icon.insert(0, battleui.TempCharIcon(self.screen_scale, int(self.input_popup[1][-1]),
-                                                                       self.input_box.text))
+                                                                       self.input_box.text, 0))
                         self.char_selector.setup_char_icon(self.char_icon, self.camp_icon)
                         self.map_preview.change_mode(1, camp_pos_list=self.camp_pos[0])
+
+                    elif "wind" in self.input_popup[1] and self.input_box.text.isdigit():
+                        self.custom_map_data["info"]["weather"][0][2] = int(self.input_box.text)
+                        self.wind_custom_select.rename("Wind Direction: " + self.input_box.text)
 
                     elif self.input_popup[1] == "quit":
                         pygame.time.wait(1000)

@@ -25,8 +25,9 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                         if self.night_battle_tick_box.tick:  # check for night battle
                             battle_time = "21:00:00"
                         self.custom_map_data["info"]["weather"] = \
-                            (battle_time, int(self.battle_map_data.weather_list.index(name.name.split(" ")[1]) / 3),
-                             ("Light ", "Normal ", "Strong ").index(name.name.split(" ")[0]))
+                            [[int(self.battle_map_data.weather_list.index(name.name) / 3), battle_time,
+                              self.custom_map_data["info"]["weather"][0][2],
+                             ("Light", "Normal", "Strong").index(name.name.split(" ")[0])]]
                         for this_name in self.popup_namegroup:  # remove name list
                             this_name.kill()
                             del this_name
@@ -142,6 +143,12 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                                  self.battle_map_data.weather_list, "weather",
                                  "top", self.main_ui_updater)
 
+    elif self.wind_custom_select.rect.collidepoint(self.mouse_pos):
+        if mouse_left_up:
+            self.input_popup = ("text_input", "wind")
+            self.input_ui.change_instruction("Wind Direction Degree:")
+            self.main_ui_updater.add(self.input_ui_popup)
+
     elif self.char_selector.rect.collidepoint(self.mouse_pos):
         if mouse_scroll_up:
             if self.char_selector.current_row > 0:
@@ -184,7 +191,8 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                         break
 
     if self.map_back_button.event or esc_press:
-        self.custom_map_data = {"info": {}, "unit": {"pos": {}}}
+        self.custom_map_data["info"] = {"weather": self.custom_map_data["info"]["weather"]}  # keep weather setting only
+        self.custom_map_data["unit"] = {"pos": {}}
         self.camp_pos = [{}]
         self.menu_state = self.last_select
         self.map_back_button.event = False
@@ -192,7 +200,7 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                                     self.observe_mode_tick_box, self.night_battle_tick_box,
                                     self.source_list_box, self.source_list_box.scroll,
                                     self.char_selector, self.char_selector.scroll,
-                                    self.char_icon, self.team_coa, self.weather_custom_select)
+                                    self.char_icon, self.team_coa, self.weather_custom_select, self.wind_custom_select)
         self.menu_button.remove(*self.menu_button)
 
         for this_name in self.popup_namegroup:  # remove name list
@@ -227,7 +235,8 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
             self.char_select_row = 0
 
             self.main_ui_updater.remove(self.custom_map_option_box, self.observe_mode_tick_box, self.night_battle_tick_box,
-                                        self.source_list_box, self.source_list_box.scroll, self.weather_custom_select)
+                                        self.source_list_box, self.source_list_box.scroll, self.weather_custom_select,
+                                        self.wind_custom_select)
 
             for this_name in self.popup_namegroup:  # remove name list
                 this_name.kill()

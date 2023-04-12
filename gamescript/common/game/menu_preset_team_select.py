@@ -101,10 +101,12 @@ def change_to_char_select_menu(self, custom_data=None):
                                 self.source_description, self.army_stat)
     self.menu_button.remove(*self.map_select_button)
 
-    for group in (self.source_namegroup, self.team_coa):  # remove no longer related sprites in group
+    for group in (self.source_namegroup, ):  # remove no longer related sprites in group
         for stuff in group:
             stuff.kill()
             del stuff
+
+    self.main_ui_updater.remove(self.team_coa)
 
     self.char_stat["char"] = menu.ArmyStat(self.screen_scale,
                                            (self.screen_rect.center[0] / 9, self.screen_rect.height / 8),

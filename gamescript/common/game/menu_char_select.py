@@ -20,10 +20,9 @@ def menu_char_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
             self.current_source_row = 0
             self.menu_state = "preset_team_select"
 
-            self.change_to_source_selection_menu()
+            self.main_ui_updater.add(self.team_coa)
 
-            self.create_team_coa([self.map_data[self.map_title.name][data] for data in self.map_data[self.map_title.name] if
-                                  "Team " in data], self.main_ui_updater)
+            self.change_to_source_selection_menu()
 
         elif self.map_type == "custom":
             self.main_ui_updater.remove(tuple(self.char_stat.values()), self.start_button)

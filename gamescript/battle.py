@@ -324,7 +324,7 @@ class Battle:
             print(message, end="")
 
     def inner_prepare_new_game(self, ruleset, ruleset_folder, team_selected, map_type, map_selected,
-                               map_source, char_selected, map_info, camp_pos, custom_map_data=None):
+                               map_source, char_selected, map_info, camp_pos):
         """Setup stuff when start new battle"""
         self.language = self.main.language
 
@@ -355,17 +355,22 @@ class Battle:
 
         # Load weather schedule
         yield set_start_load("weather")
-        try:
-            self.weather_event = csv_read(self.main_dir, "weather.csv",
-                                          ("data", "ruleset", self.ruleset_folder, "map", map_type, self.map_selected,
-                                           self.map_source), output_type="list")
-            self.weather_event = self.weather_event[1:]
+        if map_type == "preset":
+            try:
+                self.weather_event = csv_read(self.main_dir, "weather.csv",
+                                              ("data", "ruleset", self.ruleset_folder, "map", map_type, self.map_selected,
+                                               self.map_source), output_type="list")
+                self.weather_event = self.weather_event[1:]
+                utility.convert_str_time(self.weather_event)
+            except (FileNotFoundError,
+                    TypeError):  # If no weather found or no map use light sunny weather start at 9:00 and wind direction at 0 angle
+                new_time = datetime.strptime("09:00:00", "%H:%M:%S").time()
+                new_time = timedelta(hours=new_time.hour, minutes=new_time.minute, seconds=new_time.second)
+                self.weather_event = ((4, new_time, 0, 0),)  # default weather light sunny all day
+        elif map_type == "custom":
+            self.weather_event = self.main.custom_map_data["info"]["weather"]
             utility.convert_str_time(self.weather_event)
-        except (FileNotFoundError,
-                TypeError):  # If no weather found or no map use light sunny weather start at 9:00 and wind direction at 0 angle
-            new_time = datetime.strptime("09:00:00", "%H:%M:%S").time()
-            new_time = timedelta(hours=new_time.hour, minutes=new_time.minute, seconds=new_time.second)
-            self.weather_event = ((4, new_time, 0, 0),)  # default weather light sunny all day
+
         self.weather_playing = self.weather_event[0][1]  # used as the reference for map starting time
         yield set_done_load()
 
@@ -424,9 +429,12 @@ class Battle:
         self.time_number.start_setup(self.weather_playing)
         yield set_done_load()
 
-        yield set_start_load("images")
+        yield set_start_load("map images")
         images = load_images(self.main_dir,
                              subfolder=("ruleset", self.ruleset_folder, "map", map_type, self.map_selected))
+        if not images and map_type == "custom":  # custom map battle but use preset map
+            images = load_images(self.main_dir,
+                                 subfolder=("ruleset", self.ruleset_folder, "map", "preset", self.map_selected))
         self.battle_map_base.draw_image(images["base"])
         self.battle_map_feature.draw_image(images["feature"])
         self.battle_map_height.draw_image(images["height"])
@@ -455,7 +463,11 @@ class Battle:
         self.camera_mode = self.start_camera_mode
         if not self.char_selected:
             self.camera_mode = "Free"
-        self.setup_battle_troop(self.subunit_updater)
+        if map_type == "preset":
+            self.setup_battle_troop(self.subunit_updater)
+        elif map_type == "custom":
+            self.setup_battle_troop(self.subunit_updater, custom_data=self.main.custom_map_data["battle"])
+
         for this_group in self.all_team_subunit.values():
             this_group.empty()
         for this_group in self.all_team_enemy.values():
