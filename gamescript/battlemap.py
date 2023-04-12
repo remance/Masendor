@@ -1,9 +1,11 @@
 import threading
+import numpy as np
 from random import randint, random, randrange
 
 import pygame
 import pygame.freetype
 from PIL import Image, ImageFilter, ImageOps
+from functools import lru_cache
 
 from gamescript.common import utility
 
@@ -94,6 +96,27 @@ class HeightMap(pygame.sprite.Sprite):
         self.map_array = tuple([[256 - col[2] for col in row] for row in pygame.surfarray.array3d(image).tolist()])
         self.max_map_array = (len(self.map_array) - 1, len(self.map_array[0]) - 1)
         self.topology_image = topology_map_creation(self.image, self.poster_level)
+
+    @lru_cache(maxsize=1)
+    def get_grey_scaled_surface(self):
+        """get a grey scaled surface(24-bit) representation of the height map. brightness equals the height. brightness is any of the R, G or B values (they are always the same)"""
+        if self.image is None:
+            raise Exception("This method is depended on draw_image being called first.")
+
+        # this method assume that height can only be represented by an integer that is in the range between 0 to 255 (inclusive)
+
+        surface_array = np.multiply.outer(pygame.surfarray.pixels_green(self.image), [1, ]*3)
+        surface_inverted = pygame.surfarray.make_surface(surface_array)
+
+        surface = pygame.Surface(surface_inverted.get_rect().size)
+        surface.fill((255,)*3)
+        surface.blit(surface_inverted, (0, 0), special_flags=pygame.BLEND_RGB_SUB)
+
+        # TODO: I think we should consider having the origin of the height map data being the actual grey scale
+        #       and use that grey scale to make the red-alpha version of the height map.
+        #       I can see this being better. /coppermouse
+
+        return surface
 
     def get_height(self, pos):
         """get the terrain height at that exact position"""
