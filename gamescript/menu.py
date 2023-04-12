@@ -775,6 +775,8 @@ class MapPreview(pygame.sprite.Sprite):
                 if feature in self.feature_colour:
                     feature_index = self.feature_colour.index(feature)
                     feature_index = feature_index + (terrain_index * len(self.feature_colour))
+                # else:
+                #     print(feature, row_pos * 3.333, col_pos * 3.333)
                 new_colour = self.battle_map_colour[feature_index][1]
                 rect = pygame.Rect(row_pos, col_pos, 1, 1)
                 map_image.fill(new_colour, rect)

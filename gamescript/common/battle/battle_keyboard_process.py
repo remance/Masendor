@@ -9,11 +9,11 @@ def battle_keyboard_process(self, key_press):
         self.wheel_ui.generate(self.unit_behaviour_wheel["Main"])
 
     elif key_press == pygame.K_F1:
-        self.drama_text.queue.append("Hello and welcome to the Tale of Taillefer")
+        self.drama_text.queue.append("Hello and welcome to showcase video")
     elif key_press == pygame.K_F2:
-        self.drama_text.queue.append("That is the name of a legendary minstrel and juggler")
+        self.drama_text.queue.append("Custom map battle")
     elif key_press == pygame.K_F3:
-        self.drama_text.queue.append("Who fought at the Battle of Hastings in England")
+        self.drama_text.queue.append("See video description for more detail")
     elif key_press == pygame.K_F4:
         self.drama_text.queue.append("He juggled his sword and sing the Song of Roland")
     elif key_press == pygame.K_F5:
