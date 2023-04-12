@@ -139,9 +139,10 @@ class BeautifulMap(pygame.sprite.Sprite):
         self.base_image = None  # image before adding height map mode
         self.image = None  # image after adding height map mode
 
-    def draw_image(self, base_map, feature_map, place_name, camp_pos, battle):
-        self.image = pygame.Surface((len(base_map.map_array[0]), len(base_map.map_array)))
-        self.rect = self.image.get_rect(topleft=(0, 0))
+    def recolour_map_and_build_move_and_def_arrays(self, feature_map, base_map, battle):
+
+        if (type(feature_map), type(base_map)) != (FeatureMap, BaseMap):
+            raise TypeError()
 
         for row_pos in range(0, self.image.get_width()):  # recolour the map
             speed_array = []
@@ -161,6 +162,12 @@ class BeautifulMap(pygame.sprite.Sprite):
                 def_array.append(def_mod)
             battle.map_move_array.append(speed_array)
             battle.map_def_array.append(def_array)
+
+    def draw_image(self, base_map, feature_map, place_name, camp_pos, battle):
+        self.image = pygame.Surface((len(base_map.map_array[0]), len(base_map.map_array)))
+        self.rect = self.image.get_rect(topleft=(0, 0))
+
+        self.recolour_map_and_build_move_and_def_arrays(feature_map, base_map, battle)
 
         # Blur map to make it look older
         data = pygame.image.tostring(self.image, "RGB")  # convert image to string data for filtering effect
