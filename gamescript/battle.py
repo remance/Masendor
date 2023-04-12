@@ -368,7 +368,7 @@ class Battle:
                 new_time = timedelta(hours=new_time.hour, minutes=new_time.minute, seconds=new_time.second)
                 self.weather_event = ((4, new_time, 0, 0),)  # default weather light sunny all day
         elif map_type == "custom":
-            self.weather_event = self.main.custom_map_data["info"]["weather"]
+            self.weather_event = self.main.custom_map_data["info"]["weather"].copy()
             utility.convert_str_time(self.weather_event)
 
         self.weather_playing = self.weather_event[0][1]  # used as the reference for map starting time
@@ -496,6 +496,7 @@ class Battle:
     def run_game(self):
         # Create Starting Values
         self.game_state = "battle"  # battle mode
+        self.current_weather.__init__(self.time_ui, 4, 0, 0, self.weather_data)  # start weather with sunny first
         self.current_pop_up_row = 0
         self.input_popup = (None, None)  # no popup asking for user text input state
         self.player_char = None  # Which unit is currently selected
@@ -671,7 +672,7 @@ class Battle:
                         if self.weather_playing and self.time_number.time_number >= self.weather_playing:
                             this_weather = self.weather_event[0]
 
-                            if this_weather[0] != 0 and this_weather[0] in self.weather_data:
+                            if this_weather[0] in self.weather_data:
                                 self.current_weather.__init__(self.time_ui, this_weather[0], this_weather[2],
                                                               this_weather[3], self.weather_data)
                             else:  # Clear weather when no weather found, also for when input weather not in ruleset
@@ -772,8 +773,8 @@ class Battle:
                                         self.event_log.add_log(
                                             (0, self.event_log.map_event["wt" + str(key)]["Text"]))
                                     self.battle_done_box.pop(self.faction_data.faction_list[self.map_info[
-                                        "Team " + str(key)]]["Name"], self.coa_list[self.map_info[
-                                        "Team " + str(key)]])
+                                        "Team " + str(key)][0]]["Name"], self.coa_list[self.map_info[
+                                        "Team " + str(key)][0]])
                                     break
 
                         self.battle_done_button.rect = self.battle_done_button.image.get_rect(
@@ -781,11 +782,11 @@ class Battle:
                         self.battle_ui_updater.add(self.battle_done_box, self.battle_done_button)
                     else:
                         if mouse_left_up and self.battle_done_button.rect.collidepoint(self.mouse_pos):
-                            coa_list = [self.coa_list[self.map_info[key]] for key in self.map_info if "Team " in key if
-                                        self.map_info[key]]
+                            coa_list = [self.coa_list[self.map_info[key][0]] for key in self.map_info if "Team "
+                                        in key if self.map_info[key]]
                             if not self.battle_done_box.result_showing:  # show battle result stat
                                 faction_name = {key: self.faction_data.faction_list[self.map_info[
-                                    "Team " + str(key)]]["Name"] for key in self.all_team_subunit}
+                                    "Team " + str(key)][0]]["Name"] for key in self.all_team_subunit}
 
                                 self.battle_done_box.show_result(coa_list,
                                                                  {"Faction": faction_name,

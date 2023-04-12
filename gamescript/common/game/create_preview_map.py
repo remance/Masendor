@@ -33,6 +33,12 @@ def create_preview_map(self, map_folder_list, map_list, custom_map=False):
 
     # Create map description
     self.map_data = self.read_selected_map_data(map_folder_list, "info_" + self.language + ".csv")
+    for key in self.map_data:
+        if "Team " in key:
+            if type(self.map_data[key]) == int:
+                self.map_data[key] = [self.map_data[key]]
+            elif type(self.map_data[key]) == str:
+                self.map_data[key] = [int(item) for item in self.map_data[key].split(",")]
     description = [self.map_data[map_list[self.current_map_select]]["Description 1"],
                    self.map_data[map_list[self.current_map_select]]["Description 2"]]
     self.map_description.change_text(description)

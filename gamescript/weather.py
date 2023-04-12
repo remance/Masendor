@@ -17,7 +17,7 @@ class Weather:
         self.has_stat_effect = False
         if weather_data:
             self.has_stat_effect = True
-            stat = weather_data[weather_type]
+            stat = weather_data[self.weather_type]
             self.name = stat["Name"]
             self.level = level  # weather level 0 = Light, 1 = Normal, 2 = Strong
             if self.level > 2:  # in case adding higher level number by mistake
