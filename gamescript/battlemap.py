@@ -118,6 +118,29 @@ class HeightMap(pygame.sprite.Sprite):
 
         return surface
 
+    def get_battle_map_overlay(self):
+        """get an overlay (24-bit surface) that should be applied to the battle map to visual height differences. It is intended to be applied using BLEND_RGB_ADD"""
+
+        # the old slow way used this formula to modify the color.
+        # as you can see it adds a subtle increase of white where there is height
+        # height = int((self.height_map.get_height((row_pos, col_pos)) - 100) / 20)
+        # new_colour = (new_colour[0] + height, new_colour[1] + height, new_colour[2] + height)
+
+        # the new way mimics this formula but make use of blits and blends which
+        # is a lot faster. Sadly I could not do a perfect recreation but is is almost the same.
+
+        overlay = self.get_grey_scaled_surface().copy()
+        applier = pygame.Surface(overlay.get_size())
+        applier.fill((100,)*3)
+        overlay.blit(applier, (0, 0), special_flags=pygame.BLEND_RGB_SUB)
+
+        applier.fill((13,)*3)  # this is the divide with 20 part. 255 * 1/20 = 12.75 so it is
+        # hard get it exact (we are limited to integers) I tried 11, 12, 13, 14 and so on
+        # but no one produced a perfect match to the old solution.
+
+        overlay.blit(applier, (0, 0), special_flags=pygame.BLEND_RGB_MULT)
+        return overlay
+
     def get_height(self, pos):
         """get the terrain height at that exact position"""
         new_pos = pygame.Vector2(pos)
@@ -173,7 +196,8 @@ class BeautifulMap(pygame.sprite.Sprite):
             for col_pos in range(0, self.image.get_height()):
                 terrain, feature = feature_map.get_feature((row_pos, col_pos), base_map)
                 new_colour = self.battle_map_colour[feature][1]
-                height = int((self.height_map.get_height((row_pos, col_pos)) - 100) / 20)
+                # height = int((self.height_map.get_height((row_pos, col_pos)) - 100) / 20)
+                height = 0
                 new_colour = (new_colour[0] + height, new_colour[1] + height, new_colour[2] + height)
                 rect = pygame.Rect(row_pos, col_pos, 1, 1)
                 self.image.fill(new_colour, rect)
@@ -185,6 +209,8 @@ class BeautifulMap(pygame.sprite.Sprite):
                 def_array.append(def_mod)
             battle.map_move_array.append(speed_array)
             battle.map_def_array.append(def_array)
+
+        self.image.blit(self.height_map.get_battle_map_overlay(), (0, 0), special_flags=pygame.BLEND_RGB_ADD)
 
     def draw_image(self, base_map, feature_map, place_name, camp_pos, battle):
         self.image = pygame.Surface((len(base_map.map_array[0]), len(base_map.map_array)))

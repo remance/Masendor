@@ -2,11 +2,13 @@ import pygame
 import os
 
 
-def compare_surfaces(surface_a, surface_b):
-    if surface_a.get_size() != surface_b.get_size(): return False
+def compare_surfaces(surface_a, surface_b, error_margin = 0):
+    if surface_a.get_size() != surface_b.get_size():
+        return False
     for x in range(surface_a.get_size()[0]):
         for y in range(surface_a.get_size()[1]):
-            if surface_a.get_at((x, y)) != surface_b.get_at((x, y)): return False
+            if sum((abs(surface_a.get_at((x,y))[i]-surface_b.get_at((x,y))[i]) for i in range(3))) > error_margin: 
+                return False
     return True
 
 
@@ -59,4 +61,8 @@ def test_recolour_man_and_build_move_and_def_arrays():
         battle=mb,
     )
 
-    assert compare_surfaces(battle_map.image, pygame.image.load(os.path.join(main_dir, "tests/map1.png")))
+    assert compare_surfaces(
+        battle_map.image,
+        pygame.image.load(os.path.join(main_dir, "tests/map1.png")),
+        error_margin=3
+    )
