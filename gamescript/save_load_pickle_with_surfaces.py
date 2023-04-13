@@ -38,7 +38,7 @@ class PickleableSurface:
         return (pygame.image.tobytes(self.surface, "RGBA"), self.surface.get_size())
 
     def __setstate__(self, state):
-        self.surface = pygame.image.frombytes(state[0], state[1], "RGBA")
+        self.surface = pygame.image.frombytes(state[0], state[1], "RGBA").convert_alpha()
 
 # ---
 # these methods below works what it is required to handle at this moment but it is not guaranteed
