@@ -589,6 +589,10 @@ class Battle:
 
                     self.main.profiler.switch_show_hide()
 
+                elif event.type == pygame.KEYDOWN and event.key == K_F7:  # clear profiler
+                    if hasattr(self.main, "profiler"):
+                        self.main.profiler.clear()
+
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:  # left click
                         mouse_left_up = True

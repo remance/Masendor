@@ -1294,7 +1294,8 @@ class Profiler(cProfile.Profile, pygame.sprite.Sprite):
             info_str = s_io.getvalue()
             self.enable()  # profiler must be re-enabled after get stats
             self.image.fill(0x112233)
-            for e, line in enumerate(info_str.split("\n")):
+            self.image.blit(self.font.render("press F7 to clear times", True, pygame.Color("white")), (0, 0))
+            for e, line in enumerate(info_str.split("\n"), 1):
                 self.image.blit(self.font.render(line, True, pygame.Color("white")), (0, e*20))
         else:
             self.image = pygame.Surface((1, 1))
