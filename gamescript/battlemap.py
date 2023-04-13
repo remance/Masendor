@@ -93,7 +93,7 @@ class HeightMap(pygame.sprite.Sprite):
 
     def draw_image(self, image):
         self.image = image.copy()
-        self.map_array = tuple([[256 - col[2] for col in row] for row in pygame.surfarray.array3d(image).tolist()])
+        self.map_array = tuple([[col for col in row] for row in pygame.surfarray.pixels_green(self.get_grey_scaled_surface()).tolist()])
         self.max_map_array = (len(self.map_array) - 1, len(self.map_array[0]) - 1)
         self.topology_image = topology_map_creation(self.image, self.poster_level)
 
