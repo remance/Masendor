@@ -793,6 +793,12 @@ class Game:
 
         pygame.display.set_caption(version_name)  # set the self name on program border/tab
 
+    def setup_profiler(self):
+        from gamescript.battleui import Profiler
+        self.profiler = Profiler()
+        self.profiler.enable()
+        self.battle_ui_updater.add(self.profiler)
+
     def run(self):
         while True:
             # Get user input

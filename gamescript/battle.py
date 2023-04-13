@@ -533,7 +533,13 @@ class Battle:
         # self.mapunitarray = [[x[random.randint(0, 1)] if i != j else 0 for i in range(1000)] for j in range(1000)]
         pygame.mixer.music.set_endevent(self.SONG_END)  # End current music before battle start
 
+        frame = 0
         while True:  # self running
+            frame += 1
+
+            if frame % 30 == 0 and hasattr(self.main, "profiler"):
+                self.main.profiler.refresh()
+
             self.fps_count.fps_show(self.clock)
             event_key_press = None
             mouse_left_up = False  # left click
@@ -576,6 +582,10 @@ class Battle:
 
                 elif event.type == pygame.KEYDOWN and event.key == K_ESCAPE:  # open/close menu
                     esc_press = True
+
+                elif event.type == pygame.KEYDOWN and event.key == K_F8:  # show/hide profiler
+                    if not hasattr(self.main, "profiler"):
+                        self.main.setup_profiler()
 
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:  # left click
