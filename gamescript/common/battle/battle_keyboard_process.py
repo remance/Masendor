@@ -22,8 +22,6 @@ def battle_keyboard_process(self, key_press):
         self.drama_text.queue.append("The Saxon swarmed him and left him death, that they shall atone")
     elif key_press == pygame.K_F7:
         self.drama_text.queue.append("For his name will be remember in the song singed by people")
-    elif key_press == pygame.K_F8:
-        self.drama_text.queue.append("And that is the end of this tale, don't expect a sequel")
     # elif key_press == pygame.K_PAGEUP:  # Go to top of event log
     #     self.event_log.current_start_row = 0
     #     self.event_log.recreate_image()
