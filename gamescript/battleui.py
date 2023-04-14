@@ -1270,23 +1270,36 @@ class Profiler(cProfile.Profile, pygame.sprite.Sprite):
 
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        size = (900, 550)
-        self.image = pygame.Surface(size)
-        self.rect = pygame.Rect((0, 0, *size))
+        self.size = (900, 550)
+        self.image = pygame.Surface(self.size)
+        self.rect = pygame.Rect((0, 0, *self.size))
         font = "ubuntumono"  # TODO: feel free to change this, the most important thing is that it
         # is monospace and works good for every developer
         self.font = pygame.font.SysFont(font, 16)
-        self.image.fill(0x112233)
         self._layer = 12
+        self.visible = False
 
     def refresh(self):
         import io
         from pstats import Stats
-        s_io = io.StringIO()
-        stats = Stats(self, stream=s_io)
-        stats.sort_stats('tottime').print_stats(20)
-        info_str = s_io.getvalue()
-        self.enable()  # profiler must be re-enabled after get stats
-        self.image.fill(0x112233)
-        for e, line in enumerate(info_str.split("\n")):
-            self.image.blit(self.font.render(line, True, pygame.Color("white")), (0, e*20))
+
+        # There should be a way to hide/show something using the sprite api but
+        # I didn't get it to work so I did this solution instead
+
+        if self.visible:
+            self.image = pygame.Surface(self.size)
+            s_io = io.StringIO()
+            stats = Stats(self, stream=s_io)
+            stats.sort_stats('tottime').print_stats(20)
+            info_str = s_io.getvalue()
+            self.enable()  # profiler must be re-enabled after get stats
+            self.image.fill(0x112233)
+            self.image.blit(self.font.render("press F7 to clear times", True, pygame.Color("white")), (0, 0))
+            for e, line in enumerate(info_str.split("\n"), 1):
+                self.image.blit(self.font.render(line, True, pygame.Color("white")), (0, e*20))
+        else:
+            self.image = pygame.Surface((1, 1))
+
+    def switch_show_hide(self):
+        self.visible = not self.visible
+        self.refresh()
