@@ -1,7 +1,7 @@
 import os
 from math import radians
 from pathlib import Path
-from random import random
+from random import random, getrandbits
 
 import pygame
 import pygame.freetype
@@ -237,6 +237,7 @@ class Subunit(pygame.sprite.Sprite):
         self.unit_add_change = False
         self.retreat_start = False
         self.taking_damage_angle = None
+        self.leader_temp_retreat = False
 
         self.hitbox = None
         self.effectbox = None
@@ -940,7 +941,7 @@ class Subunit(pygame.sprite.Sprite):
                         if not self.take_melee_dmg and not self.take_aoe_dmg and not self.take_range_dmg:
                             self.reserve_ready_timer += dt
                             if self.health < self.max_health:  # leader regen health in camp
-                                self.health += dt
+                                self.health += dt * 5
                                 if self.health > self.max_health:
                                     self.health = self.max_health
                         if self.reserve_ready_timer > 5:  # troop reinforcement take 5 seconds
@@ -1014,13 +1015,23 @@ class Subunit(pygame.sprite.Sprite):
 
                 self.taking_damage_angle = None
 
-                if not self.player_control:
-                    if self.not_broken:
-                        if "uncontrollable" not in self.current_action and "uncontrollable" not in self.command_action:
-                            self.ai_combat()
+                if self.not_broken:
+                    if not self.player_control and "uncontrollable" not in self.current_action and "uncontrollable" not in self.command_action:
+                        self.ai_combat()
+                        if self.reserve_ready_timer and self.health < self.max_health:  # in camp
+                            # AI wait until heal to max health before moving somewhere else
+                            if self.command_target.distance_to(self.base_pos) < self.current_camp_radius:
+                                self.ai_move()
+                        else:
                             self.ai_move()
-                    else:
-                        self.ai_retreat()
+
+                else:
+                    self.ai_retreat()
+                    if self.leader_temp_retreat:
+                        if self.reserve_ready_timer:  # stop retreat when reach camp
+                            self.leader_temp_retreat = False
+                            self.command_target = self.base_pos
+                            self.not_broken = True
 
                 self.check_skill_usage()
 
@@ -1121,7 +1132,28 @@ class Subunit(pygame.sprite.Sprite):
                             SkillAimTarget(self.screen_scale, self,
                                            self.skill[self.current_action["skill"]]["Area Of Effect"])
 
-        else:  # dead
+        else:  # die
+            if self.is_leader and self.alive:
+                if not self.leader_temp_retreat and not self.reserve_ready_timer and not self.retreat_start:
+                    if self.camp_pos:  # has camp to retreat to
+                        camp_distance = infinity
+                        for camp_pos in self.camp_pos:
+                            next_camp_distance = self.base_pos.distance_to(camp_pos)
+                            if next_camp_distance <= camp_distance:
+                                self.command_target = camp_pos
+                        self.leader_temp_retreat = True
+                        self.not_broken = False
+                        self.health = self.max_health10  # restore health to 10% for retreat to camp
+                    else:  # no camp, simply retreat from battle
+                        self.not_broken = False
+                        self.find_retreat_target()
+                    return
+
+                else:
+                    if bool(getrandbits(1)):  # 50/50 chance to not die
+                        self.health = 1  # restore health to 1
+                        return
+
             if self.alive:  # enter dead state
                 self.alive = False  # enter dead state
                 self.die("dead")

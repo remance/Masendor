@@ -4,7 +4,7 @@ import pygame
 def player_input(self, cursor_pos, mouse_left_up=False, mouse_right_up=False, mouse_left_down=False,
                  mouse_right_down=False, key_state=None):
     """other_command is special type of command such as stop all action, raise flag, decimation, duel and so on"""
-    if self.alive:
+    if self.alive and self.not_broken:
         new_pos = pygame.Vector2(self.base_pos)
         if not self.current_action or "hold" in self.current_action:  # can rotate if not has any action or holding
             self.new_angle = self.set_rotate(cursor_pos)
