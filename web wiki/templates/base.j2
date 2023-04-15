@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Web wiki</title>
+        <style>
+        * { font-family: Helvetica; color: #111 }
+        body { background: #d7d0c4; padding: 0; margin: 0 }
+        th { background: #a3856c }
+        h1 { margin: 0; padding: 0; color: #222222; font-size: 42px }
+        h2 { margin: 0; padding: 0; color: #71410a; font-size: 28px }
+        table { border-collapse: collapse; border-spacing: 0 }
+        hr { margin: 6px 0 6px 0; height: 1px; border: 0; border-bottom: 1px solid #ccc; display: block; padding: 0 }
+        th { text-align: left; color: #fefefe; font-size: 12px; font-weight: normal; padding: 8px; border-bottom: 1px solid #604030; border-top: 1px solid #604030; margin-bottom: 28px }
+        #content { background: #fefefe; padding:40px; border-left: 1px solid #ccc; border-right: 1px solid #ccc; width: 1300px; margin: 0 auto 0 auto }
+        a{ color: #a13c12 }
+        tr:nth-child(odd) td { background: #fef2e8 }
+        td{ padding: 8px; font-size: 12px }
+        </style>
+    </head>
+
+    <body>
+        <div id="content">
+            <h1>Masendor</h1>
+
+            <hr/>
+            <a href="/regions">Regions</a> | 
+            <a href="/factions">Factions</a> | 
+            <a href="/troop-classes">Troop Classes</a> | 
+            <a href="/sub-units">Sub Units</a>
+            <hr/>
+
+            {% block content %}{% endblock %}
+
+        </div>
+    </body>
+</html>
