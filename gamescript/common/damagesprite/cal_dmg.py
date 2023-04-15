@@ -46,7 +46,7 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
     if self.attack_type == "range":  # Range or other type of damage
         troop_dmg, element_effect = cal_dmg_penetrate(self, target)
 
-    else:  # Melee dmg
+    else:  # Melee or charge dmg
         if self.attack_type == "charge":  # Include charge in dmg if charging
             troop_dmg, element_effect = cal_dmg_penetrate(self, target, reduce_penetrate=False)
             if not attacker.check_special_effect("Ignore Charge Defence",
@@ -111,13 +111,13 @@ def cal_dmg_penetrate(self, target, reduce_penetrate=True):
     troop_dmg = 0
     element_effect = {}
     for key, value in self.dmg.items():
-        if value:
-            if self.penetrate < target.element_resistance[key]:
-                troop_dmg += value - (value * (target.element_resistance[key] - self.penetrate) / 100)
-                element_effect[key] = (value / 10 * (target.element_resistance[key] - self.penetrate) / 100)
-            else:
-                troop_dmg += value
-                element_effect[key] = value / 10
-            if reduce_penetrate:
-                self.penetrate -= target.element_resistance[key]
+        if self.penetrate < target.element_resistance[key]:
+            dmg = value - (value * (target.element_resistance[key] - self.penetrate) / 100)
+            troop_dmg += dmg
+            element_effect[key] = dmg / 10
+        else:
+            troop_dmg += value
+            element_effect[key] = value / 10
+        if reduce_penetrate:
+            self.penetrate -= target.element_resistance[key]
     return troop_dmg, element_effect

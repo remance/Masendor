@@ -72,7 +72,8 @@ def status_update(self):
     self.crit_effect = self.base_crit_effect
     self.shoot_range = self.original_shoot_range[self.equipped_weapon].copy()
     self.weapon_speed = self.original_weapon_speed[self.equipped_weapon].copy()
-    self.weapon_dmg = self.original_weapon_dmg[self.equipped_weapon].copy()
+    self.weapon_dmg = {key: {key2: value2.copy() for key2, value2 in value.items()} for
+                       key, value in self.original_weapon_dmg[self.equipped_weapon].items()}
 
     self.element_resistance = self.base_element_resistance.copy()
 
@@ -208,14 +209,13 @@ def status_update(self):
 
             for weapon in self.weapon_dmg:
                 for key, value in self.weapon_dmg[weapon].items():
-                    if key != "Physical" and key + " Damage Extra" in cal_effect:
+                    if key + " Damage Extra" in cal_effect:
                         extra_dmg = cal_effect[key + " Damage Extra"]
-                        if extra_dmg != 0:
-                            value[0] += extra_dmg * self.weapon_dmg[weapon]["Physical"]
-                            value[1] += extra_dmg * self.weapon_dmg[weapon]["Physical"]
-                    else:
-                        value[0] *= cal_effect["Physical Damage Effect"]
-                        value[1] *= cal_effect["Physical Damage Effect"]
+                        if extra_dmg:
+                            value[0] += int(extra_dmg / 2)
+                            value[1] += extra_dmg
+
+            weapon_dmg_modifier += cal_effect["Damage Effect"]
 
             sight_bonus += cal_effect["Sight Bonus"]
             hidden_bonus += cal_effect["Hidden Bonus"]
@@ -290,7 +290,7 @@ def status_update(self):
     self.charge_def = (self.charge_def + (self.charge_def * self.morale_state)) * self.command_buff
     height_diff = (self.height / self.front_height) ** 2  # walk down hill increase speed, walk up hill reduce speed
     self.speed = (self.speed * self.stamina_state) * height_diff
-    self.charge = ((self.charge + self.speed) + (self.charge * self.morale_state)) * self.command_buff
+    self.charge = (self.charge + (self.charge * self.morale_state)) * self.command_buff
 
     # Add discipline to stat
     self.discipline += discipline_bonus
@@ -331,7 +331,7 @@ def status_update(self):
     troop_mass = self.troop_mass
     if "less mass" in self.current_action:  # knockdown reduce mass
         troop_mass = int(self.troop_mass / self.current_action["less mass"])
-    self.charge_power = (self.charge * self.momentum) + troop_mass
+    self.charge_power = (self.charge + self.speed + troop_mass) * self.momentum
 
     self.charge_def_power = self.charge_def + troop_mass
     if self.move_speed:  # reduce charge def by half when moving

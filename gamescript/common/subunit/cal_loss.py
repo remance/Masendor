@@ -16,7 +16,6 @@ def cal_loss(self, final_dmg, impact, final_morale_dmg, element_effect, hit_angl
     """
     if final_dmg > self.health:  # dmg cannot be higher than remaining health
         final_dmg = self.health
-
     impact_check = impact - self.troop_mass
 
     if impact_check > self.max_health50:  # knockdown

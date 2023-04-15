@@ -66,9 +66,7 @@ def move_logic(self, dt):
                                 self.momentum = 1
 
                     elif self.momentum:  # reset charge momentum when not running
-                        self.momentum -= dt * 2
-                        if self.momentum < 0:
-                            self.momentum = 0
+                        self.momentum = 0
 
                 if self.move_path and self.base_pos.distance_to(self.move_path[0]) < 0.1:
                     # reach the current queue point, remove from queue
@@ -85,6 +83,4 @@ def move_logic(self, dt):
         if "movable" in self.current_action:  # in moving animation, interrupt it
             self.interrupt_animation = True
         if self.momentum:  # reduce charge momentum when not moving
-            self.momentum -= dt * 2
-            if self.momentum < 0:
-                self.momentum = 0
+            self.momentum = 0

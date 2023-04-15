@@ -564,9 +564,9 @@ class Subunit(pygame.sprite.Sprite):
         self.original_charge = ((self.strength * 0.3) + (self.agility * 0.3) + (self.dexterity * 0.3) +
                                 (self.wisdom * 0.2)) + (grade_stat["Training Score"] * training_scale[0])
 
-        self.original_charge_def = ((self.dexterity * 0.4) + (self.agility * 0.1) + (self.constitution * 0.3) +
-                                    (self.wisdom * 0.2)) + (grade_stat["Training Score"] *
-                                                            ((training_scale[0] + training_scale[1]) / 2))
+        self.original_charge_def = ((self.dexterity * 0.4) + (self.agility * 0.2) + (self.constitution * 0.3) +
+                                    (self.wisdom * 0.1)) + (grade_stat["Training Score"] *
+                                                            (training_scale[0] + training_scale[1]))
 
         self.original_speed = self.agility / 5  # get replaced with mount agi and speed bonus
 
@@ -809,9 +809,9 @@ class Subunit(pygame.sprite.Sprite):
         self.morale = self.base_morale
         self.discipline = self.base_discipline
         self.charge = self.base_charge
-        self.charge_power = self.charge * self.speed / 2 * self.troop_mass
+        self.charge_power = (self.charge + self.speed + self.troop_mass) * self.momentum
         self.charge_def = self.base_charge_def
-        self.charge_def_power = self.charge_def * self.troop_mass
+        self.charge_def_power = self.charge_def + self.troop_mass
         self.hp_regen = self.base_hp_regen
         self.stamina_regen = self.base_stamina_regen
         self.morale_regen = self.base_morale_regen
@@ -820,7 +820,8 @@ class Subunit(pygame.sprite.Sprite):
         self.mental = self.base_mental
         self.crit_effect = self.base_crit_effect
 
-        self.weapon_dmg = self.original_weapon_dmg[self.equipped_weapon].copy()
+        self.weapon_dmg = {key: {key2: value2.copy() for key2, value2 in value.items()} for
+                           key, value in self.original_weapon_dmg[self.equipped_weapon].items()}
         self.weapon_speed = self.original_weapon_speed[self.equipped_weapon].copy()
         self.shoot_range = self.original_shoot_range[self.equipped_weapon].copy()
         self.melee_range = self.original_melee_range[self.equipped_weapon]
@@ -944,7 +945,7 @@ class Subunit(pygame.sprite.Sprite):
                                 self.health += dt * 5
                                 if self.health > self.max_health:
                                     self.health = self.max_health
-                        if self.reserve_ready_timer > 5:  # troop reinforcement take 5 seconds
+                        if self.reserve_ready_timer > 10:  # troop reinforcement take 10 seconds
                             for troop_id, number in self.troop_dead_list.items():
                                 for _ in range(number):
                                     if self.troop_reserve_list[troop_id] > 0:
@@ -961,10 +962,12 @@ class Subunit(pygame.sprite.Sprite):
                                         self.troop_dead_list[troop_id] -= 1
                                         self.battle.last_troop_game_id += 1
                                         self.troop_reserve_list[troop_id] -= 1
-
                                     else:
-                                        self.troop_reserve_list.pop(troop_id)
                                         break
+
+                                if not self.troop_reserve_list[troop_id]:  # troop reserve run out, remove from dict
+                                    self.troop_reserve_list.pop(troop_id)
+                                    break
 
                             self.find_formation_size(troop=True)
                             self.change_formation("troop")
