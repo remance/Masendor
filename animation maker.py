@@ -769,6 +769,7 @@ class Model:
                                                    "dmg_effect_1": None, "dmg_effect_2": None, "dmg_effect_3": None,
                                                    "dmg_effect_4": None}
         self.p_eyebrow = {}
+        self.p_face = {}
         self.p_any_eye = {}
         self.p_any_mouth = {}
         self.p_beard = {}
@@ -807,6 +808,7 @@ class Model:
         for p in range(1, max_person + 1):
             this_p = "p" + str(p)
             self.p_eyebrow = self.p_eyebrow | {this_p: "normal"}
+            self.p_face = self.p_face | {this_p: "common"}
             self.p_any_eye = self.p_any_eye | {this_p: "normal"}
             self.p_any_mouth = self.p_any_mouth | {this_p: "normal"}
             self.p_beard = self.p_beard | {this_p: "none"}
@@ -1029,7 +1031,8 @@ class Model:
                 head_sprite_surface = pygame.Surface(head_sprite.get_size(), pygame.SRCALPHA)
                 head_rect = head_sprite.get_rect(midtop=(head_sprite_surface.get_width() / 2, 0))
                 head_sprite_surface.blit(head_sprite, head_rect)
-                face = [self.grab_face_part(head_race, "eyebrow", self.p_eyebrow[key]),
+                face = [self.grab_face_part(head_race, "face", self.p_face[key]),
+                        self.grab_face_part(head_race, "eyebrow", self.p_eyebrow[key]),
                         self.grab_face_part(head_race, "eye", bodypart_list[key + "_eye"],
                                             self.p_any_eye[key]),
                         self.grab_face_part(head_race, "beard", self.p_beard[key]),
@@ -1037,9 +1040,9 @@ class Model:
                                             self.p_any_mouth[key])]
                 # if skin != "white":
                 #     face[0] = self.apply_colour(face[0], skin_colour)
-                face[0] = apply_colour(face[0], self.p_hair_colour[key])
-                face[2] = apply_colour(face[2], self.p_hair_colour[key])
-                face[1] = apply_colour(face[1], self.p_eye_colour[key])
+                face[1] = apply_colour(face[1], self.p_hair_colour[key])
+                face[3] = apply_colour(face[3], self.p_hair_colour[key])
+                face[2] = apply_colour(face[2], self.p_eye_colour[key])
 
                 head_sprite_surface = pygame.Surface(head_sprite.get_size(), pygame.SRCALPHA)
                 rect = head_sprite.get_rect(

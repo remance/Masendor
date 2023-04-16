@@ -1,7 +1,7 @@
 import os
 from math import radians
 from pathlib import Path
-from random import random
+from random import random, getrandbits
 
 import pygame
 import pygame.freetype
@@ -237,6 +237,7 @@ class Subunit(pygame.sprite.Sprite):
         self.unit_add_change = False
         self.retreat_start = False
         self.taking_damage_angle = None
+        self.leader_temp_retreat = False
 
         self.hitbox = None
         self.effectbox = None
@@ -563,9 +564,9 @@ class Subunit(pygame.sprite.Sprite):
         self.original_charge = ((self.strength * 0.3) + (self.agility * 0.3) + (self.dexterity * 0.3) +
                                 (self.wisdom * 0.2)) + (grade_stat["Training Score"] * training_scale[0])
 
-        self.original_charge_def = ((self.dexterity * 0.4) + (self.agility * 0.1) + (self.constitution * 0.3) +
-                                    (self.wisdom * 0.2)) + (grade_stat["Training Score"] *
-                                                            ((training_scale[0] + training_scale[1]) / 2))
+        self.original_charge_def = ((self.dexterity * 0.4) + (self.agility * 0.2) + (self.constitution * 0.3) +
+                                    (self.wisdom * 0.1)) + (grade_stat["Training Score"] *
+                                                            (training_scale[0] + training_scale[1]))
 
         self.original_speed = self.agility / 5  # get replaced with mount agi and speed bonus
 
@@ -808,9 +809,9 @@ class Subunit(pygame.sprite.Sprite):
         self.morale = self.base_morale
         self.discipline = self.base_discipline
         self.charge = self.base_charge
-        self.charge_power = self.charge * self.speed / 2 * self.troop_mass
+        self.charge_power = (self.charge + self.speed + self.troop_mass) * self.momentum
         self.charge_def = self.base_charge_def
-        self.charge_def_power = self.charge_def * self.troop_mass
+        self.charge_def_power = self.charge_def + self.troop_mass
         self.hp_regen = self.base_hp_regen
         self.stamina_regen = self.base_stamina_regen
         self.morale_regen = self.base_morale_regen
@@ -819,7 +820,8 @@ class Subunit(pygame.sprite.Sprite):
         self.mental = self.base_mental
         self.crit_effect = self.base_crit_effect
 
-        self.weapon_dmg = self.original_weapon_dmg[self.equipped_weapon].copy()
+        self.weapon_dmg = {key: {key2: value2.copy() for key2, value2 in value.items()} for
+                           key, value in self.original_weapon_dmg[self.equipped_weapon].items()}
         self.weapon_speed = self.original_weapon_speed[self.equipped_weapon].copy()
         self.shoot_range = self.original_shoot_range[self.equipped_weapon].copy()
         self.melee_range = self.original_melee_range[self.equipped_weapon]
@@ -940,10 +942,10 @@ class Subunit(pygame.sprite.Sprite):
                         if not self.take_melee_dmg and not self.take_aoe_dmg and not self.take_range_dmg:
                             self.reserve_ready_timer += dt
                             if self.health < self.max_health:  # leader regen health in camp
-                                self.health += dt
+                                self.health += dt * 5
                                 if self.health > self.max_health:
                                     self.health = self.max_health
-                        if self.reserve_ready_timer > 5:  # troop reinforcement take 5 seconds
+                        if self.reserve_ready_timer > 10:  # troop reinforcement take 10 seconds
                             for troop_id, number in self.troop_dead_list.items():
                                 for _ in range(number):
                                     if self.troop_reserve_list[troop_id] > 0:
@@ -960,10 +962,12 @@ class Subunit(pygame.sprite.Sprite):
                                         self.troop_dead_list[troop_id] -= 1
                                         self.battle.last_troop_game_id += 1
                                         self.troop_reserve_list[troop_id] -= 1
-
                                     else:
-                                        self.troop_reserve_list.pop(troop_id)
                                         break
+
+                                if not self.troop_reserve_list[troop_id]:  # troop reserve run out, remove from dict
+                                    self.troop_reserve_list.pop(troop_id)
+                                    break
 
                             self.find_formation_size(troop=True)
                             self.change_formation("troop")
@@ -1014,13 +1018,23 @@ class Subunit(pygame.sprite.Sprite):
 
                 self.taking_damage_angle = None
 
-                if not self.player_control:
-                    if self.not_broken:
-                        if "uncontrollable" not in self.current_action and "uncontrollable" not in self.command_action:
-                            self.ai_combat()
+                if self.not_broken:
+                    if not self.player_control and "uncontrollable" not in self.current_action and "uncontrollable" not in self.command_action:
+                        self.ai_combat()
+                        if self.reserve_ready_timer and self.health < self.max_health:  # in camp
+                            # AI wait until heal to max health before moving somewhere else
+                            if self.command_target.distance_to(self.base_pos) < self.current_camp_radius:
+                                self.ai_move()
+                        else:
                             self.ai_move()
-                    else:
-                        self.ai_retreat()
+
+                else:
+                    self.ai_retreat()
+                    if self.leader_temp_retreat:
+                        if self.reserve_ready_timer:  # stop retreat when reach camp
+                            self.leader_temp_retreat = False
+                            self.command_target = self.base_pos
+                            self.not_broken = True
 
                 self.check_skill_usage()
 
@@ -1121,7 +1135,28 @@ class Subunit(pygame.sprite.Sprite):
                             SkillAimTarget(self.screen_scale, self,
                                            self.skill[self.current_action["skill"]]["Area Of Effect"])
 
-        else:  # dead
+        else:  # die
+            if self.is_leader and self.alive:
+                if not self.leader_temp_retreat and not self.reserve_ready_timer and not self.retreat_start:
+                    if self.camp_pos:  # has camp to retreat to
+                        camp_distance = infinity
+                        for camp_pos in self.camp_pos:
+                            next_camp_distance = self.base_pos.distance_to(camp_pos)
+                            if next_camp_distance <= camp_distance:
+                                self.command_target = camp_pos
+                        self.leader_temp_retreat = True
+                        self.not_broken = False
+                        self.health = self.max_health10  # restore health to 10% for retreat to camp
+                    else:  # no camp, simply retreat from battle
+                        self.not_broken = False
+                        self.find_retreat_target()
+                    return
+
+                else:
+                    if bool(getrandbits(1)):  # 50/50 chance to not die
+                        self.health = 1  # restore health to 1
+                        return
+
             if self.alive:  # enter dead state
                 self.alive = False  # enter dead state
                 self.die("dead")

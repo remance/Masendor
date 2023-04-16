@@ -28,6 +28,7 @@ def attack(self, attack_type):
             max_range = self.shoot_range[weapon]
             if max_range == 0:
                 print(self.name, weapon, self.shoot_range, self.current_action, self.equipped_weapon)
+                crash
 
             accuracy = self.accuracy
             sight_penalty = 1
@@ -93,7 +94,7 @@ def attack(self, attack_type):
                                       base_target[1] * (100 + choice((accuracy / 100, -accuracy / 100))) / 100)
 
                 dmg = {key: uniform(value[0], value[1]) for key, value in self.weapon_dmg[weapon].items()}
-                if self.release_timer > 1 and self.current_action["weapon"] in self.equipped_power_weapon:
+                if self.release_timer > 1 and weapon in self.equipped_power_weapon:
                     # apply power hold buff
                     for key in self.dmg:
                         dmg[key] *= 1.5
@@ -104,8 +105,11 @@ def attack(self, attack_type):
                                   equipped_weapon_data, attack_type, self.front_pos, base_target,
                                   accuracy=accuracy, arc_shot=arc_shot,
                                   reach_effect=equipped_weapon_data["After Reach Effect"])
-
-            self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
+            try:
+                self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
+            except KeyError:
+                print(weapon, self.equipped_weapon, self.current_action, self.ammo_now)
+                crash
 
             if self.ammo_now[self.equipped_weapon][weapon] == 0 and \
                     self.magazine_count[self.equipped_weapon][weapon] == 0:
@@ -132,7 +136,7 @@ def attack(self, attack_type):
 
         elif attack_type == "charge":
             if weapon:
-                dmg = {key: value[0] for key, value in self.weapon_dmg[weapon].items()}
+                dmg = {key: value[0] for key, value in self.weapon_dmg[weapon].items() if value[0]}
                 impact = self.weapon_impact[self.equipped_weapon][weapon]
                 penetrate = self.weapon_penetrate[self.equipped_weapon][weapon]
                 stat = equipped_weapon_data
@@ -163,7 +167,7 @@ def attack(self, attack_type):
                                       self.front_pos[1] - (self.melee_range[weapon] * cos(radians(base_angle))))
 
             dmg = {key: uniform(value[0], value[1]) for key, value in self.weapon_dmg[weapon].items()}
-            if self.release_timer > 1 and self.current_action["weapon"] in self.equipped_power_weapon:
+            if self.release_timer > 1 and weapon in self.equipped_power_weapon:
                 # apply power hold buff
                 for key in dmg:
                     dmg[key] *= 1.5

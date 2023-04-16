@@ -152,6 +152,10 @@ This function is going to be a headache to write and research. But hopefully, it
 
 # Credit
 
+## Programming
+
+### coppermouse (https://github.com/coppermouse)
+
 ## Tool
 
 ### Subunit sprite viewer by coppermouse (https://github.com/coppermouse)
@@ -204,14 +208,12 @@ This function is going to be a headache to write and research. But hopefully, it
 **Ver 0.6 Dream Decision:** Battle selection(with different estimation source),
 preparation and result screen, custom battle, improve the main menu, Battle of Megiddo, Battle of Mohács
 
-**0.6.7 and 0.6.9:** custom battle, Battle of Mohács
-
 **Ver 0.7 Future Visionary:**  battle information based on hidden vs sight, march sound system, raise flag/ light torch, ambush bonus, 
 Battle of Walaja, Battle of Dorylaeum
 
-**0.7.1 and 0.7.2:** hidden stat, line of sight, leader respawn system
+**0.7 and 0.7.1:** hidden stat, line of sight, rework Battle of Hastings, Battle of Mohács
 
-**0.7.3:** unit editor and march sound system
+**0.7.2 and 0.7.3:** custom unit editor and march sound system
 
 **0.7.4:** custom troop editor, Battle of Walaja
 

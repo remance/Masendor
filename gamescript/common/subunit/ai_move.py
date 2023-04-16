@@ -7,6 +7,7 @@ stay_formation_distance = 1
 
 
 def ai_move(self):
+    # TODO add condition to check for moving to camp for respawn troop
     if self.leader:  # has higher leader
         if self.is_leader:
             follow_order = self.leader.unit_follow_order

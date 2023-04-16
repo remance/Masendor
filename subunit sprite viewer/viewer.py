@@ -11,6 +11,7 @@ from gamescript import datasprite
 
 csv_read = utility.csv_read
 
+
 def get_all_surfaces_recursive( _dict, return_container = None):
     if return_container is None: return_container = set()
     for k, v in _dict.items():        

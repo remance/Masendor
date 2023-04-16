@@ -3,6 +3,7 @@ from math import cos, sin, radians
 
 import pygame
 import pygame.freetype
+import cProfile
 
 from gamescript.common import utility
 
@@ -1263,3 +1264,42 @@ class SpriteIndicator(pygame.sprite.Sprite):
         self.battle = battle
         self.image = image
         self.rect = self.image.get_rect(center=self.who.pos)
+
+
+class Profiler(cProfile.Profile, pygame.sprite.Sprite):
+
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.size = (900, 550)
+        self.image = pygame.Surface(self.size)
+        self.rect = pygame.Rect((0, 0, *self.size))
+        font = "ubuntumono"  # TODO: feel free to change this, the most important thing is that it
+        # is monospace and works good for every developer
+        self.font = pygame.font.SysFont(font, 16)
+        self._layer = 12
+        self.visible = False
+
+    def refresh(self):
+        import io
+        from pstats import Stats
+
+        # There should be a way to hide/show something using the sprite api but
+        # I didn't get it to work so I did this solution instead
+
+        if self.visible:
+            self.image = pygame.Surface(self.size)
+            s_io = io.StringIO()
+            stats = Stats(self, stream=s_io)
+            stats.sort_stats('tottime').print_stats(20)
+            info_str = s_io.getvalue()
+            self.enable()  # profiler must be re-enabled after get stats
+            self.image.fill(0x112233)
+            self.image.blit(self.font.render("press F7 to clear times", True, pygame.Color("white")), (0, 0))
+            for e, line in enumerate(info_str.split("\n"), 1):
+                self.image.blit(self.font.render(line, True, pygame.Color("white")), (0, e*20))
+        else:
+            self.image = pygame.Surface((1, 1))
+
+    def switch_show_hide(self):
+        self.visible = not self.visible
+        self.refresh()
