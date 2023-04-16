@@ -185,7 +185,7 @@ class Game:
             self.ruleset = 0  # for now default historical ruleset only
 
         # Set the display mode
-        self.screen_rect = Rect(0, 0, self.screen_width, self.screen_height)
+        self.screen_rect = pygame.Rect(0, 0, self.screen_width, self.screen_height)
         self.screen_scale = (self.screen_rect.width / 1920, self.screen_rect.height / 1080)
 
         self.window_style = 0
@@ -213,6 +213,8 @@ class Game:
 
         self.ruleset_list = csv_read(self.main_dir, "ruleset_list.csv", ("data", "ruleset"))  # get ruleset list
         self.ruleset_folder = str(self.ruleset_list[self.ruleset][0]).strip("/").lower()
+
+        self.joysticks = {}
 
         self.map_type = ""
         self.map_source = 0  # current selected map source
@@ -790,7 +792,7 @@ class Game:
         # "It is more important to out-think your enemy, than to out-fight him, Sun Tzu"]
         while intro:
             for event in pygame.event.get():
-                if event.type == KEYDOWN:
+                if event.type == pygame.KEYDOWN:
                     intro = False
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -844,18 +846,27 @@ class Game:
                     elif event.button == 5:  # Mouse scroll up
                         mouse_scroll_down = True
 
-                elif event.type == KEYDOWN:
+                elif event.type == pygame.KEYDOWN:
                     if self.input_popup[0]:  # event update to input box
-                        if event.key == K_ESCAPE:
+                        if event.key == pygame.K_ESCAPE:
                             input_esc = True
                         elif self.input_popup[0] == "text_input":
                             self.input_box.player_input(event, key_press)
                             self.text_delay = 0.1
                     else:
-                        if event.key == K_ESCAPE:
+                        if event.key == pygame.K_ESCAPE:
                             esc_press = True
 
-                if event.type == QUIT or self.quit_button.event or (esc_press and self.menu_state == "main_menu"):
+                elif event.type == pygame.JOYDEVICEADDED:
+                    # Player add new joystick by plug in
+                    joy = pygame.joystick.Joystick(event.device_index)
+                    self.joysticks[joy.get_instance_id()] = joy
+
+                elif event.type == pygame.JOYDEVICEREMOVED:
+                    # Player unplug joystick
+                    del self.joysticks[event.instance_id]
+
+                elif event.type == QUIT or self.quit_button.event or (esc_press and self.menu_state == "main_menu"):
                     self.quit_button.event = False
                     self.input_popup = ("confirm_input", "quit")
                     self.confirm_ui.change_instruction("Quit Game?")

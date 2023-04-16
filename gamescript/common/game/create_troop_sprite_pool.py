@@ -185,8 +185,10 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                              (any(ext in this_animation for ext in weapon_attack_type_list) is False or
                               ("_Both_" in this_animation or (weapon_attack_action[weapon_set][0] in this_animation and "_Main_" in this_animation)
                                or weapon_attack_action[weapon_set][1] in this_animation and "_Sub_" in this_animation))]
-
-                animation = [this_animation for this_animation in animation if this_animation == specific_preview[0][:-2]]
+                if "non-specific" in specific_preview:
+                    animation = [this_animation for this_animation in animation if specific_preview[0][:-2] in this_animation]
+                else:
+                    animation = [this_animation for this_animation in animation if this_animation == specific_preview[0][:-2]]
                 animation = animation[0]
             else:
                 animation = [this_animation for this_animation in animation
@@ -236,6 +238,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
             sprite_pic, center_offset = crop_sprite(sprite_dict["sprite"])
 
             if max_preview_size:
+                print(self.screen_scale[0], sprite_pic.get_width())
                 scale = min(max_preview_size * self.screen_scale[0] / sprite_pic.get_width(),
                             max_preview_size * self.screen_scale[1] / sprite_pic.get_height())
                 if scale != 1:  # scale down to fit ui like encyclopedia
