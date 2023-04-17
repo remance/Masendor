@@ -3041,6 +3041,7 @@ while True:
 
     ui.update(mouse_pos, mouse_left_up, mouse_left_down)
     anim.play(showroom.image, (0, 0), activate_list)
+    current_frame = anim.show_frame
     for strip_index, strip in enumerate(filmstrips):
         if strip_index == current_frame:
             strip.selected(True)
