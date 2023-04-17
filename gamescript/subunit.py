@@ -264,6 +264,7 @@ class Subunit(pygame.sprite.Sprite):
 
         self.near_ally = []
         self.near_enemy = []
+        # self.near_visible_enemy = []
         self.nearest_enemy = []
         self.nearest_ally = []
 
@@ -555,7 +556,7 @@ class Subunit(pygame.sprite.Sprite):
         self.original_accuracy = ((self.strength * 0.1) + (self.dexterity * 0.6) + (self.wisdom * 0.3)) + \
                                  (grade_stat["Training Score"] / 2 * training_scale[2])
 
-        self.original_sight = ((self.dexterity * 0.8) + (self.wisdom * 0.2)) + (grade_stat["Training Score"] / 2 *
+        self.original_sight = ((self.dexterity * 2) + (self.wisdom * 0.5)) + (grade_stat["Training Score"] *
                                                                                 training_scale[2])
 
         self.original_reload = ((self.strength * 0.1) + (self.dexterity * 0.4) + (self.agility * 0.4) +
@@ -700,7 +701,7 @@ class Subunit(pygame.sprite.Sprite):
         self.command_buff = 1
         self.leader_social_buff = 0
         self.authority = 0
-        self.original_hidden = 1000 / self.troop_mass  # hidden based on size, use size after add mount
+        self.original_hidden = 500 / self.troop_mass  # hidden based on size, use size after add mount
 
         self.trait["Original"] = tuple(
             set([trait for trait in self.trait["Original"] if trait != 0]))  # remove empty and duplicate traits

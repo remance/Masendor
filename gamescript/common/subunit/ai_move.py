@@ -43,7 +43,7 @@ def ai_move(self):
                     run_speed = self.run_speed
                     if run_speed > self.unit_leader.run_speed:  # use unit leader run speed instead if faster
                         run_speed = self.unit_leader.run_speed
-                    if self.is_leader:
+                    if self.is_leader and self.nearest_enemy:
                         charge_target = self.nearest_enemy[0].base_pos
                     else:
                         charge_target = Vector2(self.base_pos[0] -

@@ -2,6 +2,7 @@ import configparser
 import glob
 import os.path
 import sys
+import ast
 from pathlib import Path
 
 import pygame
@@ -68,8 +69,11 @@ stamina_state_text = {0: "Collapse", 1: "Exhausted", 2: "Severed", 3: "Very Tire
 
 script_folder = "gamescript"
 
+mouse_binding = {"left click": 1, "middle click": 2, "right click": 3, "scroll up": 4, "scroll down": 5}
+
 
 class Game:
+    game_version = "0.7.0.2"
     empty_method = utility.empty_method
 
     # import from common.game
@@ -78,6 +82,7 @@ class Game:
     change_to_source_selection_menu = empty_method
     change_to_team_selection_menu = empty_method
     change_sound_volume = empty_method
+    create_config = empty_method
     create_preview_map = empty_method
     create_sound_effect_pool = empty_method
     create_team_coa = empty_method
@@ -141,35 +146,43 @@ class Game:
         try:
             config.read_file(open(os.path.join(self.main_dir, "configuration.ini")))  # read config file
         except FileNotFoundError:  # Create config file if not found with the default
-            config = configparser.ConfigParser()
+            config = self.create_config()
 
-            screen = screeninfo.get_monitors()[0]
-            screen_width = int(screen.width)
-            screen_height = int(screen.height)
-
-            config["DEFAULT"] = {"screen_width": screen_width, "screen_height": screen_height, "full_screen": "0",
-                                 "player_Name": "Noname", "master_volume": "100.0", "music_volume": "0.0",
-                                 "voice_volume": "100.0", "effect_volume": "100.0", "max_fps": "60", "ruleset": "0",
-                                 "language": "en"}
-            config["USER"] = {key: value for key, value in config["DEFAULT"].items()}
-            with open(os.path.join(self.main_dir, "configuration.ini"), "w") as cf:
-                config.write(cf)
-            config.read_file(open(os.path.join(self.main_dir, "configuration.ini")))
-
-        self.config = config
-        self.screen_width = int(self.config["USER"]["screen_width"])
-        self.screen_height = int(self.config["USER"]["screen_height"])
-        self.full_screen = int(self.config["USER"]["full_screen"])
-        self.master_volume = float(self.config["USER"]["master_volume"])
-        self.music_volume = float(self.config["USER"]["music_volume"])
-        self.play_music_volume = self.master_volume * self.music_volume / 10000
-        self.effect_volume = float(self.config["USER"]["effect_volume"])
-        self.play_effect_volume = self.master_volume * self.effect_volume / 10000
-        self.voice_volume = float(self.config["USER"]["voice_volume"])
-        self.play_voice_volume = self.master_volume * self.voice_volume / 10000
-        self.profile_name = str(self.config["USER"]["player_Name"])
-        self.language = str(self.config["USER"]["language"])
-        self.ruleset = 0  # for now default historical ruleset only
+        try:
+            self.config = config
+            self.screen_width = int(self.config["USER"]["screen_width"])
+            self.screen_height = int(self.config["USER"]["screen_height"])
+            self.full_screen = int(self.config["USER"]["full_screen"])
+            self.master_volume = float(self.config["USER"]["master_volume"])
+            self.music_volume = float(self.config["USER"]["music_volume"])
+            self.play_music_volume = self.master_volume * self.music_volume / 10000
+            self.effect_volume = float(self.config["USER"]["effect_volume"])
+            self.play_effect_volume = self.master_volume * self.effect_volume / 10000
+            self.voice_volume = float(self.config["USER"]["voice_volume"])
+            self.play_voice_volume = self.master_volume * self.voice_volume / 10000
+            self.profile_name = str(self.config["USER"]["player_Name"])
+            self.language = str(self.config["USER"]["language"])
+            self.player1_key_binding = ast.literal_eval(self.config["USER"]["keybinding player 1"])
+            self.ruleset = 0  # for now default historical ruleset only
+            if self.game_version != self.config["VERSION"]["ver"]:  # remake config as game version change
+                crash
+        except (KeyError, TypeError, AttributeError):  # config error will make the game recreate config with default
+            config = self.create_config()
+            self.config = config
+            self.screen_width = int(self.config["USER"]["screen_width"])
+            self.screen_height = int(self.config["USER"]["screen_height"])
+            self.full_screen = int(self.config["USER"]["full_screen"])
+            self.master_volume = float(self.config["USER"]["master_volume"])
+            self.music_volume = float(self.config["USER"]["music_volume"])
+            self.play_music_volume = self.master_volume * self.music_volume / 10000
+            self.effect_volume = float(self.config["USER"]["effect_volume"])
+            self.play_effect_volume = self.master_volume * self.effect_volume / 10000
+            self.voice_volume = float(self.config["USER"]["voice_volume"])
+            self.play_voice_volume = self.master_volume * self.voice_volume / 10000
+            self.profile_name = str(self.config["USER"]["player_Name"])
+            self.language = str(self.config["USER"]["language"])
+            self.player1_key_binding = ast.literal_eval(self.config["USER"]["keybinding player 1"])
+            self.ruleset = 0  # for now default historical ruleset only
 
         # Set the display mode
         self.screen_rect = Rect(0, 0, self.screen_width, self.screen_height)
@@ -459,9 +472,10 @@ class Game:
                                             self.screen_height, image_list,
                                             {"master": self.master_volume, "music": self.music_volume,
                                              "voice": self.voice_volume, "effect": self.effect_volume},
-                                            self.full_screen, self.main_ui_updater,
-                                            battle_select_image=battle_select_image)
+                                            self.main_ui_updater, self.config["USER"], self.player1_key_binding,
+                                            battle_select_image)
         self.back_button = option_menu_dict["back_button"]
+        self.keybind_button = option_menu_dict["keybind_button"]
         self.default_button = option_menu_dict["default_button"]
         self.resolution_drop = option_menu_dict["resolution_drop"]
         self.resolution_bar = option_menu_dict["resolution_bar"]
@@ -471,12 +485,14 @@ class Game:
         self.volume_texts = option_menu_dict["volume_texts"]
         self.fullscreen_box = option_menu_dict["fullscreen_box"]
         self.fullscreen_text = option_menu_dict["fullscreen_text"]
+        self.keybinding_text = option_menu_dict["keybinding_text"]
+        self.keybinding_icon = option_menu_dict["keybinding_icon"]
 
         self.option_text_list = tuple(
             [self.resolution_text, self.fullscreen_text] + [value for value in
                                                             self.volume_texts.values()])
         self.option_menu_button = (
-            self.back_button, self.default_button, self.resolution_drop, self.fullscreen_box)
+            self.back_button, self.default_button, self.keybind_button, self.resolution_drop, self.fullscreen_box)
 
         # Profile box
         self.profile_name = self.profile_name
@@ -897,6 +913,11 @@ class Game:
                     self.input_popup = (None, None)
                     self.main_ui_updater.remove(*self.input_ui_popup, *self.confirm_ui_popup)
 
+                elif self.input_popup[0] == "keybinding_input":
+                    # self.
+                    edit_config("USER", "keybinding", self.config["USER"]["keybinding"],
+                                "configuration.ini", self.config)
+
                 elif self.input_popup[0] == "text_input":
                     if self.text_delay == 0:
                         if key_press[self.input_box.hold_key]:
@@ -942,6 +963,9 @@ class Game:
 
                 elif self.menu_state == "option":
                     self.menu_option(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press)
+
+                elif self.menu_state == "keybind":
+                    self.menu_keybind(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "encyclopedia":
                     command = self.lorebook_process(self.main_ui_updater, mouse_left_up, mouse_left_down,

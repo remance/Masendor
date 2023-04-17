@@ -10,6 +10,11 @@ def ai_subunit(self):
                              self.battle.all_team_subunit[self.team]}.items(),
                             key=lambda item: item[1])  # sort the closest friend
 
+    # self.near_visible_enemy = {key: value for key, value in self.near_enemy if self.sight > key.hidden + value}
+    #
+    # self.nearest_enemy = None
+    # if self.near_visible_enemy:
+    #     self.nearest_enemy = self.near_visible_enemy[0]
     self.nearest_enemy = self.near_enemy[0]
     self.nearest_ally = self.near_ally[0]
 

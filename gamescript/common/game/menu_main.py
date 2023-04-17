@@ -68,8 +68,8 @@ def menu_main(self, mouse_left_up):
         self.menu_button.remove(*self.menu_button)
 
         self.menu_button.add(*self.option_menu_button)
-        self.main_ui_updater.add(*self.menu_button, *self.option_menu_sliders.values(), *self.value_boxes.values())
-        self.main_ui_updater.add(*self.option_text_list)
+        self.main_ui_updater.add(*self.menu_button, *self.option_menu_sliders.values(), *self.value_boxes.values(),
+                                 *self.option_text_list)
 
     elif mouse_left_up and self.profile_box.rect.collidepoint(self.mouse_pos):
         self.input_popup = ("text_input", "profile_name")

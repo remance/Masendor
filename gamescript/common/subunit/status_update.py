@@ -67,8 +67,8 @@ def status_update(self):
     self.charge_def = self.base_charge_def
     self.speed = self.base_speed
     self.charge = self.base_charge
-    self.sight = self.base_sight
-    self.hidden = self.base_hidden
+    # self.sight = self.base_sight
+    # self.hidden = self.base_hidden
     self.crit_effect = self.base_crit_effect
     self.shoot_range = self.original_shoot_range[self.equipped_weapon].copy()
     self.weapon_speed = self.original_weapon_speed[self.equipped_weapon].copy()
@@ -95,7 +95,7 @@ def status_update(self):
     speed_bonus = 0
     charge_bonus = 0
     sight_bonus = 0
-    hidden_bonus = 0
+    # hidden_bonus = 0
     shoot_range_bonus = 0
     hp_regen_bonus = 0
     stamina_regen_bonus = 0
@@ -217,8 +217,8 @@ def status_update(self):
 
             weapon_dmg_modifier += cal_effect["Damage Effect"]
 
-            sight_bonus += cal_effect["Sight Bonus"]
-            hidden_bonus += cal_effect["Hidden Bonus"]
+            # sight_bonus += cal_effect["Sight Bonus"]
+            # hidden_bonus += cal_effect["Hidden Bonus"]
             crit_effect_modifier += cal_effect["Critical Effect"]
             self.morale_dmg_bonus += cal_effect["Morale Damage Bonus"]
             self.stamina_dmg_bonus += cal_effect["Stamina Damage Bonus"]
@@ -240,8 +240,8 @@ def status_update(self):
             stamina_regen_bonus += cal_effect["Stamina Regeneration Bonus"]
             morale_bonus += (cal_effect["Morale Bonus"] * self.mental)
             discipline_bonus += cal_effect["Discipline Bonus"]
-            sight_bonus += cal_effect["Sight Bonus"]
-            hidden_bonus += cal_effect["Hidden Bonus"]
+            # sight_bonus += cal_effect["Sight Bonus"]
+            # hidden_bonus += cal_effect["Hidden Bonus"]
             temp_reach += cal_effect["Temperature Change"]
             for element in self.element_resistance:  # Weather can cause elemental effect such as wet
                 self.element_resistance[element] += cal_effect[element + " Resistance Bonus"]
@@ -251,17 +251,17 @@ def status_update(self):
     # Day time effect sight and hidden stat
     if self.battle.day_time == "Twilight":
         if not self.night_vision:
-            sight_bonus -= 10
+            # sight_bonus -= 10
             accuracy_bonus -= 5
-        hidden_bonus += 10
+        # hidden_bonus += 10
     elif self.battle.day_time == "Night":
         if not self.night_vision:
-            sight_bonus -= 30
+            # sight_bonus -= 30
             accuracy_bonus -= 20
-        hidden_bonus += 30
+        # hidden_bonus += 30
     else:  # day
         if self.day_blindness:
-            sight_bonus -= 30
+            # sight_bonus -= 30
             accuracy_bonus -= 20
 
     self.cal_temperature(temp_reach)  # calculate temperature and its effect
@@ -320,8 +320,8 @@ def status_update(self):
     self.charge_def = (self.charge_def * charge_def_modifier) + charge_def_bonus
     self.speed = (self.speed * speed_modifier) + speed_bonus
     self.charge = (self.charge * charge_modifier) + charge_bonus
-    self.sight += sight_bonus
-    self.hidden += hidden_bonus
+    # self.sight += sight_bonus
+    # self.hidden += hidden_bonus
     self.crit_effect *= crit_effect_modifier
 
     for key, value in self.melee_range.items():
@@ -334,8 +334,6 @@ def status_update(self):
     self.charge_power = (self.charge + self.speed + troop_mass) * self.momentum
 
     self.charge_def_power = self.charge_def + troop_mass
-    if self.move_speed:  # reduce charge def by half when moving
-        self.charge_def_power /= 2
 
     if self.hold_timer and "weapon" in self.current_action:  # holding weapon
         self.melee_dodge /= 2  # reduce dodge during any holding
@@ -352,6 +350,12 @@ def status_update(self):
             for element in self.weapon_dmg[weapon]:
                 self.weapon_dmg[weapon][element][0] *= weapon_dmg_modifier
                 self.weapon_dmg[weapon][element][1] *= weapon_dmg_modifier
+
+    if self.move_speed:  # stat that got affected when moving
+        # self.hidden *= 0.9
+        # if self.momentum:
+        #     self.hidden *= 0.5
+        self.charge_def_power /= 2   # reduce charge def by half when moving
 
     if self.melee_attack < 0:  # seem like using if 0 is faster than max(0,)
         self.melee_attack = 0
@@ -417,11 +421,11 @@ def status_update(self):
             self.discipline_mod = 3
         elif self.discipline_mod < -1:
             self.discipline_mod = -1
-        self.hidden_mod = int(hidden_bonus / 40) + 1
-        if self.hidden_mod > 3:
-            self.hidden_mod = 3
-        elif self.hidden_mod < -1:
-            self.hidden_mod = -1
+        # self.hidden_mod = int(hidden_bonus / 40) + 1
+        # if self.hidden_mod > 3:
+        #     self.hidden_mod = 3
+        # elif self.hidden_mod < -1:
+        #     self.hidden_mod = -1
         self.temperature_mod = int(self.temperature / 50) + 1
         if self.temperature_mod > 3:
             self.temperature_mod = 3

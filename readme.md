@@ -208,21 +208,21 @@ This function is going to be a headache to write and research. But hopefully, it
 **Ver 0.6 Dream Decision:** Battle selection(with different estimation source),
 preparation and result screen, custom battle, improve the main menu, Battle of Megiddo, Battle of Mohács
 
-**Ver 0.7 Future Visionary:**  battle information based on hidden vs sight, march sound system, raise flag/ light torch, ambush bonus, 
+**Ver 0.7 Future Visionary:**  march sound system, keybinding,
 Battle of Walaja, Battle of Dorylaeum
 
-**0.7 and 0.7.1:** hidden stat, line of sight, rework Battle of Hastings, Battle of Mohács
+**0.7 and 0.7.1:** console stick, control key binding, rework Battle of Hastings, Battle of Mohács
 
 **0.7.2 and 0.7.3:** custom unit editor and march sound system
 
-**0.7.4:** custom troop editor, Battle of Walaja
+**0.7.4 to 0.7.6:** custom troop editor, Battle of Walaja
 
-**0.7.7:**  Battle of Dorylaeum
+**0.7.7:** Companion system, Battle of Dorylaeum
 
-**0.7.8 and 0.7.9:** specific Leader command, console stick, control key binding, Minor battle: 764 Irish
+**0.7.8 and 0.7.9:** specific Leader command, Minor battle: 764 Irish
 abbey war
 
-**Ver 0.8 Authentic Attraction:** Companion system, In-game art, better-looking UI, add intro screen, Battle of Isandlwana, Battle of Hwangsanbeol
+**Ver 0.8 Authentic Attraction:** In-game art, better-looking UI, add intro screen, Battle of Isandlwana, Battle of Hwangsanbeol
 
 **Ver 0.9 Gaze of New Life:** AI and pathfinding (The most challenging step unless cut corner to the point of braindead
 AI), final code optimisation before full 1.0
@@ -237,12 +237,12 @@ Encyclopedia at main menu + more historical battles
 
 **Ver 1.2:** Urban map, Siege battle and siege equipment, Minor battle: Wolf of Paris
 
-**Ver 1.3:** Deception, False information, scout, espionage warfare, information, Minor battle: Siege of Orleans
+**Ver 1.3:** hidden stat, line of sight, raise flag/ light torch, ambush bonus
 
 **Ver 1.6:** Commander, strategist and leader duel with dynamic result and event (Move from 0.2.7 as it is not the main
 priority in the early battle sample yet), transfer leader, Battle of Gaixia
 
-**Ver 1.7:** Rework formation
+**Ver 1.7:** Deception, False information, scout, espionage warfare, information, Minor battle: Siege of Orleans
 
 **Ver 1.8:** Deployable Defence (Stakes, Barrier, Camp, Wagon), dynamic squad facing position and maybe "saved"
 formation that player can rotate in battle, swappable squad position

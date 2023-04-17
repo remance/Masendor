@@ -330,6 +330,42 @@ class OptionMenuText(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(self.pos[0] - (self.image.get_width() / 2), self.pos[1]))
 
 
+class KeybindingIcon(pygame.sprite.Sprite):
+    controller_icon = {}
+
+    def __init__(self, pos, text_size, control_type, key):
+        pygame.sprite.Sprite.__init__(self)
+        self.font = pygame.font.SysFont("helvetica", text_size)
+        self.pos = pos
+        self.change_key(control_type, key)
+        self.rect = self.image.get_rect(center=self.pos)
+
+    def change_key(self, control_type, key):
+        if control_type == "keyboard":
+            if type(key) is str and "click" in key:
+                self.draw_keyboard(key)
+            else:
+                self.draw_keyboard(pygame.key.name(key))
+        if control_type == "mouse":
+            pass
+        elif control_type == "joystick":
+            pass
+        self.rect = self.image.get_rect(center=self.pos)
+
+    def draw_keyboard(self, text):
+        text_surface = self.font.render(text, True, (0, 0, 0))
+        size = text_surface.get_size()
+        image_size = size[0] * 2
+        if size[0] < 40:
+            image_size = size[0] * 4
+        self.image = pygame.Surface((image_size, size[1] * 2), pygame.SRCALPHA)
+        pygame.draw.rect(self.image, (50, 50, 50), (0, 0, image_size, size[1] * 2), border_radius=2)
+        pygame.draw.rect(self.image, (255, 255, 255), (image_size * 0.1, size[1] * 0.3, image_size * 0.8, size[1] * 1.5),
+                         border_radius=2)
+        text_rect = text_surface.get_rect(center=self.image.get_rect().center)
+        self.image.blit(text_surface, text_rect)
+
+
 class ValueBox(pygame.sprite.Sprite):
     def __init__(self, image, pos, value, text_size):
         self._layer = 26
