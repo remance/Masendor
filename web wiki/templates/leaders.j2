@@ -1,0 +1,84 @@
+{% extends "base.j2" %}
+
+{% block content %}
+<h2>Leaders</h2>
+
+<style>
+.attributes th{ color: #777; font-size: 10px; }
+</style>
+
+<table>
+    <tr>
+        <th>Icon</th>
+        <th>Name/Type</th>
+        <th>Attributes</th>
+        <th>Speciality</th>
+        <th>Primary W.</th>
+        <th>Second. W.</th>
+        <th>Form.</th>
+        <th>Cavalry S.</th>
+        <th>Social C.</th>
+        <th>Armour</th>
+        <th>Mount</th>
+        <th>Cha. Sk.</th>
+        <th>Skill</th>
+    </tr>
+    {% for unit in leaders %}
+    <tr>
+        <td><img src="{{unit["icon"][0]}}" alt="{{unit["icon"][1]}}" title="{{unit["icon"][1]}}"></td>
+        <td><a href="">{{unit["name"]}}</a><br>{{unit["type"]}}</td>
+        
+        <td>
+            <table class="inner attributes">
+                <tr>
+                    <th>STR:</th><td>{{unit["strength"]}}</td>
+                    <th>DEX:</th><td>{{unit["dexterity"]}}</td>
+                    <th>AGL:</th><td>{{unit["agility"]}}</td>
+                    <th>CON:</th><td>{{unit["constitution"]}}</td>
+                </tr>
+                <tr>
+                    <th>INT:</th><td>{{unit["intelligence"]}}</td>
+                    <th>WIS:</th><td>{{unit["wisdom"]}}</td>
+                    <th>CHR:</th><td>{{unit["charisma"]}}</td>
+                </tr>
+            </table>
+        </td>
+
+        <td>
+            <table class="inner">
+                <tr>
+                    <th>Melee: </th><td>{{unit["melee-speciality"]}}</td>
+                </tr><tr>
+                    <th>Range: </th><td>{{unit["range-speciality"]}}</td>
+                </tr>
+            </table>
+        </td>
+
+        <td>
+            <b>m: </b>{{unit["primary-main-weapon"][1]}}<br>
+            <b>s: </b>{{unit["primary-sub-weapon"][1]}}
+        </td>
+
+        <td>
+            <b>m: </b>{{unit["secondary-main-weapon"][1]}}<br>
+            <b>s: </b>{{unit["secondary-sub-weapon"][1]}}
+        </td>
+
+        <td>
+            <ul>{% for formation in unit["formations"] %}<li>{{formation}}</li>{% endfor %}</ul>
+        </td>
+
+        <td>{{unit["cavalry-speciality"]}}</td>
+        <td>{{unit["social-class"]}}</td>
+        <td>{{unit["armour"][1]}}</td>
+        <td>{{unit["mount"]}}</td>
+
+        <td>{{unit["charge-skill"]}}</td>
+        <td>{{unit["skill"]}}</td>
+
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
+

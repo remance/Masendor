@@ -79,9 +79,24 @@ game.change_ruleset()
 app = Flask(__name__)
 
 
+def get_subunit_icon(subunit_id, scale):
+    """get a icon for a specific subunit"""
+
+    subunits = (game.troop_data.troop_list | game.leader_data.leader_list)
+    who_todo = {key: value for key, value in subunits.items() if key == subunit_id}
+
+    # make idle animation, first frame, right side (change to l_side for left), non-specific so it can make for any troops
+    preview_sprite_pool, _ = create_troop_sprite_pool(game, who_todo, preview=True, specific_preview=("Idle_0", 0, "r_side", "non-specific"),
+                                                      max_preview_size=scale)
+    sprite = preview_sprite_pool[subunit_id]["sprite"]
+    icon = pygame.Surface((36, 36), pygame.SRCALPHA)
+    icon.blit(sprite, (0, 0))
+    return icon
+
+
 @app.route("/")
 def index():
-    return redirect("/sub-units")
+    return redirect("/leaders")
 
 
 @app.route("/regions")
@@ -108,13 +123,91 @@ def troop_classes():
     return render_template("troop-classes.j2")
 
 
-@app.route("/sub-units")
+@app.route("/leaders")
 def sub_units():
 
-    sub_units = list()
-    for k, v in (game.troop_data.troop_list | game.leader_data.leader_list).items():
-        sub_units.append({"name": v["Name"], "troop-class": v.get("Troop Class", "-"), "race": v["Race"]})
+    skill_list = game.troop_data.skill_list
+    weapon_list = game.troop_data.weapon_list
+    armour_list = game.troop_data.armour_list
 
-    return render_template("sub-units.j2", sub_units=sub_units)
+    leaders = list()
+    for k, v in game.leader_data.leader_list.items():
 
-app.run()
+        leader = {
+            "name": v["Name"],
+            "strength": v.get("Strength", "-"),
+            "dexterity": v.get("Dexterity"),
+            "agility": v.get("Agility"),
+            "constitution": v.get("Constitution"),
+            "intelligence": v.get("Intelligence"),
+            "wisdom": v.get("Wisdom"),
+            "charisma": v.get("Charisma"),
+            "troop-class": v.get("Troop Class", "-"),
+            "race": v["Race"],
+            "melee-speciality": v.get('Melee Speciality'),
+            "range-speciality": v.get('Range Speciality'),
+            "cavalry-speciality": v.get('Cavalry Speciality'),
+            "social-class": v.get('Social Class'),
+
+            "primary-main-weapon": (
+                v.get('Primary Main Weapon'),
+                (weapon_list[v.get("Primary Main Weapon")[1]]["Name"]
+                 if v.get('Primary Main Weapon') and type(v.get('Primary Main Weapon')[0]) == int
+                 else "-")
+            ),
+
+            "primary-sub-weapon": (
+                v.get('Primary Sub Weapon'),
+                (weapon_list[v.get("Primary Sub Weapon")[1]]["Name"]
+                 if v.get('Primary Sub Weapon') and type(v.get('Primary Sub Weapon')[0]) == int
+                 else "-")
+            ),
+
+            "secondary-main-weapon": (
+                v.get('Secondary Main Weapon'),
+                (weapon_list[v.get("Secondary Main Weapon")[1]]["Name"]
+                 if v.get('Secondary Main Weapon') and type(v.get('Secondary Main Weapon')[0]) == int
+                 else "-")
+            ),
+
+            "secondary-sub-weapon": (
+                v.get('Secondary Sub Weapon'),
+                (weapon_list[v.get("Secondary Sub Weapon")[1]]["Name"]
+                 if v.get('Secondary Sub Weapon') and type(v.get('Secondary Sub Weapon')[0]) == int
+                 else "-")
+            ),
+
+            "armour": (
+                v.get('Armour'),
+                (armour_list[v.get("Armour")[1]]["Name"]
+                 if v.get('Armour') and type(v.get('Armour')[0]) == int
+                 else "-")
+            ),
+
+            "mount": v.get('Mount'),
+            "charge-skill": v.get('Charge Skill'),
+            # "skill": [ skill_list.get(s,{"Name":"-"})["Name"] for s in v.get('Skill',[]) ] ,
+            "skill": v.get('Skill', []),
+            "trait": v.get('Trait'),
+            "formations": v.get('Formation'),
+            "type": v.get('Type'),
+            "size": v.get('Size'),
+        }
+
+        leaders.append(leader)
+
+        subunit_icon_server_path = os.path.join(main_dir, "web wiki", "static", "{0}.png".format(k))
+        subunit_icon_web_path = "static/{0}.png".format(k)
+        leader['icon'] = [subunit_icon_web_path, k]
+
+        if not os.path.isfile(subunit_icon_server_path):
+            try:
+                subunit_icon = get_subunit_icon(k, 38*leader['size'])
+                pygame.image.save(subunit_icon, subunit_icon_server_path)
+            except Exception as e:
+                pass
+                # raise e
+
+    return render_template("leaders.j2", leaders=leaders)
+
+app.run(debug=True)
