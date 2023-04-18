@@ -281,7 +281,7 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
         else:
             self.input_popup = ("confirm_input", "warning")
             self.input_ui.change_instruction("Require at least 2 teams")
-            self.main_ui_updater.add(self.input_ui_popup)
+            self.main_ui_updater.add(self.inform_ui_popup)
 
 
 def change_team_coa(self):

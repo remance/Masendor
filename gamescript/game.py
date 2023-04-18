@@ -69,14 +69,14 @@ stamina_state_text = {0: "Collapse", 1: "Exhausted", 2: "Severed", 3: "Very Tire
 
 script_folder = "gamescript"
 
-mouse_binding = {"left click": 1, "middle click": 2, "right click": 3, "scroll up": 4, "scroll down": 5}
-
 
 class Game:
     game_version = "0.7.0.2"
+    mouse_binding = {"left click": 1, "middle click": 2, "right click": 3, "scroll up": 4, "scroll down": 5}
     empty_method = utility.empty_method
 
     # import from common.game
+    assign_key = empty_method
     back_mainmenu = empty_method
     change_battle_source = empty_method
     change_to_source_selection_menu = empty_method
@@ -604,12 +604,14 @@ class Game:
                                        load_base_button(self.main_dir, self.screen_scale))
         self.input_ui = input_ui_dict["input_ui"]
         self.input_ok_button = input_ui_dict["input_ok_button"]
+        self.input_close_button = input_ui_dict["input_close_button"]
         self.input_cancel_button = input_ui_dict["input_cancel_button"]
         self.input_box = input_ui_dict["input_box"]
         self.confirm_ui = input_ui_dict["confirm_ui"]
-        self.input_button = (self.input_ok_button, self.input_cancel_button)
+        self.input_button = (self.input_ok_button, self.input_cancel_button, self.input_close_button)
         self.input_ui_popup = (self.input_ui, self.input_box, self.input_ok_button, self.input_cancel_button)
         self.confirm_ui_popup = (self.confirm_ui, self.input_ok_button, self.input_cancel_button)
+        self.inform_ui_popup = (self.input_ui, self.input_box, self.input_close_button)
 
         # Other ui in battle
         self.battle_done_box = battleui.BattleDone(self.screen_scale, (self.screen_width / 2, self.screen_height / 2),
@@ -823,6 +825,7 @@ class Game:
             self.dt = self.clock.get_time() / 1000  # dt before game_speed
             mouse_left_up = False
             mouse_left_down = False
+            mouse_center_up = False
             mouse_right_up = False
             mouse_right_down = False
             mouse_scroll_down = False
@@ -838,18 +841,30 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:  # left click
                         mouse_left_up = True
+                    elif event.button == 2:
+                        mouse_center_up = True
                     elif event.button == 3:
                         mouse_right_up = True
                     elif event.button == 4:  # Mouse scroll down
                         mouse_scroll_up = True
-
                     elif event.button == 5:  # Mouse scroll up
                         mouse_scroll_down = True
+
+                    if self.input_popup[0] == "keybinding_input" and \
+                            self.config["USER"]["control player 1"] == "keyboard" and not \
+                            self.input_close_button.rect.collidepoint(self.mouse_pos):  # check for keyboard mouse key
+                        self.assign_key(tuple(self.mouse_binding.keys())[tuple(
+                            self.mouse_binding.values()).index(event.button)])
 
                 elif event.type == pygame.KEYDOWN:
                     if self.input_popup[0]:  # event update to input box
                         if event.key == pygame.K_ESCAPE:
                             input_esc = True
+
+                        elif self.input_popup[0] == "keybinding_input" and \
+                                self.config["USER"]["control player 1"] == "keyboard":
+                            self.assign_key(event.key)
+
                         elif self.input_popup[0] == "text_input":
                             self.input_box.player_input(event, key_press)
                             self.text_delay = 0.1
@@ -902,6 +917,21 @@ class Game:
                         self.char_selector.setup_char_icon(self.char_icon, self.camp_icon)
                         self.map_preview.change_mode(1, camp_pos_list=self.camp_pos[0])
 
+                    elif "replace key" in self.input_popup[1]:
+                        old_key = self.player1_key_binding[self.config["USER"]["control player 1"]][self.input_popup[1][1]]
+                        self.player1_key_binding[self.config["USER"]["control player 1"]][
+                            self.input_popup[1][1]] = self.player1_key_binding[self.config["USER"]["control player 1"]][self.input_popup[1][2]]
+                        self.player1_key_binding[self.config["USER"]["control player 1"]][self.input_popup[1][2]] = old_key
+                        edit_config("USER", "keybinding player 1", self.player1_key_binding,
+                                    "configuration.ini", self.config)
+                        for key, value in self.keybinding_icon.items():
+                            if key == self.input_popup[1][1]:
+                                value.change_key(self.config["USER"]["control player 1"],
+                                                 self.player1_key_binding[self.config["USER"]["control player 1"]][self.input_popup[1][1]])
+                            elif key == self.input_popup[1][2]:
+                                value.change_key(self.config["USER"]["control player 1"],
+                                                 self.player1_key_binding[self.config["USER"]["control player 1"]][self.input_popup[1][2]])
+
                     elif "wind" in self.input_popup[1] and self.input_box.text.isdigit():
                         self.custom_map_data["info"]["weather"][0][2] = int(self.input_box.text)
                         self.wind_custom_select.rename("Wind Direction: " + self.input_box.text)
@@ -916,18 +946,13 @@ class Game:
 
                     self.input_box.text_start("")
                     self.input_popup = (None, None)
-                    self.main_ui_updater.remove(*self.input_ui_popup)
+                    self.main_ui_updater.remove(*self.input_ui_popup, *self.confirm_ui_popup, *self.inform_ui_popup)
 
-                elif self.input_cancel_button.event or input_esc:
+                elif self.input_cancel_button.event or self.input_close_button.event or input_esc:
                     self.input_cancel_button.event = False
                     self.input_box.text_start("")
                     self.input_popup = (None, None)
-                    self.main_ui_updater.remove(*self.input_ui_popup, *self.confirm_ui_popup)
-
-                elif self.input_popup[0] == "keybinding_input":
-                    # self.
-                    edit_config("USER", "keybinding", self.config["USER"]["keybinding"],
-                                "configuration.ini", self.config)
+                    self.main_ui_updater.remove(*self.input_ui_popup, *self.confirm_ui_popup, *self.inform_ui_popup)
 
                 elif self.input_popup[0] == "text_input":
                     if self.text_delay == 0:

@@ -232,7 +232,7 @@ def menu_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mouse_
         if can_continue is False:
             self.input_popup = ("confirm_input", "warning")
             self.input_ui.change_instruction("Teams need all units placed")
-            self.main_ui_updater.add(self.input_ui_popup)
+            self.main_ui_updater.add(self.inform_ui_popup)
         else:
             self.menu_state = "unit_leader_setup"
             self.char_select_row = 0

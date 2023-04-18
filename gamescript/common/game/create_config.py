@@ -14,7 +14,7 @@ def create_config(self):
     config["DEFAULT"] = {"screen_width": screen_width, "screen_height": screen_height, "full_screen": 0,
                          "player_Name": "Noname", "master_volume": 100.0, "music_volume": 100.0,
                          "voice_volume": 100.0, "effect_volume": 50.0, "max_fps": 60, "ruleset": 0,
-                         "language": "en", "player control 1": "keyboard", "player control 2": "joystick",
+                         "language": "en", "control player 1": "keyboard", "control player 2": "joystick",
                          "keybinding player 1": {"keyboard": {"Main Weapon Attack": "left click",
                                                               "Sub Weapon Attack": "right click",
                                                               "Move Left": pygame.K_a, "Move Right": pygame.K_d,
