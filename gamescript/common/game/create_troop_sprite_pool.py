@@ -238,7 +238,6 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
             sprite_pic, center_offset = crop_sprite(sprite_dict["sprite"])
 
             if max_preview_size:
-                print(self.screen_scale[0], sprite_pic.get_width())
                 scale = min(max_preview_size * self.screen_scale[0] / sprite_pic.get_width(),
                             max_preview_size * self.screen_scale[1] / sprite_pic.get_height())
                 if scale != 1:  # scale down to fit ui like encyclopedia

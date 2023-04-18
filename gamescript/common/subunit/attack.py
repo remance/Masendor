@@ -48,9 +48,10 @@ def attack(self, attack_type):
                 accuracy = accuracy * (
                         100 - ((attack_range * 100 / max_range) / 4)) / 100  # range penalty half
             else:
-                if attack_range > self.sight:  # penalty for range attack if shoot beyond troop can see
-                    sight_penalty = self.sight / attack_range
+                # if attack_range > self.sight:  # penalty for range attack if shoot beyond troop can see
+                #     sight_penalty = self.sight / attack_range
                 accuracy = accuracy * sight_penalty * (100 - ((attack_range * 100 / max_range) / 2)) / 100
+                # accuracy = accuracy * sight_penalty * (100 - ((attack_range * 100 / max_range) / 2)) / 100
 
             base_angle = self.set_rotate(base_target)
             # Wind affect accuracy, higher different in direction cause more accuracy loss
