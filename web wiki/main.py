@@ -78,6 +78,18 @@ game.change_ruleset()
 
 app = Flask(__name__)
 
+troop_skill_list = game.troop_data.skill_list
+weapon_list = game.troop_data.weapon_list
+armour_list = game.troop_data.armour_list
+troop_grade_list = game.troop_data.grade_list
+equipment_grade_list = game.troop_data.equipment_grade_list
+mount_list = game.troop_data.mount_list
+mount_grade_list = game.troop_data.mount_grade_list
+mount_armour_list = game.troop_data.mount_armour_list
+leader_skill_list = game.leader_data.skill_list  # leader skill list is different from troop
+leader_portrait = game.leader_data.images
+leader_class = game.leader_data.leader_class
+
 
 def get_subunit_icon(subunit_id, scale):
     """get a icon for a specific subunit"""
@@ -123,16 +135,103 @@ def troop_classes():
     return render_template("troop-classes.j2")
 
 
+@app.route("/troops")
+def troops():
+    troops = list()
+    for k, v in game.troop_data.troop_list.items():
+        troop = {
+            "name": v["Name"],
+            "grade": troop_grade_list[v.get('Grade')]["Name"],
+            "troop-class": v.get("Troop Class", "-"),
+            "race": v["Race"],
+            "melee-speciality": v.get('Melee Attack Scale'),
+            "defence-speciality": v.get('Defence Scale'),
+            "range-speciality": v.get('Ranged Attack Scale'),
+
+            "primary-main-weapon": (
+                (equipment_grade_list[v.get('Primary Main Weapon')[1]]["Name"] if
+                 v.get('Primary Main Weapon') and type(v.get('Primary Main Weapon')[0]) == int
+                 else "-"),
+                (weapon_list[v.get("Primary Main Weapon")[0]]["Name"]
+                 if v.get('Primary Main Weapon') and type(v.get('Primary Main Weapon')[0]) == int
+                 else "-")
+            ),
+
+            "primary-sub-weapon": (
+                (equipment_grade_list[v.get('Primary Sub Weapon')[1]]["Name"] if
+                 v.get('Primary Sub Weapon') and type(v.get('Primary Sub Weapon')[0]) == int
+                 else "-"),
+                (weapon_list[v.get("Primary Sub Weapon")[0]]["Name"]
+                 if v.get('Primary Sub Weapon') and type(v.get('Primary Sub Weapon')[0]) == int
+                 else "-")
+            ),
+
+            "secondary-main-weapon": (
+                (equipment_grade_list[v.get('Secondary Main Weapon')[1]]["Name"] if
+                 v.get('Secondary Main Weapon') and type(v.get('Secondary Main Weapon')[0]) == int
+                 else "-"),
+                (weapon_list[v.get("Secondary Main Weapon")[0]]["Name"]
+                 if v.get('Secondary Main Weapon') and type(v.get('Secondary Main Weapon')[0]) == int
+                 else "-")
+            ),
+
+            "secondary-sub-weapon": (
+                (equipment_grade_list[v.get('Secondary Sub Weapon')[1]]["Name"] if
+                 v.get('Secondary Sub Weapon') and type(v.get('Secondary Sub Weapon')[0]) == int
+                 else "-"),
+                (weapon_list[v.get("Secondary Sub Weapon")[0]]["Name"]
+                 if v.get('Secondary Sub Weapon') and type(v.get('Secondary Sub Weapon')[0]) == int
+                 else "-")
+            ),
+
+            "armour": (
+                (equipment_grade_list[v.get('Armour')[1]]["Name"] if
+                 v.get('Armour') and type(v.get('Armour')[0]) == int
+                 else "-"),
+                (armour_list[v.get("Armour")[0]]["Name"]
+                 if v.get('Armour') and type(v.get('Armour')[0]) == int
+                 else "-")
+            ),
+
+            "mount": (
+                (mount_grade_list[v.get('Mount')[1]]["Name"] if
+                 v.get('Mount') and type(v.get('Mount')[0]) == int
+                 else "-"),
+                (mount_list[v.get("Mount")[0]]["Name"]
+                 if v.get('Mount') and type(v.get('Mount')[0]) == int
+                 else "-"),
+                (mount_armour_list[v.get("Mount")[2]]["Name"]
+                 if v.get('Mount') and type(v.get('Mount')[0]) == int
+                 else "-")
+            ),
+
+            "skill": [troop_skill_list[int(v.get('Charge Skill'))]["Name"] if v.get('Charge Skill') else "-"] +
+                     [troop_skill_list[item]["Name"] for item in v.get('Skill')],
+            "trait": v.get('Trait'),
+            "role": v.get('Role'),
+        }
+
+        troops.append(troop)
+
+        subunit_icon_server_path = os.path.join(main_dir, "web wiki", "static", "{0}.png".format(k))
+        subunit_icon_web_path = "static/{0}.png".format(k)
+        troop['icon'] = [subunit_icon_web_path, k]
+
+        if not os.path.isfile(subunit_icon_server_path):
+            try:
+                subunit_icon = get_subunit_icon(k, 35)
+                pygame.image.save(subunit_icon, subunit_icon_server_path)
+            except Exception as e:
+                pass
+                # raise e
+
+    return render_template("troops.j2", troops=troops)
+
+
 @app.route("/leaders")
-def sub_units():
-
-    skill_list = game.troop_data.skill_list
-    weapon_list = game.troop_data.weapon_list
-    armour_list = game.troop_data.armour_list
-
+def leaders():
     leaders = list()
     for k, v in game.leader_data.leader_list.items():
-
         leader = {
             "name": v["Name"],
             "strength": v.get("Strength", "-"),
@@ -147,47 +246,72 @@ def sub_units():
             "melee-speciality": v.get('Melee Speciality'),
             "range-speciality": v.get('Range Speciality'),
             "cavalry-speciality": v.get('Cavalry Speciality'),
-            "social-class": v.get('Social Class'),
+
+            "social-class": (
+                (leader_class[v.get('Social Class')]["Leader Social Class"]
+                 if v.get('Social Class')
+                 else "-")
+            ),
 
             "primary-main-weapon": (
-                v.get('Primary Main Weapon'),
-                (weapon_list[v.get("Primary Main Weapon")[1]]["Name"]
+                (equipment_grade_list[v.get('Primary Main Weapon')[1]]["Name"] if
+                 v.get('Primary Main Weapon') and type(v.get('Primary Main Weapon')[0]) == int
+                 else "-"),
+                (weapon_list[v.get("Primary Main Weapon")[0]]["Name"]
                  if v.get('Primary Main Weapon') and type(v.get('Primary Main Weapon')[0]) == int
                  else "-")
             ),
 
             "primary-sub-weapon": (
-                v.get('Primary Sub Weapon'),
-                (weapon_list[v.get("Primary Sub Weapon")[1]]["Name"]
+                (equipment_grade_list[v.get('Primary Sub Weapon')[1]]["Name"] if
+                 v.get('Primary Sub Weapon') and type(v.get('Primary Sub Weapon')[0]) == int
+                 else "-"),
+                (weapon_list[v.get("Primary Sub Weapon")[0]]["Name"]
                  if v.get('Primary Sub Weapon') and type(v.get('Primary Sub Weapon')[0]) == int
                  else "-")
             ),
 
             "secondary-main-weapon": (
-                v.get('Secondary Main Weapon'),
-                (weapon_list[v.get("Secondary Main Weapon")[1]]["Name"]
+                (equipment_grade_list[v.get('Secondary Main Weapon')[1]]["Name"] if
+                 v.get('Secondary Main Weapon') and type(v.get('Secondary Main Weapon')[0]) == int
+                 else "-"),
+                (weapon_list[v.get("Secondary Main Weapon")[0]]["Name"]
                  if v.get('Secondary Main Weapon') and type(v.get('Secondary Main Weapon')[0]) == int
                  else "-")
             ),
 
             "secondary-sub-weapon": (
-                v.get('Secondary Sub Weapon'),
-                (weapon_list[v.get("Secondary Sub Weapon")[1]]["Name"]
+                (equipment_grade_list[v.get('Secondary Sub Weapon')[1]]["Name"] if
+                 v.get('Secondary Sub Weapon') and type(v.get('Secondary Sub Weapon')[0]) == int
+                 else "-"),
+                (weapon_list[v.get("Secondary Sub Weapon")[0]]["Name"]
                  if v.get('Secondary Sub Weapon') and type(v.get('Secondary Sub Weapon')[0]) == int
                  else "-")
             ),
 
             "armour": (
-                v.get('Armour'),
-                (armour_list[v.get("Armour")[1]]["Name"]
+                (equipment_grade_list[v.get('Armour')[1]]["Name"] if
+                 v.get('Armour') and type(v.get('Armour')[0]) == int
+                 else "-"),
+                (armour_list[v.get("Armour")[0]]["Name"]
                  if v.get('Armour') and type(v.get('Armour')[0]) == int
                  else "-")
             ),
 
-            "mount": v.get('Mount'),
-            "charge-skill": v.get('Charge Skill'),
-            # "skill": [ skill_list.get(s,{"Name":"-"})["Name"] for s in v.get('Skill',[]) ] ,
-            "skill": v.get('Skill', []),
+            "mount": (
+                (mount_grade_list[v.get('Mount')[1]]["Name"] if
+                 v.get('Mount') and type(v.get('Mount')[0]) == int
+                 else "-"),
+                (mount_list[v.get("Mount")[0]]["Name"]
+                 if v.get('Mount') and type(v.get('Mount')[0]) == int
+                 else "-"),
+                (mount_armour_list[v.get("Mount")[2]]["Name"]
+                 if v.get('Mount') and type(v.get('Mount')[0]) == int
+                 else "-")
+            ),
+
+            "skill": [troop_skill_list[int(v.get('Charge Skill'))]["Name"] if v.get('Charge Skill') else "-"] +
+                     [leader_skill_list[item]["Name"] for item in v.get('Skill')],
             "trait": v.get('Trait'),
             "formations": v.get('Formation'),
             "type": v.get('Type'),
@@ -202,7 +326,7 @@ def sub_units():
 
         if not os.path.isfile(subunit_icon_server_path):
             try:
-                subunit_icon = get_subunit_icon(k, 38*leader['size'])
+                subunit_icon = get_subunit_icon(k, 35)
                 pygame.image.save(subunit_icon, subunit_icon_server_path)
             except Exception as e:
                 pass
