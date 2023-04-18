@@ -1,0 +1,16 @@
+{% extends "base.j2" %}
+
+
+{% block content %}
+<h2>Regions</h2>
+<table>
+    <tr><th>Name</th><th>Number of factions</th><th>Number of troops</th></tr>
+    {% for region in regions %}
+    <tr>
+        <td>{{region}}</td>
+        <td>TODO</td>
+        <td>TODO</td>
+    </tr>
+    {% endfor %}
+{% endblock %}
+
