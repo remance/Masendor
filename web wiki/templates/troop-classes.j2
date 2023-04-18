@@ -7,9 +7,9 @@
     <tr><th>Name</th><th>Strengths</th><th>Weaknesses</th></tr>
     {% for troop_class in troop_classes %}
     <tr>
-        <td>{{name}}</td>
-        <td>{{strengths}}</td>
-        <td>{{weaknesses}}</td>
+        <td>{{troop_class["name"]}}</td>
+        <td>{{troop_class["strengths"]}}</td>
+        <td>{{troop_class["weaknesses"]}}</td>
     </tr>
     {% endfor %}
 {% endblock %}
