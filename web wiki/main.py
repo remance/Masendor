@@ -130,6 +130,18 @@ def factions():
     return render_template("factions.j2")
 
 
+@app.route("/weapons")
+def weapons():
+
+    # modifies the key-strings because I think it looks better in jinja template.
+    weapons = list()
+    for k, v in weapon_list.items():
+        weapon = {k2.lower().replace(" ", "-"): v2 for k2, v2 in v.items()}
+        weapons.append(weapon)
+
+    return render_template("weapons.j2", weapons=weapons)
+
+
 @app.route("/troop-classes")
 def troop_classes():
     return render_template("troop-classes.j2")
