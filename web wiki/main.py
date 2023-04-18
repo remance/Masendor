@@ -132,7 +132,14 @@ def factions():
 
 @app.route("/troop-classes")
 def troop_classes():
-    return render_template("troop-classes.j2")
+    troop_classes = list()
+    for k, v in game.troop_data.troop_class.items():
+        troop_class = {
+            "name": k,
+            "strengths": v["Strengths"],
+            "weaknesses": v["Weaknesses"]}
+        troop_classes.append(troop_class)
+    return render_template("troop-classes.j2", troop_classes=troop_classes)
 
 
 @app.route("/troops")

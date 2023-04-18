@@ -3,6 +3,13 @@
 
 {% block content %}
 <h2>Troop Classes</h2>
-
+<table>
+    <tr><th>Name</th><th>Strengths</th><th>Weaknesses</th></tr>
+    {% for troop_class in troop_classes %}
+    <tr>
+        <td>{{name}}</td>
+        <td>{{strengths}}</td>
+        <td>{{weaknesses}}</td>
+    </tr>
+    {% endfor %}
 {% endblock %}
-

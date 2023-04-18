@@ -187,17 +187,15 @@ class TroopData:
         edit_file.close()
 
         # Troop role dict
-        self.role = {}
+        self.troop_class = {}
         with open(
                 os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "troop_class_" + language + ".csv"),
                 encoding="utf-8",
                 mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
-            for row in rd:
-                for n, i in enumerate(row):
-                    if i.isdigit():
-                        row[n] = int(i)
-                self.role[row[0]] = row[1:]
+            header = rd[0]
+            for index, row in enumerate(rd[1:]):
+                self.troop_class[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
         # Equipment grade dict
