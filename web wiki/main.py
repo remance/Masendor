@@ -241,10 +241,31 @@ def troops():
 
 
 @app.route("/leaders")
-def leaders():
+@app.route("/leaders/<leader_id>")
+def leaders(leader_id=None):
+
+    # single leader view
+    if leader_id is not None:
+
+
+        data = game.leader_data.leader_list[leader_id]
+        lore = game.leader_data.leader_lore[leader_id]
+
+        leader_name = data["Name"]
+        history = lore[1:]
+
+        return render_template(
+            "leader.j2",
+            name=leader_name,
+            history=history,
+        )
+
+    # list leaders view
+
     leaders = list()
     for k, v in game.leader_data.leader_list.items():
         leader = {
+            "id": k,
             "name": v["Name"],
             "strength": v.get("Strength", "-"),
             "dexterity": v.get("Dexterity"),
