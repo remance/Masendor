@@ -115,6 +115,7 @@ def get_subunit_icon(subunit_id, scale, icon_size):
             return None
 
         sprite = preview_sprite_pool[subunit_id]["sprite"]
+        icon_size = sprite.get_size() if icon_size is None else icon_size
         icon = pygame.Surface(icon_size, pygame.SRCALPHA)
         icon.blit(sprite, (0, 0))
 
@@ -277,7 +278,7 @@ def leaders(leader_id=None):
 
         leader_name = data["Name"]
         history = lore[1:]
-        sprite_icon = get_subunit_icon(leader_id, 100, (138, 138))
+        sprite_icon = get_subunit_icon(leader_id, 100, None)
         
         return render_template(
             "leader.j2",
