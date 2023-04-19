@@ -125,7 +125,7 @@ def regions():
 
 
 @app.route("/factions")
-def factions():
+def factions():  # TODO add faction coa as icon
     factions = list()
     for k, v in game.faction_data.faction_list.items():
         if k != 0:  # skip all faction

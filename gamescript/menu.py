@@ -330,7 +330,7 @@ class OptionMenuText(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(self.pos[0] - (self.image.get_width() / 2), self.pos[1]))
 
 
-class KeybindingIcon(pygame.sprite.Sprite):
+class KeybindIcon(pygame.sprite.Sprite):
     controller_icon = {}
 
     def __init__(self, pos, text_size, control_type, key):

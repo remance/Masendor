@@ -3,7 +3,7 @@ from math import cos, sin, radians
 import pygame
 
 
-def player_aim(self, mouse_left_up, mouse_right_up, key_state, key_press):
+def player_aim(self):
     """
     Manual player aim control for range attack
     """
@@ -63,12 +63,13 @@ def player_aim(self, mouse_left_up, mouse_right_up, key_state, key_press):
 
     self.single_text_popup.pop(self.cursor.rect.bottomright, shoot_text)
 
-    if key_press == pygame.K_TAB or not self.player_char.alive:  # Cancel manual aim when move or player die)
+    if self.player_keyboard_press["Order Menu"] or not self.player_char.alive:
+        # Cancel manual aim with order menu input or player die
         self.player_cancel_input()
 
-    elif mouse_left_up or mouse_right_up:
+    elif self.battle.player_keyboard_press["Main Weapon Attack"] or self.battle.player_keyboard_press["Sub Weapon Attack"]:
         weapon = 0
-        if mouse_right_up:
+        if self.battle.player_keyboard_press["Sub Weapon Attack"]:
             weapon = 1
         if shoot_ready[weapon] > 0:
             for this_subunit in shoot_ready_list[weapon]:
@@ -85,5 +86,5 @@ def player_aim(self, mouse_left_up, mouse_right_up, key_state, key_press):
                     this_subunit.attack_pos = this_subunit.shoot_line.base_target_pos
 
     else:
-        self.camera_process(key_state)
+        self.camera_process()
         self.player_char.player_input(self.command_mouse_pos)

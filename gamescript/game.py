@@ -7,7 +7,6 @@ from pathlib import Path
 
 import pygame
 import pygame.freetype
-import screeninfo
 from pygame.locals import *
 
 from gamescript import battlemap, weather, battleui, menu, damagesprite, effectsprite, battle, subunit, datasprite, \
@@ -72,7 +71,13 @@ script_folder = "gamescript"
 
 class Game:
     game_version = "0.7.0.2"
-    mouse_binding = {"left click": 1, "middle click": 2, "right click": 3, "scroll up": 4, "scroll down": 5}
+    mouse_bind = {"left click": 1, "middle click": 2, "right click": 3, "scroll up": 4, "scroll down": 5}
+    mouse_bind_name = {value: key for key, value in mouse_bind.items()}
+    joystick_bind_name = {"XBox": {0: "A", 1: "B", 2: "X", 3: "Y", 4: "-", 5: "Home", 6: "+", 7: None, 8: None,
+                                   9: None, 10: None, 11: "D-Up", 12: "D-Down", 13: "D-Left", 14: "D-Right", 15: "Capture"},
+                          "Other": {0: None, 1: None, 2: None, 3: None, 4: None, 5: None, 6: None, 7: None, 8: None,
+                                    9: None, 10: None, 11: None, 12: None, 13: None, 14: None, 15: None},
+                          "PS": {}, "Nintendo": {}}
     empty_method = utility.empty_method
 
     # import from common.game
@@ -162,7 +167,7 @@ class Game:
             self.play_voice_volume = self.master_volume * self.voice_volume / 10000
             self.profile_name = str(self.config["USER"]["player_Name"])
             self.language = str(self.config["USER"]["language"])
-            self.player1_key_binding = ast.literal_eval(self.config["USER"]["keybinding player 1"])
+            self.player1_key_bind = ast.literal_eval(self.config["USER"]["keybind player 1"])
             self.ruleset = 0  # for now default historical ruleset only
             if self.game_version != self.config["VERSION"]["ver"]:  # remake config as game version change
                 crash
@@ -181,7 +186,7 @@ class Game:
             self.play_voice_volume = self.master_volume * self.voice_volume / 10000
             self.profile_name = str(self.config["USER"]["player_Name"])
             self.language = str(self.config["USER"]["language"])
-            self.player1_key_binding = ast.literal_eval(self.config["USER"]["keybinding player 1"])
+            self.player1_key_bind = ast.literal_eval(self.config["USER"]["keybind player 1"])
             self.ruleset = 0  # for now default historical ruleset only
 
         # Set the display mode
@@ -258,6 +263,7 @@ class Game:
         # battle object group
         self.battle_camera = pygame.sprite.LayeredUpdates()  # layer drawer self camera, all image pos should be based on the map not screen
         self.battle_ui_updater = pygame.sprite.LayeredUpdates()  # this is layer drawer for ui, all image pos should be based on the screen
+        self.hitbox_layer = pygame.sprite.LayeredUpdates()
 
         self.subunit_updater = pygame.sprite.Group()  # updater for subunit objects
         self.ui_updater = pygame.sprite.Group()  # updater for ui objects
@@ -295,7 +301,6 @@ class Game:
 
         # battle containers
         battleui.SkillCardIcon.containers = self.skill_icon, self.battle_ui_updater
-        battleui.EffectCardIcon.containers = self.effect_icon, self.battle_ui_updater
         battleui.CharIcon.containers = self.char_icon, self.main_ui_updater
         battleui.SpriteIndicator.containers = self.effect_updater, self.battle_camera
         battleui.AimTarget.containers = self.shoot_lines, self.battle_camera
@@ -474,7 +479,7 @@ class Game:
                                             self.screen_height, image_list,
                                             {"master": self.master_volume, "music": self.music_volume,
                                              "voice": self.voice_volume, "effect": self.effect_volume},
-                                            self.main_ui_updater, self.config["USER"], self.player1_key_binding,
+                                            self.main_ui_updater, self.config["USER"], self.player1_key_bind,
                                             battle_select_image)
         self.back_button = option_menu_dict["back_button"]
         self.keybind_button = option_menu_dict["keybind_button"]
@@ -487,8 +492,8 @@ class Game:
         self.volume_texts = option_menu_dict["volume_texts"]
         self.fullscreen_box = option_menu_dict["fullscreen_box"]
         self.fullscreen_text = option_menu_dict["fullscreen_text"]
-        self.keybinding_text = option_menu_dict["keybinding_text"]
-        self.keybinding_icon = option_menu_dict["keybinding_icon"]
+        self.keybind_text = option_menu_dict["keybind_text"]
+        self.keybind_icon = option_menu_dict["keybind_icon"]
 
         self.option_text_list = tuple(
             [self.resolution_text, self.fullscreen_text] + [value for value in
@@ -557,18 +562,27 @@ class Game:
         self.command_ui = battle_ui_dict["command_ui"]
 
         # 4 Skill icons near hero ui, TODO change key later when can set keybind
+        skill_key_list = []
+        if self.config["USER"]["control player 1"] == "keyboard":
+            for key, value in self.player1_key_bind[self.config["USER"]["control player 1"]].items():
+                if "Skill" in key:
+                    if type(value) is int:
+                        skill_key_list.append(pygame.key.name(value))
+                    else:
+                        skill_key_list.append(value)
+
         battleui.SkillCardIcon(self.screen_scale, self.skill_images["0"], (self.command_ui.image.get_width() +
                                                                            self.skill_images["0"].get_width() / 2, 0),
-                               "Q")
+                               skill_key_list[0])
         battleui.SkillCardIcon(self.screen_scale, self.skill_images["0"], (self.command_ui.image.get_width() +
                                                                            self.skill_images["0"].get_width() * 2, 0),
-                               "E")
+                               skill_key_list[1])
         battleui.SkillCardIcon(self.screen_scale, self.skill_images["0"], (self.command_ui.image.get_width() +
                                                                            self.skill_images["0"].get_width() * 3.5, 0),
-                               "R")
+                               skill_key_list[2])
         battleui.SkillCardIcon(self.screen_scale, self.skill_images["0"], (self.command_ui.image.get_width() +
                                                                            self.skill_images["0"].get_width() * 5, 0),
-                               "T")
+                               skill_key_list[3])
 
         weather.Weather.wind_compass_images = {"wind_compass": battle_ui_image["wind_compass"],
                                                "wind_arrow": battle_ui_image["wind_arrow"]}
@@ -850,18 +864,18 @@ class Game:
                     elif event.button == 5:  # Mouse scroll up
                         mouse_scroll_down = True
 
-                    if self.input_popup[0] == "keybinding_input" and \
+                    if self.input_popup[0] == "keybind_input" and \
                             self.config["USER"]["control player 1"] == "keyboard" and not \
                             self.input_close_button.rect.collidepoint(self.mouse_pos):  # check for keyboard mouse key
-                        self.assign_key(tuple(self.mouse_binding.keys())[tuple(
-                            self.mouse_binding.values()).index(event.button)])
+                        self.assign_key(tuple(self.mouse_bind.keys())[tuple(
+                            self.mouse_bind.values()).index(event.button)])
 
                 elif event.type == pygame.KEYDOWN:
                     if self.input_popup[0]:  # event update to input box
                         if event.key == pygame.K_ESCAPE:
                             input_esc = True
 
-                        elif self.input_popup[0] == "keybinding_input" and \
+                        elif self.input_popup[0] == "keybind_input" and \
                                 self.config["USER"]["control player 1"] == "keyboard":
                             self.assign_key(event.key)
 
@@ -918,19 +932,19 @@ class Game:
                         self.map_preview.change_mode(1, camp_pos_list=self.camp_pos[0])
 
                     elif "replace key" in self.input_popup[1]:
-                        old_key = self.player1_key_binding[self.config["USER"]["control player 1"]][self.input_popup[1][1]]
-                        self.player1_key_binding[self.config["USER"]["control player 1"]][
-                            self.input_popup[1][1]] = self.player1_key_binding[self.config["USER"]["control player 1"]][self.input_popup[1][2]]
-                        self.player1_key_binding[self.config["USER"]["control player 1"]][self.input_popup[1][2]] = old_key
-                        edit_config("USER", "keybinding player 1", self.player1_key_binding,
+                        old_key = self.player1_key_bind[self.config["USER"]["control player 1"]][self.input_popup[1][1]]
+                        self.player1_key_bind[self.config["USER"]["control player 1"]][
+                            self.input_popup[1][1]] = self.player1_key_bind[self.config["USER"]["control player 1"]][self.input_popup[1][2]]
+                        self.player1_key_bind[self.config["USER"]["control player 1"]][self.input_popup[1][2]] = old_key
+                        edit_config("USER", "keybind player 1", self.player1_key_bind,
                                     "configuration.ini", self.config)
-                        for key, value in self.keybinding_icon.items():
+                        for key, value in self.keybind_icon.items():
                             if key == self.input_popup[1][1]:
                                 value.change_key(self.config["USER"]["control player 1"],
-                                                 self.player1_key_binding[self.config["USER"]["control player 1"]][self.input_popup[1][1]])
+                                                 self.player1_key_bind[self.config["USER"]["control player 1"]][self.input_popup[1][1]])
                             elif key == self.input_popup[1][2]:
                                 value.change_key(self.config["USER"]["control player 1"],
-                                                 self.player1_key_binding[self.config["USER"]["control player 1"]][self.input_popup[1][2]])
+                                                 self.player1_key_bind[self.config["USER"]["control player 1"]][self.input_popup[1][2]])
 
                     elif "wind" in self.input_popup[1] and self.input_box.text.isdigit():
                         self.custom_map_data["info"]["weather"][0][2] = int(self.input_box.text)
@@ -1001,7 +1015,7 @@ class Game:
                     self.menu_option(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "keybind":
-                    self.menu_keybind(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press)
+                    self.menu_keybind(mouse_left_up, esc_press)
 
                 elif self.menu_state == "encyclopedia":
                     command = self.lorebook_process(self.main_ui_updater, mouse_left_up, mouse_left_down,

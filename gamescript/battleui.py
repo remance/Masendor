@@ -393,25 +393,36 @@ class SkillCardIcon(pygame.sprite.Sprite):
         self.active_check = 0  # active timer number
         self.game_id = None
 
-        key_font_size = int(24 * screen_scale[1])
-        key_font = pygame.font.SysFont("helvetica", key_font_size)
-        self.image = pygame.Surface((image.get_width(), image.get_height() + (key_font_size * 1.5)), pygame.SRCALPHA)
+        self.key_font_size = int(24 * screen_scale[1])
+
+        self.image = pygame.Surface((image.get_width(), image.get_height() + (self.key_font_size * 1.5)),
+                                    pygame.SRCALPHA)
+        image_rect = image.get_rect(midtop=(self.image.get_width() / 2, 0))
+        self.image.blit(image, image_rect)
+        self.base_image = self.image.copy()  # original image before adding key name
+
+        key_font = pygame.font.SysFont("helvetica", self.key_font_size)
         text_surface = text_render(key, key_font)
         text_rect = text_surface.get_rect(midbottom=(self.image.get_width() / 2, self.image.get_height()))
         self.image.blit(text_surface, text_rect)
-
-        image_rect = image.get_rect(midtop=(self.image.get_width() / 2, 0))
-        self.image.blit(image, image_rect)
-        self.base_image = self.image.copy()  # keep original image without number
+        self.base_image2 = self.image.copy()  # keep original image without timer
 
         self.rect = self.image.get_rect(topleft=pos)
         self.cooldown_rect = self.image.get_rect(topleft=(0, 0))
+
+    def change_key(self, key):
+        self.image = self.base_image.copy()
+        key_font = pygame.font.SysFont("helvetica", self.key_font_size)
+        text_surface = text_render(key, key_font)
+        text_rect = text_surface.get_rect(midbottom=(self.image.get_width() / 2, self.image.get_height()))
+        self.image.blit(text_surface, text_rect)
+        self.base_image2 = self.image.copy()  # keep original image without timer
 
     def icon_change(self, cooldown, active_timer):
         """Show active effect timer first if none show cooldown"""
         if active_timer != self.active_check:
             self.active_check = active_timer  # renew number
-            self.image = self.base_image.copy()
+            self.image = self.base_image2.copy()
             if self.active_check:
                 rect = self.image.get_rect(topleft=(0, 0))
                 self.image.blit(self.active_skill, rect)
@@ -424,7 +435,7 @@ class SkillCardIcon(pygame.sprite.Sprite):
 
         elif cooldown != self.cooldown_check and self.active_check == 0:  # Cooldown only get blit when skill is not active
             self.cooldown_check = cooldown
-            self.image = self.base_image.copy()
+            self.image = self.base_image2.copy()
             if self.cooldown_check:
                 self.image.blit(self.cooldown, self.cooldown_rect)
                 output_number = str(self.cooldown_check)
@@ -433,21 +444,6 @@ class SkillCardIcon(pygame.sprite.Sprite):
                 text_surface = self.font.render(output_number, True, (0, 0, 0))
                 text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
                 self.image.blit(text_surface, text_rect)
-
-
-class EffectCardIcon(pygame.sprite.Sprite):
-
-    def __init__(self, image, pos, icon_type, game_id=None):
-        self._layer = 11
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        self.icon_type = icon_type
-        self.game_id = game_id
-        self.pos = pos
-        self.cooldown_check = 0
-        self.active_check = 0
-        self.image = image
-        self.rect = self.image.get_rect(center=pos)
-        self.base_image = self.image.copy()
 
 
 class FPScount(pygame.sprite.Sprite):
@@ -1273,8 +1269,7 @@ class Profiler(cProfile.Profile, pygame.sprite.Sprite):
         self.size = (900, 550)
         self.image = pygame.Surface(self.size)
         self.rect = pygame.Rect((0, 0, *self.size))
-        font = "ubuntumono"  # TODO: feel free to change this, the most important thing is that it
-        # is monospace and works good for every developer
+        font = "ubuntumono"
         self.font = pygame.font.SysFont(font, 16)
         self._layer = 12
         self.visible = False
