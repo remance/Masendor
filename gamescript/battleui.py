@@ -495,6 +495,8 @@ class MiniMap(pygame.sprite.Sprite):
         self.player_dot_images = {}
         self.troop_dot_images = {}
 
+        self.update_count = 0
+
         for team in self.colour:
             leader_dot = pygame.Surface(
                 (10 * self.screen_scale[0], 10 * self.screen_scale[1]))  # dot for team2 leader
@@ -524,37 +526,40 @@ class MiniMap(pygame.sprite.Sprite):
 
     def update(self, camera_pos, subunit_list):
         """update troop and leader dot on map"""
-        self.camera_pos = camera_pos
-        self.image = self.base_image.copy()
-        for subunit in subunit_list:
-            scaled_pos = (subunit.base_pos[0] / self.map_scale_width, subunit.base_pos[1] / self.map_scale_height)
-            if subunit.is_leader:
-                if subunit.player_control:
-                    rect = self.player_dot_images[subunit.team].get_rect(center=scaled_pos)
-                    self.image.blit(self.player_dot_images[subunit.team], rect)
+        self.update_count += 1
+        if self.update_count > 5:
+            self.update_count = 0
+            self.camera_pos = camera_pos
+            self.image = self.base_image.copy()
+            for subunit in subunit_list:
+                scaled_pos = (subunit.base_pos[0] / self.map_scale_width, subunit.base_pos[1] / self.map_scale_height)
+                if subunit.is_leader:
+                    if subunit.player_control:
+                        rect = self.player_dot_images[subunit.team].get_rect(center=scaled_pos)
+                        self.image.blit(self.player_dot_images[subunit.team], rect)
+                    else:
+                        rect = self.leader_dot_images[subunit.team].get_rect(center=scaled_pos)
+                        self.image.blit(self.leader_dot_images[subunit.team], rect)
                 else:
-                    rect = self.leader_dot_images[subunit.team].get_rect(center=scaled_pos)
-                    self.image.blit(self.leader_dot_images[subunit.team], rect)
-            else:
-                rect = self.troop_dot_images[subunit.team].get_rect(center=scaled_pos)
-                self.image.blit(self.troop_dot_images[subunit.team], rect)
+                    rect = self.troop_dot_images[subunit.team].get_rect(center=scaled_pos)
+                    self.image.blit(self.troop_dot_images[subunit.team], rect)
 
-        pygame.draw.rect(self.image, (0, 0, 0),
-                         ((camera_pos[1][0] / self.screen_scale[0] / (self.map_scale_width)) / 5,
-                          (camera_pos[1][1] / self.screen_scale[1] / (self.map_scale_height)) / 5,
-                          (self.camera_border[0] / self.screen_scale[0] / 5) / self.map_scale_width,
-                          (self.camera_border[1] / self.screen_scale[1] / 5) / self.map_scale_height), 2)
+            pygame.draw.rect(self.image, (0, 0, 0),
+                             ((camera_pos[1][0] / self.screen_scale[0] / (self.map_scale_width)) / 5,
+                              (camera_pos[1][1] / self.screen_scale[1] / (self.map_scale_height)) / 5,
+                              (self.camera_border[0] / self.screen_scale[0] / 5) / self.map_scale_width,
+                              (self.camera_border[1] / self.screen_scale[1] / 5) / self.map_scale_height), 2)
 
 
 class EventLog(pygame.sprite.Sprite):
-    max_row_show = 9  # maximum 9 text rows can appear at once
 
     def __init__(self, image, pos):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self)
-        self.font = pygame.font.SysFont("helvetica", 16)
+        self.font = pygame.font.SysFont("helvetica", int(image.get_height() / 15))
         self.pos = pos
         self.image = image
+        self.max_row_show = int(image.get_height() / self.font.get_height())
         self.base_image = self.image.copy()
         self.rect = self.image.get_rect(bottomleft=self.pos)
         self.len_check = 0
@@ -640,7 +645,7 @@ class EventLog(pygame.sprite.Sprite):
 
     def add_log(self, log, event_id=None):
         """Add log to appropriate event log, the log must be in list format
-        following this rule [game_id, logtext]"""
+        following this rule [id, logtext]"""
         at_last_row = False
         image_change = False
         image_change2 = False
@@ -652,10 +657,10 @@ class EventLog(pygame.sprite.Sprite):
         if event_id and event_id in self.map_event:  # Process whether there is historical commentary to add to event log
             text_output = self.map_event[event_id]
             image_change2 = self.log_text_process(text_output["Who"],
-                                                  str(text_output["Time"]) + ": " + text_output["Text"])
+                                                  str(text_output["Time"]) + ": " + str(text_output["Text"]))
         if image_change or image_change2:
             self.len_check = len(self.battle_log)
-            if at_last_row and self.len_check > 9:
+            if at_last_row and self.len_check > self.max_row_show:
                 self.current_start_row = self.len_check - self.max_row_show
                 self.scroll.current_row = self.current_start_row
             self.scroll.change_image(row_size=self.len_check)

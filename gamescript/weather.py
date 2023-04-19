@@ -104,7 +104,7 @@ class MatterSprite(pygame.sprite.Sprite):
                            self.image.get_height() + screen_rect_size[1])
         self.rect = self.image.get_rect(center=self.base_pos)
 
-    def update(self, dt, timer):
+    def update(self, dt, *args):
         """Update sprite position movement"""
         move = self.target - self.base_pos
         move_length = move.length()

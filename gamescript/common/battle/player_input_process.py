@@ -14,7 +14,7 @@ def player_input_process(self):
     if self.player_char and self.player_char.alive:
         self.player_char.player_input(self.command_mouse_pos)
 
-    elif self.player_keyboard_press["Order Menu"]:  # Open unit command wheel ui
+    if self.player_keyboard_press["Order Menu"]:  # Open unit command wheel ui
         self.battle_ui_updater.add(self.wheel_ui)
         self.previous_player_input_state = self.player_input_state
         self.player_input_state = self.wheel_ui

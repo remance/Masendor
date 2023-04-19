@@ -313,8 +313,6 @@ class Battle:
 
         self.camera = camera.Camera(self.shown_camera_pos, self.screen_rect)
 
-        self.hitbox_camera = pygame.Surface(self.screen_rect.size, pygame.SRCALPHA)  # TODO test this later
-
         self.clock = pygame.time.Clock()  # Game clock to keep track of realtime pass
 
         self.background = pygame.Surface(self.screen_rect.size)  # Create background image
@@ -736,15 +734,14 @@ class Battle:
 
                     if self.dt:  # Part that run when game not pause only
                         # Event log
-                        if self.event_schedule and self.event_list != [] and self.time_number.time_number >= self.event_schedule:
+                        if self.event_id and self.time_number.time_number >= self.event_schedule:
                             self.event_log.add_log(None, event_id=self.event_id)
-                            for event in self.event_log.map_event:
-                                if self.event_log.map_event[event]["Time"] and self.event_log.map_event[event][
-                                    "Time"] > self.time_number.time_number:
-                                    self.event_id = event
-                                    self.event_schedule = self.event_log.map_event[event]["Time"]
-                                    break
-                            self.event_list = self.event_list[1:]
+                            self.event_list.pop(0)
+                            if self.event_list:
+                                self.event_id = self.event_list[0]
+                                self.event_schedule = self.event_log.map_event[self.event_id]["Time"]
+                            else:
+                                self.event_id = None
 
                         # Weather system
                         if self.weather_playing and self.time_number.time_number >= self.weather_playing:

@@ -302,7 +302,7 @@ class Game:
         # battle containers
         battleui.SkillCardIcon.containers = self.skill_icon, self.battle_ui_updater
         battleui.CharIcon.containers = self.char_icon, self.main_ui_updater
-        battleui.SpriteIndicator.containers = self.effect_updater#, self.battle_camera
+        battleui.SpriteIndicator.containers = self.effect_updater, self.battle_camera
         battleui.AimTarget.containers = self.shoot_lines, self.battle_camera
 
         damagesprite.DamageSprite.containers = self.effect_updater, self.battle_camera
