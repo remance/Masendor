@@ -1,0 +1,11 @@
+{% extends "base.j2" %}
+
+{% block content %}
+
+<h2>{{name}}</h2>
+
+{% for paragraph in text %}
+<p>{{paragraph}}</p>
+{% endfor %}
+
+{% endblock %}
