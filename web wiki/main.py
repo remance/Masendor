@@ -1,6 +1,7 @@
 import sys
 import os
 import pygame
+import hashlib
 from flask import Flask, render_template, redirect
 
 # ---
@@ -91,20 +92,35 @@ leader_portrait = game.leader_data.images
 leader_class = game.leader_data.leader_class
 
 
-def get_subunit_icon(subunit_id, scale):
+def get_subunit_icon(subunit_id, scale, icon_size):
     """get a icon for a specific subunit"""
 
-    subunits = (game.troop_data.troop_list | game.leader_data.leader_list)
-    who_todo = {key: value for key, value in subunits.items() if key == subunit_id}
+    md5_input = "{0}${1}${2}".format(subunit_id, scale, icon_size)
+    hex_hash = hashlib.md5(md5_input.encode()).hexdigest()
 
-    # make idle animation, first frame, right side (change to l_side for left), non-specific so it can make for any troops
-    preview_sprite_pool, _ = create_troop_sprite_pool(game, who_todo, preview=True, specific_preview=("Idle_0", 0, "r_side", "non-specific"),
+    subunit_icon_server_path = os.path.join(main_dir, "web wiki", "static", "{0}.png".format(hex_hash))
+
+    if not os.path.isfile(subunit_icon_server_path):
+
+        subunits = (game.troop_data.troop_list | game.leader_data.leader_list)
+        who_todo = {key: value for key, value in subunits.items() if key == subunit_id}
+
+        # make idle animation, first frame, right side (change to l_side for left), non-specific so it can make for any troops
+        try:
+            preview_sprite_pool, _ = create_troop_sprite_pool(game, who_todo, preview=True, specific_preview=("Idle_0", 0, "r_side", "non-specific"),
                                                       max_preview_size=scale)
-    sprite = preview_sprite_pool[subunit_id]["sprite"]
-    icon = pygame.Surface((36, 36), pygame.SRCALPHA)
-    icon.blit(sprite, (0, 0))
-    return icon
+        except KeyError:
+            return None
+        except TypeError:
+            return None
 
+        sprite = preview_sprite_pool[subunit_id]["sprite"]
+        icon = pygame.Surface(icon_size, pygame.SRCALPHA)
+        icon.blit(sprite, (0, 0))
+
+        pygame.image.save(icon, subunit_icon_server_path)
+
+    return "/static/{0}.png".format(hex_hash)
 
 @app.route("/")
 def index():
@@ -227,15 +243,9 @@ def troops():
 
         subunit_icon_server_path = os.path.join(main_dir, "web wiki", "static", "{0}.png".format(k))
         subunit_icon_web_path = "static/{0}.png".format(k)
-        troop['icon'] = [subunit_icon_web_path, k]
+        subunit_icon = get_subunit_icon(k, 35, (36, 36))
+        troop['icon'] = [subunit_icon, k]
 
-        if not os.path.isfile(subunit_icon_server_path):
-            try:
-                subunit_icon = get_subunit_icon(k, 35)
-                pygame.image.save(subunit_icon, subunit_icon_server_path)
-            except Exception as e:
-                pass
-                # raise e
 
     return render_template("troops.j2", troops=troops)
 
@@ -253,11 +263,13 @@ def leaders(leader_id=None):
 
         leader_name = data["Name"]
         history = lore[1:]
-
+        sprite_icon = get_subunit_icon(leader_id, 100, (138, 138))
+        
         return render_template(
             "leader.j2",
             name=leader_name,
             history=history,
+            sprite_icon=sprite_icon,
         )
 
     # list leaders view
@@ -353,17 +365,9 @@ def leaders(leader_id=None):
 
         leaders.append(leader)
 
-        subunit_icon_server_path = os.path.join(main_dir, "web wiki", "static", "{0}.png".format(k))
-        subunit_icon_web_path = "static/{0}.png".format(k)
-        leader['icon'] = [subunit_icon_web_path, k]
+        subunit_icon = get_subunit_icon(k, 35, (36, 36))
+        leader['icon'] = [subunit_icon, k]
 
-        if not os.path.isfile(subunit_icon_server_path):
-            try:
-                subunit_icon = get_subunit_icon(k, 35)
-                pygame.image.save(subunit_icon, subunit_icon_server_path)
-            except Exception as e:
-                pass
-                # raise e
 
     return render_template("leaders.j2", leaders=leaders)
 
