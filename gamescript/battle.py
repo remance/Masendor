@@ -313,7 +313,7 @@ class Battle:
 
         self.camera = camera.Camera(self.shown_camera_pos, self.screen_rect)
 
-        self.hitbox_layer = pygame.Surface(self.screen_rect.size, pygame.SRCALPHA)  # TODO test this later
+        self.hitbox_camera = pygame.Surface(self.screen_rect.size, pygame.SRCALPHA)  # TODO test this later
 
         self.clock = pygame.time.Clock()  # Game clock to keep track of realtime pass
 
