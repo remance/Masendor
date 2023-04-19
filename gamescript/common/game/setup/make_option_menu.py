@@ -14,7 +14,7 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
     back_button = menu.MenuButton(screen_scale, image_list, (screen_rect.width / 3, screen_rect.height / 1.2),
                                   updater, text="Back")
     keybind_button = menu.MenuButton(screen_scale, image_list, (screen_rect.width / 2, screen_rect.height / 1.2),
-                                  updater, text="Keybinding")
+                                  updater, text="Keybind")
     default_button = menu.MenuButton(screen_scale, image_list, (screen_rect.width / 1.5, screen_rect.height / 1.2),
                                      updater, text="Default")
 
@@ -63,7 +63,7 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
     resolution_text = menu.OptionMenuText((resolution_drop.pos[0] - (resolution_drop.pos[0] / 4.5),
                                            resolution_drop.pos[1]), "Display Resolution", font_size)
 
-    keybinding_text = {"Main Weapon Attack": menu.OptionMenuText((screen_rect.width / 4, screen_rect.height / 5),
+    keybind_text = {"Main Weapon Attack": menu.OptionMenuText((screen_rect.width / 4, screen_rect.height / 5),
                                                                  "Main Weapon Attack", font_size),
                        "Sub Weapon Attack": menu.OptionMenuText((screen_rect.width / 4, screen_rect.height / 3.5),
                                                                 "Sub Weapon Attack", font_size),
@@ -97,38 +97,38 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
     control_type = "keyboard"
     keybind = keybind[control_type]
 
-    keybinding_icon = {"Main Weapon Attack": menu.KeybindingIcon((screen_rect.width / 3, screen_rect.height / 5),
+    keybind_icon = {"Main Weapon Attack": menu.KeybindIcon((screen_rect.width / 3, screen_rect.height / 5),
                                                                  font_size, control_type,
                                                                  keybind["Main Weapon Attack"]),
-                       "Sub Weapon Attack": menu.KeybindingIcon((screen_rect.width / 3, screen_rect.height / 3.5),
+                       "Sub Weapon Attack": menu.KeybindIcon((screen_rect.width / 3, screen_rect.height / 3.5),
                                                                 font_size, control_type,
                                                                 keybind["Sub Weapon Attack"]),
-                       "Move Left": menu.KeybindingIcon((screen_rect.width / 3, screen_rect.height / 2.5), font_size,
+                       "Move Left": menu.KeybindIcon((screen_rect.width / 3, screen_rect.height / 2.5), font_size,
                                                         control_type, keybind["Move Left"]),
-                       "Move Right": menu.KeybindingIcon((screen_rect.width / 3, screen_rect.height / 2), font_size,
+                       "Move Right": menu.KeybindIcon((screen_rect.width / 3, screen_rect.height / 2), font_size,
                                                          control_type, keybind["Move Right"]),
-                       "Move Up": menu.KeybindingIcon((screen_rect.width / 3, screen_rect.height / 1.7), font_size,
+                       "Move Up": menu.KeybindIcon((screen_rect.width / 3, screen_rect.height / 1.7), font_size,
                                                       control_type, keybind["Move Up"]),
-                       "Move Down": menu.KeybindingIcon((screen_rect.width / 1.7, screen_rect.height / 5), font_size,
+                       "Move Down": menu.KeybindIcon((screen_rect.width / 1.7, screen_rect.height / 5), font_size,
                                                         control_type, keybind["Move Down"]),
-                       "Menu/Cancel": menu.KeybindingIcon((screen_rect.width / 1.7, screen_rect.height / 3.5), font_size,
+                       "Menu/Cancel": menu.KeybindIcon((screen_rect.width / 1.7, screen_rect.height / 3.5), font_size,
                                                           control_type, keybind["Menu/Cancel"]),
-                       "Order Menu": menu.KeybindingIcon((screen_rect.width / 1.7, screen_rect.height / 2.5), font_size,
+                       "Order Menu": menu.KeybindIcon((screen_rect.width / 1.7, screen_rect.height / 2.5), font_size,
                                                          control_type, keybind["Order Menu"]),
-                       "Run Input": menu.KeybindingIcon((screen_rect.width / 1.7, screen_rect.height / 2), font_size,
+                       "Run Input": menu.KeybindIcon((screen_rect.width / 1.7, screen_rect.height / 2), font_size,
                                                         control_type, keybind["Run Input"]),
-                       "Skill 1": menu.KeybindingIcon((screen_rect.width / 1.7, screen_rect.height / 1.7), font_size,
+                       "Skill 1": menu.KeybindIcon((screen_rect.width / 1.7, screen_rect.height / 1.7), font_size,
                                                       control_type, keybind["Skill 1"]),
-                       "Skill 2": menu.KeybindingIcon((screen_rect.width / 1.12, screen_rect.height / 5), font_size,
+                       "Skill 2": menu.KeybindIcon((screen_rect.width / 1.12, screen_rect.height / 5), font_size,
                                                       control_type, keybind["Skill 2"]),
-                       "Skill 3": menu.KeybindingIcon((screen_rect.width / 1.12, screen_rect.height / 3.5), font_size,
+                       "Skill 3": menu.KeybindIcon((screen_rect.width / 1.12, screen_rect.height / 3.5), font_size,
                                                       control_type, keybind["Skill 3"]),
-                       "Skill 4": menu.KeybindingIcon((screen_rect.width / 1.12, screen_rect.height / 2.5), font_size,
+                       "Skill 4": menu.KeybindIcon((screen_rect.width / 1.12, screen_rect.height / 2.5), font_size,
                                                       control_type, keybind["Skill 4"]),
-                       "Swap Weapon Set 1": menu.KeybindingIcon((screen_rect.width / 1.12, screen_rect.height / 2),
+                       "Swap Weapon Set 1": menu.KeybindIcon((screen_rect.width / 1.12, screen_rect.height / 2),
                                                                 font_size, control_type,
                                                                 keybind["Swap Weapon Set 1"]),
-                       "Swap Weapon Set 2": menu.KeybindingIcon((screen_rect.width / 1.12, screen_rect.height / 1.7),
+                       "Swap Weapon Set 2": menu.KeybindIcon((screen_rect.width / 1.12, screen_rect.height / 1.7),
                                                                 font_size, control_type,
                                                                 keybind["Swap Weapon Set 2"])}
 
@@ -136,4 +136,4 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
             "resolution_drop": resolution_drop,
             "resolution_bar": resolution_bar, "resolution_text": resolution_text, "volume_sliders": volume_slider,
             "value_boxes": value_box, "volume_texts": volume_text, "fullscreen_box": fullscreen_box,
-            "fullscreen_text": fullscreen_text, "keybinding_text": keybinding_text, "keybinding_icon": keybinding_icon}
+            "fullscreen_text": fullscreen_text, "keybind_text": keybind_text, "keybind_icon": keybind_icon}

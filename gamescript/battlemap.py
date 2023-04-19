@@ -99,7 +99,8 @@ class HeightMap(pygame.sprite.Sprite):
 
     @lru_cache(maxsize=1)
     def get_grey_scaled_surface(self):
-        """get a grey scaled surface(24-bit) representation of the height map. brightness equals the height. brightness is any of the R, G or B values (they are always the same)"""
+        """get a grey scaled surface(24-bit) representation of the height map.
+        brightness equals the height. brightness is any of the R, G or B values (they are always the same)"""
         if self.image is None:
             raise Exception("This method is depended on draw_image being called first.")
 

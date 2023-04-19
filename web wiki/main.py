@@ -129,7 +129,6 @@ def index():
 
 @app.route("/regions")
 def regions():
-
     regions = set()
     for faction in game.faction_data.faction_list.values():
         regions.add(faction['Type'])
@@ -142,8 +141,16 @@ def regions():
 
 
 @app.route("/factions")
-def factions():
-    return render_template("factions.j2")
+def factions():  # TODO add faction coa as icon
+    factions = list()
+    for k, v in game.faction_data.faction_list.items():
+        if k != 0:  # skip all faction
+            faction = {
+                "name": v["Name"],
+                "troop": v["Troop"],
+                "region": v["Type"]}
+            factions.append(faction)
+    return render_template("factions.j2", factions=factions)
 
 
 @app.route("/weapons")
@@ -160,7 +167,14 @@ def weapons():
 
 @app.route("/troop-classes")
 def troop_classes():
-    return render_template("troop-classes.j2")
+    troop_classes = list()
+    for k, v in game.troop_data.troop_class.items():
+        troop_class = {
+            "name": k,
+            "strengths": v["Strengths"],
+            "weaknesses": v["Weaknesses"]}
+        troop_classes.append(troop_class)
+    return render_template("troop-classes.j2", troop_classes=troop_classes)
 
 
 @app.route("/troops")
@@ -370,5 +384,6 @@ def leaders(leader_id=None):
 
 
     return render_template("leaders.j2", leaders=leaders)
+
 
 app.run(debug=True)

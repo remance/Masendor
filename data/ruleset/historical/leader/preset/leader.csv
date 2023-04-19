@@ -25,13 +25,13 @@
 "NOR-23","Engenulf of Laigle",1,40,57,36,35,46,49,45,3,3,4,4,"2,4",,,,"5,4","2,3,14",21,"L21",,"Line","Norman Leader","Supporter"
 "NOR-24","Richard FitzGilbert",1,47,42,45,60,56,48,40,4,2,4,4,"2,4",,,,"5,4","2,3,14",21,"L17",,"Line","Norman Leader","Supporter"
 "NOR-25","Taillefer",1,70,89,82,74,68,71,73,1,2,1,2,"2,3",,,,"15,3","2,3,14",19,"L2",,"Bar","Taillefer","Warrior"
-"NOR-26","Odo of Champagne",1,63,70,72,67,63,62,68,5,6,4,4,"2,4",,,,"5,4","2,3,14",21,,,"Line","Norman Leader","Warrior"
-"NOR-27","Richard of Évreux",1,52,56,55,58,62,67,64,5,5,6,4,"2,4",,,,"5,4","2,3,14",21,,,"Line","Norman Leader","Leader"
-"NOR-28","Baldwin FitzGilbert",1,46,49,48,60,68,70,67,4,5,4,4,"2,4",,,,"5,4","2,3,14",21,,,"Line","Norman Leader","Leader"
-"NOR-29","Gerbod the Fleming",1,44,51,47,64,60,54,48,5,5,4,4,"2,4",,,,"5,4","2,3,14",21,,,"Line","Norman Leader",
-"NOR-30","Ralph of Gael",1,71,70,67,67,64,68,81,7,6,6,4,"2,4",,,,"5,4","2,3,14",21,,,"Line","Norman Leader","Leader"
-"NOR-31","Gilbert II Crispin",1,,,,,,,,,,,,,,,,,,,,,,,
-"NOR-32","William Crispin",1,,,,,,,,,,,,,,,,,,,,,,,
+"NOR-26","Odo of Champagne",1,63,70,72,67,63,62,68,5,6,4,4,"2,4",,,,"5,4","2,3,14",21,"L18",,"Line","Norman Leader","Warrior"
+"NOR-27","Richard of Évreux",1,52,56,55,58,62,67,64,5,5,6,4,"2,4",,,,"5,4","2,3,14",21,"L19",,"Line","Norman Leader","Leader"
+"NOR-28","Baldwin FitzGilbert",1,46,49,48,60,68,70,67,4,5,4,4,"2,4",,,,"5,4","2,3,14",21,"L17",,"Line","Norman Leader","Leader"
+"NOR-29","Gerbod the Fleming",1,44,51,47,64,60,54,48,5,5,4,4,"2,4",,,,"5,4","2,3,14",21,"L26",,"Line","Norman Leader","Leader"
+"NOR-30","Ralph of Gael",1,71,70,67,67,64,68,81,7,6,6,4,"2,4",,,,"5,4","2,3,14",21,"L3,L46",,"Line","Norman Leader","Leader"
+"NOR-31","Gilbert II Crispin",1,58,63,63,66,60,58,65,6,5,5,4,"2,4",,,,"5,4","2,3,14",21,,,"Line","Norman Leader","Leader"
+"NOR-32","William Crispin",1,59,60,60,68,62,60,66,5,6,6,4,"2,4",,,,"5,4","2,3,14",21,,,"Line","Norman Leader","Leader"
 "NOR-33","Henry of Ferrers",1,,,,,,,,,,,,,,,,,,,,,,,
 "NOR-34","Roger of Beaumont",1,,,,,,,,,,,,,,,,,,,,,,"Norman Leader Brown Beard",
 "NOR-35","Alain Fergant",1,,,,,,,,,,,,,,,,,,,,,,,
@@ -48,7 +48,7 @@
 "NOR-46","Hugh III of Gournay",1,,,,,,,,,,,,,,,,,,,,,,,
 "NOR-47","William I of Moyon",1,,,,,,,,,,,,,,,,,,,,,,,
 "NOR-48","Eudo al Chapel",1,,,,,,,,,,,,,,,,,,,,,,,
-"NOR-49","Fulk D'Aulnay",1,,,,,,,,,,,,,,,,,,,,,,,
+"NOR-49","Fulk of Aulnay",1,,,,,,,,,,,,,,,,,,,,,,,
 "NOR-50","Robert I FitzErneis",1,,,,,,,,,,,,,,,,,,,,,,,
 "NOR-51","Richard of Neville",1,,,,,,,,,,,,,,,,,,,,,,,
 "NOR-52","Niel II of Saint-Sauveur",1,,,,,,,,,,,,,,,,,,,,,,,
@@ -62,15 +62,15 @@
 "NOR-60","William Patrie",1,,,,,,,,,,,,,,,,,,,,,,,
 "NOR-61","William Avenel",1,,,,,,,,,,,,,,,,,,,,,,,
 "NOR-62","Bernard of St.Valeri",1,,,,,,,,,,,,,,,,,,,,,,,
-"NOR-63","Robert D'Oyly",1,,,,,,,,,,,,,,,,,,,,,,,
-"NOR-64","Jean d'Ivri",1,,,,,,,,,,,,,,,,,,,,,,,
+"NOR-63","Robert of Oyly",1,,,,,,,,,,,,,,,,,,,,,,,
+"NOR-64","Jean of Ivri",1,,,,,,,,,,,,,,,,,,,,,,,
 "NOR-65","Raoul of Fougeres",1,,,,,,,,,,,,,,,,,,,,,,,
 "NOR-66","Errand of Harcourt",1,,,,,,,,,,,,,,,,,,,,,,,
 "NOR-67","William Painel",1,,,,,,,,,,,,,,,,,,,,,,,
 "NOR-68","Avenel de Biarz",1,,,,,,,,,,,,,,,,,,,,,,,
 "NOR-69","Robert Bertram the Crooked",1,,,,,,,,,,,,,,,,,,,,,,,
-"NOR-70","Walter D'Aincourt",1,,,,,,,,,,,,,,,,,,,,,,,
-"NOR-71","Samson D’Ansneville",1,,,,,,,,,,,,,,,,,,,,,,,
+"NOR-70","Walter of Aincourt",1,,,,,,,,,,,,,,,,,,,,,,,
+"NOR-71","Samson of Ansneville",1,,,,,,,,,,,,,,,,,,,,,,,
 "NOR-72","Hamo of Crevecceur",1,,,,,,,,,,,,,,,,,,,,,,,
 "NOR-73","Picot of Say",1,,,,,,,,,,,,,,,,,,,,,,,
 "NOR-74","Hugh of Port",1,,,,,,,,,,,,,,,,,,,,,,,
@@ -138,30 +138,12 @@
 "HUN-48","Antal Palóczi",,,,,,,,,,,,,,,,,,,,,,,,
 "HUN-49","Mátyás Czetrini",,,,,,,,,,,,,,,,,,,,,,,,
 "HUN-50","Frangepán",,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,
 "OTTO-1","Suleiman the Magnificent",1,68,65,55,67,91,93,95,7,9,8,7,"8,5",,,,,,,"L12,L48",,,"Suleiman","Leader"
 "OTTO-2","Pargalı Ibrahim Pasha",1,66,68,53,66,83,74,75,8,8,8,4,,,,,,,,,,,,"Leader"
 "OTTO-3","Malkoçoğlu Bali Bey",1,,,,,,,,,,,4,,,,,,,,,,,,
 "OTTO-4","Gazi Hüsrev Bey",1,,,,,,,,,,,4,,,,,,,,,,,,
 "OTTO-5","Behram Pasha",1,,,,,,,,,,,4,,,,,,,,,,,,
 "OTTO-6","Sehagic Chieftain",1,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,
 "TEST-1","Bowguy Deletelater",1,72,68,60,70,81,83,92,7,4,7,5,"32,5","3,3","3,3",,,,21,"L3,L61",,"Line,Wedge","Landsknecht Leader","Test"
 "TEST-2","Testguy Deletelater",1,72,68,60,70,81,83,92,7,4,7,5,"33,5","37,4","39,4","3,3","12,3",,21,"L3,L4",,"Line,Wedge","Landsknecht Leader","Test"
 "TEST-3","Cannonguy Deletelater",1,55,55,55,55,55,55,55,3,8,1,4,"M14,3","M15,3","M16,3",,"12,3","81,8,19",21,,,,"Landsknecht Cannon Leader","Test"

@@ -44,12 +44,12 @@
 43,"Heater Shield",,,80,4,0,0,6,25,18,7,14,29,,1.5,0,0,0,7,,1,"TRUE","Crush Medium (team)",0,,,,,9,,"shield","Bash",,"hold,block","Shield"
 44,"Pavise Shield",10,0,90,3,0,0,2,20,35,1,23,30,,2.5,0,0,0,7,,1,"TRUE","Crush Medium (team)",0,,,,,10,,"shield","Bash",,"hold,block","Shield"
 45,"Spiked Shield",5,5,65,7,0,0,20,18,9,10,11,,,1,0,0,0,7,,1,"TRUE","Crush Medium (team)",0,,,,,8,,"shield","Bash",,"hold,block","Shield"
-46,"Bouche Shield",,,,,,,,20,13,3,8,,,,,,,,,,"TRUE","Crush Medium (team)",0,,,,,8,,"shield","Bash",,"hold,block","Shield"
+46,"Bouche Shield",,,,,,0,0,20,13,3,8,,,1,0,0,0,7,,1,"TRUE","Crush Medium (team)",0,,,,,8,,"shield","Bash",,"hold,block","Shield"
 47,"Oval Shield",7,3,85,4,0,0,4,22,17,5,8,29,,1.5,0,0,0,7,,1,"TRUE","Crush Medium (team)",0,,,,,8,,"shield","Bash",,"hold,block","Shield"
 48,"Parry Dagger",1,9,70,4,0,0,40,6,5,1,1,,,0.5,0,0,0,6,,1,"TRUE","Slash Small (team)",0,,,,,5,,"1hand","Slash",,"parry","Melee"
 49,"Parry Club",3,7,,,0,0,30,16,7,2,5,,,1.2,0,0,0,9,,1,"TRUE","Crush Medium (team)",0,,,,,8,,"1hand","Smash",,"parry","Melee"
 50,"Barrier Shield",10,0,90,1,0,0,0,20,40,1,30,30,,2.5,0,0,0,7,,2,"TRUE","Crush Big (team)",0,,,,,10,,"shield","Bash",,"hold,block","Shield"
-51,"Lance",1,9,40,16,,,,12,4,45,12,,14,3,0,0,0,25,,1,"TRUE","Pierce Big (team)",0,,,,,8,,"1hand","Pierce",,,"Melee"
+51,"Lance",1,9,40,16,0,0,0,12,4,45,12,,14,3,0,0,0,25,,1,"TRUE","Pierce Big (team)",0,,,,,8,,"1pole","Pierce",,,"Melee"
 52,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 53,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 54,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

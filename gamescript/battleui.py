@@ -393,25 +393,36 @@ class SkillCardIcon(pygame.sprite.Sprite):
         self.active_check = 0  # active timer number
         self.game_id = None
 
-        key_font_size = int(24 * screen_scale[1])
-        key_font = pygame.font.SysFont("helvetica", key_font_size)
-        self.image = pygame.Surface((image.get_width(), image.get_height() + (key_font_size * 1.5)), pygame.SRCALPHA)
+        self.key_font_size = int(24 * screen_scale[1])
+
+        self.image = pygame.Surface((image.get_width(), image.get_height() + (self.key_font_size * 1.5)),
+                                    pygame.SRCALPHA)
+        image_rect = image.get_rect(midtop=(self.image.get_width() / 2, 0))
+        self.image.blit(image, image_rect)
+        self.base_image = self.image.copy()  # original image before adding key name
+
+        key_font = pygame.font.SysFont("helvetica", self.key_font_size)
         text_surface = text_render(key, key_font)
         text_rect = text_surface.get_rect(midbottom=(self.image.get_width() / 2, self.image.get_height()))
         self.image.blit(text_surface, text_rect)
-
-        image_rect = image.get_rect(midtop=(self.image.get_width() / 2, 0))
-        self.image.blit(image, image_rect)
-        self.base_image = self.image.copy()  # keep original image without number
+        self.base_image2 = self.image.copy()  # keep original image without timer
 
         self.rect = self.image.get_rect(topleft=pos)
         self.cooldown_rect = self.image.get_rect(topleft=(0, 0))
+
+    def change_key(self, key):
+        self.image = self.base_image.copy()
+        key_font = pygame.font.SysFont("helvetica", self.key_font_size)
+        text_surface = text_render(key, key_font)
+        text_rect = text_surface.get_rect(midbottom=(self.image.get_width() / 2, self.image.get_height()))
+        self.image.blit(text_surface, text_rect)
+        self.base_image2 = self.image.copy()  # keep original image without timer
 
     def icon_change(self, cooldown, active_timer):
         """Show active effect timer first if none show cooldown"""
         if active_timer != self.active_check:
             self.active_check = active_timer  # renew number
-            self.image = self.base_image.copy()
+            self.image = self.base_image2.copy()
             if self.active_check:
                 rect = self.image.get_rect(topleft=(0, 0))
                 self.image.blit(self.active_skill, rect)
@@ -424,7 +435,7 @@ class SkillCardIcon(pygame.sprite.Sprite):
 
         elif cooldown != self.cooldown_check and self.active_check == 0:  # Cooldown only get blit when skill is not active
             self.cooldown_check = cooldown
-            self.image = self.base_image.copy()
+            self.image = self.base_image2.copy()
             if self.cooldown_check:
                 self.image.blit(self.cooldown, self.cooldown_rect)
                 output_number = str(self.cooldown_check)
@@ -433,21 +444,6 @@ class SkillCardIcon(pygame.sprite.Sprite):
                 text_surface = self.font.render(output_number, True, (0, 0, 0))
                 text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
                 self.image.blit(text_surface, text_rect)
-
-
-class EffectCardIcon(pygame.sprite.Sprite):
-
-    def __init__(self, image, pos, icon_type, game_id=None):
-        self._layer = 11
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        self.icon_type = icon_type
-        self.game_id = game_id
-        self.pos = pos
-        self.cooldown_check = 0
-        self.active_check = 0
-        self.image = image
-        self.rect = self.image.get_rect(center=pos)
-        self.base_image = self.image.copy()
 
 
 class FPScount(pygame.sprite.Sprite):
@@ -499,6 +495,8 @@ class MiniMap(pygame.sprite.Sprite):
         self.player_dot_images = {}
         self.troop_dot_images = {}
 
+        self.update_count = 0
+
         for team in self.colour:
             leader_dot = pygame.Surface(
                 (10 * self.screen_scale[0], 10 * self.screen_scale[1]))  # dot for team2 leader
@@ -528,37 +526,40 @@ class MiniMap(pygame.sprite.Sprite):
 
     def update(self, camera_pos, subunit_list):
         """update troop and leader dot on map"""
-        self.camera_pos = camera_pos
-        self.image = self.base_image.copy()
-        for subunit in subunit_list:
-            scaled_pos = (subunit.base_pos[0] / self.map_scale_width, subunit.base_pos[1] / self.map_scale_height)
-            if subunit.is_leader:
-                if subunit.player_control:
-                    rect = self.player_dot_images[subunit.team].get_rect(center=scaled_pos)
-                    self.image.blit(self.player_dot_images[subunit.team], rect)
+        self.update_count += 1
+        if self.update_count > 5:
+            self.update_count = 0
+            self.camera_pos = camera_pos
+            self.image = self.base_image.copy()
+            for subunit in subunit_list:
+                scaled_pos = (subunit.base_pos[0] / self.map_scale_width, subunit.base_pos[1] / self.map_scale_height)
+                if subunit.is_leader:
+                    if subunit.player_control:
+                        rect = self.player_dot_images[subunit.team].get_rect(center=scaled_pos)
+                        self.image.blit(self.player_dot_images[subunit.team], rect)
+                    else:
+                        rect = self.leader_dot_images[subunit.team].get_rect(center=scaled_pos)
+                        self.image.blit(self.leader_dot_images[subunit.team], rect)
                 else:
-                    rect = self.leader_dot_images[subunit.team].get_rect(center=scaled_pos)
-                    self.image.blit(self.leader_dot_images[subunit.team], rect)
-            else:
-                rect = self.troop_dot_images[subunit.team].get_rect(center=scaled_pos)
-                self.image.blit(self.troop_dot_images[subunit.team], rect)
+                    rect = self.troop_dot_images[subunit.team].get_rect(center=scaled_pos)
+                    self.image.blit(self.troop_dot_images[subunit.team], rect)
 
-        pygame.draw.rect(self.image, (0, 0, 0),
-                         ((camera_pos[1][0] / self.screen_scale[0] / (self.map_scale_width)) / 5,
-                          (camera_pos[1][1] / self.screen_scale[1] / (self.map_scale_height)) / 5,
-                          (self.camera_border[0] / self.screen_scale[0] / 5) / self.map_scale_width,
-                          (self.camera_border[1] / self.screen_scale[1] / 5) / self.map_scale_height), 2)
+            pygame.draw.rect(self.image, (0, 0, 0),
+                             ((camera_pos[1][0] / self.screen_scale[0] / (self.map_scale_width)) / 5,
+                              (camera_pos[1][1] / self.screen_scale[1] / (self.map_scale_height)) / 5,
+                              (self.camera_border[0] / self.screen_scale[0] / 5) / self.map_scale_width,
+                              (self.camera_border[1] / self.screen_scale[1] / 5) / self.map_scale_height), 2)
 
 
 class EventLog(pygame.sprite.Sprite):
-    max_row_show = 9  # maximum 9 text rows can appear at once
 
     def __init__(self, image, pos):
         self._layer = 10
         pygame.sprite.Sprite.__init__(self)
-        self.font = pygame.font.SysFont("helvetica", 16)
+        self.font = pygame.font.SysFont("helvetica", int(image.get_height() / 15))
         self.pos = pos
         self.image = image
+        self.max_row_show = int(image.get_height() / self.font.get_height())
         self.base_image = self.image.copy()
         self.rect = self.image.get_rect(bottomleft=self.pos)
         self.len_check = 0
@@ -644,7 +645,7 @@ class EventLog(pygame.sprite.Sprite):
 
     def add_log(self, log, event_id=None):
         """Add log to appropriate event log, the log must be in list format
-        following this rule [game_id, logtext]"""
+        following this rule [id, logtext]"""
         at_last_row = False
         image_change = False
         image_change2 = False
@@ -656,10 +657,10 @@ class EventLog(pygame.sprite.Sprite):
         if event_id and event_id in self.map_event:  # Process whether there is historical commentary to add to event log
             text_output = self.map_event[event_id]
             image_change2 = self.log_text_process(text_output["Who"],
-                                                  str(text_output["Time"]) + ": " + text_output["Text"])
+                                                  str(text_output["Time"]) + ": " + str(text_output["Text"]))
         if image_change or image_change2:
             self.len_check = len(self.battle_log)
-            if at_last_row and self.len_check > 9:
+            if at_last_row and self.len_check > self.max_row_show:
                 self.current_start_row = self.len_check - self.max_row_show
                 self.scroll.current_row = self.current_start_row
             self.scroll.change_image(row_size=self.len_check)
@@ -1273,8 +1274,7 @@ class Profiler(cProfile.Profile, pygame.sprite.Sprite):
         self.size = (900, 550)
         self.image = pygame.Surface(self.size)
         self.rect = pygame.Rect((0, 0, *self.size))
-        font = "ubuntumono"  # TODO: feel free to change this, the most important thing is that it
-        # is monospace and works good for every developer
+        font = "ubuntumono"
         self.font = pygame.font.SysFont(font, 16)
         self._layer = 12
         self.visible = False

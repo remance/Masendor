@@ -17,13 +17,13 @@ def menu_option(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scr
         self.menu_state = "keybind"
         self.main_ui_updater.remove(*self.option_text_list, *self.option_menu_sliders.values(),
                                     *self.value_boxes.values(), self.option_menu_button)
-        self.main_ui_updater.add(*self.keybinding_text.values(), *self.keybinding_icon.values(),
+        self.main_ui_updater.add(*self.keybind_text.values(), *self.keybind_icon.values(),
                                  self.back_button, self.default_button)
 
     elif self.default_button.event:  # revert all setting to original
         self.default_button.event = False
         for setting in self.config["DEFAULT"]:
-            if setting not in ("genre", "language", "player_name", "keybinding"):
+            if setting not in ("genre", "language", "player_name", "keybind"):
                 edit_config("USER", setting, self.config["DEFAULT"][setting], "configuration.ini", self.config)
 
         change_resolution(self, (int(self.config["DEFAULT"]["screen_width"]), "",

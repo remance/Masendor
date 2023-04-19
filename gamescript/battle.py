@@ -51,8 +51,6 @@ class Battle:
 
     # Import from common.battle
     add_sound_effect_queue = empty_method
-    battle_keyboard_process = empty_method
-    battle_mouse_process = empty_method
     cal_shake_value = empty_method
     camera_fix = empty_method
     camera_process = empty_method
@@ -63,6 +61,7 @@ class Battle:
     play_sound_effect = empty_method
     player_aim = empty_method
     player_cancel_input = empty_method
+    player_input_process = empty_method
     player_skill_perform = empty_method
     setup_battle_troop = empty_method
     setup_battle_ui = empty_method
@@ -98,6 +97,14 @@ class Battle:
         self.play_music_volume = main.play_music_volume
         self.play_effect_volume = main.play_effect_volume
         self.play_voice_volume = main.play_voice_volume
+        # if self.config["USER"]["control player 1"] == "keyboard":
+        self.mouse_bind = main.mouse_bind
+        self.mouse_bind_name = main.mouse_bind_name
+        self.player_keyboard_bind = main.player1_key_bind["keyboard"]
+        self.player_keyboard_bind_name = {value: key for key, value in self.player_keyboard_bind.items()}
+        self.player_keyboard_press = {key: False for key in self.player_keyboard_bind}
+        self.player_keyboard_hold = {key: False for key in self.player_keyboard_bind if "Attack" in key or
+                                     "Move" in key or "Input" in key}  # key that consider holding
         self.screen_rect = main.screen_rect
         self.main_dir = main.main_dir
         self.screen_scale = main.screen_scale
@@ -304,8 +311,7 @@ class Battle:
                                       self.camera_pos[1] - self.center_screen[
                                           1])  # calculate top left corner of camera position
 
-        camera.Camera.screen_rect = self.screen_rect
-        self.camera = camera.Camera(self.shown_camera_pos)
+        self.camera = camera.Camera(self.shown_camera_pos, self.screen_rect)
 
         self.clock = pygame.time.Clock()  # Game clock to keep track of realtime pass
 
@@ -525,6 +531,22 @@ class Battle:
         self.battle_mouse_pos = [0, 0]  # with camera zoom adjust but without screen scale
         self.command_mouse_pos = [0, 0]  # with zoom and screen scale for unit command
 
+        self.player_keyboard_bind = self.main.player1_key_bind["keyboard"]
+        self.player_keyboard_bind_name = {value: key for key, value in self.player_keyboard_bind.items()}
+        self.player_keyboard_press = {key: False for key in self.player_keyboard_bind}
+        self.player_keyboard_hold = {key: False for key in self.player_keyboard_hold}  # key that consider holding
+
+        skill_key_list = []
+        if self.config["USER"]["control player 1"] == "keyboard":
+            for key, value in self.player_keyboard_bind.items():
+                if "Skill" in key:
+                    if type(value) is int:
+                        skill_key_list.append(pygame.key.name(value))
+                    else:
+                        skill_key_list.append(value)
+        for index, skill_icon in enumerate(self.skill_icon):
+            skill_icon.change_key(skill_key_list[index])
+
         self.time_update()
 
         self.effect_updater.update(self.active_subunit_list, self.dt)
@@ -544,13 +566,14 @@ class Battle:
             event_key_press = None
             mouse_left_up = False  # left click
             mouse_left_down = False  # hold left click
-            mouse_right_up = False  # right click
-            mouse_right_down = False  # hold right click
             mouse_scroll_down = False
             mouse_scroll_up = False
             key_state = pygame.key.get_pressed()
             esc_press = False
             self.click_any = False
+
+            self.player_keyboard_press = dict.fromkeys(self.player_keyboard_press, False)
+            self.player_keyboard_hold = dict.fromkeys(self.player_keyboard_hold, False)
 
             self.true_dt = self.clock.get_time() / 1000  # dt before game_speed
 
@@ -568,6 +591,10 @@ class Battle:
                                                     self.battle_mouse_pos[1] / self.screen_scale[
                                                         1])  # with screen scale
 
+            for key in self.player_keyboard_press:  # check for key holding
+                if type(self.player_keyboard_bind[key]) == int and key_state[self.player_keyboard_bind[key]]:
+                    self.player_keyboard_hold[key] = True
+
             for event in pygame.event.get():  # get event that happen
                 if event.type == QUIT:  # quit self
                     self.input_popup = ("confirm_input", "quit")
@@ -580,40 +607,78 @@ class Battle:
                     pygame.mixer.music.load(self.music_list[self.playing_music[self.picked_music]])
                     pygame.mixer.music.play(fade_ms=100)
 
-                elif event.type == pygame.KEYDOWN and event.key == K_ESCAPE:  # open/close menu
-                    esc_press = True
+                elif event.type == pygame.KEYDOWN:
+                    event_key_press = event.key
+                    if self.input_popup[0] == "text_input":  # event update to input box
+                        self.input_box.player_input(event, key_state)
+                        self.text_delay = 0.1
+                    else:
+                        if event_key_press in self.player_keyboard_bind_name:  # check for key press
+                            self.player_keyboard_press[self.player_keyboard_bind_name[event_key_press]] = True
 
-                elif event.type == pygame.KEYDOWN and event.key == K_F8:  # show/hide profiler
-                    if not hasattr(self.main, "profiler"):
-                        self.main.setup_profiler()
+                    # FOR DEVELOPMENT
 
-                    self.main.profiler.switch_show_hide()
+                    # elif key_press == pygame.K_l and self.current_selected is not None:
+                    #     for subunit in self.current_selected.subunit_sprite:
+                    #         subunit.base_morale = 0
+                    # elif key_press == pygame.K_k and self.player_char:
+                    #     # for index, subunit in enumerate(self.current_selected.subunit_sprite):
+                    #     #     subunit.unit_health -= subunit.unit_health
+                    #     self.player_char.health = 0
+                    # elif key_press == pygame.K_m and self.player_char is not None:
+                    #     for follower in self.player_char.alive_troop_follower:
+                    #         follower.health = 0
+                    # elif key_press == pygame.K_n and self.player_char is not None:
+                    #     for follower in self.player_char.alive_leader_follower:
+                    #         follower.health = 0
+                    # elif key_press == pygame.K_b and self.player_char is not None:
+                    #     for follower in self.player_char.alive_leader_follower:
+                    #         for follower2 in follower.alive_troop_follower:
+                    #             follower2.health = 0
 
-                elif event.type == pygame.KEYDOWN and event.key == K_F7:  # clear profiler
-                    if hasattr(self.main, "profiler"):
-                        self.main.profiler.clear()
+                    if event.key == K_F1:
+                        self.drama_text.queue.append("Hello and welcome to showcase video")
+                    elif event.key == K_F2:
+                        self.drama_text.queue.append("Custom map battle")
+                    elif event.key == K_F3:
+                        self.drama_text.queue.append("See video description for more detail")
+                    elif event.key == K_F4:
+                        self.drama_text.queue.append("He juggled his sword and sing the Song of Roland")
+                    elif event.key == K_F5:
+                        self.drama_text.queue.append("Rushed to the English line, he fought valiantly alone")
+                    elif event.key == K_F6:
+                        self.drama_text.queue.append("The Saxon swarmed him and left him death, that they shall atone")
+                    elif event.key == K_F7:  # clear profiler
+                        if hasattr(self.main, "profiler"):
+                            self.main.profiler.clear()
+                    elif event.key == K_F8:  # show/hide profiler
+                        if not hasattr(self.main, "profiler"):
+                            self.main.setup_profiler()
+                        self.main.profiler.switch_show_hide()
 
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:  # left click
                         mouse_left_up = True
-                    elif event.button == 3:  # Right Click
-                        mouse_right_up = True
                     elif event.button == 4:  # Mouse scroll up
                         mouse_scroll_up = True
                     elif event.button == 5:  # Mouse scroll down
                         mouse_scroll_down = True
 
-                elif event.type == pygame.KEYDOWN:
-                    if self.input_popup[0] == "text_input":  # event update to input box
-                        self.input_box.player_input(event, key_state)
-                        self.text_delay = 0.1
-                    else:
-                        event_key_press = event.key
+                    press_button = self.mouse_bind_name[event.button]
+                    if press_button in self.player_keyboard_bind_name:  # check for mouse press
+                        self.player_keyboard_press[self.player_keyboard_bind_name[press_button]] = True
 
-            if pygame.mouse.get_pressed()[0]:  # Hold left click
-                mouse_left_down = True
-            elif pygame.mouse.get_pressed()[2]:  # Hold left click
-                mouse_right_down = True
+            for index, press in enumerate(pygame.mouse.get_pressed()):
+                if press:  # check for mouse hold
+                    button_press = self.mouse_bind_name[index + 1]
+                    if button_press in self.player_keyboard_bind_name:
+                        self.player_keyboard_hold[self.player_keyboard_bind_name[button_press]] = True
+                    if index == 0:  # Hold left click
+                        mouse_left_down = True
+
+            if self.player_keyboard_press["Menu/Cancel"]:  # or self.player2_key_press["Menu/Cancel"]
+                # open/close menu
+                esc_press = True
 
             if self.player_char_input_delay:  # delay for command input
                 self.player_char_input_delay -= self.dt
@@ -634,14 +699,9 @@ class Battle:
                             self.mouse_scrolling_process(mouse_scroll_up, mouse_scroll_down)
 
                         # keyboard input
-                        if event_key_press:
-                            self.battle_keyboard_process(event_key_press)
+                        self.camera_process()
 
-                        self.camera_process(key_state)
-
-                        if mouse_left_up or mouse_right_up or mouse_left_down or mouse_right_down or key_state:
-                            self.battle_mouse_process(mouse_left_up, mouse_right_up, mouse_left_down,
-                                                      mouse_right_down, key_state)
+                        self.player_input_process()
 
                     else:  # register and process ui that require player input and block everything else
                         if type(self.player_input_state) is not str:  # ui input state
@@ -649,16 +709,16 @@ class Battle:
                             if self.player_input_state == self.wheel_ui:  # wheel ui process
                                 if mouse_left_up:
                                     self.wheel_ui_process(choice)
-                                elif event_key_press == pygame.K_TAB:  # Close unit command wheel ui
+                                elif self.player_keyboard_press["Order Menu"]:  # Close unit command wheel ui
                                     self.battle_ui_updater.remove(self.wheel_ui)
                                     old_player_input_state = self.player_input_state
                                     self.player_input_state = self.previous_player_input_state
                                     self.previous_player_input_state = old_player_input_state
                         elif "aim" in self.player_input_state:
                             if "skill" not in self.player_input_state:
-                                self.player_aim(mouse_left_up, mouse_right_up, key_state, event_key_press)
+                                self.player_aim()
                             else:  # skill that require player to input target
-                                self.player_skill_perform(mouse_left_up, mouse_right_up, key_state)
+                                self.player_skill_perform()
 
                     # Drama text function
                     if not self.drama_timer and self.drama_text.queue:  # Start timer and draw if there is event queue
@@ -674,15 +734,14 @@ class Battle:
 
                     if self.dt:  # Part that run when game not pause only
                         # Event log
-                        if self.event_schedule and self.event_list != [] and self.time_number.time_number >= self.event_schedule:
+                        if self.event_id and self.time_number.time_number >= self.event_schedule:
                             self.event_log.add_log(None, event_id=self.event_id)
-                            for event in self.event_log.map_event:
-                                if self.event_log.map_event[event]["Time"] and self.event_log.map_event[event][
-                                    "Time"] > self.time_number.time_number:
-                                    self.event_id = event
-                                    self.event_schedule = self.event_log.map_event[event]["Time"]
-                                    break
-                            self.event_list = self.event_list[1:]
+                            self.event_list.pop(0)
+                            if self.event_list:
+                                self.event_id = self.event_list[0]
+                                self.event_schedule = self.event_log.map_event[self.event_id]["Time"]
+                            else:
+                                self.event_id = None
 
                         # Weather system
                         if self.weather_playing and self.time_number.time_number >= self.weather_playing:
@@ -832,8 +891,6 @@ class Battle:
                     self.input_ok_button.event = False
 
                     if self.input_popup[1] == "quit":  # quit game
-                        self.battle_ui_updater.clear(self.screen, self.background)
-                        self.battle_camera.clear(self.screen, self.background)
                         pygame.quit()
                         sys.exit()
 

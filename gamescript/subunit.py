@@ -888,12 +888,12 @@ class Subunit(pygame.sprite.Sprite):
             if hitbox_size not in self.hitbox_image_list[self.team]["leader"]:
                 self.hitbox_image = pygame.Surface(hitbox_size, pygame.SRCALPHA)
                 pygame.draw.circle(self.hitbox_image, (self.team_colour[self.team][0], self.team_colour[self.team][1],
-                                                       self.team_colour[self.team][2], 150),
+                                                       self.team_colour[self.team][2]),
                                    (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
                                    self.hitbox_image.get_width() / 2)
 
                 pygame.draw.circle(self.hitbox_image,
-                                   (220, 120, 20, 150),
+                                   (220, 120, 20),
                                    (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
                                    self.hitbox_image.get_width() / 2.4)
             else:
@@ -903,12 +903,12 @@ class Subunit(pygame.sprite.Sprite):
                 self.hitbox_image = pygame.Surface(hitbox_size,
                                                    pygame.SRCALPHA)
                 pygame.draw.circle(self.hitbox_image, (self.team_colour[self.team][0], self.team_colour[self.team][1],
-                                                       self.team_colour[self.team][2], 150),
+                                                       self.team_colour[self.team][2]),
                                    (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
                                    self.hitbox_image.get_width() / 2)
 
                 pygame.draw.circle(self.hitbox_image,
-                                   (100, 100, 100, 150),
+                                   (100, 100, 100),
                                    (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
                                    self.hitbox_image.get_width() / 2.4)
             else:
