@@ -17,6 +17,22 @@ For game update showcase video: [![github](https://github.com/remance/preview/bl
 
 ---------------
 
+# Contribution to development
+
+All helps, suggestions, and issue reports are appreciated.
+
+If you would like to help the project, feel free to join discord for a chat, open issues, commit the codes and do pull requests, or send emails to 
+`masendor@proton.me`.
+
+Some non-specific suggestions and examples of helps, including but not limited to:
+
+- **Programming**: New features, improve current ones, code optimisation/improvement
+- **Asset Creation**: UI, troop, leader, effect art, sound effect, music
+- **Historical stuffs**: Battle information, writing, sources, correction, improvements
+- **Quality Assurance**: Code documentation, game balancing, bugs fix, feedbacks
+
+---------------
+
 # Index
 
 - [How to run/compile](#how-to-runcompile)
