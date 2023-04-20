@@ -267,9 +267,12 @@ def leader_change_team_unit(self):
                     else:
                         image = self.leader_data.leader_list[unit["Leader ID"]]["Name"].split(" ")[0]
                     self.preview_char.add(battleui.TempCharIcon(self.screen_scale, this_team.team, image, unit_index))
-            self.char_selector.setup_char_icon(self.char_icon, [char for char in self.preview_char if char.index is None or "Temp Leader" not in
-                                                self.custom_map_data["unit"][this_team.team][char.index] or
-                                                self.custom_map_data["unit"][this_team.team][char.index]["Temp Leader"] == ""])
+            self.char_selector.setup_char_icon(self.char_icon, [char for char in self.preview_char if
+                                                                char.index is None or "Temp Leader" not in
+                                                                self.custom_map_data["unit"][this_team.team][
+                                                                    char.index] or
+                                                                self.custom_map_data["unit"][this_team.team][
+                                                                    char.index]["Temp Leader"] == ""])
 
             break
 
@@ -323,9 +326,11 @@ def unit_change_team_unit(self, new_faction=False, old_selected=None, add_plus=T
                            self.map_namegroup, self.unit_list_box, self.main_ui_updater)
 
             self.char_selector.setup_char_icon(self.char_icon,
-                                               [char for char in self.preview_char if char.index is None or "Temp Leader" not in
+                                               [char for char in self.preview_char if
+                                                char.index is None or "Temp Leader" not in
                                                 self.custom_map_data["unit"][this_team.team][char.index] or
-                                                self.custom_map_data["unit"][this_team.team][char.index]["Temp Leader"] == ""])
+                                                self.custom_map_data["unit"][this_team.team][char.index][
+                                                    "Temp Leader"] == ""])
 
             if old_selected is not None:
                 for icon in self.char_icon:

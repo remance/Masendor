@@ -7,3 +7,5 @@ def back_mainmenu(self):
     self.menu_button.add(*self.mainmenu_button)
 
     self.main_ui_updater.add(*self.start_menu_ui_only)
+
+    self.background = self.background_image["main"]

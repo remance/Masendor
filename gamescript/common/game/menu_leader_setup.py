@@ -55,7 +55,8 @@ def menu_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mous
                         if this_team.selected:
                             preview_char = [char for char in self.preview_char if "Temp Leader" not in
                                             self.custom_map_data["unit"][this_team.team][char.index] or
-                                            self.custom_map_data["unit"][this_team.team][char.index]["Temp Leader"] == ""]
+                                            self.custom_map_data["unit"][this_team.team][char.index][
+                                                "Temp Leader"] == ""]
                             self.char_selector.setup_char_icon(self.char_icon, preview_char)
                             break
 
@@ -120,7 +121,8 @@ def menu_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mous
                             for subunit2 in self.char_icon:
                                 if subunit2.right_selected and subunit2 is not subunit:
                                     not_in_list = False
-                                    self.custom_map_data["unit"][subunit2.who.team][subunit2.who.index]["Temp Leader"] = subunit.index
+                                    self.custom_map_data["unit"][subunit2.who.team][subunit2.who.index][
+                                        "Temp Leader"] = subunit.index
                                     for subunit3_index, subunit3 in enumerate(self.char_icon):
                                         if subunit3.selected:
                                             unit_change_team_unit(self, add_plus=False, old_selected=subunit3.who.index)
@@ -220,10 +222,11 @@ def menu_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mous
         for team, team_data in self.custom_map_data["unit"].items():
             if team != "pos":
                 for value in team_data:
-                    new_value = {key: {key2: val2.copy() for key2, val2 in val.items()} if type(val) is dict else val for key, val in value.items()}
+                    new_value = {key: {key2: val2.copy() for key2, val2 in val.items()} if type(val) is dict else val
+                                 for key, val in value.items()}
                     for troop in new_value["Troop"]:
                         troop_value = new_value["Troop"][troop]
                         new_value["Troop"][troop] = str(troop_value[0]) + "/" + str(troop_value[1])
                     self.custom_map_data["battle"].append(new_value)
-        
+
         change_to_char_select_menu(self, custom_data=self.custom_map_data["battle"])

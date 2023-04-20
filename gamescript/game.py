@@ -1,8 +1,8 @@
+import ast
 import configparser
 import glob
 import os.path
 import sys
-import ast
 from pathlib import Path
 
 import pygame
@@ -74,7 +74,8 @@ class Game:
     mouse_bind = {"left click": 1, "middle click": 2, "right click": 3, "scroll up": 4, "scroll down": 5}
     mouse_bind_name = {value: key for key, value in mouse_bind.items()}
     joystick_bind_name = {"XBox": {0: "A", 1: "B", 2: "X", 3: "Y", 4: "-", 5: "Home", 6: "+", 7: None, 8: None,
-                                   9: None, 10: None, 11: "D-Up", 12: "D-Down", 13: "D-Left", 14: "D-Right", 15: "Capture"},
+                                   9: None, 10: None, 11: "D-Up", 12: "D-Down", 13: "D-Left", 14: "D-Right",
+                                   15: "Capture"},
                           "Other": {0: None, 1: None, 2: None, 3: None, 4: None, 5: None, 6: None, 7: None, 8: None,
                                     9: None, 10: None, 11: None, 12: None, 13: None, 14: None, 15: None},
                           "PS": {}, "Nintendo": {}}
@@ -439,11 +440,13 @@ class Game:
                                                   battle_select_image["untick"], battle_select_image["tick"], "night")
         self.weather_custom_select = menu.NameList(self.screen_scale, self.map_option_box,
                                                    (self.map_option_box.rect.midleft[0],
-                                                    self.map_option_box.rect.midleft[1] + self.map_option_box.image.get_height() / 4),
+                                                    self.map_option_box.rect.midleft[
+                                                        1] + self.map_option_box.image.get_height() / 4),
                                                    "Weather: Light Random")
         self.wind_custom_select = menu.NameList(self.screen_scale, self.map_option_box,
                                                 (self.map_option_box.rect.midleft[0],
-                                                 self.map_option_box.rect.midleft[1] + self.map_option_box.image.get_height() / 10),
+                                                 self.map_option_box.rect.midleft[
+                                                     1] + self.map_option_box.image.get_height() / 10),
                                                 "Wind Direction: 0")
 
         self.current_map_row = 0
@@ -494,6 +497,7 @@ class Game:
         self.fullscreen_text = option_menu_dict["fullscreen_text"]
         self.keybind_text = option_menu_dict["keybind_text"]
         self.keybind_icon = option_menu_dict["keybind_icon"]
+        self.control_switch = option_menu_dict["control_switch"]
 
         self.option_text_list = tuple(
             [self.resolution_text, self.fullscreen_text] + [value for value in
@@ -668,9 +672,9 @@ class Game:
         self.change_ruleset()
 
         # Background image
-        self.background = pygame.transform.scale(load_image(self.main_dir, self.screen_scale,
-                                                            "default.png", ("ui", "mainmenu_ui")),
-                                                 self.screen_rect.size)
+        self.background_image = load_images(self.main_dir, screen_scale=self.screen_scale,
+                                            subfolder=("ui", "mainmenu_ui", "background"))
+        self.background = self.background_image["main"]
 
         subunit.Subunit.battle = self.battle
         damagesprite.DamageSprite.battle = self.battle
@@ -934,17 +938,20 @@ class Game:
                     elif "replace key" in self.input_popup[1]:
                         old_key = self.player1_key_bind[self.config["USER"]["control player 1"]][self.input_popup[1][1]]
                         self.player1_key_bind[self.config["USER"]["control player 1"]][
-                            self.input_popup[1][1]] = self.player1_key_bind[self.config["USER"]["control player 1"]][self.input_popup[1][2]]
+                            self.input_popup[1][1]] = self.player1_key_bind[self.config["USER"]["control player 1"]][
+                            self.input_popup[1][2]]
                         self.player1_key_bind[self.config["USER"]["control player 1"]][self.input_popup[1][2]] = old_key
                         edit_config("USER", "keybind player 1", self.player1_key_bind,
                                     "configuration.ini", self.config)
                         for key, value in self.keybind_icon.items():
                             if key == self.input_popup[1][1]:
                                 value.change_key(self.config["USER"]["control player 1"],
-                                                 self.player1_key_bind[self.config["USER"]["control player 1"]][self.input_popup[1][1]])
+                                                 self.player1_key_bind[self.config["USER"]["control player 1"]][
+                                                     self.input_popup[1][1]])
                             elif key == self.input_popup[1][2]:
                                 value.change_key(self.config["USER"]["control player 1"],
-                                                 self.player1_key_bind[self.config["USER"]["control player 1"]][self.input_popup[1][2]])
+                                                 self.player1_key_bind[self.config["USER"]["control player 1"]][
+                                                     self.input_popup[1][2]])
 
                     elif "wind" in self.input_popup[1] and self.input_box.text.isdigit():
                         self.custom_map_data["info"]["weather"][0][2] = int(self.input_box.text)
@@ -964,6 +971,7 @@ class Game:
 
                 elif self.input_cancel_button.event or self.input_close_button.event or input_esc:
                     self.input_cancel_button.event = False
+                    self.input_close_button.event = False
                     self.input_box.text_start("")
                     self.input_popup = (None, None)
                     self.main_ui_updater.remove(*self.input_ui_popup, *self.confirm_ui_popup, *self.inform_ui_popup)

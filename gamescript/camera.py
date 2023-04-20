@@ -1,4 +1,4 @@
-from pygame import Surface, Rect
+from pygame import Surface
 
 
 class Camera:

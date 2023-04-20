@@ -1,6 +1,3 @@
-import pygame
-
-
 def player_input_process(self):
     if self.event_log.rect.collidepoint(self.mouse_pos):  # check mouse collide for event log ui
         if self.event_log.scroll.rect.collidepoint(
@@ -19,4 +16,3 @@ def player_input_process(self):
         self.previous_player_input_state = self.player_input_state
         self.player_input_state = self.wheel_ui
         self.wheel_ui.generate(self.unit_behaviour_wheel["Main"])
-

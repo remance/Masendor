@@ -67,7 +67,8 @@ def player_aim(self):
         # Cancel manual aim with order menu input or player die
         self.player_cancel_input()
 
-    elif self.battle.player_keyboard_press["Main Weapon Attack"] or self.battle.player_keyboard_press["Sub Weapon Attack"]:
+    elif self.battle.player_keyboard_press["Main Weapon Attack"] or self.battle.player_keyboard_press[
+        "Sub Weapon Attack"]:
         weapon = 0
         if self.battle.player_keyboard_press["Sub Weapon Attack"]:
             weapon = 1

@@ -150,7 +150,7 @@ class Studio(game.Game):
                                       self.camera_pos[1] - self.center_screen[
                                           1])  # calculate top left corner of camera position
 
-        self.camera = camera.Camera(self.camera_pos)
+        self.camera = camera.Camera(self.camera_pos, self.screen_rect)
         self.ground_camera = pygame.sprite.LayeredUpdates()  # layer drawer camera
         self.ground_camera.add(self.battle_map)
         self.sky_camera = pygame.sprite.LayeredUpdates()  # layer drawer camera

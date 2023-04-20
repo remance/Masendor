@@ -365,8 +365,8 @@ class TroopData:
             int_column = ("ID", "Grade", "Race", "Cost", "Upkeep", "Troop")  # value int only
             list_column = ("Trait", "Skill",)  # value in list only
             tuple_column = ("Armour", "Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon",
-                            "Secondary Sub Weapon", "Mount", "Role")  # value in tuple only
-            percent_column = ("Ammunition Modifier",)
+                            "Secondary Sub Weapon", "Mount", "Role", "Faction")  # value in tuple only
+            percent_column = ("Ammunition Modifier")
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
@@ -470,7 +470,7 @@ class LeaderData:
                                    skill_list + ".csv"), encoding="utf-8", mode="r") as edit_file:
                 rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
                 header = rd[0]
-                int_column = ("Troop Type", "Range", "Area of Effect", "Cost")  # value int only
+                int_column = ("Troop Type", "Range", "Area of Effect", "Cost", "Charge Skill")  # value int only
                 list_column = ("Action",)
                 tuple_column = ("Replace", "Status", "Enemy Status", "Effect Sprite", "AI Use Condition")
                 mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
@@ -519,10 +519,10 @@ class LeaderData:
             header = rd[0]
             int_column = ("Race", "Strength", "Dexterity", "Agility", "Constitution", "Intelligence",
                           "Wisdom", "Charisma", "Melee Speciality", "Range Speciality", "Cavalry Speciality",
-                          "Social Class", "Faction")  # value int only
+                          "Social Class")  # value int only
             list_column = ("Skill", "Trait", "Formation")
             tuple_column = ("Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon",
-                            "Secondary Sub Weapon", "Armour", "Mount")
+                            "Secondary Sub Weapon", "Armour", "Mount", "Faction")
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
@@ -641,6 +641,7 @@ class FactionData:
 
         images_old = load_images(main_dir, screen_scale=screen_scale,
                                  subfolder=("ruleset", ruleset_folder, "faction", "coa"))  # coa_list images list
+
         self.coa_list = []
         for image in images_old:
             self.coa_list.append(images_old[image])

@@ -6,8 +6,9 @@
 # alternative solution: https://github.com/pygame/pygame/issues/3054#issuecomment-1156481897
 # (note that that user uses tostring, I think tobytes is better)
 
-import pygame
 import pickle
+
+import pygame
 
 
 def save_pickle_with_surfaces(file_path, data):
@@ -24,6 +25,7 @@ def load_pickle_with_surfaces(file_path):
     recursive_cast_pickleable_surface_to_surface(data)
     return data
 
+
 # NOTE: PickleableSurface is far from perfect but it works for what is required.
 #       This class has hardcoded format (RGBA) and does not take flags into account
 #       and maybe more.
@@ -39,6 +41,7 @@ class PickleableSurface:
 
     def __setstate__(self, state):
         self.surface = pygame.image.frombytes(state[0], state[1], "RGBA").convert_alpha()
+
 
 # ---
 # these methods below works what it is required to handle at this moment but it is not guaranteed

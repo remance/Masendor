@@ -1,6 +1,3 @@
-import pygame
-
-
 def camera_process(self):
     if self.camera_mode == "Free":
         if self.player_keyboard_hold["Move Down"] or self.mouse_pos[1] >= self.bottom_corner:  # Camera move down

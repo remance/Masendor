@@ -10,7 +10,7 @@ def cal_range_hit(self, attacker, target, target_side, hit_angle):
     target_dodge_luck = randint(-30, 30)  # luck of the defender subunit
 
     attacker_hit = self.accuracy + attacker_luck + (
-                attacker.height - target.height) / 2  # calculate hit chance with height advantage
+            attacker.height - target.height) / 2  # calculate hit chance with height advantage
     if attacker_hit < 0:
         attacker_hit = 0  # hit_chance cannot be negative
 

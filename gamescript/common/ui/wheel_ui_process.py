@@ -36,7 +36,8 @@ def wheel_ui_process(self, choice):
                 self.player_char.setup_formation("troop", position=choice)
             elif choice in self.unit_behaviour_wheel["Formation Order"]:
                 self.player_char.change_follow_order(choice, "troop")
-            elif "Formation List" in self.unit_behaviour_wheel and choice in self.unit_behaviour_wheel["Formation List"]:
+            elif "Formation List" in self.unit_behaviour_wheel and choice in self.unit_behaviour_wheel[
+                "Formation List"]:
                 self.player_char.change_formation("troop", formation=choice)
 
             elif choice in self.unit_behaviour_wheel["Unit Style"]:
