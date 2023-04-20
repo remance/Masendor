@@ -164,6 +164,20 @@ that is.
 This function is going to be a headache to write and research. But hopefully, it will provide useful and interesting historical information to players.
 
 
+## Tools
+
+### Animation maker
+
+Animation maker for the troop Vector-based animation in game. The tool is made with pygame and the code is compatible enough for other purposes with some modification.
+
+![alt text](https://github.com/remance/preview/blob/main/animation%20maker.png?raw=true)
+
+### Photo studio
+
+Photo studio to make battle screen to your liking. Simply add subunit and effect data and the tool will render them. 
+
+![alt text](https://github.com/remance/preview/blob/main/studio.png?raw=true)
+
 ---------------
 
 # Credit
