@@ -355,7 +355,7 @@ def status_update(self):
         # self.hidden *= 0.9
         # if self.momentum:
         #     self.hidden *= 0.5
-        self.charge_def_power /= 2   # reduce charge def by half when moving
+        self.charge_def_power /= 2  # reduce charge def by half when moving
 
     if self.melee_attack < 0:  # seem like using if 0 is faster than max(0,)
         self.melee_attack = 0

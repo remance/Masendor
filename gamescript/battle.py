@@ -3,19 +3,17 @@ import os
 import sys
 import time
 from datetime import datetime, timedelta
+from pathlib import Path
 from random import randint
 
 import pygame
 import pygame.freetype
+from pygame.locals import *
 
 from gamescript import camera, weather, battleui, subunit, datasprite, damagesprite, effectsprite, ai
 from gamescript.common import utility
 
-from pygame.locals import *
-from pathlib import Path
-
 direction_list = datasprite.direction_list
-
 
 load_image = utility.load_image
 load_images = utility.load_images
@@ -26,7 +24,6 @@ setup_list = utility.setup_list
 clean_group_object = utility.clean_group_object
 
 script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
-
 
 # ----
 # perhaps this can be in its own file?
@@ -42,6 +39,7 @@ def set_start_load(what):
 def set_done_load():
     duration = time.time() - globals()['load_timer']
     return " DONE ({0}s)\n".format(duration)
+
 
 # ---
 
@@ -364,7 +362,8 @@ class Battle:
         if map_type == "preset":
             try:
                 self.weather_event = csv_read(self.main_dir, "weather.csv",
-                                              ("data", "ruleset", self.ruleset_folder, "map", map_type, self.map_selected,
+                                              ("data", "ruleset", self.ruleset_folder, "map", map_type,
+                                               self.map_selected,
                                                self.map_source), output_type="list")
                 self.weather_event = self.weather_event[1:]
                 utility.convert_str_time(self.weather_event)

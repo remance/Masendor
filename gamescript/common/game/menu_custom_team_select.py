@@ -27,7 +27,7 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                         self.custom_map_data["info"]["weather"] = \
                             [[int(self.battle_map_data.weather_list.index(name.name) / 3), battle_time,
                               self.custom_map_data["info"]["weather"][0][2],
-                             ("Light", "Normal", "Strong").index(name.name.split(" ")[0])]]
+                              ("Light", "Normal", "Strong").index(name.name.split(" ")[0])]]
                         for this_name in self.popup_namegroup:  # remove name list
                             this_name.kill()
                             del this_name
@@ -239,7 +239,8 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
             self.menu_state = "unit_setup"
             self.char_select_row = 0
 
-            self.main_ui_updater.remove(self.custom_map_option_box, self.observe_mode_tick_box, self.night_battle_tick_box,
+            self.main_ui_updater.remove(self.custom_map_option_box, self.observe_mode_tick_box,
+                                        self.night_battle_tick_box,
                                         self.source_list_box, self.source_list_box.scroll, self.weather_custom_select,
                                         self.wind_custom_select)
 

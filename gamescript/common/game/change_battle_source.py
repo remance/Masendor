@@ -12,10 +12,10 @@ def change_battle_source(self, team_troop, team_commander):
             team_total_troop[index] += team[this_troop][1]
             troop_type = 0
             if self.troop_data.troop_list[this_troop]["Troop Class"] in (
-            "Range Infantry", "Range Cavalry", "Artillery"):  # range subunit
+                    "Range Infantry", "Range Cavalry", "Artillery"):  # range subunit
                 troop_type += 1  # range weapon and accuracy higher than melee melee_attack
             if self.troop_data.troop_list[this_troop]["Troop Class"] in (
-            "Light Cavalry", "Heavy Cavalry", "Chariot"):  # cavalry
+                    "Light Cavalry", "Heavy Cavalry", "Chariot"):  # cavalry
                 troop_type += 2
             troop_type_list[index][troop_type][0] += team[this_troop][0]
             troop_type_list[index][troop_type][1] += int(team[this_troop][1])

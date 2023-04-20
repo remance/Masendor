@@ -1,11 +1,11 @@
 import threading
-import numpy as np
+from functools import lru_cache
 from random import randint, random, randrange
 
+import numpy as np
 import pygame
 import pygame.freetype
 from PIL import Image, ImageFilter, ImageOps
-from functools import lru_cache
 
 from gamescript.common import utility
 
@@ -93,7 +93,8 @@ class HeightMap(pygame.sprite.Sprite):
 
     def draw_image(self, image):
         self.image = image.copy()
-        self.map_array = tuple([[col for col in row] for row in pygame.surfarray.pixels_green(self.get_grey_scaled_surface()).tolist()])
+        self.map_array = tuple(
+            [[col for col in row] for row in pygame.surfarray.pixels_green(self.get_grey_scaled_surface()).tolist()])
         self.max_map_array = (len(self.map_array) - 1, len(self.map_array[0]) - 1)
         self.topology_image = topology_map_creation(self.image, self.poster_level)
 
@@ -106,11 +107,11 @@ class HeightMap(pygame.sprite.Sprite):
 
         # this method assume that height can only be represented by an integer that is in the range between 0 to 255 (inclusive)
 
-        surface_array = np.multiply.outer(pygame.surfarray.pixels_green(self.image), [1, ]*3)
+        surface_array = np.multiply.outer(pygame.surfarray.pixels_green(self.image), [1, ] * 3)
         surface_inverted = pygame.surfarray.make_surface(surface_array)
 
         surface = pygame.Surface(surface_inverted.get_rect().size)
-        surface.fill((255,)*3)
+        surface.fill((255,) * 3)
         surface.blit(surface_inverted, (0, 0), special_flags=pygame.BLEND_RGB_SUB)
 
         # TODO: I think we should consider having the origin of the height map data being the actual grey scale
@@ -132,10 +133,10 @@ class HeightMap(pygame.sprite.Sprite):
 
         overlay = self.get_grey_scaled_surface().copy()
         applier = pygame.Surface(overlay.get_size())
-        applier.fill((100,)*3)
+        applier.fill((100,) * 3)
         overlay.blit(applier, (0, 0), special_flags=pygame.BLEND_RGB_SUB)
 
-        applier.fill((13,)*3)  # this is the divide with 20 part. 255 * 1/20 = 12.75 so it is
+        applier.fill((13,) * 3)  # this is the divide with 20 part. 255 * 1/20 = 12.75 so it is
         # hard get it exact (we are limited to integers) I tried 11, 12, 13, 14 and so on
         # but no one produced a perfect match to the old solution.
 
@@ -294,10 +295,11 @@ class BeautifulMap(pygame.sprite.Sprite):
         if self.mode == 1:  # with topology map
             self.image.blit(pygame.transform.smoothscale(self.height_map.topology_image,
                                                          (
-                                                         self.height_map.topology_image.get_width() * self.screen_scale[
-                                                             0] * 5,
-                                                         self.height_map.topology_image.get_height() *
-                                                         self.screen_scale[1] * 5)), (0, 0))
+                                                             self.height_map.topology_image.get_width() *
+                                                             self.screen_scale[
+                                                                 0] * 5,
+                                                             self.height_map.topology_image.get_height() *
+                                                             self.screen_scale[1] * 5)), (0, 0))
         elif self.mode == 2:  # with height map
             self.image.blit(pygame.transform.smoothscale(self.height_map.image,
                                                          (self.height_map.image.get_width() * self.screen_scale[0] * 5,

@@ -18,7 +18,7 @@ def menu_preset_team_select(self, mouse_left_up, mouse_left_down, mouse_scroll_u
                     self.change_battle_source(team_army, team_leader)
                     break
 
-            for box in (self.observe_mode_tick_box, ):
+            for box in (self.observe_mode_tick_box,):
                 if box in self.main_ui_updater and box.rect.collidepoint(self.mouse_pos):
                     if box.tick is False:
                         box.change_tick(True)
@@ -101,7 +101,7 @@ def change_to_char_select_menu(self, custom_data=None):
                                 self.source_description, self.army_stat)
     self.menu_button.remove(*self.map_select_button)
 
-    for group in (self.source_namegroup, ):  # remove no longer related sprites in group
+    for group in (self.source_namegroup,):  # remove no longer related sprites in group
         for stuff in group:
             stuff.kill()
             del stuff

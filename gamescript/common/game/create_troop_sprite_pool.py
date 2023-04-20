@@ -1,19 +1,19 @@
-import os
 import hashlib
-import pygame
+import os
 import threading
 from random import choice
+
+import pygame
 from PIL import Image
 
 from gamescript.common.game import create_troop_sprite
-from gamescript.save_load_pickle_with_surfaces import save_pickle_with_surfaces
 from gamescript.save_load_pickle_with_surfaces import load_pickle_with_surfaces
+from gamescript.save_load_pickle_with_surfaces import save_pickle_with_surfaces
 
 
 def create_troop_sprite_pool(self, who_todo, preview=False, specific_preview=None, max_preview_size=200):
-
     if not preview:
-        stringified_arguments = "".join(sorted(map(str, who_todo.keys())))+"p"+str(max_preview_size)
+        stringified_arguments = "".join(sorted(map(str, who_todo.keys()))) + "p" + str(max_preview_size)
         md5 = hashlib.md5(stringified_arguments.encode()).hexdigest()
 
         cache_folder_path = os.path.join(self.main_dir, "cache")
@@ -183,12 +183,15 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                                  "_any_" in this_animation or weapon_common_action[weapon_set][0] in this_animation or
                                  weapon_common_action[weapon_set][1] in this_animation) and
                              (any(ext in this_animation for ext in weapon_attack_type_list) is False or
-                              ("_Both_" in this_animation or (weapon_attack_action[weapon_set][0] in this_animation and "_Main_" in this_animation)
+                              ("_Both_" in this_animation or (weapon_attack_action[weapon_set][
+                                                                  0] in this_animation and "_Main_" in this_animation)
                                or weapon_attack_action[weapon_set][1] in this_animation and "_Sub_" in this_animation))]
                 if "non-specific" in specific_preview:
-                    animation = [this_animation for this_animation in animation if specific_preview[0][:-2] in this_animation]
+                    animation = [this_animation for this_animation in animation if
+                                 specific_preview[0][:-2] in this_animation]
                 else:
-                    animation = [this_animation for this_animation in animation if this_animation == specific_preview[0][:-2]]
+                    animation = [this_animation for this_animation in animation if
+                                 this_animation == specific_preview[0][:-2]]
                 animation = animation[0]
             else:
                 animation = [this_animation for this_animation in animation

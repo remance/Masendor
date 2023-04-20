@@ -1,5 +1,5 @@
-import pygame
 import networkx as nx
+import pygame
 import pygame.freetype
 import pygame.freetype
 import pygame.transform
@@ -330,6 +330,26 @@ class OptionMenuText(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(self.pos[0] - (self.image.get_width() / 2), self.pos[1]))
 
 
+class ControllerIcon(pygame.sprite.Sprite):
+    def __init__(self, pos, screen_scale, images, control_type):
+        pygame.sprite.Sprite.__init__(self)
+        self.pos = pos
+        self.font = pygame.font.SysFont("helvetica", int(42 * screen_scale[1]))
+        self.images = images
+        self.image = self.images[control_type].copy()
+        self.rect = self.image.get_rect(center=self.pos)
+
+    def change_control(self, control_type):
+        if "joystick" in control_type:
+            self.image = self.images[control_type].copy()
+            joystick_num = control_type[-1]
+            text_surface = self.font.render(joystick_num, True, (0, 0, 0))
+            text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 1.3))
+            self.image.blit(text_surface, text_rect)
+        else:
+            self.image = self.images[control_type]
+
+
 class KeybindIcon(pygame.sprite.Sprite):
     controller_icon = {}
 
@@ -360,7 +380,8 @@ class KeybindIcon(pygame.sprite.Sprite):
             image_size = size[0] * 4
         self.image = pygame.Surface((image_size, size[1] * 2), pygame.SRCALPHA)
         pygame.draw.rect(self.image, (50, 50, 50), (0, 0, image_size, size[1] * 2), border_radius=2)
-        pygame.draw.rect(self.image, (255, 255, 255), (image_size * 0.1, size[1] * 0.3, image_size * 0.8, size[1] * 1.5),
+        pygame.draw.rect(self.image, (255, 255, 255),
+                         (image_size * 0.1, size[1] * 0.3, image_size * 0.8, size[1] * 1.5),
                          border_radius=2)
         text_rect = text_surface.get_rect(center=self.image.get_rect().center)
         self.image.blit(text_surface, text_rect)
@@ -480,7 +501,7 @@ class TeamCoa(pygame.sprite.Sprite):
             if image:
                 if index == 0:  # first one as main faction coa
                     coa_image = pygame.transform.smoothscale(image, (
-                    int(self.coa_size[0] * 0.65), int(self.coa_size[1] * 0.65)))
+                        int(self.coa_size[0] * 0.65), int(self.coa_size[1] * 0.65)))
                     coa_rect = coa_image.get_rect(
                         midtop=(self.selected_image.get_width() / 2, self.coa_size[1] * 0.05))
                 else:
@@ -909,7 +930,7 @@ class OrgChart(pygame.sprite.Sprite):
                          type(subunit["Temp Leader"]) is int]
             try:
                 graph_input.add_edges_from(edge_list)
-                pos = self.hierarchy_pos(graph_input, root=selected,  width=self.image.get_width(),
+                pos = self.hierarchy_pos(graph_input, root=selected, width=self.image.get_width(),
                                          vert_gap=-self.image.get_height() * 0.5 / len(edge_list), y_pos=100,
                                          x_pos=self.image.get_width() / 2)
                 image_size = (self.image.get_width() / (len(pos) * 1.5), self.image.get_height() / (len(pos) * 1.5))

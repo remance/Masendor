@@ -92,4 +92,3 @@ def setup_battle_troop(self, team_subunit_list, specific_team=None, custom_data=
                                     data["Start Stamina"], add_leader,
                                     self.faction_data.coa_list[data["Faction"]])
                     self.last_troop_game_id += 1
-

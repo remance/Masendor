@@ -1,7 +1,8 @@
 import configparser
 import os
-import screeninfo
+
 import pygame
+import screeninfo
 
 
 def create_config(self):

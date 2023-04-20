@@ -1,9 +1,9 @@
+import cProfile
 import datetime
 from math import cos, sin, radians
 
 import pygame
 import pygame.freetype
-import cProfile
 
 from gamescript.common import utility
 
@@ -94,8 +94,8 @@ class HeroUI(pygame.sprite.Sprite):
                      self.weapon_box_images[1].get_height()))
 
         self.weapon_cooldown_rect = (
-        self.weapon_box_images[0].get_rect(midbottom=self.prim_main_weapon_box_rect.midbottom),
-        self.weapon_box_images[0].get_rect(midbottom=self.prim_sub_weapon_box_rect.midbottom))
+            self.weapon_box_images[0].get_rect(midbottom=self.prim_main_weapon_box_rect.midbottom),
+            self.weapon_box_images[0].get_rect(midbottom=self.prim_sub_weapon_box_rect.midbottom))
 
         self.ammo_count_rect = ((self.prim_main_weapon_box_rect.midbottom, self.prim_sub_weapon_box_rect.midbottom),
                                 (self.sec_main_weapon_box_rect.midbottom, self.sec_sub_weapon_box_rect.midbottom))
@@ -147,15 +147,15 @@ class HeroUI(pygame.sprite.Sprite):
 
         self.status_bar_image = {-1: bar_worst, 0: bar_bad, 1: bar_normal, 2: bar_good, 3: bar_best}
         self.status_bar_rect = (
-        self.status_bar_image[0].get_rect(midbottom=(13 * self.screen_scale[0], 16 * self.screen_scale[1])),
-        self.status_bar_image[0].get_rect(midbottom=(37 * self.screen_scale[0], 16 * self.screen_scale[1])),
-        self.status_bar_image[0].get_rect(midbottom=(61 * self.screen_scale[0], 16 * self.screen_scale[1])),
-        self.status_bar_image[0].get_rect(midbottom=(85 * self.screen_scale[0], 16 * self.screen_scale[1])),
-        self.status_bar_image[0].get_rect(midbottom=(109 * self.screen_scale[0], 16 * self.screen_scale[1])),
-        self.status_bar_image[0].get_rect(midbottom=(132 * self.screen_scale[0], 16 * self.screen_scale[1])),
-        self.status_bar_image[0].get_rect(midbottom=(155 * self.screen_scale[0], 16 * self.screen_scale[1])),
-        self.status_bar_image[0].get_rect(midbottom=(179 * self.screen_scale[0], 16 * self.screen_scale[1])),
-        self.status_bar_image[0].get_rect(midbottom=(203 * self.screen_scale[0], 16 * self.screen_scale[1])))
+            self.status_bar_image[0].get_rect(midbottom=(13 * self.screen_scale[0], 16 * self.screen_scale[1])),
+            self.status_bar_image[0].get_rect(midbottom=(37 * self.screen_scale[0], 16 * self.screen_scale[1])),
+            self.status_bar_image[0].get_rect(midbottom=(61 * self.screen_scale[0], 16 * self.screen_scale[1])),
+            self.status_bar_image[0].get_rect(midbottom=(85 * self.screen_scale[0], 16 * self.screen_scale[1])),
+            self.status_bar_image[0].get_rect(midbottom=(109 * self.screen_scale[0], 16 * self.screen_scale[1])),
+            self.status_bar_image[0].get_rect(midbottom=(132 * self.screen_scale[0], 16 * self.screen_scale[1])),
+            self.status_bar_image[0].get_rect(midbottom=(155 * self.screen_scale[0], 16 * self.screen_scale[1])),
+            self.status_bar_image[0].get_rect(midbottom=(179 * self.screen_scale[0], 16 * self.screen_scale[1])),
+            self.status_bar_image[0].get_rect(midbottom=(203 * self.screen_scale[0], 16 * self.screen_scale[1])))
 
         self.base_image.blit(self.status_effect_image, self.status_effect_image_rect)
 
@@ -810,7 +810,8 @@ class CharIcon(pygame.sprite.Sprite):
         self.not_selected_image.fill((255, 255, 255))  # fill white corner
 
         for image in (
-        self.not_selected_image, self.selected_image, self.right_selected_image):  # add team colour and leader image
+                self.not_selected_image, self.selected_image,
+                self.right_selected_image):  # add team colour and leader image
             center_image = pygame.Surface((self.leader_image.get_width() + (self.leader_image.get_width() / 14),
                                            self.leader_image.get_height() + (
                                                    self.leader_image.get_height() / 14)))  # create image block
@@ -1296,7 +1297,7 @@ class Profiler(cProfile.Profile, pygame.sprite.Sprite):
             self.image.fill(0x112233)
             self.image.blit(self.font.render("press F7 to clear times", True, pygame.Color("white")), (0, 0))
             for e, line in enumerate(info_str.split("\n"), 1):
-                self.image.blit(self.font.render(line, True, pygame.Color("white")), (0, e*20))
+                self.image.blit(self.font.render(line, True, pygame.Color("white")), (0, e * 20))
         else:
             self.image = pygame.Surface((1, 1))
 
