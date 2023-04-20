@@ -24,7 +24,7 @@
     {% for unit in leaders %}
     <tr>
         <td><img src="{{unit["icon"][0]}}" alt="{{unit["icon"][1]}}" title="{{unit["icon"][1]}}"></td>
-        <td><a href="/leaders/{{unit["id"]}}">{{unit["name"]}}</a><br>{{unit["type"]}}</td>
+        <td><a href="/leaders/{{unit["id"]}}">{{unit["name"]}}</a><br>{{unit["type"]}}<br>{{unit["faction"]}}</td>
         
         <td>
             <table class="inner attributes">
