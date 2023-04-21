@@ -1,7 +1,7 @@
 {% extends "base.j2" %}
 
 {% block content %}
-<h2>Leaders</h2>
+<h2>{{header}}</h2>
 
 <style>
 .attributes th{ color: #777; font-size: 10px; }
@@ -23,7 +23,7 @@
     </tr>
     {% for unit in leaders %}
     <tr>
-        <td><img src="{{unit["icon"][0]}}" alt="{{unit["icon"][1]}}" title="{{unit["icon"][1]}}"></td>
+        <td style="text-align: center"><img src="{{unit["icon"][0]}}" alt="{{unit["icon"][1]}}" title="{{unit["icon"][1]}}"></td>
         <td><a href="/leaders/{{unit["id"]}}">{{unit["name"]}}</a><br>{{unit["type"]}}<br>{{unit["faction"]}}</td>
         
         <td>
