@@ -94,7 +94,7 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
                     "Swap Weapon Set 2": menu.OptionMenuText((screen_rect.width / 1.2, screen_rect.height / 1.7),
                                                              "Swap Weapon Set 2", font_size)}
 
-    control_type = "keyboard"
+    control_type = "keyboard"  # make default keyboard for now, get changed later when player enter keybind menu
     keybind = keybind[control_type]
 
     control_images = load_images(main_dir, screen_scale=screen_scale, subfolder=("ui", "option_ui"))

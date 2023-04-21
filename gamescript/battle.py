@@ -21,6 +21,7 @@ csv_read = utility.csv_read
 load_sound = utility.load_sound
 edit_config = utility.edit_config
 setup_list = utility.setup_list
+number_to_minus_or_plus = utility.number_to_minus_or_plus
 clean_group_object = utility.clean_group_object
 
 script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
@@ -98,10 +99,12 @@ class Battle:
         # if self.config["USER"]["control player 1"] == "keyboard":
         self.mouse_bind = main.mouse_bind
         self.mouse_bind_name = main.mouse_bind_name
-        self.player_keyboard_bind = main.player1_key_bind["keyboard"]
-        self.player_keyboard_bind_name = {value: key for key, value in self.player_keyboard_bind.items()}
-        self.player_keyboard_press = {key: False for key in self.player_keyboard_bind}
-        self.player_keyboard_hold = {key: False for key in self.player_keyboard_bind if "Attack" in key or
+        self.joystick_bind_name = main.joystick_bind_name
+        self.player_key_control = self.config["USER"]["control player 1"]
+        self.player_key_bind = main.player1_key_bind["keyboard"]
+        self.player_key_bind_name = {value: key for key, value in self.player_key_bind.items()}
+        self.player_key_press = {key: False for key in self.player_key_bind}
+        self.player_key_hold = {key: False for key in self.player_key_bind if "Attack" in key or
                                      "Move" in key or "Input" in key}  # key that consider holding
         self.screen_rect = main.screen_rect
         self.main_dir = main.main_dir
@@ -116,6 +119,8 @@ class Battle:
         self.effect_updater = main.effect_updater
 
         self.cursor = main.cursor
+        self.joysticks = main.joysticks
+        self.joystick_name = main.joystick_name
 
         self.battle_map_base = main.battle_base_map
         self.battle_map_feature = main.battle_feature_map
@@ -316,9 +321,9 @@ class Battle:
         self.background = pygame.Surface(self.screen_rect.size)  # Create background image
         self.background.fill((255, 255, 255))  # fill background image with black colour
 
-        self.battle_mouse_pos = [0, 0]  # mouse position list in battle map not screen without zoom
-        self.battle_mouse_pos = [0, 0]  # with camera zoom adjust but without screen scale
-        self.command_mouse_pos = [0, 0]  # with zoom and screen scale for unit command
+        self.base_cursor_pos = [0, 0]  # mouse pos on the map based on camera position
+        self.battle_cursor_pos = [0, 0]  # mouse position list in battle map not screen with zoom
+        self.command_cursor_pos = [0, 0]  # with zoom and screen scale for unit command
 
     def prepare_new_game(self, ruleset, ruleset_folder, team_selected, map_type, map_selected,
                          map_source, char_selected, map_info, camp_pos):
@@ -526,23 +531,29 @@ class Battle:
         self.player_input_state = None
         self.previous_player_input_state = None
 
-        self.battle_mouse_pos = [0, 0]  # mouse position list in battle map not screen without zoom
-        self.battle_mouse_pos = [0, 0]  # with camera zoom adjust but without screen scale
-        self.command_mouse_pos = [0, 0]  # with zoom and screen scale for unit command
+        self.base_cursor_pos = [0, 0]  # mouse pos on the map based on camera position
+        self.battle_cursor_pos = [0, 0]  # mouse position list in battle map not screen with zoom
+        self.command_cursor_pos = [0, 0]  # with zoom and screen scale for unit command
 
-        self.player_keyboard_bind = self.main.player1_key_bind["keyboard"]
-        self.player_keyboard_bind_name = {value: key for key, value in self.player_keyboard_bind.items()}
-        self.player_keyboard_press = {key: False for key in self.player_keyboard_bind}
-        self.player_keyboard_hold = {key: False for key in self.player_keyboard_hold}  # key that consider holding
+        self.player_key_control = self.config["USER"]["control player 1"]
+        self.player_key_bind = self.main.player1_key_bind[self.player_key_control]
+        self.player_key_bind_name = {value: key for key, value in self.player_key_bind.items()}
+        self.player_key_press = {key: False for key in self.player_key_bind}
+        self.player_key_hold = {key: False for key in self.player_key_hold}  # key that consider holding
 
         skill_key_list = []
         if self.config["USER"]["control player 1"] == "keyboard":
-            for key, value in self.player_keyboard_bind.items():
+            for key, value in self.player_key_bind.items():
                 if "Skill" in key:
                     if type(value) is int:
                         skill_key_list.append(pygame.key.name(value))
                     else:
                         skill_key_list.append(value)
+        else:
+            for key, value in self.player_key_bind.items():
+                if "Skill" in key:
+                    skill_key_list.append(self.joystick_bind_name[self.joystick_name[0]][value])
+
         for index, skill_icon in enumerate(self.skill_icon):
             skill_icon.change_key(skill_key_list[index])
 
@@ -571,8 +582,8 @@ class Battle:
             esc_press = False
             self.click_any = False
 
-            self.player_keyboard_press = dict.fromkeys(self.player_keyboard_press, False)
-            self.player_keyboard_hold = dict.fromkeys(self.player_keyboard_hold, False)
+            self.player_key_press = dict.fromkeys(self.player_key_press, False)
+            self.player_key_hold = dict.fromkeys(self.player_key_hold, False)
 
             self.true_dt = self.clock.get_time() / 1000  # dt before game_speed
 
@@ -582,17 +593,41 @@ class Battle:
 
             self.cursor.update(self.mouse_pos)
 
-            self.base_mouse_pos = pygame.Vector2((self.mouse_pos[0] - self.center_screen[0] + self.camera_pos[0]),
-                                                 (self.mouse_pos[1] - self.center_screen[1] + self.camera_pos[
+            self.base_cursor_pos = pygame.Vector2((self.mouse_pos[0] - self.center_screen[0] + self.camera_pos[0]),
+                                                  (self.mouse_pos[1] - self.center_screen[1] + self.camera_pos[
                                                      1]))  # mouse pos on the map based on camera position
-            self.battle_mouse_pos = self.base_mouse_pos / 5  # mouse pos on the map at current camera zoom scale
-            self.command_mouse_pos = pygame.Vector2(self.battle_mouse_pos[0] / self.screen_scale[0],
-                                                    self.battle_mouse_pos[1] / self.screen_scale[
+            self.battle_cursor_pos = self.base_cursor_pos / 5  # mouse pos on the map at current camera zoom scale
+            self.command_cursor_pos = pygame.Vector2(self.battle_cursor_pos[0] / self.screen_scale[0],
+                                                     self.battle_cursor_pos[1] / self.screen_scale[
                                                         1])  # with screen scale
 
-            for key in self.player_keyboard_press:  # check for key holding
-                if type(self.player_keyboard_bind[key]) == int and key_state[self.player_keyboard_bind[key]]:
-                    self.player_keyboard_hold[key] = True
+            if self.player_key_control == "keyboard":
+                for key in self.player_key_press:  # check for key holding
+                    if type(self.player_key_bind[key]) == int and key_state[self.player_key_bind[key]]:
+                        self.player_key_hold[key] = True
+            else:
+                for joystick in self.joysticks.values():
+                    for i in range(joystick.get_numaxes()):
+                        if joystick.get_axis(i):
+                            axis_name = "axis" + number_to_minus_or_plus(joystick.get_axis(i)) + str(i)
+                            if axis_name in self.player_key_bind_name:
+                                self.player_key_hold[self.player_key_bind_name[axis_name]] = True
+                            if "3" in axis_name or "4" in axis_name:
+                                self.mouse_pos
+
+                    for i in range(joystick.get_numbuttons()):
+                        if joystick.get_button(i) and i in self.player_key_bind_name:
+                            self.player_key_hold[self.player_key_bind_name[i]] = True
+
+                    for i in range(joystick.get_numhats()):
+                        if joystick.get_hat(i)[0]:
+                            hat_name = "hat" + number_to_minus_or_plus(joystick.get_axis(i)) + str(0)
+                            if hat_name in self.player_key_bind_name:
+                                self.player_key_hold[self.player_key_bind_name[hat_name]] = True
+                        if joystick.get_hat(i)[1]:
+                            hat_name = "hat" + number_to_minus_or_plus(joystick.get_axis(i)) + str(1)
+                            if hat_name in self.player_key_bind_name:
+                                self.player_key_hold[self.player_key_bind_name[hat_name]] = True
 
             for event in pygame.event.get():  # get event that happen
                 if event.type == QUIT:  # quit self
@@ -606,14 +641,21 @@ class Battle:
                     pygame.mixer.music.load(self.music_list[self.playing_music[self.picked_music]])
                     pygame.mixer.music.play(fade_ms=100)
 
+                elif event.type == pygame.JOYBUTTONUP:
+                    joystick = event.instance_id
+                    if self.player_key_control == "joystick" and \
+                            event.button in self.player_key_bind_name:  # check for key press
+                        self.player_key_press[self.player_key_bind_name[event.button]] = True
+
                 elif event.type == pygame.KEYDOWN:
                     event_key_press = event.key
                     if self.input_popup[0] == "text_input":  # event update to input box
                         self.input_box.player_input(event, key_state)
                         self.text_delay = 0.1
                     else:
-                        if event_key_press in self.player_keyboard_bind_name:  # check for key press
-                            self.player_keyboard_press[self.player_keyboard_bind_name[event_key_press]] = True
+                        if self.player_key_control == "keyboard" and \
+                                event_key_press in self.player_key_bind_name:  # check for key press
+                            self.player_key_press[self.player_key_bind_name[event_key_press]] = True
 
                     # FOR DEVELOPMENT
 
@@ -664,18 +706,29 @@ class Battle:
                         mouse_scroll_down = True
 
                     press_button = self.mouse_bind_name[event.button]
-                    if press_button in self.player_keyboard_bind_name:  # check for mouse press
-                        self.player_keyboard_press[self.player_keyboard_bind_name[press_button]] = True
+                    if self.player_key_control == "keyboard" and press_button in self.player_key_bind_name:
+                        # check for mouse press
+                        self.player_key_press[self.player_key_bind_name[press_button]] = True
+
+                elif event.type == pygame.JOYDEVICEADDED:
+                    # Player add new joystick by plug in
+                    joy = pygame.joystick.Joystick(event.device_index)
+                    self.joysticks[joy.get_instance_id()] = joy
+
+                elif event.type == pygame.JOYDEVICEREMOVED:
+                    # Player unplug joystick
+                    del self.joysticks[event.instance_id]
 
             for index, press in enumerate(pygame.mouse.get_pressed()):
                 if press:  # check for mouse hold
-                    button_press = self.mouse_bind_name[index + 1]
-                    if button_press in self.player_keyboard_bind_name:
-                        self.player_keyboard_hold[self.player_keyboard_bind_name[button_press]] = True
+                    if self.player_key_control == "keyboard":
+                        button_press = self.mouse_bind_name[index + 1]
+                        if button_press in self.player_key_bind_name:
+                            self.player_key_hold[self.player_key_bind_name[button_press]] = True
                     if index == 0:  # Hold left click
                         mouse_left_down = True
 
-            if self.player_keyboard_press["Menu/Cancel"]:  # or self.player2_key_press["Menu/Cancel"]
+            if self.player_key_press["Menu/Cancel"]:  # or self.player2_key_press["Menu/Cancel"]
                 # open/close menu
                 esc_press = True
 
@@ -708,7 +761,7 @@ class Battle:
                             if self.player_input_state == self.wheel_ui:  # wheel ui process
                                 if mouse_left_up:
                                     self.wheel_ui_process(choice)
-                                elif self.player_keyboard_press["Order Menu"]:  # Close unit command wheel ui
+                                elif self.player_key_press["Order Menu"]:  # Close unit command wheel ui
                                     self.battle_ui_updater.remove(self.wheel_ui)
                                     old_player_input_state = self.player_input_state
                                     self.player_input_state = self.previous_player_input_state
