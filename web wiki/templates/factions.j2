@@ -4,11 +4,12 @@
 {% block content %}
 <h2>Factions</h2>
 <table>
-    <tr><th></th><th>Name</th><th>Troop</th><th>Region</th></tr>
+    <tr><th></th><th>Name</th><th>Leaders</th><th>Troop</th><th>Region</th></tr>
     {% for faction in factions %}
     <tr>
         <td><img src="{{faction["icon"]}}"></td>
         <td>{{faction["name"]}}</td>
+        <td><a href="/leaders?faction={{faction["id"]}}">See leaders</a></td>
         <td>{{faction["troop"]}}</td>
         <td>{{faction["region"]}}</td>
     </tr>

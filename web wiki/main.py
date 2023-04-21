@@ -2,7 +2,7 @@ import sys
 import os
 import pygame
 import hashlib
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, request
 
 # ---
 # to get this to work on my computer I acutal has to have this (I tested using both this current directory and the actual "main" directory
@@ -92,7 +92,7 @@ leader_portrait = game.leader_data.images
 leader_class = game.leader_data.leader_class
 
 
-def get_subunit_icon(subunit_id, scale, icon_size):
+def get_subunit_icon(subunit_id, scale, icon_size=None):
     """get a icon for a specific subunit"""
 
     md5_input = "{0}${1}${2}".format(subunit_id, scale, icon_size)
@@ -149,6 +149,7 @@ def factions():  # TODO add faction coa as icon
     for k, v in game.faction_data.faction_list.items():
         if k != 0:  # skip all faction
             faction = {
+                "id": k,
                 "name": v["Name"],
                 "icon": make_faction_icon_and_return_web_path(k),
                 "troop": "TODO: get this to work?",  # v["Troop"] <-- key not exist error
@@ -327,9 +328,22 @@ def leaders(leader_id=None):
             image="/static/leader_{0}.png".format(leader_id),
         )
 
+    faction = request.args.get("faction")
+    header = "Leaders"
+
+    if faction is None:
+        _filter = None
+    else:
+        _filter = {k for k, v in game.leader_data.leader_list.items() if int(faction) in v["Faction"]}
+        header = "Leaders of {0}".format(game.faction_data.faction_list[int(faction)]["Name"])
+
     # list leaders view
     leaders = list()
     for k, v in game.leader_data.leader_list.items():
+
+        if _filter is not None:
+            if k not in _filter:
+                continue
 
         leader = {
             "id": k,
@@ -421,10 +435,10 @@ def leaders(leader_id=None):
 
         leaders.append(leader)
 
-        subunit_icon = get_subunit_icon(k, 35, (36, 36))
+        subunit_icon = get_subunit_icon(k, 44)
         leader['icon'] = [subunit_icon, k]
 
-    return render_template("leaders.j2", leaders=leaders)
+    return render_template("leaders.j2", leaders=leaders, header=header)
 
 
 app.run(debug=True)
