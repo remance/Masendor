@@ -28,7 +28,7 @@ def menu_option(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scr
             self.control_switch.change_control("keyboard")
             for key, value in self.keybind_icon.items():
                 value.change_key(self.config["USER"]["control player 1"],
-                                 self.player1_key_bind[self.config["USER"]["control player 1"]][key])
+                                 self.player1_key_bind[self.config["USER"]["control player 1"]][key], None)
 
         self.main_ui_updater.remove(*self.option_text_list, *self.option_menu_sliders.values(),
                                     *self.value_boxes.values(), self.option_menu_button)

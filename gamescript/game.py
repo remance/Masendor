@@ -178,7 +178,7 @@ class Game:
             self.ruleset = 0  # for now default historical ruleset only
             if self.game_version != self.config["VERSION"]["ver"]:  # remake config as game version change
                 crash
-        except (KeyError, TypeError, AttributeError):  # config error will make the game recreate config with default
+        except (KeyError, TypeError, NameError):  # config error will make the game recreate config with default
             config = self.create_config()
             self.config = config
             self.screen_width = int(self.config["USER"]["screen_width"])
