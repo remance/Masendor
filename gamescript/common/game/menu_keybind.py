@@ -28,11 +28,17 @@ def menu_keybind(self, mouse_left_up, esc_press):
             if self.joysticks:
                 if self.config["USER"]["control player 1"] == "keyboard":
                     self.config["USER"]["control player 1"] = "joystick"
-                    self.control_switch.change_control = "joystick"
+                    self.control_switch.change_control("joystick1")
                 else:
                     # if self.config["USER"]["control player 2"] == "joystick"
                     self.config["USER"]["control player 1"] = "keyboard"
-                    self.control_switch.change_control = "keyboard"
+                    self.control_switch.change_control("keyboard")
+                edit_config("USER", "control player 1", self.config["USER"]["control player 1"],
+                            "configuration.ini", self.config)
+                for key, value in self.keybind_icon.items():
+                    value.change_key(self.config["USER"]["control player 1"],
+                                     self.player1_key_bind[self.config["USER"]["control player 1"]][key],
+                                     self.joystick_bind_name[self.joystick_name[0]])
             else:
                 self.input_popup = ("confirm_input", "warning")
                 self.input_ui.change_instruction("No joysticks detected")

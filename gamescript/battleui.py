@@ -413,6 +413,7 @@ class SkillCardIcon(pygame.sprite.Sprite):
     def change_key(self, key):
         self.image = self.base_image.copy()
         key_font = pygame.font.SysFont("helvetica", self.key_font_size)
+        print(key)
         text_surface = text_render(key, key_font)
         text_rect = text_surface.get_rect(midbottom=(self.image.get_width() / 2, self.image.get_height()))
         self.image.blit(text_surface, text_rect)

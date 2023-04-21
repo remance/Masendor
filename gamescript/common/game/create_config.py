@@ -28,12 +28,12 @@ def create_config(self):
                                                            "Swap Weapon Set 2": pygame.K_2},
                                               "joystick": {"Main Weapon Attack": 4,
                                                            "Sub Weapon Attack": 5,
-                                                           "Move Left": "axis 0", "Move Right": "axis 0",
-                                                           "Move Up": "axis 1", "Move Down": "axis 1",
+                                                           "Move Left": "axis-0", "Move Right": "axis+0",
+                                                           "Move Up": "axis-1", "Move Down": "axis+1",
                                                            "Menu/Cancel": 9,
                                                            "Order Menu": 8, "Run Input": 10,
-                                                           "Skill 1": 1, "Skill 2": 2,
-                                                           "Skill 3": 3, "Skill 4": 4,
+                                                           "Skill 1": 0, "Skill 2": 1,
+                                                           "Skill 3": 2, "Skill 4": 3,
                                                            "Swap Weapon Set 1": 6,
                                                            "Swap Weapon Set 2": 7}}}
 

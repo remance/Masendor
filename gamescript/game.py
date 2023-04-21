@@ -70,15 +70,21 @@ script_folder = "gamescript"
 
 
 class Game:
-    game_version = "0.7.0.2"
+    game_version = "0.7.1.3"
     mouse_bind = {"left click": 1, "middle click": 2, "right click": 3, "scroll up": 4, "scroll down": 5}
     mouse_bind_name = {value: key for key, value in mouse_bind.items()}
-    joystick_bind_name = {"XBox": {0: "A", 1: "B", 2: "X", 3: "Y", 4: "-", 5: "Home", 6: "+", 7: None, 8: None,
+    joystick_bind_name = {"XBox": {0: "A", 1: "B", 2: "X", 3: "Y", 4: "-", 5: "Home", 6: "+", 7: "Start", 8: None,
                                    9: None, 10: None, 11: "D-Up", 12: "D-Down", 13: "D-Left", 14: "D-Right",
-                                   15: "Capture"},
-                          "Other": {0: None, 1: None, 2: None, 3: None, 4: None, 5: None, 6: None, 7: None, 8: None,
-                                    9: None, 10: None, 11: None, 12: None, 13: None, 14: None, 15: None},
-                          "PS": {}, "Nintendo": {}}
+                                   15: "Capture", "axis-0": "L. Stick Left", "axis+0": "L. Stick R.",
+                                   "axis-1": "R. Stick L.", "axis+1": "R. Stick L."},
+                          "Other": {0: "1", 1: "2", 2: "3", 3: "4", 4: "L1", 5: "R1", 6: "L2", 7: "R2", 8: "Select",
+                                    9: "Start", 10: "L. Stick", 11: "R. Stick", 12: None, 13: None, 14: None, 15: None,
+                                    "axis-0": "L. Stick L.", "axis+0": "L. Stick R.",
+                                    "axis-1": "R. Stick L.", "axis+1": "R. Stick L."},
+                          "PS": {0: "X", 1: "O", 2: "□", 3: "△", 4: "Share", 5: "PS", 6: "Options", 7: None, 8: None,
+                                 9: None, 10: None, 11: "D-Up", 12: "D-Down", 13: "D-Left", 14: "D-R.",
+                                 15: "T-Pad", "axis-0": "L. Stick L.", "axis+0": "L. Stick R.",
+                                 "axis-1": "R. Stick L.", "axis+1": "R. Stick L."}}
     empty_method = utility.empty_method
 
     # import from common.game
@@ -221,6 +227,7 @@ class Game:
         self.ruleset_folder = str(self.ruleset_list[self.ruleset][0]).strip("/").lower()
 
         self.joysticks = {}
+        self.joystick_name = {}
 
         self.map_type = ""
         self.map_source = 0  # current selected map source
@@ -565,28 +572,20 @@ class Game:
         self.wheel_ui = battle_ui_dict["wheel_ui"]
         self.command_ui = battle_ui_dict["command_ui"]
 
-        # 4 Skill icons near hero ui, TODO change key later when can set keybind
-        skill_key_list = []
-        if self.config["USER"]["control player 1"] == "keyboard":
-            for key, value in self.player1_key_bind[self.config["USER"]["control player 1"]].items():
-                if "Skill" in key:
-                    if type(value) is int:
-                        skill_key_list.append(pygame.key.name(value))
-                    else:
-                        skill_key_list.append(value)
+        # 4 Skill icons UI
 
         battleui.SkillCardIcon(self.screen_scale, self.skill_images["0"], (self.command_ui.image.get_width() +
                                                                            self.skill_images["0"].get_width() / 2, 0),
-                               skill_key_list[0])
+                               "0")
         battleui.SkillCardIcon(self.screen_scale, self.skill_images["0"], (self.command_ui.image.get_width() +
                                                                            self.skill_images["0"].get_width() * 2, 0),
-                               skill_key_list[1])
+                               "1")
         battleui.SkillCardIcon(self.screen_scale, self.skill_images["0"], (self.command_ui.image.get_width() +
                                                                            self.skill_images["0"].get_width() * 3.5, 0),
-                               skill_key_list[2])
+                               "2")
         battleui.SkillCardIcon(self.screen_scale, self.skill_images["0"], (self.command_ui.image.get_width() +
                                                                            self.skill_images["0"].get_width() * 5, 0),
-                               skill_key_list[3])
+                               "3")
 
         weather.Weather.wind_compass_images = {"wind_compass": battle_ui_image["wind_compass"],
                                                "wind_arrow": battle_ui_image["wind_arrow"]}
@@ -894,10 +893,17 @@ class Game:
                     # Player add new joystick by plug in
                     joy = pygame.joystick.Joystick(event.device_index)
                     self.joysticks[joy.get_instance_id()] = joy
+                    joy_name = joy.get_name()
+                    for name in self.joystick_bind_name:
+                        if name in joy_name:  # find common name
+                            self.joystick_name[joy.get_instance_id()] = name
+                    if joy.get_instance_id() not in self.joystick_name:
+                        self.joystick_name[joy.get_instance_id()] = "Other"
 
                 elif event.type == pygame.JOYDEVICEREMOVED:
                     # Player unplug joystick
                     del self.joysticks[event.instance_id]
+                    del self.joystick_name[event.instance_id]
 
                 elif event.type == QUIT or self.quit_button.event or (esc_press and self.menu_state == "main_menu"):
                     self.quit_button.event = False

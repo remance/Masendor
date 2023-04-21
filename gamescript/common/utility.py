@@ -531,6 +531,14 @@ def popup_list_open(self, new_rect, new_list, ui_type, rect_pos, updater):
     self.popup_list_box.type = ui_type
 
 
+def number_to_minus_or_plus(number):
+    """Number should not be 0"""
+    if number > 0:
+        return "+"
+    else:  # assuming number is not 0
+        return "-"
+
+
 def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tuple_column=(), int_column=(),
                  float_column=(), dict_column=()):
     """

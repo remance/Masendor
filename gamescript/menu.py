@@ -334,17 +334,17 @@ class ControllerIcon(pygame.sprite.Sprite):
     def __init__(self, pos, screen_scale, images, control_type):
         pygame.sprite.Sprite.__init__(self)
         self.pos = pos
-        self.font = pygame.font.SysFont("helvetica", int(42 * screen_scale[1]))
+        self.font = pygame.font.SysFont("helvetica", int(46 * screen_scale[1]))
         self.images = images
         self.image = self.images[control_type].copy()
         self.rect = self.image.get_rect(center=self.pos)
 
     def change_control(self, control_type):
         if "joystick" in control_type:
-            self.image = self.images[control_type].copy()
+            self.image = self.images[control_type[:-1]].copy()
             joystick_num = control_type[-1]
-            text_surface = self.font.render(joystick_num, True, (0, 0, 0))
-            text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 1.3))
+            text_surface = self.font.render(joystick_num, True, (255, 255, 255))
+            text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
             self.image.blit(text_surface, text_rect)
         else:
             self.image = self.images[control_type]
@@ -357,19 +357,17 @@ class KeybindIcon(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.font = pygame.font.SysFont("helvetica", text_size)
         self.pos = pos
-        self.change_key(control_type, key)
+        self.change_key(control_type, key, keybind_name=None)
         self.rect = self.image.get_rect(center=self.pos)
 
-    def change_key(self, control_type, key):
+    def change_key(self, control_type, key, keybind_name):
         if control_type == "keyboard":
             if type(key) is str and "click" in key:
                 self.draw_keyboard(key)
             else:
                 self.draw_keyboard(pygame.key.name(key))
-        if control_type == "mouse":
-            pass
         elif control_type == "joystick":
-            pass
+            self.draw_joystick(key, keybind_name)
         self.rect = self.image.get_rect(center=self.pos)
 
     def draw_keyboard(self, text):
@@ -383,6 +381,19 @@ class KeybindIcon(pygame.sprite.Sprite):
         pygame.draw.rect(self.image, (255, 255, 255),
                          (image_size * 0.1, size[1] * 0.3, image_size * 0.8, size[1] * 1.5),
                          border_radius=2)
+        text_rect = text_surface.get_rect(center=self.image.get_rect().center)
+        self.image.blit(text_surface, text_rect)
+
+    def draw_joystick(self, key, keybind_name):
+
+        text_surface = self.font.render(keybind_name[key], True, (0, 0, 0))
+        size = text_surface.get_size()
+        image_size = size[0] * 2
+        if size[0] < 40:
+            image_size = size[0] * 4
+        self.image = pygame.Surface((image_size, size[1] * 2), pygame.SRCALPHA)
+        pygame.draw.circle(self.image, (255, 255, 255), (self.image.get_width() / 2, self.image.get_height() / 2),
+                           self.image.get_width() / 2)
         text_rect = text_surface.get_rect(center=self.image.get_rect().center)
         self.image.blit(text_surface, text_rect)
 
@@ -832,8 +843,6 @@ class MapPreview(pygame.sprite.Sprite):
                 if feature in self.feature_colour:
                     feature_index = self.feature_colour.index(feature)
                     feature_index = feature_index + (terrain_index * len(self.feature_colour))
-                # else:
-                #     print(feature, row_pos * 3.333, col_pos * 3.333)
                 new_colour = self.battle_map_colour[feature_index][1]
                 rect = pygame.Rect(row_pos, col_pos, 1, 1)
                 map_image.fill(new_colour, rect)
