@@ -1,0 +1,28 @@
+{% extends "base.j2" %}
+
+{% block content %}
+
+<style>
+.sidebar { width:300px; border: 1px solid #789; float:right; background: #eef; padding: 8px; margin: 8px; text-align:center; margin-left: 24px }
+.sidebar h3 { background: #abc; padding: 4px; margin: 4px; padding-top: 10px }
+.end{ clear: both; padding: 0; margin: 0 }
+</style>
+
+<h2>{{name}}</h2>
+
+<div class="sidebar">
+
+<h3>{{name}}</h3>
+<img src="{{image}}">
+<img src="{{sprite_icon}}">
+</div>
+
+
+
+{% for paragraph in lore %}
+<p>{{paragraph}}</p>
+{% endfor %}
+
+<div class="end"></div>
+
+{% endblock %}

@@ -1,6 +1,7 @@
 import sys
 import os
 import pygame
+import hashlib
 from flask import Flask, render_template, redirect
 
 # ---
@@ -91,19 +92,36 @@ leader_portrait = game.leader_data.images
 leader_class = game.leader_data.leader_class
 
 
-def get_subunit_icon(subunit_id, scale):
+def get_subunit_icon(subunit_id, scale, icon_size):
     """get a icon for a specific subunit"""
 
-    subunits = (game.troop_data.troop_list | game.leader_data.leader_list)
-    who_todo = {key: value for key, value in subunits.items() if key == subunit_id}
+    md5_input = "{0}${1}${2}".format(subunit_id, scale, icon_size)
+    hex_hash = hashlib.md5(md5_input.encode()).hexdigest()
 
-    # make idle animation, first frame, right side (change to l_side for left), non-specific so it can make for any troops
-    preview_sprite_pool, _ = create_troop_sprite_pool(game, who_todo, preview=True, specific_preview=("Idle_0", 0, "r_side", "non-specific"),
-                                                      max_preview_size=scale)
-    sprite = preview_sprite_pool[subunit_id]["sprite"]
-    icon = pygame.Surface((36, 36), pygame.SRCALPHA)
-    icon.blit(sprite, (0, 0))
-    return icon
+    subunit_icon_server_path = os.path.join(main_dir, "web wiki", "static", "{0}.png".format(hex_hash))
+
+    if not os.path.isfile(subunit_icon_server_path):
+
+        subunits = (game.troop_data.troop_list | game.leader_data.leader_list)
+        who_todo = {key: value for key, value in subunits.items() if key == subunit_id}
+
+        # make idle animation, first frame, right side (change to l_side for left), non-specific so it can make for any troops
+        try:
+            preview_sprite_pool, _ = create_troop_sprite_pool(game, who_todo, preview=True, specific_preview=("Idle_0", 0, "r_side", "non-specific"),
+                                                              max_preview_size=scale)
+        except KeyError:
+            return None
+        except TypeError:
+            return None
+
+        sprite = preview_sprite_pool[subunit_id]["sprite"]
+        icon_size = sprite.get_size() if icon_size is None else icon_size
+        icon = pygame.Surface(icon_size, pygame.SRCALPHA)
+        icon.blit(sprite, (0, 0))
+
+        pygame.image.save(icon, subunit_icon_server_path)
+
+    return "/static/{0}.png".format(hex_hash)
 
 
 @app.route("/")
@@ -127,14 +145,28 @@ def regions():
 @app.route("/factions")
 def factions():  # TODO add faction coa as icon
     factions = list()
+
     for k, v in game.faction_data.faction_list.items():
         if k != 0:  # skip all faction
             faction = {
                 "name": v["Name"],
-                "troop": v["Troop"],
+                "icon": make_faction_icon_and_return_web_path(k),
+                "troop": "TODO: get this to work?",  # v["Troop"] <-- key not exist error
                 "region": v["Type"]}
             factions.append(faction)
     return render_template("factions.j2", factions=factions)
+
+
+@app.route("/weapons")
+def weapons():
+
+    # modifies the key-strings because I think it looks better in jinja template.
+    weapons = list()
+    for k, v in weapon_list.items():
+        weapon = {k2.lower().replace(" ", "-"): v2 for k2, v2 in v.items()}
+        weapons.append(weapon)
+
+    return render_template("weapons.j2", weapons=weapons)
 
 
 @app.route("/troop-classes")
@@ -227,27 +259,82 @@ def troops():
 
         troops.append(troop)
 
-        subunit_icon_server_path = os.path.join(main_dir, "web wiki", "static", "{0}.png".format(k))
-        subunit_icon_web_path = "static/{0}.png".format(k)
-        troop['icon'] = [subunit_icon_web_path, k]
-
-        if not os.path.isfile(subunit_icon_server_path):
-            try:
-                subunit_icon = get_subunit_icon(k, 35)
-                pygame.image.save(subunit_icon, subunit_icon_server_path)
-            except Exception as e:
-                pass
-                # raise e
+        subunit_icon = get_subunit_icon(k, 35, (36, 36))
+        troop['icon'] = [subunit_icon, k]
 
     return render_template("troops.j2", troops=troops)
 
 
+def make_faction_icon_and_return_web_path(faction_id):
+    import random
+    md5_input = "faction-icon:{0}".format(faction_id)
+    hex_hash = hashlib.md5(md5_input.encode()).hexdigest()
+
+    faction_icon_server_path = os.path.join(main_dir, "web wiki", "static", "{0}.png".format(hex_hash))
+
+    size = 31  # size each dimension
+    margin = 4  # on all sides
+    extra_width = 5  # on each side
+
+    if not os.path.isfile(faction_icon_server_path) or 1:  # or 1 in this makes it random every refresh. when there is no more random remove this 'or 1'
+
+        coa = game.faction_data.coa_list[faction_id]
+        scale = min((size/coa.get_size()[i]) for i in range(2))
+        cfs = coa_fit_scaled = pygame.transform.smoothscale(coa, [c*scale for c in coa.get_size()])
+
+        icon_surface = pygame.Surface((size+margin*2+extra_width*2, size+margin*2))
+
+        icon_surface.fill(random.randrange(256**3))
+        icon_surface.blit(cfs, (
+            (size - cfs.get_size()[0])/2+margin+extra_width,
+            (size - cfs.get_size()[1])/2+margin
+        ))
+
+        frame = pygame.Surface(icon_surface.get_size(), pygame.SRCALPHA)
+        frame.fill((0, 0, 0, 128))
+        pygame.draw.rect(frame, (0, 0, 0, 24), (1, 1, size+(extra_width+margin-1)*2, size+(margin-1)*2))
+        pygame.draw.rect(frame, (0, 0, 0, 0), (2, 2, size+(extra_width+margin-2)*2, size+(margin-2)*2))
+        icon_surface.blit(frame, (0, 0))
+        pygame.image.save(icon_surface, faction_icon_server_path)
+
+    return "/static/{0}.png".format(hex_hash)
+
+
 @app.route("/leaders")
-def leaders():
+@app.route("/leaders/<leader_id>")
+def leaders(leader_id=None):
+
+    # single leader view
+    if leader_id is not None:
+
+        data = game.leader_data.leader_list[leader_id]
+        lore = game.leader_data.leader_lore[leader_id][1:]
+        image = game.leader_data.images[leader_id].convert_alpha()
+
+        # TODO: this is temp solution, no need to save it everytime
+        # and we also might alter the image somehow in the future
+        leader_image_server_path = os.path.join(main_dir, "web wiki", "static", "leader_{0}.png".format(leader_id))
+        pygame.image.save(image, leader_image_server_path)
+
+        leader_name = data["Name"]
+        sprite_icon = get_subunit_icon(leader_id, 100, None)
+
+        return render_template(
+            "leader.j2",
+            name=leader_name,
+            lore=lore,
+            sprite_icon=sprite_icon,
+            image="/static/leader_{0}.png".format(leader_id),
+        )
+
+    # list leaders view
     leaders = list()
     for k, v in game.leader_data.leader_list.items():
+
         leader = {
+            "id": k,
             "name": v["Name"],
+            "faction": ", ".join([faction_data["Name"] for faction_id, faction_data in game.faction_data.faction_list.items() if faction_id in v["Faction"]]),
             "strength": v.get("Strength", "-"),
             "dexterity": v.get("Dexterity"),
             "agility": v.get("Agility"),
@@ -334,17 +421,8 @@ def leaders():
 
         leaders.append(leader)
 
-        subunit_icon_server_path = os.path.join(main_dir, "web wiki", "static", "{0}.png".format(k))
-        subunit_icon_web_path = "static/{0}.png".format(k)
-        leader['icon'] = [subunit_icon_web_path, k]
-
-        if not os.path.isfile(subunit_icon_server_path):
-            try:
-                subunit_icon = get_subunit_icon(k, 35)
-                pygame.image.save(subunit_icon, subunit_icon_server_path)
-            except Exception as e:
-                pass
-                # raise e
+        subunit_icon = get_subunit_icon(k, 35, (36, 36))
+        leader['icon'] = [subunit_icon, k]
 
     return render_template("leaders.j2", leaders=leaders)
 

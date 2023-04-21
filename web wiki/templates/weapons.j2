@@ -1,0 +1,102 @@
+{% extends "base.j2" %}
+
+{% block content %}
+<h2>Weapons</h2>
+
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Strength Bonus Scale</th>
+        <th>Dexterity Bonus Scale</th>
+        <th>Damage Balance</th>
+        <th>Physical damage</th>
+        <th>Fire Damage</th>
+
+        <th>Poison Damage</th>
+        <th>Armour Penetration</th>
+        <th>Impact</th>
+        <th>Defence</th>
+        <th>Charge</th>
+        <th>Weight</th>
+
+        <th>Skill</th>
+        <th>Trait</th>
+        <th>Cooldown</th>
+        <th>Ammunition</th>
+        <th>Magazine</th>
+        <th>Shot number</th>
+
+        <th>Range</th>
+        <th>Travel speed</th>
+        <th>Cost</th>
+        <th>Hand</th>
+        <th>Damage stat scaling</th>
+        <th>Damage sprite</th>
+        <th>Damage sprite effect</th>
+        <th>After reach effect</th>
+        <th>After attack effect</th>
+        <th>Sound effect</th>
+        <th>Sound distance</th>
+        <th>Bullet sound distance</th>
+        <th>Common</th>
+        <th>Attack</th>
+        <th>Properties</th>
+        <th>Type</th>
+        <th>Shake power</th> 
+        <th>Bullet shake power</th>
+
+
+
+    </tr>
+    {% for weapon in weapons %}
+    <tr>
+        <td>{{weapon["name"]}}</td>
+        <td>{{weapon["strength-bonus-scale"]}}</td>
+        <td>{{weapon["dexterity-bonus-scale"]}}</td>
+        <td>{{weapon["damage-balance"]}}</td>
+        <td>{{weapon["physical-damage"]}}</td>
+        <td>{{weapon["fire-damage"]}}</td>
+
+        <td>{{weapon["poison-damage"]}}</td>
+        <td>{{weapon["armour-penetration"]}}</td>
+        <td>{{weapon["impact"]}}</td>
+        <td>{{weapon["defence"]}}</td>
+        <td>{{weapon["charge"]}}</td>
+        <td>{{weapon["weight"]}}</td>
+
+        <td>{{weapon["skill"]}}</td>
+        <td>{{weapon["trait"]}}</td>
+        <td>{{weapon["cooldown"]}}</td>
+        <td>{{weapon["ammunition"]}}</td>
+        <td>{{weapon["magazine"]}}</td>
+        <td>{{weapon["shot-number"]}}</td>
+
+
+        <td>{{weapon["range"]}}</td>
+        <td>{{weapon["travel speed"]}}</td>
+        <td>{{weapon["cost"]}}</td>
+        <td>{{weapon["hand"]}}</td>
+        <td>{{weapon["damage-stat-scaling"]}}</td>
+        <td>{{weapon["damage-sprite"]}}</td>
+
+        <td>{{weapon["damage-sprite-effect"]}}</td>
+        <td>{{weapon["after-reach-effect"]}}</td>
+        <td>{{weapon["after-attack-effect"]}}</td>
+        <td>{{weapon["sound-effect"]}}</td>
+        <td>{{weapon["sound-distance"]}}</td>
+        <td>{{weapon["bullet-sound-distance"]}}</td>
+
+        <td>{{weapon["common"]}}</td>
+        <td>{{weapon["attack"]}}</td>
+        <td>{{weapon["properties"]}}</td>
+        <td>{{weapon["type"]}}</td>
+        <td>{{weapon["shake-power"]}}</td> 
+        <td>{{weapon["bullet-shake-power"]}}</td>
+
+    </tr>
+    {% endfor %}
+</table>
+
+
+{% endblock %}
