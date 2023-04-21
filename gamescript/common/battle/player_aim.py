@@ -12,8 +12,8 @@ def player_aim(self):
     has_ammo = [0, 0]
     shoot_ready_list = [[], []]
     self.battle_ui_updater.add(self.single_text_popup)
-    base_target_pos = self.command_mouse_pos
-    target_pos = self.base_mouse_pos
+    base_target_pos = self.command_cursor_pos
+    target_pos = self.base_cursor_pos
 
     who_shoot = ()
     if self.player_input_state == "leader aim":
@@ -29,8 +29,8 @@ def player_aim(self):
                 "weapon" not in this_subunit.command_action:
 
             if self.player_input_state == "line aim":
-                angle = self.player_char.set_rotate(self.command_mouse_pos)
-                distance = self.player_char.base_pos.distance_to(self.command_mouse_pos)
+                angle = self.player_char.set_rotate(self.command_cursor_pos)
+                distance = self.player_char.base_pos.distance_to(self.command_cursor_pos)
                 base_target_pos = pygame.Vector2(
                     this_subunit.base_pos[0] - (distance * sin(radians(angle))),
                     this_subunit.base_pos[1] - (distance * cos(radians(angle))))
@@ -63,14 +63,14 @@ def player_aim(self):
 
     self.single_text_popup.pop(self.cursor.rect.bottomright, shoot_text)
 
-    if self.player_keyboard_press["Order Menu"] or not self.player_char.alive:
+    if self.player_key_press["Order Menu"] or not self.player_char.alive:
         # Cancel manual aim with order menu input or player die
         self.player_cancel_input()
 
-    elif self.battle.player_keyboard_press["Main Weapon Attack"] or self.battle.player_keyboard_press[
+    elif self.battle.player_key_press["Main Weapon Attack"] or self.battle.player_key_press[
         "Sub Weapon Attack"]:
         weapon = 0
-        if self.battle.player_keyboard_press["Sub Weapon Attack"]:
+        if self.battle.player_key_press["Sub Weapon Attack"]:
             weapon = 1
         if shoot_ready[weapon] > 0:
             for this_subunit in shoot_ready_list[weapon]:
@@ -88,4 +88,4 @@ def player_aim(self):
 
     else:
         self.camera_process()
-        self.player_char.player_input(self.command_mouse_pos)
+        self.player_char.player_input(self.command_cursor_pos)

@@ -15,6 +15,21 @@ def menu_option(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scr
     elif self.keybind_button.event:
         self.keybind_button.event = False
         self.menu_state = "keybind"
+
+        if self.joysticks:
+            if self.config["USER"]["control player 1"] == "joystick":
+                self.control_switch.change_control("joystick1")
+                for key, value in self.keybind_icon.items():
+                    value.change_key(self.config["USER"]["control player 1"],
+                                     self.player1_key_bind[self.config["USER"]["control player 1"]][key],
+                                     self.joystick_bind_name[self.joystick_name[0]])
+        else:  # no joystick, reset player 1 to keyboard
+            self.config["USER"]["control player 1"] = "keyboard"
+            self.control_switch.change_control("keyboard")
+            for key, value in self.keybind_icon.items():
+                value.change_key(self.config["USER"]["control player 1"],
+                                 self.player1_key_bind[self.config["USER"]["control player 1"]][key])
+
         self.main_ui_updater.remove(*self.option_text_list, *self.option_menu_sliders.values(),
                                     *self.value_boxes.values(), self.option_menu_button)
         self.main_ui_updater.add(*self.keybind_text.values(), *self.keybind_icon.values(), self.control_switch,

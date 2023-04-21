@@ -143,7 +143,7 @@ def regions():
 
 
 @app.route("/factions")
-def factions():  # TODO add faction coa as icon
+def factions():
     factions = list()
 
     for k, v in game.faction_data.faction_list.items():
@@ -151,7 +151,9 @@ def factions():  # TODO add faction coa as icon
             faction = {
                 "name": v["Name"],
                 "icon": make_faction_icon_and_return_web_path(k),
-                "troop": "TODO: get this to work?",  # v["Troop"] <-- key not exist error
+                "strengths": v["Strengths"],
+                "weaknesses": v["Weaknesses"],
+                "favoured-troop": v["Favoured Troop"],
                 "region": v["Type"]}
             factions.append(faction)
     return render_template("factions.j2", factions=factions)
