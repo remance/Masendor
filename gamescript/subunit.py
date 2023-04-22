@@ -1070,6 +1070,8 @@ class Subunit(pygame.sprite.Sprite):
                         ("hold" in self.current_action and
                          "hold" in self.current_animation[self.show_frame]["frame_property"] and
                          "hold" in self.action_list[self.current_action["weapon"]]["Properties"]):
+                    if self.player_control:
+                        print('test', self.current_action)
                     hold_check = True
                     self.hold_timer += dt
                 elif self.hold_timer > 0:  # no longer holding, reset timer

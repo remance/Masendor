@@ -986,7 +986,7 @@ class Game:
                                     value.change_key(self.config["USER"]["control player 1"],
                                                      self.player1_key_bind[self.config["USER"]["control player 1"]][
                                                          self.input_popup[1][1]],
-                                                     self.joystick_bind_name[self.joystick_name[0]])
+                                                     self.joystick_bind_name[self.joystick_name[tuple(self.joystick_name.keys())[0]]])
                                 else:
                                     value.change_key(self.config["USER"]["control player 1"],
                                                      self.player1_key_bind[self.config["USER"]["control player 1"]][
@@ -997,7 +997,7 @@ class Game:
                                     value.change_key(self.config["USER"]["control player 1"],
                                                      self.player1_key_bind[self.config["USER"]["control player 1"]][
                                                          self.input_popup[1][2]],
-                                                     self.joystick_bind_name[self.joystick_name[0]])
+                                                     self.joystick_bind_name[self.joystick_name[tuple(self.joystick_name.keys())[0]]])
                                 else:
                                     value.change_key(self.config["USER"]["control player 1"],
                                                      self.player1_key_bind[self.config["USER"]["control player 1"]][

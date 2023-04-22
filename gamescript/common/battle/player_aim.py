@@ -45,7 +45,7 @@ def player_aim(self):
                                 this_subunit.shoot_range[weapon] >= this_subunit.base_pos.distance_to(
                             base_target_pos) and \
                                 ((this_subunit.move_speed and this_subunit.shoot_while_moving and
-                                  not self.check_special_effect("Stationary", weapon=weapon)) or
+                                  not this_subunit.check_special_effect("Stationary", weapon=weapon)) or
                                  not this_subunit.move_speed):
                             shoot_ready_list[weapon].append(this_subunit)
                             shoot_ready[weapon] += 1
@@ -67,10 +67,9 @@ def player_aim(self):
         # Cancel manual aim with order menu input or player die
         self.player_cancel_input()
 
-    elif self.battle.player_key_press["Main Weapon Attack"] or self.battle.player_key_press[
-        "Sub Weapon Attack"]:
+    elif self.player_key_press["Main Weapon Attack"] or self.player_key_press["Sub Weapon Attack"]:
         weapon = 0
-        if self.battle.player_key_press["Sub Weapon Attack"]:
+        if self.player_key_press["Sub Weapon Attack"]:
             weapon = 1
         if shoot_ready[weapon] > 0:
             for this_subunit in shoot_ready_list[weapon]:

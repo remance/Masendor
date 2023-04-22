@@ -23,7 +23,7 @@ def menu_option(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scr
                     if self.joysticks:
                         value.change_key(self.config["USER"]["control player 1"],
                                          self.player1_key_bind[self.config["USER"]["control player 1"]][key],
-                                         self.joystick_bind_name[self.joystick_name[0]])
+                                         self.joystick_bind_name[self.joystick_name[tuple(self.joystick_name.keys())[0]]])
                     else:
                         value.change_key(self.config["USER"]["control player 1"],
                                          self.player1_key_bind[self.config["USER"]["control player 1"]][key],
@@ -36,7 +36,7 @@ def menu_option(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scr
                 if self.joysticks:
                     value.change_key(self.config["USER"]["control player 1"],
                                      self.player1_key_bind[self.config["USER"]["control player 1"]][key],
-                                     self.joystick_bind_name[self.joystick_name[0]])
+                                     self.joystick_bind_name[self.joystick_name[tuple(self.joystick_name.keys())[0]]])
                 else:
                     value.change_key(self.config["USER"]["control player 1"],
                                      self.player1_key_bind[self.config["USER"]["control player 1"]][key],

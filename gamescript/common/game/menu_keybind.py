@@ -23,7 +23,7 @@ def menu_keybind(self, mouse_left_up, esc_press):
         for key, value in self.keybind_icon.items():
             if self.joysticks:
                 value.change_key(control_type, self.config["USER"]["keybind player 1"][control_type][key],
-                                 self.joystick_bind_name[self.joystick_name[0]])
+                                 self.joystick_bind_name[self.joystick_name[tuple(self.joystick_name.keys())[0]]])
             else:
                 value.change_key(control_type, self.config["USER"]["keybind player 1"][control_type][key], None)
 
@@ -43,7 +43,7 @@ def menu_keybind(self, mouse_left_up, esc_press):
                     if self.joysticks:
                         value.change_key(self.config["USER"]["control player 1"],
                                          self.player1_key_bind[self.config["USER"]["control player 1"]][key],
-                                         self.joystick_bind_name[self.joystick_name[0]])
+                                         self.joystick_bind_name[self.joystick_name[tuple(self.joystick_name.keys())[0]]])
                     else:
                         value.change_key(self.config["USER"]["control player 1"],
                                          self.player1_key_bind[self.config["USER"]["control player 1"]][key],

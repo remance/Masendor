@@ -74,19 +74,7 @@ def player_input(self, cursor_pos):
                 self.command_target = new_pos
 
             if not self.move_speed:  # attack while stationary
-                if self.battle.player_key_press["Main Weapon Attack"] or self.battle.player_key_press[
-                    "Sub Weapon Attack"]:
-                    action_num = 0
-                    if self.battle.player_key_press["Sub Weapon Attack"]:
-                        action_num = 1
-                    if "hold" in self.current_action:  # release holding
-                        self.release_timer = self.hold_timer
-                        if "melee attack" in self.current_action:
-                            self.current_action = self.melee_attack_command_action[action_num]
-                        elif "range attack" in self.current_action:
-                            self.current_action = self.range_attack_command_action[action_num]
-
-                elif self.battle.player_key_hold["Main Weapon Attack"] or self.battle.player_key_hold[
+                if self.battle.player_key_hold["Main Weapon Attack"] or self.battle.player_key_hold[
                     "Sub Weapon Attack"]:
                     action_num = 0
                     str_action_num = "0"
@@ -111,6 +99,18 @@ def player_input(self, cursor_pos):
                                 self.current_action = self.melee_hold_command_action[action_num]
                             elif "range attack" in self.current_action:
                                 self.current_action = self.range_hold_command_action[action_num]
+
+                elif (self.battle.player_key_press["Main Weapon Attack"] or self.battle.player_key_press[
+                    "Sub Weapon Attack"]) or "hold" in self.current_action:  # release holding
+                    action_num = 0
+                    if self.battle.player_key_press["Sub Weapon Attack"]:
+                        action_num = 1
+                    if "hold" in self.current_action:  # release holding
+                        self.release_timer = self.hold_timer
+                        if "melee attack" in self.current_action:
+                            self.current_action = self.melee_attack_command_action[action_num]
+                        elif "range attack" in self.current_action:
+                            self.current_action = self.range_attack_command_action[action_num]
 
             else:  # attack while moving
                 if self.battle.player_key_press["Main Weapon Attack"] or self.battle.player_key_press[
@@ -168,6 +168,7 @@ def player_input(self, cursor_pos):
                             if "melee attack" in self.current_action:
                                 self.current_action = self.melee_hold_command_action[action_num]
                             elif "range attack" in self.current_action:
+                                print('test2')
                                 self.current_action = self.range_hold_command_action[action_num]
                         else:  # holding, update new attack pos
                             self.attack_pos = cursor_pos

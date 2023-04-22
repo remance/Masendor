@@ -553,7 +553,7 @@ class Battle:
         else:
             for key, value in self.player_key_bind.items():
                 if "Skill" in key:
-                    skill_key_list.append(self.joystick_bind_name[self.joystick_name[0]][value])
+                    skill_key_list.append(self.joystick_bind_name[self.joystick_name[tuple(self.joystick_name.keys())[0]]][value])
 
         for index, skill_icon in enumerate(self.skill_icon):
             skill_icon.change_key(skill_key_list[index])
@@ -590,7 +590,7 @@ class Battle:
 
             self.battle_ui_updater.remove(self.single_text_popup)  # remove button text popup every update
 
-            if self.player_key_control == "keyboard" or self.game_state == "menu":
+            if self.player_key_control == "keyboard" or self.game_state in ("menu", "end"):
                 self.mouse_pos = pygame.mouse.get_pos()  # current mouse pos based on screen
 
                 if self.player_key_control == "keyboard":
@@ -776,7 +776,7 @@ class Battle:
                         if type(self.player_input_state) is not str:  # ui input state
                             choice = self.player_input_state.selection(self.mouse_pos)
                             if self.player_input_state == self.wheel_ui:  # wheel ui process
-                                if mouse_left_up:
+                                if self.player_key_press["Main Weapon Attack"]:
                                     self.wheel_ui_process(choice)
                                 elif self.player_key_press["Order Menu"]:  # Close unit command wheel ui
                                     self.battle_ui_updater.remove(self.wheel_ui)

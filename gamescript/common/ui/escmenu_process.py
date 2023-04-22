@@ -30,6 +30,9 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                                       *self.esc_slider_menu, *self.esc_value_boxes)
         self.game_state = self.previous_game_state
 
+        if self.player_key_control != "keyboard":
+            self.mouse_pos = pygame.Vector2(self.screen_rect.width / 2, self.screen_rect.height / 2)
+
     elif self.battle_menu.mode == "menu":  # start_set esc menu
         for button in self.battle_menu_button:
             if button.rect.collidepoint(self.mouse_pos):
@@ -40,6 +43,8 @@ def escmenu_process(self, mouse_up: bool, mouse_leftdown: bool, esc_press: bool,
                         self.game_state = self.previous_game_state  # resume battle gameplay state
                         self.battle_ui_updater.remove(self.battle_menu, *self.battle_menu_button, *self.esc_slider_menu,
                                                       *self.esc_value_boxes)  # remove menu sprite
+                        if self.player_key_control != "keyboard":
+                            self.mouse_pos = pygame.Vector2(self.screen_rect.width / 2, self.screen_rect.height / 2)
 
                     elif button.text == "Encyclopedia":  # open encyclopedia
                         self.battle_menu.change_mode("encyclopedia")  # change to enclycopedia mode

@@ -12,8 +12,9 @@ def assign_key(self, key_assign):
         for key, value in self.keybind_icon.items():
             if key == self.input_popup[1]:
                 if self.joysticks:
+                    print(self.joystick_name)
                     value.change_key(self.config["USER"]["control player 1"], key_assign,
-                                     self.joystick_bind_name[self.joystick_name[0]])
+                                     self.joystick_bind_name[self.joystick_name[tuple(self.joystick_name.keys())[0]]])
                 else:
                     value.change_key(self.config["USER"]["control player 1"], key_assign, None)
 
