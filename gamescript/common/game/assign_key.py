@@ -11,7 +11,11 @@ def assign_key(self, key_assign):
                     "configuration.ini", self.config)
         for key, value in self.keybind_icon.items():
             if key == self.input_popup[1]:
-                value.change_key(self.config["USER"]["control player 1"], key_assign)
+                if self.joysticks:
+                    value.change_key(self.config["USER"]["control player 1"], key_assign,
+                                     self.joystick_bind_name[self.joystick_name[0]])
+                else:
+                    value.change_key(self.config["USER"]["control player 1"], key_assign, None)
 
         self.input_box.text_start("")
         self.input_popup = (None, None)

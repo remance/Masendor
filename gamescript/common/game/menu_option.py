@@ -20,15 +20,27 @@ def menu_option(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scr
             if self.config["USER"]["control player 1"] == "joystick":
                 self.control_switch.change_control("joystick1")
                 for key, value in self.keybind_icon.items():
-                    value.change_key(self.config["USER"]["control player 1"],
-                                     self.player1_key_bind[self.config["USER"]["control player 1"]][key],
-                                     self.joystick_bind_name[self.joystick_name[0]])
+                    if self.joysticks:
+                        value.change_key(self.config["USER"]["control player 1"],
+                                         self.player1_key_bind[self.config["USER"]["control player 1"]][key],
+                                         self.joystick_bind_name[self.joystick_name[0]])
+                    else:
+                        value.change_key(self.config["USER"]["control player 1"],
+                                         self.player1_key_bind[self.config["USER"]["control player 1"]][key],
+                                         None)
+
         else:  # no joystick, reset player 1 to keyboard
             self.config["USER"]["control player 1"] = "keyboard"
             self.control_switch.change_control("keyboard")
             for key, value in self.keybind_icon.items():
-                value.change_key(self.config["USER"]["control player 1"],
-                                 self.player1_key_bind[self.config["USER"]["control player 1"]][key], None)
+                if self.joysticks:
+                    value.change_key(self.config["USER"]["control player 1"],
+                                     self.player1_key_bind[self.config["USER"]["control player 1"]][key],
+                                     self.joystick_bind_name[self.joystick_name[0]])
+                else:
+                    value.change_key(self.config["USER"]["control player 1"],
+                                     self.player1_key_bind[self.config["USER"]["control player 1"]][key],
+                                     None)
 
         self.main_ui_updater.remove(*self.option_text_list, *self.option_menu_sliders.values(),
                                     *self.value_boxes.values(), self.option_menu_button)

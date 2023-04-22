@@ -26,6 +26,7 @@ load_base_button = utility.load_base_button
 text_objects = utility.text_objects
 setup_list = utility.setup_list
 list_scroll = utility.list_scroll
+number_to_minus_or_plus = utility.number_to_minus_or_plus
 empty_function = utility.empty_function
 
 # Module that get loads with import in common.game.setup after
@@ -76,15 +77,22 @@ class Game:
     joystick_bind_name = {"XBox": {0: "A", 1: "B", 2: "X", 3: "Y", 4: "-", 5: "Home", 6: "+", 7: "Start", 8: None,
                                    9: None, 10: None, 11: "D-Up", 12: "D-Down", 13: "D-Left", 14: "D-Right",
                                    15: "Capture", "axis-0": "L. Stick Left", "axis+0": "L. Stick R.",
-                                   "axis-1": "R. Stick L.", "axis+1": "R. Stick L."},
+                                   "axis-1": "L. Stick U.", "axis+1": "L. Stick D.",
+                                   "axis-2": "R. Stick Left", "axis+2": "R. Stick R.",
+                                   "axis-3": "R. Stick U.", "axis+3": "R. Stick D."},
                           "Other": {0: "1", 1: "2", 2: "3", 3: "4", 4: "L1", 5: "R1", 6: "L2", 7: "R2", 8: "Select",
                                     9: "Start", 10: "L. Stick", 11: "R. Stick", 12: None, 13: None, 14: None, 15: None,
                                     "axis-0": "L. Stick L.", "axis+0": "L. Stick R.",
-                                    "axis-1": "R. Stick L.", "axis+1": "R. Stick L."},
+                                    "axis-1": "L. Stick U.", "axis+1": "L. Stick D.",
+                                    "axis-2": "R. Stick Left", "axis+2": "R. Stick R.",
+                                    "axis-3": "R. Stick U.", "axis+3": "R. Stick D."
+                                    },
                           "PS": {0: "X", 1: "O", 2: "□", 3: "△", 4: "Share", 5: "PS", 6: "Options", 7: None, 8: None,
                                  9: None, 10: None, 11: "D-Up", 12: "D-Down", 13: "D-Left", 14: "D-R.",
                                  15: "T-Pad", "axis-0": "L. Stick L.", "axis+0": "L. Stick R.",
-                                 "axis-1": "R. Stick L.", "axis+1": "R. Stick L."}}
+                                 "axis-1": "L. Stick U.", "axis+1": "L. Stick D.",
+                                 "axis-2": "R. Stick Left", "axis+2": "R. Stick R.",
+                                 "axis-3": "R. Stick U.", "axis+3": "R. Stick D."}}
     empty_method = utility.empty_method
 
     # import from common.game
@@ -854,6 +862,23 @@ class Game:
                 mouse_left_down = True
             elif pygame.mouse.get_pressed()[2]:  # Hold left click
                 mouse_right_down = True
+
+            if self.config["USER"]["control player 1"] == "joystick" and self.input_popup[0] == "keybind_input":
+                for joystick in self.joysticks.values():  # TODO change this when has multiplayer
+                    for i in range(joystick.get_numaxes()):
+                        if joystick.get_axis(i):
+                            if i not in (2, 3):  # prevent right axis from being assigned
+                                axis_name = "axis" + number_to_minus_or_plus(joystick.get_axis(i)) + str(i)
+                                self.assign_key(axis_name)
+
+                    for i in range(joystick.get_numhats()):
+                        if joystick.get_hat(i)[0]:
+                            hat_name = "hat" + number_to_minus_or_plus(joystick.get_axis(i)) + str(0)
+                            self.assign_key(hat_name)
+                        elif joystick.get_hat(i)[1]:
+                            hat_name = "hat" + number_to_minus_or_plus(joystick.get_axis(i)) + str(1)
+                            self.assign_key(hat_name)
+
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:  # left click
@@ -867,11 +892,17 @@ class Game:
                     elif event.button == 5:  # Mouse scroll up
                         mouse_scroll_down = True
 
-                    if self.input_popup[0] == "keybind_input" and \
-                            self.config["USER"]["control player 1"] == "keyboard" and not \
-                            self.input_close_button.rect.collidepoint(self.mouse_pos):  # check for keyboard mouse key
-                        self.assign_key(tuple(self.mouse_bind.keys())[tuple(
-                            self.mouse_bind.values()).index(event.button)])
+                    if self.input_popup[0] == "keybind_input":
+                        if self.config["USER"]["control player 1"] == "keyboard" and not \
+                                self.input_close_button.rect.collidepoint(self.mouse_pos):  # check for keyboard mouse key
+                            self.assign_key(tuple(self.mouse_bind.keys())[tuple(
+                                self.mouse_bind.values()).index(event.button)])
+
+                elif event.type == pygame.JOYBUTTONUP:
+                    joystick = event.instance_id
+                    if self.config["USER"]["control player 1"] == "joystick" and self.input_popup[0] == "keybind_input":
+                        # check for button press
+                        self.assign_key(event.button)
 
                 elif event.type == pygame.KEYDOWN:
                     if self.input_popup[0]:  # event update to input box
@@ -951,13 +982,26 @@ class Game:
                                     "configuration.ini", self.config)
                         for key, value in self.keybind_icon.items():
                             if key == self.input_popup[1][1]:
-                                value.change_key(self.config["USER"]["control player 1"],
-                                                 self.player1_key_bind[self.config["USER"]["control player 1"]][
-                                                     self.input_popup[1][1]])
+                                if self.joysticks:
+                                    value.change_key(self.config["USER"]["control player 1"],
+                                                     self.player1_key_bind[self.config["USER"]["control player 1"]][
+                                                         self.input_popup[1][1]],
+                                                     self.joystick_bind_name[self.joystick_name[0]])
+                                else:
+                                    value.change_key(self.config["USER"]["control player 1"],
+                                                     self.player1_key_bind[self.config["USER"]["control player 1"]][
+                                                         self.input_popup[1][1]], None)
+
                             elif key == self.input_popup[1][2]:
-                                value.change_key(self.config["USER"]["control player 1"],
-                                                 self.player1_key_bind[self.config["USER"]["control player 1"]][
-                                                     self.input_popup[1][2]])
+                                if self.joysticks:
+                                    value.change_key(self.config["USER"]["control player 1"],
+                                                     self.player1_key_bind[self.config["USER"]["control player 1"]][
+                                                         self.input_popup[1][2]],
+                                                     self.joystick_bind_name[self.joystick_name[0]])
+                                else:
+                                    value.change_key(self.config["USER"]["control player 1"],
+                                                     self.player1_key_bind[self.config["USER"]["control player 1"]][
+                                                         self.input_popup[1][2]], None)
 
                     elif "wind" in self.input_popup[1] and self.input_box.text.isdigit():
                         self.custom_map_data["info"]["weather"][0][2] = int(self.input_box.text)

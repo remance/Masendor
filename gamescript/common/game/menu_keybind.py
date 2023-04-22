@@ -21,7 +21,11 @@ def menu_keybind(self, mouse_left_up, esc_press):
                 edit_config("USER", setting, self.config["DEFAULT"][setting], "configuration.ini", self.config)
         control_type = self.config["USER"]["control player 1"]
         for key, value in self.keybind_icon.items():
-            value.change_key(control_type, self.config["USER"]["keybind player 1"][control_type][key])
+            if self.joysticks:
+                value.change_key(control_type, self.config["USER"]["keybind player 1"][control_type][key],
+                                 self.joystick_bind_name[self.joystick_name[0]])
+            else:
+                value.change_key(control_type, self.config["USER"]["keybind player 1"][control_type][key], None)
 
     elif mouse_left_up:
         if self.control_switch.rect.collidepoint(self.mouse_pos):
@@ -36,9 +40,15 @@ def menu_keybind(self, mouse_left_up, esc_press):
                 edit_config("USER", "control player 1", self.config["USER"]["control player 1"],
                             "configuration.ini", self.config)
                 for key, value in self.keybind_icon.items():
-                    value.change_key(self.config["USER"]["control player 1"],
-                                     self.player1_key_bind[self.config["USER"]["control player 1"]][key],
-                                     self.joystick_bind_name[self.joystick_name[0]])
+                    if self.joysticks:
+                        value.change_key(self.config["USER"]["control player 1"],
+                                         self.player1_key_bind[self.config["USER"]["control player 1"]][key],
+                                         self.joystick_bind_name[self.joystick_name[0]])
+                    else:
+                        value.change_key(self.config["USER"]["control player 1"],
+                                         self.player1_key_bind[self.config["USER"]["control player 1"]][key],
+                                         None)
+
             else:
                 self.input_popup = ("confirm_input", "warning")
                 self.input_ui.change_instruction("No joysticks detected")
