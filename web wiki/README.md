@@ -11,3 +11,8 @@ As of writting this this wiki is read only but we could of course add write func
 ![image](https://user-images.githubusercontent.com/124282214/233780005-29965187-6c48-46d3-a17a-e0f5c1271358.png)
 
 ![image](https://user-images.githubusercontent.com/124282214/233780071-50c8aee1-109e-4d1a-b4e4-688823ee75f5.png)
+
+![image](https://user-images.githubusercontent.com/124282214/233794571-bb636952-df2d-4b16-8a04-13b13d550642.png)
+
+![image](https://user-images.githubusercontent.com/124282214/233794593-8757e20a-9289-4e30-ac76-0c940095be9d.png)
+
