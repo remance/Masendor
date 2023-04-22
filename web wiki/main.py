@@ -3,6 +3,7 @@ import os
 import pygame
 import hashlib
 from flask import Flask, render_template, redirect, request
+from collections import defaultdict
 
 # ---
 # to get this to work on my computer I acutal has to have this (I tested using both this current directory and the actual "main" directory
@@ -139,6 +140,31 @@ def regions():
     # This is obviously not an actual faction nor region so I discard it from being visible.
     regions.discard("All")
 
+    faction_data = game.faction_data.faction_list
+
+    region_no_leaders = defaultdict(int)
+    region_no_troop_types = defaultdict(int)
+
+    for leader in game.leader_data.leader_list.values():
+        for faction in leader["Faction"]:
+            region_no_leaders[faction_data[faction]["Type"]] += 1
+
+    for troop in game.troop_data.troop_list.values():
+        for faction in troop["Faction"]:
+            region_no_troop_types[faction_data[faction]["Type"]] += 1
+
+    regions = [
+        {
+            "id": region.lower().replace(" ", "-"),  # there is not such thing as an region id (yet?) so we have
+            # to rely on the name (but make it more id-like)
+            "name": region,
+            "no-factions": len([1 for f in game.faction_data.faction_list.values() if f["Type"] == region]),
+            "no-leaders": region_no_leaders[region],
+            "no-troop-types": region_no_troop_types[region],
+        }
+        for region in sorted(regions)
+    ]
+
     return render_template("regions.j2", regions=regions)
 
 
@@ -157,6 +183,9 @@ def factions():
                 "favoured-troop": v["Favoured Troop"],
                 "region": v["Type"]}
             factions.append(faction)
+
+    factions.sort(key=lambda a: a["name"])
+
     return render_template("factions.j2", factions=factions)
 
 
