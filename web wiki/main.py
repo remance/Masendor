@@ -363,7 +363,7 @@ def leaders(leader_id=None):
         pygame.image.save(image, leader_image_server_path)
 
         leader_name = data["Name"]
-        sprite_icon = get_subunit_icon(leader_id, 100, None)
+        sprite_icon = get_subunit_icon(leader_id, 140, None)
 
         return render_template(
             "leader.j2",

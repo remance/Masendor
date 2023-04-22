@@ -81,7 +81,7 @@
             {{unit["mount"][2]}}
         </td>
 
-        <td>{{unit["skill"]}}</td>
+        <td><ul>{% for skill in unit["skill"] %}<li>{{skill}}</li>{% endfor %}</ul></td>
 
     </tr>
     {% endfor %}
