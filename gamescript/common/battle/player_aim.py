@@ -75,11 +75,11 @@ def player_aim(self):
             for this_subunit in shoot_ready_list[weapon]:
                 if "movable" in this_subunit.current_action and "charge" not in this_subunit.current_action:
                     # shoot while moving
-                    self.show_frame = 0  # just restart frame
-                    if "walk" in self.current_action:
-                        self.current_action = self.range_walk_command_action[weapon]
-                    elif "run" in self.current_action:
-                        self.current_action = self.range_run_command_action[weapon]
+                    this_subunit.show_frame = 0  # just restart frame
+                    if "walk" in this_subunit.current_action:
+                        this_subunit.current_action = this_subunit.range_walk_command_action[weapon]
+                    elif "run" in this_subunit.current_action:
+                        this_subunit.current_action = this_subunit.range_run_command_action[weapon]
                 else:
                     this_subunit.new_angle = this_subunit.set_rotate(this_subunit.shoot_line.base_target_pos)
                     this_subunit.command_action = this_subunit.range_attack_command_action[weapon]
