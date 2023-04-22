@@ -119,7 +119,7 @@ class DamageSprite(pygame.sprite.Sprite):
                 dmg = None
             else:
                 dmg = {key.split(" ")[0]: uniform(value / 2, value) for key, value in dmg.items()}
-            EffectDamageSprite(self, self.reach_effect, dmg, effect_stat["Armour Penetration"], effect_stat["Impact"],
+            EffectDamageSprite(self, 0, self.reach_effect, dmg, effect_stat["Armour Penetration"], effect_stat["Impact"],
                                effect_stat, "effect", self.base_pos, self.base_pos,
                                reach_effect=effect_stat["After Reach Effect"])
 
@@ -132,14 +132,14 @@ class DamageSprite(pygame.sprite.Sprite):
                     dmg = None
                 else:
                     dmg = {key.split(" ")[0]: uniform(value / 2, value) for key, value in dmg.items()}
-                EffectDamageSprite(self, self.stat["End Effect"], dmg, effect_stat["Armour Penetration"],
+                EffectDamageSprite(self, 0, self.stat["End Effect"], dmg, effect_stat["Armour Penetration"],
                                    effect_stat["Impact"], effect_stat, "effect", self.base_pos, self.base_pos,
                                    reach_effect=effect_stat["After Reach Effect"])
         self.clean_object()
 
 
 class MeleeDamageSprite(DamageSprite):
-    def __init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
+    def __init__(self, attacker, angle, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
                  accuracy=None, reach_effect=None):
         """Melee damage sprite"""
         DamageSprite.__init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
@@ -157,7 +157,7 @@ class MeleeDamageSprite(DamageSprite):
         self.image = self.current_animation[self.show_frame]
 
         self.base_pos = base_pos  # for setting angle first
-        self.angle = self.set_rotate(self.base_target)
+        self.angle = angle
         self.base_pos = base_target
 
         self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
@@ -185,7 +185,7 @@ class MeleeDamageSprite(DamageSprite):
 
 
 class RangeDamageSprite(DamageSprite):
-    def __init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
+    def __init__(self, attacker, angle, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
                  accuracy=None, arc_shot=False, height_ignore=False, degrade_when_travel=True,
                  degrade_when_hit=True, random_direction=False, random_move=False, reach_effect=None):
         """Range damage sprite"""
@@ -195,7 +195,7 @@ class RangeDamageSprite(DamageSprite):
                               random_move=random_move, accuracy=accuracy, reach_effect=reach_effect)
         self.repeat_animation = True
         self.base_pos = pygame.Vector2(base_pos)
-        self.angle = self.set_rotate(self.base_target)
+        self.angle = angle
 
         self.speed = stat["Travel Speed"]  # bullet travel speed
 
@@ -350,7 +350,7 @@ class ChargeDamageSprite(DamageSprite):
 
 
 class EffectDamageSprite(DamageSprite):
-    def __init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
+    def __init__(self, attacker, angle, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
                  accuracy=None, arc_shot=False, height_ignore=False, degrade_when_travel=True,
                  degrade_when_hit=True, random_direction=False, random_move=False, reach_effect=None):
         """Effect damage sprite"""
@@ -361,7 +361,7 @@ class EffectDamageSprite(DamageSprite):
                               height_type=stat["Height Type"])
 
         self.base_pos = pygame.Vector2(base_pos)
-        self.angle = 0
+        self.angle = angle
 
         self.duration = self.stat["Duration"]
         self.wind_disperse = self.stat["Wind Dispersion"]

@@ -697,7 +697,7 @@ class Battle:
                     if event.key == K_F1:
                         self.drama_text.queue.append("Hello and welcome to showcase video")
                     elif event.key == K_F2:
-                        self.drama_text.queue.append("Custom map battle")
+                        self.drama_text.queue.append("Keybinding and Joystick controller")
                     elif event.key == K_F3:
                         self.drama_text.queue.append("See video description for more detail")
                     elif event.key == K_F4:

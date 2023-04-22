@@ -100,11 +100,10 @@ def player_input(self, cursor_pos):
                             elif "range attack" in self.current_action:
                                 self.current_action = self.range_hold_command_action[action_num]
 
-                elif (self.battle.player_key_press["Main Weapon Attack"] or self.battle.player_key_press[
-                    "Sub Weapon Attack"]) or "hold" in self.current_action:  # release holding
-                    action_num = 0
-                    if self.battle.player_key_press["Sub Weapon Attack"]:
-                        action_num = 1
+                elif "weapon" in self.current_action and ((self.battle.player_key_press["Main Weapon Attack"] or
+                                                           self.battle.player_key_press["Sub Weapon Attack"]) or
+                                                          "hold" in self.current_action):  # release holding
+                    action_num = self.current_action["weapon"]
                     if "hold" in self.current_action:  # release holding
                         self.release_timer = self.hold_timer
                         if "melee attack" in self.current_action:
