@@ -4,16 +4,27 @@
 {% block content %}
 <h2>Factions</h2>
 <table>
-    <tr><th></th><th>Name</th><th>Leaders</th><th>Strengths</th><th>Weaknesses</th><th>Favoured Troop</th><th>Region</th></tr>
+    <tr>
+        <th></th>
+        <th style="width:250px">Name</th>
+        <th>Strengths</th>
+        <th>Weaknesses</th>
+        <th>Favoured Troop</th>
+
+        <th class="r" style="width:130px">Number of leaders</th>
+        <th class="r" style="width:130px">Number of troop types</th>
+ 
+
+    </tr>
     {% for faction in factions %}
     <tr>
         <td><img src="{{faction["icon"]}}"></td>
-        <td>{{faction["name"]}}</td>
-        <td><a href="/leaders?faction={{faction["id"]}}">See leaders</a></td>
+        <td><a href="">{{faction["name"]}}</a><br>{{faction["region"]}}</td>
         <td>{{faction["strengths"]}}</td>
         <td>{{faction["weaknesses"]}}</td>
         <td>{{faction["favoured-troop"]}}</td>
-        <td>{{faction["region"]}}</td>
+        <td class="r"><a href="/leaders?faction={{faction["id"]}}">{{faction["no-leaders"]}} leaders</a></td>
+        <td class="r"><a href="/troops?faction={{faction["id"]}}">{{faction["no-troop-types"]}} troop types</a></td>
     </tr>
     {% endfor %}
 {% endblock %}

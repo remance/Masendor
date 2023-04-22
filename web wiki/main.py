@@ -172,6 +172,17 @@ def regions():
 def factions():
     factions = list()
 
+    faction_no_leaders = defaultdict(int)
+    faction_no_troop_types = defaultdict(int)
+
+    for leader in game.leader_data.leader_list.values():
+        for faction in leader["Faction"]:
+            faction_no_leaders[faction] += 1
+
+    for troop in game.troop_data.troop_list.values():
+        for faction in troop["Faction"]:
+            faction_no_troop_types[faction] += 1
+
     for k, v in game.faction_data.faction_list.items():
         if k != 0:  # skip all faction
             faction = {
@@ -181,7 +192,10 @@ def factions():
                 "strengths": v["Strengths"],
                 "weaknesses": v["Weaknesses"],
                 "favoured-troop": v["Favoured Troop"],
-                "region": v["Type"]}
+                "region": v["Type"],
+                "no-leaders": faction_no_leaders[k],
+                "no-troop-types": faction_no_troop_types[k],
+            }
             factions.append(faction)
 
     factions.sort(key=lambda a: a["name"])
