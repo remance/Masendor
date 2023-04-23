@@ -161,9 +161,10 @@ def attack(self, attack_type):
                 # release in timing bonus time, get accuracy boost
                 accuracy *= 1.5
 
+            base_angle = self.set_rotate(base_target)
+
             if self.front_pos.distance_to(base_target) > self.melee_range[
                 weapon]:  # target exceed weapon range, use max
-                base_angle = self.set_rotate(base_target)
                 base_target = Vector2(self.front_pos[0] - (self.melee_range[weapon] * sin(radians(base_angle))),
                                       self.front_pos[1] - (self.melee_range[weapon] * cos(radians(base_angle))))
 

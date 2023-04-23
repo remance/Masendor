@@ -288,8 +288,7 @@ def status_update(self):
     self.range_def = (self.range_def + (self.range_def * self.morale_state)) * self.command_buff
     self.accuracy = self.accuracy * self.command_buff
     self.charge_def = (self.charge_def + (self.charge_def * self.morale_state)) * self.command_buff
-    height_diff = (self.height / self.front_height) ** 2  # walk down hill increase speed, walk up hill reduce speed
-    self.speed = (self.speed * self.stamina_state) * height_diff
+    self.speed = (self.speed * self.stamina_state)
     self.charge = (self.charge + (self.charge * self.morale_state)) * self.command_buff
 
     # Add discipline to stat

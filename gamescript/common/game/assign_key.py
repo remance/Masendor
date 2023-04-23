@@ -29,7 +29,7 @@ def assign_key(self, key_assign):
         old_action = \
             tuple(self.player1_key_bind[self.config["USER"]["control player 1"]].keys())[
                 old_action]
-        self.confirm_ui.change_instruction("Swap key with " + old_action + " ?")
+        self.confirm_ui.change_instruction("Swap " + key_assign + " with " + old_action + " ?")
         self.input_popup = (
             "confirm_input", ("replace key", self.input_popup[1], old_action))
         self.main_ui_updater.remove(*self.input_ui_popup, *self.confirm_ui_popup, *self.inform_ui_popup)

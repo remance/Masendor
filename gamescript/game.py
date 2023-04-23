@@ -810,7 +810,12 @@ class Game:
         self.encyclopedia.change_ruleset()
 
         # Error log for selected ruleset
-        self.error_log.write("Ruleset: " + self.ruleset_list[self.ruleset][0])
+        self.error_log.write("Use ruleset: " + self.ruleset_list[self.ruleset][0])
+
+        subunit_to_make = tuple(set([this_subunit for this_subunit in self.troop_data.troop_list] +
+                                    [this_subunit for this_subunit in self.leader_data.leader_list]))
+        who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key in subunit_to_make}
+        who_todo |= {key: value for key, value in self.leader_data.leader_list.items() if key in subunit_to_make}
 
     def game_intro(self, screen, clock, intro):
         timer = 0

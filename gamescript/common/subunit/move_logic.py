@@ -18,7 +18,8 @@ def move_logic(self, dt):
                 move = self.base_target - self.base_pos
                 require_move_length = move.length()  # convert length
                 move.normalize_ip()
-                move *= self.move_speed * dt
+                height_diff = (self.height / self.front_height) ** 2  # walk down hill increase speed, walk up hill reduce speed
+                move *= self.move_speed * height_diff * dt
                 new_pos = self.base_pos + move
 
                 if (self.retreat_start or (0 < new_pos[0] < self.map_corner[0] and
@@ -49,6 +50,7 @@ def move_logic(self, dt):
                                                                   self.base_map)  # get new terrain and feature
 
                     self.make_front_pos()
+                    self.front_height = self.get_height(self.front_pos)
 
                     # momentum calculation
                     if "use momentum" in self.current_action:

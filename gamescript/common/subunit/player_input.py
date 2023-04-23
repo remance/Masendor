@@ -1,12 +1,16 @@
-import pygame
+from math import cos, sin, radians
+from random import choice, uniform, randint
+
+from pygame import Vector2
 
 
 def player_input(self, cursor_pos):
     """other_command is special type of command such as stop all action, raise flag, decimation, duel and so on"""
     if self.alive and self.not_broken:
-        new_pos = pygame.Vector2(self.base_pos)
+        new_pos = Vector2(self.base_pos)
+        new_angle = self.set_rotate(cursor_pos)
         if not self.current_action or "hold" in self.current_action:  # can rotate if not has any action or holding
-            self.new_angle = self.set_rotate(cursor_pos)
+            self.new_angle = new_angle
         if "uncontrollable" not in self.current_action and "uncontrollable" not in self.command_action:
             if self.battle.player_char_input_delay == 0 and not self.current_action:  # for input that need to have time delay to work properly
                 if self.battle.player_key_press[
@@ -31,7 +35,9 @@ def player_input(self, cursor_pos):
                     self.battle.player_char_input_delay = 1
 
             run_input = False
-            if self.battle.player_key_hold["Run Input"]:
+            if (self.toggle_run and not self.battle.player_key_hold["Run Input"]) or \
+                    (not self.toggle_run and self.battle.player_key_hold["Run Input"]):  # check for run input and toggle
+                # run toggle will change run input into walk input and vice versa
                 run_input = True
 
             if not self.current_action or "movable" in self.current_action:
@@ -51,7 +57,10 @@ def player_input(self, cursor_pos):
                 elif self.battle.player_key_hold["Move Right"]:
                     new_pos[0] += speed
 
-                if new_pos != self.base_pos:
+                if new_pos != self.base_pos or self.auto_move:
+                    if self.auto_move and new_pos == self.base_pos:  # auto move only if no move input
+                        new_pos = Vector2(self.base_pos[0] - (speed * sin(radians(new_angle))),
+                                          self.base_pos[1] - (speed * cos(radians(new_angle))))
                     if not self.current_action:
                         self.command_action = self.walk_command_action
                         if run_input:

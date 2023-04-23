@@ -233,6 +233,8 @@ class Subunit(pygame.sprite.Sprite):
         self.attack_subunit = None  # target for attacking
         self.melee_target = None  # current target of melee combat
         self.player_control = False  # subunit controlled by player
+        self.toggle_run = False  # player char toggle running
+        self.auto_move = False  # player char toggle auto moving
         self.formation_add_change = False  # subordinate die in last update, reset formation, this is to avoid high workload when multiple die at once
         self.unit_add_change = False
         self.retreat_start = False

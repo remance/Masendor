@@ -65,7 +65,6 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
                     impact = 0
                     attacker.interrupt_animation = True
                     attacker.command_action = attacker.damaged_command_action
-                    attacker.move_speed = attacker.walk_speed
                     attacker.momentum = 0
                     attacker.charging = False
                     attacker.forced_target = Vector2(attacker.base_pos[0] - (5 * sin(radians(attacker.angle))),

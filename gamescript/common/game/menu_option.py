@@ -31,6 +31,7 @@ def menu_option(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scr
 
         else:  # no joystick, reset player 1 to keyboard
             self.config["USER"]["control player 1"] = "keyboard"
+            edit_config("USER", "control player 1", "keyboard", "configuration.ini", self.config)
             self.control_switch.change_control("keyboard")
             for key, value in self.keybind_icon.items():
                 if self.joysticks:

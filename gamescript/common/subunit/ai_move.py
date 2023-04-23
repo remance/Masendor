@@ -40,16 +40,13 @@ def ai_move(self):
                 if self.available_move_skill and not self.command_action:  # use move skill first
                     self.skill_command_input(0, self.available_move_skill, pos_target=self.base_pos)
                 else:
-                    run_speed = self.run_speed
-                    if run_speed > self.unit_leader.run_speed:  # use unit leader run speed instead if faster
-                        run_speed = self.unit_leader.run_speed
                     if self.is_leader and self.nearest_enemy:
                         charge_target = self.nearest_enemy[0].base_pos
                     else:
                         charge_target = Vector2(self.base_pos[0] -
-                                                (run_speed * sin(radians(self.leader.angle))),
+                                                (self.run_speed * sin(radians(self.leader.angle))),
                                                 self.base_pos[1] -
-                                                (run_speed * cos(radians(self.leader.angle))))
+                                                (self.run_speed * cos(radians(self.leader.angle))))
                     if charge_target.distance_to(self.base_pos) > 0:
                         self.command_target = charge_target
                         attack_index = 0
@@ -59,7 +56,7 @@ def ai_move(self):
                         if "charge" not in self.current_action:
                             self.interrupt_animation = True
                         self.command_action = self.charge_command_action[attack_index]
-                        self.move_speed = run_speed
+                        self.move_speed = self.run_speed
 
         elif move_distance > follow:  # too far from follow target pos, start moving toward it
             self.command_target = move_target
@@ -76,8 +73,7 @@ def ai_move(self):
                 elif self.available_move_skill and not self.command_action:  # use move skill
                     self.skill_command_input(0, self.available_move_skill, pos_target=self.base_pos)
                 else:
-                    if (
-                            "movable" in self.current_action and "run" not in self.current_action) or "hold" in self.current_action:
+                    if ("movable" in self.current_action and "run" not in self.current_action) or "hold" in self.current_action:
                         self.interrupt_animation = True
                     self.command_action = self.run_command_action
                     self.move_speed = self.run_speed

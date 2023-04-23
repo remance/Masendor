@@ -198,9 +198,8 @@ class BeautifulMap(pygame.sprite.Sprite):
             for col_pos in range(0, self.image.get_height()):
                 terrain, feature = feature_map.get_feature((row_pos, col_pos), base_map)
                 new_colour = self.battle_map_colour[feature][1]
-                # height = int((self.height_map.get_height((row_pos, col_pos)) - 100) / 20)
-                height = 0
-                new_colour = (new_colour[0] + height, new_colour[1] + height, new_colour[2] + height)
+                height = self.height_map.get_height((row_pos, col_pos)) / 50
+                new_colour = pygame.Color(new_colour).correct_gamma(height)
                 rect = pygame.Rect(row_pos, col_pos, 1, 1)
                 self.image.fill(new_colour, rect)
 

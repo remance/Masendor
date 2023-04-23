@@ -82,7 +82,7 @@ class SliderMenu(pygame.sprite.Sprite):
         self._layer = 25
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
-        self.image = bar_images[0]
+        self.image = bar_images[0].copy()
         self.slider_size = bar_images[1].get_width()
         self.difference = (self.image.get_width() - self.slider_size) / 2
         self.value_scale = self.slider_size / 100

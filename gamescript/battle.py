@@ -551,9 +551,13 @@ class Battle:
                     else:
                         skill_key_list.append(value)
         else:
+            if self.joystick_name:
+                joyname = self.joystick_name[tuple(self.joystick_name.keys())[0]]
+            else:
+                joyname = "Other"
             for key, value in self.player_key_bind.items():
                 if "Skill" in key:
-                    skill_key_list.append(self.joystick_bind_name[self.joystick_name[tuple(self.joystick_name.keys())[0]]][value])
+                    skill_key_list.append(self.joystick_bind_name[joyname][value])
 
         for index, skill_icon in enumerate(self.skill_icon):
             skill_icon.change_key(skill_key_list[index])
@@ -590,7 +594,7 @@ class Battle:
 
             self.battle_ui_updater.remove(self.single_text_popup)  # remove button text popup every update
 
-            if self.player_key_control == "keyboard" or self.game_state in ("menu", "end"):
+            if self.player_key_control == "keyboard" or self.game_state in ("menu", "end") or self.input_popup[0]:
                 self.mouse_pos = pygame.mouse.get_pos()  # current mouse pos based on screen
 
                 if self.player_key_control == "keyboard":
@@ -600,7 +604,7 @@ class Battle:
             else:
                 for joystick in self.joysticks.values():
                     for i in range(joystick.get_numaxes()):
-                        if joystick.get_axis(i):
+                        if joystick.get_axis(i) > 0.1 or joystick.get_axis(i) < -0.1:
                             axis_name = "axis" + number_to_minus_or_plus(joystick.get_axis(i)) + str(i)
                             if axis_name in self.player_key_bind_name:
                                 self.player_key_hold[self.player_key_bind_name[axis_name]] = True
@@ -666,6 +670,8 @@ class Battle:
 
                 elif event.type == pygame.KEYDOWN:
                     event_key_press = event.key
+                    if event_key_press == K_ESCAPE:  # accept esc button always
+                        esc_press = True
                     if self.input_popup[0] == "text_input":  # event update to input box
                         self.input_box.player_input(event, key_state)
                         self.text_delay = 0.1

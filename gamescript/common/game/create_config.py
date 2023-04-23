@@ -25,7 +25,9 @@ def create_config(self):
                                                            "Skill 1": pygame.K_q, "Skill 2": pygame.K_e,
                                                            "Skill 3": pygame.K_r, "Skill 4": pygame.K_t,
                                                            "Swap Weapon Set 1": pygame.K_1,
-                                                           "Swap Weapon Set 2": pygame.K_2},
+                                                           "Swap Weapon Set 2": pygame.K_2,
+                                                           "Toggle Run": pygame.K_z,
+                                                           "Auto Move": pygame.K_x},
                                               "joystick": {"Main Weapon Attack": 4,
                                                            "Sub Weapon Attack": 5,
                                                            "Move Left": "axis-0", "Move Right": "axis+0",
@@ -35,7 +37,9 @@ def create_config(self):
                                                            "Skill 1": 0, "Skill 2": 1,
                                                            "Skill 3": 2, "Skill 4": 3,
                                                            "Swap Weapon Set 1": 6,
-                                                           "Swap Weapon Set 2": 7}}}
+                                                           "Swap Weapon Set 2": 7,
+                                                           "Toggle Run": "hat-0",
+                                                           "Auto Move": "hat+0"}}}
 
     config["USER"] = {key: value for key, value in config["DEFAULT"].items()}
     with open(os.path.join(self.main_dir, "configuration.ini"), "w") as cf:
