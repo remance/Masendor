@@ -27,4 +27,5 @@ def read_selected_map_data(self, map_list, file, source=False):
     header = tuple(data.values())[0]
     del data[list(data.keys())[0]]  # remove header from dict
     data = {key: {header[index]: value[index] for index, value2 in enumerate(value)} for key, value in data.items()}
+
     return data

@@ -719,6 +719,10 @@ class Battle:
                         if not hasattr(self.main, "profiler"):
                             self.main.setup_profiler()
                         self.main.profiler.switch_show_hide()
+                    elif event.key == K_F9:  # show/hide profiler
+                        for this_subunit in self.subunit_updater:
+                            if this_subunit.team == 1:
+                                this_subunit.health = 0
 
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:  # left click
@@ -923,8 +927,7 @@ class Battle:
                                         self.event_log.add_log(
                                             (0, self.event_log.map_event["wt" + str(key)]["Text"]))
                                     self.battle_done_box.pop(self.faction_data.faction_list[self.map_info[
-                                        "Team " + str(key)][0]]["Name"], self.coa_list[self.map_info[
-                                        "Team " + str(key)][0]])
+                                        "Team " + str(key)][0]]["Name"], self.coa_list[int(self.map_info["Team " + str(key)][0])])
                                     break
 
                         self.battle_done_button.rect = self.battle_done_button.image.get_rect(
