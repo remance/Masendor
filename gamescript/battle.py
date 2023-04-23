@@ -632,14 +632,14 @@ class Battle:
                             self.player_key_hold[self.player_key_bind_name[i]] = True
 
                     for i in range(joystick.get_numhats()):
-                        if joystick.get_hat(i)[0]:
-                            hat_name = "hat" + number_to_minus_or_plus(joystick.get_axis(i)) + str(0)
+                        if joystick.get_hat(i)[0] > 0.1 or joystick.get_hat(i)[0] < 0.1:
+                            hat_name = "hat" + number_to_minus_or_plus(joystick.get_hat(i)[0]) + str(0)
                             if hat_name in self.player_key_bind_name:
-                                self.player_key_hold[self.player_key_bind_name[hat_name]] = True
-                        if joystick.get_hat(i)[1]:
-                            hat_name = "hat" + number_to_minus_or_plus(joystick.get_axis(i)) + str(1)
+                                self.player_key_press[self.player_key_bind_name[hat_name]] = True
+                        if joystick.get_hat(i)[1] > 0.1 or joystick.get_hat(i)[1] < 0.1:
+                            hat_name = "hat" + number_to_minus_or_plus(joystick.get_hat(i)[1]) + str(1)
                             if hat_name in self.player_key_bind_name:
-                                self.player_key_hold[self.player_key_bind_name[hat_name]] = True
+                                self.player_key_press[self.player_key_bind_name[hat_name]] = True
 
             self.cursor.update(self.mouse_pos)
             self.base_cursor_pos = pygame.Vector2((self.mouse_pos[0] - self.center_screen[0] + self.camera_pos[0]),

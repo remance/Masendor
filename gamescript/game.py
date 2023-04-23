@@ -79,20 +79,26 @@ class Game:
                                    15: "Capture", "axis-0": "L. Stick Left", "axis+0": "L. Stick R.",
                                    "axis-1": "L. Stick U.", "axis+1": "L. Stick D.",
                                    "axis-2": "R. Stick Left", "axis+2": "R. Stick R.",
-                                   "axis-3": "R. Stick U.", "axis+3": "R. Stick D."},
+                                   "axis-3": "R. Stick U.", "axis+3": "R. Stick D.",
+                                   "hat-0": "L. Arrow", "hat+0": "R. Arrow",
+                                   "hat-1": "U. Arrow", "hat+1": "D. Arrow",},
                           "Other": {0: "1", 1: "2", 2: "3", 3: "4", 4: "L1", 5: "R1", 6: "L2", 7: "R2", 8: "Select",
                                     9: "Start", 10: "L. Stick", 11: "R. Stick", 12: None, 13: None, 14: None, 15: None,
                                     "axis-0": "L. Stick L.", "axis+0": "L. Stick R.",
                                     "axis-1": "L. Stick U.", "axis+1": "L. Stick D.",
                                     "axis-2": "R. Stick Left", "axis+2": "R. Stick R.",
-                                    "axis-3": "R. Stick U.", "axis+3": "R. Stick D."
+                                    "axis-3": "R. Stick U.", "axis+3": "R. Stick D.",
+                                    "hat-0": "L. Arrow", "hat+0": "R. Arrow",
+                                    "hat-1": "U. Arrow", "hat+1": "D. Arrow",
                                     },
                           "PS": {0: "X", 1: "O", 2: "□", 3: "△", 4: "Share", 5: "PS", 6: "Options", 7: None, 8: None,
                                  9: None, 10: None, 11: "D-Up", 12: "D-Down", 13: "D-Left", 14: "D-R.",
                                  15: "T-Pad", "axis-0": "L. Stick L.", "axis+0": "L. Stick R.",
                                  "axis-1": "L. Stick U.", "axis+1": "L. Stick D.",
                                  "axis-2": "R. Stick Left", "axis+2": "R. Stick R.",
-                                 "axis-3": "R. Stick U.", "axis+3": "R. Stick D."}}
+                                 "axis-3": "R. Stick U.", "axis+3": "R. Stick D.",
+                                 "hat-0": "L. Arrow", "hat+0": "R. Arrow",
+                                 "hat-1": "U. Arrow", "hat+1": "D. Arrow",}}
     empty_method = utility.empty_method
 
     # import from common.game
