@@ -5,7 +5,7 @@ def test_pickleable_surface():
     import pickle
     import pygame
     import io
-    from gamescript.save_load_pickle_with_surfaces import PickleableSurface
+    from gamescript.datacacher import PickleableSurface
 
     surface1 = pygame.Surface((64,)*2)
     pygame.draw.circle(surface1, 'red', (32, 32), 32)
@@ -27,12 +27,12 @@ def test_pickleable_surface():
             assert s1.get_at((x, y)) == s2.get_at((x, y))
 
 
-@patch("gamescript.save_load_pickle_with_surfaces.PickleableSurface.__eq__",
+@patch("gamescript.datacacher.PickleableSurface.__eq__",
        lambda self, other: self.surface == other.surface)
 def test_recursive_surface_to_pickleable_surface():
     import pygame
-    from gamescript.save_load_pickle_with_surfaces import recursive_cast_surface_to_pickleable_surface
-    from gamescript.save_load_pickle_with_surfaces import PickleableSurface
+    from gamescript.datacacher import recursive_cast_surface_to_pickleable_surface
+    from gamescript.datacacher import PickleableSurface
 
     surface = pygame.Surface((64,)*2)
     pygame.draw.circle(surface, 'red', (32, 32), 32)
