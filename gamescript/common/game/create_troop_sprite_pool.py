@@ -14,6 +14,7 @@ from gamescript.datacacher import save_pickle_with_surfaces
 def create_troop_sprite_pool(self, who_todo, preview=False, specific_preview=None, max_preview_size=200):
     cache_folder_path = os.path.join(self.main_dir, "cache", self.ruleset_folder)
     if not os.path.isdir(cache_folder_path):
+        os.mkdir(os.path.join(self.main_dir, "cache"))
         os.mkdir(cache_folder_path)
 
     pool = inner_create_troop_sprite_pool(self, who_todo, preview, specific_preview, max_preview_size)
