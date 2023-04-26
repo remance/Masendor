@@ -33,7 +33,6 @@ __pycache__/
 /build
 /dist
 /test.py
-!/configuration.ini
 /error_report.txt
 /configuration.ini
 /pyinstaller.exe
