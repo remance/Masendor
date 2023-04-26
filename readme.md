@@ -235,10 +235,7 @@ Photo studio to make battle screen to your liking. Simply add subunit and effect
 
 # Future Plan
 
-**Ver 0.6 Dream Decision:** Battle selection(with different estimation source),
-preparation and result screen, custom battle, improve the main menu, Battle of Megiddo, Battle of Mohács
-
-**Ver 0.7 Future Visionary:**  march sound system, keybinding,
+**Ver 0.7 Future Visionary:** custom unit and troop editor, march sound system, keybinding, loading screen,
 Battle of Walaja, Battle of Dorylaeum
 
 **0.7 and 0.7.1:** console stick, control key binding, rework Battle of Hastings, Battle of Mohács
@@ -249,7 +246,7 @@ Battle of Walaja, Battle of Dorylaeum
 
 **0.7.7:** Companion system, Battle of Dorylaeum
 
-**0.7.8 and 0.7.9:** specific Leader command, Minor battle: 764 Irish
+**0.7.8 and 0.7.9:** specific Leader command, loading screen, Minor battle: 764 Irish
 abbey war
 
 **Ver 0.8 Authentic Attraction:** In-game art, better-looking UI, add intro screen, Battle of Isandlwana, Battle of Hwangsanbeol
