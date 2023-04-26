@@ -71,7 +71,7 @@ script_folder = "gamescript"
 
 
 class Game:
-    game_version = "0.7.1.3"
+    game_version = "0.7.1.6"
     mouse_bind = {"left click": 1, "middle click": 2, "right click": 3, "scroll up": 4, "scroll down": 5}
     mouse_bind_name = {value: key for key, value in mouse_bind.items()}
     joystick_bind_name = {"XBox": {0: "A", 1: "B", 2: "X", 3: "Y", 4: "-", 5: "Home", 6: "+", 7: "Start", 8: None,

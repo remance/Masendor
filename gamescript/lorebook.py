@@ -347,10 +347,10 @@ class Lorebook(pygame.sprite.Sprite):
                            self.font)
             self.image.blit(description_surface, description_rect)
 
-            row = 350 * self.screen_scale[1]
+            row = 400 * self.screen_scale[1]
             col = 60 * self.screen_scale[0]
             if self.portrait is not None:
-                row = 600 * self.screen_scale[1]
+                row = 650 * self.screen_scale[1]
                 col = 60 * self.screen_scale[0]
 
             # concept, history, faction section is simply for processed and does not need specific column read
@@ -468,11 +468,13 @@ class Lorebook(pygame.sprite.Sprite):
                                             pass
 
                                     elif key == "Role":  # Replace imageid to subunit role in troop section
+                                        # role is not type, it represents troop classification to suggest what it excels
                                         role_list = {0: "None", 1: "Offensive", 2: "Defensive", 3: "Skirmisher",
                                                      4: "Shock", 5: "Support", 6: "Artillery",
                                                      7: "Ambusher", 8: "Sniper", 9: "Recon", "": ""}
                                         role = [role_list[item] for item in
-                                                value]  # role is not type, it represents subunit classification from base stat to tell what it excels
+                                                value]
+
                                         create_text = "Specilaised Role: "
                                         if len(role) == 0:
                                             create_text += "None, "
@@ -507,6 +509,9 @@ class Lorebook(pygame.sprite.Sprite):
                                     elif key == "Formation":
                                         create_text = key + ": " + str(value).replace("[", "").replace("]", ""). \
                                             replace("'", "")
+
+                                    elif key in ("Size", "True ID", "Sprite ID"):
+                                        create_text = ""
 
                             elif self.section in (self.skill_section, self.trait_section, self.status_section):
                                 if key == "Status" or key == "Enemy Status":  # status list
