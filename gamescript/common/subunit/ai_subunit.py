@@ -28,15 +28,17 @@ def ai_subunit(self):
 
     if self.is_leader and self.move_speed:  # find new follow point for subordinate
         for subunit in self.alive_troop_follower:
-            new_target = rotation_xy(self.base_pos, self.base_pos +
-                                     self.troop_distance_list[subunit], self.radians_angle)
-            self.troop_pos_list[subunit][0] = new_target[0]
-            self.troop_pos_list[subunit][1] = new_target[1]
+            if subunit in self.troop_distance_list:
+                new_target = rotation_xy(self.base_pos, self.base_pos +
+                                         self.troop_distance_list[subunit], self.radians_angle)
+                self.troop_pos_list[subunit][0] = new_target[0]
+                self.troop_pos_list[subunit][1] = new_target[1]
         for leader in self.alive_leader_follower:
-            new_target = rotation_xy(self.base_pos, self.base_pos +
-                                     self.unit_distance_list[leader], self.radians_angle)
-            self.unit_pos_list[leader][0] = new_target[0]
-            self.unit_pos_list[leader][1] = new_target[1]
+            if leader in self.unit_distance_list:
+                new_target = rotation_xy(self.base_pos, self.base_pos +
+                                         self.unit_distance_list[leader], self.radians_angle)
+                self.unit_pos_list[leader][0] = new_target[0]
+                self.unit_pos_list[leader][1] = new_target[1]
 
     if self.is_unit_leader:  # run leader planning
         self.ai_leader()

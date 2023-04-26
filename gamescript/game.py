@@ -164,6 +164,7 @@ class Game:
 
         self.main_dir = main_dir
         self.error_log = error_log
+        self.error_log.write("Game Version: " + self.game_version)
 
         lorebook.Lorebook.main_dir = self.main_dir
 

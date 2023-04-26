@@ -108,7 +108,8 @@ def ai_move(self):
             move_distance = self.nearest_enemy[0].base_pos.distance_to(self.front_pos)
             if self.shoot_range[0] + self.shoot_range[1] > 0:  # has range weapon, move to maximum shoot range position
                 max_shoot = max(self.shoot_range[0], self.shoot_range[1])
-                if self.leader:  # use distance of formation to make subunit not cluster at same distance
+                if self.leader and self in self.leader.troop_distance_list:  # possible that subunit not in list yet from recent change of leader
+                    # use distance of formation to make subunit not cluster at same distance
                     max_shoot -= self.leader.troop_distance_list[self][1]
                 if move_distance > max_shoot:  # further than can shoot
                     move_distance -= max_shoot
