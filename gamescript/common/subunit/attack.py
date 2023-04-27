@@ -109,7 +109,7 @@ def attack(self, attack_type):
             try:
                 self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
             except KeyError:
-                print(weapon, self.equipped_weapon, self.current_action, self.ammo_now)
+                print(self.name, weapon, self.equipped_weapon, self.current_action, self.ammo_now)
                 crash
 
             if self.ammo_now[self.equipped_weapon][weapon] == 0 and \

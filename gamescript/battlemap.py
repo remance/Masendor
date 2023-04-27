@@ -92,7 +92,7 @@ class HeightMap(pygame.sprite.Sprite):
         self.topology_image = None
 
     def draw_image(self, image):
-        self.image = image.copy()
+        self.image = image
         self.map_array = tuple(
             [[col for col in row] for row in pygame.surfarray.pixels_green(self.get_grey_scaled_surface()).tolist()])
         self.max_map_array = (len(self.map_array) - 1, len(self.map_array[0]) - 1)
@@ -121,7 +121,8 @@ class HeightMap(pygame.sprite.Sprite):
         return surface
 
     def get_battle_map_overlay(self):
-        """get an overlay (24-bit surface) that should be applied to the battle map to visual height differences. It is intended to be applied using BLEND_RGB_ADD"""
+        """get an overlay (24-bit surface) that should be applied to the battle map to visual height differences.
+        It is intended to be applied using BLEND_RGB_ADD"""
 
         # the old slow way used this formula to modify the color.
         # as you can see it adds a subtle increase of white where there is height
@@ -299,11 +300,6 @@ class BeautifulMap(pygame.sprite.Sprite):
                                                                  0] * 5,
                                                              self.height_map.topology_image.get_height() *
                                                              self.screen_scale[1] * 5)), (0, 0))
-        elif self.mode == 2:  # with height map
-            self.image.blit(pygame.transform.smoothscale(self.height_map.image,
-                                                         (self.height_map.image.get_width() * self.screen_scale[0] * 5,
-                                                          self.height_map.image.get_height() * self.screen_scale[
-                                                              1] * 5)), (0, 0))
 
     def clear_image(self):
         self.image = None

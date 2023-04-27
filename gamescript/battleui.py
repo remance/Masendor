@@ -453,7 +453,7 @@ class FPScount(pygame.sprite.Sprite):
         self.image = pygame.Surface((50, 50), pygame.SRCALPHA)
         self.base_image = self.image.copy()
         self.font = pygame.font.SysFont("Arial", 18)
-        fps_text = self.font.render("60", True, pygame.Color("blue"))
+        fps_text = self.font.render("60", True, pygame.Color("red"))
         self.text_rect = fps_text.get_rect(center=(10, 10))
         self.rect = self.image.get_rect(topleft=(0, 0))
 
@@ -461,7 +461,7 @@ class FPScount(pygame.sprite.Sprite):
         """Update current fps"""
         self.image = self.base_image.copy()
         fps = str(int(clock.get_fps()))
-        fps_text = self.font.render(fps, True, pygame.Color("blue"))
+        fps_text = self.font.render(fps, True, pygame.Color("red"))
         text_rect = fps_text.get_rect(center=(10, 10))
         self.image.blit(fps_text, text_rect)
 

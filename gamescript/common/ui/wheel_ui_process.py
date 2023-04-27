@@ -10,7 +10,7 @@ def wheel_ui_process(self, choice):
         if choice in self.unit_behaviour_wheel["Setting"]:
             if choice == "Height Map":
                 self.battle_map.mode += 1  # change height map mode
-                if self.battle_map.mode > 2:
+                if self.battle_map.mode > 1:
                     self.battle_map.mode = 0
                 self.battle_map.change_map_stuff("mode")
 
