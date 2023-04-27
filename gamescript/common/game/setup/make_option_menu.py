@@ -6,8 +6,23 @@ load_images = utility.load_images
 make_bar_list = utility.make_bar_list
 
 
-def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_height, image_list, volume,
+def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_height, image_list,
                      updater, config, keybind, battle_select_image):
+    """
+    This method create UI in option menu and keybinding menu
+
+    :param main_dir: main directory
+    :param screen_scale:
+    :param screen_rect:
+    :param screen_width: width of game screen
+    :param screen_height: height of game screen
+    :param image_list:
+    :param updater:
+    :param config: config
+    :param keybind:
+    :param battle_select_image:
+    :return: dict of objects
+    """
     # Create option menu button and icon
     font_size = int(36 * screen_scale[1])
 
@@ -20,7 +35,8 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
 
     fullscreen_box = menu.TickBox((screen_rect.width / 2, screen_rect.height / 6.5),
                                   battle_select_image["untick"], battle_select_image["tick"], "fullscreen")
-    if config["full_screen"] == 1:
+
+    if int(config["full_screen"]) == 1:
         fullscreen_box.change_tick(True)
 
     fullscreen_text = menu.OptionMenuText(
@@ -32,13 +48,17 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
     scroller_images = (option_menu_images["scroller_box"], option_menu_images["scroller"])
     scroll_button_images = (option_menu_images["scroll_button_normal"], option_menu_images["scroll_button_click"])
     volume_slider = {"master": menu.SliderMenu(scroller_images, scroll_button_images,
-                                               (screen_rect.width / 2, screen_rect.height / 4), volume["master"]),
+                                               (screen_rect.width / 2, screen_rect.height / 4),
+                                               float(config["master_volume"])),
                      "music": menu.SliderMenu(scroller_images, scroll_button_images,
-                                              (screen_rect.width / 2, screen_rect.height / 3), volume["music"]),
+                                              (screen_rect.width / 2, screen_rect.height / 3),
+                                              float(config["music_volume"])),
                      "voice": menu.SliderMenu(scroller_images, scroll_button_images,
-                                              (screen_rect.width / 2, screen_rect.height / 2.4), volume["voice"]),
+                                              (screen_rect.width / 2, screen_rect.height / 2.4),
+                                              float(config["voice_volume"])),
                      "effect": menu.SliderMenu(scroller_images, scroll_button_images,
-                                               (screen_rect.width / 2, screen_rect.height / 2), volume["effect"]),
+                                               (screen_rect.width / 2, screen_rect.height / 2),
+                                               float(config["effect_volume"])),
                      }
     value_box = {key: menu.ValueBox(option_menu_images["value"],
                                     (volume_slider[key].rect.topright[0] * 1.1, volume_slider[key].rect.center[1]),

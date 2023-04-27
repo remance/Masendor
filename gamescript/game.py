@@ -98,7 +98,7 @@ class Game:
                                  "axis-2": "R. Stick Left", "axis+2": "R. Stick R.",
                                  "axis-3": "R. Stick U.", "axis+3": "R. Stick D.",
                                  "hat-0": "L. Arrow", "hat+0": "R. Arrow",
-                                 "hat-1": "U. Arrow", "hat+1": "D. Arrow",}}
+                                 "hat-1": "U. Arrow", "hat+1": "D. Arrow"}}
     empty_method = utility.empty_method
 
     # import from common.game
@@ -193,7 +193,7 @@ class Game:
             self.player1_key_bind = ast.literal_eval(self.config["USER"]["keybind player 1"])
             self.ruleset = 0  # for now default historical ruleset only
             if self.game_version != self.config["VERSION"]["ver"]:  # remake config as game version change
-                crash
+                reset_config  # cause NameError to reset config file
         except (KeyError, TypeError, NameError):  # config error will make the game recreate config with default
             config = self.create_config()
             self.config = config
@@ -503,8 +503,6 @@ class Game:
         # Option menu button
         option_menu_dict = make_option_menu(self.main_dir, self.screen_scale, self.screen_rect, self.screen_width,
                                             self.screen_height, image_list,
-                                            {"master": self.master_volume, "music": self.music_volume,
-                                             "voice": self.voice_volume, "effect": self.effect_volume},
                                             self.main_ui_updater, self.config["USER"], self.player1_key_bind,
                                             battle_select_image)
         self.back_button = option_menu_dict["back_button"]
