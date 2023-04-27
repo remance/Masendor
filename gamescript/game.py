@@ -355,23 +355,23 @@ class Game:
                                                  self.main_ui_updater, text="Preset Map")
         self.custom_map_button = menu.MenuButton(self.screen_scale, image_list,
                                                  (self.screen_rect.width / 2,
-                                                  self.screen_rect.height - (image_list[0].get_height() * 7)),
+                                                  self.screen_rect.height - (image_list[0].get_height() * 7.4)),
                                                  self.main_ui_updater, text="Custom Map")
         self.game_edit_button = menu.MenuButton(self.screen_scale, image_list,
                                                 (self.screen_rect.width / 2,
-                                                 self.screen_rect.height - (image_list[0].get_height() * 5.5)),
+                                                 self.screen_rect.height - (image_list[0].get_height() * 6.3)),
                                                 self.main_ui_updater, text="Editor")
         self.lore_button = menu.MenuButton(self.screen_scale, image_list,
                                            (self.screen_rect.width / 2,
-                                            self.screen_rect.height - (image_list[0].get_height() * 4)),
+                                            self.screen_rect.height - (image_list[0].get_height() * 5.2)),
                                            self.main_ui_updater, text="Encyclopedia")
         self.option_button = menu.MenuButton(self.screen_scale, image_list,
                                              (self.screen_rect.width / 2,
-                                              self.screen_rect.height - (image_list[0].get_height() * 2.5)),
+                                              self.screen_rect.height - (image_list[0].get_height() * 4.1)),
                                              self.main_ui_updater, text="Option")
         self.quit_button = menu.MenuButton(self.screen_scale, image_list,
                                            (self.screen_rect.width / 2,
-                                            self.screen_rect.height - (image_list[0].get_height())),
+                                            self.screen_rect.height - (image_list[0].get_height() *3.0 )),
                                            self.main_ui_updater, text="Quit")
         self.mainmenu_button = (self.preset_map_button, self.custom_map_button, self.game_edit_button,
                                 self.lore_button, self.option_button, self.quit_button)
@@ -959,7 +959,10 @@ class Game:
             self.cursor.update(self.mouse_pos)
             # ^ End user input
 
-            self.screen.blit(self.background, (0, 0))  # blit background over instead of clear() to reset screen
+            # disable background for now...
+            # self.screen.blit(self.background, (0, 0))  # blit background over instead of clear() to reset screen
+
+            self.screen.fill("#222a2e")
 
             if self.input_popup[
                 0]:  # currently, have input text pop up on screen, stop everything else until done

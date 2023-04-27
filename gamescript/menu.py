@@ -274,13 +274,13 @@ class MenuButton(pygame.sprite.Sprite):
         self.button_click_image = images[2].copy()
         self.updater = updater
         self.text = text
-        self.font = pygame.font.SysFont("timesnewroman", int(size * screen_scale[1]))
+        self.font = pygame.font.SysFont("ubuntumono", int(size * screen_scale[1]*0.6))
         self.base_image0 = self.button_normal_image.copy()
         self.base_image1 = self.button_over_image.copy()
         self.base_image2 = self.button_click_image.copy()
 
         if text != "":  # draw text into the button images
-            text_surface = self.font.render(self.text, True, (0, 0, 0))
+            text_surface = self.font.render(self.text, True, (200, 180, 200))
             text_rect = text_surface.get_rect(center=self.button_normal_image.get_rect().center)
             self.button_normal_image.blit(text_surface, text_rect)
             self.button_over_image.blit(text_surface, text_rect)
