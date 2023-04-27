@@ -118,6 +118,7 @@ class Game:
     menu_char_select = empty_method
     menu_custom_team_select = empty_method
     menu_game_editor = empty_method
+    menu_keybind = empty_method
     menu_main = empty_method
     menu_map_select = empty_method
     menu_option = empty_method
@@ -823,6 +824,8 @@ class Game:
                                     [this_subunit for this_subunit in self.leader_data.leader_list]))
         who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key in subunit_to_make}
         who_todo |= {key: value for key, value in self.leader_data.leader_list.items() if key in subunit_to_make}
+
+        # self.create_troop_sprite_pool(who_todo)
 
     def game_intro(self, screen, clock, intro):
         timer = 0

@@ -12,9 +12,12 @@ from gamescript.datacacher import save_pickle_with_surfaces
 
 
 def create_troop_sprite_pool(self, who_todo, preview=False, specific_preview=None, max_preview_size=200):
+    cache_folder_path = os.path.join(self.main_dir, "cache")
+    if not os.path.isdir(cache_folder_path):
+        os.mkdir(cache_folder_path)
+
     cache_folder_path = os.path.join(self.main_dir, "cache", self.ruleset_folder)
     if not os.path.isdir(cache_folder_path):
-        os.mkdir(os.path.join(self.main_dir, "cache"))
         os.mkdir(cache_folder_path)
 
     pool = inner_create_troop_sprite_pool(self, who_todo, preview, specific_preview, max_preview_size)
@@ -342,6 +345,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                         make_animation = False
                         same_both_weapon_set = False
                         both_main_sub_weapon = False
+                        skill_animation = False
                         name_input = animation + "/" + str(weapon_set_index)
 
                         try:  # get any animation for checking weapon layer
@@ -362,6 +366,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                             for skill in skill_list:  # not make animation for troop with no related skill animation
                                 if skill in name_input:
                                     make_animation = True
+                                    skill_animation = True
                                     break
 
                         elif any(ext in name_input for ext in weapon_common_type_list) is False and \
@@ -379,12 +384,10 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                             if any(ext in name_input for ext in weapon_attack_type_list) is False and \
                                     "_Charge" not in name_input and weapon_index == 0:
                                 # common animation with weapon like idle, make only for main weapon
-                                # print("common", name_input, ("_Main_", "_Sub_")[weapon_index])
                                 make_animation = True
                             elif (weapon_attack_action[weapon_set_index][weapon_index] in name_input or
                                   "_Charge" in name_input) and ("_Main_", "_Sub_")[weapon_index] in name_input:
                                 # attack animation and charge
-                                # print("attack", name_input, ("_Main_", "_Sub_")[weapon_index], weapon_attack_action[weapon_set_index][weapon_index])
                                 make_animation = True
 
                         final_name = name_input
@@ -394,10 +397,14 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                             final_name = final_name.replace(
                                 weapon_common_action[weapon_set_index][weapon_index] + "_", "")
 
+                        if skill_animation and weapon_index == 1:
+                            # skill animation does not differentiate between main and sub weapon, so make only for main
+                            # the animation for main weapon should already been done before sub weapon
+                            make_animation = False
+
                         if make_animation:
                             if final_name not in current_in_pool:  # check if animation already existed or not
                                 current_in_pool[final_name] = {}
-                                print(subunit_id, "not exist", final_name, same_both_weapon_set, weapon_set_index, weapon_index, weapon_common_action[weapon_set_index][weapon_index])
                                 if same_both_weapon_set:
                                     next_level[weapon_key[1]][final_name] = {}
                             else:  # animation with this name exist, check if data match
@@ -410,7 +417,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                                 if current_in_pool[final_name]["data"] == md5_string:  # data matched
                                     make_animation = False
                                 else:
-                                    print(subunit_id, "exist but not match", final_name)
+                                    print(sprite_id, subunit_id, "exist but not match", final_name)
 
                         if make_animation:
                             new_direction = "r_side"

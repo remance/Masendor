@@ -1,10 +1,10 @@
-from pygame import Surface, SRCALPHA
+from pygame import Surface
 
 
 class Camera:
     def __init__(self, start_pos, screen_rect):
         self.pos = start_pos  # Starting camara pos
-        self.image = Surface(screen_rect.size, SRCALPHA)  # Camera image
+        self.image = Surface(screen_rect.size)  # Camera image
 
     def update(self, pos, surfaces):
         """Update self camera with sprite blit to camera image"""

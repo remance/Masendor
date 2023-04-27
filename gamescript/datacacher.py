@@ -7,7 +7,8 @@
 # (note that that user uses tostring, I think tobytes is better)
 
 import pickle
-
+import threading
+from time import sleep
 import pygame
 
 
@@ -77,4 +78,15 @@ def recursive_cast_pickleable_surface_to_surface(data):
         for v in data:
             f(v)
 
-# ---
+
+# class TroopSpriteCacher:
+#     def __int__(self):
+#         self.input_list = []
+#         threading.Thread(target=self._loop, daemon=True).start()
+#
+#     def _loop(self):
+#         while True:
+#             # Check for commands
+#             sleep(0.01)  # Limit the logic loop running to every 10ms
+#             if self.input_list:
+#                 pass

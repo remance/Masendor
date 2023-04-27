@@ -240,11 +240,11 @@ Battle of Walaja, Battle of Dorylaeum
 
 **0.7 and 0.7.1:** console stick, control key binding, rework Battle of Hastings, Battle of Mohács
 
-**0.7.2 and 0.7.3:** custom unit editor and march sound system
+**0.7.2 and 0.7.3:** Companion system, Battle of Dorylaeum
 
-**0.7.4 to 0.7.6:** custom troop editor, Battle of Walaja
+**0.7.4 to 0.7.6:** custom unit editor and march sound system
 
-**0.7.7:** Companion system, Battle of Dorylaeum
+**0.7.7:** custom troop editor, Battle of Walaja
 
 **0.7.8 and 0.7.9:** specific Leader command, loading screen, Minor battle: 764 Irish
 abbey war
@@ -266,7 +266,7 @@ Encyclopedia at main menu + more historical battles
 
 **Ver 1.3:** hidden stat, line of sight, raise flag/ light torch, ambush bonus
 
-**Ver 1.6:** Commander, strategist and leader duel with dynamic result and event (Move from 0.2.7 as it is not the main
+**Ver 1.6:** Commander mode, strategist and leader duel with dynamic result and event (Move from 0.2.7 as it is not the main
 priority in the early battle sample yet), transfer leader, Battle of Gaixia
 
 **Ver 1.7:** Deception, False information, scout, espionage warfare, information, Minor battle: Siege of Orleans
