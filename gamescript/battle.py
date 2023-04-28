@@ -235,7 +235,7 @@ class Battle:
         self.bottom_corner = self.screen_rect.height - (5 * self.screen_scale[1])
         self.center_screen = [self.screen_rect.width / 2, self.screen_rect.height / 2]  # center position of the screen
 
-        # data specific to ruleset
+        # data specific to module
         self.faction_data = None
         self.coa_list = None
 
@@ -325,20 +325,20 @@ class Battle:
         self.battle_cursor_pos = [0, 0]  # mouse position list in battle map not screen with zoom
         self.command_cursor_pos = [0, 0]  # with zoom and screen scale for unit command
 
-    def prepare_new_game(self, ruleset, ruleset_folder, team_selected, map_type, map_selected,
+    def prepare_new_game(self, module, module_folder, team_selected, map_type, map_selected,
                          map_source, char_selected, map_info, camp_pos):
 
-        for message in self.inner_prepare_new_game(ruleset, ruleset_folder, team_selected, map_type, map_selected,
+        for message in self.inner_prepare_new_game(module, module_folder, team_selected, map_type, map_selected,
                                                    map_source, char_selected, map_info, camp_pos):
             print(message, end="")
 
-    def inner_prepare_new_game(self, ruleset, ruleset_folder, team_selected, map_type, map_selected,
+    def inner_prepare_new_game(self, module, module_folder, team_selected, map_type, map_selected,
                                map_source, char_selected, map_info, camp_pos):
         """Setup stuff when start new battle"""
         self.language = self.main.language
 
-        self.ruleset = ruleset  # current ruleset used
-        self.ruleset_folder = ruleset_folder  # the folder of rulseset used
+        self.module = module  # current module used
+        self.module_folder = module_folder  # the folder of rulseset used
         self.map_selected = map_selected  # map folder name
         self.map_source = str(map_source)
         self.team_selected = team_selected  # player selected team
@@ -367,7 +367,7 @@ class Battle:
         if map_type == "preset":
             try:
                 self.weather_event = csv_read(self.main_dir, "weather.csv",
-                                              ("data", "ruleset", self.ruleset_folder, "map", map_type,
+                                              ("data", "module", self.module_folder, "map", map_type,
                                                self.map_selected,
                                                self.map_source), output_type="list")
                 self.weather_event = self.weather_event[1:]
@@ -391,7 +391,7 @@ class Battle:
             self.music_list = glob.glob(os.path.join(self.main_dir, "data", "sound", "music", "*.ogg"))
             try:
                 self.music_event = csv_read(self.main_dir, "music_event.csv",
-                                            ("data", "ruleset", self.ruleset_folder, "map", map_type,
+                                            ("data", "module", self.module_folder, "map", map_type,
                                              self.map_selected), output_type="list")
                 self.music_event = self.music_event[1:]
                 if self.music_event:
@@ -416,7 +416,7 @@ class Battle:
         yield set_start_load("map events")
         try:  # get new map event for event log
             map_event = csv_read(self.main_dir, "eventlog_" + self.language + ".csv",
-                                 ("data", "ruleset", self.ruleset_folder, "map", map_type,
+                                 ("data", "module", self.module_folder, "map", map_type,
                                   self.map_selected, self.map_source),
                                  header_key=True)
             battleui.EventLog.map_event = map_event
@@ -441,10 +441,10 @@ class Battle:
 
         yield set_start_load("map images")
         images = load_images(self.main_dir,
-                             subfolder=("ruleset", self.ruleset_folder, "map", map_type, self.map_selected))
+                             subfolder=("module", self.module_folder, "map", map_type, self.map_selected))
         if not images and map_type == "custom":  # custom map battle but use preset map
             images = load_images(self.main_dir,
-                                 subfolder=("ruleset", self.ruleset_folder, "map", "preset", self.map_selected))
+                                 subfolder=("module", self.module_folder, "map", "preset", self.map_selected))
         self.battle_map_base.draw_image(images["base"])
         self.battle_map_feature.draw_image(images["feature"])
         self.battle_map_height.draw_image(images["height"])
@@ -829,7 +829,7 @@ class Battle:
                             if this_weather[0] in self.weather_data:
                                 self.current_weather.__init__(self.time_ui, this_weather[0], this_weather[2],
                                                               this_weather[3], self.weather_data)
-                            else:  # Clear weather when no weather found, also for when input weather not in ruleset
+                            else:  # Clear weather when no weather found, also for when input weather not in module
                                 self.current_weather.__init__(self.time_ui, 4, 0, 0, self.weather_data)
                             self.weather_event.pop(0)
                             if self.current_weather.name in self.weather_effect_images:

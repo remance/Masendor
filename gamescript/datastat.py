@@ -16,15 +16,15 @@ lore_csv_read = utility.lore_csv_read
 
 
 class TroopData:
-    def __init__(self, main_dir, weapon_icon_images, ruleset_folder, language):
+    def __init__(self, main_dir, weapon_icon_images, module_folder, language):
         """
         For keeping all data related to troop.
         :param main_dir: Game folder direction
-        :param ruleset_folder: Folder name of the ruleset
+        :param module_folder: Folder name of the module
         """
         self.weapon_icon = tuple(weapon_icon_images.values())
 
-        # Troop special status effect dict, not ruleset related
+        # Troop special status effect dict, not module related
         self.special_effect_list = {}
         with open(os.path.join(main_dir, "data", "troop", "troop_special_effect.csv"), encoding="utf-8",
                   mode="r") as edit_file:
@@ -42,7 +42,7 @@ class TroopData:
 
         # Troop status effect dict
         self.status_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "troop_status.csv"),
+        with open(os.path.join(main_dir, "data", "module", module_folder, "troop", "troop_status.csv"),
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -64,7 +64,7 @@ class TroopData:
                 self.status_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
-        # Add map and element effect status if exist in ruleset
+        # Add map and element effect status if exist in module
         require_effect_list = ("Wet", "Drench", "Cold", "Hot", "Heatstroke", "Sink", "Drown", "Swimming", "Muddy Leg",
                                "Decay", "Burn", "Severe Burning", "Shock", "Electrocution", "Stun", "Petrify",
                                "Poison", "Deadly Poison")
@@ -73,7 +73,7 @@ class TroopData:
                 self.status_list[value["Name"]] = key
 
         self.status_lore = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop",
+        with open(os.path.join(main_dir, "data", "module", module_folder, "troop",
                                "troop_status_lore_" + language + ".csv"), encoding="utf-8",
                   mode="r") as edit_file:
             lore_csv_read(edit_file, self.status_lore)
@@ -82,7 +82,7 @@ class TroopData:
 
         # Race dict
         self.race_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "troop_race.csv"),
+        with open(os.path.join(main_dir, "data", "module", module_folder, "troop", "troop_race.csv"),
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -103,7 +103,7 @@ class TroopData:
 
         # Troop grade dict
         self.grade_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "troop_grade.csv"),
+        with open(os.path.join(main_dir, "data", "module", module_folder, "troop", "troop_grade.csv"),
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -120,7 +120,7 @@ class TroopData:
 
         # Troop skill dict
         self.skill_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "troop_skill.csv"),
+        with open(os.path.join(main_dir, "data", "module", module_folder, "troop", "troop_skill.csv"),
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -143,7 +143,7 @@ class TroopData:
         edit_file.close()
 
         self.skill_lore = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop",
+        with open(os.path.join(main_dir, "data", "module", module_folder, "troop",
                                "troop_skill_lore_" + language + ".csv"), encoding="utf-8",
                   mode="r") as edit_file:
             lore_csv_read(edit_file, self.skill_lore)
@@ -152,7 +152,7 @@ class TroopData:
 
         # Troop trait dict
         self.trait_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "troop_trait.csv"),
+        with open(os.path.join(main_dir, "data", "module", module_folder, "troop", "troop_trait.csv"),
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -179,7 +179,7 @@ class TroopData:
         edit_file.close()
 
         self.trait_lore = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop",
+        with open(os.path.join(main_dir, "data", "module", module_folder, "troop",
                                "troop_trait_lore_" + language + ".csv"), encoding="utf-8",
                   mode="r") as edit_file:
             lore_csv_read(edit_file, self.trait_lore)
@@ -189,7 +189,7 @@ class TroopData:
         # Troop role dict
         self.troop_class = {}
         with open(
-                os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "troop_class_" + language + ".csv"),
+                os.path.join(main_dir, "data", "module", module_folder, "troop", "troop_class_" + language + ".csv"),
                 encoding="utf-8",
                 mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
@@ -200,7 +200,7 @@ class TroopData:
 
         # Equipment grade dict
         self.equipment_grade_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "equipment_grade.csv"),
+        with open(os.path.join(main_dir, "data", "module", module_folder, "troop", "equipment_grade.csv"),
                   encoding="utf-8",
                   mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
@@ -216,7 +216,7 @@ class TroopData:
         # Weapon dict
         self.weapon_list = {}
         for index, weapon_list in enumerate(("troop_weapon", "mount_weapon")):
-            with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop",
+            with open(os.path.join(main_dir, "data", "module", module_folder, "troop",
                                    weapon_list + ".csv"), encoding="utf-8", mode="r") as edit_file:
                 rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
                 header = rd[0]
@@ -249,7 +249,7 @@ class TroopData:
 
         self.weapon_lore = {}
         for index, weapon_lore in enumerate(("troop_", "mount_")):
-            with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop",
+            with open(os.path.join(main_dir, "data", "module", module_folder, "troop",
                                    weapon_lore + "weapon_lore_" + language + ".csv"), encoding="utf-8",
                       mode="r") as edit_file:
                 weapon_lore_list = {}
@@ -260,7 +260,7 @@ class TroopData:
 
         # Armour dict
         self.armour_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "troop_armour.csv"),
+        with open(os.path.join(main_dir, "data", "module", module_folder, "troop", "troop_armour.csv"),
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -278,7 +278,7 @@ class TroopData:
         edit_file.close()
 
         self.armour_lore = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop",
+        with open(os.path.join(main_dir, "data", "module", module_folder, "troop",
                                "troop_armour_lore_" + language + ".csv"), encoding="utf-8",
                   mode="r") as edit_file:
             lore_csv_read(edit_file, self.armour_lore)
@@ -287,7 +287,7 @@ class TroopData:
 
         # Mount dict
         self.mount_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "mount_preset.csv"),
+        with open(os.path.join(main_dir, "data", "module", module_folder, "troop", "mount_preset.csv"),
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -305,7 +305,7 @@ class TroopData:
         edit_file.close()
 
         self.mount_lore = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop",
+        with open(os.path.join(main_dir, "data", "module", module_folder, "troop",
                                "mount_preset_lore_" + language + ".csv"), encoding="utf-8",
                   mode="r") as edit_file:
             lore_csv_read(edit_file, self.mount_lore)
@@ -314,7 +314,7 @@ class TroopData:
 
         # Mount grade dict
         self.mount_grade_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "mount_grade.csv"),
+        with open(os.path.join(main_dir, "data", "module", module_folder, "troop", "mount_grade.csv"),
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -332,7 +332,7 @@ class TroopData:
 
         # Mount armour dict
         self.mount_armour_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "mount_armour.csv"),
+        with open(os.path.join(main_dir, "data", "module", module_folder, "troop", "mount_armour.csv"),
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -348,7 +348,7 @@ class TroopData:
         edit_file.close()
 
         self.mount_armour_lore = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop",
+        with open(os.path.join(main_dir, "data", "module", module_folder, "troop",
                                "mount_armour_lore_" + language + ".csv"),
                   encoding="utf-8", mode="r") as edit_file:
             lore_csv_read(edit_file, self.mount_armour_lore)
@@ -358,7 +358,7 @@ class TroopData:
 
         # Troop stat dict
         self.troop_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "preset", "troop_preset.csv"),
+        with open(os.path.join(main_dir, "data", "module", module_folder, "troop", "preset", "troop_preset.csv"),
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -392,7 +392,7 @@ class TroopData:
 
         # Lore of the troop
         self.troop_lore = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "preset",
+        with open(os.path.join(main_dir, "data", "module", module_folder, "troop", "preset",
                                "troop_lore" + "_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
             lore_csv_read(edit_file, self.troop_lore)
             self.troop_lore = {key: value for key, value in self.troop_lore.items() if key in self.troop_list}
@@ -400,7 +400,7 @@ class TroopData:
 
         # Troop sprite
         self.troop_sprite_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "preset", "troop_sprite.csv"),
+        with open(os.path.join(main_dir, "data", "module", module_folder, "troop", "preset", "troop_sprite.csv"),
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -435,7 +435,7 @@ class TroopData:
 
         # Effect that exist as its own sprite in battle
         self.effect_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "troop", "effect.csv"),
+        with open(os.path.join(main_dir, "data", "module", module_folder, "troop", "effect.csv"),
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -453,20 +453,20 @@ class TroopData:
 
 
 class LeaderData:
-    def __init__(self, main_dir, images, troop_data, ruleset_folder, language):
+    def __init__(self, main_dir, images, troop_data, module_folder, language):
         """
         For keeping all data related to leader.
         :param main_dir: Game folder direction
         :param images: Portrait images of leaders
         :param troop_data: Troop data dict
-        :param ruleset_folder: Folder name of the ruleset
+        :param module_folder: Folder name of the module
         :param language: Current game language acronym
         """
         self.images = images
 
         self.skill_list = {}
         for index, skill_list in enumerate(("leader_skill", "commander_skill")):
-            with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "leader",
+            with open(os.path.join(main_dir, "data", "module", module_folder, "leader",
                                    skill_list + ".csv"), encoding="utf-8", mode="r") as edit_file:
                 rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
                 header = rd[0]
@@ -490,7 +490,7 @@ class LeaderData:
 
         self.skill_lore = {}
         for index, skill_lore in enumerate(("leader_skill_lore_", "commander_skill_lore_")):
-            with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "leader",
+            with open(os.path.join(main_dir, "data", "module", module_folder, "leader",
                                    skill_lore + language + ".csv"), encoding="utf-8",
                       mode="r") as edit_file:
                 lore_csv_read(edit_file, self.skill_lore)
@@ -499,7 +499,7 @@ class LeaderData:
 
         # Leader class dict
         self.leader_class = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "leader", "leader_class.csv"),
+        with open(os.path.join(main_dir, "data", "module", module_folder, "leader", "leader_class.csv"),
                   encoding="utf-8",
                   mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
@@ -513,7 +513,7 @@ class LeaderData:
 
         # Leader preset
         self.leader_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader", "preset", "leader.csv"),
+        with open(os.path.join(main_dir, "data", "module", str(module_folder), "leader", "preset", "leader.csv"),
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -535,7 +535,7 @@ class LeaderData:
 
         # Add common leader to the leader list
         with open(
-                os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader", "preset", "common_leader.csv"),
+                os.path.join(main_dir, "data", "module", str(module_folder), "leader", "preset", "common_leader.csv"),
                 encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -559,7 +559,7 @@ class LeaderData:
         # Lore of the leader dict
         self.leader_lore = {}
         for leader_file in ("leader_lore", "common_leader_lore"):  # merge leader and common leader lore together
-            with open(os.path.join(main_dir, "data", "ruleset", str(ruleset_folder), "leader", "preset",
+            with open(os.path.join(main_dir, "data", "module", str(module_folder), "leader", "preset",
                                    leader_file + "_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
                 lore_csv_read(edit_file, self.leader_lore)
                 self.leader_lore = {key: value for key, value in self.leader_lore.items() if key in self.leader_list}
@@ -567,7 +567,7 @@ class LeaderData:
 
         # Leader sprite
         self.leader_sprite_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "leader", "preset", "leader_sprite.csv"),
+        with open(os.path.join(main_dir, "data", "module", module_folder, "leader", "preset", "leader_sprite.csv"),
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -582,15 +582,15 @@ class LeaderData:
 class FactionData:
     images = []
 
-    def __init__(self, main_dir, ruleset_folder, screen_scale, language):
+    def __init__(self, main_dir, module_folder, screen_scale, language):
         """
         For keeping all data related to leader.
         :param main_dir: Game folder direction
-        :param ruleset_folder: Folder name of the ruleset
+        :param module_folder: Folder name of the module
         :param screen_scale: scale of screen resolution
         """
         self.faction_list = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "faction", "faction.csv"), encoding="utf-8",
+        with open(os.path.join(main_dir, "data", "module", module_folder, "faction", "faction.csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -609,12 +609,12 @@ class FactionData:
         self.faction_name_list = [value["Name"] for value in self.faction_list.values()]
 
         self.faction_unit_list = {}
-        part_folder = Path(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "faction", "unit"))
+        part_folder = Path(os.path.join(main_dir, "data", "module", module_folder, "faction", "unit"))
         subdirectories = [os.sep.join(os.path.normpath(x).split(os.sep)[-1:]) for x in
                           part_folder.iterdir()]
         for folder in subdirectories:
             self.faction_unit_list[int(folder[-1])] = {}
-            with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "faction", "unit", folder[-1],
+            with open(os.path.join(main_dir, "data", "module", module_folder, "faction", "unit", folder[-1],
                                    "unit.csv"), encoding="utf-8", mode="r") as edit_file:
                 rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
                 header = rd[0]
@@ -633,14 +633,14 @@ class FactionData:
                 edit_file.close()
 
         self.faction_lore = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset_folder, "faction",
+        with open(os.path.join(main_dir, "data", "module", module_folder, "faction",
                                "faction_lore_" + language + ".csv"), encoding="utf-8", mode="r") as edit_file:
             lore_csv_read(edit_file, self.faction_lore)
         self.faction_lore = {key: value for key, value in self.faction_lore.items() if key in self.faction_list}
         edit_file.close()
 
         images_old = load_images(main_dir, screen_scale=screen_scale,
-                                 subfolder=("ruleset", ruleset_folder, "faction", "coa"))  # coa_list images list
+                                 subfolder=("module", module_folder, "faction", "coa"))  # coa_list images list
 
         self.coa_list = []
         for image in images_old:

@@ -2,6 +2,7 @@ import hashlib
 import os
 import threading
 from random import choice
+from gamescript.common import utility
 
 import pygame
 from PIL import Image
@@ -10,22 +11,30 @@ from gamescript.common.game import create_troop_sprite
 from gamescript.datacacher import load_pickle_with_surfaces
 from gamescript.datacacher import save_pickle_with_surfaces
 
+md5_dir = utility.md5_dir
+
 
 def create_troop_sprite_pool(self, who_todo, preview=False, specific_preview=None, max_preview_size=200):
     cache_folder_path = os.path.join(self.main_dir, "cache")
     if not os.path.isdir(cache_folder_path):
         os.mkdir(cache_folder_path)
 
-    cache_folder_path = os.path.join(self.main_dir, "cache", self.ruleset_folder)
+    cache_folder_path = os.path.join(self.main_dir, "cache", self.module_folder)
     if not os.path.isdir(cache_folder_path):
         os.mkdir(cache_folder_path)
 
-    pool = inner_create_troop_sprite_pool(self, who_todo, preview, specific_preview, max_preview_size)
+    sprite_pool_hash = ""
+    if not preview:
+        sprite_pool_hash = md5_dir(os.path.join(self.main_dir, "data", "sprite", "subunit"))
+
+    pool = inner_create_troop_sprite_pool(self, who_todo, sprite_pool_hash, preview=preview,
+                                          specific_preview=specific_preview, max_preview_size=max_preview_size)
 
     return pool
 
 
-def inner_create_troop_sprite_pool(self, who_todo, preview=False, specific_preview=None, max_preview_size=200):
+def inner_create_troop_sprite_pool(self, who_todo, sprite_pool_hash, preview=False, specific_preview=None,
+                                   max_preview_size=200):
     weapon_list = self.troop_data.weapon_list
     animation_sprite_pool = {}
     status_animation_pool = {}
@@ -59,13 +68,14 @@ def inner_create_troop_sprite_pool(self, who_todo, preview=False, specific_previ
     else:
         create_sprite(self, who_todo, preview, max_preview_size, weapon_list,
                       weapon_common_type_list, weapon_attack_type_list, animation_sprite_pool, status_animation_pool,
-                      specific_preview=specific_preview)
+                      sprite_pool_hash, specific_preview=specific_preview)
 
     return animation_sprite_pool, status_animation_pool
 
 
 def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon_common_type_list,
-                  weapon_attack_type_list, animation_sprite_pool, status_animation_pool, specific_preview=None):
+                  weapon_attack_type_list, animation_sprite_pool, status_animation_pool, sprite_pool_hash,
+                  specific_preview=None):
     """
     Create subunit troop sprite
     :param self: Battle object
@@ -251,7 +261,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                                                  "center_offset": center_offset}  # preview pool use subunit_id only
 
         else:
-            cache_file_path = os.path.join(self.main_dir, "cache", self.ruleset_folder, sprite_id + "_sprite")
+            cache_file_path = os.path.join(self.main_dir, "cache", self.module_folder, sprite_id + "_sprite")
             if sprite_id not in animation_sprite_pool:  # troop can share sprite preset id but different gear
                 if os.path.isfile(cache_file_path):  # cache exist for sprite ID loaded it
                     animation_sprite_pool[sprite_id] = load_pickle_with_surfaces(cache_file_path)
@@ -410,9 +420,11 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                             else:  # animation with this name exist, check if data match
                                 string_args = str((sprite_data, hand_weapon_list[weapon_set_index][weapon_index],
                                                   weapon_list[hand_weapon_list[weapon_set_index][weapon_index]],
-                                                  self.subunit_animation_data[race_type][animation], idle_animation))
+                                                  self.subunit_animation_data[race_type][animation], idle_animation,
+                                                  sprite_pool_hash))
                                 if same_both_weapon_set:
-                                    string_args = str((sprite_data, self.subunit_animation_data[race_type][animation]))
+                                    string_args = str((sprite_data, self.subunit_animation_data[race_type][animation],
+                                                       sprite_pool_hash))
                                 md5_string = hashlib.md5(string_args.encode()).hexdigest()
                                 if current_in_pool[final_name]["data"] == md5_string:  # data matched
                                     make_animation = False
@@ -517,19 +529,20 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                                         "center_offset": (-center_offset[0], center_offset[1])}
 
                             if same_both_weapon_set:
-                                string_args = str((sprite_data, self.subunit_animation_data[race_type][animation]))
+                                string_args = str((sprite_data, self.subunit_animation_data[race_type][animation],
+                                                   sprite_pool_hash))
                                 md5_string = hashlib.md5(string_args.encode()).hexdigest()
                                 current_in_pool[final_name]["data"] = md5_string
                                 next_level[weapon_key[1]][final_name]["data"] = string_args
                             else:
                                 string_args = str((sprite_data, hand_weapon_list[weapon_set_index][weapon_index],
                                                   weapon_list[hand_weapon_list[weapon_set_index][weapon_index]],
-                                                  self.subunit_animation_data[race_type][animation], idle_animation))
+                                                  self.subunit_animation_data[race_type][animation], idle_animation,
+                                                  sprite_pool_hash))
                                 md5_string = hashlib.md5(string_args.encode()).hexdigest()
                                 current_in_pool[final_name]["data"] = md5_string
 
             save_pickle_with_surfaces(cache_file_path, animation_sprite_pool[sprite_id])
-            animation_sprite_pool[sprite_id] = load_pickle_with_surfaces(cache_file_path)
 
             if this_subunit["Size"] not in status_animation_pool:
                 status_animation_pool[this_subunit["Size"]] = {}

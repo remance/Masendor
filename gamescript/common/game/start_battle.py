@@ -16,7 +16,7 @@ def start_battle(self, char_selected=None):
     elif self.map_type == "custom":
         map_data = self.custom_map_data["info"]
 
-    self.battle.prepare_new_game(self.ruleset, self.ruleset_folder, self.team_selected, self.map_type,
+    self.battle.prepare_new_game(self.module, self.module_folder, self.team_selected, self.map_type,
                                  self.map_selected, self.map_source, start_char_selected,
                                  map_data, self.camp_pos[self.map_source])
     self.battle.run_game()

@@ -12,11 +12,24 @@ from time import sleep
 import pygame
 
 
-def save_pickle_with_surfaces(file_path, data):
-    recursive_cast_surface_to_pickleable_surface(data)
+def recursive_dict_creation(data):
+    f = recursive_dict_creation
+    if type(data) == dict:
+        for k, v in data.items():
+            if type(v) == dict:
+                data[k] = v.copy()
+                f(v)
 
+
+def save_pickle_with_surfaces(file_path, data):
+    new_data = data
+    if type(data) == dict:  # remake dict to not replace input data
+        new_data = data.copy()
+        recursive_dict_creation(new_data)
+
+    recursive_cast_surface_to_pickleable_surface(new_data)
     with open(file_path, "wb") as handle:
-        pickle.dump(data, handle)
+        pickle.dump(new_data, handle)
 
 
 def load_pickle_with_surfaces(file_path):
@@ -79,14 +92,21 @@ def recursive_cast_pickleable_surface_to_surface(data):
             f(v)
 
 
-# class TroopSpriteCacher:
-#     def __int__(self):
-#         self.input_list = []
-#         threading.Thread(target=self._loop, daemon=True).start()
-#
-#     def _loop(self):
-#         while True:
-#             # Check for commands
-#             sleep(0.01)  # Limit the logic loop running to every 10ms
-#             if self.input_list:
-#                 pass
+class TroopSpriteCacher:
+    def __int__(self, main):
+        self.input_list = []
+        self.main = main
+        self.interrupt = False
+        self.jobs = []
+        threading.Thread(target=self._loop, daemon=True).start()
+
+    def _loop(self):
+        while True:
+            # Check for commands
+            sleep(0.01)  # Limit the logic loop running to every 10ms
+            if self.input_list:
+                self.main.create_troop_sprite_pool(self.input_list)
+                self.input_list = []
+
+            if self.interrupt:
+                self.interrupt = False
