@@ -4,6 +4,7 @@ import pygame.freetype
 import pygame.freetype
 import pygame.transform
 import pyperclip
+from functools import lru_cache
 
 from gamescript.common import utility
 
@@ -265,7 +266,31 @@ class TextBox(pygame.sprite.Sprite):
 
 
 class MenuButton(pygame.sprite.Sprite):
+
+
+    @classmethod
+    @lru_cache
+    def make_buttons(cls):
+        from gamescript.game import Game
+        from gamescript.common import utility
+        game = Game.game
+        load_base_button = utility.load_base_button
+        image_list = load_base_button(game.main_dir, game.screen_scale)
+        
+        # normal button
+        normal_button = image_list[0].copy()
+        
+        # hover button
+        hover_button = normal_button.copy()
+        pygame.draw.rect(hover_button, "#CCFF77", hover_button.get_rect(), 1)
+
+        # TODO: make click button (last element in return tuple)
+
+        return (normal_button, hover_button, normal_button)
+
+
     def __init__(self, screen_scale, images, pos, updater=None, text="", size=28, layer=1):
+        images = self.make_buttons()
         self._layer = layer
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
@@ -289,6 +314,7 @@ class MenuButton(pygame.sprite.Sprite):
         self.image = self.button_normal_image
         self.rect = self.button_normal_image.get_rect(center=self.pos)
         self.event = False
+
 
     def update(self, mouse_pos, mouse_up, mouse_down):
         if not self.updater or self in self.updater:

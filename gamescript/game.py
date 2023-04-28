@@ -71,6 +71,9 @@ script_folder = "gamescript"
 
 
 class Game:
+
+    game = None
+
     game_version = "0.7.1.6"
     mouse_bind = {"left click": 1, "middle click": 2, "right click": 3, "scroll up": 4, "scroll down": 5}
     mouse_bind_name = {value: key for key, value in mouse_bind.items()}
@@ -159,6 +162,9 @@ class Game:
                             8: (255, 150, 45), 9: (230, 140, 160), 10: (200, 190, 230)}
 
     def __init__(self, main_dir, error_log):
+
+        Game.game = self
+
         pygame.init()  # Initialize pygame
 
         pygame.mouse.set_visible(False)  # set mouse as not visible, use in-game mouse sprite
