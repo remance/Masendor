@@ -8,6 +8,7 @@ list_scroll = utility.list_scroll
 def menu_main(self, mouse_left_up):
     if self.preset_map_button.event:  # preset map list menu
         self.menu_state = "preset_map"
+        self.map_type = "preset"
         self.last_select = self.menu_state
 
         self.current_map_select = 0
@@ -21,11 +22,20 @@ def menu_main(self, mouse_left_up):
                    self.map_list_box, self.main_ui_updater)
         self.create_preview_map(self.preset_map_folder, self.preset_map_list)
 
-        self.menu_button.add(*self.map_select_button)
-        self.main_ui_updater.add(*self.map_select_button, self.map_list_box, self.map_title, self.map_list_box.scroll)
+        for team in self.team_coa:
+            if self.team_selected == team.team:
+                team.change_select(True)
+
+        self.change_battle_source()
+
+        self.menu_button.add(*self.char_select_button)
+        self.main_ui_updater.add(*self.char_select_button, self.map_list_box, self.map_title, self.map_list_box.scroll, self.map_option_box,
+                                 self.observe_mode_tick_box, self.source_list_box, self.source_list_box.scroll, self.char_selector,
+                                 self.char_selector.scroll, self.char_model_room)
 
     elif self.custom_map_button.event:  # custom map list menu
         self.menu_state = "custom_map"
+        self.map_type = "custom"
         self.last_select = self.menu_state
 
         self.current_map_select = 0

@@ -13,35 +13,23 @@ def menu_char_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
         self.map_back_button.event = False
         clean_group_object((self.subunit_updater, self.all_subunits, self.preview_char, self.char_icon))
 
-        if self.map_type == "preset":
-            self.main_ui_updater.remove(self.char_selector, self.char_selector.scroll,
-                                        tuple(self.char_stat.values()), self.start_button)
-            self.menu_button.remove(self.start_button)
-            self.current_source_row = 0
-            self.menu_state = "preset_team_select"
+        self.main_ui_updater.remove(tuple(self.char_stat.values()), self.start_button)
+        self.menu_button.remove(self.start_button)
+        self.menu_state = "unit_leader_setup"
+        self.char_select_row = 0
+        self.current_map_row = 0
 
-            self.main_ui_updater.add(self.team_coa)
+        self.menu_button.add(*self.team_select_button)
 
-            self.change_to_source_selection_menu()
+        self.main_ui_updater.add(*self.team_select_button, self.team_coa)
 
-        elif self.map_type == "custom":
-            self.main_ui_updater.remove(tuple(self.char_stat.values()), self.start_button)
-            self.menu_button.remove(self.start_button)
-            self.menu_state = "unit_leader_setup"
-            self.char_select_row = 0
-            self.current_map_row = 0
+        self.main_ui_updater.add(self.org_chart)
 
-            self.menu_button.add(*self.team_select_button)
+        for icon in self.preview_char:
+            icon.kill()
+        self.preview_char.empty()
 
-            self.main_ui_updater.add(*self.team_select_button, self.team_coa)
-
-            self.main_ui_updater.add(self.org_chart)
-
-            for icon in self.preview_char:
-                icon.kill()
-            self.preview_char.empty()
-
-            leader_change_team_unit(self)
+        leader_change_team_unit(self)
 
         if self.start_button.event:  # start battle button
             self.start_button.event = False

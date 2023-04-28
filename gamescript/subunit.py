@@ -220,7 +220,6 @@ class Subunit(pygame.sprite.Sprite):
         :param start_hp: Starting health or troop number percentage
         :param start_stamina: Starting maximum stamina percentage
         :param coa: Coat of arms image, used as shadow and flag
-        :param effect_pool: Effect animation image
         """
         self._layer = 4
         pygame.sprite.Sprite.__init__(self, self.containers)

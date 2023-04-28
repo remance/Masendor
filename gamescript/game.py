@@ -105,7 +105,6 @@ class Game:
     assign_key = empty_method
     back_mainmenu = empty_method
     change_battle_source = empty_method
-    change_to_source_selection_menu = empty_method
     change_to_team_selection_menu = empty_method
     change_sound_volume = empty_method
     create_config = empty_method
@@ -120,12 +119,11 @@ class Game:
     menu_game_editor = empty_method
     menu_keybind = empty_method
     menu_main = empty_method
-    menu_map_select = empty_method
+    menu_custom_map_select = empty_method
     menu_option = empty_method
-    menu_preset_team_select = empty_method
+    menu_preset_map_select = empty_method
     menu_leader_setup = empty_method
     menu_unit_setup = empty_method
-    read_battle_source = empty_method
     read_selected_map_data = empty_method
     start_battle = empty_method
 
@@ -402,7 +400,7 @@ class Game:
                                                       (self.screen_rect.width / 2, self.screen_rect.height / 1.3),
                                                       text_size=24)
 
-        self.char_selector = battleui.UnitSelector((self.screen_rect.width / 5, self.screen_rect.height / 1.5),
+        self.char_selector = battleui.UnitSelector((self.screen_rect.width / 2, self.screen_rect.height),
                                                    battle_select_image["char_select"], icon_scale=0.4)
         battleui.UIScroll(self.char_selector, self.char_selector.rect.topright)  # scroll bar for char pick
 
@@ -424,7 +422,7 @@ class Game:
         self.char_select_button = (self.start_button, self.map_back_button)
 
         self.map_list_box = menu.ListBox(self.screen_scale, (self.screen_width -
-                                                             battle_select_image["name_list"].get_width(), 0),
+                                                             (battle_select_image["name_list"].get_width() * 2), 0),
                                          battle_select_image["name_list"])
         battleui.UIScroll(self.map_list_box, self.map_list_box.rect.topright)  # scroll bar for map list
 
@@ -434,14 +432,15 @@ class Game:
         battleui.UIScroll(self.unit_list_box, self.unit_list_box.rect.topright)  # scroll bar for map list
 
         self.source_list_box = menu.ListBox(self.screen_scale, (self.screen_width -
-                                                                (battle_select_image["name_list"].get_width() * 1.2),
+                                                                (battle_select_image["name_list"].get_width()),
                                                                 0),
                                             battle_select_image["top_box"])  # source list ui box
         battleui.UIScroll(self.source_list_box, self.source_list_box.rect.topright)  # scroll bar for source list
-        self.map_option_box = menu.MapOptionBox(self.screen_scale, (self.source_list_box.rect.x, 0),
+        self.map_option_box = menu.MapOptionBox(self.screen_scale, (self.screen_width,
+                                                                    battle_select_image["top_box"].get_height()),
                                                 battle_select_image["top_box"],
                                                 0)  # ui box for battle option during preset map preparation screen
-        self.custom_map_option_box = menu.MapOptionBox(self.screen_scale, (self.source_list_box.rect.x, 0),
+        self.custom_map_option_box = menu.MapOptionBox(self.screen_scale, (self.screen_width, 0),
                                                        battle_select_image["top_box"],
                                                        1)  # ui box for battle option during preparation screen
 
@@ -455,11 +454,17 @@ class Game:
         self.char_stat = {}
         self.camp_icon = [{}]
 
+        model_room_image = load_image(self.main_dir, self.screen_scale, "model_room.png", ("ui", "mapselect_ui"))
+        self.char_model_room = menu.ArmyStat(self.screen_scale,
+                                             (self.screen_rect.center[0] - (model_room_image.get_width() / 2),
+                                              self.char_selector.rect.midtop[1] - model_room_image.get_height()),
+                                             model_room_image)  # troop stat
+
         self.observe_mode_tick_box = menu.TickBox((self.map_option_box.rect.topleft[0] * 1.05,
-                                                   self.map_option_box.image.get_height() * 0.2),
+                                                   self.map_option_box.rect.topleft[1] * 1.15),
                                                   battle_select_image["untick"], battle_select_image["tick"], "observe")
         self.night_battle_tick_box = menu.TickBox((self.map_option_box.rect.topleft[0] * 1.05,
-                                                   self.map_option_box.image.get_height() * 0.4),
+                                                   self.map_option_box.rect.topleft[1] * 1.3),
                                                   battle_select_image["untick"], battle_select_image["tick"], "night")
         self.weather_custom_select = menu.NameList(self.screen_scale, self.map_option_box,
                                                    (self.map_option_box.rect.midleft[0],
@@ -1054,13 +1059,11 @@ class Game:
                 if self.menu_state == "main_menu":
                     self.menu_main(mouse_left_up)
 
-                elif self.menu_state == "preset_map" or self.menu_state == "custom_map":
-                    self.map_type = self.menu_state[:-4]
-                    self.menu_map_select(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press)
+                elif self.menu_state == "preset_map":
+                    self.menu_preset_map_select(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press)
 
-                elif self.menu_state == "preset_team_select":
-                    self.menu_preset_team_select(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down,
-                                                 esc_press)
+                elif self.menu_state == "custom_map":
+                    self.menu_custom_map_select(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "custom_team_select":
                     self.menu_custom_team_select(mouse_left_up, mouse_left_down, mouse_right_up,

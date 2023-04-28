@@ -326,14 +326,14 @@ class Battle:
         self.command_cursor_pos = [0, 0]  # with zoom and screen scale for unit command
 
     def prepare_new_game(self, module, module_folder, team_selected, map_type, map_selected,
-                         map_source, char_selected, map_info, camp_pos):
+                         map_source, char_selected, map_data, camp_pos):
 
         for message in self.inner_prepare_new_game(module, module_folder, team_selected, map_type, map_selected,
-                                                   map_source, char_selected, map_info, camp_pos):
+                                                   map_source, char_selected, map_data, camp_pos):
             print(message, end="")
 
     def inner_prepare_new_game(self, module, module_folder, team_selected, map_type, map_selected,
-                               map_source, char_selected, map_info, camp_pos):
+                               map_source, char_selected, map_data, camp_pos):
         """Setup stuff when start new battle"""
         self.language = self.main.language
 
@@ -344,7 +344,7 @@ class Battle:
         self.team_selected = team_selected  # player selected team
 
         self.char_selected = char_selected
-        self.map_info = map_info
+        self.map_data = map_data
         self.camp_pos = camp_pos
 
         self.faction_data = self.main.faction_data
@@ -482,8 +482,9 @@ class Battle:
             this_group.empty()
         for this_group in self.all_team_enemy.values():
             this_group.empty()
-        self.all_team_subunit = {int(key[-1]): pygame.sprite.Group() for key in self.map_info if "Team " in key}
-        self.all_team_enemy = {int(key[-1]): pygame.sprite.Group() for key in self.map_info if "Team " in key}
+        print(self.map_data)
+        self.all_team_subunit = {int(key[-1]): pygame.sprite.Group() for key in self.map_data if "Team Faction" in key}
+        self.all_team_enemy = {int(key[-1]): pygame.sprite.Group() for key in self.map_data if "Team Faction" in key}
         self.camp = {key: {} for key in self.all_team_subunit.keys()}
         self.team_troop_number = [0 for _ in
                                   range(len(self.all_team_subunit) + 1)]  # reset list of troop number in each team
@@ -926,8 +927,8 @@ class Battle:
                                     if "wt" + str(key) in self.event_log.map_event:
                                         self.event_log.add_log(
                                             (0, self.event_log.map_event["wt" + str(key)]["Text"]))
-                                    self.battle_done_box.pop(self.faction_data.faction_list[self.map_info[
-                                        "Team " + str(key)][0]]["Name"], self.coa_list[int(self.map_info["Team " + str(key)][0])])
+                                    self.battle_done_box.pop(self.faction_data.faction_list[self.map_data[
+                                        "Team Faction" + str(key)][0]]["Name"], self.coa_list[int(self.map_data["Team Faction" + str(key)][0])])
                                     break
 
                         self.battle_done_button.rect = self.battle_done_button.image.get_rect(
@@ -935,11 +936,11 @@ class Battle:
                         self.battle_ui_updater.add(self.battle_done_box, self.battle_done_button)
                     else:
                         if mouse_left_up and self.battle_done_button.rect.collidepoint(self.mouse_pos):
-                            coa_list = [self.coa_list[self.map_info[key][0]] for key in self.map_info if "Team "
-                                        in key if self.map_info[key]]
+                            coa_list = [self.coa_list[self.map_data[key][0]] for key in self.map_data if "Team Faction"
+                                        in key if self.map_data[key]]
                             if not self.battle_done_box.result_showing:  # show battle result stat
-                                faction_name = {key: self.faction_data.faction_list[self.map_info[
-                                    "Team " + str(key)][0]]["Name"] for key in self.all_team_subunit}
+                                faction_name = {key: self.faction_data.faction_list[self.map_data[
+                                    "Team Faction" + str(key)][0]]["Name"] for key in self.all_team_subunit}
 
                                 self.battle_done_box.show_result(coa_list,
                                                                  {"Faction": faction_name,

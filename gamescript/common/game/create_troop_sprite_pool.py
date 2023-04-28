@@ -59,7 +59,7 @@ def inner_create_troop_sprite_pool(self, who_todo, sprite_pool_hash, preview=Fal
             p = threading.Thread(target=create_sprite,
                                  args=(self, who, preview, max_preview_size, weapon_list,
                                        weapon_common_type_list, weapon_attack_type_list,
-                                       animation_sprite_pool, status_animation_pool),
+                                       sprite_pool_hash, animation_sprite_pool, status_animation_pool),
                                  daemon=True)
             jobs.append(p)
             p.start()

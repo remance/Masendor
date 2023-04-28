@@ -581,9 +581,10 @@ class ArmyStat(pygame.sprite.Sprite):
 
     def add_preview_model(self, model, coa):
         self.image = self.base_image.copy()
-        rect = coa.get_rect(topleft=(20 * self.screen_scale[0], 20 * self.screen_scale[1]))
-        self.image.blit(pygame.transform.smoothscale(coa, (200 * self.screen_scale[0],
-                                                           200 * self.screen_scale[1])), rect)
+        new_coa = pygame.transform.smoothscale(coa, (200 * self.screen_scale[0],
+                                                     200 * self.screen_scale[1]))
+        rect = new_coa.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
+        self.image.blit(new_coa, rect)
         rect = model.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
         self.image.blit(model, rect)
 

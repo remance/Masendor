@@ -8,7 +8,6 @@ stat_convert = utility.stat_convert
 def read_battle_source(self, description_text):
     """Change battle source description and add new subunit dot when select new source"""
     self.source_description.change_text(description_text)
-    self.main_ui_updater.add(self.source_description)
 
     openfolder = self.preset_map_folder
     if self.last_select == "custom":
