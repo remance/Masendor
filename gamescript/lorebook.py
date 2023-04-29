@@ -53,7 +53,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.image = image
         self.base_image = self.image.copy()
         self.section = 0
-        self.subsection = 1  # subsection of that section e.g. swordmen subunit in subunit section
+        self.subsection = 1  # subsection of that section
         self.stat_data = None  # for getting the section stat data
         self.lore_data = None  # for getting the section lore data
         self.index_data = None  # for getting old and new subsection index reference
@@ -456,7 +456,6 @@ class Lorebook(pygame.sprite.Sprite):
                                             if value in self.troop_data.skill_list:  # only include skill if exist in module
                                                 skill_list += self.troop_data.skill_list[value]["Name"]
                                             create_text = key + ": " + skill_list
-                                            # + ", Base Speed: " + str(speed)  # add subunit speed after
                                         elif 0 not in value:
                                             for this_text in value:
                                                 if this_text in self.troop_data.skill_list:  # only include skill in module
@@ -467,7 +466,7 @@ class Lorebook(pygame.sprite.Sprite):
                                             create_text = ""
                                             pass
 
-                                    elif key == "Role":  # Replace imageid to subunit role in troop section
+                                    elif key == "Role":
                                         # role is not type, it represents troop classification to suggest what it excels
                                         role_list = {0: "None", 1: "Offensive", 2: "Defensive", 3: "Skirmisher",
                                                      4: "Shock", 5: "Support", 6: "Artillery",

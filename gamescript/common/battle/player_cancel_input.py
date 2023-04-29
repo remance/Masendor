@@ -1,5 +1,5 @@
 def player_cancel_input(self):
-    if self.player_char.alive:
+    if self.player_unit.alive:
         self.camera_mode = "Follow"
     self.cursor.change_image("normal")
     self.battle_ui_updater.remove(self.single_text_popup)

@@ -17,9 +17,9 @@ def player_aim(self):
 
     who_shoot = ()
     if self.player_input_state == "leader aim":
-        who_shoot = (self.player_char,)
+        who_shoot = (self.player_unit,)
     elif self.player_input_state == "line aim" or self.player_input_state == "focus aim":
-        who_shoot = self.player_char.alive_troop_follower
+        who_shoot = self.player_unit.alive_troop_follower
 
     for this_subunit in who_shoot:
         can_shoot = [False, False]
@@ -29,8 +29,8 @@ def player_aim(self):
                 "weapon" not in this_subunit.command_action:
 
             if self.player_input_state == "line aim":
-                angle = self.player_char.set_rotate(self.command_cursor_pos)
-                distance = self.player_char.base_pos.distance_to(self.command_cursor_pos)
+                angle = self.player_unit.set_rotate(self.command_cursor_pos)
+                distance = self.player_unit.base_pos.distance_to(self.command_cursor_pos)
                 base_target_pos = pygame.Vector2(
                     this_subunit.base_pos[0] - (distance * sin(radians(angle))),
                     this_subunit.base_pos[1] - (distance * cos(radians(angle))))
@@ -63,7 +63,7 @@ def player_aim(self):
 
     self.single_text_popup.pop(self.cursor.rect.bottomright, shoot_text)
 
-    if self.player_key_press["Order Menu"] or not self.player_char.alive:
+    if self.player_key_press["Order Menu"] or not self.player_unit.alive:
         # Cancel manual aim with order menu input or player die
         self.player_cancel_input()
 
@@ -87,4 +87,4 @@ def player_aim(self):
 
     else:
         self.camera_process()
-        self.player_char.player_input(self.command_cursor_pos)
+        self.player_unit.player_input(self.command_cursor_pos)

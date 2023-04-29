@@ -470,14 +470,14 @@ class SelectedSquad(pygame.sprite.Sprite):
     image = None
 
     def __init__(self, pos, layer=17):
-        """Used for showing selected subunit in inpeact ui and unit editor"""
+        """Used for showing selected unit in inpeact ui and unit editor"""
         self._layer = layer
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
         self.rect = self.image.get_rect(topleft=self.pos)
 
     def pop(self, pos):
-        """pop out at the selected subunit in inspect uo"""
+        """pop out at the selected unit in inspect uo"""
         self.pos = pos
         self.rect = self.image.get_rect(topleft=self.pos)
 
@@ -619,7 +619,7 @@ class EventLog(pygame.sprite.Sprite):
         """Cut up whole log into separate sentence based on space"""
         if len(text_output) <= 45:  # EventLog each row cannot have more than 45 characters including space
             self.battle_log.append([who, text_output])
-        else:  # Cut the text log into multiple row if more than 45 char
+        else:  # Cut the text log into multiple row if more than 45 unit
             cut_space = [index for index, letter in enumerate(text_output) if letter == " "]
             loop_number = len(text_output) / 45  # number of row
             if not loop_number.is_integer():  # always round up if there is decimal number
@@ -742,8 +742,8 @@ class UnitSelector(pygame.sprite.Sprite):
         self.row_size = 0
         self.scroll = None  # got add after create scroll object
 
-    def setup_char_icon(self, troop_icon_group, subunit_list):
-        """Setup character selection list in selector ui"""
+    def setup_unit_icon(self, troop_icon_group, subunit_list):
+        """Setup unit selection list in selector ui"""
         if troop_icon_group:  # remove all old icon first before making new list
             for icon in troop_icon_group:
                 icon.kill()
@@ -772,7 +772,7 @@ class UnitSelector(pygame.sprite.Sprite):
                         column = start_column
                         row = self.rect.topleft[1] + (this_subunit.portrait.get_height() / 1.5)
                     if index >= current_index:
-                        new_icon = CharIcon((column, row), this_subunit,
+                        new_icon = UnitIcon((column, row), this_subunit,
                                             (int(this_subunit.portrait.get_width() * self.icon_scale),
                                              int(this_subunit.portrait.get_height() * self.icon_scale)))
                         troop_icon_group.add(new_icon)
@@ -785,20 +785,20 @@ class UnitSelector(pygame.sprite.Sprite):
         self.scroll.change_image(new_row=self.current_row, row_size=self.row_size)
 
 
-class CharIcon(pygame.sprite.Sprite):
+class UnitIcon(pygame.sprite.Sprite):
     colour = None
 
-    def __init__(self, pos, char, size):
+    def __init__(self, pos, unit, size):
         self._layer = 11
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.who = char  # link subunit object so when click can correctly select or go to position
+        self.who = unit  # link unit object so when click can correctly select or go to position
         self.pos = pos  # pos on unit selector ui
         self.place_pos = pos  # pos when drag by mouse
-        self.name = ""  # not used for char icon, for checking with CampIcon
+        self.name = ""  # not used for unit icon, for checking with CampIcon
         self.selected = False
         self.right_selected = False
 
-        self.leader_image = pygame.transform.scale(char.portrait,
+        self.leader_image = pygame.transform.scale(unit.portrait,
                                                    size)  # scale leader image to fit the icon
         self.not_selected_image = pygame.Surface((self.leader_image.get_width() + (self.leader_image.get_width() / 7),
                                                   self.leader_image.get_height() + (
@@ -860,7 +860,7 @@ class CharIcon(pygame.sprite.Sprite):
                 self.image = self.right_selected_image
 
 
-class TempCharIcon(pygame.sprite.Sprite):
+class TempUnitIcon(pygame.sprite.Sprite):
     def __init__(self, screen_scale, team, image, index):
         pygame.sprite.Sprite.__init__(self)
         self.team = team
@@ -1259,7 +1259,7 @@ class SkillAimTarget(AimTarget):
 
 class SpriteIndicator(pygame.sprite.Sprite):
     def __init__(self, image, who, battle, layer=1):
-        """Indicator for subunit hitbox and status effect sprite"""
+        """Indicator for unit hitbox and status effect sprite"""
         self.who = who
         self._layer = layer
         pygame.sprite.Sprite.__init__(self, self.containers)

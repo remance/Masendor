@@ -51,7 +51,7 @@ class TroopModel(pygame.sprite.Sprite):
         hitbox_size = (troop_size * 10, troop_size * 10)
         if self.team not in self.hitbox_image_list:
             self.hitbox_image_list[self.team] = {"troop": {}, "leader": {}}
-        if leader:  # leader subunit
+        if leader:  # leader unit
             if hitbox_size not in self.hitbox_image_list[self.team]["leader"]:
                 self.hitbox_image = pygame.Surface(hitbox_size, pygame.SRCALPHA)
                 pygame.draw.circle(self.hitbox_image, (team_colour[self.team][0], team_colour[self.team][1],
@@ -65,7 +65,7 @@ class TroopModel(pygame.sprite.Sprite):
                                    self.hitbox_image.get_width() / 2.4)
             else:
                 self.hitbox_image = self.hitbox_image_list[self.team]["leader"][hitbox_size]
-        else:  # troop subunit
+        else:  # troop unit
             if hitbox_size not in self.hitbox_image_list[self.team]["troop"]:
                 self.hitbox_image = pygame.Surface(hitbox_size,
                                                    pygame.SRCALPHA)
@@ -186,7 +186,7 @@ class Studio(game.Game):
         self.troop_animation = datasprite.TroopAnimationData(data_dir, self.module_dir,
                                                              [str(self.troop_data.race_list[key]["Name"]) for key in
                                                               self.troop_data.race_list], self.team_colour)
-        self.subunit_animation_data = self.troop_animation.subunit_animation_data  # animation data pool
+        self.unit_animation_data = self.troop_animation.unit_animation_data  # animation data pool
         self.gen_body_sprite_pool = self.troop_animation.gen_body_sprite_pool  # body sprite pool
         self.gen_weapon_sprite_pool = self.troop_animation.gen_weapon_sprite_pool  # weapon sprite pool
         self.gen_armour_sprite_pool = self.troop_animation.gen_armour_sprite_pool  # armour sprite pool
@@ -217,7 +217,7 @@ class Studio(game.Game):
             edit_file.close()
 
         for stuff in self.battle_data.values():
-            if stuff["Type"] == "subunit":
+            if stuff["Type"] == "unit":
                 if type(stuff["ID"]) is str:
                     is_leader = True
                     who_todo = {key: value for key, value in self.leader_data.leader_list.items() if key == stuff["ID"]}

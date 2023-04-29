@@ -10,11 +10,11 @@ infinity = float("inf")
 
 def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
     """
-    Calculate dmg, melee attack will use attacker subunit stat,
+    Calculate dmg, melee attack will use attacker unit stat,
     other types will use the type object stat instead (mostly used for range attack)
     :param self: DamageSprite object
-    :param attacker: Subunit object
-    :param target: Target subunit object
+    :param attacker: Unit object
+    :param target: Target unit object
     :param hit: Hit chance value
     :param defence: Defence chance value
     :param weapon: Weapon index (0 for main, 1 for sub)
@@ -90,9 +90,9 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
 
         troop_dmg *= hit_score
 
-    # troop_dmg on subunit is dmg multiply by troop number with addition from leader combat
-    if (attacker.check_special_effect("Anti Infantry", weapon=weapon) and target.subunit_type < 2 or
-            (attacker.check_special_effect("Anti Cavalry", weapon=weapon) and target.subunit_type == 2)):
+    # troop_dmg on unit is dmg multiply by troop number with addition from leader combat
+    if (attacker.check_special_effect("Anti Infantry", weapon=weapon) and target.unit_type < 2 or
+            (attacker.check_special_effect("Anti Cavalry", weapon=weapon) and target.unit_type == 2)):
         troop_dmg *= 1.25  # Anti trait dmg bonus
         impact *= 1.25
 

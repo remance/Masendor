@@ -1,4 +1,4 @@
-"""This file contains all class and function that read subunit/leader related data
+"""This file contains all class and function that read troop/leader related data
 and save them into dict for in game use """
 
 import csv

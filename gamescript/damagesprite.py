@@ -52,11 +52,11 @@ class DamageSprite(pygame.sprite.Sprite):
     def __init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
                  accuracy=None, arc_shot=False, height_ignore=False, degrade_when_travel=True,
                  degrade_when_hit=True, random_direction=False, random_move=False, reach_effect=None, height_type=1):
-        """Damage or effect sprite that can affect subunit"""
+        """Damage or effect sprite that can affect or damage unit"""
         self._layer = 10000000 + height_type
         pygame.sprite.Sprite.__init__(self, self.containers)
 
-        self.attacker = attacker  # subunit that perform the attack
+        self.attacker = attacker  # unit that perform the attack
         self.weapon = weapon  # weapon that use to perform the attack
         self.accuracy = accuracy
         self.height = self.attacker.height
@@ -90,7 +90,7 @@ class DamageSprite(pygame.sprite.Sprite):
         self.repeat_animation = False
         self.sprite_direction = ""
         self.attacker_sprite_direction = self.attacker.sprite_direction
-        self.already_hit = []  # list of subunit already got hit by sprite for sprite with no duration
+        self.already_hit = []  # list of unit already got hit by sprite for sprite with no duration
 
         self.dmg = dmg
         self.deal_dmg = False
@@ -165,18 +165,18 @@ class MeleeDamageSprite(DamageSprite):
                                   self.base_pos[1] * self.screen_scale[1]) * 5
         self.adjust_sprite()
 
-    def update(self, subunit_list, dt):
+    def update(self, unit_list, dt):
         done = False
 
         if self.current_animation:  # play animation if any
             done, just_start = self.play_animation(0.05, dt, False)
 
-        for subunit in self.attacker.near_enemy:  # collide check
-            this_subunit = subunit[0]
-            if this_subunit.alive and this_subunit.game_id not in self.already_hit and \
-                    this_subunit.hitbox.rect.colliderect(self.rect):
-                self.hit_register(this_subunit)
-                self.already_hit.append(this_subunit.game_id)
+        for unit in self.attacker.near_enemy:  # collide check
+            this_unit = unit[0]
+            if this_unit.alive and this_unit.game_id not in self.already_hit and \
+                    this_unit.hitbox.rect.colliderect(self.rect):
+                self.hit_register(this_unit)
+                self.already_hit.append(this_unit.game_id)
             if self.penetrate <= 0:
                 break  # use break for melee to last until animation done
 
@@ -225,33 +225,33 @@ class RangeDamageSprite(DamageSprite):
                                   self.base_pos[1] * self.screen_scale[1]) * 5
         self.adjust_sprite()
 
-    def update(self, subunit_list, dt):
+    def update(self, unit_list, dt):
         if self.sound_effect_name and self.sound_timer < self.sound_duration:
             self.sound_timer += dt
 
         if self.duration > 0:
             self.timer += dt
             self.duration -= dt
-            if self.timer > 1:  # reset timer and list of subunit already hit for attack with duration
+            if self.timer > 1:  # reset timer and list of unit already hit for attack with duration
                 self.timer -= 1
-                self.already_hit = []  # sprite can deal dmg to same subunit only once every 1 second
+                self.already_hit = []  # sprite can deal dmg to same unit only once every 1 second
 
         if self.current_animation:  # play animation if any
             self.play_animation(0.05, dt, False)
 
-        for subunit in self.attacker.near_enemy:  # collide check
-            this_subunit = subunit[0]
-            if this_subunit.alive and this_subunit.game_id not in self.already_hit and this_subunit.hitbox.rect.colliderect(
+        for unit in self.attacker.near_enemy:  # collide check
+            this_unit = unit[0]
+            if this_unit.alive and this_unit.game_id not in self.already_hit and this_unit.hitbox.rect.colliderect(
                     self.rect):
                 if self.arc_shot:
                     if self.distance_progress >= 100:  # arc shot only hit when reach target
-                        self.hit_register(this_subunit)
+                        self.hit_register(this_unit)
                         if self.penetrate <= 0:
                             self.reach_target()
                             return
                 else:
-                    self.hit_register(this_subunit)
-                    self.already_hit.append(this_subunit.game_id)
+                    self.hit_register(this_unit)
+                    self.already_hit.append(this_unit.game_id)
                     if self.penetrate <= 0:
                         self.reach_target()
                         return
@@ -324,25 +324,25 @@ class ChargeDamageSprite(DamageSprite):
 
         self.rect = self.attacker.hitbox.rect
 
-        self.battle.battle_camera.remove(self)  # no sprite to play since it use subunit sprite as damage sprite
+        self.battle.battle_camera.remove(self)  # no sprite to play since it use unit sprite as damage sprite
 
     def change_weapon(self, dmg, penetrate, impact):
         self.dmg = dmg
         self.penetrate = penetrate
         self.knock_power = impact
 
-    def update(self, subunit_list, dt):
+    def update(self, unit_list, dt):
         self.timer += dt
-        if self.timer > 1:  # reset timer and list of subunit already hit
+        if self.timer > 1:  # reset timer and list of unit already hit
             self.timer -= 1
-            self.already_hit = []  # sprite can deal dmg to same subunit only once every 1 second
+            self.already_hit = []  # sprite can deal dmg to same unit only once every 1 second
 
-        for subunit in self.attacker.near_enemy:  # collide check
-            this_subunit = subunit[0]
-            if this_subunit.alive and this_subunit.game_id not in self.already_hit and \
-                    this_subunit.hitbox.rect.colliderect(self.rect):
-                self.hit_register(this_subunit)
-                self.already_hit.append(this_subunit.game_id)
+        for unit in self.attacker.near_enemy:  # collide check
+            this_unit = unit[0]
+            if this_unit.alive and this_unit.game_id not in self.already_hit and \
+                    this_unit.hitbox.rect.colliderect(self.rect):
+                self.hit_register(this_unit)
+                self.already_hit.append(this_unit.game_id)
 
         if not self.attacker.charging:  # remove sprite when attacker no longer charge
             self.attacker.charge_sprite = None
@@ -389,7 +389,7 @@ class EffectDamageSprite(DamageSprite):
 
         self.adjust_sprite()
 
-    def update(self, subunit_list, dt):
+    def update(self, unit_list, dt):
         done = True
 
         if self.sound_effect_name and self.sound_timer < self.sound_duration:
@@ -406,25 +406,24 @@ class EffectDamageSprite(DamageSprite):
                 self.duration -= self.speed
             if self.duration > 0:  # only clear for sprite with duration or charge
                 self.duration -= self.timer
-                self.already_hit = []  # sprite can deal dmg to same subunit only once every 1 second
+                self.already_hit = []  # sprite can deal dmg to same unit only once every 1 second
             self.timer -= 1
 
         if self.current_animation:  # play animation if any
             done, just_start = self.play_animation(0.05, dt, False)
 
-        for this_subunit in subunit_list:
-            if this_subunit.game_id not in self.already_hit and \
-                    ((self.aoe == 0 and this_subunit.hitbox.rect.colliderect(self.rect)) or
-                     (self.aoe and this_subunit.base_pos.distance_to(self.base_pos) <= self.aoe)):
-                this_subunit.apply_effect(self.weapon, self.stat,
-                                          this_subunit.status_effect, this_subunit.status_duration)
+        for this_unit in unit_list:
+            if this_unit.game_id not in self.already_hit and \
+                    ((self.aoe == 0 and this_unit.hitbox.rect.colliderect(self.rect)) or
+                     (self.aoe and this_unit.base_pos.distance_to(self.base_pos) <= self.aoe)):
+                this_unit.apply_effect(self.weapon, self.stat, this_unit.status_effect, this_unit.status_duration)
                 if self.stat["Status"]:
                     for status in self.stat["Status"]:
-                        this_subunit.apply_effect(status, this_subunit.status_list[status],
-                                                  this_subunit.status_effect, this_subunit.status_duration)
+                        this_unit.apply_effect(status, this_unit.status_list[status],
+                                                  this_unit.status_effect, this_unit.status_duration)
                 if self.dmg:
-                    self.hit_register(this_subunit)
-                self.already_hit.append(this_subunit.game_id)
+                    self.hit_register(this_unit)
+                self.already_hit.append(this_unit.game_id)
 
         if self.full_distance:  # damage sprite that can move
             move = self.base_target - self.base_pos

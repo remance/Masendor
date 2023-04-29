@@ -53,7 +53,7 @@ def read_anim_data(module_folder, anim_column_header):
 
 
 def read_joint_data(module_folder):
-    with open(os.path.join(main_dir, "data", "module", module_folder, "sprite", "subunit", "weapon", "joint.csv"), encoding="utf-8",
+    with open(os.path.join(main_dir, "data", "module", module_folder, "sprite", "unit", "weapon", "joint.csv"), encoding="utf-8",
               mode="r") as edit_file:
         rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
         rd = [row for row in rd]

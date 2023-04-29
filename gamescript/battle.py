@@ -10,7 +10,7 @@ import pygame
 import pygame.freetype
 from pygame.locals import *
 
-from gamescript import camera, weather, battleui, subunit, datasprite, damagesprite, effectsprite, ai
+from gamescript import camera, weather, battleui, unit, datasprite, damagesprite, effectsprite, ai
 from gamescript.common import utility
 
 direction_list = datasprite.direction_list
@@ -54,7 +54,6 @@ class Battle:
     camera_fix = empty_method
     camera_process = empty_method
     change_battle_state = empty_method
-    check_subunit_collision = empty_method
     generate_unit = empty_method
     mouse_scrolling_process = empty_method
     play_sound_effect = empty_method
@@ -88,8 +87,9 @@ class Battle:
     start_camera_mode = "Follow"
 
     def __init__(self, game):
-        self.player_char = None  # player subunit for genre that allow player to directly control only one subunit
         self.game = game
+
+        self.player_unit = None  # player unit
 
         self.config = game.config
         self.master_volume = game.master_volume
@@ -112,8 +112,8 @@ class Battle:
         self.battle_camera = game.battle_camera
         self.battle_ui_updater = game.battle_ui_updater
 
-        self.subunit_updater = game.subunit_updater
-        self.all_subunits = game.all_subunits
+        self.unit_updater = game.unit_updater
+        self.all_units = game.all_units
         self.ui_updater = game.ui_updater
         self.weather_updater = game.weather_updater
         self.effect_updater = game.effect_updater
@@ -154,7 +154,7 @@ class Battle:
         self.confirm_ui = game.confirm_ui
         self.confirm_ui_popup = game.confirm_ui_popup
 
-        self.char_icon = game.char_icon
+        self.char_icon = game.unit_icon
 
         self.time_ui = game.time_ui
         self.time_number = game.time_number
@@ -252,7 +252,7 @@ class Battle:
 
         self.current_weather = weather.Weather(self.time_ui, 4, 0, 0, self.weather_data)
 
-        self.subunit_animation_data = None
+        self.unit_animation_data = None
         self.gen_body_sprite_pool = None
         self.gen_weapon_sprite_pool = None
         self.gen_armour_sprite_pool = None
@@ -262,7 +262,7 @@ class Battle:
         self.team_colour = None
 
         self.generic_action_data = None
-        self.subunit_animation_pool = None
+        self.unit_animation_pool = None
         self.status_animation_pool = None
 
         self.game_speed = 0
@@ -270,8 +270,8 @@ class Battle:
         self.day_time = "Day"
         self.old_day_time = self.day_time
         self.camp = {}
-        self.all_team_subunit = {1: pygame.sprite.Group(),
-                                 2: pygame.sprite.Group()}  # more team can be added later
+        self.all_team_unit = {1: pygame.sprite.Group(),
+                              2: pygame.sprite.Group()}  # more team can be added later
         self.all_team_enemy = {1: pygame.sprite.Group(),
                                2: pygame.sprite.Group()}
         self.team_troop_number = []  # list of troop number in each team, minimum at one because percentage can't divide by 0
@@ -286,8 +286,8 @@ class Battle:
         self.player_input_state = None  # specific player command input and ui
         self.previous_player_input_state = None
 
-        self.active_subunit_list = []  # list of all subunit alive in battle, need to be in list for collision check
-        self.visible_subunit_list = {}  # list of subunit visible to the team
+        self.active_unit_list = []  # list of all unit alive in battle, need to be in list for collision check
+        self.visible_unit_list = {}  # list of unit visible to the team
 
         self.best_depth = pygame.display.mode_ok(self.screen_rect.size, self.game.window_style,
                                                  32)  # Set the display mode
@@ -295,7 +295,7 @@ class Battle:
                                               self.best_depth)  # set up self screen
 
         # Assign battle variable to some classes
-        subunit.Subunit.sound_effect_pool = self.sound_effect_pool
+        unit.Unit.sound_effect_pool = self.sound_effect_pool
         damagesprite.DamageSprite.sound_effect_pool = self.sound_effect_pool
         effectsprite.EffectSprite.sound_effect_pool = self.sound_effect_pool
 
@@ -353,7 +353,7 @@ class Battle:
         self.troop_data = self.game.troop_data
         self.leader_data = self.game.leader_data
 
-        self.subunit_animation_data = self.game.subunit_animation_data
+        self.unit_animation_data = self.game.unit_animation_data
         self.gen_body_sprite_pool = self.game.gen_body_sprite_pool
         self.gen_weapon_sprite_pool = self.game.gen_weapon_sprite_pool
         self.gen_armour_sprite_pool = self.game.gen_armour_sprite_pool
@@ -467,41 +467,41 @@ class Battle:
         self.max_camera = ((self.battle_map_height.image.get_width() - 1),
                            (self.battle_map_height.image.get_height() - 1))  # reset max camera to new map size
 
-        self.active_subunit_list = []
-        self.visible_subunit_list = {}
+        self.active_unit_list = []
+        self.visible_unit_list = {}
 
         self.camera_mode = self.start_camera_mode
         if not self.char_selected:
             self.camera_mode = "Free"
         if map_type == "preset":
-            self.setup_battle_troop(self.subunit_updater)
+            self.setup_battle_troop(self.unit_updater)
         elif map_type == "custom":
-            self.setup_battle_troop(self.subunit_updater, custom_data=self.game.custom_map_data["battle"])
+            self.setup_battle_troop(self.unit_updater, custom_data=self.game.custom_map_data["battle"])
 
-        for this_group in self.all_team_subunit.values():
+        for this_group in self.all_team_unit.values():
             this_group.empty()
         for this_group in self.all_team_enemy.values():
             this_group.empty()
         print(self.map_data)
-        self.all_team_subunit = {int(key[-1]): pygame.sprite.Group() for key in self.map_data if "Team Faction" in key}
+        self.all_team_unit = {int(key[-1]): pygame.sprite.Group() for key in self.map_data if "Team Faction" in key}
         self.all_team_enemy = {int(key[-1]): pygame.sprite.Group() for key in self.map_data if "Team Faction" in key}
-        self.camp = {key: {} for key in self.all_team_subunit.keys()}
+        self.camp = {key: {} for key in self.all_team_unit.keys()}
         self.team_troop_number = [0 for _ in
-                                  range(len(self.all_team_subunit) + 1)]  # reset list of troop number in each team
+                                  range(len(self.all_team_unit) + 1)]  # reset list of troop number in each team
         self.battle_scale = [1 for _ in self.team_troop_number]
         self.start_troop_number = [0 for _ in self.team_troop_number]
         self.death_troop_number = [0 for _ in self.team_troop_number]
         self.flee_troop_number = [0 for _ in self.team_troop_number]
-        self.visible_subunit_list = {key: {} for key in self.all_team_subunit.keys()}
+        self.visible_unit_list = {key: {} for key in self.all_team_unit.keys()}
 
         self.battle_scale_ui.change_fight_scale(self.battle_scale)
         yield set_done_load()
 
         yield set_start_load("sprites")
-        subunit_to_make = tuple(set([this_subunit.troop_id for this_subunit in self.subunit_updater]))
-        who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key in subunit_to_make}
-        who_todo |= {key: value for key, value in self.leader_data.leader_list.items() if key in subunit_to_make}
-        self.subunit_animation_pool, self.status_animation_pool = self.game.create_troop_sprite_pool(who_todo)
+        unit_to_make = tuple(set([this_unit.troop_id for this_unit in self.unit_updater]))
+        who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key in unit_to_make}
+        who_todo |= {key: value for key, value in self.leader_data.leader_list.items() if key in unit_to_make}
+        self.unit_animation_pool, self.status_animation_pool = self.game.create_troop_sprite_pool(who_todo)
         yield set_done_load()
 
     def run_game(self):
@@ -510,7 +510,7 @@ class Battle:
         self.current_weather.__init__(self.time_ui, 4, 0, 0, self.weather_data)  # start weather with sunny first
         self.current_pop_up_row = 0
         self.input_popup = (None, None)  # no popup asking for user text input state
-        self.player_char = None  # Which unit is currently selected
+        self.player_unit = None  # Which unit is currently selected
         self.drama_text.queue = []  # reset drama text popup queue
 
         self.change_battle_state()
@@ -565,7 +565,7 @@ class Battle:
 
         self.time_update()
 
-        self.effect_updater.update(self.active_subunit_list, self.dt)
+        self.effect_updater.update(self.active_unit_list, self.dt)
 
         # self.map_def_array = []
         # self.mapunitarray = [[x[random.randint(0, 1)] if i != j else 0 for i in range(1000)] for j in range(1000)]
@@ -684,20 +684,20 @@ class Battle:
                     # FOR DEVELOPMENT
 
                     # elif key_press == pygame.K_l and self.current_selected is not None:
-                    #     for subunit in self.current_selected.subunit_sprite:
-                    #         subunit.base_morale = 0
-                    # elif key_press == pygame.K_k and self.player_char:
-                    #     # for index, subunit in enumerate(self.current_selected.subunit_sprite):
-                    #     #     subunit.unit_health -= subunit.unit_health
-                    #     self.player_char.health = 0
-                    # elif key_press == pygame.K_m and self.player_char is not None:
-                    #     for follower in self.player_char.alive_troop_follower:
+                    #     for unit in self.player_unit.alive_troop_follower:
+                    #         unit.base_morale = 0
+                    # elif key_press == pygame.K_k and self.player_unit:
+                    #     # for unit in self.player_unit.alive_troop_follower:
+                    #     #     unit.unit_health -= unit.unit_health
+                    #     self.player_unit.health = 0
+                    # elif key_press == pygame.K_m and self.player_unit is not None:
+                    #     for follower in self.player_unit.alive_troop_follower:
                     #         follower.health = 0
-                    # elif key_press == pygame.K_n and self.player_char is not None:
-                    #     for follower in self.player_char.alive_leader_follower:
+                    # elif key_press == pygame.K_n and self.player_unit is not None:
+                    #     for follower in self.player_unit.alive_leader_follower:
                     #         follower.health = 0
-                    # elif key_press == pygame.K_b and self.player_char is not None:
-                    #     for follower in self.player_char.alive_leader_follower:
+                    # elif key_press == pygame.K_b and self.player_unit is not None:
+                    #     for follower in self.player_unit.alive_leader_follower:
                     #         for follower2 in follower.alive_troop_follower:
                     #             follower2.health = 0
 
@@ -721,9 +721,9 @@ class Battle:
                             self.game.setup_profiler()
                         self.game.profiler.switch_show_hide()
                     elif event.key == K_F9:  # show/hide profiler
-                        for this_subunit in self.subunit_updater:
-                            if this_subunit.team == 1:
-                                this_subunit.health = 0
+                        for this_unit in self.unit_updater:
+                            if this_unit.team == 1:
+                                this_unit.health = 0
 
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:  # left click
@@ -868,7 +868,7 @@ class Battle:
                         #     self.music_schedule = self.music_schedule[1:]
                         #     self.music_event = self.music_event[1:]
 
-                    # Run troop ai logic no more than limit number of subunit per update to prevent stutter
+                    # Run troop ai logic no more than limit number of unit per update to prevent stutter
                     if self.troop_ai_logic_queue:
                         limit = int(len(self.troop_ai_logic_queue) / 20)
                         if limit < 10:
@@ -876,15 +876,15 @@ class Battle:
                             if limit > len(self.troop_ai_logic_queue):
                                 limit = len(self.troop_ai_logic_queue)
                         for index in range(limit):
-                            this_subunit = self.troop_ai_logic_queue[index]
-                            if this_subunit.alive:  # in case subunit die or flee during queue
-                                this_subunit.ai_subunit()
+                            this_unit = self.troop_ai_logic_queue[index]
+                            if this_unit.alive:  # in case unit die or flee during queue
+                                this_unit.ai_unit()
 
                         self.troop_ai_logic_queue = self.troop_ai_logic_queue[limit:]
 
                     # Battle related updater
-                    self.subunit_updater.update(self.dt)
-                    self.effect_updater.update(self.active_subunit_list, self.dt)
+                    self.unit_updater.update(self.dt)
+                    self.effect_updater.update(self.active_unit_list, self.dt)
                     self.weather_updater.update(self.dt, self.time_number.time_number)
 
                     self.ui_updater.update()  # update ui
@@ -904,9 +904,9 @@ class Battle:
                     self.ui_dt = self.dt  # get ui timer before apply self
 
                     if self.ui_timer >= 0.4:
-                        self.mini_map.update([self.camera_pos, self.camera_topleft_corner], self.active_subunit_list)
-                        if self.player_char:
-                            self.command_ui.value_input(who=self.player_char)
+                        self.mini_map.update([self.camera_pos, self.camera_topleft_corner], self.active_unit_list)
+                        if self.player_unit:
+                            self.command_ui.value_input(who=self.player_unit)
                             self.countdown_skill_icon()
                         self.battle_scale = [value / sum(self.team_troop_number) for value in
                                              self.team_troop_number]
@@ -919,10 +919,10 @@ class Battle:
 
                 elif self.game_state == "end":
                     if self.battle_done_box not in self.battle_ui_updater:
-                        if not self.active_subunit_list:  # draw
+                        if not self.active_unit_list:  # draw
                             self.battle_done_box.pop("Draw")
                         else:
-                            for key, value in self.all_team_subunit.items():
+                            for key, value in self.all_team_unit.items():
                                 if value:
                                     if "wt" + str(key) in self.event_log.map_event:
                                         self.event_log.add_log(
@@ -941,7 +941,7 @@ class Battle:
                                         in key if self.map_data[key]]
                             if not self.battle_done_box.result_showing:  # show battle result stat
                                 faction_name = {key: self.faction_data.faction_list[self.map_data[
-                                    "Team Faction" + str(key)][0]]["Name"] for key in self.all_team_subunit}
+                                    "Team Faction" + str(key)][0]]["Name"] for key in self.all_team_unit}
 
                                 self.battle_done_box.show_result(coa_list,
                                                                  {"Faction": faction_name,
@@ -1011,21 +1011,21 @@ class Battle:
                                       self.battle_done_button)  # remove menu
 
         # remove all reference from battle object
-        self.player_char = None
+        self.player_unit = None
 
-        self.active_subunit_list = []
+        self.active_unit_list = []
         self.map_move_array = []
         self.map_def_array = []
 
         self.troop_ai_logic_queue = []
 
-        clean_group_object((self.shoot_lines, self.all_subunits, self.char_icon,
+        clean_group_object((self.shoot_lines, self.all_units, self.char_icon,
                             self.effect_updater, self.weather_matter))
 
         self.command_ui.__init__(self.screen_scale, self.command_ui.weapon_box_images,
                                  self.command_ui.status_effect_image)  # reset command ui
 
-        self.subunit_animation_pool = None
+        self.unit_animation_pool = None
         self.status_animation_pool = None
         self.generic_action_data = None
 

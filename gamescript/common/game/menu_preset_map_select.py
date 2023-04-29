@@ -41,16 +41,16 @@ def menu_preset_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
             for this_team in self.team_coa:
                 if this_team.rect.collidepoint(self.mouse_pos):
                     self.team_selected = this_team.team
-                    for icon in self.preview_char:
+                    for icon in self.preview_unit:
                         icon.kill()
-                    self.preview_char.empty()
+                    self.preview_unit.empty()
 
-                    self.setup_battle_troop(self.preview_char, specific_team=self.team_selected, custom_data=None)
+                    self.setup_battle_troop(self.preview_unit, specific_team=self.team_selected, custom_data=None)
 
-                    self.char_selector.setup_char_icon(self.char_icon, self.preview_char)
+                    self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
 
-                    for index, icon in enumerate(self.char_icon):  # select first char
-                        self.char_selected = icon.who.map_id
+                    for index, icon in enumerate(self.unit_icon):  # select first unit
+                        self.unit_selected = icon.who.map_id
                         icon.selection()
                         who_todo = {key: value for key, value in self.leader_data.leader_list.items() if
                                     key == icon.who.troop_id}
@@ -58,7 +58,7 @@ def menu_preset_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
                         self.map_preview.change_mode(1, team_pos_list=self.team_pos,
                                                      camp_pos_list=self.camp_pos[self.map_source],
                                                      selected=icon.who.base_pos)
-                        self.char_model_room.add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"],
+                        self.unit_model_room.add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"],
                                                                icon.who.coa)
                         break
                     break
@@ -82,8 +82,8 @@ def menu_preset_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
         self.main_ui_updater.remove(*self.menu_button, self.map_list_box, self.map_list_box.scroll, self.map_option_box,
                                     self.observe_mode_tick_box, self.source_list_box, self.source_list_box.scroll,
                                     self.source_description, self.army_stat, self.map_preview, self.map_description,
-                                    self.team_coa, self.map_title, self.char_selector, self.char_selector.scroll,
-                                    tuple(self.char_stat.values()), self.char_model_room)
+                                    self.team_coa, self.map_title, self.unit_selector, self.unit_selector.scroll,
+                                    tuple(self.unit_stat.values()), self.unit_model_room)
         self.menu_button.remove(*self.menu_button)
 
         # Reset selected team
@@ -95,20 +95,18 @@ def menu_preset_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
         self.map_preview.change_mode(0)  # revert map preview back to without unit dot
 
         for group in (
-        self.map_namegroup, self.team_coa, self.source_namegroup):  # remove map name, source name and coa item
+        self.map_namegroup, self.team_coa, self.source_namegroup, self.preview_unit):  # remove map name, source name and coa item
             for stuff in group:
                 stuff.kill()
                 del stuff
 
-        for icon in self.preview_char:
-            icon.kill()
-        self.preview_char.empty()
+        self.preview_unit.empty()
 
         self.back_mainmenu()
 
     elif self.start_button.event:  # Start Battle
         self.start_button.event = False
-        self.start_battle(self.char_selected)
+        self.start_battle(self.unit_selected)
 
     elif self.map_list_box.rect.collidepoint(self.mouse_pos):
         self.current_map_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down,
@@ -121,31 +119,31 @@ def menu_preset_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
                                               self.current_source_row, self.source_list,
                                               self.source_namegroup, self.main_ui_updater)
 
-    elif self.char_selector.rect.collidepoint(self.mouse_pos):
+    elif self.unit_selector.rect.collidepoint(self.mouse_pos):
         if mouse_scroll_up:
-            if self.char_selector.current_row > 0:
-                self.char_selector.current_row -= 1
-                self.char_selector.scroll.change_image(new_row=self.char_selector.current_row,
-                                                       row_size=self.char_selector.row_size)
-                self.char_selector.setup_char_icon(self.char_icon, self.preview_char)
+            if self.unit_selector.current_row > 0:
+                self.unit_selector.current_row -= 1
+                self.unit_selector.scroll.change_image(new_row=self.unit_selector.current_row,
+                                                       row_size=self.unit_selector.row_size)
+                self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
 
         elif mouse_scroll_down:
-            if self.char_selector.current_row < self.char_selector.row_size:
-                self.char_selector.current_row += 1
-                self.char_selector.scroll.change_image(new_row=self.char_selector.current_row,
-                                                       row_size=self.char_selector.row_size)
-                self.char_selector.setup_char_icon(self.char_icon, self.preview_char)
+            if self.unit_selector.current_row < self.unit_selector.row_size:
+                self.unit_selector.current_row += 1
+                self.unit_selector.scroll.change_image(new_row=self.unit_selector.current_row,
+                                                       row_size=self.unit_selector.row_size)
+                self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
 
-        elif self.char_selector.scroll.rect.collidepoint(self.mouse_pos):
+        elif self.unit_selector.scroll.rect.collidepoint(self.mouse_pos):
             if mouse_left_down or mouse_left_up:
-                new_row = self.char_selector.scroll.player_input(self.mouse_pos)
-                if self.char_selector.current_row != new_row:
-                    self.char_selector.current_row = new_row
-                    self.char_selector.scroll.change_image(new_row=new_row, row_size=self.char_selector.row_size)
-                    self.char_selector.setup_char_icon(self.char_icon, self.preview_char)
+                new_row = self.unit_selector.scroll.player_input(self.mouse_pos)
+                if self.unit_selector.current_row != new_row:
+                    self.unit_selector.current_row = new_row
+                    self.unit_selector.scroll.change_image(new_row=new_row, row_size=self.unit_selector.row_size)
+                    self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
 
         else:
-            for index, icon in enumerate(self.char_icon):
+            for index, icon in enumerate(self.unit_icon):
                 if icon.rect.collidepoint(self.mouse_pos):
                     popup_text = [icon.who.name]
                     for troop in icon.who.troop_reserve_list:
@@ -156,21 +154,21 @@ def menu_preset_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
                     self.single_text_popup.pop(self.mouse_pos, popup_text)
                     self.main_ui_updater.add(self.single_text_popup)
                     if mouse_left_up:
-                        for other_icon in self.char_icon:
+                        for other_icon in self.unit_icon:
                             if other_icon.selected:  # unselected all others first
                                 other_icon.selection()
                         icon.selection()
-                        # self.char_stat["char"].add_leader_stat(icon.who, self.leader_data, self.troop_data)
+                        # self.unit_stat["unit"].add_leader_stat(icon.who, self.leader_data, self.troop_data)
                         who_todo = {key: value for key, value in self.leader_data.leader_list.items() if
                                     key == icon.who.troop_id}
                         preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True)
-                        self.char_model_room.add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"],
+                        self.unit_model_room.add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"],
                                                                icon.who.coa)
                         self.map_preview.change_mode(1, team_pos_list=self.team_pos,
                                                      camp_pos_list=self.camp_pos[self.map_source],
                                                      selected=icon.who.base_pos)
 
-                        self.char_selected = icon.who.map_id
+                        self.unit_selected = icon.who.map_id
                     break
 
 
@@ -188,6 +186,6 @@ def change_team_coa(self):
 
 
 def change_char(self):
-    self.main_ui_updater.add(self.char_selector, self.char_selector.scroll,
-                             tuple(self.char_stat.values()), *self.char_select_button)
-    self.menu_button.add(*self.char_select_button)
+    self.main_ui_updater.add(self.unit_selector, self.unit_selector.scroll,
+                             tuple(self.unit_stat.values()), *self.unit_select_button)
+    self.menu_button.add(*self.unit_select_button)

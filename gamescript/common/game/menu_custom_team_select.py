@@ -84,10 +84,10 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                                     self.camp_icon = []
                                 else:
                                     for camp in self.camp_pos[0][coa.team]:
-                                        self.camp_icon.append(battleui.TempCharIcon(self.screen_scale, coa.team,
+                                        self.camp_icon.append(battleui.TempUnitIcon(self.screen_scale, coa.team,
                                                                                     camp[1], 0))
                                 if not self.camp_icon or self.camp_icon[-1].name != "+":
-                                    self.camp_icon.append(battleui.TempCharIcon(self.screen_scale, coa.team, "+", 0))
+                                    self.camp_icon.append(battleui.TempUnitIcon(self.screen_scale, coa.team, "+", 0))
 
                             else:  # team no longer exist
                                 if coa.team in self.camp_pos[0]:
@@ -95,7 +95,7 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                                     for icon in self.camp_icon:
                                         icon.kill()
                                     self.camp_icon = []
-                            self.char_selector.setup_char_icon(self.char_icon, self.camp_icon)
+                            self.unit_selector.setup_unit_icon(self.unit_icon, self.camp_icon)
                             break
 
             for box in (self.observe_mode_tick_box, self.night_battle_tick_box):
@@ -113,7 +113,7 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                         self.custom_map_data["info"]["weather"][0][1] = battle_time
 
             if mouse_right_up and self.map_preview.rect.collidepoint(self.mouse_pos):
-                for index, icon in enumerate(self.char_icon):
+                for index, icon in enumerate(self.unit_icon):
                     if icon.selected:
                         map_pos = (
                             (int(self.mouse_pos[0] - self.map_preview.rect.x) * self.map_preview.map_scale_width),
@@ -154,35 +154,35 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
             self.input_ui.change_instruction("Wind Direction Degree:")
             self.main_ui_updater.add(self.input_ui_popup)
 
-    elif self.char_selector.rect.collidepoint(self.mouse_pos):
+    elif self.unit_selector.rect.collidepoint(self.mouse_pos):
         if mouse_scroll_up:
-            if self.char_selector.current_row > 0:
-                self.char_selector.current_row -= 1
-                self.char_selector.scroll.change_image(new_row=self.char_selector.current_row,
-                                                       row_size=self.char_selector.row_size)
-                self.char_selector.setup_char_icon(self.char_icon, self.camp_icon)
+            if self.unit_selector.current_row > 0:
+                self.unit_selector.current_row -= 1
+                self.unit_selector.scroll.change_image(new_row=self.unit_selector.current_row,
+                                                       row_size=self.unit_selector.row_size)
+                self.unit_selector.setup_unit_icon(self.unit_icon, self.camp_icon)
 
         elif mouse_scroll_down:
-            if self.char_selector.current_row < self.char_selector.row_size:
-                self.char_selector.current_row += 1
-                self.char_selector.scroll.change_image(new_row=self.char_selector.current_row,
-                                                       row_size=self.char_selector.row_size)
-                self.char_selector.setup_char_icon(self.char_icon, self.camp_icon)
+            if self.unit_selector.current_row < self.unit_selector.row_size:
+                self.unit_selector.current_row += 1
+                self.unit_selector.scroll.change_image(new_row=self.unit_selector.current_row,
+                                                       row_size=self.unit_selector.row_size)
+                self.unit_selector.setup_unit_icon(self.unit_icon, self.camp_icon)
 
-        elif self.char_selector.scroll.rect.collidepoint(self.mouse_pos):
+        elif self.unit_selector.scroll.rect.collidepoint(self.mouse_pos):
             if mouse_left_down or mouse_left_up:
-                new_row = self.char_selector.scroll.player_input(self.mouse_pos)
-                if self.char_selector.current_row != new_row:
-                    self.char_selector.current_row = new_row
-                    self.char_selector.scroll.change_image(new_row=new_row, row_size=self.char_selector.row_size)
-                    self.char_selector.setup_char_icon(self.char_icon, self.camp_icon)
+                new_row = self.unit_selector.scroll.player_input(self.mouse_pos)
+                if self.unit_selector.current_row != new_row:
+                    self.unit_selector.current_row = new_row
+                    self.unit_selector.scroll.change_image(new_row=new_row, row_size=self.unit_selector.row_size)
+                    self.unit_selector.setup_unit_icon(self.unit_icon, self.camp_icon)
 
         else:
             if mouse_left_up or mouse_right_up:
-                for index, icon in enumerate(self.char_icon):
+                for index, icon in enumerate(self.unit_icon):
                     if icon.rect.collidepoint(self.mouse_pos):
                         if mouse_left_up:
-                            for other_icon in self.char_icon:
+                            for other_icon in self.unit_icon:
                                 if other_icon.selected:  # unselected all others first
                                     other_icon.selection()
                             icon.selection()
@@ -191,7 +191,7 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                                 self.camp_pos[0][icon.who.team].pop(index)
                                 icon.kill()
                                 self.camp_icon.pop(index)
-                                self.char_selector.setup_char_icon(self.char_icon, self.camp_icon)
+                                self.unit_selector.setup_unit_icon(self.unit_icon, self.camp_icon)
                         self.map_preview.change_mode(1, camp_pos_list=self.camp_pos[0])
                         break
 
@@ -204,8 +204,8 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
         self.main_ui_updater.remove(*self.menu_button, self.map_list_box, self.custom_map_option_box,
                                     self.observe_mode_tick_box, self.night_battle_tick_box,
                                     self.source_list_box, self.source_list_box.scroll,
-                                    self.char_selector, self.char_selector.scroll,
-                                    self.char_icon, self.team_coa, self.weather_custom_select, self.wind_custom_select)
+                                    self.unit_selector, self.unit_selector.scroll,
+                                    self.unit_icon, self.team_coa, self.weather_custom_select, self.wind_custom_select)
         self.menu_button.remove(*self.menu_button)
 
         for this_name in self.popup_namegroup:  # remove name list
@@ -237,7 +237,7 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
         self.select_button.event = False
         if len([coa for coa in self.team_coa if coa.name is not None and coa.name != "None"]) > 1:
             self.menu_state = "unit_setup"
-            self.char_select_row = 0
+            self.unit_select_row = 0
 
             self.main_ui_updater.remove(self.custom_map_option_box, self.observe_mode_tick_box,
                                         self.night_battle_tick_box,
@@ -278,7 +278,7 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                                self.map_namegroup, self.unit_list_box, self.main_ui_updater)
                     break
 
-            # self.char_selector.setup_char_icon(self.char_icon, self.preview_char)
+            # self.unit_selector.setup_char_icon(self.unit_icon, self.preview_unit)
         else:
             self.input_popup = ("confirm_input", "warning")
             self.input_ui.change_instruction("Require at least 2 teams")
@@ -296,9 +296,9 @@ def change_team_coa(self):
             self.camp_icon = []
             if this_team.team in self.camp_pos[0]:
                 for camp in self.camp_pos[0][this_team.team]:
-                    self.camp_icon.append(battleui.TempCharIcon(self.screen_scale, this_team.team, camp[1], 0))
-                self.camp_icon.append(battleui.TempCharIcon(self.screen_scale, this_team.team, "+", 0))
-            self.char_selector.setup_char_icon(self.char_icon, self.camp_icon)
+                    self.camp_icon.append(battleui.TempUnitIcon(self.screen_scale, this_team.team, camp[1], 0))
+                self.camp_icon.append(battleui.TempUnitIcon(self.screen_scale, this_team.team, "+", 0))
+            self.unit_selector.setup_unit_icon(self.unit_icon, self.camp_icon)
 
             for this_team2 in self.team_coa:
                 if self.team_selected != this_team2.team and this_team2.selected:

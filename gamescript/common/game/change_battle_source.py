@@ -45,23 +45,23 @@ def change_battle_source(self):
     self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos[self.map_source])
 
     # Reset character selection UI
-    self.char_select_row = 0
+    self.unit_select_row = 0
 
-    for icon in self.preview_char:
+    for icon in self.preview_unit:
         icon.kill()
-    self.preview_char.empty()
+    self.preview_unit.empty()
 
-    self.setup_battle_troop(self.preview_char, specific_team=self.team_selected, custom_data=None)
+    self.setup_battle_troop(self.preview_unit, specific_team=self.team_selected, custom_data=None)
 
-    self.char_selector.setup_char_icon(self.char_icon, self.preview_char)
+    self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
 
-    for index, icon in enumerate(self.char_icon):  # select first char
-        self.char_selected = icon.who.map_id
+    for index, icon in enumerate(self.unit_icon):  # select first unit
+        self.unit_selected = icon.who.map_id
         icon.selection()
         who_todo = {key: value for key, value in self.leader_data.leader_list.items() if key == icon.who.troop_id}
         preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True)
         self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos[self.map_source],
                                      selected=icon.who.base_pos)
-        self.char_model_room.add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"],
+        self.unit_model_room.add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"],
                                                icon.who.coa)
         break

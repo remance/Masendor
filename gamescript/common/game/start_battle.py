@@ -31,7 +31,7 @@ def start_battle(self, char_selected=None):
     # print(vars(self))
     # for item in gc.get_objects():
     # #     try:
-    #         # if type(item) == unit.Unit or type(item) == subunit.Subunit or type(item) == leader.Leader:
+    #         # if type(item) == unit.Unit or type(item) == unit.Unit or type(item) == leader.Leader:
     #     if type(item) == dict:
     #         print(item, type(item))
     # print(item.current_animation)
@@ -41,4 +41,4 @@ def start_battle(self, char_selected=None):
     #     #     asdasdasd
     #     except:
     #         pass
-    # print(gc.get_referrers(self.subunit_animation_pool))
+    # print(gc.get_referrers(self.unit_animation_pool))

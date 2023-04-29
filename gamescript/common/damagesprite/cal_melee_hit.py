@@ -8,7 +8,7 @@ def cal_melee_hit(self, attacker, weapon, target, hit_side, hit_angle):
     """base_target position 0 = Front, 1 = Side, 3 = Rear,
     attacker_side and target_side is the side attacking and defending respectively"""
     attacker_luck = randint(-50, 20)  # attacker luck
-    target_dodge_luck = randint(-30, 30)  # luck of the defender subunit
+    target_dodge_luck = randint(-30, 30)  # luck of the defender unit
 
     hit_side_mod = combat_side_cal[hit_side]  # defender defend side
 
@@ -23,7 +23,7 @@ def cal_melee_hit(self, attacker, weapon, target, hit_side, hit_angle):
         if target.check_special_effect("All Side Full Defence"):
             hit_side_mod = 1
 
-        target_def_luck = randint(-20, 20)  # luck of the defender subunit
+        target_def_luck = randint(-20, 20)  # luck of the defender unit
         target_defence = (target.melee_def * hit_side_mod) + target_def_luck
 
         if target_defence < 0 or (attacker.check_special_effect("Rear Attack Bonus") and hit_side == 2) or \

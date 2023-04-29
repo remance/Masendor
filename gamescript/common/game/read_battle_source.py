@@ -6,7 +6,7 @@ stat_convert = utility.stat_convert
 
 
 def read_battle_source(self, description_text):
-    """Change battle source description and add new subunit dot when select new source"""
+    """Change battle source description and add new unit dot when select new source"""
     self.source_description.change_text(description_text)
 
     openfolder = self.preset_map_folder

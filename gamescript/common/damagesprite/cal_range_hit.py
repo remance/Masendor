@@ -5,9 +5,9 @@ combat_side_cal = (1, 0.3, 0.3, 0)  # for range side that hit target modifier
 
 def cal_range_hit(self, attacker, target, target_side, hit_angle):
     """Calculate range attack hit chance and defence chance, side_percent is more punishing than melee attack"""
-    attacker_luck = randint(-20, 20)  # luck of the attacker subunit
-    target_def_luck = randint(-20, 20)  # luck of the defender subunit
-    target_dodge_luck = randint(-30, 30)  # luck of the defender subunit
+    attacker_luck = randint(-20, 20)  # luck of the attacker unit
+    target_def_luck = randint(-20, 20)  # luck of the defender unit
+    target_dodge_luck = randint(-30, 30)  # luck of the defender unit
 
     attacker_hit = self.accuracy + attacker_luck + (
             attacker.height - target.height) / 2  # calculate hit chance with height advantage

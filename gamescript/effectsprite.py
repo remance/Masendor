@@ -21,7 +21,7 @@ class EffectSprite(pygame.sprite.Sprite):
     adjust_sprite = adjust_sprite.adjust_sprite
 
     def __init__(self, attacker, base_pos, pos, target, sprite_type, sprite_name):
-        """Effect sprite that does not affect subunit in any way"""
+        """Effect sprite that does not affect unit in any way"""
         self._layer = 10000000
         pygame.sprite.Sprite.__init__(self, self.containers)
 
@@ -64,7 +64,7 @@ class EffectSprite(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect(center=self.pos)
 
-    def update(self, subunit_list, dt):
+    def update(self, unit_list, dt):
         done, just_start = self.play_animation(0.1, dt)
 
         if self.sound_effect_name and self.sound_timer < self.sound_duration:
