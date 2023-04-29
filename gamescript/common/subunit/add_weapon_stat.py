@@ -39,7 +39,7 @@ def add_weapon_stat(self):
                                                               self.troop_data.equipment_grade_list[weapon[1]][
                                                                   "Modifier"] + \
                                                               (weapon_stat["Impact"] * (
-                                                                          self.strength * dmg_scaling[0] / 100))
+                                                                      self.strength * dmg_scaling[0] / 100))
             else:
                 self.weapon_impact[set_index][weapon_index] = weapon_stat["Impact"] * \
                                                               self.troop_data.equipment_grade_list[weapon[1]][

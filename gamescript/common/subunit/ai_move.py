@@ -73,7 +73,8 @@ def ai_move(self):
                 elif self.available_move_skill and not self.command_action:  # use move skill
                     self.skill_command_input(0, self.available_move_skill, pos_target=self.base_pos)
                 else:
-                    if ("movable" in self.current_action and "run" not in self.current_action) or "hold" in self.current_action:
+                    if (
+                            "movable" in self.current_action and "run" not in self.current_action) or "hold" in self.current_action:
                         self.interrupt_animation = True
                     self.command_action = self.run_command_action
                     self.move_speed = self.run_speed

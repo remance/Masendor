@@ -18,7 +18,8 @@ def move_logic(self, dt):
                 move = self.base_target - self.base_pos
                 require_move_length = move.length()  # convert length
                 move.normalize_ip()
-                height_diff = (self.height / self.front_height) ** 2  # walk down hill increase speed, walk up hill reduce speed
+                height_diff = (
+                                          self.height / self.front_height) ** 2  # walk down hill increase speed, walk up hill reduce speed
                 move *= self.move_speed * height_diff * dt
                 new_pos = self.base_pos + move
 

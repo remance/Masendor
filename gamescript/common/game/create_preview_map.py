@@ -9,15 +9,12 @@ load_images = utility.load_images
 def create_preview_map(self, map_folder_list, map_list, custom_map=False):
     # Create map preview image
     if self.menu_state == "preset_map":
-        map_images = load_images(self.main_dir, subfolder=("module", self.module_folder, "map", "preset",
-                                                           map_folder_list[self.current_map_select]))
+        map_images = load_images(self.module_dir, subfolder=("map", "preset", map_folder_list[self.current_map_select]))
     else:
         if map_folder_list[self.current_map_select] != "Random":
-            map_images = load_images(self.main_dir, subfolder=("module", self.module_folder, "map", "custom",
-                                                               map_folder_list[self.current_map_select]))
+            map_images = load_images(self.module_dir, subfolder=("map", "custom", map_folder_list[self.current_map_select]))
             if not map_images:  # try loading from preset map list
-                map_images = load_images(self.main_dir, subfolder=("module", self.module_folder, "map", "preset",
-                                                                   map_folder_list[self.current_map_select]))
+                map_images = load_images(self.module_dir, subfolder=("map", "preset", map_folder_list[self.current_map_select]))
         else:  # random map
             terrain, feature, height = battlemap.create_random_map(self.battle_map_data.terrain_colour,
                                                                    self.battle_map_data.feature_colour,

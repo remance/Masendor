@@ -36,7 +36,8 @@ def player_input(self, cursor_pos):
 
             run_input = False
             if (self.toggle_run and not self.battle.player_key_hold["Run Input"]) or \
-                    (not self.toggle_run and self.battle.player_key_hold["Run Input"]):  # check for run input and toggle
+                    (not self.toggle_run and self.battle.player_key_hold[
+                        "Run Input"]):  # check for run input and toggle
                 # run toggle will change run input into walk input and vice versa
                 run_input = True
 

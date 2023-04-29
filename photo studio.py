@@ -19,6 +19,7 @@ from gamescript.common.game.create_troop_sprite_pool import create_troop_sprite_
 team_colour = game.Game.team_colour
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
+data_dir = os.path.join(main_dir, "data")
 
 rotation_list = (90, -90)
 rotation_name = ("l_side", "r_side")
@@ -87,7 +88,7 @@ class Studio(game.Game):
     spawn_weather_matter = spawn_weather_matter
     create_troop_sprite_pool = create_troop_sprite_pool
 
-    def __init__(self, photo_size, map_name, battle_data_name, ruleset, day_time, weather_event):
+    def __init__(self, photo_size, map_name, battle_data_name, module, day_time, weather_event):
         pygame.init()  # Initialize pygame
         self.screen_rect = pygame.Rect(0, 0, photo_size[0], photo_size[1])
         camera.Camera.screen_rect = self.screen_rect
@@ -95,16 +96,21 @@ class Studio(game.Game):
         self.best_depth = pygame.display.mode_ok(self.screen_rect.size, 0, 32)
         self.screen = pygame.display.set_mode(self.screen_rect.size, 0 | pygame.RESIZABLE, self.best_depth)
 
-        self.ruleset_list = csv_read(main_dir, "ruleset_list.csv", ("data", "ruleset"))  # get ruleset list
-        self.ruleset_folder = str(self.ruleset_list[ruleset][0]).strip("/")
+        self.module_list = csv_read(data_dir, "module_list.csv", ("module",))  # get module list
+        self.module_folder = str(self.module_list[module][0]).strip("/")
 
-        self.troop_data, self.leader_data, self.faction_data = make_faction_troop_leader_data(main_dir, self.screen_scale, self.ruleset_folder, "en")
-        self.battle_map_data = datamap.BattleMapData(main_dir, self.screen_scale, self.ruleset_folder, "en")
+        self.main_dir = main_dir
+        self.data_dir = data_dir
+        self.module_dir = os.path.join(data_dir, "module", self.module_folder)
 
-        self.battle_base_map = battlemap.BaseMap(main_dir)  # create base terrain map
-        self.battle_feature_map = battlemap.FeatureMap(main_dir)  # create terrain feature map
+        self.troop_data, self.leader_data, self.faction_data = make_faction_troop_leader_data(self.data_dir, self.module_dir,
+                                                                                              self.screen_scale, "en")
+        self.battle_map_data = datamap.BattleMapData(self.module_dir, self.screen_scale, "en")
+
+        self.battle_base_map = battlemap.BaseMap(data_dir)  # create base terrain map
+        self.battle_feature_map = battlemap.FeatureMap(data_dir)  # create terrain feature map
         self.battle_height_map = battlemap.HeightMap()  # create height map
-        self.battle_map = battlemap.BeautifulMap(main_dir, self.screen_scale, self.battle_height_map)
+        self.battle_map = battlemap.BeautifulMap(data_dir, self.screen_scale, self.battle_height_map)
 
         self.battle_base_map.terrain_list = self.battle_map_data.terrain_list
         self.battle_base_map.terrain_colour = self.battle_map_data.terrain_colour
@@ -121,9 +127,9 @@ class Studio(game.Game):
         self.map_move_array = []
         self.map_def_array = []
 
-        images = load_images(main_dir, subfolder=("ruleset", self.ruleset_folder.lower(), "map", "preset", map_name))
+        images = load_images(data_dir, subfolder=("module", self.module_folder, "map", "preset", map_name))
         if not images:
-            images = load_images(main_dir, subfolder=("ruleset", self.ruleset_folder.lower(), "map", "custom", map_name))
+            images = load_images(data_dir, subfolder=("module", self.module_folder, "map", "custom", map_name))
 
         self.battle_base_map.draw_image(images["base"])
         self.battle_feature_map.draw_image(images["feature"])
@@ -162,7 +168,7 @@ class Studio(game.Game):
         effectsprite.EffectSprite.containers = self.ground_camera
         battleui.SpriteIndicator.containers = self.ground_camera
 
-        battle_ui_image = load_images(main_dir, subfolder=("ui", "battle_ui"))
+        battle_ui_image = load_images(data_dir, subfolder=("ui", "battle_ui"))
 
         weather.Weather.wind_compass_images = {"wind_compass": battle_ui_image["wind_compass"],
                                                "wind_arrow": battle_ui_image["wind_arrow"]}
@@ -177,8 +183,7 @@ class Studio(game.Game):
                                          self.battle_map_data.day_effect_images[day_time])
         self.weather_spawn_timer = 0
 
-
-        self.troop_animation = datasprite.TroopAnimationData(main_dir,
+        self.troop_animation = datasprite.TroopAnimationData(data_dir, self.module_dir,
                                                              [str(self.troop_data.race_list[key]["Name"]) for key in
                                                               self.troop_data.race_list], self.team_colour)
         self.subunit_animation_data = self.troop_animation.subunit_animation_data  # animation data pool
@@ -197,7 +202,7 @@ class Studio(game.Game):
         effectsprite.EffectSprite.effect_animation_pool = self.effect_animation_pool
 
         self.battle_data = {}
-        with open(os.path.join(main_dir, "photo studio", self.ruleset_folder, battle_data_name + ".csv"), encoding="utf-8",
+        with open(os.path.join(main_dir, "photo studio", self.module_folder, battle_data_name + ".csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -336,11 +341,11 @@ screen_width = int(config["DEFAULT"]["screen_width"])
 screen_height = int(config["DEFAULT"]["screen_height"])
 photo_map = config["DEFAULT"]["map"]
 battle_data = config["DEFAULT"]["battle_data"]
-ruleset = int(config["DEFAULT"]["ruleset"])
+module = int(config["DEFAULT"]["module"])
 day_time = config["DEFAULT"]["day_time"]
 weather_type = int(config["DEFAULT"]["weather_type"])
 wind_direction = int(config["DEFAULT"]["wind_direction"])
 weather_strength = int(config["DEFAULT"]["weather_strength"])
 
-Studio((screen_width, screen_height), photo_map, battle_data, ruleset, day_time,
+Studio((screen_width, screen_height), photo_map, battle_data, module, day_time,
        (weather_type, wind_direction, weather_strength))  # change screen width and height for custom screen size

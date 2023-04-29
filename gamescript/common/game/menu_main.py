@@ -29,8 +29,10 @@ def menu_main(self, mouse_left_up):
         self.change_battle_source()
 
         self.menu_button.add(*self.char_select_button)
-        self.main_ui_updater.add(*self.char_select_button, self.map_list_box, self.map_title, self.map_list_box.scroll, self.map_option_box,
-                                 self.observe_mode_tick_box, self.source_list_box, self.source_list_box.scroll, self.char_selector,
+        self.main_ui_updater.add(*self.char_select_button, self.map_list_box, self.map_title, self.map_list_box.scroll,
+                                 self.map_option_box,
+                                 self.observe_mode_tick_box, self.source_list_box, self.source_list_box.scroll,
+                                 self.char_selector,
                                  self.char_selector.scroll, self.char_model_room)
 
     elif self.custom_map_button.event:  # custom map list menu

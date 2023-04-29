@@ -199,6 +199,7 @@ Photo studio to make battle screen to your liking. Simply add subunit and effect
 ### Sprite:
 
 - Prototype slash effect sprites by inogNate
+- Weapon sprite by jeet
 
 ### Sound (Obtained and edited):
 

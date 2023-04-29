@@ -52,9 +52,11 @@ def menu_preset_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
                     for index, icon in enumerate(self.char_icon):  # select first char
                         self.char_selected = icon.who.map_id
                         icon.selection()
-                        who_todo = {key: value for key, value in self.leader_data.leader_list.items() if key == icon.who.troop_id}
+                        who_todo = {key: value for key, value in self.leader_data.leader_list.items() if
+                                    key == icon.who.troop_id}
                         preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True)
-                        self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos[self.map_source],
+                        self.map_preview.change_mode(1, team_pos_list=self.team_pos,
+                                                     camp_pos_list=self.camp_pos[self.map_source],
                                                      selected=icon.who.base_pos)
                         self.char_model_room.add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"],
                                                                icon.who.coa)
@@ -92,7 +94,8 @@ def menu_preset_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
         self.map_source = 0
         self.map_preview.change_mode(0)  # revert map preview back to without unit dot
 
-        for group in (self.map_namegroup, self.team_coa, self.source_namegroup):   # remove map name, source name and coa item
+        for group in (
+        self.map_namegroup, self.team_coa, self.source_namegroup):  # remove map name, source name and coa item
             for stuff in group:
                 stuff.kill()
                 del stuff
@@ -185,7 +188,6 @@ def change_team_coa(self):
 
 
 def change_char(self):
-
     self.main_ui_updater.add(self.char_selector, self.char_selector.scroll,
                              tuple(self.char_stat.values()), *self.char_select_button)
     self.menu_button.add(*self.char_select_button)

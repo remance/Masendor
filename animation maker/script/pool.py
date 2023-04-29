@@ -16,13 +16,13 @@ from gamescript import datastat
 stat_convert = datastat.stat_convert
 
 
-def read_anim_data(anim_column_header):
+def read_anim_data(module_folder, anim_column_header):
     pool = {}
-    part_folder = Path(os.path.join(main_dir, "data", "animation"))
+    part_folder = Path(os.path.join(main_dir, "data", "module", module_folder, "animation"))
     files = [os.path.split(x)[-1].replace(".csv", "") for x in part_folder.iterdir() if ".csv" in os.path.split(x)[-1] and
              "lock." not in os.path.split(x)[-1]]
     for file in files:
-        with open(os.path.join(main_dir, "data", "animation", file + ".csv"), encoding="utf-8",
+        with open(os.path.join(main_dir, "data", "module", module_folder, "animation", file + ".csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             rd = [row for row in rd]
@@ -52,8 +52,8 @@ def read_anim_data(anim_column_header):
     return pool, part_name_header
 
 
-def read_joint_data():
-    with open(os.path.join(main_dir, "data", "sprite", "subunit", "weapon", "joint.csv"), encoding="utf-8",
+def read_joint_data(module_folder):
+    with open(os.path.join(main_dir, "data", "module", module_folder, "sprite", "subunit", "weapon", "joint.csv"), encoding="utf-8",
               mode="r") as edit_file:
         rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
         rd = [row for row in rd]
@@ -97,9 +97,9 @@ def anim_to_pool(animation_name, pool, char, activate_list, new=False, replace=N
                                     frame != {} and activate_list[index]]
 
 
-def anim_save_pool(pool, race_name, anim_column_header):
+def anim_save_pool(pool, race_name, anim_column_header, module_folder):
     """Save animation pool data"""
-    with open(os.path.join(main_dir, "data", "animation", race_name + ".csv"), mode="w",
+    with open(os.path.join(main_dir, "data", "module", module_folder, "animation", race_name + ".csv"), mode="w",
               encoding='utf-8', newline="") as edit_file:
         filewriter = csv.writer(edit_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_ALL)
         save_list = pool

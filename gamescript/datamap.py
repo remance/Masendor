@@ -2,6 +2,8 @@ import ast
 import csv
 import os
 
+from pathlib import Path
+
 import pygame
 
 from gamescript import weather
@@ -15,9 +17,15 @@ lore_csv_read = utility.lore_csv_read
 
 
 class BattleMapData:
-    def __init__(self, main_dir, screen_scale, module, language):
+    def __init__(self, module_dir, screen_scale, language):
+        """
+        For keeping all data related to battle map.
+        :param module_dir: Game selected module data folder directory
+        :param screen_scale: Scale of screen resolution
+        :param language: Language localisation code string (e.g., en for English)
+        """
         self.terrain_colour = {}
-        with open(os.path.join(main_dir, "data", "module", module, "map", "terrain.csv"), encoding="utf-8",
+        with open(os.path.join(module_dir, "map", "terrain.csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             for row_index, row in enumerate(rd):
@@ -32,7 +40,7 @@ class BattleMapData:
         self.terrain_colour = tuple([value[0] for value in self.terrain_colour.values()])
 
         self.feature_colour = {}
-        with open(os.path.join(main_dir, "data", "module", module, "map", "feature.csv"), encoding="utf-8",
+        with open(os.path.join(module_dir, "map", "feature.csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             for row_index, row in enumerate(rd):
@@ -49,7 +57,7 @@ class BattleMapData:
 
         # read terrain feature mode
         self.feature_mod = {}
-        with open(os.path.join(main_dir, "data", "module", module, "map", "terrain_effect.csv"), encoding="utf-8",
+        with open(os.path.join(module_dir, "map", "terrain_effect.csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -74,29 +82,29 @@ class BattleMapData:
         edit_file.close()
 
         self.feature_mod_lore = {}
-        with open(os.path.join(main_dir, "data", "module", module, "map", "terrain_effect_lore_" + language + ".csv"),
+        with open(os.path.join(module_dir, "map", "terrain_effect_lore_" + language + ".csv"),
                   encoding="utf-8",
                   mode="r") as edit_file:
             lore_csv_read(edit_file, self.feature_mod_lore)
         edit_file.close()
 
         self.empty_image = pygame.Surface((0, 0))  # empty texture image
-        self.camp_image = load_image(main_dir, (1, 1), "camp.png",
-                                     ("module", module, "map", "texture"))  # war camp texture image
+        self.camp_image = load_image(module_dir, (1, 1), "camp.png",
+                                     ("map", "texture"))  # war camp texture image
 
         self.map_texture = []
         self.texture_folder = [item["Name"] for item in self.feature_mod.values() if
                                item["Name"] != ""]  # For now remove terrain with no planned name/folder yet
 
         for index, folder in enumerate(self.texture_folder):
-            images = load_images(main_dir, subfolder=("module", module, "map", "texture", folder))
+            images = load_images(module_dir, subfolder=("map", "texture", folder))
             self.map_texture.append(list(images.values()))
 
-        self.day_effect_images = load_images(main_dir, screen_scale=screen_scale,
-                                             subfolder=("module", module, "map", "day"))
+        self.day_effect_images = load_images(module_dir, screen_scale=screen_scale,
+                                             subfolder=("map", "day"))
 
         self.battle_map_colour = {}
-        with open(os.path.join(main_dir, "data", "module", module, "map", "map_colour.csv"), encoding="utf-8",
+        with open(os.path.join(module_dir, "map", "map_colour.csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             for row_index, row in enumerate(rd):
@@ -109,7 +117,7 @@ class BattleMapData:
                     self.battle_map_colour[row[0]] = row[1:]
 
         self.weather_data = {}
-        with open(os.path.join(main_dir, "data", "module", module, "map", "weather", "weather.csv"),
+        with open(os.path.join(module_dir, "map", "weather", "weather.csv"),
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -133,8 +141,7 @@ class BattleMapData:
         edit_file.close()
 
         self.weather_lore = {}
-        with open(os.path.join(main_dir, "data", "module", module, "map", "weather",
-                               "weather_lore_" + language + ".csv"),
+        with open(os.path.join(module_dir, "map", "weather", "weather_lore_" + language + ".csv"),
                   encoding="utf-8", mode="r") as edit_file:
             lore_csv_read(edit_file, self.weather_lore)
         edit_file.close()
@@ -142,8 +149,8 @@ class BattleMapData:
         self.weather_matter_images = {}
         for this_weather in weather_list:  # Load weather matter sprite image
             try:
-                images = load_images(main_dir, screen_scale=screen_scale,
-                                     subfolder=("module", module, "map", "weather", "matter", this_weather))
+                images = load_images(module_dir, screen_scale=screen_scale,
+                                     subfolder=("map", "weather", "matter", this_weather))
                 self.weather_matter_images[this_weather] = tuple(images.values())
             except FileNotFoundError:
                 self.weather_matter_images[this_weather] = ()
@@ -151,14 +158,14 @@ class BattleMapData:
         self.weather_effect_images = {}
         for this_weather in weather_list:  # Load weather effect sprite image
             try:
-                images = load_images(main_dir, screen_scale=screen_scale,
-                                     subfolder=("module", module, "map", "weather", "effect", this_weather))
+                images = load_images(module_dir, screen_scale=screen_scale,
+                                     subfolder=("map", "weather", "effect", this_weather))
                 self.weather_effect_images[this_weather] = tuple(images.values())
             except FileNotFoundError:
                 self.weather_effect_images[this_weather] = ()
 
-        weather_icon_list = load_images(main_dir, screen_scale=screen_scale,
-                                        subfolder=("module", module, "map", "weather", "icon"))  # Load weather icon
+        weather_icon_list = load_images(module_dir, screen_scale=screen_scale,
+                                        subfolder=("map", "weather", "icon"))  # Load weather icon
         new_weather_icon = {}
         for weather_icon in weather_list:
             for strength in range(0, 3):
@@ -169,3 +176,36 @@ class BattleMapData:
                         break
 
         weather.Weather.weather_icons = new_weather_icon
+
+        read_folder = Path(os.path.join(module_dir, "map", "preset"))
+        subdirectories = [x for x in read_folder.iterdir() if x.is_dir()]
+
+        self.preset_map_list = []  # map name list for map selection list
+        self.preset_map_folder = []  # folder for reading later
+
+        for file_map in subdirectories:
+            self.preset_map_folder.append(os.sep.join(os.path.normpath(file_map).split(os.sep)[-1:]))
+            with open(os.path.join(str(file_map), "info_" + language + ".csv"), encoding="utf-8",
+                      mode="r") as edit_file:
+                rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+                for row in rd:
+                    if row[0] != "Name":
+                        self.preset_map_list.append(row[0])
+            edit_file.close()
+
+        # Load custom map list
+        read_folder = Path(os.path.join(module_dir, "map", "custom"))
+        subdirectories = [x for x in read_folder.iterdir() if x.is_dir()]
+
+        self.custom_map_list = self.preset_map_list.copy() + ["Random"]
+        self.custom_map_folder = self.preset_map_folder.copy() + ["Random"]
+
+        for file_map in subdirectories:
+            self.custom_map_folder.append(os.sep.join(os.path.normpath(file_map).split(os.sep)[-1:]))
+            with open(os.path.join(str(file_map), "info_" + language + ".csv"), encoding="utf-8",
+                      mode="r") as edit_file:
+                rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+                for row in rd:
+                    if row[0] != "Name":
+                        self.custom_map_list.append(row[0])
+            edit_file.close()

@@ -8,7 +8,6 @@ from inspect import stack
 from math import cos, sin, atan2, degrees
 from pathlib import Path
 
-
 import pygame
 import pygame.freetype
 from PIL import Image, ImageOps
@@ -41,10 +40,10 @@ def change_group(item, group, change):
         group.remove(item)
 
 
-def load_image(main_dir, screen_scale, file, subfolder=""):
+def load_image(directory, screen_scale, file, subfolder=""):
     """
     loads an image and prepares it for game
-    :param main_dir: Game directory folder path
+    :param directory: Directory folder path
     :param screen_scale: Resolution scale of game
     :param file: File name
     :param subfolder: List of subfolder path
@@ -55,7 +54,7 @@ def load_image(main_dir, screen_scale, file, subfolder=""):
         new_subfolder = ""
         for folder in subfolder:
             new_subfolder = os.path.join(new_subfolder, folder)
-    this_file = os.path.join(main_dir, "data", new_subfolder, file)
+    this_file = os.path.join(directory, new_subfolder, file)
     surface = pygame.image.load(this_file).convert_alpha()
     surface = pygame.transform.smoothscale(surface,
                                            (surface.get_width() * screen_scale[0],
@@ -63,10 +62,10 @@ def load_image(main_dir, screen_scale, file, subfolder=""):
     return surface
 
 
-def load_images(main_dir, screen_scale=(1, 1), subfolder=(), load_order=False, return_order=False):
+def load_images(directory, screen_scale=(1, 1), subfolder=(), load_order=False, return_order=False):
     """
     loads all images(only png files) in folder
-    :param main_dir: Game directory folder path
+    :param directory: Directory folder path
     :param screen_scale: Resolution scale of game
     :param subfolder: List of subfolder path
     :param load_order: Using loadorder list file to create ordered list
@@ -74,7 +73,7 @@ def load_images(main_dir, screen_scale=(1, 1), subfolder=(), load_order=False, r
     :return: Dict of loaded and scaled images as Pygame Surface
     """
     images = {}
-    dir_path = os.path.join(main_dir, "data")
+    dir_path = directory
     for folder in subfolder:
         dir_path = os.path.join(dir_path, folder)
 
@@ -94,7 +93,7 @@ def load_images(main_dir, screen_scale=(1, 1), subfolder=(), load_order=False, r
             if "." in file_name:  # remove extension from name
                 file_name = file.split(".")[:-1]
                 file_name = "".join(file_name)
-            images[file_name] = load_image(main_dir, screen_scale, file, subfolder=dir_path)
+            images[file_name] = load_image(directory, screen_scale, file, subfolder=dir_path)
 
         if return_order is False:
             return images
@@ -102,7 +101,7 @@ def load_images(main_dir, screen_scale=(1, 1), subfolder=(), load_order=False, r
             load_order_file = [int(name.replace(".png", "")) for name in load_order_file]
             return images, load_order_file
     except FileNotFoundError as b:
-        # print(b)
+        print(b)
         return images
 
 
@@ -315,10 +314,10 @@ def make_bar_list(main_dir, screen_scale, list_to_do, menu_image, updater):
     return bar_list
 
 
-def load_base_button(main_dir, screen_scale):
-    return (load_image(main_dir, screen_scale, "idle_button.png", ("ui", "mainmenu_ui")),
-            load_image(main_dir, screen_scale, "mouse_button.png", ("ui", "mainmenu_ui")),
-            load_image(main_dir, screen_scale, "click_button.png", ("ui", "mainmenu_ui")))
+def load_base_button(data_dir, screen_scale):
+    return (load_image(data_dir, screen_scale, "idle_button.png", ("ui", "mainmenu_ui")),
+            load_image(data_dir, screen_scale, "mouse_button.png", ("ui", "mainmenu_ui")),
+            load_image(data_dir, screen_scale, "click_button.png", ("ui", "mainmenu_ui")))
 
 
 def text_objects(text, font):

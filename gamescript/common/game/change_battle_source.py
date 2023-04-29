@@ -65,4 +65,3 @@ def change_battle_source(self):
         self.char_model_room.add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"],
                                                icon.who.coa)
         break
-

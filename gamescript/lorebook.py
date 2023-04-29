@@ -40,11 +40,11 @@ class Lorebook(pygame.sprite.Sprite):
     weather_section = 10
     leader_text = ("E", "E+", "D", "D+", "C", "C+", "B", "B+", "A", "A+", "S")
 
-    def __init__(self, main, image, text_size=24):
-        self.main = main
-        self.main_dir = main.main_dir
-        self.screen_rect = main.screen_rect
-        self.screen_scale = main.screen_scale
+    def __init__(self, game, image, text_size=24):
+        self.game = game
+        self.main_dir = game.main_dir
+        self.screen_rect = game.screen_rect
+        self.screen_scale = game.screen_scale
 
         self._layer = 23
         pygame.sprite.Sprite.__init__(self)
@@ -268,7 +268,7 @@ class Lorebook(pygame.sprite.Sprite):
         elif self.section == self.troop_section:
             try:
                 who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key == self.subsection}
-                preview_sprite_pool, _ = self.main.create_troop_sprite_pool(who_todo, preview=True)
+                preview_sprite_pool, _ = self.game.create_troop_sprite_pool(who_todo, preview=True)
                 self.portrait = preview_sprite_pool[self.subsection]["sprite"]
 
             except KeyError:

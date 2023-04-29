@@ -119,7 +119,8 @@ class DamageSprite(pygame.sprite.Sprite):
                 dmg = None
             else:
                 dmg = {key.split(" ")[0]: uniform(value / 2, value) for key, value in dmg.items()}
-            EffectDamageSprite(self, 0, self.reach_effect, dmg, effect_stat["Armour Penetration"], effect_stat["Impact"],
+            EffectDamageSprite(self, 0, self.reach_effect, dmg, effect_stat["Armour Penetration"],
+                               effect_stat["Impact"],
                                effect_stat, "effect", self.base_pos, self.base_pos,
                                reach_effect=effect_stat["After Reach Effect"])
 

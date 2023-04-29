@@ -3,7 +3,7 @@ import os
 
 def create_sound_effect_pool(self):
     sound_effect_pool = {}
-    dir_path = os.path.join(self.main_dir, "data", "sound", "effect")
+    dir_path = os.path.join(self.module_dir, "sound", "effect")
     for file in os.listdir(dir_path):
         if file.endswith(".ogg"):  # read ogg file only
             file_name = file.split(".")[0]

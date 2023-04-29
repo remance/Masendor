@@ -55,11 +55,13 @@ def inner_create_troop_sprite_pool(self, who_todo, sprite_pool_hash, preview=Fal
             next_least_len = min(new_who_todo, key=len)
             next_least_len |= least_len
 
+        thread_event = threading.Event()
+
         for who in new_who_todo:
             p = threading.Thread(target=create_sprite,
                                  args=(self, who, preview, max_preview_size, weapon_list,
-                                       weapon_common_type_list, weapon_attack_type_list,
-                                       sprite_pool_hash, animation_sprite_pool, status_animation_pool),
+                                       weapon_common_type_list, weapon_attack_type_list, animation_sprite_pool,
+                                       status_animation_pool, sprite_pool_hash, thread_event),
                                  daemon=True)
             jobs.append(p)
             p.start()
@@ -68,14 +70,14 @@ def inner_create_troop_sprite_pool(self, who_todo, sprite_pool_hash, preview=Fal
     else:
         create_sprite(self, who_todo, preview, max_preview_size, weapon_list,
                       weapon_common_type_list, weapon_attack_type_list, animation_sprite_pool, status_animation_pool,
-                      sprite_pool_hash, specific_preview=specific_preview)
+                      sprite_pool_hash, None, specific_preview=specific_preview)
 
     return animation_sprite_pool, status_animation_pool
 
 
 def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon_common_type_list,
                   weapon_attack_type_list, animation_sprite_pool, status_animation_pool, sprite_pool_hash,
-                  specific_preview=None):
+                  thread_event, specific_preview=None):
     """
     Create subunit troop sprite
     :param self: Battle object
@@ -87,6 +89,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
     :param weapon_attack_type_list: Weapon attack action data
     :param animation_sprite_pool: Animation pool data
     :param status_animation_pool: Status animation pool data
+    :param thread_event: threading.Event object
     :param specific_preview: list array containing animation name, frame number and direction of either l_side or r_side for flipping
     """
 
@@ -419,9 +422,9 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                                     next_level[weapon_key[1]][final_name] = {}
                             else:  # animation with this name exist, check if data match
                                 string_args = str((sprite_data, hand_weapon_list[weapon_set_index][weapon_index],
-                                                  weapon_list[hand_weapon_list[weapon_set_index][weapon_index]],
-                                                  self.subunit_animation_data[race_type][animation], idle_animation,
-                                                  sprite_pool_hash))
+                                                   weapon_list[hand_weapon_list[weapon_set_index][weapon_index]],
+                                                   self.subunit_animation_data[race_type][animation], idle_animation,
+                                                   sprite_pool_hash))
                                 if same_both_weapon_set:
                                     string_args = str((sprite_data, self.subunit_animation_data[race_type][animation],
                                                        sprite_pool_hash))
@@ -536,9 +539,9 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                                 next_level[weapon_key[1]][final_name]["data"] = string_args
                             else:
                                 string_args = str((sprite_data, hand_weapon_list[weapon_set_index][weapon_index],
-                                                  weapon_list[hand_weapon_list[weapon_set_index][weapon_index]],
-                                                  self.subunit_animation_data[race_type][animation], idle_animation,
-                                                  sprite_pool_hash))
+                                                   weapon_list[hand_weapon_list[weapon_set_index][weapon_index]],
+                                                   self.subunit_animation_data[race_type][animation], idle_animation,
+                                                   sprite_pool_hash))
                                 md5_string = hashlib.md5(string_args.encode()).hexdigest()
                                 current_in_pool[final_name]["data"] = md5_string
 

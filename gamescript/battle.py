@@ -32,7 +32,7 @@ script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
 load_timer = None
 
 
-def set_start_load(what):
+def set_start_load(what):  # For printing asset loading time
     globals()['load_timer'] = time.time()
     return "Loading {0}... ".format(what)
 
@@ -87,89 +87,89 @@ class Battle:
 
     start_camera_mode = "Follow"
 
-    def __init__(self, main):
+    def __init__(self, game):
         self.player_char = None  # player subunit for genre that allow player to directly control only one subunit
-        self.main = main
+        self.game = game
 
-        self.config = main.config
-        self.master_volume = main.master_volume
-        self.play_music_volume = main.play_music_volume
-        self.play_effect_volume = main.play_effect_volume
-        self.play_voice_volume = main.play_voice_volume
+        self.config = game.config
+        self.master_volume = game.master_volume
+        self.play_music_volume = game.play_music_volume
+        self.play_effect_volume = game.play_effect_volume
+        self.play_voice_volume = game.play_voice_volume
         # if self.config["USER"]["control player 1"] == "keyboard":
-        self.mouse_bind = main.mouse_bind
-        self.mouse_bind_name = main.mouse_bind_name
-        self.joystick_bind_name = main.joystick_bind_name
+        self.mouse_bind = game.mouse_bind
+        self.mouse_bind_name = game.mouse_bind_name
+        self.joystick_bind_name = game.joystick_bind_name
         self.player_key_control = self.config["USER"]["control player 1"]
-        self.player_key_bind = main.player1_key_bind["keyboard"]
+        self.player_key_bind = game.player1_key_bind["keyboard"]
         self.player_key_bind_name = {value: key for key, value in self.player_key_bind.items()}
         self.player_key_press = {key: False for key in self.player_key_bind}
         self.player_key_hold = {key: False for key in self.player_key_bind if "Attack" in key or
-                                     "Move" in key or "Input" in key}  # key that consider holding
-        self.screen_rect = main.screen_rect
-        self.main_dir = main.main_dir
-        self.screen_scale = main.screen_scale
-        self.battle_camera = main.battle_camera
-        self.battle_ui_updater = main.battle_ui_updater
+                                "Move" in key or "Input" in key}  # key that consider holding
+        self.screen_rect = game.screen_rect
+        self.main_dir = game.main_dir
+        self.screen_scale = game.screen_scale
+        self.battle_camera = game.battle_camera
+        self.battle_ui_updater = game.battle_ui_updater
 
-        self.subunit_updater = main.subunit_updater
-        self.all_subunits = main.all_subunits
-        self.ui_updater = main.ui_updater
-        self.weather_updater = main.weather_updater
-        self.effect_updater = main.effect_updater
+        self.subunit_updater = game.subunit_updater
+        self.all_subunits = game.all_subunits
+        self.ui_updater = game.ui_updater
+        self.weather_updater = game.weather_updater
+        self.effect_updater = game.effect_updater
 
-        self.cursor = main.cursor
-        self.joysticks = main.joysticks
-        self.joystick_name = main.joystick_name
+        self.cursor = game.cursor
+        self.joysticks = game.joysticks
+        self.joystick_name = game.joystick_name
 
-        self.battle_map_base = main.battle_base_map
-        self.battle_map_feature = main.battle_feature_map
-        self.battle_map_height = main.battle_height_map
-        self.battle_map = main.battle_map
+        self.battle_map_base = game.battle_base_map
+        self.battle_map_feature = game.battle_feature_map
+        self.battle_map_height = game.battle_height_map
+        self.battle_map = game.battle_map
 
-        self.sprite_indicator = main.sprite_indicator
-        self.shoot_lines = main.shoot_lines
+        self.sprite_indicator = game.sprite_indicator
+        self.shoot_lines = game.shoot_lines
 
-        self.mini_map = main.mini_map
-        self.button_ui = main.button_ui
+        self.mini_map = game.mini_map
+        self.button_ui = game.button_ui
 
-        self.fps_count = main.fps_count
+        self.fps_count = game.fps_count
 
-        self.single_text_popup = main.single_text_popup
-        self.drama_text = main.drama_text
+        self.single_text_popup = game.single_text_popup
+        self.drama_text = game.drama_text
 
-        self.skill_icon = main.skill_icon
-        self.effect_icon = main.effect_icon
+        self.skill_icon = game.skill_icon
+        self.effect_icon = game.effect_icon
 
-        self.battle_menu = main.battle_menu
-        self.battle_menu_button = main.battle_menu_button
-        self.esc_option_menu_button = main.esc_option_menu_button
+        self.battle_menu = game.battle_menu
+        self.battle_menu_button = game.battle_menu_button
+        self.esc_option_menu_button = game.esc_option_menu_button
 
-        self.input_button = main.input_button
-        self.input_box = main.input_box
-        self.input_ui = main.input_ui
-        self.input_ok_button = main.input_ok_button
-        self.input_cancel_button = main.input_cancel_button
-        self.input_ui_popup = main.input_ui_popup
-        self.confirm_ui = main.confirm_ui
-        self.confirm_ui_popup = main.confirm_ui_popup
+        self.input_button = game.input_button
+        self.input_box = game.input_box
+        self.input_ui = game.input_ui
+        self.input_ok_button = game.input_ok_button
+        self.input_cancel_button = game.input_cancel_button
+        self.input_ui_popup = game.input_ui_popup
+        self.confirm_ui = game.confirm_ui
+        self.confirm_ui_popup = game.confirm_ui_popup
 
-        self.char_icon = main.char_icon
+        self.char_icon = game.char_icon
 
-        self.time_ui = main.time_ui
-        self.time_number = main.time_number
+        self.time_ui = game.time_ui
+        self.time_number = game.time_number
 
-        self.battle_scale_ui = main.battle_scale_ui
+        self.battle_scale_ui = game.battle_scale_ui
 
-        self.weather_matter = main.weather_matter
-        self.weather_effect = main.weather_effect
+        self.weather_matter = game.weather_matter
+        self.weather_effect = game.weather_effect
 
-        self.status_images = main.status_images
-        self.role_images = main.role_images
-        self.trait_images = main.trait_images
-        self.skill_images = main.skill_images
+        self.status_images = game.status_images
+        self.role_images = game.role_images
+        self.trait_images = game.trait_images
+        self.skill_images = game.skill_images
 
-        self.sound_effect_pool = main.sound_effect_pool
+        self.sound_effect_pool = game.sound_effect_pool
         self.sound_effect_queue = {}
 
         self.map_corner = (1000, 1000)
@@ -181,10 +181,10 @@ class Battle:
         self.troop_ai_logic_queue = []
         self.pathfinding_thread = ai.PathfindingAI(self)
 
-        self.esc_slider_menu = main.esc_slider_menu
-        self.esc_value_boxes = main.esc_value_boxes
+        self.esc_slider_menu = game.esc_slider_menu
+        self.esc_value_boxes = game.esc_value_boxes
 
-        self.wheel_ui = main.wheel_ui
+        self.wheel_ui = game.wheel_ui
 
         self.unit_behaviour_wheel = \
             {"Main": {"Unit": "Unit", "Formation": "Formation", "Range Attack": "Range Attack", "Setting": "Setting"},
@@ -224,11 +224,11 @@ class Battle:
                                  "Stay Here": "Stay Here"},
              "Setting": {"Height Map": "Height Map", "UI Hide": "UI Hide", "UI Show": "UI Show"}}
 
-        self.command_ui = main.command_ui
-        self.event_log = main.event_log
+        self.command_ui = game.command_ui
+        self.event_log = game.event_log
 
-        self.battle_done_box = main.battle_done_box
-        self.battle_done_button = main.battle_done_button
+        self.battle_done_box = game.battle_done_box
+        self.battle_done_button = game.battle_done_button
 
         self.weather_screen_adjust = self.screen_rect.width / self.screen_rect.height  # for weather sprite spawn position
         self.right_corner = self.screen_rect.width - (5 * self.screen_scale[0])
@@ -289,9 +289,9 @@ class Battle:
         self.active_subunit_list = []  # list of all subunit alive in battle, need to be in list for collision check
         self.visible_subunit_list = {}  # list of subunit visible to the team
 
-        self.best_depth = pygame.display.mode_ok(self.screen_rect.size, self.main.window_style,
+        self.best_depth = pygame.display.mode_ok(self.screen_rect.size, self.game.window_style,
                                                  32)  # Set the display mode
-        self.screen = pygame.display.set_mode(self.screen_rect.size, self.main.window_style | pygame.RESIZABLE,
+        self.screen = pygame.display.set_mode(self.screen_rect.size, self.game.window_style,
                                               self.best_depth)  # set up self screen
 
         # Assign battle variable to some classes
@@ -335,7 +335,7 @@ class Battle:
     def inner_prepare_new_game(self, module, module_folder, team_selected, map_type, map_selected,
                                map_source, char_selected, map_data, camp_pos):
         """Setup stuff when start new battle"""
-        self.language = self.main.language
+        self.language = self.game.language
 
         self.module = module  # current module used
         self.module_folder = module_folder  # the folder of rulseset used
@@ -347,20 +347,20 @@ class Battle:
         self.map_data = map_data
         self.camp_pos = camp_pos
 
-        self.faction_data = self.main.faction_data
+        self.faction_data = self.game.faction_data
         self.coa_list = self.faction_data.coa_list
 
-        self.troop_data = self.main.troop_data
-        self.leader_data = self.main.leader_data
+        self.troop_data = self.game.troop_data
+        self.leader_data = self.game.leader_data
 
-        self.subunit_animation_data = self.main.subunit_animation_data
-        self.gen_body_sprite_pool = self.main.gen_body_sprite_pool
-        self.gen_weapon_sprite_pool = self.main.gen_weapon_sprite_pool
-        self.gen_armour_sprite_pool = self.main.gen_armour_sprite_pool
-        self.effect_sprite_pool = self.main.effect_sprite_pool
-        self.effect_animation_pool = self.main.effect_animation_pool
-        self.weapon_joint_list = self.main.weapon_joint_list
-        self.team_colour = self.main.team_colour
+        self.subunit_animation_data = self.game.subunit_animation_data
+        self.gen_body_sprite_pool = self.game.gen_body_sprite_pool
+        self.gen_weapon_sprite_pool = self.game.gen_weapon_sprite_pool
+        self.gen_armour_sprite_pool = self.game.gen_armour_sprite_pool
+        self.effect_sprite_pool = self.game.effect_sprite_pool
+        self.effect_animation_pool = self.game.effect_animation_pool
+        self.weapon_joint_list = self.game.weapon_joint_list
+        self.team_colour = self.game.team_colour
 
         # Load weather schedule
         yield set_start_load("weather")
@@ -378,40 +378,40 @@ class Battle:
                 new_time = timedelta(hours=new_time.hour, minutes=new_time.minute, seconds=new_time.second)
                 self.weather_event = ((4, new_time, 0, 0),)  # default weather light sunny all day
         elif map_type == "custom":
-            self.weather_event = self.main.custom_map_data["info"]["weather"].copy()
+            self.weather_event = self.game.custom_map_data["info"]["weather"].copy()
             utility.convert_str_time(self.weather_event)
 
         self.weather_playing = self.weather_event[0][1]  # used as the reference for map starting time
         yield set_done_load()
 
         # Random music played from list
-        yield set_start_load("music")
-        if pygame.mixer:
-            self.SONG_END = pygame.USEREVENT + 1
-            self.music_list = glob.glob(os.path.join(self.main_dir, "data", "sound", "music", "*.ogg"))
-            try:
-                self.music_event = csv_read(self.main_dir, "music_event.csv",
-                                            ("data", "module", self.module_folder, "map", map_type,
-                                             self.map_selected), output_type="list")
-                self.music_event = self.music_event[1:]
-                if self.music_event:
-                    utility.convert_str_time(self.music_event)
-                    self.music_schedule = list(dict.fromkeys([item[1] for item in self.music_event]))
-                    new_list = []
-                    for time in self.music_schedule:
-                        new_event_list = []
-                        for event in self.music_event:
-                            if time == event[1]:
-                                new_event_list.append(event[0])
-                        new_list.append(new_event_list)
-                    self.music_event = new_list
-                else:
-                    self.music_schedule = [self.weather_playing]
-                    self.music_event = []
-            except:  # any reading error will play random custom music instead
-                self.music_schedule = [self.weather_playing]
-                self.music_event = []  # TODO change later when has custom playlist
-        yield set_done_load()
+        # yield set_start_load("music")
+        # if pygame.mixer:
+        #     self.SONG_END = pygame.USEREVENT + 1
+        #     self.music_list = glob.glob(os.path.join(self.main_dir, "data", "sound", "music", "*.ogg"))
+        #     try:
+        #         self.music_event = csv_read(self.main_dir, "music_event.csv",
+        #                                     ("data", "module", self.module_folder, "map", map_type,
+        #                                      self.map_selected), output_type="list")
+        #         self.music_event = self.music_event[1:]
+        #         if self.music_event:
+        #             utility.convert_str_time(self.music_event)
+        #             self.music_schedule = list(dict.fromkeys([item[1] for item in self.music_event]))
+        #             new_list = []
+        #             for time in self.music_schedule:
+        #                 new_event_list = []
+        #                 for event in self.music_event:
+        #                     if time == event[1]:
+        #                         new_event_list.append(event[0])
+        #                 new_list.append(new_event_list)
+        #             self.music_event = new_list
+        #         else:
+        #             self.music_schedule = [self.weather_playing]
+        #             self.music_event = []
+        #     except:  # any reading error will play random custom music instead
+        #         self.music_schedule = [self.weather_playing]
+        #         self.music_event = []  # TODO change later when has custom playlist
+        # yield set_done_load()
 
         yield set_start_load("map events")
         try:  # get new map event for event log
@@ -476,7 +476,7 @@ class Battle:
         if map_type == "preset":
             self.setup_battle_troop(self.subunit_updater)
         elif map_type == "custom":
-            self.setup_battle_troop(self.subunit_updater, custom_data=self.main.custom_map_data["battle"])
+            self.setup_battle_troop(self.subunit_updater, custom_data=self.game.custom_map_data["battle"])
 
         for this_group in self.all_team_subunit.values():
             this_group.empty()
@@ -501,7 +501,7 @@ class Battle:
         subunit_to_make = tuple(set([this_subunit.troop_id for this_subunit in self.subunit_updater]))
         who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key in subunit_to_make}
         who_todo |= {key: value for key, value in self.leader_data.leader_list.items() if key in subunit_to_make}
-        self.subunit_animation_pool, self.status_animation_pool = self.main.create_troop_sprite_pool(who_todo)
+        self.subunit_animation_pool, self.status_animation_pool = self.game.create_troop_sprite_pool(who_todo)
         yield set_done_load()
 
     def run_game(self):
@@ -538,7 +538,7 @@ class Battle:
         self.command_cursor_pos = [0, 0]  # with zoom and screen scale for unit command
 
         self.player_key_control = self.config["USER"]["control player 1"]
-        self.player_key_bind = self.main.player1_key_bind[self.player_key_control]
+        self.player_key_bind = self.game.player1_key_bind[self.player_key_control]
         self.player_key_bind_name = {value: key for key, value in self.player_key_bind.items()}
         self.player_key_press = {key: False for key in self.player_key_bind}
         self.player_key_hold = {key: False for key in self.player_key_hold}  # key that consider holding
@@ -569,14 +569,14 @@ class Battle:
 
         # self.map_def_array = []
         # self.mapunitarray = [[x[random.randint(0, 1)] if i != j else 0 for i in range(1000)] for j in range(1000)]
-        pygame.mixer.music.set_endevent(self.SONG_END)  # End current music before battle start
+        # pygame.mixer.music.set_endevent(self.SONG_END)  # End current music before battle start
 
         frame = 0
         while True:  # self running
             frame += 1
 
-            if frame % 30 == 0 and hasattr(self.main, "profiler"):
-                self.main.profiler.refresh()
+            if frame % 30 == 0 and hasattr(self.game, "profiler"):
+                self.game.profiler.refresh()
 
             self.fps_count.fps_show(self.clock)
             event_key_press = None
@@ -645,11 +645,11 @@ class Battle:
             self.cursor.update(self.mouse_pos)
             self.base_cursor_pos = pygame.Vector2((self.mouse_pos[0] - self.center_screen[0] + self.camera_pos[0]),
                                                   (self.mouse_pos[1] - self.center_screen[1] + self.camera_pos[
-                                                     1]))  # mouse pos on the map based on camera position
+                                                      1]))  # mouse pos on the map based on camera position
             self.battle_cursor_pos = self.base_cursor_pos / 5  # mouse pos on the map at current camera zoom scale
             self.command_cursor_pos = pygame.Vector2(self.battle_cursor_pos[0] / self.screen_scale[0],
                                                      self.battle_cursor_pos[1] / self.screen_scale[
-                                                        1])  # with screen scale
+                                                         1])  # with screen scale
 
             for event in pygame.event.get():  # get event that happen
                 if event.type == QUIT:  # quit self
@@ -657,11 +657,11 @@ class Battle:
                     self.confirm_ui.change_instruction("Quit Game?")
                     self.battle_ui_updater.add(*self.confirm_ui_popup)
 
-                elif event.type == self.SONG_END:  # change music track
-                    pygame.mixer.music.unload()
-                    self.picked_music = randint(0, len(self.playing_music) - 1)
-                    pygame.mixer.music.load(self.music_list[self.playing_music[self.picked_music]])
-                    pygame.mixer.music.play(fade_ms=100)
+                # elif event.type == self.SONG_END:  # change music track
+                #     pygame.mixer.music.unload()
+                #     self.picked_music = randint(0, len(self.playing_music) - 1)
+                #     pygame.mixer.music.load(self.music_list[self.playing_music[self.picked_music]])
+                #     pygame.mixer.music.play(fade_ms=100)
 
                 elif event.type == pygame.JOYBUTTONUP:
                     joystick = event.instance_id
@@ -714,12 +714,12 @@ class Battle:
                     elif event.key == K_F6:
                         self.drama_text.queue.append("The Saxon swarmed him and left him death, that they shall atone")
                     elif event.key == K_F7:  # clear profiler
-                        if hasattr(self.main, "profiler"):
-                            self.main.profiler.clear()
+                        if hasattr(self.game, "profiler"):
+                            self.game.profiler.clear()
                     elif event.key == K_F8:  # show/hide profiler
-                        if not hasattr(self.main, "profiler"):
-                            self.main.setup_profiler()
-                        self.main.profiler.switch_show_hide()
+                        if not hasattr(self.game, "profiler"):
+                            self.game.setup_profiler()
+                        self.game.profiler.switch_show_hide()
                     elif event.key == K_F9:  # show/hide profiler
                         for this_subunit in self.subunit_updater:
                             if this_subunit.team == 1:
@@ -858,15 +858,15 @@ class Battle:
                                 self.screen_shake_value = 0
 
                         # Music System
-                        if self.music_schedule and self.time_number.time_number >= self.music_schedule[0] and \
-                                self.music_event:
-                            pygame.mixer.music.unload()
-                            self.playing_music = self.music_event[0].copy()
-                            self.picked_music = randint(0, len(self.playing_music) - 1)
-                            pygame.mixer.music.load(self.music_list[self.playing_music[self.picked_music]])
-                            pygame.mixer.music.play(fade_ms=100)
-                            self.music_schedule = self.music_schedule[1:]
-                            self.music_event = self.music_event[1:]
+                        # if self.music_schedule and self.time_number.time_number >= self.music_schedule[0] and \
+                        #         self.music_event:
+                        #     pygame.mixer.music.unload()
+                        #     self.playing_music = self.music_event[0].copy()
+                        #     self.picked_music = randint(0, len(self.playing_music) - 1)
+                        #     pygame.mixer.music.load(self.music_list[self.playing_music[self.picked_music]])
+                        #     pygame.mixer.music.play(fade_ms=100)
+                        #     self.music_schedule = self.music_schedule[1:]
+                        #     self.music_event = self.music_event[1:]
 
                     # Run troop ai logic no more than limit number of subunit per update to prevent stutter
                     if self.troop_ai_logic_queue:
@@ -928,7 +928,8 @@ class Battle:
                                         self.event_log.add_log(
                                             (0, self.event_log.map_event["wt" + str(key)]["Text"]))
                                     self.battle_done_box.pop(self.faction_data.faction_list[self.map_data[
-                                        "Team Faction" + str(key)][0]]["Name"], self.coa_list[int(self.map_data["Team Faction" + str(key)][0])])
+                                        "Team Faction" + str(key)][0]]["Name"], self.coa_list[
+                                                                 int(self.map_data["Team Faction" + str(key)][0])])
                                     break
 
                         self.battle_done_button.rect = self.battle_done_button.image.get_rect(
@@ -993,6 +994,7 @@ class Battle:
                         if self.text_delay >= 0.3:
                             self.text_delay = 0
 
+            # self.screen.fill((0, 0, 0))
             self.screen.blit(self.camera.image, (0, 0))  # Draw the battle camera and everything that appear in it
             self.battle_ui_updater.draw(self.screen)  # Draw the UI
             pygame.display.update()  # update self display, draw everything
