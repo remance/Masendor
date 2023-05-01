@@ -15,9 +15,9 @@ lore_csv_read = utility.lore_csv_read
 
 
 class BattleMapData:
-    def __init__(self, main_dir, screen_scale, ruleset, language):
+    def __init__(self, main_dir, screen_scale, module, language):
         self.terrain_colour = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset, "map", "terrain.csv"), encoding="utf-8",
+        with open(os.path.join(main_dir, "data", "module", module, "map", "terrain.csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             for row_index, row in enumerate(rd):
@@ -32,7 +32,7 @@ class BattleMapData:
         self.terrain_colour = tuple([value[0] for value in self.terrain_colour.values()])
 
         self.feature_colour = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset, "map", "feature.csv"), encoding="utf-8",
+        with open(os.path.join(main_dir, "data", "module", module, "map", "feature.csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             for row_index, row in enumerate(rd):
@@ -49,7 +49,7 @@ class BattleMapData:
 
         # read terrain feature mode
         self.feature_mod = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset, "map", "terrain_effect.csv"), encoding="utf-8",
+        with open(os.path.join(main_dir, "data", "module", module, "map", "terrain_effect.csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -74,7 +74,7 @@ class BattleMapData:
         edit_file.close()
 
         self.feature_mod_lore = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset, "map", "terrain_effect_lore_" + language + ".csv"),
+        with open(os.path.join(main_dir, "data", "module", module, "map", "terrain_effect_lore_" + language + ".csv"),
                   encoding="utf-8",
                   mode="r") as edit_file:
             lore_csv_read(edit_file, self.feature_mod_lore)
@@ -82,21 +82,21 @@ class BattleMapData:
 
         self.empty_image = pygame.Surface((0, 0))  # empty texture image
         self.camp_image = load_image(main_dir, (1, 1), "camp.png",
-                                     ("ruleset", ruleset, "map", "texture"))  # war camp texture image
+                                     ("module", module, "map", "texture"))  # war camp texture image
 
         self.map_texture = []
         self.texture_folder = [item["Name"] for item in self.feature_mod.values() if
                                item["Name"] != ""]  # For now remove terrain with no planned name/folder yet
 
         for index, folder in enumerate(self.texture_folder):
-            images = load_images(main_dir, subfolder=("ruleset", ruleset, "map", "texture", folder))
+            images = load_images(main_dir, subfolder=("module", module, "map", "texture", folder))
             self.map_texture.append(list(images.values()))
 
         self.day_effect_images = load_images(main_dir, screen_scale=screen_scale,
-                                             subfolder=("ruleset", ruleset, "map", "day"))
+                                             subfolder=("module", module, "map", "day"))
 
         self.battle_map_colour = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset, "map", "map_colour.csv"), encoding="utf-8",
+        with open(os.path.join(main_dir, "data", "module", module, "map", "map_colour.csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
             for row_index, row in enumerate(rd):
@@ -109,7 +109,7 @@ class BattleMapData:
                     self.battle_map_colour[row[0]] = row[1:]
 
         self.weather_data = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset, "map", "weather", "weather.csv"),
+        with open(os.path.join(main_dir, "data", "module", module, "map", "weather", "weather.csv"),
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -133,7 +133,7 @@ class BattleMapData:
         edit_file.close()
 
         self.weather_lore = {}
-        with open(os.path.join(main_dir, "data", "ruleset", ruleset, "map", "weather",
+        with open(os.path.join(main_dir, "data", "module", module, "map", "weather",
                                "weather_lore_" + language + ".csv"),
                   encoding="utf-8", mode="r") as edit_file:
             lore_csv_read(edit_file, self.weather_lore)
@@ -143,7 +143,7 @@ class BattleMapData:
         for this_weather in weather_list:  # Load weather matter sprite image
             try:
                 images = load_images(main_dir, screen_scale=screen_scale,
-                                     subfolder=("ruleset", ruleset, "map", "weather", "matter", this_weather))
+                                     subfolder=("module", module, "map", "weather", "matter", this_weather))
                 self.weather_matter_images[this_weather] = tuple(images.values())
             except FileNotFoundError:
                 self.weather_matter_images[this_weather] = ()
@@ -152,13 +152,13 @@ class BattleMapData:
         for this_weather in weather_list:  # Load weather effect sprite image
             try:
                 images = load_images(main_dir, screen_scale=screen_scale,
-                                     subfolder=("ruleset", ruleset, "map", "weather", "effect", this_weather))
+                                     subfolder=("module", module, "map", "weather", "effect", this_weather))
                 self.weather_effect_images[this_weather] = tuple(images.values())
             except FileNotFoundError:
                 self.weather_effect_images[this_weather] = ()
 
         weather_icon_list = load_images(main_dir, screen_scale=screen_scale,
-                                        subfolder=("ruleset", ruleset, "map", "weather", "icon"))  # Load weather icon
+                                        subfolder=("module", module, "map", "weather", "icon"))  # Load weather icon
         new_weather_icon = {}
         for weather_icon in weather_list:
             for strength in range(0, 3):

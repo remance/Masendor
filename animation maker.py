@@ -4,6 +4,7 @@ import random
 import re
 import sys
 import time
+import configparser
 from pathlib import Path
 
 import pygame
@@ -44,6 +45,10 @@ pygame.init()
 pen = pygame.display.set_mode(screen_size)
 pygame.display.set_caption("Animation Maker")  # set the self name on program border/tab
 pygame.mouse.set_visible(True)  # set mouse as visible
+
+config = configparser.ConfigParser()  # initiate config reader
+config.read_file(open(os.path.join(current_dir, "configuration.ini")))  # read config file
+module = int(config["DEFAULT"]["module"])
 
 max_person = 4
 max_frame = 22

@@ -20,7 +20,7 @@ def setup_battle_troop(self, team_subunit_list, specific_team=None, custom_data=
     leader_subunit = {}
     self.last_troop_game_id = 0
     if not custom_data:
-        with open(os.path.join(main_dir, "data", "ruleset", self.ruleset_folder, "map", "preset",
+        with open(os.path.join(main_dir, "data", "module", self.module_folder, "map", "preset",
                                self.map_selected, str(self.map_source),
                                "troop_pos.csv"), encoding="utf-8", mode="r") as unit_file:
             rd = list(csv.reader(unit_file, quoting=csv.QUOTE_ALL))

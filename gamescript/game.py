@@ -176,7 +176,7 @@ class Game:
         lorebook.Lorebook.main_dir = self.main_dir
 
         # Read config file
-        config = configparser.ConfigParser()
+        config = configparser.ConfigParser()  # initiate config reader
         try:
             config.read_file(open(os.path.join(self.main_dir, "configuration.ini")))  # read config file
         except FileNotFoundError:  # Create config file if not found with the default
@@ -189,7 +189,7 @@ class Game:
             self.full_screen = int(self.config["USER"]["full_screen"])
             self.master_volume = float(self.config["USER"]["master_volume"])
             self.music_volume = float(self.config["USER"]["music_volume"])
-            self.play_music_volume = self.master_volume * self.music_volume / 10000
+            self.play_music_volume = self.master_volume * self.music_volume / 10000  # convert volume into percentage
             self.effect_volume = float(self.config["USER"]["effect_volume"])
             self.play_effect_volume = self.master_volume * self.effect_volume / 10000
             self.voice_volume = float(self.config["USER"]["voice_volume"])
@@ -197,7 +197,7 @@ class Game:
             self.profile_name = str(self.config["USER"]["player_Name"])
             self.language = str(self.config["USER"]["language"])
             self.player1_key_bind = ast.literal_eval(self.config["USER"]["keybind player 1"])
-            self.ruleset = 0  # for now default historical ruleset only
+            self.module = int(self.config["USER"]["module"])
             if self.game_version != self.config["VERSION"]["ver"]:  # remake config as game version change
                 reset_config  # cause NameError to reset config file
         except (KeyError, TypeError, NameError):  # config error will make the game recreate config with default
@@ -216,7 +216,7 @@ class Game:
             self.profile_name = str(self.config["USER"]["player_Name"])
             self.language = str(self.config["USER"]["language"])
             self.player1_key_bind = ast.literal_eval(self.config["USER"]["keybind player 1"])
-            self.ruleset = 0  # for now default historical ruleset only
+            self.module = int(self.config["USER"]["module"])
 
         # Set the display mode
         self.screen_rect = pygame.Rect(0, 0, self.screen_width, self.screen_height)
@@ -245,8 +245,8 @@ class Game:
         self.loading = load_image(self.main_dir, self.screen_scale, "loading.png", ("ui", "mainmenu_ui"))
         self.loading = pygame.transform.scale(self.loading, self.screen_rect.size)
 
-        self.ruleset_list = csv_read(self.main_dir, "ruleset_list.csv", ("data", "ruleset"))  # get ruleset list
-        self.ruleset_folder = str(self.ruleset_list[self.ruleset][0]).strip("/").lower()
+        self.module_list = csv_read(self.main_dir, "module_list.csv", ("data", "module"))  # get module list
+        self.module_folder = str(self.module_list[self.module][0]).strip("/").lower()
 
         self.joysticks = {}
         self.joystick_name = {}
@@ -681,7 +681,7 @@ class Game:
 
         self.ui_updater.add(self.command_ui)
 
-        self.change_ruleset()
+        self.change_module()
 
         # Background image
         self.background_image = load_images(self.main_dir, screen_scale=self.screen_scale,
@@ -708,13 +708,13 @@ class Game:
 
         self.run()
 
-    def change_ruleset(self):
+    def change_module(self):
         self.troop_data, self.leader_data, self.faction_data = make_faction_troop_leader_data(self.main_dir,
                                                                                               self.screen_scale,
-                                                                                              self.ruleset_folder,
+                                                                                              self.module_folder,
                                                                                               self.language)
 
-        self.battle_map_data = datamap.BattleMapData(self.main_dir, self.screen_scale, self.ruleset_folder,
+        self.battle_map_data = datamap.BattleMapData(self.main_dir, self.screen_scale, self.module_folder,
                                                      self.language)
 
         self.battle.battle_map_base.terrain_list = self.battle_map_data.terrain_list
@@ -753,7 +753,7 @@ class Game:
         effectsprite.EffectSprite.effect_list = self.troop_data.effect_list
 
         self.preset_map_list, self.preset_map_folder, self.custom_map_list, \
-        self.custom_map_folder = make_battle_list_data(self.main_dir, self.ruleset_folder, self.language)
+        self.custom_map_folder = make_battle_list_data(self.main_dir, self.module_folder, self.language)
 
         self.troop_animation = datasprite.TroopAnimationData(self.main_dir,
                                                              [str(self.troop_data.race_list[key]["Name"]) for key in
@@ -798,13 +798,13 @@ class Game:
 
         # Encyclopedia
         lorebook.Lorebook.concept_stat = csv_read(self.main_dir, "concept_stat.csv",
-                                                  ("data", "ruleset", self.ruleset_folder, "lore"), header_key=True)
+                                                  ("data", "module", self.module_folder, "lore"), header_key=True)
         lorebook.Lorebook.concept_lore = csv_read(self.main_dir, "concept_lore" + "_" + self.language + ".csv",
-                                                  ("data", "ruleset", self.ruleset_folder, "lore"))
+                                                  ("data", "module", self.module_folder, "lore"))
         lorebook.Lorebook.history_stat = csv_read(self.main_dir, "history_stat.csv",
-                                                  ("data", "ruleset", self.ruleset_folder, "lore"), header_key=True)
+                                                  ("data", "module", self.module_folder, "lore"), header_key=True)
         lorebook.Lorebook.history_lore = csv_read(self.main_dir, "history_lore" + "_" + self.language + ".csv",
-                                                  ("data", "ruleset", self.ruleset_folder, "lore"))
+                                                  ("data", "module", self.module_folder, "lore"))
 
         lorebook.Lorebook.faction_data = self.faction_data
         lorebook.Lorebook.troop_data = self.troop_data
@@ -812,10 +812,10 @@ class Game:
         lorebook.Lorebook.battle_map_data = self.battle_map_data
         lorebook.Lorebook.screen_rect = self.screen_rect
 
-        self.encyclopedia.change_ruleset()
+        self.encyclopedia.change_module()
 
-        # Error log for selected ruleset
-        self.error_log.write("Use ruleset: " + self.ruleset_list[self.ruleset][0])
+        # Error log for selected module
+        self.error_log.write("Use module: " + self.module_list[self.module][0])
 
         subunit_to_make = tuple(set([this_subunit for this_subunit in self.troop_data.troop_list] +
                                     [this_subunit for this_subunit in self.leader_data.leader_list]))

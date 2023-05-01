@@ -80,7 +80,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.max_page = 0
         self.rect = self.image.get_rect(center=(self.screen_rect.width / 2, self.screen_rect.height / 2))
 
-    def change_ruleset(self):
+    def change_module(self):
         # Make new equipment list that contain all type weapon, armour, mount
         self.equipment_stat = {}
         run = 1
@@ -399,7 +399,7 @@ class Lorebook(pygame.sprite.Sprite):
                     if value != "":
                         if self.section != self.equipment_section:  # equipment section need to be processed differently
                             create_text = key + ": " + str(value)
-                            if key == "Ruleset":
+                            if key == "module":
                                 create_text = ""
                             if self.section == self.troop_section or self.section == self.leader_section:  # troop section
                                 if "Weapon" in key:  # weapon text with quality
@@ -434,7 +434,7 @@ class Lorebook(pygame.sprite.Sprite):
                                     trait_list = ""
                                     if 0 not in value:
                                         for this_text in value:
-                                            if this_text in self.troop_data.trait_list:  # in case user put in trait not existed in ruleset
+                                            if this_text in self.troop_data.trait_list:  # in case user put in trait not existed in module
                                                 trait_list += self.troop_data.trait_list[this_text]["Name"] + ", "
                                         trait_list = trait_list[0:-2]
                                         create_text = key + ": " + trait_list
@@ -453,13 +453,13 @@ class Lorebook(pygame.sprite.Sprite):
                                     elif "Skill" in key:  # skill text instead of number
                                         skill_list = ""
                                         if key == "Charge Skill":
-                                            if value in self.troop_data.skill_list:  # only include skill if exist in ruleset
+                                            if value in self.troop_data.skill_list:  # only include skill if exist in module
                                                 skill_list += self.troop_data.skill_list[value]["Name"]
                                             create_text = key + ": " + skill_list
                                             # + ", Base Speed: " + str(speed)  # add subunit speed after
                                         elif 0 not in value:
                                             for this_text in value:
-                                                if this_text in self.troop_data.skill_list:  # only include skill in ruleset
+                                                if this_text in self.troop_data.skill_list:  # only include skill in module
                                                     skill_list += self.troop_data.skill_list[this_text]["Name"] + ", "
                                             skill_list = skill_list[0:-2]
                                             create_text = key + ": " + skill_list
@@ -498,7 +498,7 @@ class Lorebook(pygame.sprite.Sprite):
                                         skill_list = ""
                                         if 0 not in value:
                                             for this_text in value:
-                                                if this_text in self.leader_data.skill_list:  # only include skill in ruleset
+                                                if this_text in self.leader_data.skill_list:  # only include skill in module
                                                     skill_list += self.leader_data.skill_list[this_text]["Name"] + ", "
                                             skill_list = skill_list[0:-2]
                                             create_text = key + ": " + skill_list
@@ -518,7 +518,7 @@ class Lorebook(pygame.sprite.Sprite):
                                     status_list = ""
                                     if 0 not in value:
                                         for this_text in value:
-                                            if this_text in self.troop_data.status_list:  # in case user put in trait not existed in ruleset
+                                            if this_text in self.troop_data.status_list:  # in case user put in trait not existed in module
                                                 status_list += self.troop_data.status_list[this_text]["Name"] + ", "
                                         status_list = status_list[0:-2]
                                         create_text = key + ": " + status_list
@@ -543,7 +543,7 @@ class Lorebook(pygame.sprite.Sprite):
                                 trait_list = ""
                                 if 0 not in value:
                                     for this_text in value:
-                                        if this_text in self.troop_data.trait_list:  # in case user put in trait not existed in ruleset
+                                        if this_text in self.troop_data.trait_list:  # in case user put in trait not existed in module
                                             trait_list += self.troop_data.trait_list[this_text][0] + ", "
                                     trait_list = trait_list[0:-2]
                                     create_text = key + ": " + trait_list

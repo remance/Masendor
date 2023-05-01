@@ -7,9 +7,9 @@ from gamescript import game
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 
 if __name__ == "__main__":
-    error_log = open(os.path.join(main_dir + "/error_report.txt"), "w")
+    error_log = open(os.path.join(main_dir + "/error_report.txt"), "w")  # create error log when game start
     python_ver = sys.version.split(" ")[0].split(".")
-    if int(python_ver[0]) < 3 or int(python_ver[1]) < 10:
+    if int(python_ver[0]) < 3 or (python_ver[0] == 3 and int(python_ver[1]) < 10):
         print("This game requires Python version 3.10 and above to run.")
     try:  # for printing error log when error exception happen
         game.Game(main_dir, error_log)
