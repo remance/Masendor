@@ -267,7 +267,6 @@ class TextBox(pygame.sprite.Sprite):
 
 class MenuButton(pygame.sprite.Sprite):
 
-
     @classmethod
     @lru_cache
     def make_buttons(cls, width):
@@ -296,7 +295,8 @@ class MenuButton(pygame.sprite.Sprite):
         return (normal_button, hover_button, normal_button)
 
 
-    def __init__(self, screen_scale, images, pos, updater=None, text="", size=28, layer=1, width=200):
+    def __init__(self, screen_scale, images, pos, updater=None, text="", size=28, layer=1, width=200, parent=None):
+        self.parent = parent
         images = self.make_buttons(width=width)
         self._layer = layer
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -333,6 +333,9 @@ class MenuButton(pygame.sprite.Sprite):
                 if mouse_up:
                     self.event = True
                     self.image = self.button_click_image
+       
+        if self.parent is not None:
+            self.rect = pygame.rect.Rect(*[self.parent.get_rect()[i]-self.image.get_size()[i]//2+(self.pos[i]+1)*self.parent.get_rect()[i+2]*0.5 for i in range(2) ], *self.image.get_size())
 
     def change_state(self, text):
         if text != "":
@@ -1015,3 +1018,26 @@ class FilterBox(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = image
         self.rect = self.image.get_rect(topleft=pos)
+
+
+class BoxUI(pygame.sprite.Sprite):
+
+    def __init__(self, size, parent):
+        pygame.sprite.Sprite.__init__(self)
+        self.parent = parent
+        self.size = size
+        self.calculate_rect()
+        self.image = pygame.Surface((1,1),pygame.SRCALPHA) # box is not visible atm
+
+    def get_rect(self):
+        return self.rect
+
+    def calculate_rect(self):
+        # TODO: atm the box is always in center. it should be able to have a position.
+        #       make a common method to caclulate position if have parent. (the expression used in MenuButton is good)
+        x, y = [ self.parent.get_size()[i]//2-(self.size[i]*0.5) for i in range(2) ]
+        self.rect = (x,y,*self.size)
+
+    def update(self, *args):
+        self.calculate_rect() 
+        

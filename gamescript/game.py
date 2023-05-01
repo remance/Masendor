@@ -355,32 +355,25 @@ class Game:
 
         # Main menu related stuff
         image_list = load_base_button(self.main_dir, self.screen_scale)
-        self.preset_map_button = menu.MenuButton(self.screen_scale, image_list,
-                                                 (self.screen_rect.width / 2,
-                                                  self.screen_rect.height - (image_list[0].get_height() * 8.5)),
-                                                 self.main_ui_updater, text="Preset Map")
-        self.custom_map_button = menu.MenuButton(self.screen_scale, image_list,
-                                                 (self.screen_rect.width / 2,
-                                                  self.screen_rect.height - (image_list[0].get_height() * 7.4)),
-                                                 self.main_ui_updater, text="Custom Map")
-        self.game_edit_button = menu.MenuButton(self.screen_scale, image_list,
-                                                (self.screen_rect.width / 2,
-                                                 self.screen_rect.height - (image_list[0].get_height() * 6.3)),
-                                                self.main_ui_updater, text="Editor")
-        self.lore_button = menu.MenuButton(self.screen_scale, image_list,
-                                           (self.screen_rect.width / 2,
-                                            self.screen_rect.height - (image_list[0].get_height() * 5.2)),
-                                           self.main_ui_updater, text="Encyclopedia")
-        self.option_button = menu.MenuButton(self.screen_scale, image_list,
-                                             (self.screen_rect.width / 2,
-                                              self.screen_rect.height - (image_list[0].get_height() * 4.1)),
-                                             self.main_ui_updater, text="Option")
-        self.quit_button = menu.MenuButton(self.screen_scale, image_list,
-                                           (self.screen_rect.width / 2,
-                                            self.screen_rect.height - (image_list[0].get_height() *3.0 )),
-                                           self.main_ui_updater, text="Quit")
+
+
+        mmbb = main_menu_buttons_box = menu.BoxUI((400,400), parent=self.screen)
+
+        f = 0.76
+        self.preset_map_button = menu.MenuButton(self.screen_scale, image_list, (0,-1*f),
+                                                 self.main_ui_updater, text="Preset Map", parent= main_menu_buttons_box)
+        self.custom_map_button = menu.MenuButton(self.screen_scale, image_list,(0,-0.6*f),
+                                                 self.main_ui_updater, text="Custom Map", parent= main_menu_buttons_box)
+        self.game_edit_button = menu.MenuButton(self.screen_scale, image_list,(0,-0.2*f),
+                                                self.main_ui_updater, text="Editor", parent=main_menu_buttons_box)
+        self.lore_button = menu.MenuButton(self.screen_scale, image_list,(0,0.2*f),
+                                           self.main_ui_updater, text="Encyclopedia", parent=main_menu_buttons_box)
+        self.option_button = menu.MenuButton(self.screen_scale, image_list, (0,0.6*f),
+                                             self.main_ui_updater, text="Option", parent=main_menu_buttons_box)
+        self.quit_button = menu.MenuButton(self.screen_scale, image_list, (0,1*f),
+                                           self.main_ui_updater, text="Quit", parent=main_menu_buttons_box)
         self.mainmenu_button = (self.preset_map_button, self.custom_map_button, self.game_edit_button,
-                                self.lore_button, self.option_button, self.quit_button)
+                                self.lore_button, self.option_button, self.quit_button, main_menu_buttons_box)
 
         # Battle map
         self.battle_base_map = battlemap.BaseMap(self.main_dir)  # create base terrain map
