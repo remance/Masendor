@@ -1,7 +1,6 @@
 from random import randint
 
-import pygame
-import pygame.freetype
+from pygame import sprite, Surface, font, transform, Vector2, SRCALPHA
 
 from gamescript.common import utility
 
@@ -60,19 +59,19 @@ class Weather:
             self.travel_angle = (int(self.travel_angle - (abs(180 - self.travel_angle) / 3)),
                                  int(self.travel_angle + (abs(180 - self.travel_angle) / 3)))
 
-            image = pygame.Surface((self.wind_compass_images["wind_compass"].get_width() * 2,
-                                    self.wind_compass_images["wind_compass"].get_height()), pygame.SRCALPHA)
+            image = Surface((self.wind_compass_images["wind_compass"].get_width() * 2,
+                             self.wind_compass_images["wind_compass"].get_height()), SRCALPHA)
 
             wind_compass_image = self.wind_compass_images["wind_compass"].copy()
             wind_compass_rect = wind_compass_image.get_rect(topleft=(0, 0))
             wind_arrow = self.wind_compass_images["wind_arrow"]
             angle = abs(360 - wind_direction)  # angle for arrow rotation
-            wind_arrow = pygame.transform.rotate(wind_arrow, angle)
+            wind_arrow = transform.rotate(wind_arrow, angle)
             wind_arrow_rect = wind_arrow.get_rect(center=(wind_compass_image.get_width() / 2,
                                                           wind_compass_image.get_height() / 2))
             wind_compass_image.blit(wind_arrow, wind_arrow_rect)
-            font = pygame.font.SysFont("helvetica", int(wind_compass_image.get_height() / 2))
-            text_surface = font.render(str(self.wind_strength), True, (0, 0, 0))
+            text_font = font.SysFont("helvetica", int(wind_compass_image.get_height() / 2))
+            text_surface = text_font.render(str(self.wind_strength), True, (0, 0, 0))
             text_rect = text_surface.get_rect(
                 center=(wind_compass_image.get_width() / 2, wind_compass_image.get_height() / 2))
             wind_compass_image.blit(text_surface, text_rect)
@@ -88,17 +87,17 @@ class Weather:
             time_ui.image.blit(image, rect)
 
 
-class MatterSprite(pygame.sprite.Sprite):
+class MatterSprite(sprite.Sprite):
     set_rotate = utility.set_rotate
 
     def __init__(self, start_pos, target, speed, image, screen_rect_size):
         self._layer = 9
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        sprite.Sprite.__init__(self, self.containers)
         self.speed = speed
-        self.base_pos = pygame.Vector2(start_pos)  # should be at the end corner of screen
-        self.target = pygame.Vector2(target)  # should be at another end corner of screen
+        self.base_pos = Vector2(start_pos)  # should be at the end corner of screen
+        self.target = Vector2(target)  # should be at another end corner of screen
         travel_angle = self.set_rotate(self.target)  # calculate sprite angle
-        self.image = pygame.transform.rotate(image, travel_angle)  # no need to copy since rotate only once
+        self.image = transform.rotate(image, travel_angle)  # no need to copy since rotate only once
         self.screen_start = (-self.image.get_width(), -self.image.get_height())
         self.screen_end = (self.image.get_width() + screen_rect_size[0],
                            self.image.get_height() + screen_rect_size[1])
@@ -119,21 +118,22 @@ class MatterSprite(pygame.sprite.Sprite):
                 self.rect.center = self.target
 
             if self.screen_end[0] <= self.base_pos[0] <= self.screen_start[0] or \
-                    self.screen_end[1] <= self.base_pos[1] <= self.screen_start[0]:  # pass through screen border
+                    self.screen_end[1] <= self.base_pos[1] <= self.screen_start[0]:
+                # pass through screen border, kill sprite
                 self.kill()
 
-        else:  # kill when it reach the end of screen
+        else:  # kill when sprite reaches target
             self.kill()
 
 
-class SpecialEffect(pygame.sprite.Sprite):
+class SpecialEffect(sprite.Sprite):
     """Special effect from weather beyond sprite such as thunder, fog etc."""
 
     def __init__(self, pos, target, speed, image, end_time):
         self._layer = 8
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        self.pos = pygame.Vector2(pos)
-        self.target = pygame.Vector2(target)
+        sprite.Sprite.__init__(self, self.containers)
+        self.pos = Vector2(pos)
+        self.target = Vector2(target)
         self.speed = speed
         self.image = image
         self.rect = self.image.get_rect(center=self.pos)
@@ -152,16 +152,16 @@ class SpecialEffect(pygame.sprite.Sprite):
                 if timer < self.end_time and self.pos[0] > 0:  # do not go beyond 0 if weather event not end yet
                     self.rect.midleft = list(int(v) for v in self.pos)
                 else:
-                    self.rect.midleft = pygame.Vector2(0, self.pos[1])
+                    self.rect.midleft = Vector2(0, self.pos[1])
             else:
                 self.rect.midleft = self.target
         elif timer >= self.end_time and self.rect.midright[0] < 0:
             self.kill()
 
 
-class SuperEffect(pygame.sprite.Sprite):
+class SuperEffect(sprite.Sprite):
     """Super effect that affect whole screen"""
 
     def __init__(self, pos, image):
         self._layer = 12
-        pygame.sprite.Sprite.__init__(self)
+        sprite.Sprite.__init__(self)

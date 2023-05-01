@@ -7,7 +7,6 @@ from pathlib import Path
 from random import randint
 
 import pygame
-import pygame.freetype
 from pygame.locals import *
 
 from gamescript import camera, weather, battleui, unit, datasprite, damagesprite, effectsprite, ai
@@ -108,6 +107,8 @@ class Battle:
                                 "Move" in key or "Input" in key}  # key that consider holding
         self.screen_rect = game.screen_rect
         self.main_dir = game.main_dir
+        self.data_dri = game.data_dir
+        self.module_dir = game.module_dir
         self.screen_scale = game.screen_scale
         self.battle_camera = game.battle_camera
         self.battle_ui_updater = game.battle_ui_updater
@@ -154,7 +155,7 @@ class Battle:
         self.confirm_ui = game.confirm_ui
         self.confirm_ui_popup = game.confirm_ui_popup
 
-        self.char_icon = game.unit_icon
+        self.unit_icon = game.unit_icon
 
         self.time_ui = game.time_ui
         self.time_number = game.time_number
@@ -325,25 +326,23 @@ class Battle:
         self.battle_cursor_pos = [0, 0]  # mouse position list in battle map not screen with zoom
         self.command_cursor_pos = [0, 0]  # with zoom and screen scale for unit command
 
-    def prepare_new_game(self, module, module_folder, team_selected, map_type, map_selected,
-                         map_source, char_selected, map_data, camp_pos):
+    def prepare_new_game(self, team_selected, map_type, map_selected,
+                         map_source, player_unit, map_data, camp_pos):
 
-        for message in self.inner_prepare_new_game(module, module_folder, team_selected, map_type, map_selected,
-                                                   map_source, char_selected, map_data, camp_pos):
+        for message in self.inner_prepare_new_game(team_selected, map_type, map_selected,
+                                                   map_source, player_unit, map_data, camp_pos):
             print(message, end="")
 
-    def inner_prepare_new_game(self, module, module_folder, team_selected, map_type, map_selected,
-                               map_source, char_selected, map_data, camp_pos):
+    def inner_prepare_new_game(self, team_selected, map_type, map_selected,
+                               map_source, player_unit, map_data, camp_pos):
         """Setup stuff when start new battle"""
         self.language = self.game.language
 
-        self.module = module  # current module used
-        self.module_folder = module_folder  # the folder of rulseset used
         self.map_selected = map_selected  # map folder name
         self.map_source = str(map_source)
         self.team_selected = team_selected  # player selected team
 
-        self.char_selected = char_selected
+        self.player_unit = player_unit
         self.map_data = map_data
         self.camp_pos = camp_pos
 
@@ -366,8 +365,8 @@ class Battle:
         yield set_start_load("weather")
         if map_type == "preset":
             try:
-                self.weather_event = csv_read(self.main_dir, "weather.csv",
-                                              ("data", "module", self.module_folder, "map", map_type,
+                self.weather_event = csv_read(self.module_dir, "weather.csv",
+                                              ("map", map_type,
                                                self.map_selected,
                                                self.map_source), output_type="list")
                 self.weather_event = self.weather_event[1:]
@@ -415,9 +414,8 @@ class Battle:
 
         yield set_start_load("map events")
         try:  # get new map event for event log
-            map_event = csv_read(self.main_dir, "eventlog_" + self.language + ".csv",
-                                 ("data", "module", self.module_folder, "map", map_type,
-                                  self.map_selected, self.map_source),
+            map_event = csv_read(self.module_dir, "eventlog_" + self.language + ".csv",
+                                 ("map", map_type, self.map_selected, self.map_source),
                                  header_key=True)
             battleui.EventLog.map_event = map_event
         except FileNotFoundError:  # can't find any event file
@@ -440,11 +438,11 @@ class Battle:
         yield set_done_load()
 
         yield set_start_load("map images")
-        images = load_images(self.main_dir,
-                             subfolder=("module", self.module_folder, "map", map_type, self.map_selected))
+        images = load_images(self.module_dir,
+                             subfolder=("map", map_type, self.map_selected))
         if not images and map_type == "custom":  # custom map battle but use preset map
-            images = load_images(self.main_dir,
-                                 subfolder=("module", self.module_folder, "map", "preset", self.map_selected))
+            images = load_images(self.module_dir,
+                                 subfolder=("map", "preset", self.map_selected))
         self.battle_map_base.draw_image(images["base"])
         self.battle_map_feature.draw_image(images["feature"])
         self.battle_map_height.draw_image(images["height"])
@@ -471,8 +469,10 @@ class Battle:
         self.visible_unit_list = {}
 
         self.camera_mode = self.start_camera_mode
-        if not self.char_selected:
+        if not self.player_unit:
+            print(self.player_unit, 'free')
             self.camera_mode = "Free"
+
         if map_type == "preset":
             self.setup_battle_troop(self.unit_updater)
         elif map_type == "custom":
@@ -482,7 +482,7 @@ class Battle:
             this_group.empty()
         for this_group in self.all_team_enemy.values():
             this_group.empty()
-        print(self.map_data)
+
         self.all_team_unit = {int(key[-1]): pygame.sprite.Group() for key in self.map_data if "Team Faction" in key}
         self.all_team_enemy = {int(key[-1]): pygame.sprite.Group() for key in self.map_data if "Team Faction" in key}
         self.camp = {key: {} for key in self.all_team_unit.keys()}
@@ -510,7 +510,6 @@ class Battle:
         self.current_weather.__init__(self.time_ui, 4, 0, 0, self.weather_data)  # start weather with sunny first
         self.current_pop_up_row = 0
         self.input_popup = (None, None)  # no popup asking for user text input state
-        self.player_unit = None  # Which unit is currently selected
         self.drama_text.queue = []  # reset drama text popup queue
 
         self.change_battle_state()
@@ -519,7 +518,7 @@ class Battle:
 
         self.shown_camera_pos = self.camera_pos
 
-        self.player_char_input_delay = 0
+        self.player_unit_input_delay = 0
         self.text_delay = 0
         self.screen_shake_value = 0
         self.ui_timer = 0  # This is timer for ui update function, use realtime
@@ -760,10 +759,10 @@ class Battle:
                 # open/close menu
                 esc_press = True
 
-            if self.player_char_input_delay:  # delay for command input
-                self.player_char_input_delay -= self.dt
-                if self.player_char_input_delay < 0:
-                    self.player_char_input_delay = 0
+            if self.player_unit_input_delay:  # delay for command input
+                self.player_unit_input_delay -= self.dt
+                if self.player_unit_input_delay < 0:
+                    self.player_unit_input_delay = 0
 
             if self.input_popup == (None, None):
                 if esc_press:  # open/close menu
@@ -1019,7 +1018,7 @@ class Battle:
 
         self.troop_ai_logic_queue = []
 
-        clean_group_object((self.shoot_lines, self.all_units, self.char_icon,
+        clean_group_object((self.shoot_lines, self.all_units, self.unit_icon,
                             self.effect_updater, self.weather_matter))
 
         self.command_ui.__init__(self.screen_scale, self.command_ui.weapon_box_images,

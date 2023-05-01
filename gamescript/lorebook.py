@@ -1,5 +1,4 @@
 import pygame
-import pygame.freetype
 
 from gamescript.common import utility
 

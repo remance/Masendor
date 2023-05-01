@@ -6,7 +6,6 @@ import sys
 from pathlib import Path
 
 import pygame
-import pygame.freetype
 from pygame.locals import *
 
 from gamescript import battlemap, weather, battleui, menu, damagesprite, effectsprite, battle, unit, datasprite, \
@@ -44,18 +43,16 @@ make_popup_ui = empty_function
 script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
 for entry in os.scandir(Path(script_dir + "/common/game/setup/")):  # load and replace modules from common.game.setup
     if entry.is_file():
+        file_name = entry.name
         if ".py" in entry.name:
             file_name = entry.name[:-3]
-        elif ".pyc" in entry.name:
-            file_name = entry.name[:-4]
-
         if file_name.startswith("."):
             continue
 
         exec(f"from gamescript.common.game.setup import " + file_name)
         exec(f"" + file_name + " = " + file_name + "." + file_name)
 
-version_name = "Dream Decision"  # Game version name that will appear as game name
+version_name = "Future Visionary"  # Game version name that will appear as game name
 
 morale_state_text = {0: "Broken", 1: "Fleeing", 2: "Breaking", 3: "Poor", 4: "Wavering", 5: "Balanced",
                      6: "Steady", 7: "Fine", 8: "Confident", 9: "Eager", 10: "Ready", 11: "Merry", 12: "Elated",
@@ -68,6 +65,8 @@ stamina_state_text = {0: "Collapse", 1: "Exhausted", 2: "Severed", 3: "Very Tire
 
 
 class Game:
+    screen_scale = (1, 1)
+
     game_version = "0.7.1.6"
     mouse_bind = {"left click": 1, "middle click": 2, "right click": 3, "scroll up": 4, "scroll down": 5}
     mouse_bind_name = {value: key for key, value in mouse_bind.items()}
@@ -96,6 +95,7 @@ class Game:
                                  "axis-3": "R. Stick U.", "axis+3": "R. Stick D.",
                                  "hat-0": "L. Arrow", "hat+0": "R. Arrow",
                                  "hat-1": "U. Arrow", "hat+1": "D. Arrow"}}
+
     empty_method = utility.empty_method
 
     # import from common.game
@@ -209,6 +209,8 @@ class Game:
         # Set the display mode
         self.screen_rect = pygame.Rect(0, 0, self.screen_width, self.screen_height)
         self.screen_scale = (self.screen_rect.width / 1920, self.screen_rect.height / 1080)
+        Game.screen_scale = self.screen_scale
+
         self.window_style = 0
         if self.full_screen == 1:
             self.window_style = pygame.FULLSCREEN
@@ -245,31 +247,30 @@ class Game:
         self.dt = 0
         self.text_delay = 0
 
-        # Decorate game window icon
+        # Decorate game icon window
         # icon = load_image(self.data_dir, "sword.jpg")
         # icon = pygame.transform.scale(icon, (32, 32))
         # pygame.display.set_icon(icon)
 
-        # Initialise groups and objects
+        # Initialise groups
 
         self.main_ui_updater = pygame.sprite.LayeredUpdates()  # main drawer for ui in main menu
 
-        # game start menu
+        # game start menu group
         self.menu_button = pygame.sprite.Group()  # group of menu buttons that are currently get shown and update
-        self.menu_icon = pygame.sprite.Group()  # mostly for option icon like volumne or screen resolution
+        self.menu_icon = pygame.sprite.Group()  # mostly for option icon like volume or screen resolution
         self.menu_slider = pygame.sprite.Group()
 
-        # encyclopedia
+        # encyclopedia group
         self.lore_button_ui = pygame.sprite.Group()  # buttons for encyclopedia group
         self.subsection_name = pygame.sprite.Group()  # subsection name objects group in encyclopedia blit on lore_name_list
         self.tag_filter_name = pygame.sprite.Group()  # tag filter objects group in encyclopedia blit on filter_name_list
 
-        # battle select menu
+        # battle select menu group
         self.map_namegroup = pygame.sprite.Group()  # map name list group
         self.popup_namegroup = pygame.sprite.Group()
         self.team_coa = pygame.sprite.Group()  # team coat of arm that also act as team selection icon
         self.source_namegroup = pygame.sprite.Group()  # source name list group
-        # battle related
 
         # battle object group
         self.battle_camera = pygame.sprite.LayeredUpdates()  # layer drawer self camera, all image pos should be based on the map not screen
@@ -326,7 +327,7 @@ class Game:
 
         unit.Unit.containers = self.unit_updater, self.all_units, self.battle_camera
 
-        # game cursor
+        # Create game cursor
         cursor_images = load_images(self.data_dir, subfolder=("ui", "cursor"))  # no need to scale cursor
         self.cursor = menu.Cursor(cursor_images)
         self.main_ui_updater.add(self.cursor)
@@ -602,7 +603,7 @@ class Game:
                                self.unit_delete_button, self.unit_save_button, self.popup_list_box, self.filter_box,
                                self.filter_tick_box)
 
-        # user input popup ui
+        # User input popup ui
         input_ui_dict = make_input_box(self.data_dir, self.screen_scale, self.screen_rect,
                                        load_base_button(self.data_dir, self.screen_scale))
         self.input_ui = input_ui_dict["input_ui"]
@@ -658,34 +659,6 @@ class Game:
 
         self.ui_updater.add(self.command_ui)
 
-        self.change_module()
-
-        # Background image
-        self.background_image = load_images(self.data_dir, screen_scale=self.screen_scale,
-                                            subfolder=("ui", "mainmenu_ui", "background"))
-        self.background = self.background_image["main"]
-
-        unit.Unit.battle = self.battle
-        damagesprite.DamageSprite.battle = self.battle
-        effectsprite.EffectSprite.battle = self.battle
-
-        # Starting script
-        self.main_ui_updater.remove(*self.menu_button)  # remove all button from drawing
-        self.menu_button.remove(
-            *self.menu_button)  # remove all button at the start and add later depending on menu_state
-        self.menu_button.add(*self.mainmenu_button)  # add only game start menu button back
-
-        self.start_menu_ui_only = *self.menu_button, self.profile_box  # ui that only appear at the start menu
-        self.main_ui_updater.add(*self.start_menu_ui_only)
-        self.menu_state = "main_menu"
-        self.input_popup = (None, None)  # popup for text input state
-        self.choosing_faction = True  # swap list between faction and unit, always start with choose faction first as true
-
-        self.loading_screen("end")
-
-        self.run()
-
-    def change_module(self):
         self.troop_data, self.leader_data, self.faction_data = make_faction_troop_leader_data(self.data_dir,
                                                                                               self.module_dir,
                                                                                               self.screen_scale,
@@ -775,13 +748,13 @@ class Game:
 
         # Encyclopedia
         lorebook.Lorebook.concept_stat = csv_read(self.module_dir, "concept_stat.csv",
-                                                  ("lore", ), header_key=True)
+                                                  ("lore",), header_key=True)
         lorebook.Lorebook.concept_lore = csv_read(self.module_dir, "concept_lore" + "_" + self.language + ".csv",
-                                                  ("lore", ))
+                                                  ("lore",))
         lorebook.Lorebook.history_stat = csv_read(self.module_dir, "history_stat.csv",
-                                                  ("lore", ), header_key=True)
+                                                  ("lore",), header_key=True)
         lorebook.Lorebook.history_lore = csv_read(self.module_dir, "history_lore" + "_" + self.language + ".csv",
-                                                  ("lore", ))
+                                                  ("lore",))
 
         lorebook.Lorebook.faction_data = self.faction_data
         lorebook.Lorebook.troop_data = self.troop_data
@@ -800,6 +773,31 @@ class Game:
         who_todo |= {key: value for key, value in self.leader_data.leader_list.items() if key in unit_to_make}
 
         # self.create_troop_sprite_pool(who_todo)
+
+        # Background image
+        self.background_image = load_images(self.data_dir, screen_scale=self.screen_scale,
+                                            subfolder=("ui", "mainmenu_ui", "background"))
+        self.background = self.background_image["main"]
+
+        unit.Unit.battle = self.battle
+        damagesprite.DamageSprite.battle = self.battle
+        effectsprite.EffectSprite.battle = self.battle
+
+        # Starting script
+        self.main_ui_updater.remove(*self.menu_button)  # remove all button from drawing
+        self.menu_button.remove(
+            *self.menu_button)  # remove all button at the start and add later depending on menu_state
+        self.menu_button.add(*self.mainmenu_button)  # add only game start menu button back
+
+        self.start_menu_ui_only = *self.menu_button, self.profile_box  # ui that only appear at the start menu
+        self.main_ui_updater.add(*self.start_menu_ui_only)
+        self.menu_state = "main_menu"
+        self.input_popup = (None, None)  # popup for text input state
+        self.choosing_faction = True  # swap list between faction and unit, always start with choose faction first as true
+
+        self.loading_screen("end")
+
+        self.run()
 
     def game_intro(self, screen, clock, intro):
         timer = 0

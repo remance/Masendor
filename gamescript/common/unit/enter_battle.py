@@ -8,8 +8,6 @@ def enter_battle(self, animation_pool, status_animation_pool):
                                                   self.base_map)  # Get new terrain and feature at each unit position
     self.height = self.get_height(self.base_pos)  # Current terrain height
 
-    print(status_animation_pool)
-
     self.status_animation_pool = status_animation_pool[self.troop_size / 10]
 
     layer = round(self.base_pos[0] + (self.base_pos[1] * 10), 0)  # change layer

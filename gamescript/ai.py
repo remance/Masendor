@@ -1,7 +1,7 @@
 import threading
 from time import sleep
 
-import pygame
+from pygame import Vector2
 
 
 class PathfindingAI:
@@ -40,7 +40,7 @@ class PathfindingAI:
 
                 finder = unit.AStarFinder(diagonal_movement=unit.DiagonalMovement.always)
                 path, runs = finder.find_path(start, end, grid)
-                path = [pygame.Vector2(this_path[0] + start_point[0], this_path[1] + start_point[1]) for this_path in
+                path = [Vector2(this_path[0] + start_point[0], this_path[1] + start_point[1]) for this_path in
                         path]  # remake pos into actual map pos
 
                 unit.move_path = path

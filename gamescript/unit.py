@@ -3,8 +3,7 @@ from math import radians
 from pathlib import Path
 from random import random, getrandbits
 
-import pygame
-import pygame.freetype
+from pygame import sprite, font, draw, Color, Vector2, Surface, SRCALPHA
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
@@ -88,7 +87,7 @@ knockdown_command_action = {"name": "Knockdown", "uncontrollable": True, "movabl
 die_command_action = {"name": "DieDown", "uninterruptible": True, "uncontrollable": True}
 
 
-class Unit(pygame.sprite.Sprite):
+class Unit(sprite.Sprite):
     empty_method = utility.empty_method
 
     battle = None
@@ -195,6 +194,8 @@ class Unit(pygame.sprite.Sprite):
     all_formation_list = {}
     hitbox_image_list = {}
 
+    containers = None
+
     # static variable
     default_animation_play_time = 0.1
     knock_down_sound_distance = 4
@@ -224,8 +225,9 @@ class Unit(pygame.sprite.Sprite):
         :param start_stamina: Starting maximum stamina percentage
         :param coa: Coat of arms image, used as shadow and flag
         """
+
         self._layer = 4
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        sprite.Sprite.__init__(self, self.containers)
         self.get_feature = self.feature_map.get_feature
         self.get_height = self.height_map.get_height
 
@@ -368,9 +370,9 @@ class Unit(pygame.sprite.Sprite):
 
         self.map_corner = self.battle.map_corner
 
-        self.base_pos = pygame.Vector2(start_pos)  # true position of unit in battle
-        self.pos = pygame.Vector2((self.base_pos[0] * self.screen_scale[0] * 5,
-                                   self.base_pos[1] * self.screen_scale[1] * 5))
+        self.base_pos = Vector2(start_pos)  # true position of unit in battle
+        self.pos = Vector2((self.base_pos[0] * self.screen_scale[0] * 5,
+                            self.base_pos[1] * self.screen_scale[1] * 5))
         self.offset_pos = self.pos  # offset_pos after consider center offset for animation for showing on screen
 
         self.base_target = self.base_pos  # base_target pos to move
@@ -474,8 +476,9 @@ class Unit(pygame.sprite.Sprite):
             else:  # Use Unknown leader image if there is no specific portrait in data
                 self.portrait = self.leader_data.images["other"].copy()
                 name = self.name.split(" ")[0]
-                font = pygame.font.SysFont("helvetica", int(90 / (len(name) / 3) * self.screen_scale[1]))
-                text_image = font.render(name, True, pygame.Color("white"))
+                text_font = font.SysFont("helvetica", int(90 / (len(name) / 3) * self.screen_scale[1]))
+                print(font)
+                text_image = text_font.render(name, True, Color("white"))
                 text_rect = text_image.get_rect(center=(self.portrait.get_width() / 2,
                                                         self.portrait.get_height() / 1.3))
                 self.portrait.blit(text_image, text_rect)
@@ -693,16 +696,6 @@ class Unit(pygame.sprite.Sprite):
 
         self.troop_mass = self.troop_size
 
-        self.knock_down_sound_distance = self.knock_down_sound_distance * self.troop_mass
-        self.knock_down_sound_shake = self.knock_down_sound_shake * self.troop_mass
-        self.heavy_dmg_sound_distance = self.heavy_dmg_sound_distance * self.troop_mass
-        self.dmg_sound_distance = self.dmg_sound_distance * self.troop_mass
-
-        if self.player_control:
-            self.hit_volume_mod = 1
-        else:
-            self.hit_volume_mod = (self.troop_mass - 10) / 100
-
         self.command_buff = 1
         self.leader_social_buff = 0
         self.authority = 0
@@ -795,13 +788,6 @@ class Unit(pygame.sprite.Sprite):
         self.stamina25 = self.stamina * 0.25
         self.stamina5 = self.stamina * 0.05
 
-        self.max_health = self.health  # health percentage
-        self.max_health10 = self.max_health * 0.1
-        self.max_health20 = self.max_health * 0.2
-        self.max_health50 = self.max_health * 0.5
-
-        self.max_morale = self.base_morale
-
         # Final stat after receiving modifier effect from various sources, reset every time status is updated
         self.melee_attack = self.base_melee_attack
         self.melee_def = self.base_melee_def
@@ -836,6 +822,12 @@ class Unit(pygame.sprite.Sprite):
         self.charge_melee_range = self.max_melee_range * 10
         self.melee_charge_range = {0: 0, 1: 0}
 
+        self.max_health = self.health  # health percentage
+        self.max_health10 = self.max_health * 0.1
+        self.max_health20 = self.max_health * 0.2
+        self.max_health50 = self.max_health * 0.5
+        self.max_morale = self.morale
+
         self.morale_state = 1  # turn into percentage
 
         self.run_speed = 1
@@ -848,6 +840,7 @@ class Unit(pygame.sprite.Sprite):
 
         self.mental = (200 - self.mental) / 100  # convert to percentage
 
+        # Variable for player status UI
         self.melee_attack_mod = 0
         self.melee_def_mod = 0
         self.range_attack_mod = 0
@@ -872,50 +865,44 @@ class Unit(pygame.sprite.Sprite):
                                (sprite_list[self.sprite_id]["p1_secondary_main_weapon"],
                                 sprite_list[self.sprite_id]["p1_secondary_sub_weapon"]))
 
-        self.image = pygame.Surface((0, 0))  # create dummy image for now
+        self.image = Surface((0, 0))  # create dummy unit sprite image for now
 
         self.melee_distance_zone = self.troop_size * 5
         self.stay_distance_zone = self.melee_distance_zone + 10
 
-        # Save some special effect that unlikely to change as variable to reduce workload
+        # Variables related to sound
+        self.knock_down_sound_distance = self.knock_down_sound_distance * self.troop_mass
+        self.knock_down_sound_shake = self.knock_down_sound_shake * self.troop_mass
+        self.heavy_dmg_sound_distance = self.heavy_dmg_sound_distance * self.troop_mass
+        self.dmg_sound_distance = self.dmg_sound_distance * self.troop_mass
+
+        if self.player_control:
+            self.hit_volume_mod = 1
+        else:
+            self.hit_volume_mod = (self.troop_mass - 10) / 100
+
+        # Assign special effects that do not change during battle as variable to reduce workload
         self.shoot_while_moving = self.check_special_effect("Shoot While Moving")
         self.impetuous = self.check_special_effect("Impetuous")
         self.night_vision = self.check_special_effect("Night Vision")
         self.day_blindness = self.check_special_effect("Day Blindness")
         self.double_terrain_penalty = self.check_special_effect("Double Terrain Penalty")
 
-        # Create hitbox sprite  # TODO make this into method with return hitbox image
+        # Create hitbox sprite
         self.hitbox_front_distance = self.troop_size
         hitbox_size = (self.troop_size * 10 * self.screen_scale[0], self.troop_size * 10 * self.screen_scale[1])
         if self.team not in self.hitbox_image_list:
             self.hitbox_image_list[self.team] = {"troop": {}, "leader": {}}
         if self.is_leader:  # leader unit
             if hitbox_size not in self.hitbox_image_list[self.team]["leader"]:
-                self.hitbox_image = pygame.Surface(hitbox_size, pygame.SRCALPHA)
-                pygame.draw.circle(self.hitbox_image, (self.team_colour[self.team][0], self.team_colour[self.team][1],
-                                                       self.team_colour[self.team][2]),
-                                   (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
-                                   self.hitbox_image.get_width() / 2)
-
-                pygame.draw.circle(self.hitbox_image,
-                                   (220, 120, 20),
-                                   (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
-                                   self.hitbox_image.get_width() / 2.4)
+                outer_colour = (220, 120, 20)
+                self.create_hitbox_sprite(hitbox_size, outer_colour)
             else:
                 self.hitbox_image = self.hitbox_image_list[self.team]["leader"][hitbox_size]
         else:  # troop unit
             if hitbox_size not in self.hitbox_image_list[self.team]["troop"]:
-                self.hitbox_image = pygame.Surface(hitbox_size,
-                                                   pygame.SRCALPHA)
-                pygame.draw.circle(self.hitbox_image, (self.team_colour[self.team][0], self.team_colour[self.team][1],
-                                                       self.team_colour[self.team][2]),
-                                   (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
-                                   self.hitbox_image.get_width() / 2)
-
-                pygame.draw.circle(self.hitbox_image,
-                                   (100, 100, 100),
-                                   (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
-                                   self.hitbox_image.get_width() / 2.4)
+                outer_colour = (100, 100, 100)
+                self.create_hitbox_sprite(hitbox_size, outer_colour)
             else:
                 self.hitbox_image = self.hitbox_image_list[self.team]["troop"][hitbox_size]
 
@@ -961,8 +948,8 @@ class Unit(pygame.sprite.Sprite):
                                                            self, self.coa)
                                         add_unit.hitbox = SpriteIndicator(add_unit.hitbox_image, add_unit,
                                                                              self)
-                                        add_unit.effectbox = SpriteIndicator(pygame.Surface((0, 0)), add_unit,
-                                                                                self, layer=10000001)
+                                        add_unit.effectbox = SpriteIndicator(Surface((0, 0)), add_unit,
+                                                                             self, layer=10000001)
                                         add_unit.enter_battle(self.battle.unit_animation_pool,
                                                                  self.battle.status_animation_pool)
                                         self.troop_dead_list[troop_id] -= 1
@@ -1137,7 +1124,7 @@ class Unit(pygame.sprite.Sprite):
                             self.battle.previous_player_input_state = self.battle.player_input_state
                             self.battle.player_input_state = "skill aim"
                             self.battle.camera_mode = "Free"
-                            self.battle.true_camera_pos = pygame.Vector2(self.base_pos)
+                            self.battle.true_camera_pos = Vector2(self.base_pos)
                             SkillAimTarget(self.screen_scale, self,
                                            self.skill[self.current_action["skill"]]["Area Of Effect"])
 
@@ -1177,25 +1164,35 @@ class Unit(pygame.sprite.Sprite):
                     self.battle.battle_camera.remove(self)
                     self.battle.unit_updater.remove(self)
 
+    def create_hitbox_sprite(self, hitbox_size, outer_colour):
+        self.hitbox_image = Surface(hitbox_size, SRCALPHA)
+        draw.circle(self.hitbox_image, (self.team_colour[self.team][0], self.team_colour[self.team][1],
+                                        self.team_colour[self.team][2]),
+                    (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
+                    self.hitbox_image.get_width() / 2)
+
+        draw.circle(self.hitbox_image, outer_colour,
+                    (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
+                    self.hitbox_image.get_width() / 2.4)
+
 
 # class Leader(Unit):
 #     def __init__(self, troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
 #                  leader_unit, coa):
+#         super().__init__(troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
+#                          leader_unit, coa)
 #
-# class PlayerLeader(Unit):
+
+# class AILeader(Leader):
 #     def __init__(self, troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
 #                  leader_unit, coa):
 #
+#         super().__init__(troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
+#                          leader_unit, coa)
 #
-# class AILeader(Unit):
-#     def __init__(self, troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
-#                  leader_unit, coa):
-#
-#         # Unit.__init__(self, troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
-#         #               leader_unit, coa)
-#
-#
+
 # class Troop(Unit):
 #     def __init__(self, troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
 #                  leader_unit, coa):
-
+#         super().__init__(troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
+#                          leader_unit, coa)

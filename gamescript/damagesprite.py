@@ -3,8 +3,7 @@ from math import cos, sin, radians
 from pathlib import Path
 from random import choice, uniform
 
-import pygame
-import pygame.freetype
+from pygame import sprite, mixer, Vector2
 
 from gamescript.common import utility
 
@@ -13,7 +12,7 @@ direction_angle = {"r_side": radians(90), "l_side": radians(270), "back": radian
                    "r_sideup": radians(45), "l_sideup": radians(315)}
 
 
-class DamageSprite(pygame.sprite.Sprite):
+class DamageSprite(sprite.Sprite):
     empty_method = utility.empty_method
     clean_object = utility.clean_object
 
@@ -54,7 +53,7 @@ class DamageSprite(pygame.sprite.Sprite):
                  degrade_when_hit=True, random_direction=False, random_move=False, reach_effect=None, height_type=1):
         """Damage or effect sprite that can affect or damage unit"""
         self._layer = 10000000 + height_type
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        sprite.Sprite.__init__(self, self.containers)
 
         self.attacker = attacker  # unit that perform the attack
         self.weapon = weapon  # weapon that use to perform the attack
@@ -161,8 +160,7 @@ class MeleeDamageSprite(DamageSprite):
         self.angle = angle
         self.base_pos = base_target
 
-        self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
-                                  self.base_pos[1] * self.screen_scale[1]) * 5
+        self.pos = Vector2(self.base_pos[0] * self.screen_scale[0], self.base_pos[1] * self.screen_scale[1]) * 5
         self.adjust_sprite()
 
     def update(self, unit_list, dt):
@@ -195,7 +193,7 @@ class RangeDamageSprite(DamageSprite):
                               degrade_when_hit=degrade_when_hit, random_direction=random_direction,
                               random_move=random_move, accuracy=accuracy, reach_effect=reach_effect)
         self.repeat_animation = True
-        self.base_pos = pygame.Vector2(base_pos)
+        self.base_pos = Vector2(base_pos)
         self.angle = angle
 
         self.speed = stat["Travel Speed"]  # bullet travel speed
@@ -215,14 +213,13 @@ class RangeDamageSprite(DamageSprite):
             self.travel_sound_distance = stat["Bullet Sound Distance"]
             self.travel_shake_power = stat["Bullet Shake Power"]
             self.sound_effect_name = choice(self.sound_effect_pool[sprite_name])
-            self.sound_duration = pygame.mixer.Sound(self.sound_effect_name).get_length() * 1000 / self.speed
+            self.sound_duration = mixer.Sound(self.sound_effect_name).get_length() * 1000 / self.speed
             self.sound_timer = self.sound_duration / 1.5  # wait a bit before start playing
             self.travel_sound_distance_check = self.travel_sound_distance * 2
             if self.sound_duration > 2:
                 self.sound_timer = self.sound_duration / 0.5
 
-        self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
-                                  self.base_pos[1] * self.screen_scale[1]) * 5
+        self.pos = Vector2(self.base_pos[0] * self.screen_scale[0], self.base_pos[1] * self.screen_scale[1]) * 5
         self.adjust_sprite()
 
     def update(self, unit_list, dt):
@@ -283,8 +280,7 @@ class RangeDamageSprite(DamageSprite):
                     self.reach_target()  # direct shot will not be able to shoot pass higher height terrain midway
                     return
 
-                self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
-                                          self.base_pos[1] * self.screen_scale[1]) * 5
+                self.pos = Vector2(self.base_pos[0] * self.screen_scale[0], self.base_pos[1] * self.screen_scale[1]) * 5
                 self.rect.center = self.pos
 
                 if not self.random_move and (
@@ -305,8 +301,7 @@ class RangeDamageSprite(DamageSprite):
                         return
             else:  # reach target
                 self.base_pos = self.base_target
-                self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
-                                          self.base_pos[1] * self.screen_scale[1]) * 5
+                self.pos = Vector2(self.base_pos[0] * self.screen_scale[0], self.base_pos[1] * self.screen_scale[1]) * 5
                 self.rect.center = self.pos
 
 
@@ -361,7 +356,7 @@ class EffectDamageSprite(DamageSprite):
                               random_move=random_move, accuracy=accuracy, reach_effect=reach_effect,
                               height_type=stat["Height Type"])
 
-        self.base_pos = pygame.Vector2(base_pos)
+        self.base_pos = Vector2(base_pos)
         self.angle = angle
 
         self.duration = self.stat["Duration"]
@@ -371,7 +366,7 @@ class EffectDamageSprite(DamageSprite):
             self.travel_sound_distance = stat["Sound Distance"]
             self.travel_shake_power = stat["Shake Power"]
             self.sound_effect_name = choice(self.sound_effect_pool[weapon])
-            self.sound_duration = pygame.mixer.Sound(self.sound_effect_name).get_length()
+            self.sound_duration = mixer.Sound(self.sound_effect_name).get_length()
             self.sound_timer = self.sound_duration / 1.5  # wait a bit before start playing
             self.travel_sound_distance_check = self.travel_sound_distance * 2
             if self.sound_duration > 2:
@@ -383,8 +378,7 @@ class EffectDamageSprite(DamageSprite):
             self.current_animation = self.effect_animation_pool[weapon][weapon]
 
         self.image = self.current_animation[self.show_frame]
-        self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
-                                  self.base_pos[1] * self.screen_scale[1]) * 5
+        self.pos = Vector2(self.base_pos[0] * self.screen_scale[0], self.base_pos[1] * self.screen_scale[1]) * 5
         self.rect = self.image.get_rect(center=self.pos)
 
         self.adjust_sprite()
@@ -399,7 +393,7 @@ class EffectDamageSprite(DamageSprite):
         if self.timer > 1:  # reset timer
             if self.wind_disperse:
                 self.speed = self.battle.current_weather.wind_strength
-                self.base_target = pygame.Vector2(
+                self.base_target = Vector2(
                     self.base_pos[0] + (self.speed * sin(radians(self.battle.current_weather.wind_direction))),
                     self.base_pos[1] - (self.speed * cos(radians(self.battle.current_weather.wind_direction))))
                 self.full_distance = self.base_pos.distance_to(self.base_target)
@@ -440,8 +434,8 @@ class EffectDamageSprite(DamageSprite):
                         self.reach_target()  # direct shot will not be able to shoot pass higher height terrain midway
                         return
 
-                    self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
-                                              self.base_pos[1] * self.screen_scale[1]) * 5
+                    self.pos = Vector2(self.base_pos[0] * self.screen_scale[0],
+                                       self.base_pos[1] * self.screen_scale[1]) * 5
                     self.rect.center = self.pos
 
                     if not self.random_move and (
@@ -462,8 +456,8 @@ class EffectDamageSprite(DamageSprite):
                             return
                 else:  # reach target
                     self.base_pos = self.base_target
-                    self.pos = pygame.Vector2(self.base_pos[0] * self.screen_scale[0],
-                                              self.base_pos[1] * self.screen_scale[1]) * 5
+                    self.pos = Vector2(self.base_pos[0] * self.screen_scale[0],
+                                       self.base_pos[1] * self.screen_scale[1]) * 5
                     self.rect.center = self.pos
 
         if done and self.duration <= 0:

@@ -16,12 +16,10 @@ def setup_battle_troop(self, team_unit_list, specific_team=None, custom_data=Non
     :param team_unit_list: List of team unit group, can be list for preview or dict for battle
     :param specific_team: Assign the unit to which specific team
     """
-    main_dir = self.main_dir
     leader_unit = {}
     self.last_troop_game_id = 0
-    if not custom_data:
-        with open(os.path.join(main_dir, "data", "module", self.module_folder, "map", "preset",
-                               self.map_selected, str(self.map_source),
+    if not custom_data:  # TODO move this data reading process to map selection
+        with open(os.path.join(self.module_dir, "map", "preset", self.map_selected, str(self.map_source),
                                "troop_pos.csv"), encoding="utf-8", mode="r") as unit_file:
             rd = list(csv.reader(unit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -65,7 +63,7 @@ def setup_battle_troop(self, team_unit_list, specific_team=None, custom_data=Non
                 if data["Team"] not in team_unit_list:
                     team_unit_list[data["Team"]] = pygame.sprite.Group()
                 which_team = team_unit_list[data["Team"]]
-            else:  # for character selection screen
+            else:  # for unit selection screen
                 which_team = team_unit_list
 
             leader = None

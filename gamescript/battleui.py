@@ -3,7 +3,6 @@ import datetime
 from math import cos, sin, radians
 
 import pygame
-import pygame.freetype
 
 from gamescript.common import utility
 

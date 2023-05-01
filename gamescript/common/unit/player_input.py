@@ -12,27 +12,27 @@ def player_input(self, cursor_pos):
         if not self.current_action or "hold" in self.current_action:  # can rotate if not has any action or holding
             self.new_angle = new_angle
         if "uncontrollable" not in self.current_action and "uncontrollable" not in self.command_action:
-            if self.battle.player_char_input_delay == 0 and not self.current_action:  # for input that need to have time delay to work properly
+            if self.battle.player_unit_input_delay == 0 and not self.current_action:  # for input that need to have time delay to work properly
                 if self.battle.player_key_press[
                     "Swap Weapon Set 1"] and self.equipped_weapon != 0:  # Swap to primary weapon
                     self.swap_weapon(0)
-                    self.battle.player_char_input_delay = 1
+                    self.battle.player_unit_input_delay = 1
                 elif self.battle.player_key_press[
                     "Swap Weapon Set 2"] and self.equipped_weapon != 1:  # Swap to secondary weapon
                     self.swap_weapon(1)
-                    self.battle.player_char_input_delay = 1
+                    self.battle.player_unit_input_delay = 1
                 elif self.battle.player_key_press["Skill 1"]:  # Use input skill 1
                     self.command_action = self.skill_command_action_0
-                    self.battle.player_char_input_delay = 1
+                    self.battle.player_unit_input_delay = 1
                 elif self.battle.player_key_press["Skill 2"]:  # Use input skill 2
                     self.command_action = self.skill_command_action_1
-                    self.battle.player_char_input_delay = 1
+                    self.battle.player_unit_input_delay = 1
                 elif self.battle.player_key_press["Skill 3"]:  # Use input skill 3
                     self.command_action = self.skill_command_action_2
-                    self.battle.player_char_input_delay = 1
+                    self.battle.player_unit_input_delay = 1
                 elif self.battle.player_key_press["Skill 4"]:  # Use input skill 4
                     self.command_action = self.skill_command_action_3
-                    self.battle.player_char_input_delay = 1
+                    self.battle.player_unit_input_delay = 1
 
             run_input = False
             if (self.toggle_run and not self.battle.player_key_hold["Run Input"]) or \

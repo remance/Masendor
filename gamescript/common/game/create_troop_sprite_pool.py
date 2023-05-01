@@ -25,7 +25,7 @@ def create_troop_sprite_pool(self, who_todo, preview=False, specific_preview=Non
 
     sprite_pool_hash = ""
     if not preview:
-        sprite_pool_hash = md5_dir(os.path.join(self.main_dir, "data", "sprite", "unit"))
+        sprite_pool_hash = md5_dir(os.path.join(self.module_dir, "sprite", "unit"))
 
     pool = inner_create_troop_sprite_pool(self, who_todo, sprite_pool_hash, preview=preview,
                                           specific_preview=specific_preview, max_preview_size=max_preview_size)

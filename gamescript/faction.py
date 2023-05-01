@@ -1,4 +1,4 @@
-import pygame.freetype
+import pygame
 
 
 class Faction(pygame.sprite.Sprite):

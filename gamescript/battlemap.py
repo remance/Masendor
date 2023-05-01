@@ -4,7 +4,6 @@ from random import randint, random, randrange
 
 import numpy as np
 import pygame
-import pygame.freetype
 from PIL import Image, ImageFilter, ImageOps
 
 from gamescript.common import utility

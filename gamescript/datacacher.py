@@ -90,23 +90,3 @@ def recursive_cast_pickleable_surface_to_surface(data):
     elif type(data) == tuple:
         for v in data:
             f(v)
-
-
-class TroopSpriteCacher:
-    def __int__(self, main):
-        self.input_list = []
-        self.main = main
-        self.interrupt = False
-        self.jobs = []
-        threading.Thread(target=self._loop, daemon=True).start()
-
-    def _loop(self):
-        while True:
-            # Check for commands
-            sleep(0.01)  # Limit the logic loop running to every 10ms
-            if self.input_list:
-                self.main.create_troop_sprite_pool(self.input_list)
-                self.input_list = []
-
-            if self.interrupt:
-                self.interrupt = False

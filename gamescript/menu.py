@@ -1,11 +1,19 @@
 import networkx as nx
 import pygame
-import pygame.freetype
-import pygame.freetype
 import pygame.transform
 import pyperclip
 
 from gamescript.common import utility
+
+
+class MenuUI(pygame.sprite.Sprite):
+    def __init__(self):
+        """
+        Parent class for all menu user interface
+        """
+        from gamescript.game import Game
+        self.screen_scale = Game.screen_scale
+        pygame.sprite.Sprite.__init__(self)
 
 
 class Cursor(pygame.sprite.Sprite):

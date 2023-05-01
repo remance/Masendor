@@ -106,7 +106,7 @@ def attack(self, attack_type):
                                   impact,
                                   equipped_weapon_data, attack_type, self.front_pos, base_target,
                                   accuracy=accuracy, arc_shot=arc_shot,
-                                  reach_effect=equipped_weapon_data["After Reach Effect"])
+                                  reach_effect=equipped_weapon_data["After Reach Effect"])  # TODO change front pos to check for angle
             try:
                 self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
             except KeyError:

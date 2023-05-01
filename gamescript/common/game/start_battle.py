@@ -3,21 +3,21 @@ import gc
 import pygame
 
 
-def start_battle(self, char_selected=None):
+def start_battle(self, player_unit=None):
     self.error_log.write("\n Map: " + str(self.map_title.name) + ", Source: " +
-                         str(self.source_name_list[self.map_source]) + ", Character: " + str(char_selected) + "\n")
+                         str(self.source_name_list[self.map_source]) + ", Character: " + str(player_unit) + "\n")
 
-    start_char_selected = char_selected
+    selected_player_unit = player_unit
     if self.enactment:
-        start_char_selected = None
+        selected_player_unit = None
 
     if self.map_type == "preset":
         map_data = self.map_data
     elif self.map_type == "custom":
         map_data = self.custom_map_data["info"]
 
-    self.battle.prepare_new_game(self.module, self.module_folder, self.team_selected, self.map_type,
-                                 self.map_selected, self.map_source, start_char_selected,
+    self.battle.prepare_new_game(self.team_selected, self.map_type,
+                                 self.map_selected, self.map_source, selected_player_unit,
                                  map_data[self.map_source], self.camp_pos[self.map_source])
     self.battle.run_game()
     pygame.mixer.music.unload()

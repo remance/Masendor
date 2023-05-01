@@ -7,7 +7,7 @@ rotation_xy = utility.rotation_xy
 formation_density_distance = {"Very Tight": 2, "Tight": 4,
                               "Very Loose": 15, "Loose": 8}
 
-unit_density_distance = {"Very Tight": 20, "Tight": 40, "Very Loose": 100, "Loose": 70}
+group_density_distance = {"Very Tight": 20, "Tight": 40, "Very Loose": 100, "Loose": 70}
 
 
 def setup_formation(self, which, phase=None, style=None, density=None, position=None):
@@ -58,7 +58,7 @@ def setup_formation(self, which, phase=None, style=None, density=None, position=
         placement_density = formation_density_distance[formation_density]
         formation_preset = self.troop_formation_preset
 
-    elif which == "unit":
+    elif which == "group":
         if phase:
             self.group_formation_phase = phase
 
@@ -80,7 +80,7 @@ def setup_formation(self, which, phase=None, style=None, density=None, position=
         formation_pos_list = self.group_pos_list
         follow_order = self.group_follow_order
         follower_list = self.alive_leader_follower
-        placement_density = unit_density_distance[formation_density]
+        placement_density = group_density_distance[formation_density]
         formation_preset = self.group_formation_preset
 
     if follower_size > 0:
@@ -105,32 +105,32 @@ def setup_formation(self, which, phase=None, style=None, density=None, position=
         first_placement = np.where(first_placement == 0, 99, first_placement)
 
         priority_place = {"center-front": [], "center-rear": [], "flank-front": [],
-                          "flank-rear": [], "front": [], "rear": []}  # dict to keep placement priority score of unit
+                          "flank-rear": [], "front": [], "rear": []}  # dict to keep placement priority score of formation
 
         # For whatever reason, front and rear placement has to be in opposite of what intend, for example melee troop at the
         # front has to be assigned in "rear" instead
         for who in follower_list:
             if "Melee" in formation_phase:  # melee front
                 if (which == "troop" and any(ext in who.troop_class for ext in ("Heavy", "Light"))) or \
-                        (which == "unit" and "melee" in who.unit_type):  # melee at front
+                        (which == "group" and "melee" in who.unit_type):  # melee at front
                     formation_style_check(self, who, which, formation_style, priority_place, "rear")
                 else:  # range and other classes at rear
                     formation_style_check(self, who, which, formation_style, priority_place, "front")
             elif "Skirmish" in formation_phase:  # range front
                 if (which == "troop" and "Range" in who.troop_class) or (
-                        which == "unit" and "range" in who.unit_type):  # range
+                        which == "group" and "range" in who.unit_type):  # range
                     formation_style_check(self, who, which, formation_style, priority_place, "rear")
                 elif (which == "troop" and who.troop_class == "Artillery") or (
-                        which == "unit" and who.unit_type == "artillery"):  # artillery
+                        which == "group" and who.unit_type == "artillery"):  # artillery
                     formation_style_check(self, who, which, formation_style, priority_place, "rear")
                 else:  # melee
                     formation_style_check(self, who, which, formation_style, priority_place, "front")
             elif "Bombard" in formation_phase:
                 if (which == "troop" and who.troop_class == "Artillery") or (
-                        which == "unit" and who.unit_type == "artillery"):  # artillery
+                        which == "group" and who.unit_type == "artillery"):  # artillery
                     formation_style_check(self, who, which, formation_style, priority_place, "rear")
                 elif (which == "troop" and "Range" in who.troop_class) or (
-                        which == "unit" and "range" in who.unit_type):  # range
+                        which == "group" and "range" in who.unit_type):  # range
                     formation_style_check(self, who, which, formation_style, priority_place, "rear")
                 else:  # melee
                     formation_style_check(self, who, which, formation_style, priority_place, "front")
@@ -139,7 +139,7 @@ def setup_formation(self, which, phase=None, style=None, density=None, position=
                                                 dtype=object)  # for placement before consider style and phase
 
         priority_place = {key: value for key, value in priority_place.items() if len(value) > 0}
-        for key, value in priority_place.items():  # there should be no excess number of unit
+        for key, value in priority_place.items():  # there should be no excess number of unit in formation
             formation_sorted = []  # sorted from the highest
             formation_position_list = first_placement * formation_preset[key]
             for placement_value in tuple(sorted(set(formation_position_list.flat))):
@@ -258,14 +258,14 @@ def setup_formation(self, which, phase=None, style=None, density=None, position=
 
 def formation_style_check(self, who, formation_type, formation_style, priority_unit_place, side):
     if (formation_type == "troop" and self.formation_consider_flank) or \
-            (formation_type == "unit" and self.group_formation_consider_flank):
+            (formation_type == "group" and self.group_formation_consider_flank):
         if "Infantry" in formation_style:  # Infantry at flank
             if formation_type == "troop":
                 if who.unit_type < 2:  # infantry
                     priority_unit_place["flank-" + side].append(who)
                 elif who.unit_type == 2:  # cavalry
                     priority_unit_place["center-" + side].append(who)
-            elif formation_type == "unit":
+            elif formation_type == "group":
                 if "inf" in who.unit_type:  # infantry
                     priority_unit_place["flank-" + side].append(who)
                 elif "cav" in who.unit_type:  # cavalry
@@ -276,7 +276,7 @@ def formation_style_check(self, who, formation_type, formation_style, priority_u
                     priority_unit_place["center-" + side].append(who)
                 elif who.unit_type == 2:  # cavalry
                     priority_unit_place["flank-" + side].append(who)
-            elif formation_type == "unit":
+            elif formation_type == "group":
                 if "inf" in who.unit_type:  # infantry
                     priority_unit_place["center-" + side].append(who)
                 elif "cav" in who.unit_type:  # cavalry
