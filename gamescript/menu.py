@@ -266,6 +266,61 @@ class TextBox(pygame.sprite.Sprite):
 
 
 class MenuButton(pygame.sprite.Sprite):
+    def __init__(self, screen_scale, images, pos, updater=None, text="", size=28, layer=1):
+        self._layer = layer
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.pos = pos
+        self.button_normal_image = images[0].copy()
+        self.button_over_image = images[1].copy()
+        self.button_click_image = images[2].copy()
+        self.updater = updater
+        self.text = text
+        self.font = pygame.font.SysFont("timesnewroman", int(size * screen_scale[1]))
+        self.base_image0 = self.button_normal_image.copy()
+        self.base_image1 = self.button_over_image.copy()
+        self.base_image2 = self.button_click_image.copy()
+
+        if text != "":  # draw text into the button images
+            text_surface = self.font.render(self.text, True, (0, 0, 0))
+            text_rect = text_surface.get_rect(center=self.button_normal_image.get_rect().center)
+            self.button_normal_image.blit(text_surface, text_rect)
+            self.button_over_image.blit(text_surface, text_rect)
+            self.button_click_image.blit(text_surface, text_rect)
+
+        self.image = self.button_normal_image
+        self.rect = self.button_normal_image.get_rect(center=self.pos)
+        self.event = False
+
+    def update(self, mouse_pos, mouse_up, mouse_down):
+        if not self.updater or self in self.updater:
+            self.mouse_over = False
+            self.image = self.button_normal_image
+            if self.rect.collidepoint(mouse_pos):
+                self.mouse_over = True
+                self.image = self.button_over_image
+                if mouse_up:
+                    self.event = True
+                    self.image = self.button_click_image
+
+    def change_state(self, text):
+        if text != "":
+            img0 = self.base_image0.copy()
+            img1 = self.base_image1.copy()
+            img2 = self.base_image2.copy()
+            self.images = [img0, img1, img2]
+            text_surface = self.font.render(text, True, (0, 0, 0))
+            text_rect = text_surface.get_rect(center=self.images[0].get_rect().center)
+            self.images[0].blit(text_surface, text_rect)
+            self.images[1].blit(text_surface, text_rect)
+            self.images[2].blit(text_surface, text_rect)
+            self.button_normal_image = self.images[0].copy()
+            self.button_over_image = self.images[1].copy()
+            self.button_click_image = self.images[2].copy()
+        self.rect = self.images[0].get_rect(center=self.pos)
+        self.event = False
+
+
+class BrownMenuButton(pygame.sprite.Sprite):
 
     @classmethod
     @lru_cache
@@ -290,69 +345,42 @@ class MenuButton(pygame.sprite.Sprite):
         hover_button = normal_button.copy()
         pygame.draw.rect(hover_button, "#CCFF77", hover_button.get_rect(), 1)
 
-        # TODO: make click button (last element in return tuple)
-
-        return (normal_button, hover_button, normal_button)
+        return (normal_button, hover_button)
 
 
-    def __init__(self, screen_scale, images, pos, updater=None, text="", size=28, layer=1, width=200, parent=None):
+    def __init__(self, pos, text="", width=200, parent=None):
+        pygame.sprite.Sprite.__init__(self)
+        self.pos = pos
         self.parent = parent
         images = self.make_buttons(width=width)
-        self._layer = layer
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        self.pos = pos
         self.button_normal_image = images[0].copy()
         self.button_over_image = images[1].copy()
-        self.button_click_image = images[2].copy()
-        self.updater = updater
-        self.text = text
-        self.font = pygame.font.SysFont("ubuntumono", int(size * screen_scale[1]*0.6))
-        self.base_image0 = self.button_normal_image.copy()
-        self.base_image1 = self.button_over_image.copy()
-        self.base_image2 = self.button_click_image.copy()
+        font = pygame.font.SysFont("ubuntumono", 17)
 
-        if text != "":  # draw text into the button images
-            text_surface = self.font.render(self.text, True, (200, 180, 200))
-            text_rect = text_surface.get_rect(center=self.button_normal_image.get_rect().center)
-            self.button_normal_image.blit(text_surface, text_rect)
-            self.button_over_image.blit(text_surface, text_rect)
-            self.button_click_image.blit(text_surface, text_rect)
+        # draw text into the button images
+        text_surface = font.render(text, True, (200, 180, 200))
+        text_rect = text_surface.get_rect(center=self.button_normal_image.get_rect().center)
+        self.button_normal_image.blit(text_surface, text_rect)
+        self.button_over_image.blit(text_surface, text_rect)
 
         self.image = self.button_normal_image
         self.rect = self.button_normal_image.get_rect(center=self.pos)
         self.event = False
 
-
     def update(self, mouse_pos, mouse_up, mouse_down):
-        if not self.updater or self in self.updater:
-            self.mouse_over = False
-            self.image = self.button_normal_image
-            if self.rect.collidepoint(mouse_pos):
-                self.mouse_over = True
-                self.image = self.button_over_image
-                if mouse_up:
-                    self.event = True
-                    self.image = self.button_click_image
+        self.mouse_over = False
+        self.image = self.button_normal_image
+        if self.rect.collidepoint(mouse_pos):
+            self.mouse_over = True
+            self.image = self.button_over_image
+            if mouse_up:
+                self.event = True
        
         if self.parent is not None:
             self.rect = pygame.rect.Rect(*[self.parent.get_rect()[i]-self.image.get_size()[i]//2+(self.pos[i]+1)*self.parent.get_rect()[i+2]*0.5 for i in range(2) ], *self.image.get_size())
 
     def change_state(self, text):
-        if text != "":
-            img0 = self.base_image0.copy()
-            img1 = self.base_image1.copy()
-            img2 = self.base_image2.copy()
-            self.images = [img0, img1, img2]
-            text_surface = self.font.render(text, True, (0, 0, 0))
-            text_rect = text_surface.get_rect(center=self.images[0].get_rect().center)
-            self.images[0].blit(text_surface, text_rect)
-            self.images[1].blit(text_surface, text_rect)
-            self.images[2].blit(text_surface, text_rect)
-            self.button_normal_image = self.images[0].copy()
-            self.button_over_image = self.images[1].copy()
-            self.button_click_image = self.images[2].copy()
-        self.rect = self.images[0].get_rect(center=self.pos)
-        self.event = False
+        pass
 
 
 class OptionMenuText(pygame.sprite.Sprite):
@@ -1027,7 +1055,9 @@ class BoxUI(pygame.sprite.Sprite):
         self.parent = parent
         self.size = size
         self.calculate_rect()
-        self.image = pygame.Surface((1,1),pygame.SRCALPHA) # box is not visible atm
+        self.image = pygame.Surface(size)
+        self.image.fill("#222a2e")
+        self._layer = -1 # NOTE: not sure if this is good since underscore indicate it is a private variable but it works for now
 
     def get_rect(self):
         return self.rect

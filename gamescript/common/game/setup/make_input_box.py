@@ -12,7 +12,7 @@ def make_input_box(main_dir, screen_scale, screen_rect, image_list):
     input_ok_button = menu.MenuButton(screen_scale, image_list,
                                       (input_ui.rect.midleft[0] + (image_list[0].get_width() / 1.2),
                                        input_ui.rect.midleft[1] + (image_list[0].get_height() / 1.3)),
-                                      text="Confirm", layer=31, width=100)
+                                      text="Confirm", layer=31)
     input_close_button = menu.MenuButton(screen_scale, image_list,
                                          (input_ui.rect.centerx,
                                           input_ui.rect.midleft[1] + (image_list[0].get_height() / 1.3)),
@@ -20,7 +20,7 @@ def make_input_box(main_dir, screen_scale, screen_rect, image_list):
     input_cancel_button = menu.MenuButton(screen_scale, image_list,
                                           (input_ui.rect.midright[0] - (image_list[0].get_width() / 1.2),
                                            input_ui.rect.midright[1] + (image_list[0].get_height() / 1.3)),
-                                          text="Cancel", layer=31, width=100)
+                                          text="Cancel", layer=31)
 
     input_box = menu.InputBox(screen_scale, input_ui.rect.center, input_ui.image.get_width())  # user text input box
 

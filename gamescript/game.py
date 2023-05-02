@@ -357,21 +357,15 @@ class Game:
         image_list = load_base_button(self.main_dir, self.screen_scale)
 
 
-        mmbb = main_menu_buttons_box = menu.BoxUI((400,400), parent=self.screen)
+        main_menu_buttons_box = menu.BoxUI((400,500), parent=self.screen)
 
-        f = 0.76
-        self.preset_map_button = menu.MenuButton(self.screen_scale, image_list, (0,-1*f),
-                                                 self.main_ui_updater, text="Preset Map", parent= main_menu_buttons_box)
-        self.custom_map_button = menu.MenuButton(self.screen_scale, image_list,(0,-0.6*f),
-                                                 self.main_ui_updater, text="Custom Map", parent= main_menu_buttons_box)
-        self.game_edit_button = menu.MenuButton(self.screen_scale, image_list,(0,-0.2*f),
-                                                self.main_ui_updater, text="Editor", parent=main_menu_buttons_box)
-        self.lore_button = menu.MenuButton(self.screen_scale, image_list,(0,0.2*f),
-                                           self.main_ui_updater, text="Encyclopedia", parent=main_menu_buttons_box)
-        self.option_button = menu.MenuButton(self.screen_scale, image_list, (0,0.6*f),
-                                             self.main_ui_updater, text="Option", parent=main_menu_buttons_box)
-        self.quit_button = menu.MenuButton(self.screen_scale, image_list, (0,1*f),
-                                           self.main_ui_updater, text="Quit", parent=main_menu_buttons_box)
+        f = 0.68
+        self.preset_map_button = menu.BrownMenuButton((0,-1*f),"Preset Map", parent= main_menu_buttons_box)
+        self.custom_map_button = menu.BrownMenuButton((0,-0.6*f),"Custom Map", parent= main_menu_buttons_box)
+        self.game_edit_button = menu.BrownMenuButton((0,-0.2*f),"Editor", parent=main_menu_buttons_box)
+        self.lore_button = menu.BrownMenuButton((0,0.2*f),"Encyclopedia", parent=main_menu_buttons_box)
+        self.option_button = menu.BrownMenuButton((0,0.6*f), "Option", parent=main_menu_buttons_box)
+        self.quit_button = menu.BrownMenuButton((0,1*f),text="Quit", parent=main_menu_buttons_box)
         self.mainmenu_button = (self.preset_map_button, self.custom_map_button, self.game_edit_button,
                                 self.lore_button, self.option_button, self.quit_button, main_menu_buttons_box)
 
@@ -958,10 +952,8 @@ class Game:
             self.cursor.update(self.mouse_pos)
             # ^ End user input
 
-            # disable background for now...
-            # self.screen.blit(self.background, (0, 0))  # blit background over instead of clear() to reset screen
+            self.screen.blit(self.background, (0, 0))  # blit background over instead of clear() to reset screen
 
-            self.screen.fill("#222a2e")
 
             if self.input_popup[
                 0]:  # currently, have input text pop up on screen, stop everything else until done
