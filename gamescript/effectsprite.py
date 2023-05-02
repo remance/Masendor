@@ -1,12 +1,12 @@
 from random import choice
 
-import pygame
+from pygame import sprite, mixer
 
 from gamescript.common import utility
 from gamescript.common.damagesprite import play_animation, adjust_sprite
 
 
-class EffectSprite(pygame.sprite.Sprite):
+class EffectSprite(sprite.Sprite):
     effect_sprite_pool = None
     effect_animation_pool = None
     effect_list = None
@@ -21,9 +21,9 @@ class EffectSprite(pygame.sprite.Sprite):
     adjust_sprite = adjust_sprite.adjust_sprite
 
     def __init__(self, attacker, base_pos, pos, target, sprite_type, sprite_name):
-        """Effect sprite that does not affect subunit in any way"""
+        """Effect sprite that does not affect unit in any way"""
         self._layer = 10000000
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        sprite.Sprite.__init__(self, self.containers)
 
         self.show_frame = 0
         self.frame_timer = 0
@@ -50,7 +50,7 @@ class EffectSprite(pygame.sprite.Sprite):
             self.travel_sound_distance = self.effect_list[sprite_type]["Sound Distance"]
             self.travel_shake_power = self.effect_list[sprite_type]["Shake Power"]
             self.sound_effect_name = choice(self.sound_effect_pool[sprite_type])
-            self.sound_duration = pygame.mixer.Sound(self.sound_effect_name).get_length()
+            self.sound_duration = mixer.Sound(self.sound_effect_name).get_length()
             self.sound_timer = 0  # start playing right away when first update
 
         if "(team)" in sprite_type:
@@ -64,7 +64,7 @@ class EffectSprite(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect(center=self.pos)
 
-    def update(self, subunit_list, dt):
+    def update(self, unit_list, dt):
         done, just_start = self.play_animation(0.1, dt)
 
         if self.sound_effect_name and self.sound_timer < self.sound_duration:

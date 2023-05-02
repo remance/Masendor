@@ -11,7 +11,7 @@ def setup_battle_ui(self, change):
 
         self.battle_scale_ui.change_pos(self.time_ui.rect.bottomleft)
 
-        if self.player_char:
+        if self.player_unit:
             change_group(self.command_ui, self.battle_ui_updater, change)
 
             add_skill_icon(self)
@@ -22,10 +22,10 @@ def setup_battle_ui(self, change):
 def add_skill_icon(self):
     for icon_index, icon in enumerate(self.skill_icon):  # reset skill icon
         icon.game_id = None
-        for index, skill in enumerate(self.player_char.input_skill):
+        for index, skill in enumerate(self.player_unit.input_skill):
             if index == icon_index:
                 icon.game_id = skill
-                icon.name = self.player_char.input_skill[skill]["Name"]
+                icon.name = self.player_unit.input_skill[skill]["Name"]
                 icon.icon_type = "skill"
                 break
         if not icon.game_id:  # remove from updater if no skill for this icon

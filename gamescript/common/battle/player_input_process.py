@@ -8,18 +8,18 @@ def player_input_process(self):
                     self.event_log.current_start_row = new_row
                     self.event_log.recreate_image()
 
-    if self.player_char and self.player_char.alive:
+    if self.player_unit and self.player_unit.alive:
         if self.player_key_press["Toggle Run"]:
-            if self.player_char.toggle_run:
-                self.player_char.toggle_run = False
+            if self.player_unit.toggle_run:
+                self.player_unit.toggle_run = False
             else:
-                self.player_char.toggle_run = True
+                self.player_unit.toggle_run = True
         if self.player_key_press["Auto Move"]:
-            if self.player_char.auto_move:
-                self.player_char.auto_move = False
+            if self.player_unit.auto_move:
+                self.player_unit.auto_move = False
             else:
-                self.player_char.auto_move = True
-        self.player_char.player_input(self.command_cursor_pos)
+                self.player_unit.auto_move = True
+        self.player_unit.player_input(self.command_cursor_pos)
 
     if self.player_key_press["Order Menu"]:  # Open unit command wheel ui
         self.battle_ui_updater.add(self.wheel_ui)

@@ -11,6 +11,7 @@
 *.tar
 *.zip
 *.xcf
+*.pyc
 
 # Logs and databases #
 ######################

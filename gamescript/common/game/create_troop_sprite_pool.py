@@ -25,7 +25,7 @@ def create_troop_sprite_pool(self, who_todo, preview=False, specific_preview=Non
 
     sprite_pool_hash = ""
     if not preview:
-        sprite_pool_hash = md5_dir(os.path.join(self.main_dir, "data", "sprite", "subunit"))
+        sprite_pool_hash = md5_dir(os.path.join(self.module_dir, "sprite", "unit"))
 
     pool = inner_create_troop_sprite_pool(self, who_todo, sprite_pool_hash, preview=preview,
                                           specific_preview=specific_preview, max_preview_size=max_preview_size)
@@ -47,7 +47,7 @@ def inner_create_troop_sprite_pool(self, who_todo, sprite_pool_hash, preview=Fal
         jobs = []
         new_who_todo = []
         sprite_id_list = tuple(set([value["Sprite ID"] for value in who_todo.values()]))
-        for sprite_id in sprite_id_list:  # all subunit with same sprite id must be done by the same pool
+        for sprite_id in sprite_id_list:  # all unit with same sprite id must be done by the same pool
             new_who_todo.append({key: value for key, value in who_todo.items() if value["Sprite ID"] == sprite_id})
         while len(new_who_todo) > 5:  # merge the smallest list together until only 5 remains
             least_len = min(new_who_todo, key=len)
@@ -77,9 +77,9 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                   weapon_attack_type_list, animation_sprite_pool, status_animation_pool, sprite_pool_hash,
                   specific_preview=None):
     """
-    Create subunit troop sprite
+    Create unit troop sprite
     :param self: Battle object
-    :param who_todo: List of subunit data
+    :param who_todo: List of unit data
     :param preview: Boolean indicating whether to create full set of animation for battle or just one for preview
     :param max_preview_size: Size of preview sprite if preview mode
     :param weapon_list: Weapon data
@@ -87,6 +87,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
     :param weapon_attack_type_list: Weapon attack action data
     :param animation_sprite_pool: Animation pool data
     :param status_animation_pool: Status animation pool data
+    :param sprite_pool_hash: Hash of entire sprite pool
     :param specific_preview: list array containing animation name, frame number and direction of either l_side or r_side for flipping
     """
 
@@ -168,10 +169,10 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                                      weapon_list[secondary_sub_weapon]["Attack"])]
 
         if preview:  # only create random right side sprite for preview in lorebook
-            animation = [this_animation for this_animation in self.subunit_animation_data[race] if final_race_name in
+            animation = [this_animation for this_animation in self.unit_animation_data[race] if final_race_name in
                          this_animation]
-            if char_name in self.subunit_animation_data:
-                named_animation = [this_animation for this_animation in self.subunit_animation_data[char_name] if
+            if char_name in self.unit_animation_data:
+                named_animation = [this_animation for this_animation in self.unit_animation_data[char_name] if
                                    final_char_name in this_animation]
                 for this_animation in named_animation:
                     replaced_animation = this_animation.replace(char_name, race)
@@ -219,10 +220,10 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                 race_type = race
 
             if specific_preview:
-                frame_data = self.subunit_animation_data[race_type][animation][specific_preview[1]]
+                frame_data = self.unit_animation_data[race_type][animation][specific_preview[1]]
             else:
-                frame_data = choice(self.subunit_animation_data[race_type][animation])  # random frame
-            animation_property = self.subunit_animation_data[race_type][animation][0]["animation_property"].copy()
+                frame_data = choice(self.unit_animation_data[race_type][animation])  # random frame
+            animation_property = self.unit_animation_data[race_type][animation][0]["animation_property"].copy()
 
             if type(subunit_id) is int:
                 sprite_data = self.troop_data.troop_sprite_list[sprite_id]
@@ -230,7 +231,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                 sprite_data = self.leader_data.leader_sprite_list[sprite_id]
 
             idle_animation_name = final_race_name + weapon_common_action[0][0] + "_Idle"
-            if idle_animation_name not in self.subunit_animation_data[race]:  # try any
+            if idle_animation_name not in self.unit_animation_data[race]:  # try any
                 idle_animation_name = final_race_name + "any_Idle"
 
             sprite_dict = self.create_troop_sprite(animation, this_subunit["Size"], frame_data,
@@ -239,7 +240,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                                                     (self.troop_data.weapon_list[primary_main_weapon]["Hand"],
                                                      self.troop_data.weapon_list[primary_sub_weapon]["Hand"])),
                                                    armour_name,
-                                                   self.subunit_animation_data[race][idle_animation_name][0], False)
+                                                   self.unit_animation_data[race][idle_animation_name][0], False)
             sprite_pic, center_offset = crop_sprite(sprite_dict["sprite"])
 
             if max_preview_size:
@@ -291,7 +292,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
             if weapon_key[1] not in next_level:  # sub weapon
                 next_level[weapon_key[1]] = {}
 
-            animation_list = list(self.subunit_animation_data[race].keys())
+            animation_list = list(self.unit_animation_data[race].keys())
             animation_list = [item for item in animation_list if "_Default" in item] + \
                              [item for item in animation_list if "_Default" not in item]  # move default to first
             animation_list = [this_animation for this_animation in animation_list if "_Preview" not in
@@ -329,8 +330,8 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
 
             animation_list = list(set(animation_list))
 
-            if char_name in self.subunit_animation_data:
-                named_animation = [this_animation for this_animation in self.subunit_animation_data[char_name] if
+            if char_name in self.unit_animation_data:
+                named_animation = [this_animation for this_animation in self.unit_animation_data[char_name] if
                                    final_char_name in this_animation]
                 for this_animation in named_animation:
                     replaced_animation = this_animation.replace(char_name, race)
@@ -347,7 +348,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                     race_type = char_name
                 else:
                     race_type = race
-                animation_property = self.subunit_animation_data[race_type][animation][0]["animation_property"].copy()
+                animation_property = self.unit_animation_data[race_type][animation][0]["animation_property"].copy()
                 for weapon_set_index, weapon_set in enumerate(
                         subunit_weapon_list):  # create animation for each weapon set
                     current_in_pool = next_level[weapon_key[weapon_set_index]]
@@ -359,10 +360,10 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                         name_input = animation + "/" + str(weapon_set_index)
 
                         try:  # get any animation for checking weapon layer
-                            idle_animation = self.subunit_animation_data[race][
+                            idle_animation = self.unit_animation_data[race][
                                 final_race_name + weapon_common_action[weapon_set_index][0] + "_Idle"]
                         except KeyError:  # try any
-                            idle_animation = self.subunit_animation_data[race][
+                            idle_animation = self.unit_animation_data[race][
                                 final_race_name + "any_Idle"]
 
                         if "_any_" in name_input:  # replace any type to weapon action name for reading later
@@ -419,11 +420,11 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                                     next_level[weapon_key[1]][final_name] = {}
                             else:  # animation with this name exist, check if data match
                                 string_args = str((sprite_data, hand_weapon_list[weapon_set_index][weapon_index],
-                                                  weapon_list[hand_weapon_list[weapon_set_index][weapon_index]],
-                                                  self.subunit_animation_data[race_type][animation], idle_animation,
-                                                  sprite_pool_hash))
+                                                   weapon_list[hand_weapon_list[weapon_set_index][weapon_index]],
+                                                   self.unit_animation_data[race_type][animation], idle_animation,
+                                                   sprite_pool_hash))
                                 if same_both_weapon_set:
-                                    string_args = str((sprite_data, self.subunit_animation_data[race_type][animation],
+                                    string_args = str((sprite_data, self.unit_animation_data[race_type][animation],
                                                        sprite_pool_hash))
                                 md5_string = hashlib.md5(string_args.encode()).hexdigest()
                                 if current_in_pool[final_name]["data"] == md5_string:  # data matched
@@ -435,7 +436,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                             new_direction = "r_side"
                             opposite_direction = "l_side"
                             current_in_pool[final_name]["frame_number"] = len(
-                                self.subunit_animation_data[race_type][animation]) - 1
+                                self.unit_animation_data[race_type][animation]) - 1
 
                             current_in_pool[final_name][new_direction] = {}
                             if same_both_weapon_set:
@@ -447,7 +448,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                                 next_level[weapon_key[1]][final_name][opposite_direction] = {}
 
                             for frame_num, frame_data in enumerate(
-                                    self.subunit_animation_data[race_type][animation]):
+                                    self.unit_animation_data[race_type][animation]):
 
                                 if both_main_sub_weapon:
                                     for key in frame_data:
@@ -529,16 +530,16 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                                         "center_offset": (-center_offset[0], center_offset[1])}
 
                             if same_both_weapon_set:
-                                string_args = str((sprite_data, self.subunit_animation_data[race_type][animation],
+                                string_args = str((sprite_data, self.unit_animation_data[race_type][animation],
                                                    sprite_pool_hash))
                                 md5_string = hashlib.md5(string_args.encode()).hexdigest()
                                 current_in_pool[final_name]["data"] = md5_string
                                 next_level[weapon_key[1]][final_name]["data"] = string_args
                             else:
                                 string_args = str((sprite_data, hand_weapon_list[weapon_set_index][weapon_index],
-                                                  weapon_list[hand_weapon_list[weapon_set_index][weapon_index]],
-                                                  self.subunit_animation_data[race_type][animation], idle_animation,
-                                                  sprite_pool_hash))
+                                                   weapon_list[hand_weapon_list[weapon_set_index][weapon_index]],
+                                                   self.unit_animation_data[race_type][animation], idle_animation,
+                                                   sprite_pool_hash))
                                 md5_string = hashlib.md5(string_args.encode()).hexdigest()
                                 current_in_pool[final_name]["data"] = md5_string
 

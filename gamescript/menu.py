@@ -1,12 +1,20 @@
 import networkx as nx
 import pygame
-import pygame.freetype
-import pygame.freetype
 import pygame.transform
 import pyperclip
 from functools import lru_cache
 
 from gamescript.common import utility
+
+
+class MenuUI(pygame.sprite.Sprite):
+    def __init__(self):
+        """
+        Parent class for all menu user interface
+        """
+        from gamescript.game import Game
+        self.screen_scale = Game.screen_scale
+        pygame.sprite.Sprite.__init__(self)
 
 
 class Cursor(pygame.sprite.Sprite):
@@ -620,7 +628,7 @@ class ArmyStat(pygame.sprite.Sprite):
                                 (self.image.get_width() / 4.5, self.image.get_height() / 1.8),  # infantry range
                                 (self.image.get_width() / 1.4, self.image.get_height() / 3),  # cav melee
                                 (self.image.get_width() / 1.4, self.image.get_height() / 1.8),  # cav range
-                                (self.image.get_width() / 3, self.image.get_height() / 1.32))  # total subunit
+                                (self.image.get_width() / 3, self.image.get_height() / 1.32))  # total unit number
 
         self.leader_text = ("E", "E+", "D", "D+", "C", "C+", "B", "B+", "A", "A+", "S")
 
@@ -645,14 +653,15 @@ class ArmyStat(pygame.sprite.Sprite):
 
     def add_preview_model(self, model, coa):
         self.image = self.base_image.copy()
-        rect = coa.get_rect(topleft=(20 * self.screen_scale[0], 20 * self.screen_scale[1]))
-        self.image.blit(pygame.transform.smoothscale(coa, (200 * self.screen_scale[0],
-                                                           200 * self.screen_scale[1])), rect)
+        new_coa = pygame.transform.smoothscale(coa, (200 * self.screen_scale[0],
+                                                     200 * self.screen_scale[1]))
+        rect = new_coa.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
+        self.image.blit(new_coa, rect)
         rect = model.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
         self.image.blit(model, rect)
 
     def add_leader_stat(self, who, leader_data, troop_data):
-        """For character select screen"""
+        """For unit select screen"""
         self.image = self.base_image.copy()
         stat = leader_data.leader_list[who.troop_id]
         leader_name = who.name
@@ -863,7 +872,7 @@ class MapPreview(pygame.sprite.Sprite):
         self.map_scale_width = 1
         self.map_scale_height = 1
 
-        leader_dot = pygame.Surface((10 * self.screen_scale[0], 10 * self.screen_scale[1]))  # dot for team subunit
+        leader_dot = pygame.Surface((10 * self.screen_scale[0], 10 * self.screen_scale[1]))  # dot for team unit
         leader_dot.fill((0, 0, 0))  # black corner
         leader_colour_dot = pygame.Surface((8 * self.screen_scale[0], 8 * self.screen_scale[1]))
         rect = leader_dot.get_rect(topleft=(2 * self.screen_scale[0], 2 * self.screen_scale[1]))
@@ -992,15 +1001,15 @@ class OrgChart(pygame.sprite.Sprite):
                                          pos=pos, parent=root)
         return pos
 
-    def add_chart(self, unit_data, preview_char, selected=None):
+    def add_chart(self, unit_data, preview_unit, selected=None):
         self.image = self.base_image.copy()
         self.node_rect = {}
 
         if selected is not None:
             graph_input = nx.Graph()
 
-            edge_list = [(subunit["Temp Leader"], index) for index, subunit in enumerate(unit_data) if
-                         type(subunit["Temp Leader"]) is int]
+            edge_list = [(unit["Temp Leader"], index) for index, unit in enumerate(unit_data) if
+                         type(unit["Temp Leader"]) is int]
             try:
                 graph_input.add_edges_from(edge_list)
                 pos = self.hierarchy_pos(graph_input, root=selected, width=self.image.get_width(),
@@ -1011,21 +1020,21 @@ class OrgChart(pygame.sprite.Sprite):
                 pos = {selected: (self.image.get_width() / 2, self.image.get_width() / 2)}
                 image_size = (self.image.get_width() / 2, self.image.get_height() / 2)
 
-            for subunit in pos:
-                for char_index, icon in enumerate(preview_char):
-                    if char_index == subunit:
+            for unit in pos:
+                for unit_index, icon in enumerate(preview_unit):
+                    if unit_index == unit:
                         image = pygame.transform.smoothscale(icon.portrait, image_size)
-                        self.node_rect[subunit] = image.get_rect(center=pos[subunit])
-                        self.image.blit(image, self.node_rect[subunit])
+                        self.node_rect[unit] = image.get_rect(center=pos[unit])
+                        self.image.blit(image, self.node_rect[unit])
                         break
 
-            for subunit in pos:
-                if type(unit_data[subunit]["Temp Leader"]) is int:
+            for unit in pos:
+                if type(unit_data[unit]["Temp Leader"]) is int:
                     line_width = int(self.image.get_width() / 100)
                     if line_width < 1:
                         line_width = 1
-                    pygame.draw.line(self.image, (0, 0, 0), self.node_rect[unit_data[subunit]["Temp Leader"]].midbottom,
-                                     self.node_rect[subunit].midtop, width=line_width)
+                    pygame.draw.line(self.image, (0, 0, 0), self.node_rect[unit_data[unit]["Temp Leader"]].midbottom,
+                                     self.node_rect[unit].midtop, width=line_width)
 
 
 class SelectedPresetBorder(pygame.sprite.Sprite):

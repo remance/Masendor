@@ -1,5 +1,4 @@
 import pygame
-import pygame.freetype
 
 
 class TextPopup(pygame.sprite.Sprite):

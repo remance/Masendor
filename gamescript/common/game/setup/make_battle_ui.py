@@ -3,7 +3,7 @@ import pygame
 from gamescript import battleui
 
 
-def make_battle_ui(battle_ui_image, battle_icon_image, team_colour, screen_size, screen_scale):
+def make_battle_ui(battle_ui_image, team_colour, screen_size, screen_scale):
     time_ui = battleui.TimeUI(battle_ui_image["timebar"])
     time_number = battleui.Timer(time_ui.rect.topleft)  # time number on time ui
 

@@ -19,9 +19,9 @@ def menu_game_editor(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mous
         self.current_list_show = "troop"
         self.unit_preset_name = ""
 
-        self.subunit_in_card = None  # current sub-subunit showing in subunit card
+        self.subunit_in_card = None  # current sub-unit showing in unit card
 
-        self.main.create_team_coa([0], ui_class=self.battle_ui_updater, one_team=True,
+        self.game.create_team_coa([0], ui_class=self.battle_ui_updater, one_team=True,
                                   team1_set_pos=(self.editor_troop_list_box.rect.midleft[0] - int(
                                       (300 * self.screen_scale[0]) / 2),
                                                  self.editor_troop_list_box.rect.midleft[

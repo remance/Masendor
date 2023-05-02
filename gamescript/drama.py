@@ -1,5 +1,4 @@
 import pygame
-import pygame.freetype
 
 
 class TextDrama(pygame.sprite.Sprite):

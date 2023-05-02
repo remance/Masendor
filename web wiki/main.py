@@ -60,7 +60,7 @@ class MinifiedGame(Game):
             self.team_colour
         )
 
-        self.subunit_animation_data = self.troop_animation.subunit_animation_data
+        self.unit_animation_data = self.troop_animation.unit_animation_data
         self.gen_body_sprite_pool = self.troop_animation.gen_body_sprite_pool
         self.gen_armour_sprite_pool = self.troop_animation.gen_armour_sprite_pool
         self.colour_list = self.troop_animation.colour_list
@@ -93,18 +93,18 @@ leader_portrait = game.leader_data.images
 leader_class = game.leader_data.leader_class
 
 
-def get_subunit_icon(subunit_id, scale, icon_size=None):
-    """get a icon for a specific subunit"""
+def get_unit_icon(unit_id, scale, icon_size=None):
+    """get a icon for a specific unit"""
 
-    md5_input = "{0}${1}${2}".format(subunit_id, scale, icon_size)
+    md5_input = "{0}${1}${2}".format(unit_id, scale, icon_size)
     hex_hash = hashlib.md5(md5_input.encode()).hexdigest()
 
-    subunit_icon_server_path = os.path.join(main_dir, "web wiki", "static", "{0}.png".format(hex_hash))
+    unit_icon_server_path = os.path.join(main_dir, "web wiki", "static", "{0}.png".format(hex_hash))
 
-    if not os.path.isfile(subunit_icon_server_path):
+    if not os.path.isfile(unit_icon_server_path):
 
-        subunits = (game.troop_data.troop_list | game.leader_data.leader_list)
-        who_todo = {key: value for key, value in subunits.items() if key == subunit_id}
+        units = (game.troop_data.troop_list | game.leader_data.leader_list)
+        who_todo = {key: value for key, value in units.items() if key == unit_id}
 
         # make idle animation, first frame, right side (change to l_side for left), non-specific so it can make for any troops
         try:
@@ -115,12 +115,12 @@ def get_subunit_icon(subunit_id, scale, icon_size=None):
         except TypeError:
             return None
 
-        sprite = preview_sprite_pool[subunit_id]["sprite"]
+        sprite = preview_sprite_pool[unit_id]["sprite"]
         icon_size = sprite.get_size() if icon_size is None else icon_size
         icon = pygame.Surface(icon_size, pygame.SRCALPHA)
         icon.blit(sprite, (0, 0))
 
-        pygame.image.save(icon, subunit_icon_server_path)
+        pygame.image.save(icon, unit_icon_server_path)
 
     return "/static/{0}.png".format(hex_hash)
 
@@ -305,8 +305,8 @@ def troops():
 
         troops.append(troop)
 
-        subunit_icon = get_subunit_icon(k, 35, (36, 36))
-        troop['icon'] = [subunit_icon, k]
+        unit_icon = get_unit_icon(k, 35, (36, 36))
+        troop['icon'] = [unit_icon, k]
 
     return render_template("troops.j2", troops=troops)
 
@@ -363,7 +363,7 @@ def leaders(leader_id=None):
         pygame.image.save(image, leader_image_server_path)
 
         leader_name = data["Name"]
-        sprite_icon = get_subunit_icon(leader_id, 140, None)
+        sprite_icon = get_unit_icon(leader_id, 140, None)
 
         return render_template(
             "leader.j2",
@@ -480,8 +480,8 @@ def leaders(leader_id=None):
 
         leaders.append(leader)
 
-        subunit_icon = get_subunit_icon(k, 44)
-        leader['icon'] = [subunit_icon, k]
+        unit_icon = get_unit_icon(k, 44)
+        leader['icon'] = [unit_icon, k]
 
     return render_template("leaders.j2", leaders=leaders, header=header)
 

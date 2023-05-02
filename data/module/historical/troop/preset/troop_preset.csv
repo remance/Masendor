@@ -102,10 +102,10 @@
 101,,,,,,,,,,,,,,,,,,,,,,,,,
 102,,,1,,,,,,,,,,,,,,,,,,,,"Renaissance Knight",,
 103,,,1,,,,,,,,,,,,,,,,,,,,"Renaissance Knight",,
-104,"Medieval Crossbow Mercenary",10,1,,,,,15,25,60,100,19,130,40,130,"Light Infantry","27,3",,"13,3",,"2,3",,"Renaissance Mercenary",,3
-105,"Medieval Light Mercenary",10,1,,,,,55,45,0,100,19,130,40,130,"Light Infantry","13,3","41,3",,,"2,3",,"Renaissance Mercenary",,1
-106,"Medieval Heavy Mercenary",10,1,,,,,50,50,0,100,19,130,45,130,"Heavy Infantry","14,3",,,,"12,2",,"Renaissance Mercenary",,1
-107,"Medieval Arquebus Mercenary",10,1,,,,,20,30,50,100,19,130,40,130,"Light Infantry",,,,,"2,3",,"Renaissance Mercenary",,3
+104,"Renaissance Crossbow Mercenary",10,1,,,,,15,25,60,100,19,130,40,130,"Light Infantry","27,3",,"13,3",,"2,3",,"Renaissance Mercenary",,3
+105,"Renaissance Light Mercenary",10,1,,,,,55,45,0,100,19,130,40,130,"Light Infantry","13,3","41,3",,,"2,3",,"Renaissance Mercenary",,1
+106,"Renaissance Heavy Mercenary",10,1,,,,,50,50,0,100,19,130,45,130,"Heavy Infantry","14,3",,,,"12,2",,"Renaissance Mercenary",,1
+107,"Renaissance Arquebus Mercenary",10,1,,,,,20,30,50,100,19,130,40,130,"Light Infantry",,,,,"2,3",,"Renaissance Mercenary",,3
 108,,,,,,,,,,,,,,,,,,,,,,,,,
 109,,,,,,,,,,,,,,,,,,,,,,,,,
 110,,,,,,,,,,,,,,,,,,,,,,,,,

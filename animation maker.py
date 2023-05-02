@@ -14,8 +14,12 @@ from PIL import Image, ImageFilter, ImageEnhance
 from gamescript import datastat, menu, battleui, popup
 from gamescript.common import utility
 
+csv_read = utility.csv_read
+
 main_dir = os.path.split(os.path.abspath(__file__))[0]
-current_dir = main_dir + "/animation maker"  # animation maker folder
+main_data_dir = os.path.join(main_dir, "data")
+current_dir = os.path.join(main_dir, "animation maker")  # animation maker folder
+current_data_dir = os.path.join(main_dir, "animation maker", "data")  # animation maker folder
 sys.path.insert(1, current_dir)
 
 from script import colour, listpopup, pool  # keep here as it need to get sys path insert
@@ -49,6 +53,9 @@ pygame.mouse.set_visible(True)  # set mouse as visible
 config = configparser.ConfigParser()  # initiate config reader
 config.read_file(open(os.path.join(current_dir, "configuration.ini")))  # read config file
 module = int(config["DEFAULT"]["module"])
+module_list = csv_read(main_dir, "module_list.csv", ("data", "module"))  # get module list
+module_folder = str(module_list[module][0]).strip("/").lower()
+module_dir = os.path.join(main_dir, "data", "module", module_folder)
 
 max_person = 4
 max_frame = 22
@@ -203,12 +210,12 @@ def change_frame_process():
 
 
 race_list = []
-for x in Path(os.path.join(main_dir, "data", "sprite", "subunit")).iterdir():  # grab race with sprite
+for x in Path(os.path.join(module_dir, "sprite", "unit")).iterdir():  # grab race with sprite
     if os.path.normpath(x).split(os.sep)[-1] != "weapon":  # exclude weapon as race
         race_list.append(os.path.normpath(x).split(os.sep)[-1])
 
-animation_pool_data, part_name_header = read_anim_data(anim_column_header)
-weapon_joint_list = read_joint_data()
+animation_pool_data, part_name_header = read_anim_data(module_folder, anim_column_header)
+weapon_joint_list = read_joint_data(module_folder)
 
 animation_race = "Human"
 
@@ -238,18 +245,19 @@ for race in race_list:
         try:
             [os.path.split(
                 os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for
-             x in Path(os.path.join(main_dir, "data", "sprite", "subunit", race)).iterdir() if
+             x in Path(os.path.join(module_dir, "sprite", "unit", race)).iterdir() if
              x.is_dir()]  # check if race folder exist
+
             gen_body_sprite_pool[race] = {}
-            part_folder = Path(os.path.join(main_dir, "data", "sprite", "subunit", race))
+            part_folder = Path(os.path.join(module_dir, "sprite", "unit", race))
             subdirectories = [os.path.split(
                 os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):]))
                               for x in part_folder.iterdir() if x.is_dir()]
             for folder in subdirectories:
-                imgs = load_images(main_dir, screen_scale=screen_scale, subfolder=folder)
+                imgs = load_images(module_dir, screen_scale=screen_scale, subfolder=folder)
                 gen_body_sprite_pool[race][folder[-1]] = imgs
-        except FileNotFoundError:
-            pass
+        except FileNotFoundError as b:
+            print(b)
 
 race_list = [race for race in gen_body_sprite_pool if race != ""]  # get only race with existed folder and parts
 
@@ -257,13 +265,13 @@ gen_armour_sprite_pool = {}
 for race in race_list:
     gen_armour_sprite_pool[race] = {}
     try:
-        part_subfolder = Path(os.path.join(main_dir, "data", "sprite", "subunit", race, "armour"))
+        part_subfolder = Path(os.path.join(module_dir, "sprite", "unit", race, "armour"))
         subdirectories = [os.path.split(
             os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for
                           x in part_subfolder.iterdir() if x.is_dir()]
         for subfolder in subdirectories:
             part_subsubfolder = Path(
-                os.path.join(main_dir, "data", "sprite", "subunit", race, "armour", subfolder[-1]))
+                os.path.join(module_dir, "sprite", "unit", race, "armour", subfolder[-1]))
             subsubdirectories = [os.path.split(
                 os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):]))
                                  for x in part_subsubfolder.iterdir() if x.is_dir()]
@@ -273,44 +281,44 @@ for race in race_list:
                 if subsubfolder[-1] not in gen_armour_sprite_pool[race][subfolder[-1]]:
                     gen_armour_sprite_pool[race][subfolder[-1]][subsubfolder[-1]] = {}
                 body_subsubfolder = Path(
-                    os.path.join(main_dir, "data", "sprite", "subunit", race, "armour", subfolder[-1],
+                    os.path.join(module_dir, "sprite", "unit", race, "armour", subfolder[-1],
                                  subsubfolder[-1]))
                 body_directories = [os.path.split(os.sep.join(
                     os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x in
                                     body_subsubfolder.iterdir() if x.is_dir()]
                 for body_folder in body_directories:
-                    imgs = load_images(main_dir, screen_scale=screen_scale,
-                                       subfolder=("sprite", "subunit", race, "armour",
+                    imgs = load_images(module_dir, screen_scale=screen_scale,
+                                       subfolder=("sprite", "unit", race, "armour",
                                                   subfolder[-1], subsubfolder[-1], body_folder[-1]))
                     gen_armour_sprite_pool[race][subfolder[-1]][subsubfolder[-1]][body_folder[-1]] = imgs
-    except FileNotFoundError:
-        pass
+    except FileNotFoundError as b:
+        print(b)
 
 gen_weapon_sprite_pool = {}
-part_folder = Path(os.path.join(main_dir, "data", "sprite", "subunit", "weapon"))
+part_folder = Path(os.path.join(module_dir, "sprite", "unit", "weapon"))
 subdirectories = [
     os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):]))
     for x in part_folder.iterdir() if x.is_dir()]
 for folder in subdirectories:
     gen_weapon_sprite_pool[folder[-1]] = {}
-    part_subfolder = Path(os.path.join(main_dir, "data", "sprite", "subunit", "weapon", folder[-1]))
+    part_subfolder = Path(os.path.join(module_dir, "sprite", "unit", "weapon", folder[-1]))
     subsubdirectories = [os.path.split(
     os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x in
                      part_subfolder.iterdir() if x.is_dir()]
-    imgs = load_images(main_dir, screen_scale=screen_scale,
-                       subfolder=("sprite", "subunit", "weapon", folder[-1],
+    imgs = load_images(module_dir, screen_scale=screen_scale,
+                       subfolder=("sprite", "unit", "weapon", folder[-1],
                                   "common"))  # use only common weapon
 
     gen_weapon_sprite_pool[folder[-1]] = imgs
 
 effect_sprite_pool = {}
-part_folder = Path(os.path.join(main_dir, "data", "sprite", "effect"))
+part_folder = Path(os.path.join(module_dir, "sprite", "effect"))
 subdirectories = [
     os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):]))
     for x in part_folder.iterdir() if x.is_dir()]
 for folder in subdirectories:
-    part_folder = Path(os.path.join(main_dir, "data", "sprite", "effect", folder[-1]))
-    imgs = load_images(main_dir, screen_scale=screen_scale, subfolder=folder)
+    part_folder = Path(os.path.join(module_dir, "sprite", "effect", folder[-1]))
+    imgs = load_images(module_dir, screen_scale=screen_scale, subfolder=folder)
     effect_sprite_pool[folder[-1]] = imgs
 
 
@@ -1719,13 +1727,13 @@ showroom = Showroom(showroom_scale)
 ui.add(showroom)
 
 Joint.images = [
-    pygame.transform.smoothscale(load_image(current_dir, screen_scale, "mainjoint.png", "animation_maker_ui"),
+    pygame.transform.smoothscale(load_image(current_data_dir, screen_scale, "mainjoint.png", "animation_maker_ui"),
                                  (int(20 * screen_scale[0]), int(20 * screen_scale[1]))),
-    pygame.transform.smoothscale(load_image(current_dir, screen_scale, "subjoint.png", "animation_maker_ui"),
+    pygame.transform.smoothscale(load_image(current_data_dir, screen_scale, "subjoint.png", "animation_maker_ui"),
                                  (int(20 * screen_scale[0]), int(20 * screen_scale[1])))]
 joints = pygame.sprite.Group()
 
-image = pygame.transform.smoothscale(load_image(current_dir, screen_scale, "film.png", "animation_maker_ui"),
+image = pygame.transform.smoothscale(load_image(current_data_dir, screen_scale, "film.png", "animation_maker_ui"),
                                      (int(50 * screen_scale[0]), int(50 * screen_scale[1])))
 
 Filmstrip.base_image = image
@@ -1751,7 +1759,7 @@ filmstrip_list += [Filmstrip((image.get_width() * this_index, 42 * screen_scale[
 
 filmstrips.add(*filmstrip_list)
 
-images = load_images(current_dir, screen_scale=screen_scale, subfolder=("animation_maker_ui", "helper_parts"),
+images = load_images(current_data_dir, screen_scale=screen_scale, subfolder=("animation_maker_ui", "helper_parts"),
                      load_order=True)
 body_helper_size = (450 * screen_scale[0], 270 * screen_scale[1])
 effect_helper_size = (450 * screen_scale[0], 270 * screen_scale[1])
@@ -1762,7 +1770,7 @@ p_body_helper = BodyHelper(body_helper_size, (body_helper_size[0] / 2,
                                               screen_size[1] - (body_helper_size[1] / 2)), "p1", list(images.values()))
 helper_list = [p_body_helper, effect_helper]
 
-image = load_image(current_dir, screen_scale, "button.png", "animation_maker_ui")
+image = load_image(current_data_dir, screen_scale, "button.png", "animation_maker_ui")
 image = pygame.transform.smoothscale(image, (int(image.get_width() * screen_scale[1]),
                                              int(image.get_height() * screen_scale[1])))
 
@@ -1929,10 +1937,10 @@ mouth_selector = NameBox((250, image.get_height()), (reset_button.image.get_widt
 # lock_button = SwitchButton(["Lock:OFF","Lock:ON"], image, (reset_button.pos[0] + reset_button.image.get_width() * 2,
 #                                            p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 
-input_ui = menu.InputUI(screen_scale, load_image(main_dir, screen_scale, "input_ui.png", ("ui", "mainmenu_ui")),
+input_ui = menu.InputUI(screen_scale, load_image(main_data_dir, screen_scale, "input_ui.png", ("ui", "mainmenu_ui")),
                         (screen_size[0] / 2, screen_size[1] / 2))  # user text input ui box popup
 
-image_list = load_base_button(main_dir, screen_scale)
+image_list = load_base_button(main_data_dir, screen_scale)
 
 input_ok_button = menu.MenuButton(screen_scale, image_list, pos=(input_ui.rect.midleft[0] + image_list[0].get_width(),
                                                                  input_ui.rect.midleft[1] + image_list[0].get_height()),
@@ -1946,13 +1954,13 @@ input_box = menu.InputBox(screen_scale, input_ui.rect.center, input_ui.image.get
 
 input_ui_popup = (input_ui, input_box, input_ok_button, input_cancel_button)
 
-confirm_ui = menu.InputUI(screen_scale, load_image(main_dir, screen_scale, "input_ui.png", ("ui", "mainmenu_ui")),
+confirm_ui = menu.InputUI(screen_scale, load_image(main_data_dir, screen_scale, "input_ui.png", ("ui", "mainmenu_ui")),
                           (screen_size[0] / 2, screen_size[1] / 2))  # user confirm input ui box popup
 confirm_ui_popup = (confirm_ui, input_ok_button, input_cancel_button)
 
-colour_ui = menu.InputUI(screen_scale, load_image(current_dir, screen_scale, "colour.png", "animation_maker_ui"),
+colour_ui = menu.InputUI(screen_scale, load_image(current_data_dir, screen_scale, "colour.png", "animation_maker_ui"),
                          (screen_size[0] / 2, screen_size[1] / 2))  # user text input ui box popup
-colour_wheel = ColourWheel(load_image(main_dir, screen_scale, "rgb.png", "sprite"),
+colour_wheel = ColourWheel(load_image(main_data_dir, screen_scale, "rgb.png", "sprite"),
                            (colour_ui.pos[0], colour_ui.pos[1] / 1.5))
 colour_input_box = menu.InputBox(screen_scale, (colour_ui.rect.center[0], colour_ui.rect.center[1] * 1.2),
                                  input_ui.image.get_width())  # user text input box
@@ -1967,8 +1975,8 @@ colour_cancel_button = menu.MenuButton(screen_scale, image_list,
                                        text="Cancel", layer=31)
 colour_ui_popup = (colour_ui, colour_wheel, colour_input_box, colour_ok_button, colour_cancel_button)
 
-box_img = load_image(current_dir, screen_scale, "property_box.png", "animation_maker_ui")
-big_box_img = load_image(current_dir, screen_scale, "biglistbox.png", "animation_maker_ui")
+box_img = load_image(current_data_dir, screen_scale, "property_box.png", "animation_maker_ui")
+big_box_img = load_image(current_data_dir, screen_scale, "biglistbox.png", "animation_maker_ui")
 
 menu.ListBox.containers = popup_list_box
 popup_list_box = menu.ListBox(screen_scale, (0, 0), big_box_img, 16)  # popup box need to be in higher layer
@@ -2894,7 +2902,7 @@ while True:
                     change_animation_race(animation_race)
 
             elif text_input_popup[1] == "save_animation":
-                anim_save_pool(current_pool[animation_race], animation_race, anim_column_header)
+                anim_save_pool(current_pool[animation_race], animation_race, anim_column_header, module_folder)
 
             elif text_input_popup[1] == "new_name":
                 old_name = animation_name

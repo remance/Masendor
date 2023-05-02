@@ -192,9 +192,14 @@ Photo studio to make battle screen to your liking. Simply add subunit and effect
 
 ## Game Asset
 
+### Graphic Art:
+
+- Ryu Hill (Mystika Digital Media)
+
 ### Sprite:
 
 - Prototype slash effect sprites by inogNate
+- Weapon sprite by jeet
 
 ### Sound (Obtained and edited):
 
@@ -230,6 +235,7 @@ Photo studio to make battle screen to your liking. Simply add subunit and effect
 - shawarmaje
 - legotrainkid
 - Hamster_Lord
+- Ryu Hill (Mystika Digital Media)
 
 ---------------
 

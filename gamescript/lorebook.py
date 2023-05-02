@@ -1,5 +1,4 @@
 import pygame
-import pygame.freetype
 
 from gamescript.common import utility
 
@@ -40,11 +39,11 @@ class Lorebook(pygame.sprite.Sprite):
     weather_section = 10
     leader_text = ("E", "E+", "D", "D+", "C", "C+", "B", "B+", "A", "A+", "S")
 
-    def __init__(self, main, image, text_size=24):
-        self.main = main
-        self.main_dir = main.main_dir
-        self.screen_rect = main.screen_rect
-        self.screen_scale = main.screen_scale
+    def __init__(self, game, image, text_size=24):
+        self.game = game
+        self.main_dir = game.main_dir
+        self.screen_rect = game.screen_rect
+        self.screen_scale = game.screen_scale
 
         self._layer = 23
         pygame.sprite.Sprite.__init__(self)
@@ -53,7 +52,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.image = image
         self.base_image = self.image.copy()
         self.section = 0
-        self.subsection = 1  # subsection of that section e.g. swordmen subunit in subunit section
+        self.subsection = 1  # subsection of that section
         self.stat_data = None  # for getting the section stat data
         self.lore_data = None  # for getting the section lore data
         self.index_data = None  # for getting old and new subsection index reference
@@ -268,7 +267,7 @@ class Lorebook(pygame.sprite.Sprite):
         elif self.section == self.troop_section:
             try:
                 who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key == self.subsection}
-                preview_sprite_pool, _ = self.main.create_troop_sprite_pool(who_todo, preview=True)
+                preview_sprite_pool, _ = self.game.create_troop_sprite_pool(who_todo, preview=True)
                 self.portrait = preview_sprite_pool[self.subsection]["sprite"]
 
             except KeyError:
@@ -456,7 +455,6 @@ class Lorebook(pygame.sprite.Sprite):
                                             if value in self.troop_data.skill_list:  # only include skill if exist in module
                                                 skill_list += self.troop_data.skill_list[value]["Name"]
                                             create_text = key + ": " + skill_list
-                                            # + ", Base Speed: " + str(speed)  # add subunit speed after
                                         elif 0 not in value:
                                             for this_text in value:
                                                 if this_text in self.troop_data.skill_list:  # only include skill in module
@@ -467,7 +465,7 @@ class Lorebook(pygame.sprite.Sprite):
                                             create_text = ""
                                             pass
 
-                                    elif key == "Role":  # Replace imageid to subunit role in troop section
+                                    elif key == "Role":
                                         # role is not type, it represents troop classification to suggest what it excels
                                         role_list = {0: "None", 1: "Offensive", 2: "Defensive", 3: "Skirmisher",
                                                      4: "Shock", 5: "Support", 6: "Artillery",
