@@ -2,6 +2,7 @@ import networkx as nx
 import pygame
 import pygame.transform
 import pyperclip
+from functools import lru_cache
 
 from gamescript.common import utility
 
@@ -325,6 +326,69 @@ class MenuButton(pygame.sprite.Sprite):
             self.button_click_image = self.images[2].copy()
         self.rect = self.images[0].get_rect(center=self.pos)
         self.event = False
+
+
+class BrownMenuButton(pygame.sprite.Sprite):
+
+    @classmethod
+    @lru_cache
+    def make_buttons(cls, width):
+        from gamescript.game import Game
+        from gamescript.common.utility import load_image
+        game = Game.game
+
+        image = load_image(game.main_dir, (1,1), "new_button.png", ("ui", "mainmenu_ui"))
+        
+        height = image.get_size()[1]
+
+        # normal button
+        normal_button = pygame.Surface((width,height))
+      
+        normal_button.blit(image,(0,0),(0,0,6,height))
+        for x in range(6,width-5):
+            normal_button.blit(image,(x,0),(6,0,1,height))
+        normal_button.blit(image,(width-5,0),(7,0,12,height))
+  
+        # hover button
+        hover_button = normal_button.copy()
+        pygame.draw.rect(hover_button, "#CCFF77", hover_button.get_rect(), 1)
+
+        return (normal_button, hover_button)
+
+
+    def __init__(self, pos, text="", width=200, parent=None):
+        pygame.sprite.Sprite.__init__(self)
+        self.pos = pos
+        self.parent = parent
+        images = self.make_buttons(width=width)
+        self.button_normal_image = images[0].copy()
+        self.button_over_image = images[1].copy()
+        font = pygame.font.SysFont("ubuntumono", 17)
+
+        # draw text into the button images
+        text_surface = font.render(text, True, (200, 180, 200))
+        text_rect = text_surface.get_rect(center=self.button_normal_image.get_rect().center)
+        self.button_normal_image.blit(text_surface, text_rect)
+        self.button_over_image.blit(text_surface, text_rect)
+
+        self.image = self.button_normal_image
+        self.rect = self.button_normal_image.get_rect(center=self.pos)
+        self.event = False
+
+    def update(self, mouse_pos, mouse_up, mouse_down):
+        self.mouse_over = False
+        self.image = self.button_normal_image
+        if self.rect.collidepoint(mouse_pos):
+            self.mouse_over = True
+            self.image = self.button_over_image
+            if mouse_up:
+                self.event = True
+       
+        if self.parent is not None:
+            self.rect = pygame.rect.Rect(*[self.parent.get_rect()[i]-self.image.get_size()[i]//2+(self.pos[i]+1)*self.parent.get_rect()[i+2]*0.5 for i in range(2) ], *self.image.get_size())
+
+    def change_state(self, text):
+        pass
 
 
 class OptionMenuText(pygame.sprite.Sprite):
@@ -991,3 +1055,28 @@ class FilterBox(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = image
         self.rect = self.image.get_rect(topleft=pos)
+
+
+class BoxUI(pygame.sprite.Sprite):
+
+    def __init__(self, size, parent):
+        pygame.sprite.Sprite.__init__(self)
+        self.parent = parent
+        self.size = size
+        self.calculate_rect()
+        self.image = pygame.Surface(size)
+        self.image.fill("#222a2e")
+        self._layer = -1 # NOTE: not sure if this is good since underscore indicate it is a private variable but it works for now
+
+    def get_rect(self):
+        return self.rect
+
+    def calculate_rect(self):
+        # TODO: atm the box is always in center. it should be able to have a position.
+        #       make a common method to caclulate position if have parent. (the expression used in MenuButton is good)
+        x, y = [ self.parent.get_size()[i]//2-(self.size[i]*0.5) for i in range(2) ]
+        self.rect = (x,y,*self.size)
+
+    def update(self, *args):
+        self.calculate_rect() 
+        

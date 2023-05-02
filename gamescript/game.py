@@ -65,6 +65,7 @@ stamina_state_text = {0: "Collapse", 1: "Exhausted", 2: "Severed", 3: "Very Tire
 
 
 class Game:
+    game = None
     screen_scale = (1, 1)
 
     game_version = "0.7.1.6"
@@ -149,6 +150,9 @@ class Game:
                             8: (255, 150, 45), 9: (230, 140, 160), 10: (200, 190, 230)}
 
     def __init__(self, main_dir, error_log):
+
+        Game.game = self
+
         pygame.init()  # Initialize pygame
 
         pygame.mouse.set_visible(False)  # set mouse as not visible, use in-game mouse sprite
@@ -336,33 +340,22 @@ class Game:
         self.game_intro(self.screen, self.clock, False)  # run intro
 
         # Main menu related stuff
+
         image_list = load_base_button(self.data_dir, self.screen_scale)
-        self.preset_map_button = menu.MenuButton(self.screen_scale, image_list,
-                                                 (self.screen_rect.width / 2,
-                                                  self.screen_rect.height - (image_list[0].get_height() * 8.5)),
-                                                 self.main_ui_updater, text="Preset Map")
-        self.custom_map_button = menu.MenuButton(self.screen_scale, image_list,
-                                                 (self.screen_rect.width / 2,
-                                                  self.screen_rect.height - (image_list[0].get_height() * 7)),
-                                                 self.main_ui_updater, text="Custom Map")
-        self.game_edit_button = menu.MenuButton(self.screen_scale, image_list,
-                                                (self.screen_rect.width / 2,
-                                                 self.screen_rect.height - (image_list[0].get_height() * 5.5)),
-                                                self.main_ui_updater, text="Editor")
-        self.lore_button = menu.MenuButton(self.screen_scale, image_list,
-                                           (self.screen_rect.width / 2,
-                                            self.screen_rect.height - (image_list[0].get_height() * 4)),
-                                           self.main_ui_updater, text="Encyclopedia")
-        self.option_button = menu.MenuButton(self.screen_scale, image_list,
-                                             (self.screen_rect.width / 2,
-                                              self.screen_rect.height - (image_list[0].get_height() * 2.5)),
-                                             self.main_ui_updater, text="Option")
-        self.quit_button = menu.MenuButton(self.screen_scale, image_list,
-                                           (self.screen_rect.width / 2,
-                                            self.screen_rect.height - (image_list[0].get_height())),
-                                           self.main_ui_updater, text="Quit")
+
+
+        main_menu_buttons_box = menu.BoxUI((400,500), parent=self.screen)
+
+        f = 0.68
+        self.preset_map_button = menu.BrownMenuButton((0,-1*f),"Preset Map", parent= main_menu_buttons_box)
+        self.custom_map_button = menu.BrownMenuButton((0,-0.6*f),"Custom Map", parent= main_menu_buttons_box)
+        self.game_edit_button = menu.BrownMenuButton((0,-0.2*f),"Editor", parent=main_menu_buttons_box)
+        self.lore_button = menu.BrownMenuButton((0,0.2*f),"Encyclopedia", parent=main_menu_buttons_box)
+        self.option_button = menu.BrownMenuButton((0,0.6*f), "Option", parent=main_menu_buttons_box)
+        self.quit_button = menu.BrownMenuButton((0,1*f),text="Quit", parent=main_menu_buttons_box)
+
         self.mainmenu_button = (self.preset_map_button, self.custom_map_button, self.game_edit_button,
-                                self.lore_button, self.option_button, self.quit_button)
+                                self.lore_button, self.option_button, self.quit_button, main_menu_buttons_box)
 
         # Battle map
         self.battle_base_map = battlemap.BaseMap(self.main_dir)  # create base terrain map
@@ -935,6 +928,7 @@ class Game:
             # ^ End user input
             self.screen.fill((0, 0, 0))
             self.screen.blit(self.background, (0, 0))  # blit background over instead of clear() to reset screen
+
 
             if self.input_popup[
                 0]:  # currently, have input text pop up on screen, stop everything else until done
