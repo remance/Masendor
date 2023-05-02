@@ -55,13 +55,11 @@ def inner_create_troop_sprite_pool(self, who_todo, sprite_pool_hash, preview=Fal
             next_least_len = min(new_who_todo, key=len)
             next_least_len |= least_len
 
-        thread_event = threading.Event()
-
         for who in new_who_todo:
             p = threading.Thread(target=create_sprite,
                                  args=(self, who, preview, max_preview_size, weapon_list,
                                        weapon_common_type_list, weapon_attack_type_list, animation_sprite_pool,
-                                       status_animation_pool, sprite_pool_hash, thread_event),
+                                       status_animation_pool, sprite_pool_hash),
                                  daemon=True)
             jobs.append(p)
             p.start()
@@ -70,14 +68,14 @@ def inner_create_troop_sprite_pool(self, who_todo, sprite_pool_hash, preview=Fal
     else:
         create_sprite(self, who_todo, preview, max_preview_size, weapon_list,
                       weapon_common_type_list, weapon_attack_type_list, animation_sprite_pool, status_animation_pool,
-                      sprite_pool_hash, None, specific_preview=specific_preview)
+                      sprite_pool_hash, specific_preview=specific_preview)
 
     return animation_sprite_pool, status_animation_pool
 
 
 def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon_common_type_list,
                   weapon_attack_type_list, animation_sprite_pool, status_animation_pool, sprite_pool_hash,
-                  thread_event, specific_preview=None):
+                  specific_preview=None):
     """
     Create unit troop sprite
     :param self: Battle object
@@ -89,7 +87,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
     :param weapon_attack_type_list: Weapon attack action data
     :param animation_sprite_pool: Animation pool data
     :param status_animation_pool: Status animation pool data
-    :param thread_event: threading.Event object
+    :param sprite_pool_hash: Hash of entire sprite pool
     :param specific_preview: list array containing animation name, frame number and direction of either l_side or r_side for flipping
     """
 
