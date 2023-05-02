@@ -31,7 +31,7 @@ script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
 load_timer = None
 
 
-def set_start_load(what):  # For printing asset loading time
+def set_start_load(what):  # For output asset loading time in terminal
     globals()['load_timer'] = time.time()
     return "Loading {0}... ".format(what)
 
@@ -60,7 +60,7 @@ class Battle:
     player_cancel_input = empty_method
     player_input_process = empty_method
     player_skill_perform = empty_method
-    setup_battle_troop = empty_method
+    setup_battle_unit = empty_method
     setup_battle_ui = empty_method
     shake_camera = empty_method
     spawn_weather_matter = empty_method
@@ -427,6 +427,7 @@ class Battle:
 
         self.event_schedule = None
         self.event_list = []
+        self.event_id = 0
         for index, event in enumerate(self.event_log.map_event):
             if self.event_log.map_event[event]["Time"]:
                 if index == 0:
@@ -470,13 +471,12 @@ class Battle:
 
         self.camera_mode = self.start_camera_mode
         if not self.player_unit:
-            print(self.player_unit, 'free')
             self.camera_mode = "Free"
 
         if map_type == "preset":
-            self.setup_battle_troop(self.unit_updater)
+            self.setup_battle_unit(self.unit_updater)
         elif map_type == "custom":
-            self.setup_battle_troop(self.unit_updater, custom_data=self.game.custom_map_data["battle"])
+            self.setup_battle_unit(self.unit_updater, custom_data=self.game.custom_map_data["battle"])
 
         for this_group in self.all_team_unit.values():
             this_group.empty()

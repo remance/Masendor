@@ -53,5 +53,22 @@ def menu_custom_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
             stuff.kill()
             del stuff
 
-        self.change_to_team_selection_menu()
+        self.camp_pos = [{}]
+        self.camp_icon = []
+
+        setup_list(self.screen_scale, menu.NameList, self.current_source_row, ["None"] +
+                   self.faction_data.faction_name_list, self.source_namegroup, self.source_list_box,
+                   self.main_ui_updater)
+
+        self.menu_button.add(*self.team_select_button)
+
+        self.create_team_coa([None for _ in range(10)], self.main_ui_updater)
+
+        self.custom_map_data["unit"] = {"pos": {}}
+
+        self.main_ui_updater.add(*self.team_select_button, self.custom_map_option_box, self.observe_mode_tick_box,
+                                 self.night_battle_tick_box, self.map_back_button, self.map_select_button,
+                                 self.source_list_box, self.source_list_box.scroll, self.unit_selector,
+                                 self.unit_selector.scroll, self.weather_custom_select, self.wind_custom_select,
+                                 self.map_option_box)
         self.menu_state = "custom_team_select"

@@ -31,20 +31,19 @@ def create_preview_map(self, map_folder_list, map_list, custom_map=False):
     # Create map description
     self.map_info = self.read_selected_map_data(map_folder_list, "info_" + self.language + ".csv")
 
-    self.map_data = self.read_selected_map_data(map_folder_list, "source" + ".csv")
-
-    team_coa = []
-    key = 0
-    for key2 in self.map_data[key]:
-        if "Team " in key2 and "Camp " not in key2:
-            if type(self.map_data[key][key2]) == int:
-                self.map_data[key][key2] = [self.map_data[key][key2]]
-            elif type(self.map_data[key][key2]) == str:
-                self.map_data[key][key2] = [int(item) for item in self.map_data[key][key2].split(",")]
-            team_coa.append(self.map_data[key][key2])
     description = [self.map_info[map_list[self.current_map_select]]["Description 1"],
                    self.map_info[map_list[self.current_map_select]]["Description 2"]]
     self.map_description.change_text(description)
 
     if custom_map is False:
+        self.map_data = self.read_selected_map_data(map_folder_list, "source" + ".csv")
+        team_coa = []
+        key = 0
+        for key2 in self.map_data[key]:
+            if "Team " in key2 and "Camp " not in key2:
+                if type(self.map_data[key][key2]) == int:
+                    self.map_data[key][key2] = [self.map_data[key][key2]]
+                elif type(self.map_data[key][key2]) == str:
+                    self.map_data[key][key2] = [int(item) for item in self.map_data[key][key2].split(",")]
+                team_coa.append(self.map_data[key][key2])
         self.create_team_coa(team_coa, self.main_ui_updater)

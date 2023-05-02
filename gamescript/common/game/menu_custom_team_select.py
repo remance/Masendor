@@ -49,34 +49,34 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                             if name.name != "None":
                                 faction_index = self.faction_data.faction_name_list.index(name.name)
                                 if mouse_left_up:
-                                    if "Team " + str(coa.team) in self.custom_map_data["info"]:
-                                        if faction_index not in self.custom_map_data["info"]["Team " + str(coa.team)]:
-                                            self.custom_map_data["info"]["Team " + str(coa.team)].append(faction_index)
+                                    if "Team Faction " + str(coa.team) in self.custom_map_data["info"]:
+                                        if faction_index not in self.custom_map_data["info"]["Team Faction " + str(coa.team)]:
+                                            self.custom_map_data["info"]["Team Faction " + str(coa.team)].append(faction_index)
                                     else:
-                                        self.custom_map_data["info"]["Team " + str(coa.team)] = [faction_index]
+                                        self.custom_map_data["info"]["Team Faction " + str(coa.team)] = [faction_index]
                                     coa.change_coa(
                                         {int(faction): self.faction_data.coa_list[int(faction)] for faction in
-                                         self.custom_map_data["info"]["Team " + str(coa.team)]},
+                                         self.custom_map_data["info"]["Team Faction " + str(coa.team)]},
                                         self.faction_data.faction_list[self.custom_map_data["info"][
-                                            "Team " + str(coa.team)][0]]["Name"])
+                                            "Team Faction " + str(coa.team)][0]]["Name"])
                                 elif mouse_right_up:
-                                    if faction_index in self.custom_map_data["info"]["Team " + str(coa.team)]:
-                                        self.custom_map_data["info"]["Team " + str(coa.team)].remove(faction_index)
-                                    if self.custom_map_data["info"]["Team " + str(coa.team)]:  # still not empty
+                                    if faction_index in self.custom_map_data["info"]["Team Faction " + str(coa.team)]:
+                                        self.custom_map_data["info"]["Team Faction " + str(coa.team)].remove(faction_index)
+                                    if self.custom_map_data["info"]["Team Faction " + str(coa.team)]:  # still not empty
                                         coa.change_coa(
                                             {int(faction): self.faction_data.coa_list[int(faction)] for faction in
-                                             self.custom_map_data["info"]["Team " + str(coa.team)]},
+                                             self.custom_map_data["info"]["Team Faction " + str(coa.team)]},
                                             self.faction_data.faction_list[self.custom_map_data["info"][
-                                                "Team " + str(coa.team)][0]]["Name"])
+                                                "Team Faction " + str(coa.team)][0]]["Name"])
                                     else:  # list empty remove data
-                                        self.custom_map_data["info"].pop("Team " + str(coa.team))
+                                        self.custom_map_data["info"].pop("Team Faction " + str(coa.team))
                                         coa.change_coa({0: None}, "None")
                             else:
-                                if mouse_left_up and "Team " + str(coa.team) in self.custom_map_data["info"]:
-                                    self.custom_map_data["info"].pop("Team " + str(coa.team))
+                                if mouse_left_up and "Team Faction " + str(coa.team) in self.custom_map_data["info"]:
+                                    self.custom_map_data["info"].pop("Team Faction " + str(coa.team))
                                 coa.change_coa({0: None}, "None")
 
-                            if "Team " + str(coa.team) in self.custom_map_data["info"]:  # camp, team exist
+                            if "Team Faction " + str(coa.team) in self.custom_map_data["info"]:  # camp, team exist
                                 if coa.team not in self.camp_pos[0]:  # new team, camp not exist
                                     self.camp_pos[0][coa.team] = []
                                     for icon in self.camp_icon:
@@ -205,7 +205,8 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                                     self.observe_mode_tick_box, self.night_battle_tick_box,
                                     self.source_list_box, self.source_list_box.scroll,
                                     self.unit_selector, self.unit_selector.scroll,
-                                    self.unit_icon, self.team_coa, self.weather_custom_select, self.wind_custom_select)
+                                    self.unit_icon, self.team_coa, self.weather_custom_select, self.wind_custom_select,
+                                    self.map_option_box)
         self.menu_button.remove(*self.menu_button)
 
         for this_name in self.popup_namegroup:  # remove name list
@@ -236,13 +237,13 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
     elif self.select_button.event:  # go to unit setup screen
         self.select_button.event = False
         if len([coa for coa in self.team_coa if coa.name is not None and coa.name != "None"]) > 1:
-            self.menu_state = "unit_setup"
+            self.menu_state = "custom_unit_setup"
             self.unit_select_row = 0
 
             self.main_ui_updater.remove(self.custom_map_option_box, self.observe_mode_tick_box,
                                         self.night_battle_tick_box,
                                         self.source_list_box, self.source_list_box.scroll, self.weather_custom_select,
-                                        self.wind_custom_select)
+                                        self.wind_custom_select, self.map_option_box)
 
             for this_name in self.popup_namegroup:  # remove name list
                 this_name.kill()

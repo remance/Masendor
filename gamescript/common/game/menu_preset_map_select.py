@@ -45,7 +45,7 @@ def menu_preset_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
                         icon.kill()
                     self.preview_unit.empty()
 
-                    self.setup_battle_troop(self.preview_unit, specific_team=self.team_selected, custom_data=None)
+                    self.setup_battle_unit(self.preview_unit, preview=self.team_selected, custom_data=None)
 
                     self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
 
@@ -94,8 +94,7 @@ def menu_preset_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
         self.map_source = 0
         self.map_preview.change_mode(0)  # revert map preview back to without unit dot
 
-        for group in (
-        self.map_namegroup, self.team_coa, self.source_namegroup, self.preview_unit):  # remove map name, source name and coa item
+        for group in (self.map_namegroup, self.team_coa, self.source_namegroup, self.preview_unit, self.unit_icon):  # remove map name, source name and coa item
             for stuff in group:
                 stuff.kill()
                 del stuff

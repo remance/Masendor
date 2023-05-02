@@ -194,7 +194,7 @@ class Unit(sprite.Sprite):
     all_formation_list = {}
     hitbox_image_list = {}
 
-    containers = None
+    containers = []
 
     # static variable
     default_animation_play_time = 0.1
@@ -454,6 +454,8 @@ class Unit(sprite.Sprite):
             self.troop_formation_density = "Tight"
             self.troop_formation_position = "Behind"
             self.troop_follow_order = "Stay Formation"
+            self.troop_group_type = "melee inf"  # type of unit indicate troop composition, melee inf, range inf, melee cav, range cav", "artillery"
+
 
             self.group_formation = "Cluster"
             self.group_formation_preset = []
@@ -462,7 +464,6 @@ class Unit(sprite.Sprite):
             self.group_formation_density = self.troop_formation_density
             self.group_formation_position = self.troop_formation_position
             self.group_follow_order = self.troop_follow_order
-            self.unit_type = "melee inf"  # type of unit indicate troop composition, melee inf, range inf, melee cav, range cav", "artillery"
 
             self.formation_consider_flank = False  # has both infantry and cavalry, consider flank placment style
             self.troop_distance_list = {}
@@ -477,7 +478,6 @@ class Unit(sprite.Sprite):
                 self.portrait = self.leader_data.images["other"].copy()
                 name = self.name.split(" ")[0]
                 text_font = font.SysFont("helvetica", int(90 / (len(name) / 3) * self.screen_scale[1]))
-                print(font)
                 text_image = text_font.render(name, True, Color("white"))
                 text_rect = text_image.get_rect(center=(self.portrait.get_width() / 2,
                                                         self.portrait.get_height() / 1.3))
@@ -1176,23 +1176,30 @@ class Unit(sprite.Sprite):
                     self.hitbox_image.get_width() / 2.4)
 
 
-# class Leader(Unit):
-#     def __init__(self, troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
-#                  leader_unit, coa):
-#         super().__init__(troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
-#                          leader_unit, coa)
-#
+class PreviewUnit(Unit):
+    def __init__(self, troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
+                 leader_unit, coa):
+        super().__init__(troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
+                         leader_unit, coa)
 
-# class AILeader(Leader):
-#     def __init__(self, troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
-#                  leader_unit, coa):
-#
-#         super().__init__(troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
-#                          leader_unit, coa)
-#
 
-# class Troop(Unit):
-#     def __init__(self, troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
-#                  leader_unit, coa):
-#         super().__init__(troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
-#                          leader_unit, coa)
+class Leader(Unit):
+    def __init__(self, troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
+                 leader_unit, coa):
+        super().__init__(troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
+                         leader_unit, coa)
+
+
+class AILeader(Leader):
+    def __init__(self, troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
+                 leader_unit, coa):
+
+        super().__init__(troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
+                         leader_unit, coa)
+
+
+class Troop(Unit):
+    def __init__(self, troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
+                 leader_unit, coa):
+        super().__init__(troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
+                         leader_unit, coa)

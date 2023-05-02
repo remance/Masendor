@@ -11,7 +11,7 @@ from pygame.locals import *
 from gamescript import battlemap, weather, battleui, menu, damagesprite, effectsprite, battle, unit, datasprite, \
     datamap, lorebook, drama, popup
 from gamescript.common import utility
-from gamescript.common.battle import setup_battle_troop
+from gamescript.common.battle import setup_battle_unit
 
 direction_list = datasprite.direction_list
 
@@ -102,7 +102,6 @@ class Game:
     assign_key = empty_method
     back_mainmenu = empty_method
     change_battle_source = empty_method
-    change_to_team_selection_menu = empty_method
     change_sound_volume = empty_method
     create_config = empty_method
     create_preview_map = empty_method
@@ -111,7 +110,7 @@ class Game:
     create_troop_sprite = empty_method
     create_troop_sprite_pool = empty_method
     loading_screen = empty_method
-    menu_unit_select = empty_method
+    menu_custom_unit_select = empty_method
     menu_custom_team_select = empty_method
     menu_game_editor = empty_method
     menu_keybind = empty_method
@@ -119,14 +118,14 @@ class Game:
     menu_custom_map_select = empty_method
     menu_option = empty_method
     menu_preset_map_select = empty_method
-    menu_leader_setup = empty_method
-    menu_unit_setup = empty_method
+    menu_custom_leader_setup = empty_method
+    menu_custom_unit_setup = empty_method
     read_selected_map_data = empty_method
     start_battle = empty_method
 
     popup_list_open = utility.popup_list_open
     lorebook_process = lorebook.lorebook_process
-    setup_battle_troop = setup_battle_troop.setup_battle_troop
+    setup_battle_unit = setup_battle_unit.setup_battle_unit
 
     script_dir = script_dir
     for entry in os.scandir(Path(script_dir + "/common/game/")):  # load and replace modules from common.game
@@ -325,7 +324,8 @@ class Game:
         weather.MatterSprite.containers = self.weather_matter, self.battle_ui_updater, self.weather_updater
         weather.SpecialEffect.containers = self.weather_effect, self.battle_ui_updater, self.weather_updater
 
-        unit.Unit.containers = self.unit_updater, self.all_units, self.battle_camera
+        unit.Troop.containers = self.unit_updater, self.all_units, self.battle_camera
+        unit.Leader.containers = self.unit_updater, self.all_units, self.battle_camera
 
         # Create game cursor
         cursor_images = load_images(self.data_dir, subfolder=("ui", "cursor"))  # no need to scale cursor
@@ -1043,17 +1043,17 @@ class Game:
                     self.menu_custom_team_select(mouse_left_up, mouse_left_down, mouse_right_up,
                                                  mouse_scroll_up, mouse_scroll_down, esc_press)
 
-                elif self.menu_state == "unit_select":
-                    self.menu_unit_select(mouse_left_up, mouse_left_down, mouse_scroll_up,
-                                          mouse_scroll_down, esc_press)
+                elif self.menu_state == "custom_unit_select":
+                    self.menu_custom_unit_select(mouse_left_up, mouse_left_down, mouse_scroll_up,
+                                                 mouse_scroll_down, esc_press)
 
-                elif self.menu_state == "unit_setup":
-                    self.menu_unit_setup(mouse_left_up, mouse_left_down, mouse_right_up, mouse_scroll_up,
-                                         mouse_scroll_down, esc_press)
+                elif self.menu_state == "custom_unit_setup":
+                    self.menu_custom_unit_setup(mouse_left_up, mouse_left_down, mouse_right_up, mouse_scroll_up,
+                                                mouse_scroll_down, esc_press)
 
-                elif self.menu_state == "unit_leader_setup":
-                    self.menu_leader_setup(mouse_left_up, mouse_left_down, mouse_right_up, mouse_right_down,
-                                           mouse_scroll_up, mouse_scroll_down, esc_press)
+                elif self.menu_state == "custom_leader_setup":
+                    self.menu_custom_leader_setup(mouse_left_up, mouse_left_down, mouse_right_up, mouse_right_down,
+                                                  mouse_scroll_up, mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "game_creator":
                     self.menu_game_editor(mouse_left_up, mouse_left_down, mouse_scroll_up,

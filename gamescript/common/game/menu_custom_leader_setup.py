@@ -2,19 +2,18 @@ import pygame
 
 from gamescript import menu
 from gamescript.common import utility
-from gamescript.common.game import menu_preset_map_select
-from gamescript.common.game import menu_unit_setup
+from gamescript.common.game import menu_custom_unit_setup
 
-unit_change_team_unit = menu_unit_setup.unit_change_team_unit
-leader_change_team_unit = menu_unit_setup.leader_change_team_unit
+unit_change_team_unit = menu_custom_unit_setup.unit_change_team_unit
+leader_change_team_unit = menu_custom_unit_setup.leader_change_team_unit
 
 setup_list = utility.setup_list
 list_scroll = utility.list_scroll
 load_image = utility.load_image
 
 
-def menu_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mouse_right_down,
-                      mouse_scroll_up, mouse_scroll_down, esc_press):
+def menu_custom_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mouse_right_down,
+                             mouse_scroll_up, mouse_scroll_down, esc_press):
     self.main_ui_updater.remove(self.single_text_popup)
     if self.unit_selector.rect.collidepoint(self.mouse_pos):
         if mouse_scroll_up:
@@ -158,7 +157,7 @@ def menu_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mous
 
     if self.map_back_button.event or esc_press:
         self.main_ui_updater.remove(self.single_text_popup)
-        self.menu_state = "unit_setup"
+        self.menu_state = "custom_unit_setup"
         self.map_back_button.event = False
         self.current_map_row = 0
         self.main_ui_updater.remove(self.org_chart)
@@ -231,7 +230,7 @@ def menu_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mous
 
 
 def change_to_char_select_menu(self, custom_data=None):
-    self.menu_state = "char_select"
+    self.menu_state = "custom_unit_select"
     self.select_button.event = False
     self.unit_select_row = 0
 
@@ -249,14 +248,14 @@ def change_to_char_select_menu(self, custom_data=None):
 
     self.unit_stat["unit"] = menu.ArmyStat(self.screen_scale,
                                            (self.screen_rect.center[0] / 9, self.screen_rect.height / 8),
-                                           load_image(self.main_dir, self.screen_scale,
+                                           load_image(self.data_dir, self.screen_scale,
                                                       "unit_stat.png", ("ui", "mapselect_ui")))  # unit stat
     self.unit_stat["model"] = menu.ArmyStat(self.screen_scale,
                                             (self.screen_rect.center[0] * 1.3, self.screen_rect.height / 8),
-                                            load_image(self.main_dir, self.screen_scale,
+                                            load_image(self.data_dir, self.screen_scale,
                                                        "unit_stat.png", ("ui", "mapselect_ui")))  # troop stat
 
-    self.setup_battle_troop(self.preview_unit, specific_team=self.team_selected, custom_data=custom_data)
+    self.setup_battle_unit(self.preview_unit, preview=self.team_selected, custom_data=custom_data)
 
     self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
 

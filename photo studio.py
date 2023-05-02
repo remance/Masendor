@@ -11,7 +11,7 @@ import screeninfo
 from gamescript import battlemap, weather, battleui, menu, effectsprite, battle, camera, datasprite, datamap, game
 
 from gamescript.common.utility import csv_read, load_images, stat_convert
-from gamescript.common.battle import setup_battle_troop
+from gamescript.common.battle import setup_battle_unit
 from gamescript.common.battle.spawn_weather_matter import spawn_weather_matter
 from gamescript.common.game.setup.make_faction_troop_leader_data import make_faction_troop_leader_data
 from gamescript.common.game.create_troop_sprite_pool import create_troop_sprite_pool

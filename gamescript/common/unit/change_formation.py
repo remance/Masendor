@@ -37,9 +37,9 @@ def change_formation(self, which, formation=None):
             self.group_formation = formation
         if self.alive_leader_follower:
             for leader in self.alive_leader_follower:
-                if "cav" not in leader.unit_type and not consider_flank[0]:
+                if "cav" not in leader.troop_group_type and not consider_flank[0]:
                     consider_flank[0] = True
-                elif "cav" in leader.unit_type and not consider_flank[0]:
+                elif "cav" in leader.troop_group_type and not consider_flank[0]:
                     consider_flank[1] = True
                 if False not in consider_flank:
                     break

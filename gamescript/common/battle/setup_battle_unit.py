@@ -9,12 +9,13 @@ from gamescript.common import utility
 stat_convert = utility.stat_convert
 
 
-def setup_battle_troop(self, team_unit_list, specific_team=None, custom_data=None):
+def setup_battle_unit(self, team_unit_list, preview=None, custom_data=None):
     """
-    Read unit battle data from unit_pos file
+    Read unit data in battle from unit_pos file
     :param self: Battle or Game object
     :param team_unit_list: List of team unit group, can be list for preview or dict for battle
-    :param specific_team: Assign the unit to which specific team
+    :param preview: Preview unit of a specific team
+    :param custom_data: Use custom battle data instead of read from preset map data
     """
     leader_unit = {}
     self.last_troop_game_id = 0
@@ -53,39 +54,37 @@ def setup_battle_troop(self, team_unit_list, specific_team=None, custom_data=Non
             if leader not in new_troop_data:
                 new_troop_data.append(leader)
 
-    for data in troop_data:  # leader with no follower last
+    for data in troop_data:  # move leader with no follower to last in list
         if data not in new_troop_data:
             new_troop_data.append(data)
 
     for data in new_troop_data:
-        if not specific_team or specific_team == data["Team"]:  # check if create unit only for specific team
-            if type(team_unit_list) == dict:
-                if data["Team"] not in team_unit_list:
-                    team_unit_list[data["Team"]] = pygame.sprite.Group()
-                which_team = team_unit_list[data["Team"]]
-            else:  # for unit selection screen
-                which_team = team_unit_list
-
-            leader = None
-            if data["Leader"] != 0 and leader_unit[data["Leader"]].team == data["Team"]:
-                # avoid different team leader assign, in case of data mistake
-                leader = leader_unit[data["Leader"]]
-
+        if not preview or preview == data["Team"]:  # check if create unit only for preview of a specific team
             troop_number_list = {int(key): [int(num) for num in value.split("/")] for key, value in
                                  data["Troop"].items()}
 
-            add_leader = unit.Unit(data["Leader ID"], self.last_troop_game_id, data["ID"], data["Team"],
-                                   data["POS"], data["Angle"], data["Start Health"], data["Start Stamina"],
-                                   leader, self.faction_data.coa_list[data["Faction"]])
-            add_leader.troop_reserve_list = {key: value[1] for key, value in troop_number_list.items()}
-            add_leader.troop_dead_list = {key: 0 for key, value in troop_number_list.items()}
+            if preview:  # make only leader for preview
+                team_unit_list.add(unit.PreviewUnit(data["Leader ID"], self.last_troop_game_id, data["ID"],
+                                                    data["Team"], data["POS"], data["Angle"], data["Start Health"],
+                                                    data["Start Stamina"], None,
+                                                    self.faction_data.coa_list[data["Faction"]]))
+            else:
+                leader = None
+                if data["Leader"] != 0 and leader_unit[data["Leader"]].team == data["Team"]:
+                    # avoid different team leader assign, in case of data mistake
+                    leader = leader_unit[data["Leader"]]
 
-            which_team.add(add_leader)
-            leader_unit[data["ID"]] = add_leader  # leader unit
-            self.last_troop_game_id += 1
-            for key, value in troop_number_list.items():
-                for _ in range(value[0]):
-                    unit.Unit(int(key), self.last_troop_game_id, None, data["Team"],
-                              data["POS"], data["Angle"], data["Start Health"], data["Start Stamina"], add_leader,
-                              self.faction_data.coa_list[data["Faction"]])
-                    self.last_troop_game_id += 1
+                add_leader = unit.Leader(data["Leader ID"], self.last_troop_game_id, data["ID"], data["Team"],
+                                         data["POS"], data["Angle"], data["Start Health"], data["Start Stamina"],
+                                         leader, self.faction_data.coa_list[data["Faction"]])
+                add_leader.troop_reserve_list = {key: value[1] for key, value in troop_number_list.items()}
+                add_leader.troop_dead_list = {key: 0 for key, value in troop_number_list.items()}
+
+                leader_unit[data["ID"]] = add_leader  # leader unit
+                self.last_troop_game_id += 1
+                for key, value in troop_number_list.items():
+                    for _ in range(value[0]):
+                        unit.Troop(int(key), self.last_troop_game_id, None, data["Team"],
+                                   data["POS"], data["Angle"], data["Start Health"], data["Start Stamina"], add_leader,
+                                   self.faction_data.coa_list[data["Faction"]])
+                        self.last_troop_game_id += 1

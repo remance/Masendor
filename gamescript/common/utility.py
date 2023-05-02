@@ -661,6 +661,7 @@ def clean_group_object(groups):
             if type(group) == pygame.sprite.Group or type(group) == list or type(group) == tuple:
                 for stuff in group:
                     clean_object(stuff)
+                group.empty()
             elif type(group) == dict:
                 for stuff in group.values():
                     for item in stuff:

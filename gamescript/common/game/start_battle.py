@@ -12,13 +12,13 @@ def start_battle(self, player_unit=None):
         selected_player_unit = None
 
     if self.map_type == "preset":
-        map_data = self.map_data
+        map_data = self.map_data[self.map_source]
     elif self.map_type == "custom":
         map_data = self.custom_map_data["info"]
 
     self.battle.prepare_new_game(self.team_selected, self.map_type,
                                  self.map_selected, self.map_source, selected_player_unit,
-                                 map_data[self.map_source], self.camp_pos[self.map_source])
+                                 map_data, self.camp_pos[self.map_source])
     self.battle.run_game()
     pygame.mixer.music.unload()
     pygame.mixer.music.set_endevent(self.SONG_END)

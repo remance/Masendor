@@ -112,25 +112,25 @@ def setup_formation(self, which, phase=None, style=None, density=None, position=
         for who in follower_list:
             if "Melee" in formation_phase:  # melee front
                 if (which == "troop" and any(ext in who.troop_class for ext in ("Heavy", "Light"))) or \
-                        (which == "group" and "melee" in who.unit_type):  # melee at front
+                        (which == "group" and "melee" in who.troop_group_type):  # melee at front
                     formation_style_check(self, who, which, formation_style, priority_place, "rear")
                 else:  # range and other classes at rear
                     formation_style_check(self, who, which, formation_style, priority_place, "front")
             elif "Skirmish" in formation_phase:  # range front
                 if (which == "troop" and "Range" in who.troop_class) or (
-                        which == "group" and "range" in who.unit_type):  # range
+                        which == "group" and "range" in who.troop_group_type):  # range
                     formation_style_check(self, who, which, formation_style, priority_place, "rear")
                 elif (which == "troop" and who.troop_class == "Artillery") or (
-                        which == "group" and who.unit_type == "artillery"):  # artillery
+                        which == "group" and who.troop_group_type == "artillery"):  # artillery
                     formation_style_check(self, who, which, formation_style, priority_place, "rear")
                 else:  # melee
                     formation_style_check(self, who, which, formation_style, priority_place, "front")
             elif "Bombard" in formation_phase:
                 if (which == "troop" and who.troop_class == "Artillery") or (
-                        which == "group" and who.unit_type == "artillery"):  # artillery
+                        which == "group" and who.troop_group_type == "artillery"):  # artillery
                     formation_style_check(self, who, which, formation_style, priority_place, "rear")
                 elif (which == "troop" and "Range" in who.troop_class) or (
-                        which == "group" and "range" in who.unit_type):  # range
+                        which == "group" and "range" in who.troop_group_type):  # range
                     formation_style_check(self, who, which, formation_style, priority_place, "rear")
                 else:  # melee
                     formation_style_check(self, who, which, formation_style, priority_place, "front")
@@ -266,9 +266,9 @@ def formation_style_check(self, who, formation_type, formation_style, priority_u
                 elif who.unit_type == 2:  # cavalry
                     priority_unit_place["center-" + side].append(who)
             elif formation_type == "group":
-                if "inf" in who.unit_type:  # infantry
+                if "inf" in who.troop_group_type:  # infantry
                     priority_unit_place["flank-" + side].append(who)
-                elif "cav" in who.unit_type:  # cavalry
+                elif "cav" in who.troop_group_type:  # cavalry
                     priority_unit_place["center-" + side].append(who)
         elif "Cavalry" in formation_style:  # Cavalry at flank
             if formation_type == "troop":
@@ -277,9 +277,9 @@ def formation_style_check(self, who, formation_type, formation_style, priority_u
                 elif who.unit_type == 2:  # cavalry
                     priority_unit_place["flank-" + side].append(who)
             elif formation_type == "group":
-                if "inf" in who.unit_type:  # infantry
+                if "inf" in who.troop_group_type:  # infantry
                     priority_unit_place["center-" + side].append(who)
-                elif "cav" in who.unit_type:  # cavalry
+                elif "cav" in who.troop_group_type:  # cavalry
                     priority_unit_place["flank-" + side].append(who)
     else:  # no need to consider flank and center since has either only infantry or cavalry troops, not both types
         priority_unit_place[side].append(who)

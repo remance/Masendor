@@ -8,7 +8,7 @@ class Faction(pygame.sprite.Sprite):
         self.game_id = faction_id
         self.name = self.faction_list[self.game_id][0]
         self.religion = None
-        self.goverment_type = None
+        self.government_type = None
         self.population = 0
         self.language_list = {}
         self.culture = {}

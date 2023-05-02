@@ -8,8 +8,8 @@ list_scroll = utility.list_scroll
 load_image = utility.load_image
 
 
-def menu_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mouse_scroll_up, mouse_scroll_down,
-                    esc_press):
+def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mouse_scroll_up, mouse_scroll_down,
+                           esc_press):
     self.main_ui_updater.remove(self.single_text_popup)
     if mouse_left_up or mouse_left_down or mouse_right_up:
         if mouse_left_up or mouse_right_up:
@@ -69,23 +69,23 @@ def menu_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mouse_
                             self.main_ui_updater.add(self.single_text_popup)
                             break
                     if mouse_left_up:
-                        has_char_select = False
-                        for char in self.unit_icon:
-                            if char.selected:
-                                if char.who.name == "+":  # add new unit
+                        has_unit_selected = False
+                        for this_unit in self.unit_icon:
+                            if this_unit.selected:
+                                if this_unit.who.name == "+":  # add new unit
                                     self.custom_map_data["unit"][coa.team].append(unit_data.copy())
                                     old_selected = None
                                 else:  # change existed
-                                    self.custom_map_data["unit"][coa.team][char.who.index] = unit_data.copy()
-                                    old_selected = char.who.index
-                                has_char_select = True
+                                    self.custom_map_data["unit"][coa.team][this_unit.who.index] = unit_data.copy()
+                                    old_selected = this_unit.who.index
+                                has_unit_selected = True
                                 unit_change_team_unit(self, old_selected=old_selected)
                                 self.map_preview.change_mode(1,
                                                              team_pos_list=self.custom_map_data["unit"]["pos"],
                                                              camp_pos_list=self.camp_pos[0], selected=old_selected)
                                 break
 
-                        if not has_char_select:  # no unit selected, consider as adding new unit
+                        if not has_unit_selected:  # no unit selected, consider as adding new unit
                             for coa in self.team_coa:
                                 if coa.selected:  # add unit for selected team
                                     unit_data = create_unit_list(self, coa, unit_selected=name.name)
@@ -234,7 +234,7 @@ def menu_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mouse_
             self.input_ui.change_instruction("Teams need all units placed")
             self.main_ui_updater.add(self.inform_ui_popup)
         else:
-            self.menu_state = "unit_leader_setup"
+            self.menu_state = "custom_leader_setup"
             self.unit_select_row = 0
             self.current_map_row = 0
 
@@ -267,12 +267,12 @@ def leader_change_team_unit(self):
                     else:
                         image = self.leader_data.leader_list[unit["Leader ID"]]["Name"].split(" ")[0]
                     self.preview_unit.add(battleui.TempUnitIcon(self.screen_scale, this_team.team, image, unit_index))
-            self.unit_selector.setup_unit_icon(self.unit_icon, [char for char in self.preview_unit if
-                                                                char.index is None or "Temp Leader" not in
+            self.unit_selector.setup_unit_icon(self.unit_icon, [this_unit for this_unit in self.preview_unit if
+                                                                this_unit.index is None or "Temp Leader" not in
                                                                 self.custom_map_data["unit"][this_team.team][
-                                                                    char.index] or
+                                                                    this_unit.index] or
                                                                 self.custom_map_data["unit"][this_team.team][
-                                                                    char.index]["Temp Leader"] == ""])
+                                                                    this_unit.index]["Temp Leader"] == ""])
 
             break
 
@@ -286,7 +286,7 @@ def unit_change_team_unit(self, new_faction=False, old_selected=None, add_plus=T
             self.preview_unit.empty()
 
             unit_list = []
-            if "Team " + str(this_team.team) in self.custom_map_data["info"]:
+            if "Team Faction " + str(this_team.team) in self.custom_map_data["info"]:
                 for unit_index, unit in enumerate(self.custom_map_data["unit"][this_team.team]):
                     if unit["Leader ID"] in self.leader_data.images:
                         image = self.leader_data.images[unit["Leader ID"]]
@@ -326,10 +326,10 @@ def unit_change_team_unit(self, new_faction=False, old_selected=None, add_plus=T
                            self.map_namegroup, self.unit_list_box, self.main_ui_updater)
 
             self.unit_selector.setup_unit_icon(self.unit_icon,
-                                               [char for char in self.preview_unit if
-                                                char.index is None or "Temp Leader" not in
-                                                self.custom_map_data["unit"][this_team.team][char.index] or
-                                                self.custom_map_data["unit"][this_team.team][char.index][
+                                               [this_unit for this_unit in self.preview_unit if
+                                                this_unit.index is None or "Temp Leader" not in
+                                                self.custom_map_data["unit"][this_team.team][this_unit.index] or
+                                                self.custom_map_data["unit"][this_team.team][this_unit.index][
                                                     "Temp Leader"] == ""])
 
             if old_selected is not None:
