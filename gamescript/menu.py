@@ -326,20 +326,20 @@ class BrownMenuButton(pygame.sprite.Sprite):
     @lru_cache
     def make_buttons(cls, width):
         from gamescript.game import Game
-        from gamescript.common import utility
+        from gamescript.common.utility import load_image
         game = Game.game
-        load_base_button = utility.load_base_button
-        image_list = load_base_button(game.main_dir, game.screen_scale)
+
+        image = load_image(game.main_dir, (1,1), "new_button.png", ("ui", "mainmenu_ui"))
         
-        height = image_list[0].get_size()[1]
+        height = image.get_size()[1]
 
         # normal button
         normal_button = pygame.Surface((width,height))
       
-        normal_button.blit(image_list[0],(0,0),(0,0,6,height))
+        normal_button.blit(image,(0,0),(0,0,6,height))
         for x in range(6,width-5):
-            normal_button.blit(image_list[0],(x,0),(6,0,1,height))
-        normal_button.blit(image_list[0],(width-5,0),(7,0,12,height))
+            normal_button.blit(image,(x,0),(6,0,1,height))
+        normal_button.blit(image,(width-5,0),(7,0,12,height))
   
         # hover button
         hover_button = normal_button.copy()
