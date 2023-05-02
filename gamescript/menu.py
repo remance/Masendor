@@ -337,7 +337,7 @@ class BrownMenuButton(pygame.sprite.Sprite):
         from gamescript.common.utility import load_image
         game = Game.game
 
-        image = load_image(game.main_dir, (1,1), "new_button.png", ("ui", "mainmenu_ui"))
+        image = load_image(game.data_dir, (1,1), "new_button.png", ("ui", "mainmenu_ui"))
         
         height = image.get_size()[1]
 
