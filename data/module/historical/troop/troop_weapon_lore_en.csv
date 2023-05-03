@@ -1,0 +1,72 @@
+"ID","Name","Description"
+1,"Unarmed","To go into a battle unarmed is either bravely or lunacy. As it is extremely difficult to block other weapons with one body without receiving damage, unarmed usually have extremely low defence unless masterly trained. Nevertheless, an unarmed attack has a sufficiently higher attack speed than most other melee weapons. And, of course, the lack of additional weight makes an unarmed weapon ideal for maximising moving speed."
+2,"Sword","Sword is the most balanced weapon one can have. Simple to use but still difficult to master. It is also good for both offence and defence. The only weakness is that it has somewhat lower armour penetration capability than mace and hammer. It is worth mentioning that historically sword is a somewhat expensive and rare weapon that is mostly used by the rich or professional army. But it is still possible for a lowly commoner to possess a low quality or salvaged sword."
+3,"Greatsword","With the length almost as long as the height of a fully grown man, a greatsword is a weapon of cultural importance to medieval warfare history in various regions of the world. From a claymore wielding Scottish Highlander to an Odachi wielding Samurai, only the best-trained warrior can fight valiantly with a greatsword in his hands."
+4,"Shortsword","A simple weapon used throughout the history of mankind. Most effective in an organised infantry tight formation due to its short length. The most remarkable example is Roman Legionaries, who use a gladius shortsword and a Scutum tower shield with tremendous effect."
+5,"Dagger","Dagger is the smallest melee weapon of medieval warfare. Easy to carry and easy to use, it is often carried by light infantry as a secondary weapon. It is one of the best weapons to penetrate the weak spot in heavy armour, such as the armpits or groin area."
+6,"Spear","Spear is the most simple weapon to use. Simply thrusting it in the right direction can kill an enemy. Due to its long length, this makes spear a good counter against cavalry class but usually have somewhat lower melee defence than other melee class."
+7,"Club","A simple club that is not suitable for professional warfare. Easy to obtain but also easy to break in intense combat. Best not to expect an extraordinary performance with this weapon. A club also served as a symbolic weapon of nobility in some cultures."
+8,"Mace","Mace is a bludgeon type weapon that became popular due to the advancement of heavy armour that makes bladed weaponry less effective. Some types of mace also have sharp tips or bladed compartments attached to the weapon's head, such as morning star or winged mace."
+9,"Great Mace","A massive mace weapon that takes a massive amount of strength to wield. A blow from a great mace is capable of incapacitating any fully armoured foe."
+10,"Flail","Flail is a mace with its head part attached to a link of chains to the handle. Although more difficult to use than mace, a flail's attack can be somewhat difficult to predict and defend against. Its flexible swing means that the flail's head can land impact behind the enemy's shield as well. "
+11,"Hammer","Hammer is a tool of the blacksmith to shape up metal. Similar to mace, the hammer is also good against an armoured target where its impactful strikes can leave the unfortunate receiver with broken bones or concussion if aims for the head."
+12,"War Hammer",
+13,"Handaxe","A tree cutting tool converted into a weapon of war. Axe is simple enough to use effectively after some practice. The weight distribution design allows the momentum of axe swing to be powerful enough to break a wooden shield or even a metal one. "
+14,"Greataxe","The might of a warrior can be symbolised by only this mightiest weapon. A greataxe requires a magnificent amount of strength just to pick it up. No mere man would be mad enough to wield it into battle, for only a few swings can tire him out for the whole day."
+15,"Halberd","Halberd is a combination of polearm and axe. Its length and lethal blade at the top allow for a versatile combat art. The only downside is that the weapon has a hefty weight and requires a great deal of training to use effectively both in duel and warfare."
+16,"Pike","Pike is the most straightforward answer to the domination of cavalry. Why go attack them when you can let them come die at your weapon tip with their own speed. Due to its extremely long length, pike users become vulnerable against melee attacks and also ranged attacks due to the lack of shield and closed stationary formation."
+17,"Glaive","A more romantic and elitist weapon than a weapon of war due to the high cost of production. A glaive is often seen holding by a skilled warrior or general more often than a common soldier. It is still a fearsome weapon that can cleave through a person's body with ease."
+18,"Whip","Not exactly a weapon for combat but rather a tool of command or sometimes duel. A sound of whip cracking can instil obedience to most slaves that they will even die for their masters if commanded. "
+19,"Quarterstaff","Quarterstaff is not a common weapon in warfare. It is a practical weapon for self-defence and a non-lethal weapon seen used by militia or religious troops. Skilled use of this weapon can still incapacitate a lightly armoured enemy with ease, though."
+20,"Sling","Sling weapon is highly mobile and versatile enough that it can be classified as both skirmish and range. Its reload speed and ammunition are extremely high while also having decent armour penetration. It has lower damage outputs than other ranged weapons, though, so make up for this by attacking the enemy from behind or something."
+21,"Blowgun","A somewhat primitive weapon that has seen its use in combat mainly in tribal and Native American warfare. Mostly effective against lightly armoured troops because of its low penetration power, a blowgun is still extremely light to carry around and very easy to use. The darts are typically coated with deadly poison to incapacitate a foe even if the projectile only graze the body."
+22,"Javelin","Javelin is a light spear specifically designed to be thrown rather than used in melee combat. The light weight makes it somewhat fragile for lengthened uses, but it can travel much further than common spears. Many cultures throughout the world used javelins both for hunting and warfare throughout history."
+23,"Throwing Axe",
+24,"Longbow","Longbow "
+25,"Shortbow","Bow is one of the most versatile ranged weapons available. The unit can switch between different arrow types to inflict the most effective result or status. Although bow is not a weapon that is easy to use and even harder to master, this makes bow unit somewhat more expensive than sling and crossbow unit. Shortbow is a variant of bow that is specialised for swift shooting but with somewhat lacking in range and firepower. "
+26,"Greatbow","Sometimes bigger does not always mean better. A greatbow is almost impossible to wield, let alone shoot an enormous arrow from it. An arrow from a greatbow can penetrate a body of a man without armour easily and may even penetrate a simple wooden shield."
+27,"Light Crossbow","The pinnacle of medieval warfare. Easier to use than bows that any peasant can use after a few days of training to kill a knight that trains for their whole life. Crossbow weapon has extremely high armour penetration than other range class but much slower reload. It is also relatively useless in melee combat, so use it wisely. Light crossbow is much easier to reload and carry, making it more suitable for skirmish tactic and medium armour targets."
+28,"Heavy Crossbow","Heavy crossbow can be regarded as the first-ever weapon that can effectively kill a knight. At short range, it can penetrate chainmail easily and may even injure a knight in his plate mail. Its large size makes it cumbersome to carry around and reload though."
+29,"Repeater Crossbow","The first automatic hand-held weapon in the history of warfare. Ineffective at long range but devastating at short range, especially against lightly armoured troops. A repeating crossbow is often seen as an unconventional weapon that has never seen use outside of Ancient China, but truly an ingenious piece of engineering nevertheless."
+30,"Arbalest","Arbalest is one of the heaviest versions of the late medieval crossbow. They are designed to be much larger and have more penetrative power compared to the earlier version. Although this also makes them much more difficult to reload and typically requires other tools such as windlass. They are one of the first weapons that let less-trained warriors reliably fight against heavily armoured opponents."
+31,"Stone","Nothing is more simple than a stick and stone to break some bones. Existed since the dawn of time as a preferred ranged weapon, throwing stones can hurt someone without armour or even kill them instantly if hit in the head with strong enough force."
+32,"Composite Bow",
+33,"Matchlock Musket","The matchlock musket is one of the earlier types of firearm developed in Europe in the 15th Century. This type of musket is typically much heavier than an arquebus and requires a rest stick to aim. Matchlock muskets are operated by igniting a slow match attached at the end of the lever called serpentine. The musket's trigger lower the serpentine lever so the match reaches the gunpowder holder called a flash pan. This creates an ignition inside the gun troop and propels the bullet inside."
+34,"Arquebus","The arquebus is one of the earlier types of firearm developed in Europe late 14th Century. Light enough to be wielded with two hands without requiring placement, but still inaccurate and unreliable for long-ranged compared to bow and crossbow. Arquebus has enough power to penetrate medium armour like chainmail, but plate armour can still deflect its bullets most of the time."
+35,"Blunderbuss",
+36,"Flintlock Musket",
+37,"Flintlock Pistol",
+38,"Matchlock Pistol",
+39,"Kite Shield","The kite-shaped shield is one of the most popular variations used in high Medieval Europe. Most suitable for cavalry force due to its tall structure (from 90 centimetres to 120 centimetres) to protect the wielder's leg while having lightweight compared to other types of large shields."
+40,"Buckler",
+41,"Round Shield",
+42,"Tower Shield",
+43,"Heater Shield",
+44,"Pavise Shield",
+45,"Spiked Shield",
+46,"Bouche Shield",
+47,"Oval Shield",
+48,"Parry Dagger",
+49,"Parry Club",
+50,"Barrier Shield",
+51,,
+52,,
+53,,
+54,,
+55,"Light Crossbow (Heavy)","Light crossbow equipped with bolts specifically made to pierce heavy armour. Less ideal for other uses due to its weight."
+56,"Light Crossbow (Poison)","Light crossbow equipped with poison-coated bolts. If these bolts penetrate armour, expect the wearer to die a slow death."
+57,"Heavy Crossbow (Heavy)","Heavy crossbow equipped with heavy bolts. Can penetrate almost every kind of armour with ease."
+58,"Heavy Crossbow (Poison)","Heavy crossbow equipped with poison-coated bolts. Good for both light and heavy armour-wearing troops as they all die just the same."
+59,"Longbow (Fire)",
+60,"Shortbow (Fire)",
+61,"Greatbow (Fire)","A fire arrow tactic is often used to ignite a structure, ship or siege machine. It is also used to inflict damage to enemy morale."
+62,"Composite Bow (Fire)","The greatest tool of cowardice. Unleash hell to the enemy from safety and see them suffer."
+63,"Longbow (Poison)",
+64,"Shortbow (Poison)",
+65,"Greatbow (Poison)",
+66,"Composite Bow (Poison)","Whistle arrow by itself does little to no physical damage. The sound, though, does have a superstitious belief attached to it."
+67,"Longbow (Whistle)",
+68,"Greatbow (Whistle)",
+69,"Throwing Knife",
+70,"Throwing Knife (Poison)",
+71,"Hamster Food",

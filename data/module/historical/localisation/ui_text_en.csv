@@ -1,0 +1,50 @@
+"Button Name","Button Text"
+"main_menu_preset_map","Preset Map"
+"main_menu_custom_map","Custom Map"
+"main_menu_unit_editor","Unit Editor"
+"main_menu_lorebook","Encyclopedia"
+"game_option","Option"
+"game_quit","Quit"
+"select_button","Select"
+"back_button","Back"
+"default_button","Default"
+"start_button","Start"
+"confirm_button","Confirm"
+"cancel_button","Cancel"
+,
+,
+"editor_menu_army_editor","Army Editor"
+"editor_menu_troop_creator","Troop Creator"
+,
+,
+,
+,
+,
+,
+"authority","Authority"
+,
+"inspect_unit_button","Inspect Unit"
+,
+,
+,
+,
+"name","Name"
+"grade","Grade"
+"race","Race"
+"trait","Trait"
+"skill","Skill"
+"cost","Cost"
+"upkeep","Upkeep"
+"melee_atk","Melee Attack"
+"melee_def","Melee Defence"
+"ranged_atk","Ranged Attack"
+"ranged_def","Ranged Defence"
+"morale","Morale"
+"discipline","Discipline"
+"mental","Mental"
+,
+,
+,
+,
+,
+"mount","Mount"

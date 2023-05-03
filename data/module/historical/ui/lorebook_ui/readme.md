@@ -1,0 +1,1 @@
+This folder keep image texture for encyclopedia.
