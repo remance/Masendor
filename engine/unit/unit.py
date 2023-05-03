@@ -1,6 +1,4 @@
-import os
 from math import radians
-from pathlib import Path
 from random import random, getrandbits
 
 from pygame import sprite, font, draw, Color, Vector2, Surface, SRCALPHA
@@ -9,7 +7,6 @@ from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 
 from engine.uibattle.uibattle import SkillAimTarget, SpriteIndicator
-from engine import unit
 from engine import utility
 
 rotation_list = (90, -90)
@@ -89,7 +86,7 @@ die_command_action = {"name": "DieDown", "uninterruptible": True, "uncontrollabl
 
 
 class Unit(sprite.Sprite):
-    empty_method = utility.empty_method
+    ai_retreatempty_method = utility.empty_method
 
     battle = None
     base_map = None  # base map
@@ -111,48 +108,122 @@ class Unit(sprite.Sprite):
     Grid = Grid
     AStarFinder = AStarFinder
 
-    # Import from common.unit
-    add_leader_buff = empty_method
-    add_mount_stat = empty_method
-    add_original_trait = empty_method
-    add_weapon_stat = empty_method
-    add_weapon_trait = empty_method
-    ai_combat = empty_method
-    ai_leader = empty_method
-    ai_move = empty_method
-    ai_retreat = empty_method
-    ai_unit = empty_method
-    apply_effect = empty_method
-    apply_map_status = empty_method
-    apply_status_to_nearby = empty_method
-    attack = empty_method
-    cal_loss = empty_method
-    cal_temperature = empty_method
-    change_follow_order = empty_method
-    change_formation = empty_method
-    check_element_effect = empty_method
-    check_element_threshold = empty_method
-    check_skill_usage = empty_method
-    check_special_effect = empty_method
-    check_weapon_cooldown = empty_method
-    create_troop_sprite = empty_method
-    die = empty_method
-    enter_battle = empty_method
-    find_formation_size = empty_method
-    find_retreat_target = empty_method
-    health_stamina_logic = empty_method
-    make_front_pos = empty_method
-    morale_logic = empty_method
-    move_logic = empty_method
-    pick_animation = empty_method
-    play_animation = empty_method
-    process_trait_skill = empty_method
-    rotate_logic = empty_method
-    skill_command_input = empty_method
-    status_update = empty_method
-    swap_weapon = empty_method
-    troop_loss = empty_method
-    use_skill = empty_method
+    from engine.unit.add_leader_buff import add_leader_buff
+    add_leader_buff = add_leader_buff
+
+    from engine.unit.add_mount_stat import add_mount_stat
+    add_mount_stat = add_mount_stat
+
+    from engine.unit.add_original_trait import add_original_trait
+    add_original_trait = add_original_trait
+
+    from engine.unit.add_weapon_stat import add_weapon_stat
+    add_weapon_stat = add_weapon_stat
+
+    from engine.unit.add_weapon_trait import add_weapon_trait
+    add_weapon_trait = add_weapon_trait
+
+    from engine.unit.ai_combat import ai_combat
+    ai_combat = ai_combat
+
+    from engine.unit.ai_leader import ai_leader
+    ai_leader = ai_leader
+
+    from engine.unit.ai_move import ai_move
+    ai_move = ai_move
+
+    from engine.unit.ai_retreat import ai_retreat
+    ai_retreat = ai_retreat
+
+    from engine.unit.ai_unit import ai_unit
+    ai_unit = ai_unit
+
+    from engine.unit.apply_effect import apply_effect
+    apply_effect = apply_effect
+
+    from engine.unit.apply_map_status import apply_map_status
+    apply_map_status = apply_map_status
+
+    from engine.unit.apply_status_to_nearby import apply_status_to_nearby
+    apply_status_to_nearby = apply_status_to_nearby
+
+    from engine.unit.attack import attack
+    attack = attack
+
+    from engine.unit.cal_loss import cal_loss
+    cal_loss = cal_loss
+
+    from engine.unit.cal_temperature import cal_temperature
+    cal_temperature = cal_temperature
+
+    from engine.unit.change_follow_order import change_follow_order
+    change_follow_order = change_follow_order
+
+    from engine.unit.change_formation import change_formation
+    change_formation = change_formation
+
+    from engine.unit.change_formation import change_formation
+    check_element_effect = change_formation
+
+    from engine.unit.check_element_threshold import check_element_threshold
+    check_element_threshold = check_element_threshold
+
+    from engine.unit.check_skill_usage import check_skill_usage
+    check_skill_usage = check_skill_usage
+
+    from engine.unit.check_special_effect import check_special_effect
+    check_special_effect = check_special_effect
+
+    from engine.unit.check_weapon_cooldown import check_weapon_cooldown
+    check_weapon_cooldown = check_weapon_cooldown
+
+    from engine.unit.die import die
+    die = die
+
+    from engine.unit.enter_battle import enter_battle
+    enter_battle = enter_battle
+
+    from engine.unit.find_formation_size import find_formation_size
+    find_formation_size = find_formation_size
+
+    from engine.unit.find_retreat_target import find_retreat_target
+    find_retreat_target = find_retreat_target
+
+    from engine.unit.health_stamina_logic import health_stamina_logic
+    health_stamina_logic = health_stamina_logic
+
+    from engine.unit.make_front_pos import make_front_pos
+    make_front_pos = make_front_pos
+
+    from engine.unit.morale_logic import morale_logic
+    morale_logic = morale_logic
+
+    from engine.unit.move_logic import move_logic
+    move_logic = move_logic
+
+    from engine.unit.pick_animation import pick_animation
+    pick_animation = pick_animation
+
+    from engine.unit.play_animation import play_animation
+    play_animation = play_animation
+
+    from engine.unit.process_trait_skill import process_trait_skill
+    process_trait_skill = process_trait_skill
+
+    from engine.unit.rotate_logic import rotate_logic
+    rotate_logic = rotate_logic
+
+    from engine.unit.skill_command_input import skill_command_input
+    skill_command_input = skill_command_input
+
+    from engine.unit.status_update import status_update
+    status_update = status_update
+
+    from engine.unit.swap_weapon import swap_weapon
+    swap_weapon = swap_weapon
+
+    from engine.unit.use_skill import use_skill
+    use_skill = use_skill
 
     weapon_set = weapon_set
 
@@ -802,6 +873,7 @@ class Unit(sprite.Sprite):
         self.mental = self.base_mental
         self.crit_effect = self.base_crit_effect
 
+        print(self.original_weapon_dmg)
         self.weapon_dmg = {key: {key2: value2.copy() for key2, value2 in value.items()} for
                            key, value in self.original_weapon_dmg[self.equipped_weapon].items()}
         self.weapon_speed = self.original_weapon_speed[self.equipped_weapon].copy()

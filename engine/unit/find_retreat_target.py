@@ -1,6 +1,6 @@
 from math import radians
 
-from engine.common import utility
+from engine import utility
 
 rotation_xy = utility.rotation_xy
 travel_to_map_border = utility.travel_to_map_border

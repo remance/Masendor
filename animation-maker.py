@@ -14,6 +14,7 @@ from PIL import Image, ImageFilter, ImageEnhance
 from engine.data import datastat
 from engine.uimenu import uimenu
 from engine.uibattle import uibattle
+from engine.game.game import Game
 from engine import utility
 
 csv_read = utility.csv_read
@@ -47,6 +48,9 @@ default_sprite_size = (200, 200)
 
 screen_size = (1100, 900)
 screen_scale = (1, 1)
+
+Game.screen_size = screen_size
+Game.screen_scale = screen_scale
 
 pygame.init()
 pen = pygame.display.set_mode(screen_size)
@@ -1789,7 +1793,7 @@ image = load_image(current_data_dir, screen_scale, "button.png", "animation_make
 image = pygame.transform.smoothscale(image, (int(image.get_width() * screen_scale[1]),
                                              int(image.get_height() * screen_scale[1])))
 
-text_popup = uimenu.TextPopup(screen_scale, screen_size)
+text_popup = uimenu.TextPopup()
 
 animation_race_button = Button("Ani Race", image, (image.get_width() / 2, image.get_height() / 2),
                     description=("Select animation race type", "Select animation race type pool to edit."))
@@ -1952,56 +1956,53 @@ mouth_selector = NameBox((250, image.get_height()), (reset_button.image.get_widt
 # lock_button = SwitchButton(["Lock:OFF","Lock:ON"], image, (reset_button.pos[0] + reset_button.image.get_width() * 2,
 #                                            p_body_helper.rect.midtop[1] - (image.get_height() / 1.5)))
 
-input_ui = uimenu.InputUI(screen_scale, load_image(module_dir, screen_scale, "input_ui.png", ("ui", "mainmenu_ui")),
-                        (screen_size[0] / 2, screen_size[1] / 2))  # user text input ui box popup
+input_ui = uimenu.InputUI(load_image(module_dir, screen_scale, "input_ui.png", ("ui", "mainmenu_ui")),
+                          (screen_size[0] / 2, screen_size[1] / 2))  # user text input ui box popup
 
 image_list = load_base_button(module_dir, screen_scale)
 
-input_ok_button = uimenu.MenuButton(screen_scale, image_list, pos=(input_ui.rect.midleft[0] + image_list[0].get_width(),
-                                                                 input_ui.rect.midleft[1] + image_list[0].get_height()),
+input_ok_button = uimenu.MenuButton(image_list, pos=(input_ui.rect.midleft[0] + image_list[0].get_width(),
+                                                     input_ui.rect.midleft[1] + image_list[0].get_height()),
                                   text="Confirm", layer=31)
-input_cancel_button = uimenu.MenuButton(screen_scale, image_list,
-                                      pos=(input_ui.rect.midright[0] - image_list[0].get_width(),
+input_cancel_button = uimenu.MenuButton(image_list,
+                                        pos=(input_ui.rect.midright[0] - image_list[0].get_width(),
                                            input_ui.rect.midright[1] + image_list[0].get_height()),
-                                      text="Cancel", layer=31)
+                                        text="Cancel", layer=31)
 input_button = (input_ok_button, input_cancel_button)
-input_box = uimenu.InputBox(screen_scale, input_ui.rect.center, input_ui.image.get_width())  # user text input box
+input_box = uimenu.InputBox(input_ui.rect.center, input_ui.image.get_width())  # user text input box
 
 input_ui_popup = (input_ui, input_box, input_ok_button, input_cancel_button)
 
-confirm_ui = uimenu.InputUI(screen_scale, load_image(module_dir, screen_scale, "input_ui.png", ("ui", "mainmenu_ui")),
+confirm_ui = uimenu.InputUI(load_image(module_dir, screen_scale, "input_ui.png", ("ui", "mainmenu_ui")),
                           (screen_size[0] / 2, screen_size[1] / 2))  # user confirm input ui box popup
 confirm_ui_popup = (confirm_ui, input_ok_button, input_cancel_button)
 
-colour_ui = uimenu.InputUI(screen_scale, load_image(current_data_dir, screen_scale, "colour.png", "animation_maker_ui"),
+colour_ui = uimenu.InputUI(load_image(current_data_dir, screen_scale, "colour.png", "animation_maker_ui"),
                          (screen_size[0] / 2, screen_size[1] / 2))  # user text input ui box popup
 colour_wheel = ColourWheel(load_image(main_data_dir, screen_scale, "rgb.png", "sprite"),
                            (colour_ui.pos[0], colour_ui.pos[1] / 1.5))
-colour_input_box = uimenu.InputBox(screen_scale, (colour_ui.rect.center[0], colour_ui.rect.center[1] * 1.2),
-                                 input_ui.image.get_width())  # user text input box
+colour_input_box = uimenu.InputBox((colour_ui.rect.center[0], colour_ui.rect.center[1] * 1.2),
+                                   input_ui.image.get_width())  # user text input box
 
-colour_ok_button = uimenu.MenuButton(screen_scale, image_list, pos=(colour_ui.rect.midleft[0] + image_list[0].get_width(),
-                                                                  colour_ui.rect.midleft[1] + (
-                                                                              image_list[0].get_height() * 2)),
+colour_ok_button = uimenu.MenuButton(image_list, pos=(colour_ui.rect.midleft[0] + image_list[0].get_width(),
+                                                      colour_ui.rect.midleft[1] + (image_list[0].get_height() * 2)),
                                    text="Confirm", layer=31)
-colour_cancel_button = uimenu.MenuButton(screen_scale, image_list,
-                                       pos=(colour_ui.rect.midright[0] - image_list[0].get_width(),
-                                            colour_ui.rect.midright[1] + (image_list[0].get_height() * 2)),
-                                       text="Cancel", layer=31)
+colour_cancel_button = uimenu.MenuButton(image_list, pos=(colour_ui.rect.midright[0] - image_list[0].get_width(),
+                                                          colour_ui.rect.midright[1] + (image_list[0].get_height() * 2)),
+                                         text="Cancel", layer=31)
 colour_ui_popup = (colour_ui, colour_wheel, colour_input_box, colour_ok_button, colour_cancel_button)
 
 box_img = load_image(current_data_dir, screen_scale, "property_box.png", "animation_maker_ui")
 big_box_img = load_image(current_data_dir, screen_scale, "biglistbox.png", "animation_maker_ui")
 
 uimenu.ListBox.containers = popup_list_box
-popup_list_box = uimenu.ListBox(screen_scale, (0, 0), big_box_img, 16)  # popup box need to be in higher layer
+popup_list_box = uimenu.ListBox((0, 0), big_box_img, 16)  # popup box need to be in higher layer
 uibattle.UIScroll(popup_list_box, popup_list_box.rect.topright)  # create scroll for popup list box
-anim_prop_list_box = uimenu.ListBox(screen_scale, (0, filmstrip_list[0].rect.midbottom[1] +
-                                                 (reset_button.image.get_height() * 1.5)), box_img, 8)
+anim_prop_list_box = uimenu.ListBox((0, filmstrip_list[0].rect.midbottom[1] +
+                                     (reset_button.image.get_height() * 1.5)), box_img, 8)
 anim_prop_list_box.namelist = anim_property_list + ["Custom"]
-frame_prop_list_box = uimenu.ListBox(screen_scale,
-                                   (screen_size[0] - box_img.get_width(), filmstrip_list[0].rect.midbottom[1] +
-                                    (reset_button.image.get_height() * 1.5)), box_img, 8)
+frame_prop_list_box = uimenu.ListBox((screen_size[0] - box_img.get_width(), filmstrip_list[0].rect.midbottom[1] +
+                                      (reset_button.image.get_height() * 1.5)), box_img, 8)
 frame_prop_list_box.namelist = [frame_property_list + ["Custom"] for _ in range(max_frame)]
 uibattle.UIScroll(anim_prop_list_box, anim_prop_list_box.rect.topright)  # create scroll for animation prop box
 uibattle.UIScroll(frame_prop_list_box, frame_prop_list_box.rect.topright)  # create scroll for frame prop box

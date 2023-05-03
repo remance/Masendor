@@ -10,27 +10,26 @@ def make_editor_ui(main_dir, screen_scale, screen_rect, listbox_image, image_lis
 
     bottom_height = screen_rect.height - image_list[0].get_height()
     box_image = load_image(main_dir, screen_scale, "unit_presetbox.png", ("ui", "mainmenu_ui"))
-    unit_preset_listbox = uimenu.ListBox(screen_scale, (0, screen_rect.height / 2.2),
-                                       box_image)  # box for showing unit preset list
+    unit_preset_listbox = uimenu.ListBox((0, screen_rect.height / 2.2), box_image)  # box for showing unit preset list
     uibattle.UIScroll(unit_preset_listbox, unit_preset_listbox.rect.topright)  # preset name scroll
     preset_select_border = uimenu.SelectedPresetBorder(
         (unit_preset_listbox.image.get_width() * 0.96, int(30 * screen_scale[1])))
 
-    troop_listbox = uimenu.ListBox(screen_scale, (screen_rect.width / 1.19, 0), listbox_image)
+    troop_listbox = uimenu.ListBox((screen_rect.width / 1.19, 0), listbox_image)
 
     uibattle.UIScroll(troop_listbox, troop_listbox.rect.topright)
 
-    unit_delete_button = uimenu.MenuButton(screen_scale, image_list, (image_list[0].get_width() / 2, bottom_height),
+    unit_delete_button = uimenu.MenuButton(image_list, (image_list[0].get_width() / 2, bottom_height),
                                          updater, text="Delete")
-    unit_save_button = uimenu.MenuButton(screen_scale, image_list,
+    unit_save_button = uimenu.MenuButton(image_list,
                                        ((screen_rect.width - (screen_rect.width - (image_list[0].get_width() * 1.7))),
                                         bottom_height), updater, text="Save")
 
-    popup_listbox = uimenu.ListBox(screen_scale, (0, 0), box_image, 15)  # popup box need to be in higher layer
+    popup_listbox = uimenu.ListBox((0, 0), box_image, 15)  # popup box need to be in higher layer
     uibattle.UIScroll(popup_listbox, popup_listbox.rect.topright)
 
     box_image = load_image(main_dir, screen_scale, "filter_box.png", ("ui", "mainmenu_ui"))  # filter box ui in editor
-    filter_box = uimenu.FilterBox(screen_scale, (screen_rect.width / 2.5, 0), box_image)
+    filter_box = uimenu.FilterBox((screen_rect.width / 2.5, 0), box_image)
 
     image1 = load_image(main_dir, screen_scale, "tick_box_no.png", ("ui", "mainmenu_ui"))
     image2 = load_image(main_dir, screen_scale, "tick_box_yes.png", ("ui", "mainmenu_ui"))

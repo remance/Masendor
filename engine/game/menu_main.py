@@ -18,7 +18,7 @@ def menu_main(self, mouse_left_up):
         self.main_ui_updater.remove(*self.start_menu_ui_only)
         self.menu_button.remove(*self.menu_button)
 
-        setup_list(self.screen_scale, uimenu.NameList, self.current_map_row, self.preset_map_list, self.map_namegroup,
+        setup_list(uimenu.NameList, self.current_map_row, self.preset_map_list, self.map_namegroup,
                    self.map_list_box, self.main_ui_updater)
         self.create_preview_map(self.preset_map_folder, self.preset_map_list)
 
@@ -47,7 +47,7 @@ def menu_main(self, mouse_left_up):
         self.main_ui_updater.remove(*self.start_menu_ui_only, self.popup_list_box, self.popup_list_box.scroll)
         self.menu_button.remove(*self.menu_button)
 
-        setup_list(self.screen_scale, uimenu.NameList, self.current_map_row, self.custom_map_list, self.map_namegroup,
+        setup_list(uimenu.NameList, self.current_map_row, self.custom_map_list, self.map_namegroup,
                    self.map_list_box,
                    self.main_ui_updater)
         self.create_preview_map(self.custom_map_folder, self.custom_map_list, custom_map=True)
@@ -108,5 +108,5 @@ def menu_main(self, mouse_left_up):
             self.ui_click = True
             self.current_popup_row = self.popup_list_box.scroll.player_input(
                 self.mouse_pos)  # update the scroller and get new current subsection
-            setup_list(self.screen_scale, uimenu.NameList, self.current_popup_row, self.genre_list,
+            setup_list(uimenu.NameList, self.current_popup_row, self.genre_list,
                        self.popup_namegroup, self.popup_list_box, self.main_ui_updater)

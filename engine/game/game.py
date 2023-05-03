@@ -75,6 +75,7 @@ class Game:
     ui_font = None
 
     screen_scale = (1, 1)
+    screen_size = ()
 
     game_version = "0.7.1.6"
     mouse_bind = {"left click": 1, "middle click": 2, "right click": 3, "scroll up": 4, "scroll down": 5}
@@ -207,10 +208,11 @@ class Game:
         Game.module_dir = os.path.join(self.data_dir, "module", self.module_folder)
         Game.ui_font = csv_read(self.module_dir, "ui_font.csv", ("ui",), header_key=True)
         for item in Game.ui_font:  # add ttf file extension for font data reading.
-            Game.ui_font[item] = Game.ui_font[item]["Font"] + ".ttf"
+            Game.ui_font[item] = os.path.join(self.font_dir, Game.ui_font[item]["Font"] + ".ttf")
         # Set the display mode
         self.screen_rect = pygame.Rect(0, 0, self.screen_width, self.screen_height)
         self.screen_scale = (self.screen_rect.width / 1920, self.screen_rect.height / 1080)
+        Game.screen_size = self.screen_rect.size
         Game.screen_scale = self.screen_scale
 
         self.window_style = 0
@@ -370,13 +372,12 @@ class Game:
         battle_select_image = load_images(self.module_dir, screen_scale=self.screen_scale,
                                           subfolder=("ui", "mapselect_ui"))
 
-        self.map_title = uimenu.MapTitle(self.screen_scale, (self.screen_rect.width / 2, 0))
+        self.map_title = uimenu.MapTitle((self.screen_rect.width / 2, 0))
 
-        self.map_description = uimenu.DescriptionBox(battle_select_image["map_description"], self.screen_scale,
+        self.map_description = uimenu.DescriptionBox(battle_select_image["map_description"],
                                                      (self.screen_rect.width / 2, self.screen_rect.height / 1.2))
-        self.map_preview = uimenu.MapPreview(self.module_dir, self.screen_scale,
-                                             (self.screen_rect.width / 2, self.map_title.image.get_height()))
-        self.source_description = uimenu.DescriptionBox(battle_select_image["source_description"], self.screen_scale,
+        self.map_preview = uimenu.MapPreview((self.screen_rect.width / 2, self.map_title.image.get_height()))
+        self.source_description = uimenu.DescriptionBox(battle_select_image["source_description"],
                                                         (self.screen_rect.width / 2, self.screen_rect.height / 1.3),
                                                         text_size=24)
 
@@ -385,13 +386,13 @@ class Game:
         uibattle.UIScroll(self.unit_selector, self.unit_selector.rect.topright)  # scroll bar for unit pick
 
         bottom_height = self.screen_rect.height - image_list[0].get_height()
-        self.select_button = uimenu.MenuButton(self.screen_scale, image_list,
+        self.select_button = uimenu.MenuButton(image_list,
                                                (self.screen_rect.width - image_list[0].get_width(), bottom_height),
                                                self.main_ui_updater, text="Select")
-        self.start_button = uimenu.MenuButton(self.screen_scale, image_list,
+        self.start_button = uimenu.MenuButton(image_list,
                                               (self.screen_rect.width - image_list[0].get_width(), bottom_height),
                                               self.main_ui_updater, text="Start")
-        self.map_back_button = uimenu.MenuButton(self.screen_scale, image_list,
+        self.map_back_button = uimenu.MenuButton(image_list,
                                                  (self.screen_rect.width - (
                                                          self.screen_rect.width - image_list[0].get_width()),
                                                   bottom_height),
@@ -401,27 +402,21 @@ class Game:
         self.team_select_button = (self.select_button, self.map_back_button)
         self.unit_select_button = (self.start_button, self.map_back_button)
 
-        self.map_list_box = uimenu.ListBox(self.screen_scale, (self.screen_width -
-                                                               (battle_select_image["name_list"].get_width() * 2), 0),
+        self.map_list_box = uimenu.ListBox((self.screen_width - (battle_select_image["name_list"].get_width() * 2), 0),
                                            battle_select_image["name_list"])
         uibattle.UIScroll(self.map_list_box, self.map_list_box.rect.topright)  # scroll bar for map list
 
-        self.unit_list_box = uimenu.ListBox(self.screen_scale, (self.screen_width -
-                                                                battle_select_image["unit_list"].get_width(), 0),
+        self.unit_list_box = uimenu.ListBox((self.screen_width - battle_select_image["unit_list"].get_width(), 0),
                                             battle_select_image["unit_list"])
         uibattle.UIScroll(self.unit_list_box, self.unit_list_box.rect.topright)  # scroll bar for map list
 
-        self.source_list_box = uimenu.ListBox(self.screen_scale, (self.screen_width -
-                                                                  (battle_select_image["name_list"].get_width()),
-                                                                  0),
+        self.source_list_box = uimenu.ListBox((self.screen_width - (battle_select_image["name_list"].get_width()), 0),
                                               battle_select_image["top_box"])  # source list ui box
         uibattle.UIScroll(self.source_list_box, self.source_list_box.rect.topright)  # scroll bar for source list
-        self.map_option_box = uimenu.MapOptionBox(self.screen_scale, (self.screen_width,
-                                                                      battle_select_image["top_box"].get_height()),
+        self.map_option_box = uimenu.MapOptionBox((self.screen_width, battle_select_image["top_box"].get_height()),
                                                   battle_select_image["top_box"],
                                                   0)  # ui box for battle option during preset map preparation screen
-        self.custom_map_option_box = uimenu.MapOptionBox(self.screen_scale, (self.screen_width, 0),
-                                                         battle_select_image["top_box"],
+        self.custom_map_option_box = uimenu.MapOptionBox((self.screen_width, 0), battle_select_image["top_box"],
                                                          1)  # ui box for battle option during preparation screen
 
         self.org_chart = uimenu.OrgChart(load_image(self.module_dir, self.screen_scale,
@@ -446,12 +441,12 @@ class Game:
         self.night_battle_tick_box = uimenu.TickBox((self.map_option_box.rect.topleft[0] * 1.05,
                                                      self.map_option_box.rect.topleft[1] * 1.3),
                                                     battle_select_image["untick"], battle_select_image["tick"], "night")
-        self.weather_custom_select = uimenu.NameList(self.screen_scale, self.map_option_box,
+        self.weather_custom_select = uimenu.NameList(self.map_option_box,
                                                      (self.map_option_box.rect.midleft[0],
                                                       self.map_option_box.rect.midleft[
                                                           1] + self.map_option_box.image.get_height() / 4),
                                                      "Weather: Light Random")
-        self.wind_custom_select = uimenu.NameList(self.screen_scale, self.map_option_box,
+        self.wind_custom_select = uimenu.NameList(self.map_option_box,
                                                   (self.map_option_box.rect.midleft[0],
                                                    self.map_option_box.rect.midleft[
                                                        1] + self.map_option_box.image.get_height() / 10),
@@ -471,15 +466,15 @@ class Game:
 
         # Unit and troop editor button in game start menu
 
-        self.unit_edit_button = uimenu.MenuButton(self.screen_scale, image_list,
+        self.unit_edit_button = uimenu.MenuButton(image_list,
                                                   (self.screen_rect.width / 2,
                                                    self.screen_rect.height - (image_list[0].get_height() * 4)),
                                                   self.main_ui_updater, text="Unit Editor")
-        self.troop_create_button = uimenu.MenuButton(self.screen_scale, image_list,
+        self.troop_create_button = uimenu.MenuButton(image_list,
                                                      (self.screen_rect.width / 2,
                                                       self.screen_rect.height - (image_list[0].get_height() * 2.5)),
                                                      self.main_ui_updater, text="Troop Creator")
-        self.editor_back_button = uimenu.MenuButton(self.screen_scale, image_list,
+        self.editor_back_button = uimenu.MenuButton(image_list,
                                                     (self.screen_rect.width / 2,
                                                      self.screen_rect.height - image_list[0].get_height()),
                                                     self.main_ui_updater, text="Back")
@@ -514,7 +509,7 @@ class Game:
         # Profile box
         self.profile_name = self.profile_name
         profile_box_image = load_image(self.module_dir, self.screen_scale, "profile_box.png", ("ui", "mainmenu_ui"))
-        self.profile_box = uimenu.TextBox(self.screen_scale, profile_box_image, (self.screen_width, 0),
+        self.profile_box = uimenu.TextBox(profile_box_image, (self.screen_width, 0),
                                           self.profile_name)  # profile name box at top right of screen at start_set menu screen
 
         # Load sound effect
@@ -540,11 +535,11 @@ class Game:
         self.status_images, self.role_images, self.trait_images, self.skill_images = make_icon_data(self.module_dir,
                                                                                                     self.screen_scale)
 
-        self.mini_map = uibattle.MiniMap((self.screen_rect.width, self.screen_rect.height), self.screen_scale)
+        self.mini_map = uibattle.MiniMap((self.screen_rect.width, self.screen_rect.height))
         self.battle_ui_updater.add(self.mini_map)
 
         battle_ui_dict = make_battle_ui(battle_ui_image, self.team_colour,
-                                        self.screen_rect.size, self.screen_scale)
+                                        self.screen_rect.size)
         self.time_ui = battle_ui_dict["time_ui"]
         self.time_number = battle_ui_dict["time_number"]
         self.battle_scale_ui = battle_ui_dict["battle_scale_ui"]
@@ -555,24 +550,20 @@ class Game:
                                                "wind_arrow": battle_ui_image["wind_arrow"]}
 
         # 4 Skill icons UI
-        uibattle.SkillCardIcon(self.screen_scale, self.skill_images["0"], (self.command_ui.image.get_width() +
-                                                                           self.skill_images["0"].get_width() / 2, 0),
-                               "0")
-        uibattle.SkillCardIcon(self.screen_scale, self.skill_images["0"], (self.command_ui.image.get_width() +
-                                                                           self.skill_images["0"].get_width() * 2, 0),
-                               "1")
-        uibattle.SkillCardIcon(self.screen_scale, self.skill_images["0"], (self.command_ui.image.get_width() +
-                                                                           self.skill_images["0"].get_width() * 3.5, 0),
-                               "2")
-        uibattle.SkillCardIcon(self.screen_scale, self.skill_images["0"], (self.command_ui.image.get_width() +
-                                                                           self.skill_images["0"].get_width() * 5, 0),
-                               "3")
+        uibattle.SkillCardIcon(self.skill_images["0"], (self.command_ui.image.get_width() +
+                                                        self.skill_images["0"].get_width() / 2, 0), "0")
+        uibattle.SkillCardIcon(self.skill_images["0"], (self.command_ui.image.get_width() +
+                                                        self.skill_images["0"].get_width() * 2, 0), "1")
+        uibattle.SkillCardIcon(self.skill_images["0"], (self.command_ui.image.get_width() +
+                                                        self.skill_images["0"].get_width() * 3.5, 0), "2")
+        uibattle.SkillCardIcon(self.skill_images["0"], (self.command_ui.image.get_width() +
+                                                        self.skill_images["0"].get_width() * 5, 0), "3")
 
         uibattle.AimTarget.aim_images = {0: battle_ui_image["aim_0"], 1: battle_ui_image["aim_1"],
                                          2: battle_ui_image["aim_2"], 3: pygame.Surface((0, 0))}
 
         box_image = load_image(self.module_dir, self.screen_scale, "unit_presetbox.png", ("ui", "mainmenu_ui"))
-        self.popup_list_box = uimenu.ListBox(self.screen_scale, (0, 0), box_image,
+        self.popup_list_box = uimenu.ListBox((0, 0), box_image,
                                              15)  # popup box need to be in higher layer
         uibattle.UIScroll(self.popup_list_box, self.popup_list_box.rect.topright)
 
@@ -608,7 +599,7 @@ class Game:
         self.inform_ui_popup = (self.input_ui, self.input_box, self.input_close_button)
 
         # Other ui in battle
-        self.battle_done_box = uibattle.BattleDone(self.screen_scale, (self.screen_width / 2, self.screen_height / 2),
+        self.battle_done_box = uibattle.BattleDone((self.screen_width / 2, self.screen_height / 2),
                                                    battle_ui_image["end_box"], battle_ui_image["result_box"])
         self.battle_done_button = uibattle.UIButton(battle_ui_image["end_button"], layer=19)
         self.battle_done_button.change_pos(
@@ -635,8 +626,7 @@ class Game:
         self.esc_value_boxes = esc_menu_dict["esc_value_boxes"]
 
         # Text
-        self.single_text_popup = uimenu.TextPopup(self.screen_scale,
-                                                  self.screen_rect.size)  # popup box that show name when mouse over
+        self.single_text_popup = uimenu.TextPopup()  # popup box that show name when mouse over
 
         # Encyclopedia
         self.encyclopedia, self.lore_name_list, self.filter_tag_list, self.lore_button_ui, self.page_button = make_lorebook(

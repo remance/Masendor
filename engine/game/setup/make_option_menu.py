@@ -26,11 +26,11 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
     # Create option menu button and icon
     font_size = int(36 * screen_scale[1])
 
-    back_button = uimenu.MenuButton(screen_scale, image_list, (screen_rect.width / 3, screen_rect.height / 1.2),
+    back_button = uimenu.MenuButton(image_list, (screen_rect.width / 3, screen_rect.height / 1.2),
                                   updater, text="Back")
-    keybind_button = uimenu.MenuButton(screen_scale, image_list, (screen_rect.width / 2, screen_rect.height / 1.2),
+    keybind_button = uimenu.MenuButton(image_list, (screen_rect.width / 2, screen_rect.height / 1.2),
                                      updater, text="Keybind")
-    default_button = uimenu.MenuButton(screen_scale, image_list, (screen_rect.width / 1.5, screen_rect.height / 1.2),
+    default_button = uimenu.MenuButton(image_list, (screen_rect.width / 1.5, screen_rect.height / 1.2),
                                      updater, text="Default")
 
     fullscreen_box = uimenu.TickBox((screen_rect.width / 2, screen_rect.height / 6.5),
@@ -73,9 +73,9 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
     image2 = image
     image3 = load_image(main_dir, screen_scale, "drop_click.jpg", ("ui", "mainmenu_ui"))
     image_list = [image, image2, image3]
-    resolution_drop = uimenu.MenuButton(screen_scale, image_list, (screen_rect.width / 2, screen_rect.height / 1.8),
-                                      updater, text=str(screen_width) + " x " + str(screen_height),
-                                      size=int(30 * screen_scale[1]))
+    resolution_drop = uimenu.MenuButton(image_list, (screen_rect.width / 2, screen_rect.height / 1.8),
+                                        updater, text=str(screen_width) + " x " + str(screen_height),
+                                        size=int(30 * screen_scale[1]))
     resolution_list = ("2560 x 1440", "2048 x 1152", "1920 x 1080", "1600 x 900", "1366 x 768",
                        "1280 x 720", "1136 x 640", "1024 x 600", "960 x 540", "848 x 480")  # add more here
     resolution_bar = make_bar_list(main_dir, screen_scale, resolution_list, resolution_drop, updater)

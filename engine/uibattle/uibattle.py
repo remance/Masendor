@@ -4,6 +4,7 @@ from math import cos, sin, radians
 
 import pygame
 
+from engine.uimenu.uimenu import UIMenu
 from engine import utility
 
 apply_sprite_colour = utility.apply_sprite_colour
@@ -19,10 +20,10 @@ def change_number(number):
         return str(round(number / 1000, 1)) + "k"
 
 
-class UIButton(pygame.sprite.Sprite):
+class UIButton(UIMenu):
     def __init__(self, image, event=None, layer=11):
         self._layer = layer
-        pygame.sprite.Sprite.__init__(self)
+        UIMenu.__init__(self)
         self.pos = (0, 0)
         self.image = image
         self.event = event
@@ -34,26 +35,13 @@ class UIButton(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.pos)
 
 
-class PopupIcon(pygame.sprite.Sprite):
-    def __init__(self, image, pos, event, game_ui, item_id=""):
-        self._layer = 12
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        self.pos = pos
-        self.image = image
-        self.event = 0
-        self.rect = self.image.get_rect(center=(self.pos))
-        self.mouse_over = False
-        self.item_id = item_id
-
-
-class HeroUI(pygame.sprite.Sprite):
+class HeroUI(UIMenu):
     weapon_sprite_pool = None
 
-    def __init__(self, screen_scale, weapon_box_images, status_box_image, text_size=24):
+    def __init__(self, weapon_box_images, status_box_image, text_size=24):
         self._layer = 10
-        pygame.sprite.Sprite.__init__(self)
-        self.screen_scale = screen_scale
-        self.font = pygame.font.SysFont("helvetica", int(text_size * screen_scale[1]))
+        UIMenu.__init__(self)
+        self.font = pygame.font.Font(self.ui_font["text_paragraph"], int(text_size * self.screen_scale[1]))
 
         self.image = pygame.Surface((400 * self.screen_scale[0], 200 * self.screen_scale[1]))
         self.image.fill((255, 255, 255))
@@ -378,21 +366,22 @@ class HeroUI(pygame.sprite.Sprite):
             self.image.blit(self.status_effect_image, self.status_effect_image_rect)
 
 
-class SkillCardIcon(pygame.sprite.Sprite):
+class SkillCardIcon(UIMenu, pygame.sprite.Sprite):
     cooldown = None
     active_skill = None
 
-    def __init__(self, screen_scale, image, pos, key):
+    def __init__(self, image, pos, key):
         self._layer = 11
+        UIMenu.__init__(self)
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos  # pos of the skill on ui
-        self.font = pygame.font.SysFont("helvetica", int(24 * screen_scale[1]))
+        self.font = pygame.font.SysFont("helvetica", int(24 * self.screen_scale[1]))
 
         self.cooldown_check = 0  # cooldown number
         self.active_check = 0  # active timer number
         self.game_id = None
 
-        self.key_font_size = int(24 * screen_scale[1])
+        self.key_font_size = int(24 * self.screen_scale[1])
 
         self.image = pygame.Surface((image.get_width(), image.get_height() + (self.key_font_size * 1.5)),
                                     pygame.SRCALPHA)
@@ -445,10 +434,10 @@ class SkillCardIcon(pygame.sprite.Sprite):
                 self.image.blit(text_surface, text_rect)
 
 
-class FPScount(pygame.sprite.Sprite):
+class FPScount(UIMenu):
     def __init__(self):
         self._layer = 12
-        pygame.sprite.Sprite.__init__(self)
+        UIMenu.__init__(self)
         self.image = pygame.Surface((50, 50), pygame.SRCALPHA)
         self.base_image = self.image.copy()
         self.font = pygame.font.SysFont("Arial", 18)
@@ -465,12 +454,13 @@ class FPScount(pygame.sprite.Sprite):
         self.image.blit(fps_text, text_rect)
 
 
-class SelectedSquad(pygame.sprite.Sprite):
+class SelectedSquad(UIMenu, pygame.sprite.Sprite):
     image = None
 
     def __init__(self, pos, layer=17):
         """Used for showing selected unit in inpeact ui and unit editor"""
         self._layer = layer
+        UIMenu.__init__(self)
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
         self.rect = self.image.get_rect(topleft=self.pos)
@@ -481,15 +471,14 @@ class SelectedSquad(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=self.pos)
 
 
-class MiniMap(pygame.sprite.Sprite):
+class MiniMap(UIMenu):
     colour = None
     selected_colour = None
 
-    def __init__(self, pos, screen_scale):
+    def __init__(self, pos):
         self._layer = 10
-        pygame.sprite.Sprite.__init__(self)
+        UIMenu.__init__(self)
         self.pos = pos
-        self.screen_scale = screen_scale
         self.leader_dot_images = {}
         self.player_dot_images = {}
         self.troop_dot_images = {}
@@ -550,11 +539,11 @@ class MiniMap(pygame.sprite.Sprite):
                               (self.camera_border[1] / self.screen_scale[1] / 5) / self.map_scale_height), 2)
 
 
-class EventLog(pygame.sprite.Sprite):
+class EventLog(UIMenu):
 
     def __init__(self, image, pos):
         self._layer = 10
-        pygame.sprite.Sprite.__init__(self)
+        UIMenu.__init__(self)
         self.font = pygame.font.SysFont("helvetica", int(image.get_height() / 15))
         self.pos = pos
         self.image = image
@@ -666,7 +655,7 @@ class EventLog(pygame.sprite.Sprite):
             self.recreate_image()
 
 
-class UIScroll(pygame.sprite.Sprite):
+class UIScroll(UIMenu):
     def __init__(self, ui, pos):
         """
         Scroll for any applicable ui
@@ -676,7 +665,7 @@ class UIScroll(pygame.sprite.Sprite):
         """
         self.ui = ui
         self._layer = self.ui.layer + 2  # always 2 layer higher than the ui and its item
-        pygame.sprite.Sprite.__init__(self)
+        UIMenu.__init__(self)
 
         self.ui.scroll = self
         self.height_ui = self.ui.image.get_height()
@@ -728,10 +717,10 @@ class UIScroll(pygame.sprite.Sprite):
             return self.current_row
 
 
-class UnitSelector(pygame.sprite.Sprite):
+class UnitSelector(UIMenu):
     def __init__(self, pos, image, icon_scale=1):
         self._layer = 10
-        pygame.sprite.Sprite.__init__(self)
+        UIMenu.__init__(self)
         self.image = image
         self.pos = pos
         self.rect = self.image.get_rect(midbottom=self.pos)
@@ -784,11 +773,12 @@ class UnitSelector(pygame.sprite.Sprite):
         self.scroll.change_image(new_row=self.current_row, row_size=self.row_size)
 
 
-class UnitIcon(pygame.sprite.Sprite):
+class UnitIcon(UIMenu, pygame.sprite.Sprite):
     colour = None
 
     def __init__(self, pos, unit, size):
         self._layer = 11
+        UIMenu.__init__(self)
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.who = unit  # link unit object so when click can correctly select or go to position
         self.pos = pos  # pos on unit selector ui
@@ -859,11 +849,10 @@ class UnitIcon(pygame.sprite.Sprite):
                 self.image = self.right_selected_image
 
 
-class TempUnitIcon(pygame.sprite.Sprite):
-    def __init__(self, screen_scale, team, image, index):
-        pygame.sprite.Sprite.__init__(self)
+class TempUnitIcon(UIMenu):
+    def __init__(self, team, image, index):
+        UIMenu.__init__(self)
         self.team = team
-        self.screen_scale = screen_scale
         self.index = index
         self.portrait = pygame.Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]), pygame.SRCALPHA)
         if type(image) in (int, float, str):
@@ -879,10 +868,10 @@ class TempUnitIcon(pygame.sprite.Sprite):
         self.is_leader = True
 
 
-class Timer(pygame.sprite.Sprite):
+class Timer(UIMenu):
     def __init__(self, pos, text_size=20):
         self._layer = 11
-        pygame.sprite.Sprite.__init__(self)
+        UIMenu.__init__(self)
         self.font = pygame.font.SysFont("helvetica", text_size)
         self.pos = pos
         self.image = pygame.Surface((100, 30), pygame.SRCALPHA)
@@ -919,10 +908,10 @@ class Timer(pygame.sprite.Sprite):
                 self.image.blit(self.timer_surface, self.timer_rect)
 
 
-class TimeUI(pygame.sprite.Sprite):
+class TimeUI(UIMenu):
     def __init__(self, image):
         self._layer = 10
-        pygame.sprite.Sprite.__init__(self)
+        UIMenu.__init__(self)
         self.pos = (0, 0)
         self.image = image.copy()
         self.base_image = self.image.copy()
@@ -945,10 +934,10 @@ class TimeUI(pygame.sprite.Sprite):
                                        self.rect.center[1]))  # time increase button
 
 
-class BattleScaleUI(pygame.sprite.Sprite):
+class BattleScaleUI(UIMenu):
     def __init__(self, image, team_colour):
         self._layer = 10
-        pygame.sprite.Sprite.__init__(self)
+        UIMenu.__init__(self)
         self.team_colour = team_colour
         self.font = pygame.font.SysFont("helvetica", 12)
         self.pos = (0, 0)
@@ -977,15 +966,14 @@ class BattleScaleUI(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=self.pos)
 
 
-class WheelUI(pygame.sprite.Sprite):
-    def __init__(self, image, selected_image, pos, screen_size, text_size=20):
+class WheelUI(UIMenu):
+    def __init__(self, image, selected_image, pos, text_size=20):
         """Wheel choice ui with text or image inside the choice.
         Works similar to Fallout companion wheel and similar system"""
         self._layer = 11
-        pygame.sprite.Sprite.__init__(self)
+        UIMenu.__init__(self)
         self.font = pygame.font.SysFont("helvetica", text_size)
         self.pos = pos
-        self.screen_size = screen_size
         self.choice_list = ()
 
         self.wheel_button_image = image
@@ -1072,12 +1060,12 @@ class WheelUI(pygame.sprite.Sprite):
                 self.image.blit(self.wheel_inactive_image_list[index], self.wheel_rect[index])
 
 
-class TextSprite(pygame.sprite.Sprite):
+class TextSprite(UIMenu):
     def __init__(self, value, text_size=20):
         """Sprite of text with transparent background.
         The size of text should be static or as close as the original text as possible"""
         self._layer = 11
-        pygame.sprite.Sprite.__init__(self)
+        UIMenu.__init__(self)
         self.font = pygame.font.SysFont("helvetica", text_size)
         self.pos = (0, 0)
         self.value = str(value)
@@ -1100,10 +1088,10 @@ class TextSprite(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.pos)
 
 
-class InspectSubunit(pygame.sprite.Sprite):
+class InspectSubunit(UIMenu):
     def __init__(self, pos):
         self._layer = 11
-        pygame.sprite.Sprite.__init__(self)
+        UIMenu.__init__(self)
         self.pos = pos
         self.who = None
         self.image = pygame.Surface((0, 0))
@@ -1119,11 +1107,10 @@ class InspectSubunit(pygame.sprite.Sprite):
             self.image = self.base_image.copy()
 
 
-class BattleDone(pygame.sprite.Sprite):
-    def __init__(self, screen_scale, pos, box_image, result_image):
+class BattleDone(UIMenu):
+    def __init__(self, pos, box_image, result_image):
         self._layer = 18
-        pygame.sprite.Sprite.__init__(self)
-        self.screen_scale = screen_scale
+        UIMenu.__init__(self)
         self.box_image = box_image
         self.result_image = result_image
         self.font = pygame.font.SysFont("oldenglishtext", int(self.screen_scale[1] * 60))
@@ -1189,13 +1176,13 @@ class BattleDone(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.pos)
 
 
-class AimTarget(pygame.sprite.Sprite):
+class AimTarget(UIMenu, pygame.sprite.Sprite):
     aim_images = None
 
-    def __init__(self, screen_scale, who):
+    def __init__(self, who):
         self._layer = 2000000
+        UIMenu.__init__(self)
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.screen_scale = screen_scale
         self.who = who
         self.who.shoot_line = self
         self.pos = pygame.Vector2(self.who.pos)
@@ -1256,21 +1243,22 @@ class SkillAimTarget(AimTarget):
             self.rect.center = self.pos
 
 
-class SpriteIndicator(pygame.sprite.Sprite):
+class SpriteIndicator(UIMenu, pygame.sprite.Sprite):
     def __init__(self, image, who, battle, layer=1):
         """Indicator for unit hitbox and status effect sprite"""
         self.who = who
         self._layer = layer
+        UIMenu.__init__(self)
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.battle = battle
         self.image = image
         self.rect = self.image.get_rect(center=self.who.pos)
 
 
-class Profiler(cProfile.Profile, pygame.sprite.Sprite):
+class Profiler(cProfile.Profile, UIMenu):
 
     def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
+        UIMenu.__init__(self)
         self.size = (900, 550)
         self.image = pygame.Surface(self.size)
         self.rect = pygame.Rect((0, 0, *self.size))

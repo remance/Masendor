@@ -1,4 +1,4 @@
-from engine.common.battle import setup_battle_ui
+from engine.battle import setup_battle_ui
 
 add_skill_icon = setup_battle_ui.add_skill_icon
 

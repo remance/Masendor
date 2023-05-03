@@ -65,7 +65,8 @@ def load_image(directory, screen_scale, file, subfolder=""):
     return surface
 
 
-def load_images(directory, screen_scale=(1, 1), subfolder=(), load_order=False, return_order=False):
+def load_images(directory, screen_scale=(1, 1), subfolder=(), load_order=False, return_order=False,
+                key_file_name_readable=False):
     """
     loads all images(only png files) in folder
     :param directory: Directory folder path
@@ -73,6 +74,7 @@ def load_images(directory, screen_scale=(1, 1), subfolder=(), load_order=False, 
     :param subfolder: List of sub1_folder path
     :param load_order: Using loadorder list file to create ordered list
     :param return_order: Return the order
+    :param key_file_name_readable: Convert key name from file name into data readable
     :return: Dict of loaded and scaled images as Pygame Surface
     """
     images = {}
@@ -96,6 +98,8 @@ def load_images(directory, screen_scale=(1, 1), subfolder=(), load_order=False, 
             if "." in file_name:  # remove extension from name
                 file_name = file.split(".")[:-1]
                 file_name = "".join(file_name)
+            if key_file_name_readable:
+                file_name = filename_convert_readable(file_name)
             images[file_name] = load_image(directory, screen_scale, file, subfolder=dir_path)
 
         if return_order is False:
@@ -327,8 +331,7 @@ def make_bar_list(main_dir, screen_scale, list_to_do, menu_image, updater):
     image3 = image2
     for index, bar in enumerate(list_to_do):
         bar_image = (image.copy(), image2.copy(), image3.copy())
-        bar = uimenu.MenuButton(screen_scale, bar_image,
-                                (menu_image.pos[0], menu_image.pos[1] + image.get_height() * (index + 1)),
+        bar = uimenu.MenuButton(bar_image, (menu_image.pos[0], menu_image.pos[1] + image.get_height() * (index + 1)),
                                 updater, text=bar)
         bar_list.append(bar)
     return bar_list
@@ -464,8 +467,10 @@ def apply_sprite_colour(surface, colour, colour_list=None, keep_white=True, keep
     return surface
 
 
-def setup_list(screen_scale, item_class, current_row, show_list, item_group, box, ui_class, layer=15):
+def setup_list(item_class, current_row, show_list, item_group, box, ui_class, layer=15):
     """generate list of subsection buttons like in the encyclopedia"""
+    from engine.game.game import Game
+    screen_scale = Game.screen_scale
     row = 5 * screen_scale[1]
     column = 5 * screen_scale[0]
     pos = box.rect.topleft
@@ -479,8 +484,7 @@ def setup_list(screen_scale, item_class, current_row, show_list, item_group, box
 
     for index, item in enumerate(show_list):
         if index >= current_row:
-            new_item = item_class(screen_scale, box, (pos[0] + column, pos[1] + row), item,
-                                  layer=layer)
+            new_item = item_class(box, (pos[0] + column, pos[1] + row), item, layer=layer)
             item_group.add(new_item)  # add new subsection sprite to group
             row += (new_item.font.get_height() * 1.4 * screen_scale[1])  # next row
             if len(item_group) > box.max_row_show:
@@ -510,13 +514,13 @@ def list_scroll(screen_scale, mouse_scroll_up, mouse_scroll_down, scroll, box, c
         if current_row < 0:
             current_row = 0
         else:
-            setup_list(screen_scale, uimenu.NameList, current_row, name_list, group, box, ui_class, layer=layer)
+            setup_list(uimenu.NameList, current_row, name_list, group, box, ui_class, layer=layer)
             scroll.change_image(new_row=current_row, row_size=len(name_list))
 
     elif mouse_scroll_down:
         current_row += 1
         if current_row + box.max_row_show - 1 < len(name_list):
-            setup_list(screen_scale, uimenu.NameList, current_row, name_list, group, box, ui_class, layer=layer)
+            setup_list(uimenu.NameList, current_row, name_list, group, box, ui_class, layer=layer)
             scroll.change_image(new_row=current_row, row_size=len(name_list))
         else:
             current_row -= 1
@@ -540,7 +544,7 @@ def popup_list_open(self, new_rect, new_list, ui_type, rect_pos, updater):
     elif rect_pos == "bottom":
         self.popup_list_box.rect = self.popup_list_box.image.get_rect(bottomleft=new_rect)
 
-    setup_list(self.screen_scale, uimenu.NameList, 0, new_list, self.popup_namegroup,
+    setup_list(uimenu.NameList, 0, new_list, self.popup_namegroup,
                self.popup_list_box, self.battle_ui_updater, layer=19)
 
     self.popup_list_box.scroll.pos = self.popup_list_box.rect.topright  # change position variable

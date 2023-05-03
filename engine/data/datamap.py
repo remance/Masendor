@@ -14,6 +14,7 @@ load_image = utility.load_image
 load_images = utility.load_images
 csv_read = utility.csv_read
 lore_csv_read = utility.lore_csv_read
+fcv = utility.filename_convert_readable
 
 
 class BattleMapData:
@@ -94,14 +95,15 @@ class BattleMapData:
 
         self.map_texture = []
         self.texture_folder = [item["Name"] for item in self.feature_mod.values() if
-                               item["Name"] != ""]  # For now remove terrain with no planned name/folder yet
+                               item["Name"] != ""]
 
         for index, folder in enumerate(self.texture_folder):
-            images = load_images(module_dir, subfolder=("map", "texture", folder))
+            images = load_images(module_dir, subfolder=("map", "texture", fcv(folder, revert=True)),
+                                 key_file_name_readable=True)
             self.map_texture.append(list(images.values()))
 
         self.day_effect_images = load_images(module_dir, screen_scale=screen_scale,
-                                             subfolder=("map", "day"))
+                                             subfolder=("map", "day"), key_file_name_readable=True)
 
         self.battle_map_colour = {}
         with open(os.path.join(module_dir, "map", "map_colour.csv"), encoding="utf-8",
@@ -150,7 +152,7 @@ class BattleMapData:
         for this_weather in weather_list:  # Load weather matter sprite image
             try:
                 images = load_images(module_dir, screen_scale=screen_scale,
-                                     subfolder=("map", "weather", "matter", this_weather))
+                                     subfolder=("map", "weather", "matter", fcv(this_weather, revert=True)))
                 self.weather_matter_images[this_weather] = tuple(images.values())
             except FileNotFoundError:
                 self.weather_matter_images[this_weather] = ()
@@ -159,7 +161,7 @@ class BattleMapData:
         for this_weather in weather_list:  # Load weather effect sprite image
             try:
                 images = load_images(module_dir, screen_scale=screen_scale,
-                                     subfolder=("map", "weather", "effect", this_weather))
+                                     subfolder=("map", "weather", "effect", fcv(this_weather, revert=True)))
                 self.weather_effect_images[this_weather] = tuple(images.values())
             except FileNotFoundError:
                 self.weather_effect_images[this_weather] = ()

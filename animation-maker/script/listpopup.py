@@ -27,7 +27,7 @@ def setup_list(item_class, current_row, show_list, item_group, box, ui_class,
     add_row = 0
     for index, item in enumerate(show_list):
         if index >= current_row:
-            item_group.add(item_class(screen_scale, box, (pos[0] + column, pos[1] + row), item,
+            item_group.add(item_class(box, (pos[0] + column, pos[1] + row), item,
                                       layer=layer))  # add new subsection sprite to group
             row += (30 * height_adjust)  # next row
             add_row += 1
