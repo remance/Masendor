@@ -1,0 +1,1 @@
+Each map should be in its own folder. Custom map folder must be in folder name custom.

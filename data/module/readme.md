@@ -1,0 +1,1 @@
+This is the folder for keeping module data. If you want to learn how to create module, map, leader, and more, then go to Tutorial folder which have documentation and tutorial for data structure.
