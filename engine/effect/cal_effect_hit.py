@@ -1,4 +1,4 @@
-from engine.common.damagesprite.cal_dmg import cal_dmg_penetrate
+from engine.effect.cal_dmg import cal_dmg_penetrate
 
 
 def cal_effect_hit(self, target, hit_angle):

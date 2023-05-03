@@ -1,5 +1,5 @@
-from engine import menu
-from engine.common import utility
+from engine.uimenu import uimenu
+from engine import utility
 
 setup_list = utility.setup_list
 list_scroll = utility.list_scroll
@@ -18,7 +18,7 @@ def menu_main(self, mouse_left_up):
         self.main_ui_updater.remove(*self.start_menu_ui_only)
         self.menu_button.remove(*self.menu_button)
 
-        setup_list(self.screen_scale, menu.NameList, self.current_map_row, self.preset_map_list, self.map_namegroup,
+        setup_list(self.screen_scale, uimenu.NameList, self.current_map_row, self.preset_map_list, self.map_namegroup,
                    self.map_list_box, self.main_ui_updater)
         self.create_preview_map(self.preset_map_folder, self.preset_map_list)
 
@@ -47,7 +47,7 @@ def menu_main(self, mouse_left_up):
         self.main_ui_updater.remove(*self.start_menu_ui_only, self.popup_list_box, self.popup_list_box.scroll)
         self.menu_button.remove(*self.menu_button)
 
-        setup_list(self.screen_scale, menu.NameList, self.current_map_row, self.custom_map_list, self.map_namegroup,
+        setup_list(self.screen_scale, uimenu.NameList, self.current_map_row, self.custom_map_list, self.map_namegroup,
                    self.map_list_box,
                    self.main_ui_updater)
         self.create_preview_map(self.custom_map_folder, self.custom_map_list, custom_map=True)
@@ -97,9 +97,9 @@ def menu_main(self, mouse_left_up):
                 if name.rect.collidepoint(self.mouse_pos) and mouse_left_up:  # click on name in list
                     self.change_game_genre(index)
 
-                    for thisname in self.popup_namegroup:  # remove troop name list
-                        thisname.kill()
-                        del thisname
+                    for this_name in self.popup_namegroup:  # remove troop name list
+                        this_name.kill()
+                        del this_name
 
                     self.main_ui_updater.remove(self.popup_list_box, self.popup_list_box.scroll)
                     break
@@ -108,8 +108,5 @@ def menu_main(self, mouse_left_up):
             self.ui_click = True
             self.current_popup_row = self.popup_list_box.scroll.player_input(
                 self.mouse_pos)  # update the scroller and get new current subsection
-            setup_list(self.screen_scale, menu.NameList, self.current_popup_row, self.genre_list,
+            setup_list(self.screen_scale, uimenu.NameList, self.current_popup_row, self.genre_list,
                        self.popup_namegroup, self.popup_list_box, self.main_ui_updater)
-
-        # else:
-        #     self.main_ui.remove(self.popup_listbox, self.popup_list_scroll, *self.popup_namegroup)

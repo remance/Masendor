@@ -1,5 +1,5 @@
-from engine import menu
-from engine.common import utility
+from engine.uimenu import uimenu
+from engine import utility
 
 setup_list = utility.setup_list
 list_scroll = utility.list_scroll
@@ -18,7 +18,7 @@ def menu_custom_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
         if self.map_list_box.scroll.rect.collidepoint(self.mouse_pos):  # click on subsection list scroll
             self.current_map_row = self.map_list_box.scroll.player_input(
                 self.mouse_pos)  # update the scroll and get new current subsection
-            setup_list(self.screen_scale, menu.NameList, self.current_map_row, self.preset_map_list,
+            setup_list(self.screen_scale, uimenu.NameList, self.current_map_row, self.preset_map_list,
                        self.map_namegroup, self.map_list_box,
                        self.main_ui_updater)
 
@@ -56,7 +56,7 @@ def menu_custom_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
         self.camp_pos = [{}]
         self.camp_icon = []
 
-        setup_list(self.screen_scale, menu.NameList, self.current_source_row, ["None"] +
+        setup_list(self.screen_scale, uimenu.NameList, self.current_source_row, ["None"] +
                    self.faction_data.faction_name_list, self.source_namegroup, self.source_list_box,
                    self.main_ui_updater)
 

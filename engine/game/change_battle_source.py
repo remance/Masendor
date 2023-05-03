@@ -1,5 +1,5 @@
-from engine import menu
-from engine.common import utility
+from engine.uimenu import uimenu
+from engine import utility
 
 setup_list = utility.setup_list
 list_scroll = utility.list_scroll
@@ -33,7 +33,7 @@ def change_battle_source(self):
 
     self.source_description.change_text(self.source_text)
 
-    setup_list(self.screen_scale, menu.NameList, self.current_source_row, self.source_name_list,
+    setup_list(self.screen_scale, uimenu.NameList, self.current_source_row, self.source_name_list,
                self.source_namegroup, self.source_list_box, self.main_ui_updater)
 
     unit_info = self.read_selected_map_data(self.preset_map_folder, "troop_pos.csv", source=True)

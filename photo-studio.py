@@ -202,7 +202,7 @@ class Studio(game.Game):
         effectsprite.Effect.effect_animation_pool = self.effect_animation_pool
 
         self.battle_data = {}
-        with open(os.path.join(main_dir, "photo studio", self.module_folder, battle_data_name + ".csv"), encoding="utf-8",
+        with open(os.path.join(main_dir, "photo-studio", self.module_folder, battle_data_name + ".csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -335,7 +335,7 @@ screen_height = int(screen.height)
 # Read config file
 config = configparser.ConfigParser()
 
-config.read_file(open(os.path.join(main_dir, "photo studio", "configuration.ini")))  # read config file
+config.read_file(open(os.path.join(main_dir, "photo-studio", "configuration.ini")))  # read config file
 
 screen_width = int(config["DEFAULT"]["screen_width"])
 screen_height = int(config["DEFAULT"]["screen_height"])

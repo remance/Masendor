@@ -3,8 +3,8 @@ import os
 
 import pygame
 
-from engine import unit
-from engine.common import utility
+from engine.unit import unit
+from engine import utility
 
 stat_convert = utility.stat_convert
 

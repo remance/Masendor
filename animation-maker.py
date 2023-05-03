@@ -17,6 +17,7 @@ from engine.uibattle import uibattle
 from engine import utility
 
 csv_read = utility.csv_read
+fcv = utility.filename_convert_readable
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 main_data_dir = os.path.join(main_dir, "data")
@@ -214,7 +215,7 @@ def change_frame_process():
 race_list = []
 for x in Path(os.path.join(module_dir, "sprite", "unit")).iterdir():  # grab race with sprite
     if os.path.normpath(x).split(os.sep)[-1] != "weapon":  # exclude weapon as race
-        race_list.append(os.path.normpath(x).split(os.sep)[-1])
+        race_list.append(fcv(os.path.normpath(x).split(os.sep)[-1]))
 
 animation_pool_data, part_name_header = read_anim_data(module_folder, anim_column_header)
 weapon_joint_list = read_joint_data(module_folder)
@@ -244,18 +245,19 @@ with open(os.path.join(main_dir, "data", "sprite", "colour_rgb.csv"), encoding="
 gen_body_sprite_pool = {}
 for race in race_list:
     if race != "":
+        race_file_name = fcv(race, revert=True)
         try:
             [os.path.split(
                 os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for
-             x in Path(os.path.join(module_dir, "sprite", "unit", race)).iterdir() if
+             x in Path(os.path.join(module_dir, "sprite", "unit", race_file_name)).iterdir() if
              x.is_dir()]  # check if race folder exist
 
             gen_body_sprite_pool[race] = {}
-            part_folder = Path(os.path.join(module_dir, "sprite", "unit", race))
-            subdirectories = [os.path.split(
+            part_folder = Path(os.path.join(module_dir, "sprite", "unit", race_file_name))
+            sub1_directories = [os.path.split(
                 os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):]))
                               for x in part_folder.iterdir() if x.is_dir()]
-            for folder in subdirectories:
+            for folder in sub1_directories:
                 imgs = load_images(module_dir, screen_scale=screen_scale, subfolder=folder)
                 gen_body_sprite_pool[race][folder[-1]] = imgs
         except FileNotFoundError as b:
@@ -266,62 +268,74 @@ race_list = [race for race in gen_body_sprite_pool if race != ""]  # get only ra
 gen_armour_sprite_pool = {}
 for race in race_list:
     gen_armour_sprite_pool[race] = {}
+    race_file_name = fcv(race, revert=True)
     try:
-        part_subfolder = Path(os.path.join(module_dir, "sprite", "unit", race, "armour"))
-        subdirectories = [os.path.split(
+        part_sub1_folder = Path(os.path.join(module_dir, "sprite", "unit", race_file_name, "armour"))
+        sub1_directories = [os.path.split(
             os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for
-                          x in part_subfolder.iterdir() if x.is_dir()]
-        for subfolder in subdirectories:
-            part_subsubfolder = Path(
-                os.path.join(module_dir, "sprite", "unit", race, "armour", subfolder[-1]))
-            subsubdirectories = [os.path.split(
+                          x in part_sub1_folder.iterdir() if x.is_dir()]
+
+        for sub1_folder in sub1_directories:
+            sub1_folder_name = sub1_folder[-1]
+            sub1_folder_data_name = fcv(sub1_folder[-1])
+
+            if sub1_folder_data_name not in gen_armour_sprite_pool[race]:
+                gen_armour_sprite_pool[race][sub1_folder_data_name] = {}
+
+            part_sub2_folder = Path(
+                os.path.join(module_dir, "sprite", "unit", race_file_name, "armour", sub1_folder[-1]))
+            sub2_directories = [os.path.split(
                 os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):]))
-                                 for x in part_subsubfolder.iterdir() if x.is_dir()]
-            if subfolder[-1] not in gen_armour_sprite_pool[race]:
-                gen_armour_sprite_pool[race][subfolder[-1]] = {}
-            for subsubfolder in subsubdirectories:
-                if subsubfolder[-1] not in gen_armour_sprite_pool[race][subfolder[-1]]:
-                    gen_armour_sprite_pool[race][subfolder[-1]][subsubfolder[-1]] = {}
-                body_subsubfolder = Path(
-                    os.path.join(module_dir, "sprite", "unit", race, "armour", subfolder[-1],
-                                 subsubfolder[-1]))
+                                 for x in part_sub2_folder.iterdir() if x.is_dir()]
+
+            for sub2_folder in sub2_directories:
+                sub2_folder_name = sub2_folder[-1]
+                sub2_folder_data_name = fcv(sub2_folder[-1])
+                if sub2_folder_data_name not in gen_armour_sprite_pool[race][sub1_folder_data_name]:
+                    gen_armour_sprite_pool[race][sub1_folder_data_name][sub2_folder_data_name] = {}
+                body_sub2_folder = Path(
+                    os.path.join(module_dir, "sprite", "unit", race_file_name, "armour", sub1_folder_name,
+                                 sub2_folder_name))
                 body_directories = [os.path.split(os.sep.join(
                     os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x in
-                                    body_subsubfolder.iterdir() if x.is_dir()]
+                                    body_sub2_folder.iterdir() if x.is_dir()]
+
                 for body_folder in body_directories:
                     imgs = load_images(module_dir, screen_scale=screen_scale,
-                                       subfolder=("sprite", "unit", race, "armour",
-                                                  subfolder[-1], subsubfolder[-1], body_folder[-1]))
-                    gen_armour_sprite_pool[race][subfolder[-1]][subsubfolder[-1]][body_folder[-1]] = imgs
+                                       subfolder=("sprite", "unit", race_file_name, "armour",
+                                                  sub1_folder_name, sub2_folder_name, body_folder[-1]))
+                    gen_armour_sprite_pool[race][sub1_folder_data_name][sub2_folder_data_name][body_folder[-1]] = imgs
     except FileNotFoundError as b:
         print(b)
 
 gen_weapon_sprite_pool = {}
 part_folder = Path(os.path.join(module_dir, "sprite", "unit", "weapon"))
-subdirectories = [
+sub1_directories = [
     os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):]))
     for x in part_folder.iterdir() if x.is_dir()]
-for folder in subdirectories:
-    gen_weapon_sprite_pool[folder[-1]] = {}
-    part_subfolder = Path(os.path.join(module_dir, "sprite", "unit", "weapon", folder[-1]))
-    subsubdirectories = [os.path.split(
+for folder in sub1_directories:
+    folder_data_name = fcv(folder[-1])
+    gen_weapon_sprite_pool[folder_data_name] = {}
+    part_sub1_folder = Path(os.path.join(module_dir, "sprite", "unit", "weapon", folder[-1]))
+    sub2_directories = [os.path.split(
     os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x in
-                     part_subfolder.iterdir() if x.is_dir()]
+                     part_sub1_folder.iterdir() if x.is_dir()]
     imgs = load_images(module_dir, screen_scale=screen_scale,
                        subfolder=("sprite", "unit", "weapon", folder[-1],
                                   "common"))  # use only common weapon
 
-    gen_weapon_sprite_pool[folder[-1]] = imgs
+    gen_weapon_sprite_pool[folder_data_name] = imgs
 
 effect_sprite_pool = {}
 part_folder = Path(os.path.join(module_dir, "sprite", "effect"))
-subdirectories = [
+sub1_directories = [
     os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):]))
     for x in part_folder.iterdir() if x.is_dir()]
-for folder in subdirectories:
+for folder in sub1_directories:
     part_folder = Path(os.path.join(module_dir, "sprite", "effect", folder[-1]))
     imgs = load_images(module_dir, screen_scale=screen_scale, subfolder=folder)
-    effect_sprite_pool[folder[-1]] = imgs
+    effect_sprite_pool[fcv(folder[-1])] = imgs
+
 
 class Showroom(pygame.sprite.Sprite):
     def __init__(self, size):
@@ -924,7 +938,6 @@ class Model:
                                                      pose[part][6]]
                                 part_name[part] = [self.weapon[part], pose[part][0]]
                         else:
-                            print(part, pose[part])
                             if any(ext in part for ext in ("effect", "special")):
                                 sprite_part[part] = [self.sprite_image[part],
                                                      (self.sprite_image[part].get_width() / 2,

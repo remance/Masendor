@@ -3,7 +3,7 @@ import math
 import pygame
 from PIL import Image, ImageFilter, ImageEnhance
 
-from engine.common import utility
+from engine import utility
 
 rotation_xy = utility.rotation_xy
 apply_sprite_colour = utility.apply_sprite_colour

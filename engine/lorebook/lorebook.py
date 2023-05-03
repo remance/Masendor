@@ -1,6 +1,6 @@
 import pygame
 
-from engine.common import utility
+from engine import utility
 
 # TODO paragraph syntax,
 

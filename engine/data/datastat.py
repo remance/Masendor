@@ -361,7 +361,7 @@ class TroopData:
             list_column = ("Trait", "Skill",)  # value in list only
             tuple_column = ("Armour", "Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon",
                             "Secondary Sub Weapon", "Mount", "Role", "Faction")  # value in tuple only
-            percent_column = ("Ammunition Modifier", )
+            percent_column = ("Ammunition Modifier",)
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]

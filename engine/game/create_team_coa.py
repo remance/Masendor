@@ -1,4 +1,4 @@
-from engine import menu
+from engine.uimenu import uimenu
 
 
 def create_team_coa(self, data, ui_class):
@@ -18,8 +18,8 @@ def create_team_coa(self, data, ui_class):
         else:  # empty team for custom map
             faction_coa_list = {0: None}
             faction_name = "None"
-        self.team_coa.add(menu.TeamCoa((int(120 * self.screen_scale[0]), int(120 * self.screen_scale[1])),
-                                       pos, faction_coa_list, team + 1, self.team_colour[team + 1], faction_name))
+        self.team_coa.add(uimenu.TeamCoa((int(120 * self.screen_scale[0]), int(120 * self.screen_scale[1])),
+                                         pos, faction_coa_list, team + 1, self.team_colour[team + 1], faction_name))
         pos[1] += 130 * self.screen_scale[1]
         if team == 4:
             pos = [self.screen_rect.width / 3.5, self.screen_rect.height / 8]

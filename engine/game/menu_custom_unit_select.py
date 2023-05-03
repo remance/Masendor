@@ -1,6 +1,6 @@
-from engine.common import utility
+from engine import utility
 
-from engine.common.game import menu_custom_unit_setup
+from engine.game import menu_custom_unit_setup
 
 leader_change_team_unit = menu_custom_unit_setup.leader_change_team_unit
 clean_group_object = utility.clean_group_object

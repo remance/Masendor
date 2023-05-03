@@ -2,14 +2,14 @@ import hashlib
 import os
 import threading
 from random import choice
-from engine.common import utility
+from engine import utility
 
 import pygame
 from PIL import Image
 
-from engine.common.game import create_troop_sprite
-from engine.datacacher import load_pickle_with_surfaces
-from engine.datacacher import save_pickle_with_surfaces
+from engine.game.create_troop_sprite import create_troop_sprite
+from engine.data.datacacher import load_pickle_with_surfaces
+from engine.data.datacacher import save_pickle_with_surfaces
 
 md5_dir = utility.md5_dir
 

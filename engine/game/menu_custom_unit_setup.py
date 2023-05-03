@@ -1,7 +1,8 @@
 import pygame
 
-from engine import menu, battleui
-from engine.common import utility
+from engine.uimenu import uimenu
+from engine.uibattle import uibattle
+from engine import utility
 
 setup_list = utility.setup_list
 list_scroll = utility.list_scroll
@@ -24,7 +25,7 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
 
                     unit_list = create_unit_list(self, this_team)
                     self.current_map_row = 0
-                    setup_list(self.screen_scale, menu.NameList, self.current_map_row, unit_list,
+                    setup_list(self.screen_scale, uimenu.NameList, self.current_map_row, unit_list,
                                self.map_namegroup, self.unit_list_box, self.main_ui_updater)
                     unit_change_team_unit(self, new_faction=True)
                     break
@@ -38,8 +39,8 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
                         if icon.who.name != "+":  # choose pos of selected unit
                             self.custom_map_data["unit"]["pos"][icon.who.team][icon.who.index] = map_pos
                             self.map_preview.change_mode(1, team_pos_list=self.custom_map_data["unit"]["pos"],
-                                                         camp_pos_list=self.camp_pos[0], selected=
-                                                         self.custom_map_data["unit"]["pos"][icon.who.team][
+                                                         camp_pos_list=self.camp_pos[0],
+                                                         selected=self.custom_map_data["unit"]["pos"][icon.who.team][
                                                              icon.who.index])
                             unit_change_team_unit(self, old_selected=icon.who.index)
                         break
@@ -52,7 +53,7 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
                 for coa in self.team_coa:
                     if coa.selected:  # get unit for selected team
                         unit_list = create_unit_list(self, coa)
-                        setup_list(self.screen_scale, menu.NameList, self.current_map_row, unit_list,
+                        setup_list(self.screen_scale, uimenu.NameList, self.current_map_row, unit_list,
                                    self.map_namegroup, self.unit_list_box, self.main_ui_updater)
         else:
             for index, name in enumerate(self.map_namegroup):  # player select unit preset in name list
@@ -152,8 +153,7 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
                             # highlight selected unit in preview map
                             self.map_preview.change_mode(1, team_pos_list=self.custom_map_data["unit"]["pos"],
                                                          camp_pos_list=self.camp_pos[0],
-                                                         selected=
-                                                         self.custom_map_data["unit"]["pos"][icon.who.team][
+                                                         selected=self.custom_map_data["unit"]["pos"][icon.who.team][
                                                              icon.who.index])
                     elif mouse_right_up:  # remove unit
                         if icon.who.name != "+":
@@ -175,10 +175,9 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
                                     if icon2.selected:
                                         self.map_preview.change_mode(1,
                                                                      team_pos_list=self.custom_map_data["unit"]["pos"],
-                                                                     camp_pos_list=self.camp_pos[0], selected=
-                                                                     self.custom_map_data["unit"]["pos"][
-                                                                         icon2.who.team][
-                                                                         icon2.who.index])
+                                                                     camp_pos_list=self.camp_pos[0],
+                                                                     selected=self.custom_map_data["unit"]["pos"][
+                                                                         icon2.who.team][icon2.who.index])
                                         break
                             icon.kill()
                     break
@@ -205,7 +204,7 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
             stuff.kill()
             del stuff
 
-        setup_list(self.screen_scale, menu.NameList, self.current_source_row,
+        setup_list(self.screen_scale, uimenu.NameList, self.current_source_row,
                    ["None"] + self.faction_data.faction_name_list,
                    self.source_namegroup, self.source_list_box, self.main_ui_updater)
 
@@ -266,7 +265,7 @@ def leader_change_team_unit(self):
                         image = self.leader_data.images[unit["Leader ID"]]
                     else:
                         image = self.leader_data.leader_list[unit["Leader ID"]]["Name"].split(" ")[0]
-                    self.preview_unit.add(battleui.TempUnitIcon(self.screen_scale, this_team.team, image, unit_index))
+                    self.preview_unit.add(uibattle.TempUnitIcon(self.screen_scale, this_team.team, image, unit_index))
             self.unit_selector.setup_unit_icon(self.unit_icon, [this_unit for this_unit in self.preview_unit if
                                                                 this_unit.index is None or "Temp Leader" not in
                                                                 self.custom_map_data["unit"][this_team.team][
@@ -296,7 +295,7 @@ def unit_change_team_unit(self, new_faction=False, old_selected=None, add_plus=T
                     if unit_index in self.custom_map_data["unit"]["pos"][this_team.team] and add_plus:
                         # unit placed on map, put in black-green colour in portrait
                         if type(image) is str:
-                            done_subunit = battleui.TempUnitIcon(self.screen_scale, this_team.team, image, unit_index)
+                            done_subunit = uibattle.TempUnitIcon(self.screen_scale, this_team.team, image, unit_index)
                             self.preview_unit.add(done_subunit)
                             new_image = pygame.Surface(self.leader_data.images["0"].get_size(), pygame.SRCALPHA)
                             pygame.draw.circle(new_image, (20, 150, 60),
@@ -310,19 +309,19 @@ def unit_change_team_unit(self, new_faction=False, old_selected=None, add_plus=T
                                                (new_image.get_width() / 2, new_image.get_height() / 2),
                                                new_image.get_width() / 2, width=int(10 * self.screen_scale[1]))
                             self.preview_unit.add(
-                                battleui.TempUnitIcon(self.screen_scale, this_team.team, new_image, unit_index))
+                                uibattle.TempUnitIcon(self.screen_scale, this_team.team, new_image, unit_index))
                     else:
                         self.preview_unit.add(
-                            battleui.TempUnitIcon(self.screen_scale, this_team.team, image, unit_index))
+                            uibattle.TempUnitIcon(self.screen_scale, this_team.team, image, unit_index))
 
                 if add_plus:
-                    self.preview_unit.add(battleui.TempUnitIcon(self.screen_scale, this_team.team, "+", None))
+                    self.preview_unit.add(uibattle.TempUnitIcon(self.screen_scale, this_team.team, "+", None))
 
                 unit_list = create_unit_list(self, this_team)
 
             if new_faction:
                 self.current_map_row = 0
-                setup_list(self.screen_scale, menu.NameList, self.current_map_row, unit_list,
+                setup_list(self.screen_scale, uimenu.NameList, self.current_map_row, unit_list,
                            self.map_namegroup, self.unit_list_box, self.main_ui_updater)
 
             self.unit_selector.setup_unit_icon(self.unit_icon,

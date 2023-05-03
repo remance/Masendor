@@ -1,5 +1,6 @@
-from engine import menu, battleui
-from engine.common import utility
+from engine.uimenu import uimenu
+from engine.uibattle import uibattle
+from engine import utility
 
 setup_list = utility.setup_list
 list_scroll = utility.list_scroll
@@ -13,7 +14,7 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
             new_row = self.popup_list_box.scroll.player_input(self.mouse_pos)
             if new_row is not None:
                 self.current_popup_row = new_row
-                setup_list(self.screen_scale, menu.NameList, self.current_popup_row,
+                setup_list(self.screen_scale, uimenu.NameList, self.current_popup_row,
                            self.popup_list_box.namelist,
                            self.popup_namegroup, self.popup_list_box, self.main_ui_updater)
         elif mouse_left_up:
@@ -50,8 +51,10 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                                 faction_index = self.faction_data.faction_name_list.index(name.name)
                                 if mouse_left_up:
                                     if "Team Faction " + str(coa.team) in self.custom_map_data["info"]:
-                                        if faction_index not in self.custom_map_data["info"]["Team Faction " + str(coa.team)]:
-                                            self.custom_map_data["info"]["Team Faction " + str(coa.team)].append(faction_index)
+                                        if faction_index not in self.custom_map_data["info"][
+                                            "Team Faction " + str(coa.team)]:
+                                            self.custom_map_data["info"]["Team Faction " + str(coa.team)].append(
+                                                faction_index)
                                     else:
                                         self.custom_map_data["info"]["Team Faction " + str(coa.team)] = [faction_index]
                                     coa.change_coa(
@@ -61,7 +64,8 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                                             "Team Faction " + str(coa.team)][0]]["Name"])
                                 elif mouse_right_up:
                                     if faction_index in self.custom_map_data["info"]["Team Faction " + str(coa.team)]:
-                                        self.custom_map_data["info"]["Team Faction " + str(coa.team)].remove(faction_index)
+                                        self.custom_map_data["info"]["Team Faction " + str(coa.team)].remove(
+                                            faction_index)
                                     if self.custom_map_data["info"]["Team Faction " + str(coa.team)]:  # still not empty
                                         coa.change_coa(
                                             {int(faction): self.faction_data.coa_list[int(faction)] for faction in
@@ -84,10 +88,10 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                                     self.camp_icon = []
                                 else:
                                     for camp in self.camp_pos[0][coa.team]:
-                                        self.camp_icon.append(battleui.TempUnitIcon(self.screen_scale, coa.team,
+                                        self.camp_icon.append(uibattle.TempUnitIcon(self.screen_scale, coa.team,
                                                                                     camp[1], 0))
                                 if not self.camp_icon or self.camp_icon[-1].name != "+":
-                                    self.camp_icon.append(battleui.TempUnitIcon(self.screen_scale, coa.team, "+", 0))
+                                    self.camp_icon.append(uibattle.TempUnitIcon(self.screen_scale, coa.team, "+", 0))
 
                             else:  # team no longer exist
                                 if coa.team in self.camp_pos[0]:
@@ -131,7 +135,7 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
         if mouse_left_up and self.source_list_box.scroll.rect.collidepoint(self.mouse_pos):  # click on list scroll
             self.current_source_row = self.source_list_box.scroll.player_input(
                 self.mouse_pos)  # update the scroll and get new current subsection
-            setup_list(self.screen_scale, menu.NameList, self.current_source_row,
+            setup_list(self.screen_scale, uimenu.NameList, self.current_source_row,
                        ["None"] + self.faction_data.faction_name_list,
                        self.source_namegroup, self.source_list_box, self.main_ui_updater)
 
@@ -227,7 +231,7 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
         for icon in self.camp_icon:
             icon.kill()
 
-        setup_list(self.screen_scale, menu.NameList, self.current_map_row, self.custom_map_list, self.map_namegroup,
+        setup_list(self.screen_scale, uimenu.NameList, self.current_map_row, self.custom_map_list, self.map_namegroup,
                    self.map_list_box, self.main_ui_updater)
 
         self.menu_button.add(*self.map_select_button)
@@ -275,7 +279,7 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
 
                         unit_list = sorted((set(unit_list)), key=unit_list.index)
 
-                    setup_list(self.screen_scale, menu.NameList, self.current_map_row, unit_list,
+                    setup_list(self.screen_scale, uimenu.NameList, self.current_map_row, unit_list,
                                self.map_namegroup, self.unit_list_box, self.main_ui_updater)
                     break
 
@@ -297,8 +301,8 @@ def change_team_coa(self):
             self.camp_icon = []
             if this_team.team in self.camp_pos[0]:
                 for camp in self.camp_pos[0][this_team.team]:
-                    self.camp_icon.append(battleui.TempUnitIcon(self.screen_scale, this_team.team, camp[1], 0))
-                self.camp_icon.append(battleui.TempUnitIcon(self.screen_scale, this_team.team, "+", 0))
+                    self.camp_icon.append(uibattle.TempUnitIcon(self.screen_scale, this_team.team, camp[1], 0))
+                self.camp_icon.append(uibattle.TempUnitIcon(self.screen_scale, this_team.team, "+", 0))
             self.unit_selector.setup_unit_icon(self.unit_icon, self.camp_icon)
 
             for this_team2 in self.team_coa:

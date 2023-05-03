@@ -1,7 +1,8 @@
 import pygame
 
-from engine import battleui, lorebook
-from engine.common import utility
+from engine.uibattle import uibattle
+from engine.lorebook import lorebook
+from engine import utility
 
 load_image = utility.load_image
 load_images = utility.load_images
@@ -20,20 +21,20 @@ def make_lorebook(self, main_dir, screen_scale, screen_rect):
     lore_name_list.max_row_show = encyclopedia.max_row_show
 
     lore_button_images = load_images(main_dir, screen_scale=screen_scale, subfolder=("ui", "lorebook_ui", "button"))
-    lore_button_ui = [battleui.UIButton(lore_button_images["concept"], 0, 13),  # concept section button
-                      battleui.UIButton(lore_button_images["history"], 1, 13),  # history section button
-                      battleui.UIButton(lore_button_images["faction"], 2, 13),  # faction section button
-                      battleui.UIButton(lore_button_images["troop"], 3, 13),  # troop section button
-                      battleui.UIButton(lore_button_images["equipment"], 4, 13),  # troop equipment section button
-                      battleui.UIButton(lore_button_images["status"], 5, 13),  # troop status section button
-                      battleui.UIButton(lore_button_images["skill"], 6, 13),  # troop skill section button
-                      battleui.UIButton(lore_button_images["property"], 7, 13),  # troop property section button
-                      battleui.UIButton(lore_button_images["leader"], 8, 13),  # leader section button
-                      battleui.UIButton(lore_button_images["terrain"], 9, 13),  # terrain section button
-                      battleui.UIButton(lore_button_images["weather"], 10, 13),  # weather section button
-                      battleui.UIButton(lore_button_images["close"], "close", 13),  # close button
-                      battleui.UIButton(lore_button_images["previous"], "previous", 24),  # previous page button
-                      battleui.UIButton(lore_button_images["next"], "next", 24)]  # next page button
+    lore_button_ui = [uibattle.UIButton(lore_button_images["concept"], 0, 13),  # concept section button
+                      uibattle.UIButton(lore_button_images["history"], 1, 13),  # history section button
+                      uibattle.UIButton(lore_button_images["faction"], 2, 13),  # faction section button
+                      uibattle.UIButton(lore_button_images["troop"], 3, 13),  # troop section button
+                      uibattle.UIButton(lore_button_images["equipment"], 4, 13),  # troop equipment section button
+                      uibattle.UIButton(lore_button_images["status"], 5, 13),  # troop status section button
+                      uibattle.UIButton(lore_button_images["skill"], 6, 13),  # troop skill section button
+                      uibattle.UIButton(lore_button_images["property"], 7, 13),  # troop property section button
+                      uibattle.UIButton(lore_button_images["leader"], 8, 13),  # leader section button
+                      uibattle.UIButton(lore_button_images["terrain"], 9, 13),  # terrain section button
+                      uibattle.UIButton(lore_button_images["weather"], 10, 13),  # weather section button
+                      uibattle.UIButton(lore_button_images["close"], "close", 13),  # close button
+                      uibattle.UIButton(lore_button_images["previous"], "previous", 24),  # previous page button
+                      uibattle.UIButton(lore_button_images["next"], "next", 24)]  # next page button
 
     lore_button_ui[0].change_pos((encyclopedia.rect.topleft[0] + (lore_button_images["concept"].get_width() / 2),
                                   encyclopedia.rect.topleft[1] - (lore_button_images["concept"].get_height() / 2)))
@@ -75,7 +76,7 @@ def make_lorebook(self, main_dir, screen_scale, screen_rect):
     lore_button_ui[13].change_pos((encyclopedia.rect.bottomright[0] - (lore_button_images["next"].get_width()),
                                    encyclopedia.rect.bottomright[1] - lore_button_images["next"].get_height()))
     page_button = (lore_button_ui[12], lore_button_ui[13])
-    battleui.UIScroll(lore_name_list, lore_name_list.rect.topright)  # add subsection list scroll
-    battleui.UIScroll(filter_tag_list, filter_tag_list.rect.topright)  # add filter list scroll
+    uibattle.UIScroll(lore_name_list, lore_name_list.rect.topright)  # add subsection list scroll
+    uibattle.UIScroll(filter_tag_list, filter_tag_list.rect.topright)  # add filter list scroll
 
     return encyclopedia, lore_name_list, filter_tag_list, lore_button_ui, page_button

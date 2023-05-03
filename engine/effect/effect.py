@@ -11,6 +11,10 @@ direction_angle = utility.direction_angle
 
 
 class Effect(sprite.Sprite):
+    empty_method = utility.empty_method
+    clean_object = utility.clean_object
+    set_rotate = utility.set_rotate
+
     effect_sprite_pool = None
     effect_animation_pool = None
     effect_list = None
@@ -18,8 +22,9 @@ class Effect(sprite.Sprite):
     battle = None
     screen_scale = (1, 1)
 
-    set_rotate = utility.set_rotate
-    clean_object = utility.clean_object
+    bullet_sprite_pool = None
+    bullet_weapon_sprite_pool = None
+    height_map = None
 
     adjust_sprite = adjust_sprite.adjust_sprite
     cal_dmg = cal_dmg.cal_dmg
@@ -97,15 +102,7 @@ class Effect(sprite.Sprite):
             return
 
 
-class DamageEffect(ABC, sprite.Sprite, Effect):
-    empty_method = utility.empty_method
-    clean_object = utility.clean_object
-
-    bullet_sprite_pool = None
-    bullet_weapon_sprite_pool = None
-    height_map = None
-
-    set_rotate = utility.set_rotate
+class DamageEffect(ABC, Effect, sprite.Sprite):
 
     @abstractmethod  # DamageEffect should not be initiated on its own
     def __init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
@@ -247,7 +244,7 @@ class RangeDamageEffect(DamageEffect):
                 self.image = self.bullet_weapon_sprite_pool[sprite_name]["common"]["base_main"]
 
         DamageEffect.__init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, Vector2(base_pos),
-                              base_target, angle, sprite_name,  arc_shot=arc_shot, height_ignore=height_ignore,
+                              base_target, angle, sprite_name, arc_shot=arc_shot, height_ignore=height_ignore,
                               degrade_when_travel=degrade_when_travel, degrade_when_hit=degrade_when_hit,
                               random_direction=random_direction, random_move=random_move,
                               accuracy=accuracy, reach_effect=reach_effect, make_sound=False)
@@ -441,7 +438,7 @@ class EffectDamageEffect(DamageEffect):
                 if self.stat["Status"]:
                     for status in self.stat["Status"]:
                         this_unit.apply_effect(status, this_unit.status_list[status],
-                                                  this_unit.status_effect, this_unit.status_duration)
+                                               this_unit.status_effect, this_unit.status_duration)
                 if self.dmg:
                     self.hit_register(this_unit)
                 self.already_hit.append(this_unit.game_id)

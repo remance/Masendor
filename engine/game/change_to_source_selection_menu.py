@@ -1,5 +1,5 @@
-from engine import menu
-from engine.common import utility
+from engine.uimenu import uimenu
+from engine import utility
 
 setup_list = utility.setup_list
 load_image = utility.load_image
@@ -34,7 +34,7 @@ def change_to_source_selection_menu(self):
         self.error_log.write("\n No source for map: " + str(self.map_title.name))
         no_source
 
-    setup_list(self.screen_scale, menu.NameList, self.current_source_row, self.source_name_list,
+    setup_list(self.screen_scale, uimenu.NameList, self.current_source_row, self.source_name_list,
                self.source_namegroup, self.source_list_box, self.main_ui_updater)
 
     team_troop, team_leader = self.read_battle_source(

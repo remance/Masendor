@@ -8,8 +8,9 @@ from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 
-from engine.battleui import SkillAimTarget, SpriteIndicator
-from engine.common import utility
+from engine.uibattle.uibattle import SkillAimTarget, SpriteIndicator
+from engine import unit
+from engine import utility
 
 rotation_list = (90, -90)
 rotation_name = ("l_side", "r_side")
@@ -152,16 +153,6 @@ class Unit(sprite.Sprite):
     swap_weapon = empty_method
     troop_loss = empty_method
     use_skill = empty_method
-
-    script_dir = os.path.split(os.path.abspath(__file__))[0]
-    for entry in os.scandir(Path(script_dir + "/common/unit/")):  # load and replace modules from common.unit
-        if entry.is_file():
-            if ".py" in entry.name:
-                file_name = entry.name[:-3]
-            elif ".pyc" in entry.name:
-                file_name = entry.name[:-4]
-            exec(f"from gamescript.common.unit import " + file_name)
-            exec(f"" + file_name + " = " + file_name + "." + file_name)
 
     weapon_set = weapon_set
 
@@ -455,7 +446,6 @@ class Unit(sprite.Sprite):
             self.troop_formation_position = "Behind"
             self.troop_follow_order = "Stay Formation"
             self.troop_group_type = "melee inf"  # type of unit indicate troop composition, melee inf, range inf, melee cav, range cav", "artillery"
-
 
             self.group_formation = "Cluster"
             self.group_formation_preset = []
@@ -943,15 +933,15 @@ class Unit(sprite.Sprite):
                                 for _ in range(number):
                                     if self.troop_reserve_list[troop_id] > 0:
                                         add_unit = Unit(troop_id, self.battle.last_troop_game_id, None, self.team,
-                                                           self.base_pos, self.angle, self.start_hp,
-                                                           self.start_stamina,
-                                                           self, self.coa)
+                                                        self.base_pos, self.angle, self.start_hp,
+                                                        self.start_stamina,
+                                                        self, self.coa)
                                         add_unit.hitbox = SpriteIndicator(add_unit.hitbox_image, add_unit,
-                                                                             self)
+                                                                          self)
                                         add_unit.effectbox = SpriteIndicator(Surface((0, 0)), add_unit,
                                                                              self, layer=10000001)
                                         add_unit.enter_battle(self.battle.unit_animation_pool,
-                                                                 self.battle.status_animation_pool)
+                                                              self.battle.status_animation_pool)
                                         self.troop_dead_list[troop_id] -= 1
                                         self.battle.last_troop_game_id += 1
                                         self.troop_reserve_list[troop_id] -= 1
@@ -1193,7 +1183,6 @@ class Leader(Unit):
 class AILeader(Leader):
     def __init__(self, troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
                  leader_unit, coa):
-
         super().__init__(troop_id, game_id, map_id, team, start_pos, start_angle, start_hp, start_stamina,
                          leader_unit, coa)
 

@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pygame
 
-from engine.common import utility
+from engine import utility
 
 apply_sprite_colour = utility.apply_sprite_colour
 load_images = utility.load_images
@@ -174,7 +174,7 @@ class TroopAnimationData:
                 icon_imgs = load_images(module_dir, subfolder=("sprite", "unit", "weapon", folder[-1], subfolder[-1]))
                 self.gen_weapon_sprite_pool[folder[-1]][subfolder[-1]]["icon"] = icon_imgs
                 imgs = load_images(module_dir, subfolder=("sprite", "unit", "weapon",
-                                                        folder[-1], subfolder[-1]))
+                                                          folder[-1], subfolder[-1]))
                 self.gen_weapon_sprite_pool[folder[-1]][subfolder[-1]] = imgs
 
         self.effect_sprite_pool = {}

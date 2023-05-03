@@ -1,8 +1,8 @@
 import pygame
 
-from engine import menu
-from engine.common import utility
-from engine.common.game import menu_custom_unit_setup
+from engine import utility
+from engine.game import menu_custom_unit_setup
+from engine.uimenu import uimenu
 
 unit_change_team_unit = menu_custom_unit_setup.unit_change_team_unit
 leader_change_team_unit = menu_custom_unit_setup.leader_change_team_unit
@@ -180,7 +180,7 @@ def menu_custom_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_u
 
                     unit_list = sorted((set(unit_list)), key=unit_list.index)
 
-                setup_list(self.screen_scale, menu.NameList, self.current_map_row, unit_list,
+                setup_list(self.screen_scale, uimenu.NameList, self.current_map_row, unit_list,
                            self.map_namegroup, self.unit_list_box, self.main_ui_updater)
                 break
 
@@ -246,11 +246,11 @@ def change_to_char_select_menu(self, custom_data=None):
 
     self.main_ui_updater.remove(self.team_coa)
 
-    self.unit_stat["unit"] = menu.ArmyStat(self.screen_scale,
+    self.unit_stat["unit"] = uimenu.ArmyStat(self.screen_scale,
                                            (self.screen_rect.center[0] / 9, self.screen_rect.height / 8),
                                            load_image(self.data_dir, self.screen_scale,
                                                       "unit_stat.png", ("ui", "mapselect_ui")))  # unit stat
-    self.unit_stat["model"] = menu.ArmyStat(self.screen_scale,
+    self.unit_stat["model"] = uimenu.ArmyStat(self.screen_scale,
                                             (self.screen_rect.center[0] * 1.3, self.screen_rect.height / 8),
                                             load_image(self.data_dir, self.screen_scale,
                                                        "unit_stat.png", ("ui", "mapselect_ui")))  # troop stat

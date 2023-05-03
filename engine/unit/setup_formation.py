@@ -105,7 +105,8 @@ def setup_formation(self, which, phase=None, style=None, density=None, position=
         first_placement = np.where(first_placement == 0, 99, first_placement)
 
         priority_place = {"center-front": [], "center-rear": [], "flank-front": [],
-                          "flank-rear": [], "front": [], "rear": []}  # dict to keep placement priority score of formation
+                          "flank-rear": [], "front": [],
+                          "rear": []}  # dict to keep placement priority score of formation
 
         # For whatever reason, front and rear placement has to be in opposite of what intend, for example melee troop at the
         # front has to be assigned in "rear" instead

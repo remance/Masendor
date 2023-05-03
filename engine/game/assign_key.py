@@ -1,4 +1,4 @@
-from engine.common import utility
+from engine import utility
 
 edit_config = utility.edit_config
 

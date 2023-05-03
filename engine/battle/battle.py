@@ -81,16 +81,6 @@ class Battle:
     kill_effect_icon = empty_method
     wheel_ui_process = empty_method
 
-    for folder in ("battle", "ui"):
-        for entry in os.scandir(Path(script_dir + "/common/" + folder + "/")):  # load and replace modules from common
-            if entry.is_file():
-                if ".pyc" in entry.name:
-                    file_name = entry.name[:-4]
-                elif ".py" in entry.name:
-                    file_name = entry.name[:-3]
-                exec(f"from gamescript.common." + folder.replace("/", ".") + " import " + file_name)
-                exec(f"" + file_name + " = " + file_name + "." + file_name)
-
     start_camera_mode = "Follow"
 
     def __init__(self, game):
@@ -305,8 +295,7 @@ class Battle:
 
         # Assign battle variable to some classes
         unit.Unit.sound_effect_pool = self.sound_effect_pool
-        damagesprite.DamageEffect.sound_effect_pool = self.sound_effect_pool
-        effectsprite.Effect.sound_effect_pool = self.sound_effect_pool
+        effect.Effect.sound_effect_pool = self.sound_effect_pool
 
         # Create the game camera
         self.camera_mode = "Follow"  # mode of game camera

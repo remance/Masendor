@@ -1,5 +1,5 @@
-from engine import menu
-from engine.common import utility
+from engine.uimenu import uimenu
+from engine import utility
 
 setup_list = utility.setup_list
 list_scroll = utility.list_scroll
@@ -66,14 +66,14 @@ def menu_preset_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
         if self.map_list_box.scroll.rect.collidepoint(self.mouse_pos):  # click on subsection list scroll
             self.current_map_row = self.map_list_box.scroll.player_input(
                 self.mouse_pos)  # update the scroll and get new current subsection
-            setup_list(self.screen_scale, menu.NameList, self.current_map_row, self.preset_map_list,
+            setup_list(self.screen_scale, uimenu.NameList, self.current_map_row, self.preset_map_list,
                        self.map_namegroup, self.map_list_box,
                        self.main_ui_updater)
 
         elif self.source_list_box.scroll.rect.collidepoint(self.mouse_pos):  # click on subsection list scroll
             self.current_source_row = self.source_list_box.scroll.player_input(
                 self.mouse_pos)  # update the scroll and get new current subsection
-            setup_list(self.screen_scale, menu.NameList, self.current_source_row, self.source_name_list,
+            setup_list(self.screen_scale, uimenu.NameList, self.current_source_row, self.source_name_list,
                        self.source_namegroup, self.source_list_box, self.main_ui_updater)
 
     if self.map_back_button.event or esc_press:
@@ -94,7 +94,8 @@ def menu_preset_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
         self.map_source = 0
         self.map_preview.change_mode(0)  # revert map preview back to without unit dot
 
-        for group in (self.map_namegroup, self.team_coa, self.source_namegroup, self.preview_unit, self.unit_icon):  # remove map name, source name and coa item
+        for group in (self.map_namegroup, self.team_coa, self.source_namegroup, self.preview_unit,
+                      self.unit_icon):  # remove map name, source name and coa item
             for stuff in group:
                 stuff.kill()
                 del stuff

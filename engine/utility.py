@@ -12,7 +12,7 @@ import pygame
 import pygame.freetype
 from PIL import Image, ImageOps
 
-from engine import uimenu
+from engine.uimenu import uimenu
 
 accept_image_types = ("png", "jpg", "jpeg", "svg", "gif", "bmp")
 direction_angle = {"r_side": radians(90), "l_side": radians(270), "back": radians(180),
@@ -49,7 +49,7 @@ def load_image(directory, screen_scale, file, subfolder=""):
     :param directory: Directory folder path
     :param screen_scale: Resolution scale of game
     :param file: File name
-    :param subfolder: List of subfolder path
+    :param subfolder: List of sub1_folder path
     :return: Pygame Surface
     """
     new_subfolder = subfolder
@@ -70,7 +70,7 @@ def load_images(directory, screen_scale=(1, 1), subfolder=(), load_order=False, 
     loads all images(only png files) in folder
     :param directory: Directory folder path
     :param screen_scale: Resolution scale of game
-    :param subfolder: List of subfolder path
+    :param subfolder: List of sub1_folder path
     :param load_order: Using loadorder list file to create ordered list
     :param return_order: Return the order
     :return: Dict of loaded and scaled images as Pygame Surface
@@ -108,18 +108,21 @@ def load_images(directory, screen_scale=(1, 1), subfolder=(), load_order=False, 
         return images
 
 
-def filename_to_readable(filename):
-    if "-" in filename:
-        readable_filename = filename.split("-")
+def filename_convert_readable(filename, revert=False):
+    if revert:
+        new_filename = filename.replace(" ", "-").lower()  # replace space with - and make name lowercase
     else:
-        readable_filename = [filename]
+        if "-" in filename:
+            new_filename = filename.split("-")
+        else:
+            new_filename = [filename]
 
-    for item in readable_filename:
-        item = item.capitalize()  # capitalise each word divided by -
+        for index, item in enumerate(new_filename):
+            new_filename[index] = item.capitalize()  # capitalise each word divided by -
 
-    readable_filename = " ".join(readable_filename)  # replace - with space
+        new_filename = " ".join(new_filename)  # replace - with space
 
-    return readable_filename
+    return new_filename
 
 
 def convert_str_time(event):
@@ -139,7 +142,7 @@ def csv_read(main_dir, file, subfolder=(), output_type="dict", header_key=False,
     Read csv file
     :param main_dir: Game directory folder path
     :param file: File name
-    :param subfolder: Array of subfolder path
+    :param subfolder: Array of sub1_folder path
     :param output_type: Type of returned object, either dict or list
     :param header_key: Use header as dict key or not
     :param language: File language in acronym such as en for English

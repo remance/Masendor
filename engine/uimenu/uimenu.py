@@ -1,3 +1,4 @@
+import os
 import networkx as nx
 import pygame
 import pygame.transform
@@ -7,13 +8,17 @@ from functools import lru_cache
 from engine import utility
 
 
-class MenuUI(pygame.sprite.Sprite):
+class UIMenu(pygame.sprite.Sprite):
     def __init__(self):
         """
         Parent class for all menu user interface
         """
         from engine.game.game import Game
         self.screen_scale = Game.screen_scale
+        self.main_dir = Game.main_dir
+        self.data_dir = Game.data_dir
+        self.font_dir = Game.font_dir
+        self.ui_font = Game.ui_font
         pygame.sprite.Sprite.__init__(self)
 
 
@@ -328,42 +333,41 @@ class MenuButton(pygame.sprite.Sprite):
         self.event = False
 
 
-class BrownMenuButton(pygame.sprite.Sprite):
+class BrownMenuButton(UIMenu):
 
     @classmethod
     @lru_cache
     def make_buttons(cls, width):
-        from engine.game import Game
-        from engine.common.utility import load_image
+        from engine.game.game import Game
+        from engine.utility import load_image
         game = Game.game
 
-        image = load_image(game.data_dir, (1,1), "new_button.png", ("ui", "mainmenu_ui"))
-        
+        image = load_image(game.module_dir, (1, 1), "new_button.png", ("ui", "mainmenu_ui"))
+
         height = image.get_size()[1]
 
         # normal button
-        normal_button = pygame.Surface((width,height))
-      
-        normal_button.blit(image,(0,0),(0,0,6,height))
-        for x in range(6,width-5):
-            normal_button.blit(image,(x,0),(6,0,1,height))
-        normal_button.blit(image,(width-5,0),(7,0,12,height))
-  
+        normal_button = pygame.Surface((width, height))
+
+        normal_button.blit(image, (0, 0), (0, 0, 6, height))
+        for x in range(6, width - 5):
+            normal_button.blit(image, (x, 0), (6, 0, 1, height))
+        normal_button.blit(image, (width - 5, 0), (7, 0, 12, height))
+
         # hover button
         hover_button = normal_button.copy()
         pygame.draw.rect(hover_button, "#CCFF77", hover_button.get_rect(), 1)
 
         return (normal_button, hover_button)
 
-
     def __init__(self, pos, text="", width=200, parent=None):
-        pygame.sprite.Sprite.__init__(self)
+        UIMenu.__init__(self)
         self.pos = pos
         self.parent = parent
         images = self.make_buttons(width=width)
         self.button_normal_image = images[0].copy()
         self.button_over_image = images[1].copy()
-        font = pygame.font.SysFont("ubuntumono", 17)
+        font = pygame.font.Font(os.path.join(self.font_dir, self.ui_font["main_button"]), 17)
 
         # draw text into the button images
         text_surface = font.render(text, True, (200, 180, 200))
@@ -383,30 +387,33 @@ class BrownMenuButton(pygame.sprite.Sprite):
             self.image = self.button_over_image
             if mouse_up:
                 self.event = True
-       
+
         if self.parent is not None:
-            self.rect = pygame.rect.Rect(*[self.parent.get_rect()[i]-self.image.get_size()[i]//2+(self.pos[i]+1)*self.parent.get_rect()[i+2]*0.5 for i in range(2) ], *self.image.get_size())
+            self.rect = pygame.rect.Rect(*[
+                self.parent.get_rect()[i] - self.image.get_size()[i] // 2 + (self.pos[i] + 1) * self.parent.get_rect()[
+                    i + 2] * 0.5 for i in range(2)], *self.image.get_size())
 
     def change_state(self, text):
         pass
 
 
-class OptionMenuText(pygame.sprite.Sprite):
+class OptionMenuText(UIMenu):
     def __init__(self, pos, text, text_size):
         text_render = utility.text_render
 
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        UIMenu.__init__(self)
         self.pos = pos
-        self.font = pygame.font.SysFont("helvetica", text_size)
+        self.font = pygame.font.Font(os.path.join(self.font_dir, self.ui_font["main_button"]), text_size)
         self.image = text_render(text, self.font, pygame.Color("black"))
         self.rect = self.image.get_rect(center=(self.pos[0] - (self.image.get_width() / 2), self.pos[1]))
 
 
-class ControllerIcon(pygame.sprite.Sprite):
-    def __init__(self, pos, screen_scale, images, control_type):
-        pygame.sprite.Sprite.__init__(self)
+class ControllerIcon(UIMenu):
+    def __init__(self, pos, images, control_type):
+        UIMenu.__init__(self)
         self.pos = pos
-        self.font = pygame.font.SysFont("helvetica", int(46 * screen_scale[1]))
+        self.font = pygame.font.Font(os.path.join(self.font_dir, self.ui_font["main_button"]),
+                                     int(46 * self.screen_scale[1]))
         self.images = images
         self.image = self.images[control_type].copy()
         self.rect = self.image.get_rect(center=self.pos)
@@ -422,12 +429,12 @@ class ControllerIcon(pygame.sprite.Sprite):
             self.image = self.images[control_type]
 
 
-class KeybindIcon(pygame.sprite.Sprite):
+class KeybindIcon(UIMenu):
     controller_icon = {}
 
     def __init__(self, pos, text_size, control_type, key):
-        pygame.sprite.Sprite.__init__(self)
-        self.font = pygame.font.SysFont("helvetica", text_size)
+        UIMenu.__init__(self)
+        self.font = pygame.font.Font(os.path.join(self.font_dir, self.ui_font["main_button"]), text_size)
         self.pos = pos
         self.change_key(control_type, key, keybind_name=None)
         self.rect = self.image.get_rect(center=self.pos)
@@ -470,10 +477,10 @@ class KeybindIcon(pygame.sprite.Sprite):
         self.image.blit(text_surface, text_rect)
 
 
-class ValueBox(pygame.sprite.Sprite):
+class ValueBox(UIMenu):
     def __init__(self, image, pos, value, text_size):
         self._layer = 26
-        pygame.sprite.Sprite.__init__(self)
+        UIMenu.__init__(self)
         self.font = pygame.font.SysFont("timesnewroman", text_size)
         self.pos = pos
         self.image = image.copy()
@@ -492,11 +499,11 @@ class ValueBox(pygame.sprite.Sprite):
         self.image.blit(text_surface, text_rect)
 
 
-class MapTitle(pygame.sprite.Sprite):
+class MapTitle(UIMenu):
     def __init__(self, screen_scale, pos):
-        pygame.sprite.Sprite.__init__(self)
+        UIMenu.__init__(self)
 
-        self.font = pygame.font.SysFont("oldenglishtext", int(70 * screen_scale[1]))
+        self.font = pygame.font.Font(os.path.join(self.font_dir, self.ui_font["name_font"]), int(70 * screen_scale[1]))
         self.screen_scale = screen_scale
         self.pos = pos
         self.name = ""
@@ -521,9 +528,9 @@ class MapTitle(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(midtop=self.pos)
 
 
-class DescriptionBox(pygame.sprite.Sprite):
+class DescriptionBox(UIMenu):
     def __init__(self, image, screen_scale, pos, text_size=26):
-        pygame.sprite.Sprite.__init__(self)
+        UIMenu.__init__(self)
         self.screen_scale = screen_scale
         self.text_size = text_size
         self.font = pygame.font.SysFont("timesnewroman", int(self.text_size * self.screen_scale[1]))
@@ -538,8 +545,9 @@ class DescriptionBox(pygame.sprite.Sprite):
                                self.font)
 
 
-class TeamCoa(pygame.sprite.Sprite):
+class TeamCoa(UIMenu, pygame.sprite.Sprite):
     def __init__(self, coa_size, pos, coa_images, team, team_colour, name):
+        UIMenu.__init__(self)
         pygame.sprite.Sprite.__init__(self, self.containers)
 
         self.selected = False
@@ -602,8 +610,8 @@ class TeamCoa(pygame.sprite.Sprite):
         # Faction name to image
         self.name = name
         font_size = int(self.coa_size[1] / 5)
-        self.font = pygame.font.SysFont("oldenglishtext", font_size)
-        text_surface = text_render(str(self.name), self.font, pygame.Color("black"))
+        font = pygame.font.Font(os.path.join(self.font_dir, self.ui_font["name_font"]), font_size)
+        text_surface = text_render(str(self.name), font, pygame.Color("black"))
         text_rect = text_surface.get_rect(
             center=(int(self.selected_image.get_width() / 2), self.selected_image.get_height() - font_size))
         self.not_selected_image.blit(text_surface, text_rect)
@@ -611,11 +619,10 @@ class TeamCoa(pygame.sprite.Sprite):
         self.change_select(True)
 
 
-class ArmyStat(pygame.sprite.Sprite):
-    def __init__(self, screen_scale, pos, image):
+class ArmyStat(UIMenu):
+    def __init__(self, pos, image):
         self._layer = 1
-        pygame.sprite.Sprite.__init__(self)
-        self.screen_scale = screen_scale
+        UIMenu.__init__(self)
         self.font_size = int(32 * self.screen_scale[1])
 
         self.leader_font = pygame.font.SysFont("helvetica", int(36 * self.screen_scale[1]))
@@ -896,7 +903,7 @@ class MapPreview(pygame.sprite.Sprite):
 
     def change_map(self, base_map, feature_map, height_map):
 
-        from engine.battlemap import topology_map_creation
+        from engine.battlemap.battlemap import topology_map_creation
 
         new_base_map = pygame.transform.scale(base_map, (300, 300))
         new_feature_map = pygame.transform.scale(feature_map, (300, 300))
@@ -1117,7 +1124,7 @@ class BoxUI(pygame.sprite.Sprite):
         self.calculate_rect()
         self.image = pygame.Surface(size)
         self.image.fill("#222a2e")
-        self._layer = -1 # NOTE: not sure if this is good since underscore indicate it is a private variable but it works for now
+        self._layer = -1  # NOTE: not sure if this is good since underscore indicate it is a private variable but it works for now
 
     def get_rect(self):
         return self.rect
@@ -1125,9 +1132,8 @@ class BoxUI(pygame.sprite.Sprite):
     def calculate_rect(self):
         # TODO: atm the box is always in center. it should be able to have a position.
         #       make a common method to caclulate position if have parent. (the expression used in MenuButton is good)
-        x, y = [ self.parent.get_size()[i]//2-(self.size[i]*0.5) for i in range(2) ]
-        self.rect = (x,y,*self.size)
+        x, y = [self.parent.get_size()[i] // 2 - (self.size[i] * 0.5) for i in range(2)]
+        self.rect = (x, y, *self.size)
 
     def update(self, *args):
-        self.calculate_rect() 
-        
+        self.calculate_rect()

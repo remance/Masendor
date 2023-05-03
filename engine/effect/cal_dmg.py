@@ -2,7 +2,7 @@ from math import sin, cos, radians
 
 from pygame import Vector2
 
-from engine.common.damagesprite import cal_melee_hit
+from engine.effect import cal_melee_hit
 
 combat_side_cal = cal_melee_hit.combat_side_cal
 infinity = float("inf")
