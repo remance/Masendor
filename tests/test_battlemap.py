@@ -13,11 +13,11 @@ def compare_surfaces(surface_a, surface_b, error_margin = 0):
 
 
 def test_recolour_man_and_build_move_and_def_arrays():
-    from gamescript.battlemap import BeautifulMap
-    from gamescript.battlemap import BaseMap
-    from gamescript.battlemap import FeatureMap
-    from gamescript.battlemap import HeightMap
-    from gamescript import datamap
+    from engine.battlemap import BeautifulMap
+    from engine.battlemap import BaseMap
+    from engine.battlemap import FeatureMap
+    from engine.battlemap import HeightMap
+    from engine import datamap
 
     class MinifiedBattle:
 

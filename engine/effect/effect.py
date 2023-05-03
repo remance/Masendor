@@ -1,0 +1,500 @@
+from abc import ABC, abstractmethod
+from math import cos, sin, radians
+from random import choice, uniform
+from pygame import sprite, mixer, Vector2
+
+from engine import utility
+from engine.effect import adjust_sprite, cal_dmg, cal_effect_hit, cal_melee_hit, cal_range_hit, find_random_direction, \
+    hit_register, play_animation
+
+direction_angle = utility.direction_angle
+
+
+class Effect(sprite.Sprite):
+    effect_sprite_pool = None
+    effect_animation_pool = None
+    effect_list = None
+    sound_effect_pool = {}
+    battle = None
+    screen_scale = (1, 1)
+
+    set_rotate = utility.set_rotate
+    clean_object = utility.clean_object
+
+    adjust_sprite = adjust_sprite.adjust_sprite
+    cal_dmg = cal_dmg.cal_dmg
+    cal_effect_hit = cal_effect_hit.cal_effect_hit
+    cal_melee_hit = cal_melee_hit.cal_melee_hit
+    cal_range_hit = cal_range_hit.cal_range_hit
+    find_random_direction = find_random_direction.find_random_direction
+    hit_register = hit_register.hit_register
+    play_animation = play_animation.play_animation
+
+    def __init__(self, attacker, base_pos, target, effect_type, sprite_name, angle=0, layer=10000000,
+                 make_sound=True):
+        """Effect sprite that does not affect unit in any way"""
+        self._layer = layer
+        sprite.Sprite.__init__(self, self.containers)
+
+        self.show_frame = 0
+        self.frame_timer = 0
+        self.rotate = False
+        self.repeat_animation = False
+
+        self.attack = attacker
+
+        self.base_pos = base_pos
+        self.pos = Vector2(self.base_pos[0] * self.screen_scale[0], self.base_pos[1] * self.screen_scale[1]) * 5
+        self.base_target = target
+        self.angle = angle
+
+        self.sound_effect_name = None
+        self.sound_timer = 0
+        self.sound_duration = 0
+        self.scale_size = 1
+
+        effect_name = "".join(sprite_name.split("_"))[-1]
+        if effect_name.isdigit():
+            effect_name = "".join([string + "_" for string in sprite_name.split("_")[:-1]])[:-1]
+        else:
+            effect_name = sprite_name
+
+        if make_sound:
+            if effect_type in self.sound_effect_pool:
+                self.travel_sound_distance = self.effect_list[effect_type]["Sound Distance"]
+                self.travel_shake_power = self.effect_list[effect_type]["Shake Power"]
+                self.sound_effect_name = choice(self.sound_effect_pool[effect_type])
+                self.sound_duration = mixer.Sound(self.sound_effect_name).get_length()
+                self.sound_timer = 0  # start playing right away when first update
+
+        if "(team)" in effect_type:
+            self.current_animation = self.effect_animation_pool[effect_type][self.attacker.team][effect_name]
+        else:
+            self.current_animation = self.effect_animation_pool[effect_type][effect_name]
+
+        self.image = self.current_animation[self.show_frame]
+
+        self.adjust_sprite()
+
+        self.rect = self.image.get_rect(center=self.pos)
+
+    def update(self, unit_list, dt):
+        done, just_start = self.play_animation(0.1, dt)
+
+        if self.sound_effect_name and self.sound_timer < self.sound_duration:
+            self.sound_timer += dt
+
+        if self.sound_effect_name and self.sound_timer >= self.sound_duration and \
+                self.travel_sound_distance > self.battle.true_camera_pos.distance_to(self.base_pos):
+            # play sound, check for distance here to avoid timer reset when not on screen
+            self.battle.add_sound_effect_queue(self.sound_effect_name, self.base_pos,
+                                               self.travel_sound_distance,
+                                               self.travel_shake_power)
+            self.sound_timer = 0
+
+        if done:  # no duration, kill effect when animation end
+            self.clean_object()
+            return
+
+
+class DamageEffect(ABC, sprite.Sprite, Effect):
+    empty_method = utility.empty_method
+    clean_object = utility.clean_object
+
+    bullet_sprite_pool = None
+    bullet_weapon_sprite_pool = None
+    height_map = None
+
+    set_rotate = utility.set_rotate
+
+    @abstractmethod  # DamageEffect should not be initiated on its own
+    def __init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
+                 effect_type, sprite_name, angle, accuracy=None, arc_shot=False, height_ignore=False,
+                 degrade_when_travel=True, degrade_when_hit=True, random_direction=False, random_move=False,
+                 reach_effect=None, height_type=1, make_sound=True):
+        """Damage or effect sprite that can affect or damage unit"""
+        Effect.__init__(attacker, base_pos, base_target, effect_type, effect_type, sprite_name, angle=angle,
+                        layer=10000000 + height_type, make_sound=make_sound)
+        sprite.Sprite.__init__(self, self.containers)
+
+        self.weapon = weapon  # weapon that use to perform the attack
+        self.accuracy = accuracy
+        self.height = self.attacker.height
+        self.attack_type = attack_type
+        self.impact_effect = None
+        self.arc_shot = arc_shot
+        self.reach_effect = reach_effect
+
+        self.height_ignore = height_ignore
+        self.degrade_when_travel = degrade_when_travel
+        self.degrade_when_hit = degrade_when_hit
+        self.random_direction = random_direction
+        self.random_move = random_move
+
+        self.stat = stat
+
+        self.aoe = 0
+        if "Area Of Effect" in self.stat:
+            self.aoe = self.stat["Area Of Effect"]
+
+        self.scale_size = 1
+        self.frame_timer = 0
+        self.duration = 0
+        self.timer = 0
+        self.show_frame = 0
+        self.current_animation = {}
+        self.sound_effect_name = None
+        self.sound_timer = 0
+        self.sound_duration = 0
+        self.stamina_dmg_bonus = 0
+        self.repeat_animation = False
+        self.sprite_direction = ""
+        self.attacker_sprite_direction = self.attacker.sprite_direction
+        self.already_hit = []  # list of unit already got hit by sprite for sprite with no duration
+
+        self.dmg = dmg
+        self.deal_dmg = False
+        if self.dmg:  # has damage to deal
+            self.deal_dmg = True
+
+        self.penetrate = penetrate
+        self.knock_power = impact
+
+        self.base_pos = Vector2(base_pos)
+        self.base_target = base_target
+
+        if self.duration:
+            self.repeat_animation = True
+
+        self.full_distance = self.base_pos.distance_to(self.base_target)
+        self.distance_progress = 0
+        self.last_distance_progress = 0
+
+    def reach_target(self):
+        self.deal_dmg = False
+        if self.reach_effect:
+            effect_stat = self.effect_list[self.reach_effect]
+            dmg = {key.split(" ")[0]: value for key, value in effect_stat.items() if " Damage" in key}
+            if sum(dmg.values()) <= 0:
+                dmg = None
+            else:
+                dmg = {key.split(" ")[0]: uniform(value / 2, value) for key, value in dmg.items()}
+            EffectDamageEffect(self, self.reach_effect, dmg, effect_stat["Armour Penetration"],
+                               effect_stat["Impact"],
+                               effect_stat, "effect", self.base_pos, self.base_pos,
+                               reach_effect=effect_stat["After Reach Effect"])
+
+        if "End Effect" in self.stat:
+            finish_effect = self.stat["End Effect"]
+            if finish_effect:
+                effect_stat = self.effect_list[finish_effect]
+                dmg = {key.split(" ")[0]: value for key, value in effect_stat.items() if " Damage" in key}
+                if sum(dmg.values()) <= 0:
+                    dmg = None
+                else:
+                    dmg = {key.split(" ")[0]: uniform(value / 2, value) for key, value in dmg.items()}
+                EffectDamageEffect(self, self.stat["End Effect"], dmg, effect_stat["Armour Penetration"],
+                                   effect_stat["Impact"], effect_stat, "effect", self.base_pos, self.base_pos,
+                                   reach_effect=effect_stat["After Reach Effect"])
+        self.clean_object()
+
+
+class MeleeDamageEffect(DamageEffect):
+    def __init__(self, attacker, angle, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
+                 accuracy=None, reach_effect=None):
+        """Melee damage sprite"""
+        effect_type = stat["Damage Sprite"]
+        sprite_name = self.attack_type[1]
+
+        DamageEffect.__init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
+                              effect_type, sprite_name, angle=angle, accuracy=accuracy, reach_effect=reach_effect)
+
+    def update(self, unit_list, dt):
+        """Melee damage effect does not travel"""
+        done = False
+
+        if self.current_animation:  # play animation if any
+            done, just_start = self.play_animation(0.05, dt, False)
+
+        for unit in self.attacker.near_enemy:  # collide check
+            this_unit = unit[0]
+            if this_unit.alive and this_unit.game_id not in self.already_hit and \
+                    this_unit.hitbox.rect.colliderect(self.rect):
+                self.hit_register(this_unit)
+                self.already_hit.append(this_unit.game_id)
+            if self.penetrate <= 0:
+                break  # use break for melee to last until animation done
+
+        if done:
+            self.reach_target()
+            return
+
+
+class RangeDamageEffect(DamageEffect):
+    def __init__(self, attacker, angle, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
+                 accuracy=None, arc_shot=False, height_ignore=False, degrade_when_travel=True,
+                 degrade_when_hit=True, random_direction=False, random_move=False, reach_effect=None):
+        """Range damage sprite"""
+        if stat["Damage Sprite"] != "self":
+            sprite_name = stat["Damage Sprite"]
+            effect_type = "base"
+        else:  # use weapon image itself as bullet image
+            sprite_name = stat["Name"]
+            if attacker.weapon_version[attacker.equipped_weapon][weapon] in self.bullet_weapon_sprite_pool[sprite_name]:
+                self.image = self.bullet_weapon_sprite_pool[sprite_name][
+                    attacker.weapon_version[attacker.equipped_weapon][weapon]]["base_main"]
+            else:
+                self.image = self.bullet_weapon_sprite_pool[sprite_name]["common"]["base_main"]
+
+        DamageEffect.__init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, Vector2(base_pos),
+                              base_target, angle, sprite_name,  arc_shot=arc_shot, height_ignore=height_ignore,
+                              degrade_when_travel=degrade_when_travel, degrade_when_hit=degrade_when_hit,
+                              random_direction=random_direction, random_move=random_move,
+                              accuracy=accuracy, reach_effect=reach_effect, make_sound=False)
+        self.repeat_animation = True
+
+        if sprite_name in self.sound_effect_pool:
+            self.travel_sound_distance = stat["Bullet Sound Distance"]
+            self.travel_shake_power = stat["Bullet Shake Power"]
+            self.sound_effect_name = choice(self.sound_effect_pool[sprite_name])
+            self.sound_duration = mixer.Sound(self.sound_effect_name).get_length() * 1000 / self.speed
+            self.sound_timer = self.sound_duration / 1.5  # wait a bit before start playing
+            self.travel_sound_distance_check = self.travel_sound_distance * 2
+
+        self.speed = stat["Travel Speed"]  # bullet travel speed
+
+    def update(self, unit_list, dt):
+        if self.sound_effect_name and self.sound_timer < self.sound_duration:
+            self.sound_timer += dt
+
+        if self.duration > 0:
+            self.timer += dt
+            self.duration -= dt
+            if self.timer > 1:  # reset timer and list of unit already hit for attack with duration
+                self.timer -= 1
+                self.already_hit = []  # sprite can deal dmg to same unit only once every 1 second
+
+        if self.current_animation:  # play animation if any
+            self.play_animation(0.05, dt, False)
+
+        for unit in self.attacker.near_enemy:  # collide check
+            this_unit = unit[0]
+            if this_unit.alive and this_unit.game_id not in self.already_hit and this_unit.hitbox.rect.colliderect(
+                    self.rect):
+                if self.arc_shot:
+                    if self.distance_progress >= 100:  # arc shot only hit when reach target
+                        self.hit_register(this_unit)
+                        if self.penetrate <= 0:
+                            self.reach_target()
+                            return
+                else:
+                    self.hit_register(this_unit)
+                    self.already_hit.append(this_unit.game_id)
+                    if self.penetrate <= 0:
+                        self.reach_target()
+                        return
+
+        if self.distance_progress >= 100:  # attack reach target pos
+            self.reach_target()
+            return
+
+        move = self.base_target - self.base_pos
+        require_move_length = move.length()
+
+        if require_move_length:  # sprite move
+            move.normalize_ip()
+            move = move * self.speed * dt
+            self.distance_progress += move.length() / self.full_distance * 100
+
+            if self.sound_effect_name and self.sound_timer >= self.sound_duration and \
+                    self.travel_sound_distance_check > self.battle.true_camera_pos.distance_to(self.base_pos):
+                # play sound, check for distance here to avoid timer reset when not on screen
+                self.battle.add_sound_effect_queue(self.sound_effect_name, self.base_pos,
+                                                   self.travel_sound_distance,
+                                                   self.travel_shake_power)
+                self.sound_timer = 0
+
+            if move.length() <= require_move_length:
+                self.base_pos += move
+                if not self.arc_shot and not self.height_ignore and \
+                        self.height_map.get_height(self.base_pos) > self.height + 20:
+                    self.reach_target()  # direct shot will not be able to shoot pass higher height terrain midway
+                    return
+
+                self.pos = Vector2(self.base_pos[0] * self.screen_scale[0], self.base_pos[1] * self.screen_scale[1]) * 5
+                self.rect.center = self.pos
+
+                if not self.random_move and (
+                        self.base_pos[0] <= 0 or self.base_pos[0] >= self.battle.map_corner[0] or
+                        self.base_pos[1] <= 0 or self.base_pos[1] >= self.battle.map_corner[
+                            1]):  # pass outside of map
+                    self.reach_target()
+                    return
+
+                if self.degrade_when_travel:  # dmg and penetration power drop the longer damage sprite travel
+                    for element in self.dmg:
+                        if self.dmg[element] > 1:
+                            self.dmg[element] -= 0.1
+                    if self.penetrate > 1:
+                        self.penetrate -= 0.1
+                    else:  # no more penetrate power to move on
+                        self.reach_target()  # remove sprite
+                        return
+            else:  # reach target
+                self.base_pos = self.base_target
+                self.pos = Vector2(self.base_pos[0] * self.screen_scale[0], self.base_pos[1] * self.screen_scale[1]) * 5
+                self.rect.center = self.pos
+
+
+class ChargeDamageEffect(DamageEffect):
+    def __init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
+                 accuracy=None, reach_effect=None):
+        """Charge damage sprite"""
+        DamageEffect.__init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
+                              self.attacker.angle, accuracy=accuracy, reach_effect=reach_effect)
+        self.base_pos = base_pos  # always move along with attacker, no Vector2
+        self.charge_power = 0
+        if weapon:
+            self.charge_power = self.attacker.weapon_data[self.attacker.equipped_weapon][weapon]["Charge"]
+
+        self.rect = self.attacker.hitbox.rect
+
+        self.battle.battle_camera.remove(self)  # no sprite to play since it use unit sprite as damage sprite
+
+    def change_weapon(self, dmg, penetrate, impact):
+        self.dmg = dmg
+        self.penetrate = penetrate
+        self.knock_power = impact
+
+    def update(self, unit_list, dt):
+        self.timer += dt
+        if self.timer > 1:  # reset timer and list of unit already hit
+            self.timer -= 1
+            self.already_hit = []  # sprite can deal dmg to same unit only once every 1 second
+
+        for unit in self.attacker.near_enemy:  # collide check
+            this_unit = unit[0]
+            if this_unit.alive and this_unit.game_id not in self.already_hit and \
+                    this_unit.hitbox.rect.colliderect(self.rect):
+                self.hit_register(this_unit)
+                self.already_hit.append(this_unit.game_id)
+
+        if not self.attacker.charging:  # remove sprite when attacker no longer charge
+            self.attacker.charge_sprite = None
+            self.clean_object()
+            return
+
+
+class EffectDamageEffect(DamageEffect):
+    def __init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
+                 accuracy=None, arc_shot=False, height_ignore=False, degrade_when_travel=True,
+                 degrade_when_hit=True, random_direction=False, random_move=False, reach_effect=None):
+        """Effect damage sprite such as explosion"""
+        DamageEffect.__init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
+                              weapon, weapon, 0, arc_shot=arc_shot, height_ignore=height_ignore,
+                              degrade_when_travel=degrade_when_travel,
+                              degrade_when_hit=degrade_when_hit, random_direction=random_direction,
+                              random_move=random_move, accuracy=accuracy, reach_effect=reach_effect,
+                              height_type=stat["Height Type"], make_sound=False)
+
+        if weapon in self.sound_effect_pool:
+            self.travel_sound_distance = stat["Sound Distance"]
+            self.travel_shake_power = stat["Shake Power"]
+            self.sound_effect_name = choice(self.sound_effect_pool[weapon])
+            self.sound_duration = mixer.Sound(self.sound_effect_name).get_length()
+            self.sound_timer = self.sound_duration / 1.5  # wait a bit before start playing
+            self.travel_sound_distance_check = self.travel_sound_distance * 2
+            if self.sound_duration > 2:
+                self.sound_timer = self.sound_duration / 0.5
+
+        self.duration = self.stat["Duration"]
+        self.wind_disperse = self.stat["Wind Dispersion"]
+
+    def update(self, unit_list, dt):
+        done = True
+
+        if self.sound_effect_name and self.sound_timer < self.sound_duration:
+            self.sound_timer += dt
+
+        self.timer += dt
+        if self.timer > 1:  # reset timer
+            if self.wind_disperse:
+                self.speed = self.battle.current_weather.wind_strength
+                self.base_target = Vector2(
+                    self.base_pos[0] + (self.speed * sin(radians(self.battle.current_weather.wind_direction))),
+                    self.base_pos[1] - (self.speed * cos(radians(self.battle.current_weather.wind_direction))))
+                self.full_distance = self.base_pos.distance_to(self.base_target)
+                self.duration -= self.speed
+            if self.duration > 0:  # only clear for sprite with duration or charge
+                self.duration -= self.timer
+                self.already_hit = []  # sprite can deal dmg to same unit only once every 1 second
+            self.timer -= 1
+
+        if self.current_animation:  # play animation if any
+            done, just_start = self.play_animation(0.05, dt, False)
+
+        for this_unit in unit_list:
+            if this_unit.game_id not in self.already_hit and \
+                    ((self.aoe == 0 and this_unit.hitbox.rect.colliderect(self.rect)) or
+                     (self.aoe and this_unit.base_pos.distance_to(self.base_pos) <= self.aoe)):
+                this_unit.apply_effect(self.weapon, self.stat, this_unit.status_effect, this_unit.status_duration)
+                if self.stat["Status"]:
+                    for status in self.stat["Status"]:
+                        this_unit.apply_effect(status, this_unit.status_list[status],
+                                                  this_unit.status_effect, this_unit.status_duration)
+                if self.dmg:
+                    self.hit_register(this_unit)
+                self.already_hit.append(this_unit.game_id)
+
+        if self.full_distance:  # damage sprite that can move
+            move = self.base_target - self.base_pos
+            require_move_length = move.length()
+
+            if require_move_length:  # sprite move
+                move.normalize_ip()
+                move = move * self.speed * dt
+
+                if move.length() <= require_move_length:
+                    self.base_pos += move
+                    if not self.arc_shot and not self.height_ignore and \
+                            self.height_map.get_height(self.base_pos) > self.height + 20:
+                        self.reach_target()  # direct shot will not be able to shoot pass higher height terrain midway
+                        return
+
+                    self.pos = Vector2(self.base_pos[0] * self.screen_scale[0],
+                                       self.base_pos[1] * self.screen_scale[1]) * 5
+                    self.rect.center = self.pos
+
+                    if not self.random_move and (
+                            self.base_pos[0] <= 0 or self.base_pos[0] >= self.battle.map_corner[0] or
+                            self.base_pos[1] <= 0 or self.base_pos[1] >= self.battle.map_corner[
+                                1]):  # pass outside of map
+                        self.reach_target()
+                        return
+
+                    if self.degrade_when_travel and self.dmg:  # dmg and penetration power drop the longer damage sprite travel
+                        for element in self.dmg:
+                            if self.dmg[element] > 1:
+                                self.dmg[element] -= 0.1
+                        if self.penetrate > 1:
+                            self.penetrate -= 0.1
+                        else:  # no more penetrate power to move on
+                            self.reach_target()  # remove sprite
+                            return
+                else:  # reach target
+                    self.base_pos = self.base_target
+                    self.pos = Vector2(self.base_pos[0] * self.screen_scale[0],
+                                       self.base_pos[1] * self.screen_scale[1]) * 5
+                    self.rect.center = self.pos
+
+        if done and self.duration <= 0:
+            self.reach_target()
+            return
+
+        if self.sound_effect_name and self.sound_timer >= self.sound_duration and \
+                self.travel_sound_distance_check > self.battle.true_camera_pos.distance_to(self.base_pos):
+            # play sound, check for distance here to avoid timer reset when not on screen
+            self.battle.add_sound_effect_queue(self.sound_effect_name, self.base_pos,
+                                               self.travel_sound_distance,
+                                               self.travel_shake_power)
+            self.sound_timer = 0

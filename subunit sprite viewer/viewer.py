@@ -3,11 +3,11 @@ import os
 
 import pygame
 import pygame_gui
-from gamescript.common import utility
-from gamescript.common.game.create_troop_sprite_pool import create_troop_sprite_pool
-from gamescript.game import Game
-from gamescript.common.game.setup.make_faction_troop_leader_data import make_faction_troop_leader_data
-from gamescript import datasprite
+from engine.common import utility
+from engine.common.game.create_troop_sprite_pool import create_troop_sprite_pool
+from engine.game import Game
+from engine.common.game.setup.make_faction_troop_leader_data import make_faction_troop_leader_data
+from engine import datasprite
 
 csv_read = utility.csv_read
 

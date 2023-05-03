@@ -1,1 +1,0 @@
-This folder keep texture image for battle esc menu.
