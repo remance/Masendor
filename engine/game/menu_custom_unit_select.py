@@ -80,7 +80,7 @@ def menu_custom_unit_select(self, mouse_left_up, mouse_left_down, mouse_scroll_u
                         self.unit_stat["model"].add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"],
                                                                   icon.who.coa)
                         self.map_preview.change_mode(1, team_pos_list=self.team_pos,
-                                                     camp_pos_list=self.camp_pos[self.map_source],
+                                                     camp_pos_list=self.camp_pos,
                                                      selected=icon.who.base_pos)
 
                         self.unit_selected = icon.who.map_id

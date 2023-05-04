@@ -14,11 +14,11 @@ main_dir = os.path.normpath(os.path.join(file_path, '..'))
 sys.path.append(main_dir)
 # ---
 
-from engine.common import utility  # nopep8
-from engine.common.game.create_troop_sprite_pool import create_troop_sprite_pool  # nopep8
-from engine.game import Game  # nopep8
-from engine.common.game.setup.make_faction_troop_leader_data import make_faction_troop_leader_data  # nopep8
-from engine import datasprite  # nopep8
+from engine import utility  # nopep8
+from engine.game.create_troop_sprite_pool import create_troop_sprite_pool  # nopep8
+from engine.game.game import Game  # nopep8
+from engine.game.setup.make_faction_troop_leader_data import make_faction_troop_leader_data  # nopep8
+from engine.data import datasprite  # nopep8
 
 csv_read = utility.csv_read
 
@@ -38,27 +38,26 @@ class MinifiedGame(Game):
             Minified init-method. Prevents the game from starting an only setup a required state.
         """
         self.main_dir = main_dir
+        self.data_dir = os.path.join(self.main_dir, "data")
         self.screen_scale = (1, 1)
-        self.ruleset = 0
-        self.ruleset_list = csv_read(
-            self.main_dir, "ruleset_list.csv", ("data", "ruleset"))
-        self.ruleset_folder = str(self.ruleset_list[self.ruleset][0]).strip("/")
+        self.module = 0
+        self.module_list = csv_read(
+            self.main_dir, "module_list.csv", ("data", "module"))
+        self.module_folder = str(self.module_list[self.module][0]).strip("/").lower()
+        self.module_dir = os.path.join(self.data_dir, "module", self.module_folder)
         self.language = 'en'
 
-    def change_ruleset(self):
+    def change_module(self):
         """
-            Minified change ruleset-method. Removed things that otherwise wouldn't allow
+            Minified change module-method. Removed things that otherwise wouldn't allow
             the script to be able to run.
         """
 
-        self.troop_data, self.leader_data, self.faction_data = make_faction_troop_leader_data(self.main_dir, self.screen_scale, self.ruleset_folder, self.language)
+        self.troop_data, self.leader_data, self.faction_data = make_faction_troop_leader_data(self.data_dir, self.module_dir, self.screen_scale, self.language)
 
-        self.troop_animation = datasprite.TroopAnimationData(
-            self.main_dir,
-            [str(self.troop_data.race_list[key]["Name"])
-             for key in self.troop_data.race_list],
-            self.team_colour
-        )
+        self.troop_animation = datasprite.TroopAnimationData(self.data_dir, self.module_dir,
+                                                             [str(self.troop_data.race_list[key]["Name"])
+                                                              for key in self.troop_data.race_list], self.team_colour)
 
         self.unit_animation_data = self.troop_animation.unit_animation_data
         self.gen_body_sprite_pool = self.troop_animation.gen_body_sprite_pool
@@ -76,7 +75,7 @@ assert type(main_dir) == str
 print("main dir: {0}".format(main_dir))
 
 game = MinifiedGame(main_dir)
-game.change_ruleset()
+game.change_module()
 
 app = Flask(__name__)
 
@@ -99,7 +98,7 @@ def get_unit_icon(unit_id, scale, icon_size=None):
     md5_input = "{0}${1}${2}".format(unit_id, scale, icon_size)
     hex_hash = hashlib.md5(md5_input.encode()).hexdigest()
 
-    unit_icon_server_path = os.path.join(main_dir, "web wiki", "static", "{0}.png".format(hex_hash))
+    unit_icon_server_path = os.path.join(main_dir, "web-wiki", "static", "{0}.png".format(hex_hash))
 
     if not os.path.isfile(unit_icon_server_path):
 
@@ -316,7 +315,7 @@ def make_faction_icon_and_return_web_path(faction_id):
     md5_input = "faction-icon:{0}".format(faction_id)
     hex_hash = hashlib.md5(md5_input.encode()).hexdigest()
 
-    faction_icon_server_path = os.path.join(main_dir, "web wiki", "static", "{0}.png".format(hex_hash))
+    faction_icon_server_path = os.path.join(main_dir, "web-wiki", "static", "{0}.png".format(hex_hash))
 
     size = 31  # size each dimension
     margin = 4  # on all sides
@@ -359,7 +358,7 @@ def leaders(leader_id=None):
 
         # TODO: this is temp solution, no need to save it everytime
         # and we also might alter the image somehow in the future
-        leader_image_server_path = os.path.join(main_dir, "web wiki", "static", "leader_{0}.png".format(leader_id))
+        leader_image_server_path = os.path.join(main_dir, "web-wiki", "static", "leader_{0}.png".format(leader_id))
         pygame.image.save(image, leader_image_server_path)
 
         leader_name = data["Name"]

@@ -53,7 +53,7 @@ def menu_custom_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
             stuff.kill()
             del stuff
 
-        self.camp_pos = [{}]
+        self.camp_pos = {}
         self.camp_icon = []
 
         setup_list(self.screen_scale, uimenu.NameList, self.current_source_row, ["None"] +

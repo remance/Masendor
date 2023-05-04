@@ -937,6 +937,7 @@ class MapPreview(UIMenu):
         self.image = self.base_image.copy()
         if mode == 1:
             if camp_pos_list:
+                print(camp_pos_list)
                 for team, pos_list in camp_pos_list.items():
                     for pos in pos_list:
                         colour = self.colour[team]

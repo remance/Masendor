@@ -81,21 +81,21 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                                 coa.change_coa({0: None}, "None")
 
                             if "Team Faction " + str(coa.team) in self.custom_map_data["info"]:  # camp, team exist
-                                if coa.team not in self.camp_pos[0]:  # new team, camp not exist
-                                    self.camp_pos[0][coa.team] = []
+                                if coa.team not in self.camp_pos:  # new team, camp not exist
+                                    self.camp_pos[coa.team] = []
                                     for icon in self.camp_icon:
                                         icon.kill()
                                     self.camp_icon = []
                                 else:
-                                    for camp in self.camp_pos[0][coa.team]:
+                                    for camp in self.camp_pos[coa.team]:
                                         self.camp_icon.append(uibattle.TempUnitIcon(self.screen_scale, coa.team,
                                                                                     camp[1], 0))
                                 if not self.camp_icon or self.camp_icon[-1].name != "+":
                                     self.camp_icon.append(uibattle.TempUnitIcon(self.screen_scale, coa.team, "+", 0))
 
                             else:  # team no longer exist
-                                if coa.team in self.camp_pos[0]:
-                                    self.camp_pos[0].pop(coa.team)
+                                if coa.team in self.camp_pos:
+                                    self.camp_pos.pop(coa.team)
                                     for icon in self.camp_icon:
                                         icon.kill()
                                     self.camp_icon = []
@@ -128,8 +128,8 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                             self.input_ui.change_instruction("Camp Size Value:")
                             self.main_ui_updater.add(self.input_ui_popup)
                         else:
-                            self.camp_pos[0][icon.who.team][index][0] = map_pos
-                        self.map_preview.change_mode(1, camp_pos_list=self.camp_pos[0])
+                            self.camp_pos[icon.who.team][index][0] = map_pos
+                        self.map_preview.change_mode(1, camp_pos_list=self.camp_pos)
                         break
 
         if mouse_left_up and self.source_list_box.scroll.rect.collidepoint(self.mouse_pos):  # click on list scroll
@@ -192,17 +192,17 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                             icon.selection()
                         else:  # right click remove icon
                             if icon.who.name != "+":
-                                self.camp_pos[0][icon.who.team].pop(index)
+                                self.camp_pos[icon.who.team].pop(index)
                                 icon.kill()
                                 self.camp_icon.pop(index)
                                 self.unit_selector.setup_unit_icon(self.unit_icon, self.camp_icon)
-                        self.map_preview.change_mode(1, camp_pos_list=self.camp_pos[0])
+                        self.map_preview.change_mode(1, camp_pos_list=self.camp_pos)
                         break
 
     if self.map_back_button.event or esc_press:
         self.custom_map_data["info"] = {"weather": self.custom_map_data["info"]["weather"]}  # keep weather setting only
         self.custom_map_data["unit"] = {"pos": {}}
-        self.camp_pos = [{}]
+        self.camp_pos = {}
         self.menu_state = self.last_select
         self.map_back_button.event = False
         self.main_ui_updater.remove(*self.menu_button, self.map_list_box, self.custom_map_option_box,
@@ -299,8 +299,8 @@ def change_team_coa(self):
             for icon in self.camp_icon:
                 icon.kill()
             self.camp_icon = []
-            if this_team.team in self.camp_pos[0]:
-                for camp in self.camp_pos[0][this_team.team]:
+            if this_team.team in self.camp_pos:
+                for camp in self.camp_pos[this_team.team]:
                     self.camp_icon.append(uibattle.TempUnitIcon(self.screen_scale, this_team.team, camp[1], 0))
                 self.camp_icon.append(uibattle.TempUnitIcon(self.screen_scale, this_team.team, "+", 0))
             self.unit_selector.setup_unit_icon(self.unit_icon, self.camp_icon)

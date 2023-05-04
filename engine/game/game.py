@@ -10,7 +10,7 @@ from pygame.locals import *
 from engine import utility
 
 from engine.game import assign_key, back_mainmenu, change_battle_source, change_sound_volume, \
-    change_to_source_selection_menu, create_config, create_preview_map, create_sound_effect_pool, create_team_coa, \
+    create_config, create_preview_map, create_sound_effect_pool, create_team_coa, \
     create_troop_sprite, create_troop_sprite_pool, loading_screen, menu_custom_leader_setup, menu_custom_map_select, \
     menu_custom_team_select, menu_custom_unit_select, menu_custom_unit_setup, menu_game_editor, \
     menu_keybind, menu_main, menu_option, menu_preset_map_select, read_battle_source, \
@@ -246,6 +246,9 @@ class Game:
         self.current_popup_row = 0
         self.team_pos = {}  # for saving preview map unit pos
         self.camp_pos = {}  # for saving preview map camp pos
+        self.map_data = None
+        self.map_info = None
+        self.map_unit_data = None
         self.custom_map_data = {"info": {"weather": [[0, "09:00:00", 0, 0]]}, "unit": {"pos": {}}}
 
         self.dt = 0
@@ -930,10 +933,10 @@ class Game:
                         pos = pos.replace("(", "").replace(")", "").split(", ")
                         pos = [float(item) for item in pos]
                         self.camp_pos[0][int(self.input_popup[1][-1])].insert(0, [pos, int(self.input_box.text)])
-                        self.camp_icon.insert(0, uibattle.TempUnitIcon(self.screen_scale, int(self.input_popup[1][-1]),
+                        self.camp_icon.insert(0, uibattle.TempUnitIcon(int(self.input_popup[1][-1]),
                                                                        self.input_box.text, 0))
                         self.unit_selector.setup_unit_icon(self.unit_icon, self.camp_icon)
-                        self.map_preview.change_mode(1, camp_pos_list=self.camp_pos[0])
+                        self.map_preview.change_mode(1, camp_pos_list=self.camp_pos)
 
                     elif "replace key" in self.input_popup[1]:
                         old_key = self.player1_key_bind[self.config["USER"]["control player 1"]][self.input_popup[1][1]]

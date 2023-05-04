@@ -56,7 +56,7 @@ def menu_preset_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
                                     key == icon.who.troop_id}
                         preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True)
                         self.map_preview.change_mode(1, team_pos_list=self.team_pos,
-                                                     camp_pos_list=self.camp_pos[self.map_source],
+                                                     camp_pos_list=self.camp_pos,
                                                      selected=icon.who.base_pos)
                         self.unit_model_room.add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"],
                                                                icon.who.coa)
@@ -165,7 +165,7 @@ def menu_preset_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
                         self.unit_model_room.add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"],
                                                                icon.who.coa)
                         self.map_preview.change_mode(1, team_pos_list=self.team_pos,
-                                                     camp_pos_list=self.camp_pos[self.map_source],
+                                                     camp_pos_list=self.camp_pos,
                                                      selected=icon.who.base_pos)
 
                         self.unit_selected = icon.who.map_id

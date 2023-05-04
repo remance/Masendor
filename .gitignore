@@ -38,4 +38,4 @@ __pycache__/
 /configuration.ini
 /pyinstaller.exe
 /cache
-/web wiki/static
+/web-wiki/static

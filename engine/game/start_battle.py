@@ -18,7 +18,7 @@ def start_battle(self, player_unit=None):
 
     self.battle.prepare_new_game(self.team_selected, self.map_type,
                                  self.map_selected, self.map_source, selected_player_unit,
-                                 map_data, self.camp_pos[self.map_source])
+                                 map_data, self.camp_pos)
     self.battle.run_game()
     pygame.mixer.music.unload()
     pygame.mixer.music.set_endevent(self.SONG_END)

@@ -414,7 +414,7 @@ class Battle:
             map_event = csv_read(self.module_dir, "eventlog_" + self.language + ".csv",
                                  ("map", map_type, self.map_selected, self.map_source),
                                  header_key=True)
-            battleui.EventLog.map_event = map_event
+            uibattle.EventLog.map_event = map_event
         except FileNotFoundError:  # can't find any event file
             map_event = {}  # create empty list
 

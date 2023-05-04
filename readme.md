@@ -31,6 +31,8 @@ Some non-specific suggestions and examples of helps, including but not limited t
 - **Historical stuffs**: Battle information, writing, sources, correction, improvements
 - **Quality Assurance**: Code documentation, game balancing, bugs fix, feedbacks
 
+Note: All the new and current untested development are done on "dev" branch. The main branch is for a somewhat stable version of the game.
+
 ---------------
 
 # Index

@@ -1,8 +1,6 @@
 import csv
 import os
 
-import pygame
-
 from engine.unit import unit
 from engine import utility
 
@@ -20,26 +18,7 @@ def setup_battle_unit(self, team_unit_list, preview=None, custom_data=None):
     leader_unit = {}
     self.last_troop_game_id = 0
     if not custom_data:  # TODO move this data reading process to map selection
-        with open(os.path.join(self.module_dir, "map", "preset", self.map_selected, str(self.map_source),
-                               "troop_pos.csv"), encoding="utf-8", mode="r") as unit_file:
-            rd = list(csv.reader(unit_file, quoting=csv.QUOTE_ALL))
-            header = rd[0]
-            int_column = ("ID", "Faction", "Team", "Leader")  # value int only
-            list_column = ("POS",)  # value in list only
-            float_column = ("Angle", "Start Health", "Start Stamina")  # value in float
-            dict_column = ("Troop",)
-            int_column = [index for index, item in enumerate(header) if item in int_column]
-            list_column = [index for index, item in enumerate(header) if item in list_column]
-            float_column = [index for index, item in enumerate(header) if item in float_column]
-            dict_column = [index for index, item in enumerate(header) if item in dict_column]
-
-            for data_index, data in enumerate(rd[1:]):  # skip header
-                for n, i in enumerate(data):
-                    data = stat_convert(data, n, i, list_column=list_column, int_column=int_column,
-                                        float_column=float_column, dict_column=dict_column)
-                rd[data_index + 1] = {header[index]: stuff for index, stuff in enumerate(data)}
-            troop_data = rd[1:]
-        unit_file.close()
+        troop_data = self.map_data["unit"]
     else:
         troop_data = custom_data
 

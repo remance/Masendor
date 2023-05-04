@@ -39,7 +39,7 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
                         if icon.who.name != "+":  # choose pos of selected unit
                             self.custom_map_data["unit"]["pos"][icon.who.team][icon.who.index] = map_pos
                             self.map_preview.change_mode(1, team_pos_list=self.custom_map_data["unit"]["pos"],
-                                                         camp_pos_list=self.camp_pos[0],
+                                                         camp_pos_list=self.camp_pos,
                                                          selected=self.custom_map_data["unit"]["pos"][icon.who.team][
                                                              icon.who.index])
                             unit_change_team_unit(self, old_selected=icon.who.index)
@@ -83,7 +83,7 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
                                 unit_change_team_unit(self, old_selected=old_selected)
                                 self.map_preview.change_mode(1,
                                                              team_pos_list=self.custom_map_data["unit"]["pos"],
-                                                             camp_pos_list=self.camp_pos[0], selected=old_selected)
+                                                             camp_pos_list=self.camp_pos, selected=old_selected)
                                 break
 
                         if not has_unit_selected:  # no unit selected, consider as adding new unit
@@ -93,7 +93,7 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
                                     self.custom_map_data["unit"][coa.team].append(unit_data.copy())
                                     unit_change_team_unit(self)
                                     self.map_preview.change_mode(1, team_pos_list=self.custom_map_data["unit"]["pos"],
-                                                                 camp_pos_list=self.camp_pos[0])
+                                                                 camp_pos_list=self.camp_pos)
 
     if self.unit_list_box.rect.collidepoint(self.mouse_pos):
         for coa in self.team_coa:
@@ -152,7 +152,7 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
                                 icon.who.index in self.custom_map_data["unit"]["pos"][icon.who.team]:
                             # highlight selected unit in preview map
                             self.map_preview.change_mode(1, team_pos_list=self.custom_map_data["unit"]["pos"],
-                                                         camp_pos_list=self.camp_pos[0],
+                                                         camp_pos_list=self.camp_pos,
                                                          selected=self.custom_map_data["unit"]["pos"][icon.who.team][
                                                              icon.who.index])
                     elif mouse_right_up:  # remove unit
@@ -169,13 +169,13 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
                                     icon2.who.index -= 1
 
                             self.map_preview.change_mode(1, team_pos_list=self.custom_map_data["unit"]["pos"],
-                                                         camp_pos_list=self.camp_pos[0])
+                                                         camp_pos_list=self.camp_pos)
                             if not icon.selected:  # find new selected
                                 for icon2 in self.unit_icon:
                                     if icon2.selected:
                                         self.map_preview.change_mode(1,
                                                                      team_pos_list=self.custom_map_data["unit"]["pos"],
-                                                                     camp_pos_list=self.camp_pos[0],
+                                                                     camp_pos_list=self.camp_pos,
                                                                      selected=self.custom_map_data["unit"]["pos"][
                                                                          icon2.who.team][icon2.who.index])
                                         break
@@ -198,7 +198,7 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
 
         self.custom_map_data["unit"] = {"pos": {}}
 
-        self.map_preview.change_mode(1, camp_pos_list=self.camp_pos[0])  # revert map preview back to without unit dot
+        self.map_preview.change_mode(1, camp_pos_list=self.camp_pos)  # revert map preview back to without unit dot
 
         for stuff in self.map_namegroup:  # remove map name item
             stuff.kill()

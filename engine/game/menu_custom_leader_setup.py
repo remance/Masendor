@@ -81,7 +81,7 @@ def menu_custom_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_u
                                 char.who.index in self.custom_map_data["unit"]["pos"][char.who.team]:
                             # highlight unit in preview map
                             self.map_preview.change_mode(1, team_pos_list=self.custom_map_data["unit"]["pos"],
-                                                         camp_pos_list=self.camp_pos[0],
+                                                         camp_pos_list=self.camp_pos,
                                                          selected=
                                                          self.custom_map_data["unit"]["pos"][char.who.team][
                                                              char.who.index])
@@ -266,7 +266,7 @@ def change_to_char_select_menu(self, custom_data=None):
         who_todo = {key: value for key, value in self.leader_data.leader_list.items() if key == icon.who.troop_id}
         preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True)
         self.unit_stat["model"].add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"], icon.who.coa)
-        self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos[self.map_source],
+        self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos,
                                      selected=icon.who.base_pos)
         break
 

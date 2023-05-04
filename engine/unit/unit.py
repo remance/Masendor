@@ -873,7 +873,6 @@ class Unit(sprite.Sprite):
         self.mental = self.base_mental
         self.crit_effect = self.base_crit_effect
 
-        print(self.original_weapon_dmg)
         self.weapon_dmg = {key: {key2: value2.copy() for key2, value2 in value.items()} for
                            key, value in self.original_weapon_dmg[self.equipped_weapon].items()}
         self.weapon_speed = self.original_weapon_speed[self.equipped_weapon].copy()
