@@ -336,39 +336,26 @@ class MenuButton(UIMenu, pygame.sprite.Sprite):
         self.event = False
 
 
-class Containerable:
+class Container:
 
-    """
-        Containerables are UI elements that have another element inside them. 
-        It can also be that they are inside another element.
-        When something is inside something else it adjusts its position to it.    
-
-        To be inside another element, set that element on the parent attribute.
-        element_inside.parent = element_to_be_inside   
-
-        Also Containerables can be inside anything that implements "get_rect".
-        For examples Surfaces.
-    """
-    
     def get_rect(self):
-        # to be a able to contain something is must have a rect
         raise NotImplementedError()
+
+
+class Containable:
 
     def get_relative_position_inside_container(self):
-        # to be a able to contained by something it must have a relative position inside container
         raise NotImplementedError()
 
-    # TODO: have a get_size_method 
+    def get_size(self):
+        raise NotImplementedError()
 
-    def update(self): # TODO: rename to get_adjusted_rect_to_inside_container
-        if self.parent is not None: # TODO: call a get_in_container() method
-            pos = self.get_relative_position_inside_container()
-            self.rect = pygame.rect.Rect(*[
-                self.parent.get_rect()[i] - self.image.get_size()[i] // 2 + (pos[i] + 1) * self.parent.get_rect()[
-                    i + 2] * 0.5 for i in range(2)], *self.image.get_size())
+    def get_adjusted_rect_to_be_inside_container(self, container):
+        pos = self.get_relative_position_inside_container()
+        return pygame.rect.Rect(*[container.get_rect()[i] - self.get_size()[i] // 2 + (pos[i] + 1) * container.get_rect()[i+2] // 2 for i in range(2)], *self.get_size())
 
 
-class BrownMenuButton(UIMenu, Containerable):
+class BrownMenuButton(UIMenu, Containable):
 
     @classmethod
     @lru_cache
@@ -426,7 +413,10 @@ class BrownMenuButton(UIMenu, Containerable):
             if mouse_up:
                 self.event = True
 
-        Containerable.update(self)
+        self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
+
+    def get_size(self):
+        return self.image.get_size()
 
     def change_state(self, text):
         pass
@@ -1144,7 +1134,7 @@ class TextPopup(UIMenu):
                 self.rect = self.image.get_rect(bottomleft=self.pos)
 
 
-class BoxUI(UIMenu, Containerable):
+class BoxUI(UIMenu, Containable, Container):
 
     def __init__(self, size, parent):
         UIMenu.__init__(self)
@@ -1153,11 +1143,14 @@ class BoxUI(UIMenu, Containerable):
         self.image = pygame.Surface(size)
         self.image.fill("#222a2e")
         self._layer = -1  # NOTE: not sure if this is good since underscore indicate it is a private variable but it works for now
-        self.pos = (0,0)
-        Containerable.update(self)
+        self.pos = (0, 0)
+        self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
 
     def get_relative_position_inside_container(self):
-        return (0,0)
+        return (0, 0)
 
     def get_rect(self):
         return self.rect
+
+    def get_size(self):
+        return self.image.get_size()
