@@ -207,7 +207,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                 # remove animation not suitable for preview
                 animation = [this_animation for this_animation in animation if
                              any(ext in this_animation for ext in
-                                 ("_Default", "_Die", "_Flee", "_Damaged", "KnockDown",
+                                 ("_Default", "_Die", "_Flee", "_Damaged", "KnockDown", "_Music_",
                                   "_Standup", "_HeavyDamaged")) is False and "_Sub_" not in this_animation]
                 if len(animation) > 0:
                     animation = choice(animation)  # random animation

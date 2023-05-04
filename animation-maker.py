@@ -49,9 +49,6 @@ default_sprite_size = (200, 200)
 screen_size = (1100, 900)
 screen_scale = (1, 1)
 
-Game.screen_size = screen_size
-Game.screen_scale = screen_scale
-
 pygame.init()
 pen = pygame.display.set_mode(screen_size)
 pygame.display.set_caption("Animation Maker")  # set the self name on program border/tab
@@ -62,7 +59,15 @@ config.read_file(open(os.path.join(current_dir, "configuration.ini")))  # read c
 module = int(config["DEFAULT"]["module"])
 module_list = csv_read(main_dir, "module_list.csv", ("data", "module"))  # get module list
 module_folder = str(module_list[module][0]).strip("/").lower()
-module_dir = os.path.join(main_dir, "data", "module", module_folder)
+data_dir = os.path.join(main_dir, "data")
+module_dir = os.path.join(data_dir, "module", module_folder)
+
+Game.screen_size = screen_size
+Game.screen_scale = screen_scale
+Game.ui_font = csv_read(module_dir, "ui_font.csv", ("ui",), header_key=True)
+Game.font_dir = os.path.join(data_dir, "font")
+for item in Game.ui_font:  # add ttf file extension for font data reading.
+    Game.ui_font[item] = os.path.join(Game.font_dir, Game.ui_font[item]["Font"] + ".ttf")
 
 max_person = 4
 max_frame = 22
