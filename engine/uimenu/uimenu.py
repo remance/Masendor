@@ -336,7 +336,26 @@ class MenuButton(UIMenu, pygame.sprite.Sprite):
         self.event = False
 
 
-class BrownMenuButton(UIMenu):
+class Container:
+
+    def get_rect(self):
+        raise NotImplementedError()
+
+
+class Containable:
+
+    def get_relative_position_inside_container(self):
+        raise NotImplementedError()
+
+    def get_size(self):
+        raise NotImplementedError()
+
+    def get_adjusted_rect_to_be_inside_container(self, container):
+        pos = self.get_relative_position_inside_container()
+        return pygame.rect.Rect(*[container.get_rect()[i] - self.get_size()[i] // 2 + (pos[i] + 1) * container.get_rect()[i+2] // 2 for i in range(2)], *self.get_size())
+
+
+class BrownMenuButton(UIMenu, Containable):
 
     @classmethod
     @lru_cache
@@ -382,6 +401,9 @@ class BrownMenuButton(UIMenu):
         self.rect = self.button_normal_image.get_rect(center=self.pos)
         self.event = False
 
+    def get_relative_position_inside_container(self):
+        return self.pos
+
     def update(self, mouse_pos, mouse_up, mouse_down):
         self.mouse_over = False
         self.image = self.button_normal_image
@@ -391,10 +413,10 @@ class BrownMenuButton(UIMenu):
             if mouse_up:
                 self.event = True
 
-        if self.parent is not None:
-            self.rect = pygame.rect.Rect(*[
-                self.parent.get_rect()[i] - self.image.get_size()[i] // 2 + (self.pos[i] + 1) * self.parent.get_rect()[
-                    i + 2] * 0.5 for i in range(2)], *self.image.get_size())
+        self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
+
+    def get_size(self):
+        return self.image.get_size()
 
     def change_state(self, text):
         pass
@@ -1113,25 +1135,23 @@ class TextPopup(UIMenu):
                 self.rect = self.image.get_rect(bottomleft=self.pos)
 
 
-class BoxUI(UIMenu):
+class BoxUI(UIMenu, Containable, Container):
 
     def __init__(self, size, parent):
         UIMenu.__init__(self)
         self.parent = parent
         self.size = size
-        self.calculate_rect()
         self.image = pygame.Surface(size)
         self.image.fill("#222a2e")
         self._layer = -1  # NOTE: not sure if this is good since underscore indicate it is a private variable but it works for now
+        self.pos = (0, 0)
+        self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
+
+    def get_relative_position_inside_container(self):
+        return (0, 0)
 
     def get_rect(self):
         return self.rect
 
-    def calculate_rect(self):
-        # TODO: atm the box is always in center. it should be able to have a position.
-        #       make a common method to caclulate position if have parent. (the expression used in MenuButton is good)
-        x, y = [self.parent.get_size()[i] // 2 - (self.size[i] * 0.5) for i in range(2)]
-        self.rect = (x, y, *self.size)
-
-    def update(self, *args):
-        self.calculate_rect()
+    def get_size(self):
+        return self.image.get_size()

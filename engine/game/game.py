@@ -204,7 +204,7 @@ class Game:
             self.module = int(self.config["USER"]["module"])
 
         self.module_list = csv_read(self.data_dir, "module_list.csv", ("module",))  # get module list
-        self.module_folder = str(self.module_list[self.module][0]).strip("/")
+        self.module_folder = str(self.module_list[self.module][0]).strip("/").lower()
         Game.module_dir = os.path.join(self.data_dir, "module", self.module_folder)
         Game.ui_font = csv_read(self.module_dir, "ui_font.csv", ("ui",), header_key=True)
         for item in Game.ui_font:  # add ttf file extension for font data reading.
