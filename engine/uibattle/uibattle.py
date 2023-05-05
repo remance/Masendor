@@ -375,7 +375,7 @@ class SkillCardIcon(UIMenu, pygame.sprite.Sprite):
         UIMenu.__init__(self)
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos  # pos of the skill on ui
-        self.font = pygame.font.SysFont("helvetica", int(24 * self.screen_scale[1]))
+        self.font = pygame.font.Font(self.ui_font["main_button"], int(24 * self.screen_scale[1]))
 
         self.cooldown_check = 0  # cooldown number
         self.active_check = 0  # active timer number
@@ -389,7 +389,7 @@ class SkillCardIcon(UIMenu, pygame.sprite.Sprite):
         self.image.blit(image, image_rect)
         self.base_image = self.image.copy()  # original image before adding key name
 
-        key_font = pygame.font.SysFont("helvetica", self.key_font_size)
+        key_font = pygame.font.Font(self.ui_font["main_button"], self.key_font_size)
         text_surface = text_render(key, key_font)
         text_rect = text_surface.get_rect(midbottom=(self.image.get_width() / 2, self.image.get_height()))
         self.image.blit(text_surface, text_rect)
@@ -400,7 +400,7 @@ class SkillCardIcon(UIMenu, pygame.sprite.Sprite):
 
     def change_key(self, key):
         self.image = self.base_image.copy()
-        key_font = pygame.font.SysFont("helvetica", self.key_font_size)
+        key_font = pygame.font.Font(self.ui_font["main_button"], self.key_font_size)
         text_surface = text_render(key, key_font)
         text_rect = text_surface.get_rect(midbottom=(self.image.get_width() / 2, self.image.get_height()))
         self.image.blit(text_surface, text_rect)
@@ -440,7 +440,7 @@ class FPScount(UIMenu):
         UIMenu.__init__(self)
         self.image = pygame.Surface((50, 50), pygame.SRCALPHA)
         self.base_image = self.image.copy()
-        self.font = pygame.font.SysFont("Arial", 18)
+        self.font = pygame.font.Font(self.ui_font["main_button"], 18)
         fps_text = self.font.render("60", True, pygame.Color("red"))
         self.text_rect = fps_text.get_rect(center=(10, 10))
         self.rect = self.image.get_rect(topleft=(0, 0))
@@ -544,7 +544,7 @@ class EventLog(UIMenu):
     def __init__(self, image, pos):
         self._layer = 10
         UIMenu.__init__(self)
-        self.font = pygame.font.SysFont("helvetica", int(image.get_height() / 15))
+        self.font = pygame.font.Font(self.ui_font["main_button"], int(image.get_height() / 15))
         self.pos = pos
         self.image = image
         self.max_row_show = int(image.get_height() / self.font.get_height())
@@ -857,7 +857,8 @@ class TempUnitIcon(UIMenu):
         self.portrait = pygame.Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]), pygame.SRCALPHA)
         if type(image) in (int, float, str):
             self.name = str(image)
-            font = pygame.font.SysFont("helvetica", int(120 / (len(self.name) / 3) * self.screen_scale[1]))
+            font = pygame.font.Font(self.ui_font["main_button"],
+                                    int(120 / (len(self.name) / 3) * self.screen_scale[1]))
             image_surface = font.render(self.name, True, (0, 0, 0))
             image_rect = image_surface.get_rect(center=(self.portrait.get_width() / 2, self.portrait.get_height() / 2))
             self.portrait.blit(image_surface, image_rect)
@@ -872,7 +873,7 @@ class Timer(UIMenu):
     def __init__(self, pos, text_size=20):
         self._layer = 11
         UIMenu.__init__(self)
-        self.font = pygame.font.SysFont("helvetica", text_size)
+        self.font = pygame.font.Font(self.ui_font["main_button"], text_size)
         self.pos = pos
         self.image = pygame.Surface((100, 30), pygame.SRCALPHA)
         self.base_image = self.image.copy()
@@ -939,7 +940,7 @@ class BattleScaleUI(UIMenu):
         self._layer = 10
         UIMenu.__init__(self)
         self.team_colour = team_colour
-        self.font = pygame.font.SysFont("helvetica", 12)
+        self.font = pygame.font.Font(self.ui_font["main_button"], 12)
         self.pos = (0, 0)
         self.image = image
         self.image_width = self.image.get_width()
@@ -972,7 +973,7 @@ class WheelUI(UIMenu):
         Works similar to Fallout companion wheel and similar system"""
         self._layer = 11
         UIMenu.__init__(self)
-        self.font = pygame.font.SysFont("helvetica", text_size)
+        self.font = pygame.font.Font(self.ui_font["main_button"], text_size)
         self.pos = pos
         self.choice_list = ()
 
@@ -1060,34 +1061,6 @@ class WheelUI(UIMenu):
                 self.image.blit(self.wheel_inactive_image_list[index], self.wheel_rect[index])
 
 
-class TextSprite(UIMenu):
-    def __init__(self, value, text_size=20):
-        """Sprite of text with transparent background.
-        The size of text should be static or as close as the original text as possible"""
-        self._layer = 11
-        UIMenu.__init__(self)
-        self.font = pygame.font.SysFont("helvetica", text_size)
-        self.pos = (0, 0)
-        self.value = str(value)
-        self.image = pygame.Surface((len(self.value) * (text_size + 4), text_size * 1.5), pygame.SRCALPHA)
-        self.base_image = self.image.copy()
-        text_surface = self.font.render(self.value, True, (0, 0, 0))
-        self.text_rect = text_surface.get_rect(topleft=(self.image.get_width() / 10, self.image.get_height() / 10))
-        self.image.blit(text_surface, self.text_rect)
-        self.rect = self.image.get_rect(center=self.pos)
-
-    def speed_update(self, new_value):
-        """change speed number text"""
-        self.image = self.base_image.copy()
-        self.value = new_value
-        text_surface = self.font.render(str(self.value), True, (0, 0, 0))
-        self.image.blit(text_surface, self.text_rect)
-
-    def change_pos(self, pos):
-        self.pos = pos
-        self.rect = self.image.get_rect(center=self.pos)
-
-
 class InspectSubunit(UIMenu):
     def __init__(self, pos):
         self._layer = 11
@@ -1113,9 +1086,9 @@ class BattleDone(UIMenu):
         UIMenu.__init__(self)
         self.box_image = box_image
         self.result_image = result_image
-        self.font = pygame.font.SysFont("oldenglishtext", int(self.screen_scale[1] * 60))
-        self.header_font = pygame.font.SysFont("timesnewroman", int(self.screen_scale[1] * 36), bold=True)
-        self.text_font = pygame.font.SysFont("timesnewroman", int(self.screen_scale[1] * 24))
+        self.font = pygame.font.Font(self.ui_font["name_font"], int(self.screen_scale[1] * 60))
+        self.header_font = pygame.font.Font(self.ui_font["text_paragraph_bold"], int(self.screen_scale[1] * 36))
+        self.text_font = pygame.font.Font(self.ui_font["text_paragraph"], int(self.screen_scale[1] * 24))
         self.pos = pos
         self.image = self.box_image.copy()
         self.rect = self.image.get_rect(center=self.pos)
@@ -1262,8 +1235,7 @@ class Profiler(cProfile.Profile, UIMenu):
         self.size = (900, 550)
         self.image = pygame.Surface(self.size)
         self.rect = pygame.Rect((0, 0, *self.size))
-        font = "ubuntumono"
-        self.font = pygame.font.SysFont(font, 16)
+        self.font = pygame.font.Font(self.ui_font["main_button"], 16)
         self._layer = 12
         self.visible = False
 

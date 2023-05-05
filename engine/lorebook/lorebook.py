@@ -1,5 +1,6 @@
 import pygame
 
+from engine.uimenu.uimenu import UIMenu
 from engine import utility
 
 # TODO paragraph syntax,
@@ -47,8 +48,8 @@ class Lorebook(pygame.sprite.Sprite):
 
         self._layer = 23
         pygame.sprite.Sprite.__init__(self)
-        self.font = pygame.font.SysFont("helvetica", int(text_size * self.screen_scale[1]))
-        self.font_header = pygame.font.SysFont("oldenglishtext", int(52 * self.screen_scale[1]))
+        self.font = pygame.font.Font(game.ui_font["main_button"], int(text_size * self.screen_scale[1]))
+        self.font_header = pygame.font.Font(game.ui_font["name_font"], int(52 * self.screen_scale[1]))
         self.image = image
         self.base_image = self.image.copy()
         self.section = 0
@@ -254,7 +255,8 @@ class Lorebook(pygame.sprite.Sprite):
                 self.portrait = self.leader_data.images[
                     "other"].copy()  # Use Unknown leader image if there is none in list
                 name = self.stat_data[self.subsection]["Name"].split(" ")[0]
-                font = pygame.font.SysFont("timesnewroman", int(100 / (len(name) / 3) * self.screen_scale[1]))
+                font = pygame.font.Font(self.game.ui_font["text_paragraph"],
+                                        int(100 / (len(name) / 3) * self.screen_scale[1]))
                 text_image = font.render(name, True, pygame.Color("white"))
                 text_rect = text_image.get_rect(
                     center=(self.portrait.get_width() / 2, self.portrait.get_height() / 1.3))
@@ -597,8 +599,8 @@ class Lorebook(pygame.sprite.Sprite):
                                     new_font_size = self.font.get_height()
                                     if "\\" in this_syntax:
                                         new_font_size = this_syntax[4:].split("\\")[1]
-                                    paragraph_font = pygame.font.SysFont(new_font,
-                                                                         int(new_font_size * self.screen_scale[1]))
+                                    paragraph_font = pygame.font.Font(self.game.ui_font["new_font"],
+                                                                      int(new_font_size * self.screen_scale[1]))
 
                         make_long_text(text_surface, text, (5 * self.screen_scale[0], 5 * self.screen_scale[1]),
                                        paragraph_font)
@@ -624,11 +626,12 @@ class SubsectionList(pygame.sprite.Sprite):
         self.max_row_show = 19
 
 
-class SubsectionName(pygame.sprite.Sprite):
+class SubsectionName(UIMenu, pygame.sprite.Sprite):
     def __init__(self, screen_scale, pos, name, subsection, tag, selected=False, text_size=28):
         self._layer = 24
+        UIMenu.__init__(self)
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.font = pygame.font.SysFont("helvetica", int(text_size * screen_scale[1]))
+        self.font = pygame.font.Font(self.ui_font["main_button"], int(text_size * screen_scale[1]))
         self.selected = False
         self.name = str(name)
 

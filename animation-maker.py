@@ -421,10 +421,10 @@ class Filmstrip(pygame.sprite.Sprite):
 class Button(pygame.sprite.Sprite):
     """Normal button"""
 
-    def __init__(self, text, image, pos, description=None, font_size=20):
+    def __init__(self, text, image, pos, description=None, font_size=16):
         self._layer = 5
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.font = pygame.font.SysFont("helvetica", int(font_size * screen_scale[1]))
+        self.font = pygame.font.Font(Game.ui_font["text_paragraph"], int(font_size * screen_scale[1]))
         self.image = image.copy()
         self.base_image = self.image.copy()
         self.description = description
@@ -455,10 +455,10 @@ class Button(pygame.sprite.Sprite):
 class SwitchButton(pygame.sprite.Sprite):
     """Button that switch text/option"""
 
-    def __init__(self, text_list, image, pos, description=None, font_size=20):
+    def __init__(self, text_list, image, pos, description=None, font_size=16):
         self._layer = 5
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.font = pygame.font.SysFont("helvetica", int(font_size * screen_scale[1]))
+        self.font = pygame.font.Font(Game.ui_font["text_paragraph"], int(font_size * screen_scale[1]))
         self.pos = pos
         self.description = description
         self.current_option = 0
@@ -493,7 +493,7 @@ class BodyHelper(pygame.sprite.Sprite):
         self._layer = 6
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font_size = int(12 * screen_scale[1])
-        self.font = pygame.font.SysFont("helvetica", self.font_size)
+        self.font = pygame.font.Font(Game.ui_font["text_paragraph"], self.font_size)
         self.size = size
         self.image = pygame.Surface(self.size, pygame.SRCALPHA)
         self.image.fill((255, 255, 200))
@@ -503,7 +503,7 @@ class BodyHelper(pygame.sprite.Sprite):
         self.ui_type = ui_type
         self.part_images_original = [image.copy() for image in part_images]
         if "effect" not in self.ui_type:
-            self.box_font = pygame.font.SysFont("helvetica", int(22 * screen_scale[1]))
+            self.box_font = pygame.font.Font(Game.ui_font["text_paragraph"], int(22 * screen_scale[1]))
             empty_box = self.part_images_original[-1]
             self.part_images_original = self.part_images_original[:-1]
             for box_part in ("W1", "W2"):
@@ -513,7 +513,7 @@ class BodyHelper(pygame.sprite.Sprite):
                 new_box.blit(text_surface, text_rect)
                 self.part_images_original.append(new_box)
         else:
-            self.box_font = pygame.font.SysFont("helvetica", int(18 * screen_scale[1]))
+            self.box_font = pygame.font.Font(Game.ui_font["text_paragraph"], int(18 * screen_scale[1]))
             empty_box = self.part_images_original[0]
             self.part_images_original = self.part_images_original[:-1]
             for box_part in ("S1", "S2", "S3", "S4", "S5", "E1", "E2", "DE1", "DE2", "E3", "E4", "DE3", "DE4"):
@@ -707,8 +707,8 @@ class NameBox(pygame.sprite.Sprite):
     def __init__(self, size, pos, description=None):
         self._layer = 6
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.font_size = int(24 * screen_scale[1])
-        self.font = pygame.font.SysFont("helvetica", int(self.font_size * screen_scale[1]))
+        self.font_size = int(22 * screen_scale[1])
+        self.font = pygame.font.Font(Game.ui_font["text_paragraph"], int(self.font_size * screen_scale[1]))
         self.description = description
         self.size = size
         self.image = pygame.Surface(self.size)
@@ -1836,7 +1836,7 @@ play_animation_button = SwitchButton(["Play", "Stop"], image,
                                      (screen_size[0] / 2,
                                       filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 0.6)),
                                      description=("Play/Stop animation",
-                                                  "Preview the current animation with auto filmstrip selection."))
+                                                  "Preview the current animation."))
 
 all_frame_part_copy_button = Button("Copy PA", image, (screen_size[0] / 2 - play_animation_button.image.get_width() * 2,
                                                        filmstrip_list[0].rect.midbottom[1] + (

@@ -601,8 +601,7 @@ class Game:
         drama.TextDrama.images = load_images(self.module_dir, screen_scale=self.screen_scale,
                                              subfolder=("ui", "popup_ui", "drama_text"))
         drama.TextDrama.screen_rect = self.screen_rect
-        self.drama_text = drama.TextDrama(
-            self.screen_scale)  # message at the top of screen that show up for important event
+        self.drama_text = drama.TextDrama()  # message at the top of screen that show up for important event
 
         # Battle event log
         self.event_log = uibattle.EventLog(battle_ui_image["event_log"], (0, self.screen_rect.height))

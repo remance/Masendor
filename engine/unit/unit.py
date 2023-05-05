@@ -542,7 +542,7 @@ class Unit(sprite.Sprite):
             else:  # Use Unknown leader image if there is no specific portrait in data
                 self.portrait = self.leader_data.images["other"].copy()
                 name = self.name.split(" ")[0]
-                text_font = font.SysFont("helvetica", int(90 / (len(name) / 3) * self.screen_scale[1]))
+                text_font = font.Font(self.battle.game.ui_font["text_paragraph"], int(90 / (len(name) / 3) * self.screen_scale[1]))
                 text_image = text_font.render(name, True, Color("white"))
                 text_rect = text_image.get_rect(center=(self.portrait.get_width() / 2,
                                                         self.portrait.get_height() / 1.3))
