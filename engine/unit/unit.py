@@ -86,8 +86,6 @@ die_command_action = {"name": "DieDown", "uninterruptible": True, "uncontrollabl
 
 
 class Unit(sprite.Sprite):
-    ai_retreatempty_method = utility.empty_method
-
     battle = None
     base_map = None  # base map
     feature_map = None  # feature map

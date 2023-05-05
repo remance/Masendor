@@ -18,7 +18,6 @@ def menu_preset_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
                     self.map_source = 0
                     self.team_selected = 1
                     self.map_selected = self.preset_map_folder[self.current_map_select]
-                    self.create_preview_map(self.preset_map_folder, self.preset_map_list)
                     self.change_battle_source()
                     break
 
@@ -45,7 +44,7 @@ def menu_preset_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
                         icon.kill()
                     self.preview_unit.empty()
 
-                    self.setup_battle_unit(self.preview_unit, preview=self.team_selected, custom_data=None)
+                    self.setup_battle_unit(self.preview_unit, preview=self.team_selected)
 
                     self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
 
@@ -145,12 +144,7 @@ def menu_preset_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
         else:
             for index, icon in enumerate(self.unit_icon):
                 if icon.rect.collidepoint(self.mouse_pos):
-                    popup_text = [icon.who.name]
-                    for troop in icon.who.troop_reserve_list:
-                        popup_text += [self.troop_data.troop_list[troop]["Name"] + ": " +
-                                       str(len([subunit for subunit in icon.who.alive_troop_follower if
-                                                subunit.troop_id == troop])) + " + " +
-                                       str(icon.who.troop_reserve_list[troop])]
+                    popup_text = leader_popup_text(self, icon)
                     self.single_text_popup.pop(self.mouse_pos, popup_text)
                     self.main_ui_updater.add(self.single_text_popup)
                     if mouse_left_up:
@@ -189,3 +183,63 @@ def change_char(self):
     self.main_ui_updater.add(self.unit_selector, self.unit_selector.scroll,
                              tuple(self.unit_stat.values()), *self.unit_select_button)
     self.menu_button.add(*self.unit_select_button)
+
+
+def leader_popup_text(self, icon):
+    who = icon.who
+
+    stat = self.leader_data.leader_list[who.troop_id]
+
+    leader_skill = ""
+    for skill in who.skill:
+        leader_skill += self.leader_data.skill_list[skill]["Name"] + ", "
+    leader_skill = leader_skill[:-2]
+    primary_main_weapon = stat["Primary Main Weapon"]
+    if not primary_main_weapon:  # replace empty with standard unarmed
+        primary_main_weapon = (1, 3)
+    primary_sub_weapon = stat["Primary Sub Weapon"]
+    if not primary_sub_weapon:  # replace empty with standard unarmed
+        primary_sub_weapon = (1, 3)
+    secondary_main_weapon = stat["Secondary Main Weapon"]
+    if not secondary_main_weapon:  # replace empty with standard unarmed
+        secondary_main_weapon = (1, 3)
+    secondary_sub_weapon = stat["Secondary Sub Weapon"]
+    if not secondary_sub_weapon:  # replace empty with standard unarmed
+        secondary_sub_weapon = (1, 3)
+
+    leader_primary_main_weapon = self.troop_data.equipment_grade_list[primary_main_weapon[1]]["Name"] + " " + \
+                                 self.troop_data.weapon_list[primary_main_weapon[0]]["Name"] + ", "
+    leader_primary_sub_weapon = self.troop_data.equipment_grade_list[primary_sub_weapon[1]]["Name"] + " " + \
+                                self.troop_data.weapon_list[primary_sub_weapon[0]]["Name"]
+    leader_secondary_main_weapon = self.troop_data.equipment_grade_list[secondary_main_weapon[1]]["Name"] + " " + \
+                                   self.troop_data.weapon_list[secondary_main_weapon[0]]["Name"] + ", "
+    leader_secondary_sub_weapon = self.troop_data.equipment_grade_list[secondary_sub_weapon[1]]["Name"] + " " + \
+                                  self.troop_data.weapon_list[secondary_sub_weapon[0]]["Name"]
+    leader_armour = "No Armour"
+    if stat["Armour"]:
+        leader_armour = self.troop_data.equipment_grade_list[stat["Armour"][1]]["Name"] + " " + \
+                        self.troop_data.armour_list[stat["Armour"][0]]["Name"]
+
+    leader_mount = "None"
+    if stat["Mount"]:
+        leader_mount = self.troop_data.mount_grade_list[stat["Mount"][1]]["Name"] + ", " + \
+                       self.troop_data.mount_list[stat["Mount"][0]]["Name"] + ", " + \
+                       self.troop_data.mount_armour_list[stat["Mount"][2]]["Name"]
+
+    popup_text = [who.name, "Social Class: " + who.social["Leader Social Class"],
+                  "Authority: " + str(who.leader_authority),
+                  "Command: " + "Melee:" + self.leader_skill_level_text[who.melee_command] +
+                  " Ranged:" + self.leader_skill_level_text[who.range_command] +
+                  " Cav:" + self.leader_skill_level_text[who.cav_command],
+                  "Skill: " + leader_skill, "1st Main Weapon: " + leader_primary_main_weapon,
+                  "1st Sub Weapon: " + leader_primary_sub_weapon, "2nd Main Weapon: " + leader_secondary_main_weapon,
+                  "2nd Sub Weapon: " + leader_secondary_sub_weapon, "Armour: " + leader_armour, "Mount: " + leader_mount]
+
+    for item in self.map_data["unit"]:
+        if item["ID"] == icon.who.map_id:
+            for troop, value in item["Troop"].items():
+                popup_text += [self.troop_data.troop_list[int(troop)]["Name"] + ": " +
+                               value]
+            break
+
+    return popup_text

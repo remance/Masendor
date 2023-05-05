@@ -61,11 +61,12 @@ def menu_custom_unit_select(self, mouse_left_up, mouse_left_down, mouse_scroll_u
             for index, icon in enumerate(self.unit_icon):
                 if icon.rect.collidepoint(self.mouse_pos):
                     popup_text = [icon.who.name]
-                    for troop in icon.who.troop_reserve_list:
-                        popup_text += [self.troop_data.troop_list[troop]["Name"] + ": " +
-                                       str(len([this_unit for this_unit in icon.who.alive_troop_follower if
-                                                this_unit.troop_id == troop])) + " + " +
-                                       str(icon.who.troop_reserve_list[troop])]
+                    for item in self.map_data["unit"]:
+                        if item["ID"] == icon.who.map_id:
+                            for troop, value in item["Troop"].items():
+                                popup_text += [self.troop_data.troop_list[int(troop)]["Name"] + ": " +
+                                               value]
+                            break
                     self.single_text_popup.pop(self.mouse_pos, popup_text)
                     self.main_ui_updater.add(self.single_text_popup)
                     if mouse_left_up:
@@ -73,7 +74,6 @@ def menu_custom_unit_select(self, mouse_left_up, mouse_left_down, mouse_scroll_u
                             if other_icon.selected:  # unselected all others first
                                 other_icon.selection()
                         icon.selection()
-                        self.unit_stat["char"].add_leader_stat(icon.who, self.leader_data, self.troop_data)
                         who_todo = {key: value for key, value in self.leader_data.leader_list.items() if
                                     key == icon.who.troop_id}
                         preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True)

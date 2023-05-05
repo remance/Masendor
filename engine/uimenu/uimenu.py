@@ -660,8 +660,6 @@ class ArmyStat(UIMenu):
                                 (self.image.get_width() / 1.4, self.image.get_height() / 1.8),  # cav range
                                 (self.image.get_width() / 3, self.image.get_height() / 1.32))  # total unit number
 
-        self.leader_text = ("E", "E+", "D", "D+", "C", "C+", "B", "B+", "A", "A+", "S")
-
         self.rect = self.image.get_rect(topleft=pos)
 
     def add_army_stat(self, troop_number, leader_name):
@@ -689,78 +687,6 @@ class ArmyStat(UIMenu):
         self.image.blit(new_coa, rect)
         rect = model.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
         self.image.blit(model, rect)
-
-    def add_leader_stat(self, who, leader_data, troop_data):
-        """For unit select screen"""
-        self.image = self.base_image.copy()
-        stat = leader_data.leader_list[who.troop_id]
-        leader_name = who.name
-        leader_image = who.portrait
-        leader_skill = ""
-        for skill in who.skill:
-            leader_skill += leader_data.skill_list[skill]["Name"] + ", "
-        leader_skill = leader_skill[:-2]
-        primary_main_weapon = stat["Primary Main Weapon"]
-        if not primary_main_weapon:  # replace empty with standard unarmed
-            primary_main_weapon = (1, 3)
-        primary_sub_weapon = stat["Primary Sub Weapon"]
-        if not primary_sub_weapon:  # replace empty with standard unarmed
-            primary_sub_weapon = (1, 3)
-        secondary_main_weapon = stat["Secondary Main Weapon"]
-        if not secondary_main_weapon:  # replace empty with standard unarmed
-            secondary_main_weapon = (1, 3)
-        secondary_sub_weapon = stat["Secondary Sub Weapon"]
-        if not secondary_sub_weapon:  # replace empty with standard unarmed
-            secondary_sub_weapon = (1, 3)
-
-        leader_primary_main_weapon = troop_data.equipment_grade_list[primary_main_weapon[1]]["Name"] + " " + \
-                                     troop_data.weapon_list[primary_main_weapon[0]]["Name"] + ", "
-        leader_primary_sub_weapon = troop_data.equipment_grade_list[primary_sub_weapon[1]]["Name"] + " " + \
-                                    troop_data.weapon_list[primary_sub_weapon[0]]["Name"]
-        leader_secondary_main_weapon = troop_data.equipment_grade_list[secondary_main_weapon[1]]["Name"] + " " + \
-                                       troop_data.weapon_list[secondary_main_weapon[0]]["Name"] + ", "
-        leader_secondary_sub_weapon = troop_data.equipment_grade_list[secondary_sub_weapon[1]]["Name"] + " " + \
-                                      troop_data.weapon_list[secondary_sub_weapon[0]]["Name"]
-        leader_armour = "No Armour"
-        if stat["Armour"]:
-            leader_armour = troop_data.equipment_grade_list[stat["Armour"][1]]["Name"] + " " + \
-                            troop_data.armour_list[stat["Armour"][0]]["Name"]
-
-        leader_mount = "None"
-        if stat["Mount"]:
-            leader_mount = troop_data.mount_grade_list[stat["Mount"][1]]["Name"] + ", " + \
-                           troop_data.mount_list[stat["Mount"][0]]["Name"] + ", " + \
-                           troop_data.mount_armour_list[stat["Mount"][2]]["Name"]
-
-        leader_stat = {"Health: ": who.health, "Authority: ": who.leader_authority,
-                       "Social Class: ": who.social["Leader Social Class"],
-                       "Command: ": "M:" + self.leader_text[who.melee_command] +
-                                    " R:" + self.leader_text[who.range_command] +
-                                    " C:" + self.leader_text[who.cav_command],
-                       "Skill: ": leader_skill,
-                       "1st Main Weapon: ": leader_primary_main_weapon,
-                       "1st Sub Weapon: ": leader_primary_sub_weapon,
-                       "2nd Main Weapon: ": leader_secondary_main_weapon,
-                       "2nd Sub Weapon: ": leader_secondary_sub_weapon,
-                       "Armour: ": leader_armour,
-                       "Mount: ": leader_mount,
-                       "Follower": " Leaders: " + str(len(who.alive_leader_follower)) +
-                                   "    Troops: " + str(len(who.alive_troop_follower)) + " + " +
-                                   str(sum(who.troop_reserve_list.values()))}
-        text_surface = self.font.render(str(leader_name), True, (0, 0, 0))
-        text_rect = text_surface.get_rect(topleft=(self.font_size, self.font_size))
-        self.image.blit(text_surface, text_rect)
-
-        leader_rect = leader_image.get_rect(topright=(self.image.get_width() - (leader_image.get_width() / 10),
-                                                      leader_image.get_height() / 10))
-        self.image.blit(leader_image, leader_rect)
-        row = text_rect.bottomleft[1]
-        column = text_rect.bottomleft[0]
-        for key, value in leader_stat.items():
-            text_surface = self.font.render(format(key + str(value)), True, (0, 0, 0))
-            text_rect = text_surface.get_rect(topleft=(column, row))
-            self.image.blit(text_surface, text_rect)
-            row += self.font_size * 1.2
 
 
 class ListBox(UIMenu):

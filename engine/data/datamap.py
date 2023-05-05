@@ -173,7 +173,7 @@ class BattleMapData:
             for strength in range(0, 3):
                 new_name = weather_icon + "_" + str(strength)
                 for item in weather_icon_list:
-                    if new_name == item:
+                    if new_name == fcv(item):
                         new_weather_icon[new_name] = weather_icon_list[item]
                         break
 
@@ -199,15 +199,15 @@ class BattleMapData:
         read_folder = Path(os.path.join(module_dir, "map", "custom"))
         subdirectories = [x for x in read_folder.iterdir() if x.is_dir()]
 
-        self.custom_map_list = self.preset_map_list.copy() + ["Random"]
-        self.custom_map_folder = self.preset_map_folder.copy() + ["Random"]
+        self.battle_map_list = self.preset_map_list.copy() + ["Random"]
+        self.battle_map_folder = self.preset_map_folder.copy() + ["Random"]
 
         for file_map in subdirectories:
-            self.custom_map_folder.append(os.sep.join(os.path.normpath(file_map).split(os.sep)[-1:]))
+            self.battle_map_folder.append(os.sep.join(os.path.normpath(file_map).split(os.sep)[-1:]))
             with open(os.path.join(str(file_map), "info_" + language + ".csv"), encoding="utf-8",
                       mode="r") as edit_file:
                 rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
                 for row in rd:
                     if row[0] != "Name":
-                        self.custom_map_list.append(row[0])
+                        self.battle_map_list.append(row[0])
             edit_file.close()

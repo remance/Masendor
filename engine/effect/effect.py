@@ -11,7 +11,6 @@ direction_angle = utility.direction_angle
 
 
 class Effect(sprite.Sprite):
-    empty_method = utility.empty_method
     clean_object = utility.clean_object
     set_rotate = utility.set_rotate
 

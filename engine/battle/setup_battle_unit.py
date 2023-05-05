@@ -7,7 +7,7 @@ from engine import utility
 stat_convert = utility.stat_convert
 
 
-def setup_battle_unit(self, team_unit_list, preview=None, custom_data=None):
+def setup_battle_unit(self, team_unit_list, preview=None):
     """
     Read unit data in battle from unit_pos file
     :param self: Battle or Game object
@@ -17,10 +17,8 @@ def setup_battle_unit(self, team_unit_list, preview=None, custom_data=None):
     """
     leader_unit = {}
     self.last_troop_game_id = 0
-    if not custom_data:  # TODO move this data reading process to map selection
-        troop_data = self.map_data["unit"]
-    else:
-        troop_data = custom_data
+
+    troop_data = self.map_data["unit"]
 
     new_troop_data = []  # rearrange data list to ensure that leader units are made first
     for data in troop_data:  # unit leader first

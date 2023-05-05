@@ -1,16 +1,11 @@
-import glob
 import os
 import sys
 import time
-from datetime import datetime, timedelta
-from pathlib import Path
-from random import randint
 
 import pygame
 from pygame.locals import *
 
 from engine.weather import weather
-from engine.battle import battle
 from engine.camera import camera
 from engine.unit import unit
 from engine.effect import effect
@@ -53,33 +48,68 @@ def set_done_load():
 
 
 class Battle:
-    empty_method = utility.empty_method
+    from engine.battle.add_sound_effect_queue import add_sound_effect_queue
+    add_sound_effect_queue = add_sound_effect_queue
 
-    # Import from common.battle
-    add_sound_effect_queue = empty_method
-    cal_shake_value = empty_method
-    camera_fix = empty_method
-    camera_process = empty_method
-    change_battle_state = empty_method
-    generate_unit = empty_method
-    mouse_scrolling_process = empty_method
-    play_sound_effect = empty_method
-    player_aim = empty_method
-    player_cancel_input = empty_method
-    player_input_process = empty_method
-    player_skill_perform = empty_method
-    setup_battle_unit = empty_method
-    setup_battle_ui = empty_method
-    shake_camera = empty_method
-    spawn_weather_matter = empty_method
-    time_update = empty_method
+    from engine.battle.cal_shake_value import cal_shake_value
+    cal_shake_value = cal_shake_value
 
-    # Import common.ui
-    countdown_skill_icon = empty_method
-    effect_icon_mouse_over = empty_method
-    escmenu_process = empty_method
-    kill_effect_icon = empty_method
-    wheel_ui_process = empty_method
+    from engine.battle.camera_fix import camera_fix
+    camera_fix = camera_fix
+
+    from engine.battle.camera_process import camera_process
+    camera_process = camera_process
+
+    from engine.battle.change_battle_state import change_battle_state
+    change_battle_state = change_battle_state
+
+    from engine.battle.countdown_skill_icon import countdown_skill_icon
+    countdown_skill_icon = countdown_skill_icon
+
+    from engine.battle.mouse_scrolling_process import mouse_scrolling_process
+    mouse_scrolling_process = mouse_scrolling_process
+
+    from engine.battle.play_sound_effect import play_sound_effect
+    play_sound_effect = play_sound_effect
+
+    from engine.battle.player_aim import player_aim
+    player_aim = player_aim
+
+    from engine.battle.player_cancel_input import player_cancel_input
+    player_cancel_input = player_cancel_input
+
+    from engine.battle.player_input_process import player_input_process
+    player_input_process = player_input_process
+
+    from engine.battle.player_skill_perform import player_skill_perform
+    player_skill_perform = player_skill_perform
+
+    from engine.battle.setup_battle_unit import setup_battle_unit
+    setup_battle_unit = setup_battle_unit
+
+    from engine.battle.setup_battle_ui import setup_battle_ui
+    setup_battle_ui = setup_battle_ui
+
+    from engine.battle.shake_camera import shake_camera
+    shake_camera = shake_camera
+
+    from engine.battle.spawn_weather_matter import spawn_weather_matter
+    spawn_weather_matter = spawn_weather_matter
+
+    from engine.battle.time_update import time_update
+    time_update = time_update
+
+    from engine.battle.effect_icon_mouse_over import effect_icon_mouse_over
+    effect_icon_mouse_over = effect_icon_mouse_over
+
+    from engine.battle.escmenu_process import escmenu_process
+    escmenu_process = escmenu_process
+
+    from engine.battle.kill_effect_icon import kill_effect_icon
+    kill_effect_icon = kill_effect_icon
+
+    from engine.battle.wheel_ui_process import wheel_ui_process
+    wheel_ui_process = wheel_ui_process
 
     start_camera_mode = "Follow"
 
@@ -359,26 +389,9 @@ class Battle:
         self.team_colour = self.game.team_colour
 
         # Load weather schedule
-        yield set_start_load("weather")
-        if map_type == "preset":
-            try:
-                self.weather_event = csv_read(self.module_dir, "weather.csv",
-                                              ("map", map_type,
-                                               self.map_selected,
-                                               self.map_source), output_type="list")
-                self.weather_event = self.weather_event[1:]
-                utility.convert_str_time(self.weather_event)
-            except (FileNotFoundError,
-                    TypeError):  # If no weather found or no map use light sunny weather start at 9:00 and wind direction at 0 angle
-                new_time = datetime.strptime("09:00:00", "%H:%M:%S").time()
-                new_time = timedelta(hours=new_time.hour, minutes=new_time.minute, seconds=new_time.second)
-                self.weather_event = ((4, new_time, 0, 0),)  # default weather light sunny all day
-        elif map_type == "custom":
-            self.weather_event = self.game.custom_map_data["info"]["weather"].copy()
-            utility.convert_str_time(self.weather_event)
-
+        self.weather_event = self.map_data["info"]["weather"].copy()
+        utility.convert_str_time(self.weather_event)
         self.weather_playing = self.weather_event[0][1]  # used as the reference for map starting time
-        yield set_done_load()
 
         # Random music played from list
         # yield set_start_load("music")
@@ -473,7 +486,7 @@ class Battle:
         if map_type == "preset":
             self.setup_battle_unit(self.unit_updater)
         elif map_type == "custom":
-            self.setup_battle_unit(self.unit_updater, custom_data=self.game.custom_map_data["battle"])
+            self.setup_battle_unit(self.unit_updater, custom_data=self.map_data["battle"])
 
         for this_group in self.all_team_unit.values():
             this_group.empty()

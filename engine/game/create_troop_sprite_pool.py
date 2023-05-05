@@ -7,11 +7,15 @@ from engine import utility
 import pygame
 from PIL import Image
 
-from engine.game.create_troop_sprite import create_troop_sprite
+from engine.game import create_troop_sprite
 from engine.data.datacacher import load_pickle_with_surfaces
 from engine.data.datacacher import save_pickle_with_surfaces
 
 md5_dir = utility.md5_dir
+
+
+default_sprite_size = create_troop_sprite.default_sprite_size
+create_troop_sprite = create_troop_sprite.create_troop_sprite
 
 
 def create_troop_sprite_pool(self, who_todo, preview=False, specific_preview=None, max_preview_size=200):
@@ -555,8 +559,8 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                         status_animation_pool[this_subunit["Size"]][status]["frame"].append(
                             pygame.transform.smoothscale(
                                 self.troop_animation.status_animation_pool[status][index],
-                                (create_troop_sprite.default_sprite_size[0] * this_subunit["Size"] / 4,
-                                 create_troop_sprite.default_sprite_size[1] * this_subunit["Size"] / 4)))
+                                (default_sprite_size[0] * this_subunit["Size"] / 4,
+                                 default_sprite_size[1] * this_subunit["Size"] / 4)))
                     status_animation_pool[this_subunit["Size"]][status]["frame"] = \
                         tuple(status_animation_pool[this_subunit["Size"]][status]["frame"])
                     status_animation_pool[this_subunit["Size"]][status]["frame_number"] = len(

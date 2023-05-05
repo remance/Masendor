@@ -1,6 +1,6 @@
 import pygame
 
-from engine.battleui import SpriteIndicator
+from engine.uibattle.uibattle import SpriteIndicator
 
 
 def change_battle_state(self):

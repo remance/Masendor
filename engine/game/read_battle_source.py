@@ -11,7 +11,7 @@ def read_battle_source(self, description_text):
 
     openfolder = self.preset_map_folder
     if self.last_select == "custom":
-        openfolder = self.custom_map_folder
+        openfolder = self.battle_map_folder
     unit_info = self.read_selected_map_data(openfolder, "troop_pos.csv", source=True)
     self.team_pos = {row["Team"]: [] for row in list(unit_info.values())}
     for row in list(unit_info.values()):

@@ -56,15 +56,6 @@ make_option_menu = make_option_menu.make_option_menu
 
 version_name = "Future Visionary"  # Game version name that will appear as game name
 
-morale_state_text = {0: "Broken", 1: "Fleeing", 2: "Breaking", 3: "Poor", 4: "Wavering", 5: "Balanced",
-                     6: "Steady", 7: "Fine", 8: "Confident", 9: "Eager", 10: "Ready", 11: "Merry", 12: "Elated",
-                     13: "Ecstatic",
-                     14: "Inspired", 15: "Fervent"}  # unit morale state name
-
-stamina_state_text = {0: "Collapse", 1: "Exhausted", 2: "Severed", 3: "Very Tired", 4: "Tired", 5: "Winded",
-                      6: "Moderate",
-                      7: "Alert", 8: "Warmed Up", 9: "Active", 10: "Fresh"}  # unit stamina state name
-
 
 class Game:
     game = None
@@ -106,8 +97,6 @@ class Game:
                                  "hat-0": "L. Arrow", "hat+0": "R. Arrow",
                                  "hat-1": "U. Arrow", "hat+1": "D. Arrow"}}
 
-    empty_method = utility.empty_method
-
     # import from game
     assign_key = assign_key.assign_key
     back_mainmenu = back_mainmenu.back_mainmenu
@@ -145,6 +134,8 @@ class Game:
     selected_team_colour = {0: (200, 200, 200), 1: (180, 180, 255), 2: (255, 150, 150), 3: (255, 255, 150),
                             4: (150, 255, 150), 5: (255, 150, 255), 6: (200, 140, 70), 7: (160, 200, 200),
                             8: (255, 150, 45), 9: (230, 140, 160), 10: (200, 190, 230)}
+
+    leader_skill_level_text = ("E", "E+", "D", "D+", "C", "C+", "B", "B+", "A", "A+", "S")
 
     def __init__(self, main_dir, error_log):
 
@@ -249,7 +240,6 @@ class Game:
         self.map_data = None
         self.map_info = None
         self.map_unit_data = None
-        self.custom_map_data = {"info": {"weather": [[0, "09:00:00", 0, 0]]}, "unit": {"pos": {}}}
 
         self.dt = 0
         self.text_delay = 0
@@ -674,8 +664,8 @@ class Game:
         self.battle.feature_mod = self.battle_map_data.feature_mod
         self.preset_map_list = self.battle_map_data.preset_map_list
         self.preset_map_folder = self.battle_map_data.preset_map_folder
-        self.custom_map_list = self.battle_map_data.custom_map_list
-        self.custom_map_folder = self.battle_map_data.custom_map_folder
+        self.battle_map_list = self.battle_map_data.battle_map_list
+        self.battle_map_folder = self.battle_map_data.battle_map_folder
 
         unit.Unit.troop_data = self.troop_data
         unit.Unit.leader_data = self.leader_data
@@ -972,7 +962,7 @@ class Game:
                                                          self.input_popup[1][2]], None)
 
                     elif "wind" in self.input_popup[1] and self.input_box.text.isdigit():
-                        self.custom_map_data["info"]["weather"][0][2] = int(self.input_box.text)
+                        self.map_data["info"]["weather"][0][2] = int(self.input_box.text)
                         self.wind_custom_select.rename("Wind Direction: " + self.input_box.text)
 
                     elif self.input_popup[1] == "quit":

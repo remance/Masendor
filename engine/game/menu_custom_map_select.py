@@ -11,8 +11,8 @@ def menu_custom_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
             for index, name in enumerate(self.map_namegroup):  # user click on map name, change map
                 if name.rect.collidepoint(self.mouse_pos):
                     self.current_map_select = index
-                    self.map_selected = self.custom_map_folder[self.current_map_select]
-                    self.create_preview_map(self.custom_map_folder, self.custom_map_list, custom_map=True)
+                    self.map_selected = self.battle_map_folder[self.current_map_select]
+                    self.create_preview_map()
                     break
 
         if self.map_list_box.scroll.rect.collidepoint(self.mouse_pos):  # click on subsection list scroll
@@ -64,7 +64,7 @@ def menu_custom_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
 
         self.create_team_coa([None for _ in range(10)], self.main_ui_updater)
 
-        self.custom_map_data["unit"] = {"pos": {}}
+        self.map_data["unit"] = {"pos": {}}
 
         self.main_ui_updater.add(*self.team_select_button, self.custom_map_option_box, self.observe_mode_tick_box,
                                  self.night_battle_tick_box, self.map_back_button, self.map_select_button,

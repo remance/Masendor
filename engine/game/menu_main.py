@@ -20,13 +20,15 @@ def menu_main(self, mouse_left_up):
 
         setup_list(uimenu.NameList, self.current_map_row, self.preset_map_list, self.map_namegroup,
                    self.map_list_box, self.main_ui_updater)
-        self.create_preview_map(self.preset_map_folder, self.preset_map_list)
+
+        self.change_battle_source()
 
         for team in self.team_coa:
             if self.team_selected == team.team:
                 team.change_select(True)
 
-        self.change_battle_source()
+        # reset preview mini map
+        self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos)
 
         self.menu_button.add(*self.unit_select_button)
         self.main_ui_updater.add(*self.unit_select_button, self.map_list_box, self.map_title, self.map_list_box.scroll,
@@ -41,16 +43,16 @@ def menu_main(self, mouse_left_up):
         self.last_select = self.menu_state
 
         self.current_map_select = 0
-        self.map_selected = self.custom_map_folder[self.current_map_select]
+        self.map_selected = self.battle_map_folder[self.current_map_select]
 
         self.custom_map_button.event = False
         self.main_ui_updater.remove(*self.start_menu_ui_only, self.popup_list_box, self.popup_list_box.scroll)
         self.menu_button.remove(*self.menu_button)
 
-        setup_list(uimenu.NameList, self.current_map_row, self.custom_map_list, self.map_namegroup,
+        setup_list(uimenu.NameList, self.current_map_row, self.battle_map_list, self.map_namegroup,
                    self.map_list_box,
                    self.main_ui_updater)
-        self.create_preview_map(self.custom_map_folder, self.custom_map_list, custom_map=True)
+        self.create_preview_map()
 
         self.menu_button.add(*self.map_select_button)
         self.main_ui_updater.add(*self.map_select_button, self.map_list_box, self.map_title, self.map_list_box.scroll)
