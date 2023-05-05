@@ -1,6 +1,6 @@
 from pygame import Vector2
 
-from engine.uibattle import uibattle
+from engine.uibattle.uibattle import AimTarget
 
 
 def wheel_ui_process(self, choice):
@@ -67,15 +67,15 @@ def wheel_ui_process(self, choice):
                 self.battle_ui_updater.add(self.single_text_popup)
                 if choice == "Leader Aim":
                     self.player_input_state = "leader aim"
-                    uibattle.AimTarget(self.screen_scale, self.player_unit)
+                    AimTarget(self.player_unit)
                 elif choice == "Line Aim":
                     self.player_input_state = "line aim"
                     for this_unit in self.player_unit.alive_troop_follower:
-                        uibattle.AimTarget(self.screen_scale, this_unit)
+                        AimTarget(this_unit)
                 elif choice == "Focus Aim":
                     self.player_input_state = "focus aim"
                     for this_unit in self.player_unit.alive_troop_follower:
-                        uibattle.AimTarget(self.screen_scale, this_unit)
+                        AimTarget(this_unit)
 
 
 def renew_wheel(self, choice):

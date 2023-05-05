@@ -183,8 +183,6 @@ class Battle:
         self.confirm_ui = game.confirm_ui
         self.confirm_ui_popup = game.confirm_ui_popup
 
-        self.unit_icon = game.unit_icon
-
         self.time_ui = game.time_ui
         self.time_number = game.time_number
 
@@ -389,7 +387,7 @@ class Battle:
         self.team_colour = self.game.team_colour
 
         # Load weather schedule
-        self.weather_event = self.map_data["info"]["weather"].copy()
+        self.weather_event = [item.copy() for item in self.map_data["info"]["weather"]].copy()
         utility.convert_str_time(self.weather_event)
         self.weather_playing = self.weather_event[0][1]  # used as the reference for map starting time
 
@@ -1028,10 +1026,9 @@ class Battle:
 
         self.troop_ai_logic_queue = []
 
-        clean_group_object((self.shoot_lines, self.all_units, self.unit_icon,
-                            self.effect_updater, self.weather_matter))
+        clean_group_object((self.shoot_lines, self.all_units, self.effect_updater, self.weather_matter))
 
-        self.command_ui.__init__(self.screen_scale, self.command_ui.weapon_box_images,
+        self.command_ui.__init__(self.command_ui.weapon_box_images,
                                  self.command_ui.status_effect_image)  # reset command ui
 
         self.unit_animation_pool = None

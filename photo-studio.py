@@ -8,13 +8,22 @@ from pathlib import Path
 
 import pygame
 import screeninfo
-from engine import battlemap, weather, battleui, menu, effectsprite, battle, camera, datasprite, datamap, game
 
-from engine.common.utility import csv_read, load_images, stat_convert
-from engine.common.battle import setup_battle_unit
-from engine.common.battle.spawn_weather_matter import spawn_weather_matter
-from engine.common.game.setup.make_faction_troop_leader_data import make_faction_troop_leader_data
-from engine.common.game.create_troop_sprite_pool import create_troop_sprite_pool
+from engine.battlemap import battlemap
+from engine.game import game
+from engine.battle import battle
+from engine.weather import weather
+from engine.camera import camera
+from engine.unit import unit
+from engine.effect import effect
+from engine.data import datasprite, datamap
+from engine.uibattle import uibattle
+
+from engine.utility import csv_read, load_images, stat_convert
+from engine.battle import setup_battle_unit
+from engine.battle.spawn_weather_matter import spawn_weather_matter
+from engine.game.setup.make_faction_troop_leader_data import make_faction_troop_leader_data
+from engine.game.create_troop_sprite_pool import create_troop_sprite_pool
 
 team_colour = game.Game.team_colour
 
@@ -165,10 +174,10 @@ class Studio(game.Game):
         TroopModel.containers = self.troop_model
         weather.MatterSprite.containers = self.weather_matter, self.sky_camera, self.weather_updater
         weather.SpecialEffect.containers = self.weather_effect, self.sky_camera, self.weather_updater
-        effectsprite.Effect.containers = self.ground_camera
-        battleui.SpriteIndicator.containers = self.ground_camera
+        effect.Effect.containers = self.ground_camera
+        uibattle.SpriteIndicator.containers = self.ground_camera
 
-        battle_ui_image = load_images(data_dir, subfolder=("ui", "battle_ui"))
+        battle_ui_image = load_images(self.module_dir, subfolder=("ui", "battle_ui"))
 
         weather.Weather.wind_compass_images = {"wind_compass": battle_ui_image["wind_compass"],
                                                "wind_arrow": battle_ui_image["wind_arrow"]}
@@ -196,10 +205,10 @@ class Studio(game.Game):
         self.effect_sprite_pool = self.troop_animation.effect_sprite_pool
         self.effect_animation_pool = self.troop_animation.effect_animation_pool
 
-        effectsprite.Effect.effect_list = self.troop_data.effect_list
+        effect.Effect.effect_list = self.troop_data.effect_list
 
-        effectsprite.Effect.effect_sprite_pool = self.effect_sprite_pool
-        effectsprite.Effect.effect_animation_pool = self.effect_animation_pool
+        effect.Effect.effect_sprite_pool = self.effect_sprite_pool
+        effect.Effect.effect_animation_pool = self.effect_animation_pool
 
         self.battle_data = {}
         with open(os.path.join(main_dir, "photo-studio", self.module_folder, battle_data_name + ".csv"), encoding="utf-8",
@@ -237,21 +246,20 @@ class Studio(game.Game):
                                                                        max_preview_size=None)
                 new_troop = TroopModel(preview_sprite_pool[stuff["ID"]]["sprite"], stuff["POS"], is_leader, int(stuff["Other Data"]["Team"]),
                                        troop_size)
-                # battleui.SpriteIndicator(new_troop.hitbox_image, new_troop, self)
+                # uibattle.SpriteIndicator(new_troop.hitbox_image, new_troop, self)
 
             elif stuff["Type"] == "effect":
                 if "Team" in stuff["Other Data"]:
-                    effect = effectsprite.Effect(dummy_troop[int(stuff["Other Data"]["Team"])], stuff["POS"],
-                                                 (stuff["POS"][0] * 5, stuff["POS"][1] * 5),
-                                                 (stuff["POS"][0] * 5, stuff["POS"][1] * 5), stuff["ID"], stuff["Animation"])
+                    this_effect = effect.Effect(dummy_troop[int(stuff["Other Data"]["Team"])], stuff["POS"],
+                                                 stuff["POS"], stuff["ID"], stuff["Animation"])
                 else:
-                    effect = effectsprite.Effect(dummy_troop[0], stuff["POS"], (stuff["POS"][0] * 5, stuff["POS"][1] * 5),
-                                                 (stuff["POS"][0] * 5, stuff["POS"][1] * 5), stuff["ID"], stuff["Animation"])
-                effect.image = effect.current_animation[int(stuff["Frame"])]
-                effect.rect = effect.image.get_rect(center=effect.pos)
+                    this_effect = effect.Effect(dummy_troop[0], stuff["POS"], stuff["POS"],
+                    stuff["ID"], stuff["Animation"])
+                this_effect.image = this_effect.current_animation[int(stuff["Frame"])]
+                this_effect.rect = this_effect.image.get_rect(center=this_effect.pos)
 
                 if stuff["Angle"] != 0:
-                    effect.image = pygame.transform.rotate(effect.image, stuff["Angle"])
+                    this_effect.image = pygame.transform.rotate(this_effect.image, stuff["Angle"])
 
         troop_model = {}  # blit troop based on layer to battle map directly to reduce workload
         for troop in self.troop_model:

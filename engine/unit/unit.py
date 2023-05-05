@@ -160,8 +160,8 @@ class Unit(sprite.Sprite):
     from engine.unit.change_formation import change_formation
     change_formation = change_formation
 
-    from engine.unit.change_formation import change_formation
-    check_element_effect = change_formation
+    from engine.unit.check_element_effect import check_element_effect
+    check_element_effect = check_element_effect
 
     from engine.unit.check_element_threshold import check_element_threshold
     check_element_threshold = check_element_threshold
@@ -205,11 +205,17 @@ class Unit(sprite.Sprite):
     from engine.unit.play_animation import play_animation
     play_animation = play_animation
 
+    from engine.unit.player_input import player_input
+    player_input = player_input
+
     from engine.unit.process_trait_skill import process_trait_skill
     process_trait_skill = process_trait_skill
 
     from engine.unit.rotate_logic import rotate_logic
     rotate_logic = rotate_logic
+
+    from engine.unit.setup_formation import setup_formation
+    swap_weapon = setup_formation
 
     from engine.unit.skill_command_input import skill_command_input
     skill_command_input = skill_command_input
@@ -1184,7 +1190,7 @@ class Unit(sprite.Sprite):
                             self.battle.player_input_state = "skill aim"
                             self.battle.camera_mode = "Free"
                             self.battle.true_camera_pos = Vector2(self.base_pos)
-                            SkillAimTarget(self.screen_scale, self,
+                            SkillAimTarget(self,
                                            self.skill[self.current_action["skill"]]["Area Of Effect"])
 
         else:  # die

@@ -3,7 +3,7 @@ from random import randint
 
 from pygame import Vector2
 
-from engine import weather
+from engine.weather import weather
 
 
 def spawn_weather_matter(self):

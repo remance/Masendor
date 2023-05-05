@@ -10,6 +10,7 @@ import numpy as np
 
 from engine import utility
 
+fcv = utility.filename_convert_readable
 stat_convert = utility.stat_convert
 load_images = utility.load_images
 lore_csv_read = utility.lore_csv_read
@@ -412,7 +413,7 @@ class TroopData:
         subdirectories = [os.sep.join(os.path.normpath(x).split(os.sep)[-1:]) for x in
                           part_folder.iterdir() if not x.is_dir()]
         for folder in subdirectories:
-            formation_name = folder.replace(".csv", "")
+            formation_name = fcv(folder.replace(".csv", ""))
             self.default_formation_list[formation_name] = []
             with open(os.path.join(data_dir, "troop", "formation", folder), encoding="utf-8",
                       mode="r") as edit_file:

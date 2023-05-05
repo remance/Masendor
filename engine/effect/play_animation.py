@@ -25,4 +25,5 @@ def play_animation(self, speed, dt, hold_check=False):
                     self.adjust_sprite()
                 else:
                     done = True
+        # self.rect already reset in adjust_sprite()
     return done, just_start

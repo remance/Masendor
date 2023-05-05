@@ -1225,8 +1225,8 @@ class SkillAimTarget(AimTarget):
     pygame.draw.circle(base_image, (125, 125, 125, 200), (base_image.get_width() / 2, base_image.get_height() / 2),
                        base_image.get_width() / 4, width=20)
 
-    def __init__(self, screen_scale, who, aoe_size):
-        AimTarget.__init__(self, screen_scale, who)
+    def __init__(self, who, aoe_size):
+        AimTarget.__init__(who)
         self.image = pygame.transform.smoothscale(self.base_image,
                                                   (aoe_size * 5 * self.screen_scale[0],
                                                    aoe_size * 5 * self.screen_scale[1]))

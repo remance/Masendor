@@ -17,7 +17,7 @@ def use_skill(self, which_skill):
                 base_pos = self.current_action["pos"]
                 pos = Vector2(base_pos[0] * self.screen_scale[0], base_pos[1] * self.screen_scale[1]) * 5
             if skill_stat["Effect Sprite"]:
-                effect.Effect(self, base_pos, pos, pos, skill_stat["Effect Sprite"][0],
+                effect.Effect(self, base_pos, pos, skill_stat["Effect Sprite"][0],
                               skill_stat["Effect Sprite"][1])
             if skill_stat["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
                 self.battle.add_sound_effect_queue(choice(self.sound_effect_pool[skill_stat["Sound Effect"]]),

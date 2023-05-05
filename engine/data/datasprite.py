@@ -198,6 +198,7 @@ class TroopAnimationData:
         for folder in subdirectories:
             folder_data_name = fcv(folder[-1])
             images = load_images(module_dir, subfolder=folder)
+            images = {fcv(key): value for key, value in images.items()}
             self.effect_sprite_pool[folder_data_name] = images
 
             self.effect_animation_pool[folder_data_name] = {}
