@@ -7,6 +7,49 @@ from functools import lru_cache
 from engine import utility
 
 
+def make_image_by_frame(frame: pygame.Surface, final_size):
+    """
+        Makes a bigger frame based image out of a frame surface.
+
+        A frame surface is the smallest possible surface of a frame.
+        It contain all corners and sides and a pixel in the center.
+        The pixel in will be the color of the content of the image.
+
+        It is required that every corner has the same size. If not
+        the final image will not look correct.
+
+        And each side must have the same size.
+    """
+
+    fs = final_size
+
+    assert frame.get_size()[0] == frame.get_size()[1]
+    assert frame.get_size()[0] % 2 == 1
+
+    css = corner_side_size = (frame.get_size()[0]-1)//2
+
+    image = pygame.Surface(final_size)
+
+    # background color
+    image.fill(frame.get_at((css, css)))
+
+    # corners
+    image.blit(frame, (0, 0), (0, 0, css, css))
+    image.blit(frame, (0, fs[1]-css), (0, css+1, css, css*2+1))
+    image.blit(frame, (fs[0]-css, 0), (css+1, 0, css*2+1, css))
+    image.blit(frame, (fs[0]-css, fs[1]-css), (css+1, css+1, css*2+1, css*2+1))
+
+    # sides
+    for x in range(css, fs[0]-css):
+        image.blit(frame, (x, 0), (css, 0, 1, css))
+        image.blit(frame, (x, fs[1]-css), (css, css+1, 1, css*2+1))
+    for y in range(css, fs[1]-css):
+        image.blit(frame, (0, y), (0, css, css, 1))
+        image.blit(frame, (fs[0]-css, y), (css+1, css, css*2+1, 1))
+
+    return image
+
+
 class UIMenu(pygame.sprite.Sprite):
     def __init__(self):
         """
@@ -1149,6 +1192,41 @@ class BoxUI(UIMenu, Containable, Container):
 
     def get_relative_position_inside_container(self):
         return (0, 0)
+
+    def get_rect(self):
+        return self.rect
+
+    def get_size(self):
+        return self.image.get_size()
+
+
+class ListUI(UIMenu, Containable):
+
+    def __init__(self, pos, size, items, parent):
+
+        from engine.game.game import Game
+        from engine.utility import load_image
+        game = Game.game
+
+        UIMenu.__init__(self)
+        self.pos = pos
+        frame = load_image(game.module_dir, (1, 1), "list_frame.png", ("ui", "mainmenu_ui"))
+
+        self.image = make_image_by_frame(frame, size)
+
+        font = pygame.font.Font(self.ui_font["main_button"], 18)
+
+        # TODO: implement hover?
+        # this code below is the start of the hover marker code
+        # pygame.draw.rect(self.image, "#181617", (4, 121, size[0]-8, 36))
+
+        self.rect = self.get_adjusted_rect_to_be_inside_container(parent)
+
+        for e, item in enumerate(items):
+            self.image.blit(font.render(item, True, (200,)*3), (20, 20+e*36))
+
+    def get_relative_position_inside_container(self):
+        return self.pos
 
     def get_rect(self):
         return self.rect
