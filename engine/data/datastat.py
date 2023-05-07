@@ -50,9 +50,9 @@ class TroopData:
                           "Air Resistance Bonus", "Earth Resistance Bonus", "Magic Resistance Bonus",
                           "Heat Resistance Bonus", "Cold Resistance Bonus", "Poison Resistance Bonus")  # value int only
             tuple_column = ("Special Effect", "Status Conflict")  # value in tuple only
-            mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect",
-                          "Speed Effect", "Accuracy Effect", "Melee Speed Effect", "Reload Effect",
-                          "Charge Effect")  # need to be calculated to percentage
+            mod_column = ("Melee Attack Modifier", "Melee Defence Modifier", "Ranged Defence Modifier",
+                          "Speed Modifier", "Accuracy Modifier", "Melee Speed Modifier", "Reload Modifier",
+                          "Charge Modifier")  # need to be calculated to percentage
             int_column = [index for index, item in enumerate(header) if item in int_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]
@@ -124,9 +124,9 @@ class TroopData:
             int_column = ("ID", "Troop Type", "Area of Effect", "Cost", "Charge Skill")  # value int only
             list_column = ("Action",)
             tuple_column = ("Status", "Enemy Status", "Effect Sprite", "AI Use Condition")  # value in tuple only
-            mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
-                          "Accuracy Effect", "Range Effect", "Melee Speed Effect", "Reload Effect", "Charge Effect",
-                          "Critical Effect", "Damage Effect", "Weapon Impact Effect")
+            mod_column = ("Melee Attack Modifier", "Melee Defence Modifier", "Ranged Defence Modifier", "Speed Modifier",
+                          "Accuracy Modifier", "Range Modifier", "Melee Speed Modifier", "Reload Modifier", "Charge Modifier",
+                          "Critical Modifier", "Damage Modifier", "Weapon Impact Modifier")
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
@@ -161,9 +161,9 @@ class TroopData:
                           "Heat Resistance Bonus", "Cold Resistance Bonus")  # value int only
             tuple_column = ("Status", "Special Effect", "Enemy Status")  # value in tuple only
             percent_column = ("Buff Modifier",)
-            mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect",
-                          "Speed Effect", "Accuracy Effect", "Range Effect", "Melee Speed Effect",
-                          "Reload Effect", "Charge Effect", "Siege Effect", "Supply Effect", "Upkeep Effect")
+            mod_column = ("Melee Attack Modifier", "Melee Defence Modifier", "Ranged Defence Modifier",
+                          "Speed Modifier", "Accuracy Modifier", "Range Modifier", "Melee Speed Modifier",
+                          "Reload Modifier", "Charge Modifier", "Siege Modifier", "Supply Modifier", "Upkeep Modifier")
             int_column = [index for index, item in enumerate(header) if item in int_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
             percent_column = [index for index, item in enumerate(header) if item in percent_column]
@@ -436,9 +436,9 @@ class TroopData:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             tuple_column = ("Status Conflict", "Status", "Special Effect", "Properties")  # value in tuple only
-            mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect",
-                          "Speed Effect", "Accuracy Effect", "Melee Speed Effect", "Reload Effect",
-                          "Charge Effect")  # need to be calculated to percentage
+            mod_column = ("Melee Attack Modifier", "Melee Defence Modifier", "Ranged Defence Modifier",
+                          "Speed Modifier", "Accuracy Modifier", "Melee Speed Modifier", "Reload Modifier",
+                          "Charge Modifier")  # need to be calculated to percentage
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
             mod_column = [index for index, item in enumerate(header) if item in mod_column]
             for index, row in enumerate(rd[1:]):
@@ -469,9 +469,9 @@ class LeaderData:
                 int_column = ("Troop Type", "Range", "Area of Effect", "Cost", "Charge Skill")  # value int only
                 list_column = ("Action",)
                 tuple_column = ("Replace", "Status", "Enemy Status", "Effect Sprite", "AI Use Condition")
-                mod_column = ("Melee Attack Effect", "Melee Defence Effect", "Ranged Defence Effect", "Speed Effect",
-                              "Accuracy Effect", "Range Effect", "Melee Speed Effect", "Reload Effect", "Charge Effect",
-                              "Critical Effect", "Damage Effect", "Weapon Impact Effect")
+                mod_column = ("Melee Attack Modifier", "Melee Defence Modifier", "Ranged Defence Modifier", "Speed Modifier",
+                              "Accuracy Modifier", "Range Modifier", "Melee Speed Modifier", "Reload Modifier", "Charge Modifier",
+                              "Critical Modifier", "Damage Modifier", "Weapon Impact Modifier")
                 int_column = [index for index, item in enumerate(header) if item in int_column]
                 list_column = [index for index, item in enumerate(header) if item in list_column]
                 tuple_column = [index for index, item in enumerate(header) if item in tuple_column]

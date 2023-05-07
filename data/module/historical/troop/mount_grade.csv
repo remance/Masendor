@@ -1,12 +1,12 @@
-"ID","Name","Speed Bonus","Charge Bonus","Health Effect","Stamina Effect","Morale Bonus","Discipline Bonus","Trait"
-0,"Untrained",-10,-60,100,100,-20,-40,5
-1,"Domestic",0,-30,105,120,-10,0,89
-2,"War",0,0,110,110,0,0,0
-3,"Hardened",10,10,120,120,20,10,266
-4,"Heroic",20,30,130,130,40,30,266
-5,"Mystical ",50,50,150,150,50,50,266
-6,"Legendary",100,100,200,200,100,100,266
-7,"Inferior",-10,0,0,0,0,0,76
-8,"Standard",0,0,0,0,0,0,0
-9,"Qualitied",10,0,100,0,0,0,0
-10,"Masterwork",20,0,200,0,0,0,0
+"ID","Name","Speed Bonus","Charge Bonus","Health Modifier","Stamina Modifier","Morale Bonus","Discipline Bonus","Trait"
+0,"Untrained",-10,-60,,,-20,-40,5
+1,"Domestic",,-30,0.05,0.2,-10,,89
+2,"War",,,0.1,0.1,,,
+3,"Hardened",10,20,0.2,0.2,20,10,266
+4,"Heroic",20,50,0.3,0.3,40,30,266
+5,"Mystical ",35,70,0.5,0.5,50,50,266
+6,"Legendary",50,150,1,1,100,100,266
+7,"Inferior",-10,0,,,,,76
+8,"Standard",0,,,,,,
+9,"Qualitied",10,15,,,,,
+10,"Masterwork",20,40,1,,,,

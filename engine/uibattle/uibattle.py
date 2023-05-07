@@ -255,9 +255,9 @@ class HeroUI(UIMenu):
                 for index2, this_weapon in enumerate(this_weapon_set):
                     if who.weapon_version[true_weapon_set_index][index2] in self.weapon_sprite_pool[this_weapon]:
                         weapon_image = self.weapon_sprite_pool[this_weapon][who.weapon_version[
-                            true_weapon_set_index][index2]]["icon"].copy()
+                            true_weapon_set_index][index2]]["Icon"].copy()
                     else:
-                        weapon_image = self.weapon_sprite_pool[this_weapon]["Common"]["icon"].copy()
+                        weapon_image = self.weapon_sprite_pool[this_weapon]["Common"]["Icon"].copy()
 
                     if index > 0:  # unequipped weapon
                         weapon_image = pygame.transform.scale(weapon_image,

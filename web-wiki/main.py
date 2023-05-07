@@ -60,10 +60,10 @@ class MinifiedGame(Game):
                                                               for key in self.troop_data.race_list], self.team_colour)
 
         self.unit_animation_data = self.troop_animation.unit_animation_data
-        self.gen_body_sprite_pool = self.troop_animation.gen_body_sprite_pool
-        self.gen_armour_sprite_pool = self.troop_animation.gen_armour_sprite_pool
+        self.body_sprite_pool = self.troop_animation.body_sprite_pool
+        self.armour_sprite_pool = self.troop_animation.armour_sprite_pool
         self.colour_list = self.troop_animation.colour_list
-        self.gen_weapon_sprite_pool = self.troop_animation.gen_weapon_sprite_pool
+        self.weapon_sprite_pool = self.troop_animation.weapon_sprite_pool
         self.weapon_joint_list = self.troop_animation.weapon_joint_list
 
 

@@ -280,9 +280,9 @@ class Battle:
         self.current_weather = weather.Weather(self.time_ui, 4, 0, 0, self.weather_data)
 
         self.unit_animation_data = None
-        self.gen_body_sprite_pool = None
-        self.gen_weapon_sprite_pool = None
-        self.gen_armour_sprite_pool = None
+        self.body_sprite_pool = None
+        self.weapon_sprite_pool = None
+        self.armour_sprite_pool = None
         self.effect_sprite_pool = None
         self.effect_animation_pool = None
         self.weapon_joint_list = None
@@ -378,9 +378,9 @@ class Battle:
         self.leader_data = self.game.leader_data
 
         self.unit_animation_data = self.game.unit_animation_data
-        self.gen_body_sprite_pool = self.game.gen_body_sprite_pool
-        self.gen_weapon_sprite_pool = self.game.gen_weapon_sprite_pool
-        self.gen_armour_sprite_pool = self.game.gen_armour_sprite_pool
+        self.body_sprite_pool = self.game.body_sprite_pool
+        self.weapon_sprite_pool = self.game.weapon_sprite_pool
+        self.armour_sprite_pool = self.game.armour_sprite_pool
         self.effect_sprite_pool = self.game.effect_sprite_pool
         self.effect_animation_pool = self.game.effect_animation_pool
         self.weapon_joint_list = self.game.weapon_joint_list

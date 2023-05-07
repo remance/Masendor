@@ -680,16 +680,16 @@ class Game:
                                                              [str(self.troop_data.race_list[key]["Name"]) for key in
                                                               self.troop_data.race_list], self.team_colour)
         self.unit_animation_data = self.troop_animation.unit_animation_data  # animation data pool
-        self.gen_body_sprite_pool = self.troop_animation.gen_body_sprite_pool  # body sprite pool
-        self.gen_weapon_sprite_pool = self.troop_animation.gen_weapon_sprite_pool  # weapon sprite pool
-        self.gen_armour_sprite_pool = self.troop_animation.gen_armour_sprite_pool  # armour sprite pool
+        self.body_sprite_pool = self.troop_animation.body_sprite_pool  # body sprite pool
+        self.weapon_sprite_pool = self.troop_animation.weapon_sprite_pool  # weapon sprite pool
+        self.armour_sprite_pool = self.troop_animation.armour_sprite_pool  # armour sprite pool
         self.weapon_joint_list = self.troop_animation.weapon_joint_list  # weapon joint data, for placing handle to hand
         self.colour_list = self.troop_animation.colour_list  # sprite colourising list
 
         self.effect_sprite_pool = self.troop_animation.effect_sprite_pool  # effect sprite pool
         self.effect_animation_pool = self.troop_animation.effect_animation_pool  # effect sprite animation pool
 
-        self.command_ui.weapon_sprite_pool = self.gen_weapon_sprite_pool
+        self.command_ui.weapon_sprite_pool = self.weapon_sprite_pool
 
         # flip (covert for ingame angle)
         bullet_sprite_pool = {}
@@ -699,7 +699,7 @@ class Game:
                 image = pygame.transform.flip(value2, False, True)
                 bullet_sprite_pool[key][key2] = image
         bullet_weapon_sprite_pool = {}
-        for key, value in self.gen_weapon_sprite_pool.items():
+        for key, value in self.weapon_sprite_pool.items():
             bullet_weapon_sprite_pool[key] = {}
             for key2, value2 in value.items():
                 bullet_weapon_sprite_pool[key][key2] = {}

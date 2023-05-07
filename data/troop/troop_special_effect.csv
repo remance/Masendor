@@ -1,32 +1,32 @@
 "ID","Name","Status","Description"
-1,"Uncontrollable",,"These troops can not be controlled. They will move, fight, and flee according to their own will."
-2,"Unbreakable",,"These troops' morale can not be broken. They will fight to the last if their commander wills it."
-3,"Terrain Immunity",,"These troops ignore all terrain effect."
-4,"No Attack",,"These troops are unable to perform any attack."
-5,"No Skill",,"These troops are unable to perform any skill."
-6,"No Spell",,"These troops are unable to perform any spell."
-7,"Weather Immunity",,"These troops are resilient against every kind of weather in existence. Rain will not make them wet, and fog will not hinder their vision."
-8,"Temperature Immunity",,"These troops are unsusceptible to temperature change. Neither cold nor heat can affect them in any way."
-9,"Status Immunity",,"These troops are immune to all status effects, both positive and negative."
-10,"Immortal",,"These troops are nigh impossible to kill by any ordinary means."
-11,"Double Terrain Penalty",,"These troops are unsuitable for uneven and unclear terrain. Making their movement impaired by terrain penalty even more."
-12,,,
-13,"Gunpowder based Weapon",109,"These troops are equipped with a gunpowder-based weapons such as a musket. Rain weather will make their weapons at minimal effectiveness, and their shooting will produce a cloud of smoke that can block their vision."
-14,,,
-15,"Cone Shot",,"These troops’ weapons shoot in a cone-shaped spread, thus having lower accuracy for each ammunition shot."
-16,"Attack Can Fail",,"These troops’ inferior weapons can fail when attacking and cause damage to the wielders."
+1,"Uncontrollable",,"This unit can not be controlled. They will move, fight, and flee according to their own will."
+2,"Unbreakable",,"This unit' morale can not be broken. They will fight to the last if their commander wills it."
+3,"Terrain Immunity",,"This unit ignore all terrain effect."
+4,"No Attack",,"This unit is unable to perform any attack."
+5,"No Skill",,"This unit is unable to perform any skill."
+6,"No Spell",,"This unit is unable to perform any spell."
+7,"Weather Immunity",,"This unit is resilient against every kind of weather in existence. Rain will not make them wet, and fog will not hinder their vision."
+8,"Temperature Immunity",,"This unit is unsusceptible to temperature change. Neither cold nor heat can affect them in any way."
+9,"Status Immunity",,"This unit is immune to all status effects, both positive and negative."
+10,"Immortal",,"This unit is nigh impossible to kill by any ordinary means."
+11,"Double Terrain Penalty",,"This unit is unsuitable for uneven and unclear terrain. Making their movement impaired by terrain penalty even more."
+12,"No Move",,"This unit is unable to move by themselves."
+13,"Gunpowder based Weapon",109,"This unit is equipped with a gunpowder-based weapons such as a musket. Rain weather will make their weapons at minimal effectiveness, and their shooting will produce a cloud of smoke that can block their vision."
+14,"No Action",,"This unit is unable to make any action by themselves."
+15,"Cone Shot",,"This unit’ weapons shoot in a cone-shaped spread, thus having lower accuracy for each ammunition shot."
+16,"Attack Can Fail",,"This unit’ inferior weapons can fail when attacking and cause damage to the wielders."
 17,,,
-18,"Day Blindness",,"These troops have eyes that are intolerant to light which causes them a degree of partial blindness, making them unable to fight at their best."
-19,"Night Vision",,"These troops are capable of fighting at full potential during nighttime."
+18,"Day Blindness",,"This unit have eyes that is intolerant to light which causes them a degree of partial blindness, making them unable to fight at their best."
+19,"Night Vision",,"This unit is capable of fighting at full potential during nighttime."
 20,,,
 21,,,
 22,,,
 23,"All Side Full Attack",,
-24,"Varied Training",,"These troops have not received standard training making them rely on their different background for combat."
-25,"Arc Shot",,"These troops’ weapons can shoot in an arc that bypasses all obstacles in front."
+24,"Varied Training",,"This unit have not received standard training making them rely on their different background for combat."
+25,"Arc Shot",,"This unit’ weapons can shoot in an arc that bypasses all obstacles in front."
 26,"Anti Infantry",,
 27,"Anti Cavalry",,
-28,"Shoot While Moving",,"These troops are capable of shooting their weapons while moving but with a penalty to accuracy."
+28,"Shoot While Moving",,"This unit is capable of shooting their weapons while moving but with a penalty to accuracy."
 29,"Agile Aim",,
 30,"No Range Penalty",,
 31,"Long Range Accurate",,
@@ -37,11 +37,11 @@
 36,"No Rear Defence",,
 37,"Flank Attack Bonus",,
 38,"Unbreakable",,
-39,"Stationary",,"These troops’ weapons require them to be stationary to attack."
+39,"Stationary",,"This unit’ weapons require them to be stationary to attack."
 40,"Reflect Damage",,
 41,"Impetuous",,
 42,,,
-43,"Maximum Momentum",,"These troops’ momentum is at maximum until the related effect expires."
+43,"Maximum Momentum",,"This unit’ momentum is at maximum until the related effect expires."
 44,,,
 45,,,
 46,,,

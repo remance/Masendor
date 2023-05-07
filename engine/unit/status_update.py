@@ -148,25 +148,23 @@ def status_update(self):
     # Map feature modifier to stat
     map_feature_mod = self.feature_map.feature_mod[self.feature]
 
-    if map_feature_mod[self.feature_mod + " Speed/Charge Effect"] != 1:  # speed/charge
+    if map_feature_mod[self.feature_mod + " Speed Modifier"] != 1:  # speed/charge
         speed_modifier += map_feature_mod[
-            self.feature_mod + " Speed/Charge Effect"]  # get the speed mod appropriate to unit type
-        charge_modifier += map_feature_mod[self.feature_mod + " Speed/Charge Effect"]
+            self.feature_mod + " Speed Modifier"]  # get the speed mod appropriate to unit type
 
-        if self.double_terrain_penalty and map_feature_mod[self.feature_mod + " Speed/Charge Effect"] < 1:
+        if self.double_terrain_penalty and map_feature_mod[self.feature_mod + " Speed Modifier"] < 1:
             speed_modifier += map_feature_mod[
-                self.feature_mod + " Speed/Charge Effect"]  # double negative effect
-            charge_modifier += map_feature_mod[self.feature_mod + " Speed/Charge Effect"]
+                self.feature_mod + " Speed Modifier"]  # double negative effect
 
-    if map_feature_mod[self.feature_mod + " Combat Effect"] != 1:  # melee melee_attack
+    if map_feature_mod[self.feature_mod + " Attack Modifier"] != 1:  # melee melee_attack
         # combat_mod = self.unit.feature_map.feature_mod[self.unit.feature][self.feature_mod + 1]
         melee_attack_modifier += map_feature_mod[
-            self.feature_mod + " Combat Effect"]  # get the melee_attack mod appropriate to unit type
+            self.feature_mod + " Attack Modifier"]  # get the melee_attack mod appropriate to unit type
 
-    if map_feature_mod[self.feature_mod + " Defence Effect"] != 1:  # melee/charge defence
+    if map_feature_mod[self.feature_mod + " Defence Modifier"] != 1:  # melee/charge defence
         melee_def_modifier += map_feature_mod[
-            self.feature_mod + " Defence Effect"]  # get the defence mod appropriate to unit type
-        charge_def_modifier += map_feature_mod[self.feature_mod + " Defence Effect"]
+            self.feature_mod + " Defence Modifier"]  # get the defence mod appropriate to unit type
+        charge_def_modifier += map_feature_mod[self.feature_mod + " Defence Modifier"]
 
     range_def_bonus += map_feature_mod["Range Defence Bonus"]  # range defence bonus from terrain
     accuracy_bonus -= (map_feature_mod[
@@ -191,16 +189,16 @@ def status_update(self):
                 #     self.idle_action = self.command_action
 
         for cal_effect in self.skill_effect.values():  # apply elemental effect to melee_dmg if skill has element
-            melee_attack_modifier += cal_effect["Melee Attack Effect"]
-            melee_def_modifier += cal_effect["Melee Defence Effect"]
-            range_def_modifier += cal_effect["Ranged Defence Effect"]
-            speed_modifier += cal_effect["Speed Effect"]
-            accuracy_modifier += cal_effect["Accuracy Effect"]
-            melee_weapon_speed_modifier += cal_effect["Melee Speed Effect"]
-            shoot_range_modifier += cal_effect["Range Effect"]
+            melee_attack_modifier += cal_effect["Melee Attack Modifier"]
+            melee_def_modifier += cal_effect["Melee Defence Modifier"]
+            range_def_modifier += cal_effect["Ranged Defence Modifier"]
+            speed_modifier += cal_effect["Speed Modifier"]
+            accuracy_modifier += cal_effect["Accuracy Modifier"]
+            melee_weapon_speed_modifier += cal_effect["Melee Speed Modifier"]
+            shoot_range_modifier += cal_effect["Range Modifier"]
             reload_modifier += cal_effect[
-                "Reload Effect"]
-            self.charge *= cal_effect["Charge Effect"]
+                "Reload Modifier"]
+            self.charge *= cal_effect["Charge Modifier"]
             charge_def_bonus += cal_effect["Charge Defence Bonus"]
             hp_regen_bonus += cal_effect["HP Regeneration Bonus"]
             stamina_regen_bonus += cal_effect["Stamina Regeneration Bonus"]
@@ -215,26 +213,26 @@ def status_update(self):
                             value[0] += int(extra_dmg / 2)
                             value[1] += extra_dmg
 
-            weapon_dmg_modifier += cal_effect["Damage Effect"]
+            weapon_dmg_modifier += cal_effect["Damage Modifier"]
 
             # sight_bonus += cal_effect["Sight Bonus"]
             # hidden_bonus += cal_effect["Hidden Bonus"]
-            crit_effect_modifier += cal_effect["Critical Effect"]
+            crit_effect_modifier += cal_effect["Critical Modifier"]
             self.morale_dmg_bonus += cal_effect["Morale Damage Bonus"]
             self.stamina_dmg_bonus += cal_effect["Stamina Damage Bonus"]
-            self.weapon_impact_effect += cal_effect["Weapon Impact Effect"]
+            self.weapon_impact_effect += cal_effect["Weapon Impact Modifier"]
 
     # Apply effect and modifier from status effect
     if self.status_effect:
         for cal_effect in self.status_effect.values():
-            melee_attack_modifier += cal_effect["Melee Attack Effect"]
-            melee_def_modifier += cal_effect["Melee Defence Effect"]
-            range_def_modifier += cal_effect["Ranged Defence Effect"]
-            speed_modifier += cal_effect["Speed Effect"]
-            accuracy_modifier += cal_effect["Accuracy Effect"]
-            reload_modifier += cal_effect["Reload Effect"]
-            charge_modifier += cal_effect["Charge Effect"]
-            melee_weapon_speed_modifier += cal_effect["Melee Speed Effect"]
+            melee_attack_modifier += cal_effect["Melee Attack Modifier"]
+            melee_def_modifier += cal_effect["Melee Defence Modifier"]
+            range_def_modifier += cal_effect["Ranged Defence Modifier"]
+            speed_modifier += cal_effect["Speed Modifier"]
+            accuracy_modifier += cal_effect["Accuracy Modifier"]
+            reload_modifier += cal_effect["Reload Modifier"]
+            charge_modifier += cal_effect["Charge Modifier"]
+            melee_weapon_speed_modifier += cal_effect["Melee Speed Modifier"]
             charge_def_bonus += cal_effect["Charge Defence Bonus"]
             hp_regen_bonus += cal_effect["HP Regeneration Bonus"]
             stamina_regen_bonus += cal_effect["Stamina Regeneration Bonus"]
@@ -307,6 +305,7 @@ def status_update(self):
     self.melee_attack = (self.melee_attack * melee_attack_modifier) + melee_attack_bonus
     self.shoot_range = {key: (shoot_range * shoot_range_modifier) + shoot_range_bonus for key, shoot_range in
                         self.shoot_range.items()}
+
     self.melee_def = (self.melee_def * melee_def_modifier) + melee_def_bonus
     self.range_def = (self.range_def * range_def_modifier) + range_def_bonus
     self.melee_dodge = (self.base_melee_dodge * speed_modifier) + speed_bonus  # dodge get buff based on speed instead

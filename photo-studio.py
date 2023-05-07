@@ -196,9 +196,9 @@ class Studio(game.Game):
                                                              [str(self.troop_data.race_list[key]["Name"]) for key in
                                                               self.troop_data.race_list], self.team_colour)
         self.unit_animation_data = self.troop_animation.unit_animation_data  # animation data pool
-        self.gen_body_sprite_pool = self.troop_animation.gen_body_sprite_pool  # body sprite pool
-        self.gen_weapon_sprite_pool = self.troop_animation.gen_weapon_sprite_pool  # weapon sprite pool
-        self.gen_armour_sprite_pool = self.troop_animation.gen_armour_sprite_pool  # armour sprite pool
+        self.gen_body_sprite_pool = self.troop_animation.body_sprite_pool  # body sprite pool
+        self.gen_weapon_sprite_pool = self.troop_animation.weapon_sprite_pool  # weapon sprite pool
+        self.gen_armour_sprite_pool = self.troop_animation.armour_sprite_pool  # armour sprite pool
         self.weapon_joint_list = self.troop_animation.weapon_joint_list  # weapon joint data
         self.colour_list = self.troop_animation.colour_list  # skin colour list
 

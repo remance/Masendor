@@ -20,13 +20,13 @@ def add_weapon_trait(self):
 
     for key in self.trait["Weapon"][self.equipped_weapon]:
         for trait in self.trait["Weapon"][self.equipped_weapon][key].values():
-            melee_attack_modifier += trait["Melee Attack Effect"]
-            melee_def_modifier += trait["Melee Defence Effect"]
-            range_def_modifier += trait["Ranged Defence Effect"]
-            speed_modifier += trait["Speed Effect"]
-            accuracy_modifier += trait["Accuracy Effect"]
-            reload_modifier += trait["Reload Effect"]
-            charge_modifier += trait["Charge Effect"]
+            melee_attack_modifier += trait["Melee Attack Modifier"]
+            melee_def_modifier += trait["Melee Defence Modifier"]
+            range_def_modifier += trait["Ranged Defence Modifier"]
+            speed_modifier += trait["Speed Modifier"]
+            accuracy_modifier += trait["Accuracy Modifier"]
+            reload_modifier += trait["Reload Modifier"]
+            charge_modifier += trait["Charge Modifier"]
             charge_def_bonus += trait["Charge Defence Bonus"]
             sight_bonus += trait["Sight Bonus"]
             hidden_bonus += trait["Hidden Bonus"]

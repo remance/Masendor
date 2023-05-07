@@ -662,7 +662,7 @@ class Unit(sprite.Sprite):
             self.armour_id = self.armour_gear[0]
             self.weight += self.troop_data.armour_list[self.armour_id]["Weight"]  # Add weight from both armour
             armour_stat = self.troop_data.armour_list[self.armour_id]
-            armour_grade_mod = self.troop_data.equipment_grade_list[self.armour_gear[1]]["Modifier"]
+            armour_grade_mod = 1 + self.troop_data.equipment_grade_list[self.armour_gear[1]]["Stat Modifier"]
             for element in self.original_element_resistance:  # resistance from armour
                 self.original_element_resistance[element] += (armour_stat[element + " Resistance"] * armour_grade_mod)
             self.trait["Original"] += self.troop_data.armour_list[self.armour_id][
@@ -673,9 +673,9 @@ class Unit(sprite.Sprite):
             self.original_skill.remove("")
 
         self.health = int(((self.strength * 0.2) + (self.constitution * 0.8)) *
-                          (grade_stat["Health Effect"] / 100) * (self.start_hp / 100))  # Health of troop
+                          (1 + grade_stat["Health Modifier"]) * (self.start_hp / 100))  # Health of troop
         self.stamina = int(((self.strength * 0.2) + (self.constitution * 0.8)) *
-                           (grade_stat["Stamina Effect"] / 100) *
+                           (1 + grade_stat["Stamina Modifier"]) *
                            (self.start_stamina / 100))  # starting stamina with grade
 
         self.original_mana = 0
@@ -853,7 +853,7 @@ class Unit(sprite.Sprite):
         self.stamina25 = self.stamina * 0.25
         self.stamina5 = self.stamina * 0.05
 
-        # Final stat after receiving modifier effect from various sources, reset every time status is updated
+        # Final stat after receiving stat effect from various sources, reset every time status is updated
         self.melee_attack = self.base_melee_attack
         self.melee_def = self.base_melee_def
         self.range_def = self.base_range_def

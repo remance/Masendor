@@ -62,8 +62,8 @@ class BattleMapData:
                   mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
-            mod_column = ("Infantry Speed/Charge Effect", "Infantry Combat Effect", "Infantry Defence Effect",
-                          "Cavalry Speed/Charge Effect", "Cavalry Combat Effect", "Cavalry Defence Effect")
+            mod_column = ("Infantry Speed Effect", "Infantry Attack Effect", "Infantry Defence Effect",
+                          "Cavalry Speed Effect", "Cavalry Attack Effect", "Cavalry Defence Effect")
             int_column = ("ID", "Range Defence Bonus", "Hide Bonus", "Discipline Bonus",
                           "Day Temperature", "Night Temperature", "Dust")  # value int only
             tuple_column = ("Status",)

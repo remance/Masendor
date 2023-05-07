@@ -434,15 +434,15 @@ def travel_to_map_border(pos, angle, map_size):
 
 def apply_sprite_colour(surface, colour, colour_list=None, keep_white=True, keep_old_colour=False):
     """Colorise body part sprite"""
-    if colour is not None and colour != "none":
+    if colour is not None and colour != "None":
         if colour_list is None:
             white_colour = colour
         else:
-            if "true" in colour:
-                white_colour = colour_list[colour.replace("true ", "")]
+            if "True" in colour:
+                white_colour = colour_list[colour.replace("True ", "")]
             else:
                 white_colour = colour_list[colour]
-        if "true" not in colour:
+        if "True" not in colour:
             mid_colour = [int(c / 2) for c in white_colour]
         else:  # completely specified colour with no shade
             mid_colour = white_colour
@@ -590,8 +590,9 @@ def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tu
     elif n in mod_column:
         if i == "":
             row[n] = 0
-        else:  # Keep only the number higher or lower than 1 (base), as the game will stack modifier before calculate them once
-            row[n] = (float(i) - 100) / 100
+        else:
+            # Keep only the number higher or lower than 1 (base), as the game will stack modifier before calculate them
+            row[n] = float(i)
 
     elif n in list_column:
         if "," in i:

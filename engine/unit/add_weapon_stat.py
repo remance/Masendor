@@ -28,25 +28,25 @@ def add_weapon_stat(self):
                         damage_with_attribute = weapon_stat[damage_name]
                 self.original_weapon_dmg[set_index][weapon_index][damage] = [
                     damage_with_attribute * weapon_stat["Damage Balance"] *
-                    self.troop_data.equipment_grade_list[weapon[1]]["Modifier"],
-                    damage_with_attribute * self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]]
+                    (1 + self.troop_data.equipment_grade_list[weapon[1]]["Stat Modifier"]),
+                    damage_with_attribute * (1 + self.troop_data.equipment_grade_list[weapon[1]]["Stat Modifier"])]
                 dmg_sum += self.original_weapon_dmg[set_index][weapon_index][damage][0]
             self.original_weapon_dmg[set_index][weapon_index] = {key: value for key, value in  # remove 0 damage element
                                                                  self.original_weapon_dmg[set_index][
                                                                      weapon_index].items() if value}
             if weapon_stat["Damage Stat Scaling"]:  # impact get bonus from quality and strength
                 self.weapon_impact[set_index][weapon_index] = weapon_stat["Impact"] * \
-                                                              self.troop_data.equipment_grade_list[weapon[1]][
-                                                                  "Modifier"] + \
+                                                              (1 + self.troop_data.equipment_grade_list[weapon[1]][
+                                                                  "Stat Modifier"]) + \
                                                               (weapon_stat["Impact"] * (
                                                                       self.strength * dmg_scaling[0] / 100))
             else:
                 self.weapon_impact[set_index][weapon_index] = weapon_stat["Impact"] * \
-                                                              self.troop_data.equipment_grade_list[weapon[1]][
-                                                                  "Modifier"]
+                                                              (1 + self.troop_data.equipment_grade_list[weapon[1]][
+                                                                  "Stat Modifier"])
 
             self.weapon_penetrate[set_index][weapon_index] = weapon_stat["Armour Penetration"] * \
-                                                             self.troop_data.equipment_grade_list[weapon[1]]["Modifier"]
+                                                             (1 + self.troop_data.equipment_grade_list[weapon[1]]["Stat Modifier"])
 
             if weapon_index == 1 and weapon_stat["Hand"] == 2:  # 2 handed weapon as sub weapon get attack speed penalty
                 self.original_weapon_speed[set_index][weapon_index] = (weapon_stat["Cooldown"] - (
@@ -79,8 +79,8 @@ def add_weapon_stat(self):
                 self.original_melee_def_range[set_index][weapon_index] = 0
                 self.shot_per_shoot[set_index][weapon_index] = weapon_stat["Shot Number"]
                 self.original_shoot_range[set_index][weapon_index] = weapon_stat["Range"] * \
-                                                                     self.troop_data.equipment_grade_list[weapon[1]][
-                                                                         "Modifier"]
+                                                                     (1 + self.troop_data.equipment_grade_list[
+                                                                         weapon[1]]["Stat Modifier"])
 
                 self.range_weapon_set[set_index] += dmg_sum / self.original_weapon_speed[set_index][
                     weapon_index]  # add weapon damage for sort
