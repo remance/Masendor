@@ -26,7 +26,7 @@ def attack(self, attack_type):
 
         if attack_type == "range":
             max_range = self.shoot_range[weapon]
-            if max_range == 0:
+            if max_range <= 0:
                 print(self.name, weapon, self.shoot_range, self.current_action, self.equipped_weapon)
                 crash
 
@@ -103,8 +103,7 @@ def attack(self, attack_type):
                 impact = self.weapon_impact[self.equipped_weapon][weapon] * self.weapon_impact_effect
 
                 RangeDamageEffect(self, base_angle, weapon, dmg, self.weapon_penetrate[self.equipped_weapon][weapon],
-                                  impact,
-                                  equipped_weapon_data, attack_type, self.front_pos, base_target,
+                                  impact, equipped_weapon_data, attack_type, self.front_pos, base_target,
                                   accuracy=accuracy, arc_shot=arc_shot,
                                   reach_effect=equipped_weapon_data[
                                       "After Reach Effect"])  # TODO change front pos to check for angle

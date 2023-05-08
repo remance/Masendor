@@ -43,7 +43,6 @@ class Effect(sprite.Sprite):
         self.show_frame = 0
         self.frame_timer = 0
         self.timer = 0
-        self.rotate = False
         self.repeat_animation = False
 
         self.attacker = attacker
@@ -68,11 +67,13 @@ class Effect(sprite.Sprite):
 
         self.current_animation = {}
         if effect_type:  # effect can have no sprite like charge
-            if "base_main" in sprite_name:  # range weapon that use weapon sprite as effect
+            if "Base Main" in sprite_name:  # range weapon that use weapon sprite as effect
                 weapon = int(sprite_name[-1])
                 sprite_name = sprite_name[:-1]
                 if self.attacker.weapon_version[self.attacker.equipped_weapon][weapon] in \
                         self.bullet_weapon_sprite_pool[effect_type]:
+                    print(self.bullet_weapon_sprite_pool[effect_type][
+                        self.attacker.weapon_version[self.attacker.equipped_weapon][weapon]])
                     self.image = self.bullet_weapon_sprite_pool[effect_type][
                         self.attacker.weapon_version[self.attacker.equipped_weapon][weapon]][sprite_name]
                 else:
@@ -80,8 +81,8 @@ class Effect(sprite.Sprite):
 
             else:
                 effect_name = "".join(sprite_name.split("_"))[-1]
-                if effect_name.isdigit():
-                    effect_name = "".join([string + "_" for string in sprite_name.split("_")[:-1]])[:-1]
+                if effect_name[-1].isdigit():
+                    effect_name = sprite_name[:-2]
                 else:
                     effect_name = sprite_name
                 if "(team)" in effect_type:
@@ -199,6 +200,7 @@ class MeleeDamageEffect(DamageEffect):
                  accuracy=None, reach_effect=None):
         """Melee damage sprite"""
         effect_type = stat["Damage Sprite"]
+        print(attack_type)
         sprite_name = attack_type[1].capitalize()
 
         DamageEffect.__init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
@@ -235,7 +237,7 @@ class RangeDamageEffect(DamageEffect):
             sprite_name = "Base"
         else:  # use weapon image itself as bullet image
             effect_type = stat["Name"]
-            sprite_name = "base_main" + str(weapon)
+            sprite_name = "Base Main" + str(weapon)
 
         DamageEffect.__init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, Vector2(base_pos),
                               base_target, effect_type, sprite_name, angle, accuracy=accuracy, arc_shot=arc_shot,

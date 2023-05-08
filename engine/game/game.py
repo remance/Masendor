@@ -704,7 +704,7 @@ class Game:
             for key2, value2 in value.items():
                 bullet_weapon_sprite_pool[key][key2] = {}
                 for key3, value3 in value2.items():
-                    if key3 == "base_main":
+                    if key3 == "Base Main":
                         bullet_weapon_sprite_pool[key][key2][key3] = {}
                         image = pygame.transform.flip(value3, False, True)
                         bullet_weapon_sprite_pool[key][key2][key3] = image
