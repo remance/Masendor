@@ -102,11 +102,15 @@ def attack(self, attack_type):
 
                 impact = self.weapon_impact[self.equipped_weapon][weapon] * self.weapon_impact_effect
 
+                radians_angle = radians(360 - base_angle)
+                start_pos = Vector2(self.base_pos[0] + (self.hitbox_front_distance * sin(radians_angle)),
+                                    self.base_pos[1] - (self.hitbox_front_distance * cos(radians_angle)))
+
                 RangeDamageEffect(self, base_angle, weapon, dmg, self.weapon_penetrate[self.equipped_weapon][weapon],
-                                  impact, equipped_weapon_data, attack_type, self.front_pos, base_target,
+                                  impact, equipped_weapon_data, attack_type, start_pos, base_target,
                                   accuracy=accuracy, arc_shot=arc_shot,
                                   reach_effect=equipped_weapon_data[
-                                      "After Reach Effect"])  # TODO change front pos to check for angle
+                                      "After Reach Effect"])
             try:
                 self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
             except KeyError:

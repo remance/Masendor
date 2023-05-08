@@ -72,8 +72,6 @@ class Effect(sprite.Sprite):
                 sprite_name = sprite_name[:-1]
                 if self.attacker.weapon_version[self.attacker.equipped_weapon][weapon] in \
                         self.bullet_weapon_sprite_pool[effect_type]:
-                    print(self.bullet_weapon_sprite_pool[effect_type][
-                        self.attacker.weapon_version[self.attacker.equipped_weapon][weapon]])
                     self.image = self.bullet_weapon_sprite_pool[effect_type][
                         self.attacker.weapon_version[self.attacker.equipped_weapon][weapon]][sprite_name]
                 else:
@@ -91,11 +89,14 @@ class Effect(sprite.Sprite):
                     self.current_animation = self.effect_animation_pool[effect_type][effect_name]
 
                 self.image = self.current_animation[self.show_frame]
+                if len(self.current_animation) == 1:  # one frame mean no animation
+                    self.current_animation = {}
 
             self.adjust_sprite()
 
     def update(self, unit_list, dt):
-        done, just_start = self.play_animation(0.1, dt)
+        if self.current_animation:
+            done, just_start = self.play_animation(0.1, dt)
 
         if self.sound_effect_name and self.sound_timer < self.sound_duration:
             self.sound_timer += dt
@@ -200,7 +201,6 @@ class MeleeDamageEffect(DamageEffect):
                  accuracy=None, reach_effect=None):
         """Melee damage sprite"""
         effect_type = stat["Damage Sprite"]
-        print(attack_type)
         sprite_name = attack_type[1].capitalize()
 
         DamageEffect.__init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
