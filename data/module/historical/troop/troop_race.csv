@@ -1,11 +1,11 @@
 "ID","Name","Type","Size","Strength","Dexterity","Agility","Constitution","Intelligence","Wisdom","Physical Resistance","Fire Resistance","Water Resistance","Air Resistance","Poison Resistance","Trait","Mount Armour","Special Hair Part","Special Body Part"
 1,"Human","Civilise",10,50,50,50,50,50,50,0,0,0,0,0,,"FALSE",,
-2,"Horse","Beast",14,125,30,80,60,20,24,0,0,0,0,30,,"TRUE","tail","neck"
-3,"Camel","Beast",14,130,30,65,65,15,17,0,0,0,0,30,64,"TRUE",,"neck"
+2,"Horse","Beast",14,125,30,80,60,20,24,0,0,0,0,30,,"TRUE","Tail","Neck"
+3,"Camel","Beast",14,130,30,65,65,15,17,0,0,0,0,30,64,"TRUE",,"Neck"
 4,"Elephant","Beast",28,300,32,35,110,22,30,10,0,0,0,50,,"TRUE",,
 5,"Horse Chariot","Beast",20,220,30,70,65,18,24,20,-5,0,0,0,77,"TRUE",,
-6,"Lion","Beast",12,140,40,75,65,17,26,5,0,0,0,0,,"TRUE",,"neck"
-7,"Tiger","Beast",12,138,42,75,65,19,28,5,0,0,0,0,,"TRUE",,"neck"
+6,"Lion","Beast",12,140,40,75,65,17,26,5,0,0,0,0,,"TRUE",,"Neck"
+7,"Tiger","Beast",12,138,42,75,65,19,28,5,0,0,0,0,,"TRUE",,"Neck"
 8,"Bear","Beast",16,145,33,65,80,15,25,20,,,,,,"TRUE",,
 9,"Boar","Beast",7,90,28,60,70,13,18,10,,,,,,"TRUE",,
 10,"Dog","Beast",5,40,32,65,40,20,29,0,,,,,,"TRUE",,

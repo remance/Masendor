@@ -358,7 +358,7 @@ class TroopData:
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
-            int_column = ("ID", "Grade", "Race", "Cost", "Upkeep", "Troop")  # value int only
+            int_column = ("Grade", "Race", "Cost", "Upkeep", "Troop")  # value int only
             list_column = ("Trait", "Skill",)  # value in list only
             tuple_column = ("Armour", "Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon",
                             "Secondary Sub Weapon", "Mount", "Role", "Faction")  # value in tuple only
@@ -621,7 +621,7 @@ class FactionData:
                                 row[n] = i.split(",")
                             else:
                                 row[n] = [i]
-                            row[n] = {int(item.split(":")[0]):
+                            row[n] = {item.split(":")[0]:
                                           [int(item2) for item2 in item.split(":")[1].split("/")] for item in row[n]}
                     self.faction_unit_list[int(folder[-1])][row[0]] = {header[index + 1]: stuff for index, stuff in
                                                                        enumerate(row[1:])}

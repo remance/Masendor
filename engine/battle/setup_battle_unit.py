@@ -37,7 +37,7 @@ def setup_battle_unit(self, team_unit_list, preview=None):
 
     for data in new_troop_data:
         if not preview or preview == data["Team"]:  # check if create unit only for preview of a specific team
-            troop_number_list = {int(key): [int(num) for num in value.split("/")] for key, value in
+            troop_number_list = {key: [int(num) for num in value.split("/")] for key, value in
                                  data["Troop"].items()}
 
             if preview:  # make only leader for preview
@@ -61,7 +61,7 @@ def setup_battle_unit(self, team_unit_list, preview=None):
                 self.last_troop_game_id += 1
                 for key, value in troop_number_list.items():
                     for _ in range(value[0]):
-                        unit.Troop(int(key), self.last_troop_game_id, None, data["Team"],
+                        unit.Troop(key, self.last_troop_game_id, None, data["Team"],
                                    data["POS"], data["Angle"], data["Start Health"], data["Start Stamina"], add_leader,
                                    self.faction_data.coa_list[data["Faction"]])
                         self.last_troop_game_id += 1

@@ -238,7 +238,7 @@ def leader_popup_text(self, icon):
     for item in self.map_data["unit"]:
         if item["ID"] == icon.who.map_id:
             for troop, value in item["Troop"].items():
-                popup_text += [self.troop_data.troop_list[int(troop)]["Name"] + ": " +
+                popup_text += [self.troop_data.troop_list[troop]["Name"] + ": " +
                                value]
             break
 

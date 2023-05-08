@@ -463,11 +463,11 @@ class Unit(sprite.Sprite):
 
         self.name = "None"
         self.is_leader = False
-        if type(self.troop_id) is not str:  # normal troop
-            self.troop_id = int(self.troop_id)
+        if "+" in self.troop_id:  # normal troop
+            self.troop_id = self.troop_id
             sprite_list = self.troop_sprite_list
-            stat = self.troop_data.troop_list[self.troop_id].copy()
-            lore = self.troop_data.troop_lore[self.troop_id].copy()
+            stat = self.troop_data.troop_list[self.troop_id]
+            lore = self.troop_data.troop_lore[self.troop_id]
             self.name = lore[0]  # name according to the preset
             self.grade = stat["Grade"]  # training level/class grade
             grade_stat = self.troop_data.grade_list[self.grade]
@@ -486,8 +486,8 @@ class Unit(sprite.Sprite):
         else:  # leader unit
             self.is_leader = True
             sprite_list = self.leader_sprite_list
-            stat = self.leader_data.leader_list[troop_id].copy()
-            lore = self.leader_data.leader_lore[troop_id].copy()
+            stat = self.leader_data.leader_list[troop_id]
+            lore = self.leader_data.leader_lore[troop_id]
             self.name = lore[0]  # name according to the preset
             self.grade = 12  # leader grade by default
             grade_stat = self.troop_data.grade_list[self.grade]
