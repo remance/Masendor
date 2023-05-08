@@ -394,8 +394,11 @@ class Containable:
         raise NotImplementedError()
 
     def get_adjusted_rect_to_be_inside_container(self, container):
-        pos = self.get_relative_position_inside_container()
-        return pygame.rect.Rect(*[container.get_rect()[i] - self.get_size()[i] // 2 + (pos[i] + 1) * container.get_rect()[i+2] // 2 for i in range(2)], *self.get_size())
+        rpic = self.get_relative_position_inside_container()
+        pivot = rpic["pivot"]
+        origin = rpic["origin"]
+
+        return pygame.rect.Rect(*[container.get_rect()[i] - (self.get_size()[i] * (origin[i]+1)) // 2 + (pivot[i] + 1) * container.get_rect()[i+2] // 2 for i in range(2)], *self.get_size())
 
 
 class BrownMenuButton(UIMenu, Containable):
@@ -445,7 +448,10 @@ class BrownMenuButton(UIMenu, Containable):
         self.event = False
 
     def get_relative_position_inside_container(self):
-        return self.pos
+        return {
+            "origin": (0, 0),
+            "pivot": self.pos,
+        }
 
     def update(self, mouse_pos, mouse_up, mouse_down):
         self.mouse_over = False
@@ -1191,7 +1197,10 @@ class BoxUI(UIMenu, Containable, Container):
         self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
 
     def get_relative_position_inside_container(self):
-        return (0, 0)
+        return {
+            "pivot": (0, 0),
+            "origin": self.pos,
+        }
 
     def get_rect(self):
         return self.rect
@@ -1202,14 +1211,15 @@ class BoxUI(UIMenu, Containable, Container):
 
 class ListUI(UIMenu, Containable):
 
-    def __init__(self, pos, size, items, parent):
+    def __init__(self, origin, pivot, size, items, parent):
 
         from engine.game.game import Game
         from engine.utility import load_image
         game = Game.game
 
         UIMenu.__init__(self)
-        self.pos = pos
+        self.pivot = pivot
+        self.origin = origin
         frame = load_image(game.module_dir, (1, 1), "list_frame.png", ("ui", "mainmenu_ui"))
 
         self.image = make_image_by_frame(frame, size)
@@ -1226,7 +1236,10 @@ class ListUI(UIMenu, Containable):
             self.image.blit(font.render(item, True, (200,)*3), (20, 20+e*36))
 
     def get_relative_position_inside_container(self):
-        return self.pos
+        return {
+            "pivot": self.pivot,
+            "origin": self.origin,
+        }
 
     def get_rect(self):
         return self.rect

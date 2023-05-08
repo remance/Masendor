@@ -356,8 +356,12 @@ class Game:
         self.option_button = uimenu.BrownMenuButton((0, 0.6 * f), "Option", parent=main_menu_buttons_box)
         self.quit_button = uimenu.BrownMenuButton((0, 1 * f), text="Quit", parent=main_menu_buttons_box)
 
+        # just to test
+        test_list = uimenu.ListUI(pivot=(-1,-1), origin=(-1,-1), parent=self.screen, size=(200,600), items=["abc","def"])
+
         self.mainmenu_button = (self.preset_map_button, self.custom_map_button, self.game_edit_button,
-                                self.lore_button, self.option_button, self.quit_button, main_menu_buttons_box)
+                                self.lore_button, self.option_button, self.quit_button, main_menu_buttons_box, test_list)
+
 
         # Battle map
         self.battle_base_map = battlemap.BaseMap(self.main_dir)  # create base terrain map
