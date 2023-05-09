@@ -180,7 +180,7 @@ class SliderMenu(UIMenu, pygame.sprite.Sprite):
         self.image = self.base_image.copy()
         button_rect = self.button_image_list[1].get_rect(center=(self.mouse_value, self.image.get_height() / 2))
         self.image.blit(self.button_image, button_rect)
-        value_box.update(self.value)
+        value_box.change_value(self.value)
 
 
 class InputUI(UIMenu):
@@ -352,7 +352,7 @@ class MenuButton(UIMenu, pygame.sprite.Sprite):
         self.rect = self.button_normal_image.get_rect(center=self.pos)
         self.event = False
 
-    def update(self, mouse_pos, mouse_up, mouse_down):
+    def update(self, mouse_pos, mouse_up, mouse_down, *args):
         if not self.updater or self in self.updater:
             self.mouse_over = False
             self.image = self.button_normal_image
@@ -453,7 +453,7 @@ class BrownMenuButton(UIMenu, Containable):
             "pivot": self.pos,
         }
 
-    def update(self, mouse_pos, mouse_up, mouse_down):
+    def update(self, mouse_pos, mouse_up, mouse_down, *args):
         self.mouse_over = False
         self.image = self.button_normal_image
         if self.rect.collidepoint(mouse_pos):
@@ -564,7 +564,7 @@ class ValueBox(UIMenu):
         self.image.blit(text_surface, text_rect)
         self.rect = self.image.get_rect(center=self.pos)
 
-    def update(self, value):
+    def change_value(self, value):
         self.value = value
         self.image = self.base_image.copy()
         text_surface = self.font.render(str(self.value), True, (0, 0, 0))

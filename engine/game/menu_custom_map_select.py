@@ -31,7 +31,7 @@ def menu_custom_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
         self.map_back_button.event = False
         self.current_map_row = 0
 
-        self.main_ui_updater.remove(self.map_list_box, self.map_preview, self.map_list_box.scroll, self.team_coa, self.map_title)
+        self.main_ui_updater.remove(self.map_preview, self.custom_map_list_box, self.team_coa, self.map_title)
 
         for group in (self.map_namegroup, self.team_coa):
             for stuff in group:
