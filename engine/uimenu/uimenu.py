@@ -390,15 +390,23 @@ class Containable:
     def get_relative_position_inside_container(self):
         raise NotImplementedError()
 
+    def get_relative_size_inside_container(self):
+        return None
+
     def get_size(self):
         raise NotImplementedError()
 
     def get_adjusted_rect_to_be_inside_container(self, container):
         rpic = self.get_relative_position_inside_container()
+        rsic = self.get_relative_size_inside_container()
         pivot = rpic["pivot"]
         origin = rpic["origin"]
 
-        return pygame.rect.Rect(*[container.get_rect()[i] - (self.get_size()[i] * (origin[i]+1)) // 2 + (pivot[i] + 1) * container.get_rect()[i+2] // 2 for i in range(2)], *self.get_size())
+        if rsic is None:
+            return pygame.rect.Rect(*[container.get_rect()[i] - (self.get_size()[i] * (origin[i]+1)) // 2 + (pivot[i] + 1) * container.get_rect()[i+2] // 2 for i in range(2)], *self.get_size())
+        else:
+            size = [ container.get_size()[i] * rsic[i] for i in range(2) ]
+            return pygame.rect.Rect(*[container.get_rect()[i] - (size[i] * (origin[i]+1)) // 2 + (pivot[i] + 1) * container.get_rect()[i+2] // 2 for i in range(2)], *size)
 
 
 class BrownMenuButton(UIMenu, Containable):
@@ -1190,11 +1198,21 @@ class BoxUI(UIMenu, Containable, Container):
         UIMenu.__init__(self)
         self.parent = parent
         self.size = size
-        self.image = pygame.Surface(size)
-        self.image.fill("#222a2e")
         self._layer = -1  # NOTE: not sure if this is good since underscore indicate it is a private variable but it works for now
         self.pos = (0, 0)
         self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
+        self.image = pygame.Surface(self.rect[2:])
+        self.image.fill("#222a2e")
+
+    def update(self, *args):
+        self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
+        self.image = pygame.Surface(self.rect[2:])
+        self.image.fill("#222a2e")
+
+
+
+    def get_relative_size_inside_container(self):
+        return (0.3,0.5)
 
     def get_relative_position_inside_container(self):
         return {
