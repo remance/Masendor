@@ -50,7 +50,7 @@
 49,"Parry Club",3,7,,,0,0,30,16,7,2,5,,,1.2,0,0,0,9,,1,"TRUE","Crush Medium (team)",0,,,,,8,,"1hand","Smash",,"parry","Melee"
 50,"Barrier Shield",10,0,90,1,0,0,0,20,40,1,30,30,,2.5,0,0,0,7,,2,"TRUE","Crush Big (team)",0,,,,,10,,"shield","Bash",,"hold,block","Shield"
 51,"Lance",1,9,40,16,0,0,0,12,4,45,12,,14,3,0,0,0,25,,1,"TRUE","Pierce Big (team)",0,,,,,8,,"1pole","Pierce",,,"Melee"
-52,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+52,"Banner",4,6,35,14,0,0,0,13,5,40,20,,26,3,0,0,0,25,,2,"TRUE","Pierce Big (team)",0,,,,,8,,"2pole","Pierce",,,"Melee"
 53,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 54,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 55,"Light Crossbow (heavy)",1,9,80,22,0,0,40,19,0,0,15,,,11,,1,1,90,,2,"FALSE","Bolt",180,,,,"Crossbow Small Shot",5,24,"2gun","Shoot","Light Crossbow","hold","Long Range"

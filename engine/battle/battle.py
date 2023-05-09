@@ -151,9 +151,9 @@ class Battle:
         self.joysticks = game.joysticks
         self.joystick_name = game.joystick_name
 
-        self.battle_map_base = game.battle_base_map
-        self.battle_map_feature = game.battle_feature_map
-        self.battle_map_height = game.battle_height_map
+        self.battle_base_map = game.battle_base_map
+        self.battle_feature_map = game.battle_feature_map
+        self.battle_height_map = game.battle_height_map
         self.battle_map = game.battle_map
 
         self.sprite_indicator = game.sprite_indicator
@@ -452,9 +452,9 @@ class Battle:
         if not images and map_type == "custom":  # custom map battle but use preset map
             images = load_images(self.module_dir,
                                  subfolder=("map", "preset", self.map_selected))
-        self.battle_map_base.draw_image(images["base"])
-        self.battle_map_feature.draw_image(images["feature"])
-        self.battle_map_height.draw_image(images["height"])
+        self.battle_base_map.draw_image(images["base"])
+        self.battle_feature_map.draw_image(images["feature"])
+        self.battle_height_map.draw_image(images["height"])
 
         if "place_name" in images:  # place_name map layer is optional, if not existed in folder then assign None
             place_name_map = images["place_name"]
@@ -463,16 +463,16 @@ class Battle:
         yield set_done_load()
 
         yield set_start_load("draw map")
-        self.battle_map.draw_image(self.battle_map_base, self.battle_map_feature, place_name_map, self.camp_pos, self)
+        self.battle_map.draw_image(self.battle_base_map, self.battle_feature_map, place_name_map, self.camp_pos, self)
         yield set_done_load()
 
         yield set_start_load("common setup")
         self.map_corner = (
-            len(self.battle_map_base.map_array[0]),
-            len(self.battle_map_base.map_array))  # get map size that troop can move
+            len(self.battle_base_map.map_array[0]),
+            len(self.battle_base_map.map_array))  # get map size that troop can move
 
-        self.max_camera = ((self.battle_map_height.image.get_width() - 1),
-                           (self.battle_map_height.image.get_height() - 1))  # reset max camera to new map size
+        self.max_camera = ((self.battle_height_map.image.get_width() - 1),
+                           (self.battle_height_map.image.get_height() - 1))  # reset max camera to new map size
 
         self.active_unit_list = []
         self.visible_unit_list = {}
@@ -1037,9 +1037,9 @@ class Battle:
 
         self.sound_effect_queue = {}
 
-        self.battle_map_base.clear_image()
-        self.battle_map_feature.clear_image()
-        self.battle_map_height.clear_image()
+        self.battle_base_map.clear_image()
+        self.battle_feature_map.clear_image()
+        self.battle_height_map.clear_image()
         self.battle_map.clear_image()
 
         self.drama_timer = 0  # reset drama text popup

@@ -46,16 +46,13 @@ def menu_main(self, mouse_left_up):
         self.map_selected = self.battle_map_folder[self.current_map_select]
 
         self.custom_map_button.event = False
-        self.main_ui_updater.remove(*self.start_menu_ui_only, self.popup_list_box, self.popup_list_box.scroll)
+        self.main_ui_updater.remove(*self.start_menu_ui_only)
         self.menu_button.remove(*self.menu_button)
 
-        setup_list(uimenu.NameList, self.current_map_row, self.battle_map_list, self.map_namegroup,
-                   self.map_list_box,
-                   self.main_ui_updater)
         self.create_preview_map()
 
         self.menu_button.add(*self.map_select_button)
-        self.main_ui_updater.add(*self.map_select_button, self.map_list_box, self.map_title, self.map_list_box.scroll)
+        self.main_ui_updater.add(*self.map_select_button, self.custom_map_list_box, self.map_title)
 
     elif self.game_edit_button.event:  # custom unit/sub-unit editor menu
         self.menu_state = "game_creator"
