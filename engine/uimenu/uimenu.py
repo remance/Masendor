@@ -76,7 +76,7 @@ class Cursor(UIMenu):
         self.pos = (0, 0)
         self.rect = self.image.get_rect(topleft=self.pos)
 
-    def update(self, mouse_pos):
+    def update(self, mouse_pos, mouse_left_up, mouse_left_down):
         """Update cursor position based on mouse position"""
         self.pos = mouse_pos
         self.rect.topleft = self.pos
@@ -1149,6 +1149,9 @@ class ListUI(UIMenu, Containable):
 
         for e, item in enumerate(items):
             self.image.blit(font.render(item, True, (200,)*3), (20, 20+e*36))
+
+    def update(self, mouse_pos, mouse_up, mouse_down):
+        self.mouse_over = False
 
     def get_relative_position_inside_container(self):
         return {

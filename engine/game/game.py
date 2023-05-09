@@ -963,8 +963,9 @@ class Game:
                     self.main_ui_updater.add(*self.confirm_ui_popup)
 
             self.mouse_pos = pygame.mouse.get_pos()
-            self.cursor.update(self.mouse_pos)
-            # ^ End user input
+            self.main_ui_updater.update(self.mouse_pos, mouse_left_up, mouse_left_down)
+
+            # Reset screen
             self.screen.fill((0, 0, 0))
             self.screen.blit(self.background, (0, 0))  # blit background over instead of clear() to reset screen
 
