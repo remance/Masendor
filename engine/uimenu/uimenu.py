@@ -1144,7 +1144,7 @@ class BoxUI(UIMenu, Containable, Container):
 
 class ListUI(UIMenu, Containable):
 
-    def __init__(self, origin, pivot, size, items, parent):
+    def __init__(self, origin, pivot, size, items, parent, on_click):
 
         from engine.game.game import Game
         from engine.utility import load_image
@@ -1153,23 +1153,48 @@ class ListUI(UIMenu, Containable):
         UIMenu.__init__(self)
         self.pivot = pivot
         self.origin = origin
-        frame = load_image(game.module_dir, (1, 1), "list_frame.png", ("ui", "mainmenu_ui"))
+        self.frame = load_image(game.module_dir, (1, 1), "list_frame.png", ("ui", "mainmenu_ui"))
+        self.on_click = on_click
 
-        self.image = make_image_by_frame(frame, size)
 
-        font = pygame.font.Font(self.ui_font["main_button"], 18)
+        self.click_ready = False
+        self.size = size
+        self.items = items
 
-        # TODO: implement hover?
-        # this code below is the start of the hover marker code
-        # pygame.draw.rect(self.image, "#181617", (4, 121, size[0]-8, 36))
-
+        self.selected_index = None
+        self.image = self.get_refreshed_image()
         self.rect = self.get_adjusted_rect_to_be_inside_container(parent)
 
-        for e, item in enumerate(items):
-            self.image.blit(font.render(item, True, (200,)*3), (20, 20+e*36))
+    def get_refreshed_image(self):
+        self.image = make_image_by_frame(self.frame, self.size)
+        import random
+        font = pygame.font.Font(self.ui_font["main_button"], 18)
+
+
+        if self.selected_index is not None:
+            si = self.selected_index
+            pygame.draw.rect(self.image, "#181617", (4, si*36+11, self.size[0]-8, 36))
+
+        for e, item in enumerate(self.items):
+            self.image.blit(font.render(item, True, ( 255 if e == self.selected_index else 178,)*3), (20, 20+e*36))
+        return self.image
+
 
     def update(self, mouse_pos, mouse_up, mouse_down):
         self.mouse_over = False
+        self.selected_index = None
+        if mouse_up:
+            self.click_ready = True
+        if self.rect.collidepoint(mouse_pos):
+            self.selected_index = (mouse_pos[1]-11)//36
+            self.mouse_over = True
+        if self.click_ready and mouse_down and self.selected_index is not None:
+            self.click_ready = False
+            self.on_click(self.selected_index, self.items[self.selected_index])
+
+
+        self.image = self.get_refreshed_image()
+
 
     def get_relative_position_inside_container(self):
         return {

@@ -508,9 +508,6 @@ class Game:
         self.option_button = uimenu.BrownMenuButton((0, 0.6 * f), key_name="game_option", parent=main_menu_buttons_box)
         self.quit_button = uimenu.BrownMenuButton((0, 1 * f), key_name="game_quit", parent=main_menu_buttons_box)
 
-        # just to test
-        test_list = uimenu.ListUI(pivot=(-1,-1), origin=(-1,-1), parent=self.screen, size=(200,600), items=["abc","def"])
-
         self.mainmenu_button = (self.preset_map_button, self.custom_map_button, self.game_edit_button,
                                 self.lore_button, self.option_button, self.quit_button, main_menu_buttons_box)
 
@@ -561,8 +558,12 @@ class Game:
         self.custom_map_option_box = uimenu.MapOptionBox((self.screen_width, 0), battle_select_image["top_box"],
                                                          1)  # ui box for battle option during preparation screen
 
+        # of course this is just for test and to show how it works
+        def test_on_click_method(item_index, item_text):
+            print("test {0} {1}".format(item_index, item_text))
+
         self.custom_map_list_box = uimenu.ListUI(pivot=(-1, -1), origin=(-1, -1), size=(200, 600),
-                                                 items=self.battle_map_list, parent=self.screen)
+                                                 items=self.battle_map_list, parent=self.screen, on_click=test_on_click_method)
 
         self.org_chart = uimenu.OrgChart(load_image(self.module_dir, self.screen_scale,
                                                     "org.png", ("ui", "mapselect_ui")),
