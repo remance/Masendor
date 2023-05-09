@@ -11,7 +11,6 @@ direction_angle = utility.direction_angle
 
 
 class Effect(sprite.Sprite):
-    empty_method = utility.empty_method
     clean_object = utility.clean_object
     set_rotate = utility.set_rotate
 
@@ -43,12 +42,12 @@ class Effect(sprite.Sprite):
 
         self.show_frame = 0
         self.frame_timer = 0
-        self.rotate = False
+        self.timer = 0
         self.repeat_animation = False
 
-        self.attack = attacker
+        self.attacker = attacker
 
-        self.base_pos = base_pos
+        self.base_pos = Vector2(base_pos)
         self.pos = Vector2(self.base_pos[0] * self.screen_scale[0], self.base_pos[1] * self.screen_scale[1]) * 5
         self.base_target = target
         self.angle = angle
@@ -58,12 +57,6 @@ class Effect(sprite.Sprite):
         self.sound_duration = 0
         self.scale_size = 1
 
-        effect_name = "".join(sprite_name.split("_"))[-1]
-        if effect_name.isdigit():
-            effect_name = "".join([string + "_" for string in sprite_name.split("_")[:-1]])[:-1]
-        else:
-            effect_name = sprite_name
-
         if make_sound:
             if effect_type in self.sound_effect_pool:
                 self.travel_sound_distance = self.effect_list[effect_type]["Sound Distance"]
@@ -72,19 +65,38 @@ class Effect(sprite.Sprite):
                 self.sound_duration = mixer.Sound(self.sound_effect_name).get_length()
                 self.sound_timer = 0  # start playing right away when first update
 
-        if "(team)" in effect_type:
-            self.current_animation = self.effect_animation_pool[effect_type][self.attacker.team][effect_name]
-        else:
-            self.current_animation = self.effect_animation_pool[effect_type][effect_name]
+        self.current_animation = {}
+        if effect_type:  # effect can have no sprite like charge
+            if "Base Main" in sprite_name:  # range weapon that use weapon sprite as effect
+                weapon = int(sprite_name[-1])
+                sprite_name = sprite_name[:-1]
+                if self.attacker.weapon_version[self.attacker.equipped_weapon][weapon] in \
+                        self.bullet_weapon_sprite_pool[effect_type]:
+                    self.image = self.bullet_weapon_sprite_pool[effect_type][
+                        self.attacker.weapon_version[self.attacker.equipped_weapon][weapon]][sprite_name]
+                else:
+                    self.image = self.bullet_weapon_sprite_pool[effect_type]["common"][sprite_name]
 
-        self.image = self.current_animation[self.show_frame]
+            else:
+                effect_name = "".join(sprite_name.split("_"))[-1]
+                if effect_name[-1].isdigit():
+                    effect_name = sprite_name[:-2]
+                else:
+                    effect_name = sprite_name
+                if "(team)" in effect_type:
+                    self.current_animation = self.effect_animation_pool[effect_type][self.attacker.team][effect_name]
+                else:
+                    self.current_animation = self.effect_animation_pool[effect_type][effect_name]
 
-        self.adjust_sprite()
+                self.image = self.current_animation[self.show_frame]
+                if len(self.current_animation) == 1:  # one frame mean no animation
+                    self.current_animation = {}
 
-        self.rect = self.image.get_rect(center=self.pos)
+            self.adjust_sprite()
 
     def update(self, unit_list, dt):
-        done, just_start = self.play_animation(0.1, dt)
+        if self.current_animation:
+            done, just_start = self.play_animation(0.1, dt)
 
         if self.sound_effect_name and self.sound_timer < self.sound_duration:
             self.sound_timer += dt
@@ -110,9 +122,8 @@ class DamageEffect(ABC, Effect, sprite.Sprite):
                  degrade_when_travel=True, degrade_when_hit=True, random_direction=False, random_move=False,
                  reach_effect=None, height_type=1, make_sound=True):
         """Damage or effect sprite that can affect or damage unit"""
-        Effect.__init__(attacker, base_pos, base_target, effect_type, effect_type, sprite_name, angle=angle,
+        Effect.__init__(self, attacker, base_pos, base_target, effect_type, sprite_name, angle,
                         layer=10000000 + height_type, make_sound=make_sound)
-        sprite.Sprite.__init__(self, self.containers)
 
         self.weapon = weapon  # weapon that use to perform the attack
         self.accuracy = accuracy
@@ -134,17 +145,9 @@ class DamageEffect(ABC, Effect, sprite.Sprite):
         if "Area Of Effect" in self.stat:
             self.aoe = self.stat["Area Of Effect"]
 
-        self.scale_size = 1
-        self.frame_timer = 0
         self.duration = 0
-        self.timer = 0
-        self.show_frame = 0
-        self.current_animation = {}
         self.sound_effect_name = None
-        self.sound_timer = 0
-        self.sound_duration = 0
         self.stamina_dmg_bonus = 0
-        self.repeat_animation = False
         self.sprite_direction = ""
         self.attacker_sprite_direction = self.attacker.sprite_direction
         self.already_hit = []  # list of unit already got hit by sprite for sprite with no duration
@@ -156,9 +159,6 @@ class DamageEffect(ABC, Effect, sprite.Sprite):
 
         self.penetrate = penetrate
         self.knock_power = impact
-
-        self.base_pos = Vector2(base_pos)
-        self.base_target = base_target
 
         if self.duration:
             self.repeat_animation = True
@@ -201,10 +201,10 @@ class MeleeDamageEffect(DamageEffect):
                  accuracy=None, reach_effect=None):
         """Melee damage sprite"""
         effect_type = stat["Damage Sprite"]
-        sprite_name = self.attack_type[1]
+        sprite_name = attack_type[1].capitalize()
 
         DamageEffect.__init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
-                              effect_type, sprite_name, angle=angle, accuracy=accuracy, reach_effect=reach_effect)
+                              effect_type, sprite_name, angle, accuracy=accuracy, reach_effect=reach_effect)
 
     def update(self, unit_list, dt):
         """Melee damage effect does not travel"""
@@ -233,21 +233,17 @@ class RangeDamageEffect(DamageEffect):
                  degrade_when_hit=True, random_direction=False, random_move=False, reach_effect=None):
         """Range damage sprite"""
         if stat["Damage Sprite"] != "self":
-            sprite_name = stat["Damage Sprite"]
-            effect_type = "base"
+            effect_type = stat["Damage Sprite"]
+            sprite_name = "Base"
         else:  # use weapon image itself as bullet image
-            sprite_name = stat["Name"]
-            if attacker.weapon_version[attacker.equipped_weapon][weapon] in self.bullet_weapon_sprite_pool[sprite_name]:
-                self.image = self.bullet_weapon_sprite_pool[sprite_name][
-                    attacker.weapon_version[attacker.equipped_weapon][weapon]]["base_main"]
-            else:
-                self.image = self.bullet_weapon_sprite_pool[sprite_name]["common"]["base_main"]
+            effect_type = stat["Name"]
+            sprite_name = "Base Main" + str(weapon)
 
         DamageEffect.__init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, Vector2(base_pos),
-                              base_target, angle, sprite_name, arc_shot=arc_shot, height_ignore=height_ignore,
-                              degrade_when_travel=degrade_when_travel, degrade_when_hit=degrade_when_hit,
-                              random_direction=random_direction, random_move=random_move,
-                              accuracy=accuracy, reach_effect=reach_effect, make_sound=False)
+                              base_target, effect_type, sprite_name, angle, accuracy=accuracy, arc_shot=arc_shot,
+                              height_ignore=height_ignore, degrade_when_travel=degrade_when_travel,
+                              degrade_when_hit=degrade_when_hit, random_direction=random_direction,
+                              random_move=random_move, reach_effect=reach_effect, make_sound=False)
         self.repeat_animation = True
 
         if sprite_name in self.sound_effect_pool:
@@ -348,7 +344,7 @@ class ChargeDamageEffect(DamageEffect):
                  accuracy=None, reach_effect=None):
         """Charge damage sprite"""
         DamageEffect.__init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
-                              self.attacker.angle, accuracy=accuracy, reach_effect=reach_effect)
+                              None, None, attacker.angle, accuracy=accuracy, reach_effect=reach_effect)
         self.base_pos = base_pos  # always move along with attacker, no Vector2
         self.charge_power = 0
         if weapon:
@@ -384,11 +380,11 @@ class ChargeDamageEffect(DamageEffect):
 
 class EffectDamageEffect(DamageEffect):
     def __init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
-                 accuracy=None, arc_shot=False, height_ignore=False, degrade_when_travel=True,
+                 angle=0, accuracy=None, arc_shot=False, height_ignore=False, degrade_when_travel=True,
                  degrade_when_hit=True, random_direction=False, random_move=False, reach_effect=None):
-        """Effect damage sprite such as explosion"""
+        """Effect damage sprite such as explosion or smoke"""
         DamageEffect.__init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
-                              weapon, weapon, 0, arc_shot=arc_shot, height_ignore=height_ignore,
+                              weapon, weapon, angle, arc_shot=arc_shot, height_ignore=height_ignore,
                               degrade_when_travel=degrade_when_travel,
                               degrade_when_hit=degrade_when_hit, random_direction=random_direction,
                               random_move=random_move, accuracy=accuracy, reach_effect=reach_effect,

@@ -37,10 +37,10 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
                             int(self.mouse_pos[0] - self.map_preview.rect.x) * self.map_preview.map_scale_width,
                             int((self.mouse_pos[1] - self.map_preview.rect.y) * self.map_preview.map_scale_height))
                         if icon.who.name != "+":  # choose pos of selected unit
-                            self.custom_map_data["unit"]["pos"][icon.who.team][icon.who.index] = map_pos
-                            self.map_preview.change_mode(1, team_pos_list=self.custom_map_data["unit"]["pos"],
+                            self.map_data["unit"]["pos"][icon.who.team][icon.who.index] = map_pos
+                            self.map_preview.change_mode(1, team_pos_list=self.map_data["unit"]["pos"],
                                                          camp_pos_list=self.camp_pos,
-                                                         selected=self.custom_map_data["unit"]["pos"][icon.who.team][
+                                                         selected=self.map_data["unit"]["pos"][icon.who.team][
                                                              icon.who.index])
                             unit_change_team_unit(self, old_selected=icon.who.index)
                         break
@@ -74,15 +74,15 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
                         for this_unit in self.unit_icon:
                             if this_unit.selected:
                                 if this_unit.who.name == "+":  # add new unit
-                                    self.custom_map_data["unit"][coa.team].append(unit_data.copy())
+                                    self.map_data["unit"][coa.team].append(unit_data.copy())
                                     old_selected = None
                                 else:  # change existed
-                                    self.custom_map_data["unit"][coa.team][this_unit.who.index] = unit_data.copy()
+                                    self.map_data["unit"][coa.team][this_unit.who.index] = unit_data.copy()
                                     old_selected = this_unit.who.index
                                 has_unit_selected = True
                                 unit_change_team_unit(self, old_selected=old_selected)
                                 self.map_preview.change_mode(1,
-                                                             team_pos_list=self.custom_map_data["unit"]["pos"],
+                                                             team_pos_list=self.map_data["unit"]["pos"],
                                                              camp_pos_list=self.camp_pos, selected=old_selected)
                                 break
 
@@ -90,9 +90,9 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
                             for coa in self.team_coa:
                                 if coa.selected:  # add unit for selected team
                                     unit_data = create_unit_list(self, coa, unit_selected=name.name)
-                                    self.custom_map_data["unit"][coa.team].append(unit_data.copy())
+                                    self.map_data["unit"][coa.team].append(unit_data.copy())
                                     unit_change_team_unit(self)
-                                    self.map_preview.change_mode(1, team_pos_list=self.custom_map_data["unit"]["pos"],
+                                    self.map_preview.change_mode(1, team_pos_list=self.map_data["unit"]["pos"],
                                                                  camp_pos_list=self.camp_pos)
 
     if self.unit_list_box.rect.collidepoint(self.mouse_pos):
@@ -133,13 +133,13 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
                 if icon.rect.collidepoint(self.mouse_pos):
                     if icon.who.name != "+":  # add popup showing leader and troop in unit
                         popup_text = [self.leader_data.leader_list[
-                                          self.custom_map_data["unit"][icon.who.team][icon.who.index]["Leader ID"]][
+                                          self.map_data["unit"][icon.who.team][icon.who.index]["Leader ID"]][
                                           "Name"]]
-                        for troop in self.custom_map_data["unit"][icon.who.team][icon.who.index]["Troop"]:
+                        for troop in self.map_data["unit"][icon.who.team][icon.who.index]["Troop"]:
                             popup_text += [self.troop_data.troop_list[troop]["Name"] + ": " +
-                                           str(self.custom_map_data["unit"][icon.who.team][icon.who.index]["Troop"][
+                                           str(self.map_data["unit"][icon.who.team][icon.who.index]["Troop"][
                                                    troop][0]) + " + " +
-                                           str(self.custom_map_data["unit"][icon.who.team][icon.who.index]["Troop"][
+                                           str(self.map_data["unit"][icon.who.team][icon.who.index]["Troop"][
                                                    troop][1])]
                         self.single_text_popup.pop(self.mouse_pos, popup_text)
                         self.main_ui_updater.add(self.single_text_popup)
@@ -148,35 +148,35 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
                             if other_icon.selected:  # unselected all others first
                                 other_icon.selection()
                         icon.selection()
-                        if icon.who.team in self.custom_map_data["unit"]["pos"] and \
-                                icon.who.index in self.custom_map_data["unit"]["pos"][icon.who.team]:
+                        if icon.who.team in self.map_data["unit"]["pos"] and \
+                                icon.who.index in self.map_data["unit"]["pos"][icon.who.team]:
                             # highlight selected unit in preview map
-                            self.map_preview.change_mode(1, team_pos_list=self.custom_map_data["unit"]["pos"],
+                            self.map_preview.change_mode(1, team_pos_list=self.map_data["unit"]["pos"],
                                                          camp_pos_list=self.camp_pos,
-                                                         selected=self.custom_map_data["unit"]["pos"][icon.who.team][
+                                                         selected=self.map_data["unit"]["pos"][icon.who.team][
                                                              icon.who.index])
                     elif mouse_right_up:  # remove unit
                         if icon.who.name != "+":
-                            self.custom_map_data["unit"][icon.who.team].pop(icon.who.index)
-                            if icon.who.index in self.custom_map_data["unit"]["pos"][icon.who.team]:
-                                self.custom_map_data["unit"]["pos"][icon.who.team].pop(icon.who.index)
+                            self.map_data["unit"][icon.who.team].pop(icon.who.index)
+                            if icon.who.index in self.map_data["unit"]["pos"][icon.who.team]:
+                                self.map_data["unit"]["pos"][icon.who.team].pop(icon.who.index)
 
                             for icon2 in self.unit_icon:
                                 if icon2.who.index and icon2.who.index > icon.who.index:
-                                    if icon2.who.index in self.custom_map_data["unit"]["pos"][icon.who.team]:
-                                        self.custom_map_data["unit"]["pos"][icon.who.team][icon2.who.index - 1] = \
-                                            self.custom_map_data["unit"]["pos"][icon.who.team].pop(icon2.who.index)
+                                    if icon2.who.index in self.map_data["unit"]["pos"][icon.who.team]:
+                                        self.map_data["unit"]["pos"][icon.who.team][icon2.who.index - 1] = \
+                                            self.map_data["unit"]["pos"][icon.who.team].pop(icon2.who.index)
                                     icon2.who.index -= 1
 
-                            self.map_preview.change_mode(1, team_pos_list=self.custom_map_data["unit"]["pos"],
+                            self.map_preview.change_mode(1, team_pos_list=self.map_data["unit"]["pos"],
                                                          camp_pos_list=self.camp_pos)
                             if not icon.selected:  # find new selected
                                 for icon2 in self.unit_icon:
                                     if icon2.selected:
                                         self.map_preview.change_mode(1,
-                                                                     team_pos_list=self.custom_map_data["unit"]["pos"],
+                                                                     team_pos_list=self.map_data["unit"]["pos"],
                                                                      camp_pos_list=self.camp_pos,
-                                                                     selected=self.custom_map_data["unit"]["pos"][
+                                                                     selected=self.map_data["unit"]["pos"][
                                                                          icon2.who.team][icon2.who.index])
                                         break
                             icon.kill()
@@ -196,7 +196,7 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
             team.change_select(False)
         self.team_selected = 1
 
-        self.custom_map_data["unit"] = {"pos": {}}
+        self.map_data["unit"] = {"pos": {}}
 
         self.map_preview.change_mode(1, camp_pos_list=self.camp_pos)  # revert map preview back to without unit dot
 
@@ -220,12 +220,12 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
     elif self.select_button.event:  # go to unit leader setup screen
         self.select_button.event = False
         can_continue = True
-        if len(self.custom_map_data) > 1:
-            for team in self.custom_map_data["unit"]:
+        if len(self.map_data) > 1:
+            for team in self.map_data["unit"]:
                 for coa in self.team_coa:
-                    if coa.team == team and 0 not in coa.coa_images and (not self.custom_map_data["unit"][team] or
-                                                                         len(self.custom_map_data["unit"][team]) != len(
-                                self.custom_map_data["unit"]["pos"][team])):
+                    if coa.team == team and 0 not in coa.coa_images and (not self.map_data["unit"][team] or
+                                                                         len(self.map_data["unit"][team]) != len(
+                                self.map_data["unit"]["pos"][team])):
                         can_continue = False
 
         if can_continue is False:
@@ -244,9 +244,9 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
                 del stuff
 
             self.main_ui_updater.add(self.org_chart)
-            for team in self.custom_map_data["unit"]:
+            for team in self.map_data["unit"]:
                 if team != "pos":
-                    for subunit in self.custom_map_data["unit"][team]:
+                    for subunit in self.map_data["unit"][team]:
                         subunit["Temp Leader"] = ""
 
             leader_change_team_unit(self)
@@ -259,8 +259,8 @@ def leader_change_team_unit(self):
                 icon.kill()
             self.preview_unit.empty()
 
-            if this_team.team in self.custom_map_data["unit"]:
-                for unit_index, unit in enumerate(self.custom_map_data["unit"][this_team.team]):
+            if this_team.team in self.map_data["unit"]:
+                for unit_index, unit in enumerate(self.map_data["unit"][this_team.team]):
                     if unit["Leader ID"] in self.leader_data.images:
                         image = self.leader_data.images[unit["Leader ID"]]
                     else:
@@ -268,9 +268,9 @@ def leader_change_team_unit(self):
                     self.preview_unit.add(uibattle.TempUnitIcon(self.screen_scale, this_team.team, image, unit_index))
             self.unit_selector.setup_unit_icon(self.unit_icon, [this_unit for this_unit in self.preview_unit if
                                                                 this_unit.index is None or "Temp Leader" not in
-                                                                self.custom_map_data["unit"][this_team.team][
+                                                                self.map_data["unit"][this_team.team][
                                                                     this_unit.index] or
-                                                                self.custom_map_data["unit"][this_team.team][
+                                                                self.map_data["unit"][this_team.team][
                                                                     this_unit.index]["Temp Leader"] == ""])
 
             break
@@ -285,14 +285,14 @@ def unit_change_team_unit(self, new_faction=False, old_selected=None, add_plus=T
             self.preview_unit.empty()
 
             unit_list = []
-            if "Team Faction " + str(this_team.team) in self.custom_map_data["info"]:
-                for unit_index, unit in enumerate(self.custom_map_data["unit"][this_team.team]):
+            if "Team Faction " + str(this_team.team) in self.map_data["info"]:
+                for unit_index, unit in enumerate(self.map_data["unit"][this_team.team]):
                     if unit["Leader ID"] in self.leader_data.images:
                         image = self.leader_data.images[unit["Leader ID"]]
                     else:
                         image = self.leader_data.leader_list[unit["Leader ID"]]["Name"].split(" ")[0]
 
-                    if unit_index in self.custom_map_data["unit"]["pos"][this_team.team] and add_plus:
+                    if unit_index in self.map_data["unit"]["pos"][this_team.team] and add_plus:
                         # unit placed on map, put in black-green colour in portrait
                         if type(image) is str:
                             done_subunit = uibattle.TempUnitIcon(self.screen_scale, this_team.team, image, unit_index)
@@ -327,8 +327,8 @@ def unit_change_team_unit(self, new_faction=False, old_selected=None, add_plus=T
             self.unit_selector.setup_unit_icon(self.unit_icon,
                                                [this_unit for this_unit in self.preview_unit if
                                                 this_unit.index is None or "Temp Leader" not in
-                                                self.custom_map_data["unit"][this_team.team][this_unit.index] or
-                                                self.custom_map_data["unit"][this_team.team][this_unit.index][
+                                                self.map_data["unit"][this_team.team][this_unit.index] or
+                                                self.map_data["unit"][this_team.team][this_unit.index][
                                                     "Temp Leader"] == ""])
 
             if old_selected is not None:

@@ -24,8 +24,8 @@ def menu_custom_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_u
                 for this_team in self.team_coa:
                     if this_team.selected:
                         preview_char = [char for char in self.preview_unit if "Temp Leader" not in
-                                        self.custom_map_data["unit"][this_team.team][char.index] or
-                                        self.custom_map_data["unit"][this_team.team][char.index]["Temp Leader"] == ""]
+                                        self.map_data["unit"][this_team.team][char.index] or
+                                        self.map_data["unit"][this_team.team][char.index]["Temp Leader"] == ""]
                         self.unit_selector.setup_unit_icon(self.unit_icon, preview_char)
                         break
 
@@ -37,8 +37,8 @@ def menu_custom_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_u
                 for this_team in self.team_coa:
                     if this_team.selected:
                         preview_char = [char for char in self.preview_unit if "Temp Leader" not in
-                                        self.custom_map_data["unit"][this_team.team][char.index] or
-                                        self.custom_map_data["unit"][this_team.team][char.index]["Temp Leader"] == ""]
+                                        self.map_data["unit"][this_team.team][char.index] or
+                                        self.map_data["unit"][this_team.team][char.index]["Temp Leader"] == ""]
                         self.unit_selector.setup_unit_icon(self.unit_icon, preview_char)
                         break
 
@@ -51,8 +51,8 @@ def menu_custom_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_u
                     for this_team in self.team_coa:
                         if this_team.selected:
                             preview_char = [char for char in self.preview_unit if "Temp Leader" not in
-                                            self.custom_map_data["unit"][this_team.team][char.index] or
-                                            self.custom_map_data["unit"][this_team.team][char.index][
+                                            self.map_data["unit"][this_team.team][char.index] or
+                                            self.map_data["unit"][this_team.team][char.index][
                                                 "Temp Leader"] == ""]
                             self.unit_selector.setup_unit_icon(self.unit_icon, preview_char)
                             break
@@ -62,13 +62,13 @@ def menu_custom_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_u
                 if char.rect.collidepoint(self.mouse_pos):
                     if char.who.name != "+":  # add popup showing leader and troop in unit
                         popup_text = [self.leader_data.leader_list[
-                                          self.custom_map_data["unit"][char.who.team][char.who.index]["Leader ID"]][
+                                          self.map_data["unit"][char.who.team][char.who.index]["Leader ID"]][
                                           "Name"]]
-                        for troop in self.custom_map_data["unit"][char.who.team][char.who.index]["Troop"]:
+                        for troop in self.map_data["unit"][char.who.team][char.who.index]["Troop"]:
                             popup_text += [self.troop_data.troop_list[troop]["Name"] + ": " +
-                                           str(self.custom_map_data["unit"][char.who.team][char.who.index]["Troop"][
+                                           str(self.map_data["unit"][char.who.team][char.who.index]["Troop"][
                                                    troop][0]) + " + " +
-                                           str(self.custom_map_data["unit"][char.who.team][char.who.index]["Troop"][
+                                           str(self.map_data["unit"][char.who.team][char.who.index]["Troop"][
                                                    troop][1])]
                         self.single_text_popup.pop(self.mouse_pos, popup_text)
                         self.main_ui_updater.add(self.single_text_popup)
@@ -77,15 +77,15 @@ def menu_custom_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_u
                             if other_icon.selected:  # unselected all others first
                                 other_icon.selection()
                         char.selection()
-                        if char.who.team in self.custom_map_data["unit"]["pos"] and \
-                                char.who.index in self.custom_map_data["unit"]["pos"][char.who.team]:
+                        if char.who.team in self.map_data["unit"]["pos"] and \
+                                char.who.index in self.map_data["unit"]["pos"][char.who.team]:
                             # highlight unit in preview map
-                            self.map_preview.change_mode(1, team_pos_list=self.custom_map_data["unit"]["pos"],
+                            self.map_preview.change_mode(1, team_pos_list=self.map_data["unit"]["pos"],
                                                          camp_pos_list=self.camp_pos,
                                                          selected=
-                                                         self.custom_map_data["unit"]["pos"][char.who.team][
+                                                         self.map_data["unit"]["pos"][char.who.team][
                                                              char.who.index])
-                        self.org_chart.add_chart(self.custom_map_data["unit"][char.who.team], self.preview_unit,
+                        self.org_chart.add_chart(self.map_data["unit"][char.who.team], self.preview_unit,
                                                  selected=char.who.index)
                     elif mouse_right_up:
                         for other_icon in self.unit_icon:
@@ -103,13 +103,13 @@ def menu_custom_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_u
                 for subunit_index, subunit in enumerate(self.preview_unit):  # check for unit in icon
                     if subunit_index == rect:  # found unit for data
                         popup_text = [self.leader_data.leader_list[
-                                          self.custom_map_data["unit"][subunit.team][subunit.index]["Leader ID"]][
+                                          self.map_data["unit"][subunit.team][subunit.index]["Leader ID"]][
                                           "Name"]]
-                        for troop in self.custom_map_data["unit"][subunit.team][subunit.index]["Troop"]:
+                        for troop in self.map_data["unit"][subunit.team][subunit.index]["Troop"]:
                             popup_text += [self.troop_data.troop_list[troop]["Name"] + ": " +
-                                           str(self.custom_map_data["unit"][subunit.team][subunit.index]["Troop"][
+                                           str(self.map_data["unit"][subunit.team][subunit.index]["Troop"][
                                                    troop][0]) + " + " +
-                                           str(self.custom_map_data["unit"][subunit.team][subunit.index]["Troop"][
+                                           str(self.map_data["unit"][subunit.team][subunit.index]["Troop"][
                                                    troop][1])]
                         self.single_text_popup.pop(self.mouse_pos, popup_text)
                         self.main_ui_updater.add(self.single_text_popup)
@@ -118,12 +118,12 @@ def menu_custom_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_u
                             for subunit2 in self.unit_icon:
                                 if subunit2.right_selected and subunit2 is not subunit:
                                     not_in_list = False
-                                    self.custom_map_data["unit"][subunit2.who.team][subunit2.who.index][
+                                    self.map_data["unit"][subunit2.who.team][subunit2.who.index][
                                         "Temp Leader"] = subunit.index
                                     for subunit3_index, subunit3 in enumerate(self.unit_icon):
                                         if subunit3.selected:
                                             unit_change_team_unit(self, add_plus=False, old_selected=subunit3.who.index)
-                                            self.org_chart.add_chart(self.custom_map_data["unit"][subunit.team],
+                                            self.org_chart.add_chart(self.map_data["unit"][subunit.team],
                                                                      self.preview_unit,
                                                                      selected=subunit3.who.index)
                                             break
@@ -131,11 +131,11 @@ def menu_custom_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_u
                         break
 
                 if mouse_right_up and not_in_list:  # remove unit's leader in org chart
-                    self.custom_map_data["unit"][subunit.team][rect]["Temp Leader"] = ""
+                    self.map_data["unit"][subunit.team][rect]["Temp Leader"] = ""
                     for subunit3_index, subunit3 in enumerate(self.unit_icon):
                         if subunit3.selected:
                             unit_change_team_unit(self, add_plus=False, old_selected=subunit3.who.index)
-                            self.org_chart.add_chart(self.custom_map_data["unit"][subunit.team],
+                            self.org_chart.add_chart(self.map_data["unit"][subunit.team],
                                                      self.preview_unit,
                                                      selected=subunit3_index)
                             break
@@ -163,7 +163,7 @@ def menu_custom_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_u
         self.main_ui_updater.remove(self.org_chart)
 
         for subunit in self.preview_unit:  # reset leader
-            self.custom_map_data["unit"][subunit.team][subunit.index]["Temp Leader"] = ""
+            self.map_data["unit"][subunit.team][subunit.index]["Temp Leader"] = ""
         leader_change_team_unit(self)
         self.org_chart.add_chart([], self.preview_unit)  # reset chart
 
@@ -187,36 +187,36 @@ def menu_custom_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_u
         unit_change_team_unit(self)
 
     elif self.select_button.event:  # go to character select screen
-        self.team_pos = {team: [pos for pos in self.custom_map_data["unit"]["pos"][team].values()] for
-                         team in self.custom_map_data["unit"]["pos"]}
+        self.team_pos = {team: [pos for pos in self.map_data["unit"]["pos"][team].values()] for
+                         team in self.map_data["unit"]["pos"]}
 
         subunit_index = 1
-        for team in self.custom_map_data["unit"]:
+        for team in self.map_data["unit"]:
             if team != "pos":
-                for index, subunit in enumerate(self.custom_map_data["unit"][team]):
+                for index, subunit in enumerate(self.map_data["unit"][team]):
                     subunit["ID"] = subunit_index
                     subunit["Angle"] = 0
                     subunit["Start Health"] = 100
                     subunit["Start Stamina"] = 100
                     subunit["Team"] = team
-                    subunit["POS"] = self.custom_map_data["unit"]["pos"][team][index]
+                    subunit["POS"] = self.map_data["unit"]["pos"][team][index]
                     subunit_index += 1
 
-        for team in self.custom_map_data["unit"]:
+        for team in self.map_data["unit"]:
             if team != "pos":
-                for subunit in self.custom_map_data["unit"][team]:  # assign leader based on ID instead
+                for subunit in self.map_data["unit"][team]:  # assign leader based on ID instead
                     temp_leader = subunit["Temp Leader"]
                     subunit["Leader"] = 0
                     if temp_leader != "":
-                        subunit["Leader"] = self.custom_map_data["unit"][team][temp_leader]["ID"]
+                        subunit["Leader"] = self.map_data["unit"][team][temp_leader]["ID"]
 
         for icon in self.preview_unit:
             icon.kill()
         self.preview_unit.empty()
         self.main_ui_updater.remove(self.org_chart)
 
-        self.custom_map_data["battle"] = []
-        for team, team_data in self.custom_map_data["unit"].items():
+        self.map_data["battle"] = []
+        for team, team_data in self.map_data["unit"].items():
             if team != "pos":
                 for value in team_data:
                     new_value = {key: {key2: val2.copy() for key2, val2 in val.items()} if type(val) is dict else val
@@ -224,12 +224,12 @@ def menu_custom_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_u
                     for troop in new_value["Troop"]:
                         troop_value = new_value["Troop"][troop]
                         new_value["Troop"][troop] = str(troop_value[0]) + "/" + str(troop_value[1])
-                    self.custom_map_data["battle"].append(new_value)
+                    self.map_data["battle"].append(new_value)
 
-        change_to_char_select_menu(self, custom_data=self.custom_map_data["battle"])
+        change_to_char_select_menu(self)
 
 
-def change_to_char_select_menu(self, custom_data=None):
+def change_to_char_select_menu(self):
     self.menu_state = "custom_unit_select"
     self.select_button.event = False
     self.unit_select_row = 0
@@ -246,16 +246,12 @@ def change_to_char_select_menu(self, custom_data=None):
 
     self.main_ui_updater.remove(self.team_coa)
 
-    self.unit_stat["unit"] = uimenu.ArmyStat(self.screen_scale,
-                                           (self.screen_rect.center[0] / 9, self.screen_rect.height / 8),
-                                           load_image(self.data_dir, self.screen_scale,
-                                                      "unit_stat.png", ("ui", "mapselect_ui")))  # unit stat
     self.unit_stat["model"] = uimenu.ArmyStat(self.screen_scale,
                                             (self.screen_rect.center[0] * 1.3, self.screen_rect.height / 8),
                                             load_image(self.data_dir, self.screen_scale,
                                                        "unit_stat.png", ("ui", "mapselect_ui")))  # troop stat
 
-    self.setup_battle_unit(self.preview_unit, preview=self.team_selected, custom_data=custom_data)
+    self.setup_battle_unit(self.preview_unit, preview=self.team_selected)
 
     self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
 

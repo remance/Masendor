@@ -7,11 +7,15 @@ from engine import utility
 import pygame
 from PIL import Image
 
-from engine.game.create_troop_sprite import create_troop_sprite
+from engine.game import create_troop_sprite
 from engine.data.datacacher import load_pickle_with_surfaces
 from engine.data.datacacher import save_pickle_with_surfaces
 
 md5_dir = utility.md5_dir
+
+
+default_sprite_size = create_troop_sprite.default_sprite_size
+create_troop_sprite = create_troop_sprite.create_troop_sprite
 
 
 def create_troop_sprite_pool(self, who_todo, preview=False, specific_preview=None, max_preview_size=200):
@@ -91,54 +95,54 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
     :param specific_preview: list array containing animation name, frame number and direction of either l_side or r_side for flipping
     """
 
-    for subunit_id, this_subunit in who_todo.items():
-        sprite_id = str(this_subunit["Sprite ID"])
-        race = self.troop_data.race_list[this_subunit["Race"]]["Name"]
-        char_name = this_subunit["Name"]
+    for unit_id, this_unit in who_todo.items():
+        sprite_id = str(this_unit["Sprite ID"])
+        race = self.troop_data.race_list[this_unit["Race"]]["Name"]
+        char_name = this_unit["Name"]
         mount_race = "None"
         final_race_name = race + "_"
         final_char_name = char_name + "_"
         troop_armour = "None"
         troop_armour_id = 0
-        if this_subunit["Armour"]:
-            troop_armour_id = this_subunit["Armour"][0]
+        if this_unit["Armour"]:
+            troop_armour_id = this_unit["Armour"][0]
             troop_armour = self.troop_data.armour_list[troop_armour_id]["Name"]
 
         armour_name = (troop_armour, "None")
         armour_id = (troop_armour_id, 0)
-        if this_subunit["Mount"]:
-            mount_race = self.troop_data.mount_list[this_subunit["Mount"][0]]["Race"]  # get mount id
+        if this_unit["Mount"]:
+            mount_race = self.troop_data.mount_list[this_unit["Mount"][0]]["Race"]  # get mount id
             mount_race = self.troop_data.race_list[mount_race]["Name"]  # replace id with name
             final_race_name = race + "&" + mount_race + "_"
             final_char_name = char_name + "&" + mount_race + "_"
-            armour_name = (troop_armour, self.troop_data.mount_armour_list[this_subunit["Mount"][2]]["Name"])
-            armour_id = (troop_armour_id, this_subunit["Mount"][2])
+            armour_name = (troop_armour, self.troop_data.mount_armour_list[this_unit["Mount"][2]]["Name"])
+            armour_id = (troop_armour_id, this_unit["Mount"][2])
 
         primary_main_weapon = 1
         primary_sub_weapon = 1
         secondary_main_weapon = 1
         secondary_sub_weapon = 1
 
-        if this_subunit["Primary Main Weapon"]:
-            primary_main_weapon = this_subunit["Primary Main Weapon"][0]
-        if this_subunit["Primary Sub Weapon"]:
-            primary_sub_weapon = this_subunit["Primary Sub Weapon"][0]
-        if this_subunit["Secondary Main Weapon"]:
-            secondary_main_weapon = this_subunit["Secondary Main Weapon"][0]
-        if this_subunit["Secondary Sub Weapon"]:
-            secondary_sub_weapon = this_subunit["Secondary Sub Weapon"][0]
+        if this_unit["Primary Main Weapon"]:
+            primary_main_weapon = this_unit["Primary Main Weapon"][0]
+        if this_unit["Primary Sub Weapon"]:
+            primary_sub_weapon = this_unit["Primary Sub Weapon"][0]
+        if this_unit["Secondary Main Weapon"]:
+            secondary_main_weapon = this_unit["Secondary Main Weapon"][0]
+        if this_unit["Secondary Sub Weapon"]:
+            secondary_sub_weapon = this_unit["Secondary Sub Weapon"][0]
 
         hand_weapon_list = (
             (primary_main_weapon, primary_sub_weapon), (secondary_main_weapon, secondary_sub_weapon))
 
         weapon_key = (str(primary_main_weapon) + "," + str(primary_sub_weapon),
                       str(secondary_main_weapon) + "," + str(secondary_sub_weapon))
-        if type(subunit_id) is int:
+        if "+" in unit_id:
             skill_data = self.troop_data.skill_list
         else:
             skill_data = self.leader_data.skill_list
 
-        skill_list = [skill_data[skill]["Action"][0] for skill in this_subunit["Skill"] if skill in skill_data]
+        skill_list = [skill_data[skill]["Action"][0] for skill in this_unit["Skill"] if skill in skill_data]
 
         weapon_skill_list = weapon_list[primary_main_weapon]["Skill"] + \
                             weapon_list[primary_sub_weapon]["Skill"] + \
@@ -149,7 +153,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
         skill_list += weapon_skill_list
         skill_list = tuple(set([item for item in skill_list if item != "Action"]))
 
-        subunit_weapon_list = [(weapon_list[primary_main_weapon]["Name"],
+        unit_weapon_list = [(weapon_list[primary_main_weapon]["Name"],
                                 weapon_list[primary_sub_weapon]["Name"])]
 
         weapon_common_action = [(weapon_list[primary_main_weapon]["Common"],
@@ -158,7 +162,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                                  weapon_list[primary_sub_weapon]["Attack"])]
 
         if (primary_main_weapon, primary_sub_weapon) != (secondary_main_weapon, secondary_sub_weapon):
-            subunit_weapon_list = [subunit_weapon_list[0],
+            unit_weapon_list = [unit_weapon_list[0],
                                    (weapon_list[secondary_main_weapon]["Name"],
                                     weapon_list[secondary_sub_weapon]["Name"])]
             weapon_common_action = [weapon_common_action[0],
@@ -207,7 +211,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                 # remove animation not suitable for preview
                 animation = [this_animation for this_animation in animation if
                              any(ext in this_animation for ext in
-                                 ("_Default", "_Die", "_Flee", "_Damaged", "KnockDown",
+                                 ("_Default", "_Die", "_Flee", "_Damaged", "KnockDown", "_Music_",
                                   "_Standup", "_HeavyDamaged")) is False and "_Sub_" not in this_animation]
                 if len(animation) > 0:
                     animation = choice(animation)  # random animation
@@ -225,7 +229,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                 frame_data = choice(self.unit_animation_data[race_type][animation])  # random frame
             animation_property = self.unit_animation_data[race_type][animation][0]["animation_property"].copy()
 
-            if type(subunit_id) is int:
+            if "+" in unit_id:
                 sprite_data = self.troop_data.troop_sprite_list[sprite_id]
             else:
                 sprite_data = self.leader_data.leader_sprite_list[sprite_id]
@@ -234,9 +238,9 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
             if idle_animation_name not in self.unit_animation_data[race]:  # try any
                 idle_animation_name = final_race_name + "any_Idle"
 
-            sprite_dict = self.create_troop_sprite(animation, this_subunit["Size"], frame_data,
+            sprite_dict = self.create_troop_sprite(animation, this_unit["Size"], frame_data,
                                                    sprite_data, animation_property,
-                                                   (weapon_set, subunit_weapon_list[weapon_set],
+                                                   (weapon_set, unit_weapon_list[weapon_set],
                                                     (self.troop_data.weapon_list[primary_main_weapon]["Hand"],
                                                      self.troop_data.weapon_list[primary_sub_weapon]["Hand"])),
                                                    armour_name,
@@ -255,11 +259,11 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                 if specific_preview[2][0:2] == "l_":
                     sprite_pic = pygame.transform.flip(sprite_pic, True, False)
 
-            animation_sprite_pool[subunit_id] = {"sprite": sprite_pic,
+            animation_sprite_pool[unit_id] = {"sprite": sprite_pic,
                                                  "animation_property": sprite_dict["animation_property"],
                                                  "frame_property": sprite_dict[
                                                      "frame_property"],
-                                                 "center_offset": center_offset}  # preview pool use subunit_id only
+                                                 "center_offset": center_offset}  # preview pool use unit_id only
 
         else:
             cache_file_path = os.path.join(self.main_dir, "cache", self.module_folder, sprite_id + "_sprite")
@@ -305,7 +309,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
 
             temp_list = []
             for weapon_set_index, weapon_set in enumerate(
-                    subunit_weapon_list):
+                    unit_weapon_list):
                 for weapon_index, weapon in enumerate(weapon_set):
                     for this_animation in temp_animation_list:
                         if any(ext in this_animation for ext in
@@ -338,7 +342,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                     if replaced_animation in animation_list:
                         animation_list[animation_list.index(replaced_animation)] = this_animation
 
-            if type(subunit_id) is int:
+            if "+" in unit_id:
                 sprite_data = self.troop_data.troop_sprite_list[sprite_id]
             else:
                 sprite_data = self.leader_data.leader_sprite_list[sprite_id]
@@ -350,7 +354,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                     race_type = race
                 animation_property = self.unit_animation_data[race_type][animation][0]["animation_property"].copy()
                 for weapon_set_index, weapon_set in enumerate(
-                        subunit_weapon_list):  # create animation for each weapon set
+                        unit_weapon_list):  # create animation for each weapon set
                     current_in_pool = next_level[weapon_key[weapon_set_index]]
                     for weapon_index, weapon in enumerate(weapon_set):
                         make_animation = False
@@ -430,7 +434,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                                 if current_in_pool[final_name]["data"] == md5_string:  # data matched
                                     make_animation = False
                                 else:
-                                    print(sprite_id, subunit_id, "exist but not match", final_name)
+                                    print(sprite_id, unit_id, "exist but not match", final_name)
 
                         if make_animation:
                             new_direction = "r_side"
@@ -458,7 +462,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                                                 frame_data[key] = frame_data[key.replace("main", "sub")].copy()
                                                 frame_data[key.replace("main", "sub")] = old_main_weapon_stat
 
-                                sprite_dict = self.create_troop_sprite(name_input, this_subunit["Size"],
+                                sprite_dict = self.create_troop_sprite(name_input, this_unit["Size"],
                                                                        frame_data, sprite_data, animation_property,
                                                                        (weapon_set_index, weapon_set,
                                                                         (self.troop_data.weapon_list[
@@ -545,22 +549,22 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
 
             save_pickle_with_surfaces(cache_file_path, animation_sprite_pool[sprite_id])
 
-            if this_subunit["Size"] not in status_animation_pool:
-                status_animation_pool[this_subunit["Size"]] = {}
+            if this_unit["Size"] not in status_animation_pool:
+                status_animation_pool[this_unit["Size"]] = {}
                 for status in self.troop_animation.status_animation_pool:
 
-                    status_animation_pool[this_subunit["Size"]][status] = {}
-                    status_animation_pool[this_subunit["Size"]][status]["frame"] = []
+                    status_animation_pool[this_unit["Size"]][status] = {}
+                    status_animation_pool[this_unit["Size"]][status]["frame"] = []
                     for index, frame in enumerate(self.troop_animation.status_animation_pool[status]):
-                        status_animation_pool[this_subunit["Size"]][status]["frame"].append(
+                        status_animation_pool[this_unit["Size"]][status]["frame"].append(
                             pygame.transform.smoothscale(
                                 self.troop_animation.status_animation_pool[status][index],
-                                (create_troop_sprite.default_sprite_size[0] * this_subunit["Size"] / 4,
-                                 create_troop_sprite.default_sprite_size[1] * this_subunit["Size"] / 4)))
-                    status_animation_pool[this_subunit["Size"]][status]["frame"] = \
-                        tuple(status_animation_pool[this_subunit["Size"]][status]["frame"])
-                    status_animation_pool[this_subunit["Size"]][status]["frame_number"] = len(
-                        status_animation_pool[this_subunit["Size"]][status]["frame"]) - 1
+                                (default_sprite_size[0] * this_unit["Size"] / 4,
+                                 default_sprite_size[1] * this_unit["Size"] / 4)))
+                    status_animation_pool[this_unit["Size"]][status]["frame"] = \
+                        tuple(status_animation_pool[this_unit["Size"]][status]["frame"])
+                    status_animation_pool[this_unit["Size"]][status]["frame_number"] = len(
+                        status_animation_pool[this_unit["Size"]][status]["frame"]) - 1
 
 
 def crop_sprite(sprite_pic):

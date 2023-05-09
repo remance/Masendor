@@ -49,9 +49,6 @@ default_sprite_size = (200, 200)
 screen_size = (1100, 900)
 screen_scale = (1, 1)
 
-Game.screen_size = screen_size
-Game.screen_scale = screen_scale
-
 pygame.init()
 pen = pygame.display.set_mode(screen_size)
 pygame.display.set_caption("Animation Maker")  # set the self name on program border/tab
@@ -62,7 +59,15 @@ config.read_file(open(os.path.join(current_dir, "configuration.ini")))  # read c
 module = int(config["DEFAULT"]["module"])
 module_list = csv_read(main_dir, "module_list.csv", ("data", "module"))  # get module list
 module_folder = str(module_list[module][0]).strip("/").lower()
-module_dir = os.path.join(main_dir, "data", "module", module_folder)
+data_dir = os.path.join(main_dir, "data")
+module_dir = os.path.join(data_dir, "module", module_folder)
+
+Game.screen_size = screen_size
+Game.screen_scale = screen_scale
+Game.ui_font = csv_read(module_dir, "ui_font.csv", ("ui",), header_key=True)
+Game.font_dir = os.path.join(data_dir, "font")
+for item in Game.ui_font:  # add ttf file extension for font data reading.
+    Game.ui_font[item] = os.path.join(Game.font_dir, Game.ui_font[item]["Font"] + ".ttf")
 
 max_person = 4
 max_frame = 22
@@ -246,7 +251,7 @@ with open(os.path.join(main_dir, "data", "sprite", "colour_rgb.csv"), encoding="
                 key = row[0].split("/")[0]
             colour_list[key] = row[1:]
 
-gen_body_sprite_pool = {}
+body_sprite_pool = {}
 for race in race_list:
     if race != "":
         race_file_name = fcv(race, revert=True)
@@ -256,22 +261,23 @@ for race in race_list:
              x in Path(os.path.join(module_dir, "sprite", "unit", race_file_name)).iterdir() if
              x.is_dir()]  # check if race folder exist
 
-            gen_body_sprite_pool[race] = {}
+            body_sprite_pool[race] = {}
             part_folder = Path(os.path.join(module_dir, "sprite", "unit", race_file_name))
             sub1_directories = [os.path.split(
                 os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):]))
                               for x in part_folder.iterdir() if x.is_dir()]
             for folder in sub1_directories:
-                imgs = load_images(module_dir, screen_scale=screen_scale, subfolder=folder)
-                gen_body_sprite_pool[race][folder[-1]] = imgs
+                imgs = load_images(module_dir, screen_scale=screen_scale, subfolder=folder,
+                                   key_file_name_readable=True)
+                body_sprite_pool[race][folder[-1]] = imgs
         except FileNotFoundError as b:
             print(b)
 
-race_list = [race for race in gen_body_sprite_pool if race != ""]  # get only race with existed folder and parts
+race_list = [race for race in body_sprite_pool if race != ""]  # get only race with existed folder and parts
 
-gen_armour_sprite_pool = {}
+armour_sprite_pool = {}
 for race in race_list:
-    gen_armour_sprite_pool[race] = {}
+    armour_sprite_pool[race] = {}
     race_file_name = fcv(race, revert=True)
     try:
         part_sub1_folder = Path(os.path.join(module_dir, "sprite", "unit", race_file_name, "armour"))
@@ -283,8 +289,8 @@ for race in race_list:
             sub1_folder_name = sub1_folder[-1]
             sub1_folder_data_name = fcv(sub1_folder[-1])
 
-            if sub1_folder_data_name not in gen_armour_sprite_pool[race]:
-                gen_armour_sprite_pool[race][sub1_folder_data_name] = {}
+            if sub1_folder_data_name not in armour_sprite_pool[race]:
+                armour_sprite_pool[race][sub1_folder_data_name] = {}
 
             part_sub2_folder = Path(
                 os.path.join(module_dir, "sprite", "unit", race_file_name, "armour", sub1_folder[-1]))
@@ -295,8 +301,8 @@ for race in race_list:
             for sub2_folder in sub2_directories:
                 sub2_folder_name = sub2_folder[-1]
                 sub2_folder_data_name = fcv(sub2_folder[-1])
-                if sub2_folder_data_name not in gen_armour_sprite_pool[race][sub1_folder_data_name]:
-                    gen_armour_sprite_pool[race][sub1_folder_data_name][sub2_folder_data_name] = {}
+                if sub2_folder_data_name not in armour_sprite_pool[race][sub1_folder_data_name]:
+                    armour_sprite_pool[race][sub1_folder_data_name][sub2_folder_data_name] = {}
                 body_sub2_folder = Path(
                     os.path.join(module_dir, "sprite", "unit", race_file_name, "armour", sub1_folder_name,
                                  sub2_folder_name))
@@ -307,28 +313,29 @@ for race in race_list:
                 for body_folder in body_directories:
                     imgs = load_images(module_dir, screen_scale=screen_scale,
                                        subfolder=("sprite", "unit", race_file_name, "armour",
-                                                  sub1_folder_name, sub2_folder_name, body_folder[-1]))
-                    gen_armour_sprite_pool[race][sub1_folder_data_name][sub2_folder_data_name][body_folder[-1]] = imgs
+                                                  sub1_folder_name, sub2_folder_name, body_folder[-1]),
+                                       key_file_name_readable=True)
+                    armour_sprite_pool[race][sub1_folder_data_name][sub2_folder_data_name][body_folder[-1]] = imgs
     except FileNotFoundError as b:
         print(b)
 
-gen_weapon_sprite_pool = {}
+weapon_sprite_pool = {}
 part_folder = Path(os.path.join(module_dir, "sprite", "unit", "weapon"))
 sub1_directories = [
     os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):]))
     for x in part_folder.iterdir() if x.is_dir()]
 for folder in sub1_directories:
     folder_data_name = fcv(folder[-1])
-    gen_weapon_sprite_pool[folder_data_name] = {}
+    weapon_sprite_pool[folder_data_name] = {}
     part_sub1_folder = Path(os.path.join(module_dir, "sprite", "unit", "weapon", folder[-1]))
     sub2_directories = [os.path.split(
     os.sep.join(os.path.normpath(x).split(os.sep)[os.path.normpath(x).split(os.sep).index("sprite"):])) for x in
                      part_sub1_folder.iterdir() if x.is_dir()]
     imgs = load_images(module_dir, screen_scale=screen_scale,
                        subfolder=("sprite", "unit", "weapon", folder[-1],
-                                  "common"))  # use only common weapon
+                                  "common"), key_file_name_readable=True)  # use only common weapon
 
-    gen_weapon_sprite_pool[folder_data_name] = imgs
+    weapon_sprite_pool[folder_data_name] = imgs
 
 effect_sprite_pool = {}
 part_folder = Path(os.path.join(module_dir, "sprite", "effect"))
@@ -337,7 +344,7 @@ sub1_directories = [
     for x in part_folder.iterdir() if x.is_dir()]
 for folder in sub1_directories:
     part_folder = Path(os.path.join(module_dir, "sprite", "effect", folder[-1]))
-    imgs = load_images(module_dir, screen_scale=screen_scale, subfolder=folder)
+    imgs = load_images(module_dir, screen_scale=screen_scale, subfolder=folder, key_file_name_readable=True)
     effect_sprite_pool[fcv(folder[-1])] = imgs
 
 
@@ -416,10 +423,10 @@ class Filmstrip(pygame.sprite.Sprite):
 class Button(pygame.sprite.Sprite):
     """Normal button"""
 
-    def __init__(self, text, image, pos, description=None, font_size=20):
+    def __init__(self, text, image, pos, description=None, font_size=16):
         self._layer = 5
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.font = pygame.font.SysFont("helvetica", int(font_size * screen_scale[1]))
+        self.font = pygame.font.Font(Game.ui_font["text_paragraph"], int(font_size * screen_scale[1]))
         self.image = image.copy()
         self.base_image = self.image.copy()
         self.description = description
@@ -450,10 +457,10 @@ class Button(pygame.sprite.Sprite):
 class SwitchButton(pygame.sprite.Sprite):
     """Button that switch text/option"""
 
-    def __init__(self, text_list, image, pos, description=None, font_size=20):
+    def __init__(self, text_list, image, pos, description=None, font_size=16):
         self._layer = 5
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.font = pygame.font.SysFont("helvetica", int(font_size * screen_scale[1]))
+        self.font = pygame.font.Font(Game.ui_font["text_paragraph"], int(font_size * screen_scale[1]))
         self.pos = pos
         self.description = description
         self.current_option = 0
@@ -488,7 +495,7 @@ class BodyHelper(pygame.sprite.Sprite):
         self._layer = 6
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.font_size = int(12 * screen_scale[1])
-        self.font = pygame.font.SysFont("helvetica", self.font_size)
+        self.font = pygame.font.Font(Game.ui_font["text_paragraph"], self.font_size)
         self.size = size
         self.image = pygame.Surface(self.size, pygame.SRCALPHA)
         self.image.fill((255, 255, 200))
@@ -498,7 +505,7 @@ class BodyHelper(pygame.sprite.Sprite):
         self.ui_type = ui_type
         self.part_images_original = [image.copy() for image in part_images]
         if "effect" not in self.ui_type:
-            self.box_font = pygame.font.SysFont("helvetica", int(22 * screen_scale[1]))
+            self.box_font = pygame.font.Font(Game.ui_font["text_paragraph"], int(22 * screen_scale[1]))
             empty_box = self.part_images_original[-1]
             self.part_images_original = self.part_images_original[:-1]
             for box_part in ("W1", "W2"):
@@ -508,7 +515,7 @@ class BodyHelper(pygame.sprite.Sprite):
                 new_box.blit(text_surface, text_rect)
                 self.part_images_original.append(new_box)
         else:
-            self.box_font = pygame.font.SysFont("helvetica", int(18 * screen_scale[1]))
+            self.box_font = pygame.font.Font(Game.ui_font["text_paragraph"], int(18 * screen_scale[1]))
             empty_box = self.part_images_original[0]
             self.part_images_original = self.part_images_original[:-1]
             for box_part in ("S1", "S2", "S3", "S4", "S5", "E1", "E2", "DE1", "DE2", "E3", "E4", "DE3", "DE4"):
@@ -702,8 +709,8 @@ class NameBox(pygame.sprite.Sprite):
     def __init__(self, size, pos, description=None):
         self._layer = 6
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.font_size = int(24 * screen_scale[1])
-        self.font = pygame.font.SysFont("helvetica", int(self.font_size * screen_scale[1]))
+        self.font_size = int(22 * screen_scale[1])
+        self.font = pygame.font.Font(Game.ui_font["text_paragraph"], int(self.font_size * screen_scale[1]))
         self.description = description
         self.size = size
         self.image = pygame.Surface(self.size)
@@ -839,11 +846,11 @@ class Model:
         """Grab face parts"""
         for p in range(1, max_person + 1):
             this_p = "p" + str(p)
-            self.p_eyebrow = self.p_eyebrow | {this_p: "normal"}
-            self.p_face = self.p_face | {this_p: "common"}
-            self.p_any_eye = self.p_any_eye | {this_p: "normal"}
-            self.p_any_mouth = self.p_any_mouth | {this_p: "normal"}
-            self.p_beard = self.p_beard | {this_p: "none"}
+            self.p_eyebrow = self.p_eyebrow | {this_p: "Normal"}
+            self.p_face = self.p_face | {this_p: "Common"}
+            self.p_any_eye = self.p_any_eye | {this_p: "Normal"}
+            self.p_any_mouth = self.p_any_mouth | {this_p: "Normal"}
+            self.p_beard = self.p_beard | {this_p: "None"}
 
     def make_layer_list(self, sprite_part):
         pose_layer_list = {k: v[5] for k, v in sprite_part.items() if v is not None and v != []}
@@ -890,7 +897,7 @@ class Model:
                         if "eye" not in part and "mouth" not in part:
                             if "weapon" in part:
                                 link_list[part] = [pose[part][1], pose[part][2]]
-                                if pose[part][0] in gen_weapon_sprite_pool[self.weapon[part]]:
+                                if pose[part][0] in weapon_sprite_pool[self.weapon[part]]:
                                     bodypart_list[part] = [self.weapon[part], pose[part][0]]
                                 else:
                                     bodypart_list[part] = [self.weapon[part], 0]
@@ -1044,9 +1051,9 @@ class Model:
         """For creating body part like eye or mouth in animation that accept any part (1) so use default instead"""
         try:
             if part_check == 1:  # any part
-                surface = gen_body_sprite_pool[race][part][part_default].copy()
+                surface = body_sprite_pool[race][part][part_default].copy()
             else:
-                surface = gen_body_sprite_pool[race][part][part_check].copy()
+                surface = body_sprite_pool[race][part][part_check].copy()
             return surface
         except KeyError:
             return None
@@ -1059,7 +1066,7 @@ class Model:
             try:
                 head_race = bodypart_list[key + "_head"][0]
                 self.head_race[key] = head_race
-                head_sprite = gen_body_sprite_pool[head_race]["head"][bodypart_list[key + "_head"][1]].copy()
+                head_sprite = body_sprite_pool[head_race]["head"][bodypart_list[key + "_head"][1]].copy()
                 head_sprite_surface = pygame.Surface(head_sprite.get_size(), pygame.SRCALPHA)
                 head_rect = head_sprite.get_rect(midtop=(head_sprite_surface.get_width() / 2, 0))
                 head_sprite_surface.blit(head_sprite, head_rect)
@@ -1094,7 +1101,7 @@ class Model:
             if self.armour[key + "_armour"] != "None":
                 try:
                     armour = self.armour[key + "_armour"].split("/")
-                    gear_image = gen_armour_sprite_pool[head_race][armour[0]][armour[1]]["head"][
+                    gear_image = armour_sprite_pool[head_race][armour[0]][armour[1]]["head"][
                         bodypart_list[key + "_head"][1]]
 
                     gear_image_sprite = pygame.Surface(gear_image.get_size(), pygame.SRCALPHA)
@@ -1127,7 +1134,7 @@ class Model:
                         if "weapon" in stuff:
                             part_name = self.weapon[stuff]
                             if part_name is not None and bodypart_list[stuff][1]:
-                                self.sprite_image[stuff] = gen_weapon_sprite_pool[part_name][
+                                self.sprite_image[stuff] = weapon_sprite_pool[part_name][
                                     bodypart_list[stuff][1]].copy()
                         elif "effect_" in stuff:
                             self.sprite_image[stuff] = effect_sprite_pool[bodypart_list[stuff][0]][
@@ -1142,12 +1149,12 @@ class Model:
                                 new_part_name = part_name
                             if "r_" in part_name[0:2] or "l_" in part_name[0:2]:
                                 new_part_name = part_name[2:]  # remove part side
-                            self.sprite_image[stuff] = gen_body_sprite_pool[bodypart_list[stuff][0]][new_part_name][
+                            self.sprite_image[stuff] = body_sprite_pool[bodypart_list[stuff][0]][new_part_name][
                                 bodypart_list[stuff][1]].copy()
                         if any(ext in stuff for ext in p_list) and self.armour[stuff[0:2] + "_armour"] != "None":
                             armour = self.armour[stuff[0:2] + "_armour"].split("/")
 
-                            gear_image = gen_armour_sprite_pool[bodypart_list[stuff][0]][armour[0]][armour[1]][
+                            gear_image = armour_sprite_pool[bodypart_list[stuff][0]][armour[0]][armour[1]][
                                 part_name][bodypart_list[stuff][1]].copy()
                             gear_surface = pygame.Surface(gear_image.get_size(), pygame.SRCALPHA)
                             rect = self.sprite_image[stuff].get_rect(
@@ -1831,7 +1838,7 @@ play_animation_button = SwitchButton(["Play", "Stop"], image,
                                      (screen_size[0] / 2,
                                       filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 0.6)),
                                      description=("Play/Stop animation",
-                                                  "Preview the current animation with auto filmstrip selection."))
+                                                  "Preview the current animation."))
 
 all_frame_part_copy_button = Button("Copy PA", image, (screen_size[0] / 2 - play_animation_button.image.get_width() * 2,
                                                        filmstrip_list[0].rect.midbottom[1] + (
@@ -2653,13 +2660,13 @@ while True:
                             try:
                                 if "special" in current_part:
                                     part_list = list(
-                                        gen_body_sprite_pool[race_part_button.text]["special"].keys())
+                                        body_sprite_pool[race_part_button.text]["special"].keys())
                                 elif any(ext in current_part for ext in p_list):
                                     selected_part = current_part[3:]
                                     if selected_part[0:2] == "r_" or selected_part[0:2] == "l_":
                                         selected_part = selected_part[2:]
                                     part_list = list(
-                                        gen_body_sprite_pool[race_part_button.text][selected_part].keys())
+                                        body_sprite_pool[race_part_button.text][selected_part].keys())
                                 elif "effect" in current_part:
                                     part_list = list(
                                         effect_sprite_pool[race_part_button.text].keys())
@@ -2668,7 +2675,7 @@ while True:
                                 try:
                                     selected_part = race_part_button.text
                                     part_list = list(
-                                        gen_weapon_sprite_pool[selected_part].keys())
+                                        weapon_sprite_pool[selected_part].keys())
                                 except KeyError:  # part not exist
                                     part_list = []
                             popup_list_open(popup_list_box, popup_namegroup, ui, "part_select",
@@ -2679,8 +2686,8 @@ while True:
                                         p_selector.rect.topleft, p_list, "bottom", screen_scale)
                     elif armour_selector.rect.collidepoint(mouse_pos):
                         armour_part_list = []
-                        for item in list(gen_armour_sprite_pool[model.body_race[p_body_helper.ui_type]].keys()):
-                            for armour in gen_armour_sprite_pool[model.body_race[p_body_helper.ui_type]][item]:
+                        for item in list(armour_sprite_pool[model.body_race[p_body_helper.ui_type]].keys()):
+                            for armour in armour_sprite_pool[model.body_race[p_body_helper.ui_type]][item]:
                                 armour_part_list.append(item + "/" + armour)
                         part_list = ["None"] + armour_part_list
                         popup_list_open(popup_list_box, popup_namegroup, ui, p_body_helper.ui_type + "_armour_select",
@@ -2689,8 +2696,8 @@ while True:
                     elif eye_selector.rect.collidepoint(mouse_pos) and model.bodypart_list[current_frame][
                         p_body_helper.ui_type + "_head"] is not None:
                         part_list = ["Any"]
-                        if "eye" in gen_body_sprite_pool[model.head_race[p_body_helper.ui_type]]:
-                            part_list = ["Any"] + list(gen_body_sprite_pool[model.head_race[p_body_helper.ui_type]][
+                        if "eye" in body_sprite_pool[model.head_race[p_body_helper.ui_type]]:
+                            part_list = ["Any"] + list(body_sprite_pool[model.head_race[p_body_helper.ui_type]][
                                                            "eye"].keys())
                         popup_list_open(popup_list_box, popup_namegroup, ui, p_body_helper.ui_type + "_eye_select",
                                         eye_selector.rect.topleft, part_list, "bottom", screen_scale)
@@ -2699,9 +2706,9 @@ while True:
                         p_body_helper.ui_type + "_head"] is not None:
                         ui_type = p_body_helper.ui_type
                         part_list = ["Any"]
-                        if "mouth" in gen_body_sprite_pool[model.head_race[p_body_helper.ui_type]]:
+                        if "mouth" in body_sprite_pool[model.head_race[p_body_helper.ui_type]]:
 
-                            part_list = ["Any"] + list(gen_body_sprite_pool[model.head_race[p_body_helper.ui_type]][
+                            part_list = ["Any"] + list(body_sprite_pool[model.head_race[p_body_helper.ui_type]][
                                                            "mouth"].keys())
                         popup_list_open(popup_list_box, popup_namegroup, ui, ui_type + "_mouth_select",
                                         mouth_selector.rect.topleft, part_list, "bottom", screen_scale)
@@ -2710,11 +2717,11 @@ while True:
                         if model.part_selected:
                             current_part = list(model.mask_part_list.keys())[model.part_selected[-1]]
                             if "weapon" in current_part:
-                                part_list = list(gen_weapon_sprite_pool)
+                                part_list = list(weapon_sprite_pool)
                             elif "effect" in current_part:
                                 part_list = list(effect_sprite_pool)
                             else:
-                                part_list = list(gen_body_sprite_pool.keys())
+                                part_list = list(body_sprite_pool.keys())
                             popup_list_open(popup_list_box, popup_namegroup, ui, "race_select",
                                             race_part_button.rect.topleft, part_list, "bottom", screen_scale)
 

@@ -56,15 +56,6 @@ make_option_menu = make_option_menu.make_option_menu
 
 version_name = "Future Visionary"  # Game version name that will appear as game name
 
-morale_state_text = {0: "Broken", 1: "Fleeing", 2: "Breaking", 3: "Poor", 4: "Wavering", 5: "Balanced",
-                     6: "Steady", 7: "Fine", 8: "Confident", 9: "Eager", 10: "Ready", 11: "Merry", 12: "Elated",
-                     13: "Ecstatic",
-                     14: "Inspired", 15: "Fervent"}  # unit morale state name
-
-stamina_state_text = {0: "Collapse", 1: "Exhausted", 2: "Severed", 3: "Very Tired", 4: "Tired", 5: "Winded",
-                      6: "Moderate",
-                      7: "Alert", 8: "Warmed Up", 9: "Active", 10: "Fresh"}  # unit stamina state name
-
 
 class Game:
     game = None
@@ -106,8 +97,6 @@ class Game:
                                  "hat-0": "L. Arrow", "hat+0": "R. Arrow",
                                  "hat-1": "U. Arrow", "hat+1": "D. Arrow"}}
 
-    empty_method = utility.empty_method
-
     # import from game
     assign_key = assign_key.assign_key
     back_mainmenu = back_mainmenu.back_mainmenu
@@ -145,6 +134,8 @@ class Game:
     selected_team_colour = {0: (200, 200, 200), 1: (180, 180, 255), 2: (255, 150, 150), 3: (255, 255, 150),
                             4: (150, 255, 150), 5: (255, 150, 255), 6: (200, 140, 70), 7: (160, 200, 200),
                             8: (255, 150, 45), 9: (230, 140, 160), 10: (200, 190, 230)}
+
+    leader_skill_level_text = ("E", "E+", "D", "D+", "C", "C+", "B", "B+", "A", "A+", "S")
 
     def __init__(self, main_dir, error_log):
 
@@ -205,6 +196,8 @@ class Game:
 
         self.module_list = csv_read(self.data_dir, "module_list.csv", ("module",))  # get module list
         self.module_folder = str(self.module_list[self.module][0]).strip("/").lower()
+        self.error_log.write("Use module: " + self.module_folder)  # error log selected module
+
         Game.module_dir = os.path.join(self.data_dir, "module", self.module_folder)
         Game.ui_font = csv_read(self.module_dir, "ui_font.csv", ("ui",), header_key=True)
         for item in Game.ui_font:  # add ttf file extension for font data reading.
@@ -249,7 +242,6 @@ class Game:
         self.map_data = None
         self.map_info = None
         self.map_unit_data = None
-        self.custom_map_data = {"info": {"weather": [[0, "09:00:00", 0, 0]]}, "unit": {"pos": {}}}
 
         self.dt = 0
         self.text_delay = 0
@@ -342,7 +334,103 @@ class Game:
 
         self.game_intro(self.screen, self.clock, False)  # run intro
 
-        # Main menu related stuff
+        # Battle related data
+        self.troop_data, self.leader_data, self.faction_data = make_faction_troop_leader_data(self.data_dir,
+                                                                                              self.module_dir,
+                                                                                              self.screen_scale,
+                                                                                              self.language)
+
+        self.battle_map_data = datamap.BattleMapData(self.module_dir, self.screen_scale, self.language)
+
+        battlemap.BaseMap.terrain_list = self.battle_map_data.terrain_list
+        battlemap.BaseMap.terrain_colour = self.battle_map_data.terrain_colour
+        battlemap.FeatureMap.feature_list = self.battle_map_data.feature_list
+        battlemap.FeatureMap.feature_colour = self.battle_map_data.feature_colour
+        battlemap.FeatureMap.feature_mod = self.battle_map_data.feature_mod
+
+        battlemap.BeautifulMap.battle_map_colour = self.battle_map_data.battle_map_colour
+        battlemap.BeautifulMap.texture_images = self.battle_map_data.map_texture
+        battlemap.BeautifulMap.load_texture_list = self.battle_map_data.texture_folder
+        battlemap.BeautifulMap.empty_texture = self.battle_map_data.empty_image
+        battlemap.BeautifulMap.camp_texture = self.battle_map_data.camp_image
+
+        uimenu.MapPreview.terrain_colour = self.battle_map_data.terrain_colour
+        uimenu.MapPreview.feature_colour = self.battle_map_data.feature_colour
+        uimenu.MapPreview.battle_map_colour = self.battle_map_data.battle_map_colour
+
+        battle.Battle.battle_map_data = self.battle_map_data
+        battle.Battle.weather_data = self.battle_map_data.weather_data
+        battle.Battle.weather_matter_images = self.battle_map_data.weather_matter_images
+        battle.Battle.weather_effect_images = self.battle_map_data.weather_effect_images
+        battle.Battle.day_effect_images = self.battle_map_data.day_effect_images
+        battle.Battle.weather_list = self.battle_map_data.weather_list
+        battle.Battle.feature_mod = self.battle_map_data.feature_mod
+        self.preset_map_list = self.battle_map_data.preset_map_list
+        self.preset_map_folder = self.battle_map_data.preset_map_folder
+        self.battle_map_list = self.battle_map_data.battle_map_list
+        self.battle_map_folder = self.battle_map_data.battle_map_folder
+
+        unit.Unit.troop_data = self.troop_data
+        unit.Unit.leader_data = self.leader_data
+        unit.Unit.troop_sprite_list = self.troop_data.troop_sprite_list
+        unit.Unit.leader_sprite_list = self.leader_data.leader_sprite_list
+        unit.Unit.status_list = self.troop_data.status_list
+        unit.Unit.all_formation_list = self.troop_data.default_formation_list
+        unit.Unit.effect_list = self.troop_data.effect_list
+
+        effect.Effect.effect_list = self.troop_data.effect_list
+
+        self.troop_animation = datasprite.TroopAnimationData(self.data_dir, self.module_dir,
+                                                             [str(self.troop_data.race_list[key]["Name"]) for key in
+                                                              self.troop_data.race_list], self.team_colour)
+        self.unit_animation_data = self.troop_animation.unit_animation_data  # animation data pool
+        self.body_sprite_pool = self.troop_animation.body_sprite_pool  # body sprite pool
+        self.weapon_sprite_pool = self.troop_animation.weapon_sprite_pool  # weapon sprite pool
+        self.armour_sprite_pool = self.troop_animation.armour_sprite_pool  # armour sprite pool
+        self.weapon_joint_list = self.troop_animation.weapon_joint_list  # weapon joint data, for placing handle to hand
+        self.colour_list = self.troop_animation.colour_list  # sprite colourising list
+
+        self.effect_sprite_pool = self.troop_animation.effect_sprite_pool  # effect sprite pool
+        self.effect_animation_pool = self.troop_animation.effect_animation_pool  # effect sprite animation pool
+
+        uibattle.HeroUI.weapon_sprite_pool = self.weapon_sprite_pool
+
+        # flip (covert for ingame angle)
+        bullet_sprite_pool = {}
+        for key, value in self.effect_sprite_pool.items():
+            bullet_sprite_pool[key] = {}
+            for key2, value2 in value.items():
+                image = pygame.transform.flip(value2, False, True)
+                bullet_sprite_pool[key][key2] = image
+        bullet_weapon_sprite_pool = {}
+        for key, value in self.weapon_sprite_pool.items():
+            bullet_weapon_sprite_pool[key] = {}
+            for key2, value2 in value.items():
+                bullet_weapon_sprite_pool[key][key2] = {}
+                for key3, value3 in value2.items():
+                    if key3 == "Base Main":
+                        bullet_weapon_sprite_pool[key][key2][key3] = {}
+                        image = pygame.transform.flip(value3, False, True)
+                        bullet_weapon_sprite_pool[key][key2][key3] = image
+
+        effect.Effect.bullet_sprite_pool = bullet_sprite_pool
+        effect.Effect.bullet_weapon_sprite_pool = bullet_weapon_sprite_pool
+        effect.Effect.effect_sprite_pool = self.effect_sprite_pool
+        effect.Effect.effect_animation_pool = self.effect_animation_pool
+
+        # Battle map object
+        self.battle_base_map = battlemap.BaseMap(self.main_dir)  # create base terrain map
+        self.battle_feature_map = battlemap.FeatureMap(self.main_dir)  # create terrain feature map
+        self.battle_height_map = battlemap.HeightMap()  # create height map
+        self.battle_map = battlemap.BeautifulMap(self.main_dir, self.screen_scale, self.battle_height_map)
+        self.battle_camera.add(self.battle_map)
+
+        effect.Effect.height_map = self.battle_height_map
+        unit.Unit.base_map = self.battle_base_map  # add battle map to unit class
+        unit.Unit.feature_map = self.battle_feature_map
+        unit.Unit.height_map = self.battle_height_map
+
+        # Main menu interface
 
         image_list = load_base_button(self.module_dir, self.screen_scale)
 
@@ -360,20 +448,8 @@ class Game:
         test_list = uimenu.ListUI(pivot=(-1,-1), origin=(-1,-1), parent=self.screen, size=(200,600), items=["abc","def"])
 
         self.mainmenu_button = (self.preset_map_button, self.custom_map_button, self.game_edit_button,
-                                self.lore_button, self.option_button, self.quit_button, main_menu_buttons_box, test_list)
+                                self.lore_button, self.option_button, self.quit_button, main_menu_buttons_box)
 
-
-        # Battle map
-        self.battle_base_map = battlemap.BaseMap(self.main_dir)  # create base terrain map
-        self.battle_feature_map = battlemap.FeatureMap(self.main_dir)  # create terrain feature map
-        self.battle_height_map = battlemap.HeightMap()  # create height map
-        self.battle_map = battlemap.BeautifulMap(self.main_dir, self.screen_scale, self.battle_height_map)
-        self.battle_camera.add(self.battle_map)
-
-        effect.Effect.height_map = self.battle_height_map
-        unit.Unit.base_map = self.battle_base_map  # add battle map to unit class
-        unit.Unit.feature_map = self.battle_feature_map
-        unit.Unit.height_map = self.battle_height_map
 
         # Battle map select menu button
         battle_select_image = load_images(self.module_dir, screen_scale=self.screen_scale,
@@ -425,6 +501,9 @@ class Game:
                                                   0)  # ui box for battle option during preset map preparation screen
         self.custom_map_option_box = uimenu.MapOptionBox((self.screen_width, 0), battle_select_image["top_box"],
                                                          1)  # ui box for battle option during preparation screen
+
+        self.custom_map_list_box = uimenu.ListUI(pivot=(-1, -1), origin=(-1, -1), size=(200, 600),
+                                                 items=self.battle_map_list, parent=self.screen)
 
         self.org_chart = uimenu.OrgChart(load_image(self.module_dir, self.screen_scale,
                                                     "org.png", ("ui", "mapselect_ui")),
@@ -553,6 +632,8 @@ class Game:
         self.battle_ui_updater.add(self.time_ui, self.time_number)
         self.wheel_ui = battle_ui_dict["wheel_ui"]
         self.command_ui = battle_ui_dict["command_ui"]
+        self.ui_updater.add(self.command_ui)
+
         weather.Weather.wind_compass_images = {"wind_compass": battle_ui_image["wind_compass"],
                                                "wind_arrow": battle_ui_image["wind_arrow"]}
 
@@ -615,8 +696,7 @@ class Game:
         drama.TextDrama.images = load_images(self.module_dir, screen_scale=self.screen_scale,
                                              subfolder=("ui", "popup_ui", "drama_text"))
         drama.TextDrama.screen_rect = self.screen_rect
-        self.drama_text = drama.TextDrama(
-            self.screen_scale)  # message at the top of screen that show up for important event
+        self.drama_text = drama.TextDrama()  # message at the top of screen that show up for important event
 
         # Battle event log
         self.event_log = uibattle.EventLog(battle_ui_image["event_log"], (0, self.screen_rect.height))
@@ -635,101 +715,13 @@ class Game:
         # Text
         self.single_text_popup = uimenu.TextPopup()  # popup box that show name when mouse over
 
-        # Encyclopedia
+        # Encyclopedia interface
         self.encyclopedia, self.lore_name_list, self.filter_tag_list, self.lore_button_ui, self.page_button = make_lorebook(
             self, self.module_dir, self.screen_scale, self.screen_rect)
 
         self.encyclopedia_stuff = (self.encyclopedia, self.lore_name_list, self.filter_tag_list,
                                    self.lore_name_list.scroll, self.filter_tag_list.scroll, *self.lore_button_ui)
 
-        self.battle = battle.Battle(self)
-
-        self.ui_updater.add(self.command_ui)
-
-        self.troop_data, self.leader_data, self.faction_data = make_faction_troop_leader_data(self.data_dir,
-                                                                                              self.module_dir,
-                                                                                              self.screen_scale,
-                                                                                              self.language)
-
-        self.battle_map_data = datamap.BattleMapData(self.module_dir, self.screen_scale, self.language)
-
-        self.battle.battle_map_base.terrain_list = self.battle_map_data.terrain_list
-        self.battle.battle_map_base.terrain_colour = self.battle_map_data.terrain_colour
-        self.battle.battle_map_feature.feature_list = self.battle_map_data.feature_list
-        self.battle.battle_map_feature.feature_colour = self.battle_map_data.feature_colour
-        self.battle.battle_map_feature.feature_mod = self.battle_map_data.feature_mod
-
-        self.battle.battle_map.battle_map_colour = self.battle_map_data.battle_map_colour
-        self.battle.battle_map.texture_images = self.battle_map_data.map_texture
-        self.battle.battle_map.load_texture_list = self.battle_map_data.texture_folder
-        self.battle.battle_map.empty_texture = self.battle_map_data.empty_image
-        self.battle.battle_map.camp_texture = self.battle_map_data.camp_image
-
-        self.map_preview.terrain_colour = self.battle_map_data.terrain_colour
-        self.map_preview.feature_colour = self.battle_map_data.feature_colour
-        self.map_preview.battle_map_colour = self.battle_map_data.battle_map_colour
-
-        self.battle.battle_map_data = self.battle_map_data
-        self.battle.weather_data = self.battle_map_data.weather_data
-        self.battle.weather_matter_images = self.battle_map_data.weather_matter_images
-        self.battle.weather_effect_images = self.battle_map_data.weather_effect_images
-        self.battle.day_effect_images = self.battle_map_data.day_effect_images
-        self.battle.weather_list = self.battle_map_data.weather_list
-        self.battle.feature_mod = self.battle_map_data.feature_mod
-        self.preset_map_list = self.battle_map_data.preset_map_list
-        self.preset_map_folder = self.battle_map_data.preset_map_folder
-        self.custom_map_list = self.battle_map_data.custom_map_list
-        self.custom_map_folder = self.battle_map_data.custom_map_folder
-
-        unit.Unit.troop_data = self.troop_data
-        unit.Unit.leader_data = self.leader_data
-        unit.Unit.troop_sprite_list = self.troop_data.troop_sprite_list
-        unit.Unit.leader_sprite_list = self.leader_data.leader_sprite_list
-        unit.Unit.status_list = self.troop_data.status_list
-        unit.Unit.all_formation_list = self.troop_data.default_formation_list
-        unit.Unit.effect_list = self.troop_data.effect_list
-
-        effect.Effect.effect_list = self.troop_data.effect_list
-
-        self.troop_animation = datasprite.TroopAnimationData(self.data_dir, self.module_dir,
-                                                             [str(self.troop_data.race_list[key]["Name"]) for key in
-                                                              self.troop_data.race_list], self.team_colour)
-        self.unit_animation_data = self.troop_animation.unit_animation_data  # animation data pool
-        self.gen_body_sprite_pool = self.troop_animation.gen_body_sprite_pool  # body sprite pool
-        self.gen_weapon_sprite_pool = self.troop_animation.gen_weapon_sprite_pool  # weapon sprite pool
-        self.gen_armour_sprite_pool = self.troop_animation.gen_armour_sprite_pool  # armour sprite pool
-        self.weapon_joint_list = self.troop_animation.weapon_joint_list  # weapon joint data, for placing handle to hand
-        self.colour_list = self.troop_animation.colour_list  # sprite colourising list
-
-        self.effect_sprite_pool = self.troop_animation.effect_sprite_pool  # effect sprite pool
-        self.effect_animation_pool = self.troop_animation.effect_animation_pool  # effect sprite animation pool
-
-        self.command_ui.weapon_sprite_pool = self.gen_weapon_sprite_pool
-
-        # flip (covert for ingame angle)
-        bullet_sprite_pool = {}
-        for key, value in self.effect_sprite_pool.items():
-            bullet_sprite_pool[key] = {}
-            for key2, value2 in value.items():
-                image = pygame.transform.flip(value2, False, True)
-                bullet_sprite_pool[key][key2] = image
-        bullet_weapon_sprite_pool = {}
-        for key, value in self.gen_weapon_sprite_pool.items():
-            bullet_weapon_sprite_pool[key] = {}
-            for key2, value2 in value.items():
-                bullet_weapon_sprite_pool[key][key2] = {}
-                for key3, value3 in value2.items():
-                    if key3 == "base_main":
-                        bullet_weapon_sprite_pool[key][key2][key3] = {}
-                        image = pygame.transform.flip(value3, False, True)
-                        bullet_weapon_sprite_pool[key][key2][key3] = image
-
-        effect.Effect.bullet_sprite_pool = bullet_sprite_pool
-        effect.Effect.bullet_weapon_sprite_pool = bullet_weapon_sprite_pool
-        effect.Effect.effect_sprite_pool = self.effect_sprite_pool
-        effect.Effect.effect_animation_pool = self.effect_animation_pool
-
-        # Encyclopedia
         lorebook.Lorebook.concept_stat = csv_read(self.module_dir, "concept_stat.csv",
                                                   ("lore",), header_key=True)
         lorebook.Lorebook.concept_lore = csv_read(self.module_dir, "concept_lore" + "_" + self.language + ".csv",
@@ -747,8 +739,10 @@ class Game:
 
         self.encyclopedia.change_module()
 
-        # Error log for selected module
-        self.error_log.write("Use module: " + self.module_list[self.module][0])
+        self.battle = battle.Battle(self)
+
+        unit.Unit.battle = self.battle
+        effect.Effect.battle = self.battle
 
         unit_to_make = tuple(set([this_unit for this_unit in self.troop_data.troop_list] +
                                  [this_unit for this_unit in self.leader_data.leader_list]))
@@ -761,9 +755,6 @@ class Game:
         self.background_image = load_images(self.module_dir, screen_scale=self.screen_scale,
                                             subfolder=("ui", "mainmenu_ui", "background"))
         self.background = self.background_image["main"]
-
-        unit.Unit.battle = self.battle
-        effect.Effect.battle = self.battle
 
         # Starting script
         self.main_ui_updater.remove(*self.menu_button)  # remove all button from drawing
@@ -976,7 +967,7 @@ class Game:
                                                          self.input_popup[1][2]], None)
 
                     elif "wind" in self.input_popup[1] and self.input_box.text.isdigit():
-                        self.custom_map_data["info"]["weather"][0][2] = int(self.input_box.text)
+                        self.map_data["info"]["weather"][0][2] = int(self.input_box.text)
                         self.wind_custom_select.rename("Wind Direction: " + self.input_box.text)
 
                     elif self.input_popup[1] == "quit":

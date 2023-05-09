@@ -4,12 +4,15 @@ from pygame import sprite, Surface, font, transform, Vector2, SRCALPHA
 
 from engine import utility
 
+from engine.uimenu.uimenu import UIMenu
 
-class Weather:
+
+class Weather(UIMenu):
     weather_icons = {}
     wind_compass_images = {}
 
     def __init__(self, time_ui, weather_type, wind_direction, level, weather_data):
+        UIMenu.__init__(self)
         self.weather_type = weather_type
         if self.weather_type == 0:
             self.weather_type = randint(1, len(weather_data) - 1)
@@ -70,7 +73,7 @@ class Weather:
             wind_arrow_rect = wind_arrow.get_rect(center=(wind_compass_image.get_width() / 2,
                                                           wind_compass_image.get_height() / 2))
             wind_compass_image.blit(wind_arrow, wind_arrow_rect)
-            text_font = font.SysFont("helvetica", int(wind_compass_image.get_height() / 2))
+            text_font = font.Font(self.ui_font["main_button"], int(wind_compass_image.get_height() / 2))
             text_surface = text_font.render(str(self.wind_strength), True, (0, 0, 0))
             text_rect = text_surface.get_rect(
                 center=(wind_compass_image.get_width() / 2, wind_compass_image.get_height() / 2))

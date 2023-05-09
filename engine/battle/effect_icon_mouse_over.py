@@ -1,4 +1,4 @@
-from engine import lorebook
+from engine.lorebook import lorebook
 
 status_section = lorebook.Lorebook.status_section
 skill_section = lorebook.Lorebook.skill_section

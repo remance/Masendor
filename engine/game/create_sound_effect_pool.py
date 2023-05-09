@@ -1,5 +1,9 @@
 import os
 
+from engine import utility
+
+fcv = utility.filename_convert_readable
+
 
 def create_sound_effect_pool(self):
     sound_effect_pool = {}
@@ -9,6 +13,8 @@ def create_sound_effect_pool(self):
             file_name = file.split(".")[0]
             if file_name[-1].isdigit() and file_name[-2] == "_":  # variation for same sound effect
                 file_name = file_name[:-2]
+
+            file_name = fcv(file_name)
 
             if file_name not in sound_effect_pool:
                 sound_effect_pool[file_name] = [os.path.join(dir_path, file)]

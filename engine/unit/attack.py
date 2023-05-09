@@ -26,7 +26,7 @@ def attack(self, attack_type):
 
         if attack_type == "range":
             max_range = self.shoot_range[weapon]
-            if max_range == 0:
+            if max_range <= 0:
                 print(self.name, weapon, self.shoot_range, self.current_action, self.equipped_weapon)
                 crash
 
@@ -102,12 +102,15 @@ def attack(self, attack_type):
 
                 impact = self.weapon_impact[self.equipped_weapon][weapon] * self.weapon_impact_effect
 
+                radians_angle = radians(360 - base_angle)
+                start_pos = Vector2(self.base_pos[0] + (self.hitbox_front_distance * sin(radians_angle)),
+                                    self.base_pos[1] - (self.hitbox_front_distance * cos(radians_angle)))
+
                 RangeDamageEffect(self, base_angle, weapon, dmg, self.weapon_penetrate[self.equipped_weapon][weapon],
-                                  impact,
-                                  equipped_weapon_data, attack_type, self.front_pos, base_target,
+                                  impact, equipped_weapon_data, attack_type, start_pos, base_target,
                                   accuracy=accuracy, arc_shot=arc_shot,
                                   reach_effect=equipped_weapon_data[
-                                      "After Reach Effect"])  # TODO change front pos to check for angle
+                                      "After Reach Effect"])
             try:
                 self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
             except KeyError:
@@ -179,8 +182,7 @@ def attack(self, attack_type):
             impact = self.weapon_impact[self.equipped_weapon][weapon] * self.weapon_impact_effect
 
             MeleeDamageEffect(self, base_angle, weapon, dmg, self.weapon_penetrate[self.equipped_weapon][weapon],
-                              impact,
-                              equipped_weapon_data, attack_type, self.base_pos,
+                              impact, equipped_weapon_data, attack_type, base_target,
                               base_target, accuracy=accuracy)
 
             if self.active_action_skill["melee"]:  # check if any skill melee action active
@@ -215,6 +217,6 @@ def attack(self, attack_type):
                 base_target = Vector2(self.base_pos[0] - (self.attack_effect_spawn_distance * sin(radians(self.angle))),
                                       self.base_pos[1] - (self.attack_effect_spawn_distance * cos(radians(self.angle))))
 
-                EffectDamageEffect(self, base_angle, equipped_weapon_data["After Attack Effect"], dmg,
+                EffectDamageEffect(self, equipped_weapon_data["After Attack Effect"], dmg,
                                    effect_stat["Armour Penetration"], effect_stat["Impact"], effect_stat, "effect",
-                                   base_target, base_target, reach_effect=effect_stat["After Reach Effect"])
+                                   base_target, base_target, base_angle, reach_effect=effect_stat["After Reach Effect"])

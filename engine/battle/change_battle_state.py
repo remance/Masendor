@@ -1,6 +1,6 @@
 import pygame
 
-from engine.battleui import SpriteIndicator
+from engine.uibattle.uibattle import SpriteIndicator
 
 
 def change_battle_state(self):
@@ -9,7 +9,7 @@ def change_battle_state(self):
         self.camera_mode = self.start_camera_mode
         if not self.player_unit:
             self.camera_mode = "Free"
-        self.mini_map.draw_image(self.battle_map_base, self.battle_map.mini_map_image, self.camera)
+        self.mini_map.draw_image(self.battle_base_map, self.battle_map.mini_map_image, self.camera)
 
         # self.command_ui.rect = self.command_ui.image.get_rect(
         #     center=(self.command_ui.image.get_width() / 2, self.command_ui.image.get_height() / 2))  # change leader ui position back

@@ -86,8 +86,6 @@ die_command_action = {"name": "DieDown", "uninterruptible": True, "uncontrollabl
 
 
 class Unit(sprite.Sprite):
-    ai_retreatempty_method = utility.empty_method
-
     battle = None
     base_map = None  # base map
     feature_map = None  # feature map
@@ -162,8 +160,8 @@ class Unit(sprite.Sprite):
     from engine.unit.change_formation import change_formation
     change_formation = change_formation
 
-    from engine.unit.change_formation import change_formation
-    check_element_effect = change_formation
+    from engine.unit.check_element_effect import check_element_effect
+    check_element_effect = check_element_effect
 
     from engine.unit.check_element_threshold import check_element_threshold
     check_element_threshold = check_element_threshold
@@ -207,11 +205,17 @@ class Unit(sprite.Sprite):
     from engine.unit.play_animation import play_animation
     play_animation = play_animation
 
+    from engine.unit.player_input import player_input
+    player_input = player_input
+
     from engine.unit.process_trait_skill import process_trait_skill
     process_trait_skill = process_trait_skill
 
     from engine.unit.rotate_logic import rotate_logic
     rotate_logic = rotate_logic
+
+    from engine.unit.setup_formation import setup_formation
+    swap_weapon = setup_formation
 
     from engine.unit.skill_command_input import skill_command_input
     skill_command_input = skill_command_input
@@ -459,11 +463,11 @@ class Unit(sprite.Sprite):
 
         self.name = "None"
         self.is_leader = False
-        if type(self.troop_id) is not str:  # normal troop
-            self.troop_id = int(self.troop_id)
+        if "+" in self.troop_id:  # normal troop
+            self.troop_id = self.troop_id
             sprite_list = self.troop_sprite_list
-            stat = self.troop_data.troop_list[self.troop_id].copy()
-            lore = self.troop_data.troop_lore[self.troop_id].copy()
+            stat = self.troop_data.troop_list[self.troop_id]
+            lore = self.troop_data.troop_lore[self.troop_id]
             self.name = lore[0]  # name according to the preset
             self.grade = stat["Grade"]  # training level/class grade
             grade_stat = self.troop_data.grade_list[self.grade]
@@ -482,8 +486,8 @@ class Unit(sprite.Sprite):
         else:  # leader unit
             self.is_leader = True
             sprite_list = self.leader_sprite_list
-            stat = self.leader_data.leader_list[troop_id].copy()
-            lore = self.leader_data.leader_lore[troop_id].copy()
+            stat = self.leader_data.leader_list[troop_id]
+            lore = self.leader_data.leader_lore[troop_id]
             self.name = lore[0]  # name according to the preset
             self.grade = 12  # leader grade by default
             grade_stat = self.troop_data.grade_list[self.grade]
@@ -538,7 +542,7 @@ class Unit(sprite.Sprite):
             else:  # Use Unknown leader image if there is no specific portrait in data
                 self.portrait = self.leader_data.images["other"].copy()
                 name = self.name.split(" ")[0]
-                text_font = font.SysFont("helvetica", int(90 / (len(name) / 3) * self.screen_scale[1]))
+                text_font = font.Font(self.battle.game.ui_font["text_paragraph"], int(90 / (len(name) / 3) * self.screen_scale[1]))
                 text_image = text_font.render(name, True, Color("white"))
                 text_rect = text_image.get_rect(center=(self.portrait.get_width() / 2,
                                                         self.portrait.get_height() / 1.3))
@@ -658,7 +662,7 @@ class Unit(sprite.Sprite):
             self.armour_id = self.armour_gear[0]
             self.weight += self.troop_data.armour_list[self.armour_id]["Weight"]  # Add weight from both armour
             armour_stat = self.troop_data.armour_list[self.armour_id]
-            armour_grade_mod = self.troop_data.equipment_grade_list[self.armour_gear[1]]["Modifier"]
+            armour_grade_mod = 1 + self.troop_data.equipment_grade_list[self.armour_gear[1]]["Stat Modifier"]
             for element in self.original_element_resistance:  # resistance from armour
                 self.original_element_resistance[element] += (armour_stat[element + " Resistance"] * armour_grade_mod)
             self.trait["Original"] += self.troop_data.armour_list[self.armour_id][
@@ -669,9 +673,9 @@ class Unit(sprite.Sprite):
             self.original_skill.remove("")
 
         self.health = int(((self.strength * 0.2) + (self.constitution * 0.8)) *
-                          (grade_stat["Health Effect"] / 100) * (self.start_hp / 100))  # Health of troop
+                          (1 + grade_stat["Health Modifier"]) * (self.start_hp / 100))  # Health of troop
         self.stamina = int(((self.strength * 0.2) + (self.constitution * 0.8)) *
-                           (grade_stat["Stamina Effect"] / 100) *
+                           (1 + grade_stat["Stamina Modifier"]) *
                            (self.start_stamina / 100))  # starting stamina with grade
 
         self.original_mana = 0
@@ -849,7 +853,7 @@ class Unit(sprite.Sprite):
         self.stamina25 = self.stamina * 0.25
         self.stamina5 = self.stamina * 0.05
 
-        # Final stat after receiving modifier effect from various sources, reset every time status is updated
+        # Final stat after receiving stat effect from various sources, reset every time status is updated
         self.melee_attack = self.base_melee_attack
         self.melee_def = self.base_melee_def
         self.range_def = self.base_range_def
@@ -1186,7 +1190,7 @@ class Unit(sprite.Sprite):
                             self.battle.player_input_state = "skill aim"
                             self.battle.camera_mode = "Free"
                             self.battle.true_camera_pos = Vector2(self.base_pos)
-                            SkillAimTarget(self.screen_scale, self,
+                            SkillAimTarget(self,
                                            self.skill[self.current_action["skill"]]["Area Of Effect"])
 
         else:  # die

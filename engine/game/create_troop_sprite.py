@@ -30,7 +30,7 @@ def create_troop_sprite(self, animation_name, troop_size, animation_part_list, t
         for key, layer in pose_layer_list.items():
             if "weapon" in key:
                 part = animation_part_list[key]
-                if "sheath" not in part[0]:
+                if "Sheath" not in part[0]:
                     if "main" in key:
                         hand_layer = pose_layer_list[key[:2] + "_r_hand"]
                         idle_hand_layer = idle_animation[key[:2] + "_r_hand"]
@@ -62,11 +62,11 @@ def create_troop_sprite(self, animation_name, troop_size, animation_part_list, t
 
         if "head" in layer:
             image_part = generate_head(layer[:2], animation_part_list, part[:2], troop_sprite_list,
-                                       self.gen_body_sprite_pool, self.gen_armour_sprite_pool,
+                                       self.body_sprite_pool, self.armour_sprite_pool,
                                        this_armour, self.colour_list, animation_property)
         elif "weapon" in layer:
             new_part.insert(1, "Dummy")  # insert dummy value for weapon list so can use indexing similar as other part
-            image_part = generate_body(layer, part[:1], troop_sprite_list, self.gen_weapon_sprite_pool, weapon=weapon)
+            image_part = generate_body(layer, part[:1], troop_sprite_list, self.weapon_sprite_pool, weapon=weapon)
         elif "effect" in layer:
             if "dmg_" not in layer:
                 image_part = generate_body(layer, part[:2], troop_sprite_list, self.effect_sprite_pool)
@@ -85,8 +85,8 @@ def create_troop_sprite(self, animation_name, troop_size, animation_part_list, t
             if colour == "":  # no custom colour, use None
                 colour = None
 
-            image_part = generate_body(layer, part[:2], troop_sprite_list, self.gen_body_sprite_pool,
-                                       armour_sprite_pool=self.gen_armour_sprite_pool, colour=colour,
+            image_part = generate_body(layer, part[:2], troop_sprite_list, self.body_sprite_pool,
+                                       armour_sprite_pool=self.armour_sprite_pool, colour=colour,
                                        colour_list=self.colour_list, armour=this_armour)
 
         if image_part is not None:  # skip for empty image
@@ -110,7 +110,7 @@ def create_troop_sprite(self, animation_name, troop_size, animation_part_list, t
                         (p + "sub_" in layer and p + "fix_sub_weapon" not in check_prop):
                     use_center = False
                     if p + "main_weapon" in layer:  # main weapon
-                        if "sheath" not in part[0]:  # change main weapon pos to right hand, if part is not sheath
+                        if "Sheath" not in part[0]:  # change main weapon pos to right hand, if part is not Sheath
                             target = (animation_part_list[p + "r_hand"][2], animation_part_list[p + "r_hand"][3])
                             use_center = False  # use weapon joint
                         else:
@@ -118,7 +118,7 @@ def create_troop_sprite(self, animation_name, troop_size, animation_part_list, t
                                       animation_part_list[p + "body"][3])  # put on back
                             use_center = True
                     elif p + "sub_weapon" in layer:  # sub weapon
-                        if "sheath" not in part[0]:  # change weapon pos to hand, if part is not sheath
+                        if "Sheath" not in part[0]:  # change weapon pos to hand, if part is not Sheath
                             if "_Sub_" in animation_name and both_main_sub_weapon:
                                 # sub animation from shared '_Both_' animation name as main for attack
                                 # so put sub weapon in man hand, remove code if different

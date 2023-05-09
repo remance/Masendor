@@ -1,5 +1,6 @@
 import pygame
 
+from engine.uimenu.uimenu import UIMenu
 from engine import utility
 
 # TODO paragraph syntax,
@@ -42,13 +43,14 @@ class Lorebook(pygame.sprite.Sprite):
     def __init__(self, game, image, text_size=24):
         self.game = game
         self.main_dir = game.main_dir
+        self.module_dir = game.module_dir
         self.screen_rect = game.screen_rect
         self.screen_scale = game.screen_scale
 
         self._layer = 23
         pygame.sprite.Sprite.__init__(self)
-        self.font = pygame.font.SysFont("helvetica", int(text_size * self.screen_scale[1]))
-        self.font_header = pygame.font.SysFont("oldenglishtext", int(52 * self.screen_scale[1]))
+        self.font = pygame.font.Font(game.ui_font["main_button"], int(text_size * self.screen_scale[1]))
+        self.font_header = pygame.font.Font(game.ui_font["name_font"], int(52 * self.screen_scale[1]))
         self.image = image
         self.base_image = self.image.copy()
         self.section = 0
@@ -97,7 +99,26 @@ class Lorebook(pygame.sprite.Sprite):
                 self.equipment_lore[run] = stat_list[index]
                 run += 1
 
-        # reindex string leader id
+        # reindex string id
+        self.troop_id_reindex = {}
+        run = 1
+        for index in self.troop_data.troop_list:
+            self.skill_stat[run] = self.troop_data.troop_list[index]
+            self.troop_id_reindex[index] = run
+            run += 1
+
+        self.troop_stat = {}
+        run = 1
+        for key, value in self.troop_data.troop_list.items():
+            self.troop_stat[run] = value | {"True ID": key}
+            run += 1
+
+        self.troop_lore = {}
+        run = 1
+        for value in self.troop_data.troop_lore.values():
+            self.troop_lore[run] = value
+            run += 1
+
         self.leader_id_reindex = {}
         run = 1
         for index in self.leader_data.leader_list:
@@ -162,7 +183,7 @@ class Lorebook(pygame.sprite.Sprite):
 
         self.section_list = ((self.concept_stat, self.concept_lore), (self.history_stat, self.history_lore),
                              (self.faction_data.faction_list, self.faction_data.faction_lore),
-                             (self.troop_data.troop_list, self.troop_data.troop_lore),
+                             (self.troop_stat, self.troop_lore, self.troop_id_reindex),
                              (self.equipment_stat, self.equipment_lore),
                              (self.troop_data.status_list, self.troop_data.status_lore),
                              (self.skill_stat, self.skill_lore, self.skill_id_reindex),
@@ -254,7 +275,8 @@ class Lorebook(pygame.sprite.Sprite):
                 self.portrait = self.leader_data.images[
                     "other"].copy()  # Use Unknown leader image if there is none in list
                 name = self.stat_data[self.subsection]["Name"].split(" ")[0]
-                font = pygame.font.SysFont("timesnewroman", int(100 / (len(name) / 3) * self.screen_scale[1]))
+                font = pygame.font.Font(self.game.ui_font["text_paragraph"],
+                                        int(100 / (len(name) / 3) * self.screen_scale[1]))
                 text_image = font.render(name, True, pygame.Color("white"))
                 text_rect = text_image.get_rect(
                     center=(self.portrait.get_width() / 2, self.portrait.get_height() / 1.3))
@@ -266,9 +288,10 @@ class Lorebook(pygame.sprite.Sprite):
 
         elif self.section == self.troop_section:
             try:
-                who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key == self.subsection}
+                who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key ==
+                            self.stat_data[self.subsection]["True ID"]}
                 preview_sprite_pool, _ = self.game.create_troop_sprite_pool(who_todo, preview=True)
-                self.portrait = preview_sprite_pool[self.subsection]["sprite"]
+                self.portrait = preview_sprite_pool[self.stat_data[self.subsection]["True ID"]]["sprite"]
 
             except KeyError:
                 pass
@@ -566,11 +589,11 @@ class Lorebook(pygame.sprite.Sprite):
                     lore = self.lore_data[self.subsection][(self.page * 4) + 2:]
 
                 row = int(80 * self.screen_scale[1])
-                col = int(100 * self.screen_scale[0])
+                col = int(50 * self.screen_scale[0])
                 for index, text in enumerate(lore):
                     if text != "":
                         # blit paragraph of text
-                        text_surface = pygame.Surface((500 * self.screen_scale[0], 310 * self.screen_scale[1]),
+                        text_surface = pygame.Surface((500 * self.screen_scale[0], 370 * self.screen_scale[1]),
                                                       pygame.SRCALPHA)
                         paragraph_font = self.font
                         if "{" in text and "}" in text:
@@ -580,25 +603,23 @@ class Lorebook(pygame.sprite.Sprite):
                             for this_syntax in syntax:
                                 if "FULLIMAGE:" in this_syntax:  # blit image to whole lore book image
                                     filename = this_syntax[10:].split("\\")[-1]
-                                    image_surface = utility.load_image(self.main_dir, self.screen_scale, filename,
-                                                                       this_syntax[10:].replace(filename, ""))
+                                    image_surface = utility.load_image(self.module_dir, self.screen_scale, filename,
+                                                                       this_syntax[10:].replace(filename, "").split("\\"))
                                     image_surface = pygame.transform.scale(image_surface, (self.image.get_width(),
                                                                                            self.image.get_height()))
-                                    rect = image_surface.get_rect(topleft=(0, 0))
-                                    self.image.blit(image_surface, rect)
+                                    self.image.blit(image_surface, image_surface.get_rect(topleft=(0, 0)))
                                 elif "IMAGE:" in this_syntax:  # blit image to paragraph
                                     filename = this_syntax[6:].split("\\")[-1]
-                                    image_surface = utility.load_image(self.main_dir, self.screen_scale, filename,
-                                                                       this_syntax[6:].replace(filename, ""))
-                                    rect = image_surface.get_rect(topleft=(0, 0))
-                                    text_surface.blit(image_surface, rect)
+                                    image_surface = utility.load_image(self.module_dir, self.screen_scale, filename,
+                                                                       this_syntax[6:].replace(filename, "").split("\\"))
+                                    self.image.blit(image_surface, image_surface.get_rect(topleft=(col, row)))
                                 elif "FONT:" in this_syntax:
                                     new_font = this_syntax[4:].split("\\")[0]
                                     new_font_size = self.font.get_height()
                                     if "\\" in this_syntax:
                                         new_font_size = this_syntax[4:].split("\\")[1]
-                                    paragraph_font = pygame.font.SysFont(new_font,
-                                                                         int(new_font_size * self.screen_scale[1]))
+                                    paragraph_font = pygame.font.Font(self.game.ui_font[new_font],
+                                                                      int(new_font_size * self.screen_scale[1]))
 
                         make_long_text(text_surface, text, (5 * self.screen_scale[0], 5 * self.screen_scale[1]),
                                        paragraph_font)
@@ -606,7 +627,7 @@ class Lorebook(pygame.sprite.Sprite):
 
                         self.image.blit(text_surface, text_rect)
 
-                        row += (330 * self.screen_scale[1])
+                        row += (400 * self.screen_scale[1])
                         if row >= 600 * self.screen_scale[1]:
                             if col == 650 * self.screen_scale[0]:
                                 break
@@ -624,11 +645,12 @@ class SubsectionList(pygame.sprite.Sprite):
         self.max_row_show = 19
 
 
-class SubsectionName(pygame.sprite.Sprite):
+class SubsectionName(UIMenu, pygame.sprite.Sprite):
     def __init__(self, screen_scale, pos, name, subsection, tag, selected=False, text_size=28):
         self._layer = 24
+        UIMenu.__init__(self)
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.font = pygame.font.SysFont("helvetica", int(text_size * screen_scale[1]))
+        self.font = pygame.font.Font(self.ui_font["main_button"], int(text_size * screen_scale[1]))
         self.selected = False
         self.name = str(name)
 

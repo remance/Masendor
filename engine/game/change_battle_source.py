@@ -1,8 +1,10 @@
 import os
 import csv
+from datetime import datetime, timedelta
 from engine.uimenu import uimenu
 from engine import utility
 
+csv_read = utility.csv_read
 setup_list = utility.setup_list
 list_scroll = utility.list_scroll
 stat_convert = utility.stat_convert
@@ -10,6 +12,7 @@ stat_convert = utility.stat_convert
 
 def change_battle_source(self):
     """change map data when select new source"""
+    self.map_data = self.read_selected_map_data(self.preset_map_folder, "source" + ".csv")[self.map_source]
 
     try:
         self.source_list = self.read_selected_map_data(self.preset_map_folder, "source" + ".csv")
@@ -41,6 +44,16 @@ def change_battle_source(self):
 
         self.map_data["unit"] = troop_data
 
+        self.map_data["info"] = {}
+        try:
+            weather_event = csv_read(self.module_dir, "weather.csv", ("map", "preset", self.map_selected,
+                                                                      str(self.map_source)), output_type="list")
+            self.map_data["info"]["weather"] = weather_event[1:]
+        except (FileNotFoundError,
+                TypeError) as b:  # If no weather found or no map use light sunny weather start at 9:00 and wind direction at 0 angle
+            print(b)
+            self.map_data["info"]["weather"] = [[1, "09:00:00", 0, 0],]  # default weather light sunny all day
+
         self.camp_pos = {}
         for key, value in self.source_list[self.map_source].items():
             if "Camp " in key:
@@ -70,6 +83,7 @@ def change_battle_source(self):
         self.team_pos[row["Team"]].append([int(item) for item in row["POS"].split(",")])
 
     # reset preview mini map
+    self.create_preview_map()
     self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos)
 
     # Reset character selection UI
@@ -79,7 +93,7 @@ def change_battle_source(self):
         icon.kill()
     self.preview_unit.empty()
 
-    self.setup_battle_unit(self.preview_unit, preview=self.team_selected, custom_data=None)
+    self.setup_battle_unit(self.preview_unit, preview=self.team_selected)
 
     self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
 
@@ -93,3 +107,13 @@ def change_battle_source(self):
         self.unit_model_room.add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"],
                                                icon.who.coa)
         break
+
+    team_coa = []
+    for key2 in self.map_data:
+        if "Team " in key2 and "Camp " not in key2:
+            if type(self.map_data[key2]) == int:
+                self.map_data[key2] = [self.map_data[key2]]
+            elif type(self.map_data[key2]) == str:
+                self.map_data[key2] = [int(item) for item in self.map_data[key2].split(",")]
+            team_coa.append(self.map_data[key2])
+    self.create_team_coa(team_coa, self.main_ui_updater)

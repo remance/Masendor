@@ -7,7 +7,7 @@ from engine import utility
 stat_convert = utility.stat_convert
 
 
-def setup_battle_unit(self, team_unit_list, preview=None, custom_data=None):
+def setup_battle_unit(self, team_unit_list, preview=None):
     """
     Read unit data in battle from unit_pos file
     :param self: Battle or Game object
@@ -17,10 +17,8 @@ def setup_battle_unit(self, team_unit_list, preview=None, custom_data=None):
     """
     leader_unit = {}
     self.last_troop_game_id = 0
-    if not custom_data:  # TODO move this data reading process to map selection
-        troop_data = self.map_data["unit"]
-    else:
-        troop_data = custom_data
+
+    troop_data = self.map_data["unit"]
 
     new_troop_data = []  # rearrange data list to ensure that leader units are made first
     for data in troop_data:  # unit leader first
@@ -39,7 +37,7 @@ def setup_battle_unit(self, team_unit_list, preview=None, custom_data=None):
 
     for data in new_troop_data:
         if not preview or preview == data["Team"]:  # check if create unit only for preview of a specific team
-            troop_number_list = {int(key): [int(num) for num in value.split("/")] for key, value in
+            troop_number_list = {key: [int(num) for num in value.split("/")] for key, value in
                                  data["Troop"].items()}
 
             if preview:  # make only leader for preview
@@ -63,7 +61,7 @@ def setup_battle_unit(self, team_unit_list, preview=None, custom_data=None):
                 self.last_troop_game_id += 1
                 for key, value in troop_number_list.items():
                     for _ in range(value[0]):
-                        unit.Troop(int(key), self.last_troop_game_id, None, data["Team"],
+                        unit.Troop(key, self.last_troop_game_id, None, data["Team"],
                                    data["POS"], data["Angle"], data["Start Health"], data["Start Stamina"], add_leader,
                                    self.faction_data.coa_list[data["Faction"]])
                         self.last_troop_game_id += 1

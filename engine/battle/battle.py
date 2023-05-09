@@ -1,16 +1,11 @@
-import glob
 import os
 import sys
 import time
-from datetime import datetime, timedelta
-from pathlib import Path
-from random import randint
 
 import pygame
 from pygame.locals import *
 
 from engine.weather import weather
-from engine.battle import battle
 from engine.camera import camera
 from engine.unit import unit
 from engine.effect import effect
@@ -53,33 +48,68 @@ def set_done_load():
 
 
 class Battle:
-    empty_method = utility.empty_method
+    from engine.battle.add_sound_effect_queue import add_sound_effect_queue
+    add_sound_effect_queue = add_sound_effect_queue
 
-    # Import from common.battle
-    add_sound_effect_queue = empty_method
-    cal_shake_value = empty_method
-    camera_fix = empty_method
-    camera_process = empty_method
-    change_battle_state = empty_method
-    generate_unit = empty_method
-    mouse_scrolling_process = empty_method
-    play_sound_effect = empty_method
-    player_aim = empty_method
-    player_cancel_input = empty_method
-    player_input_process = empty_method
-    player_skill_perform = empty_method
-    setup_battle_unit = empty_method
-    setup_battle_ui = empty_method
-    shake_camera = empty_method
-    spawn_weather_matter = empty_method
-    time_update = empty_method
+    from engine.battle.cal_shake_value import cal_shake_value
+    cal_shake_value = cal_shake_value
 
-    # Import common.ui
-    countdown_skill_icon = empty_method
-    effect_icon_mouse_over = empty_method
-    escmenu_process = empty_method
-    kill_effect_icon = empty_method
-    wheel_ui_process = empty_method
+    from engine.battle.camera_fix import camera_fix
+    camera_fix = camera_fix
+
+    from engine.battle.camera_process import camera_process
+    camera_process = camera_process
+
+    from engine.battle.change_battle_state import change_battle_state
+    change_battle_state = change_battle_state
+
+    from engine.battle.countdown_skill_icon import countdown_skill_icon
+    countdown_skill_icon = countdown_skill_icon
+
+    from engine.battle.mouse_scrolling_process import mouse_scrolling_process
+    mouse_scrolling_process = mouse_scrolling_process
+
+    from engine.battle.play_sound_effect import play_sound_effect
+    play_sound_effect = play_sound_effect
+
+    from engine.battle.player_aim import player_aim
+    player_aim = player_aim
+
+    from engine.battle.player_cancel_input import player_cancel_input
+    player_cancel_input = player_cancel_input
+
+    from engine.battle.player_input_process import player_input_process
+    player_input_process = player_input_process
+
+    from engine.battle.player_skill_perform import player_skill_perform
+    player_skill_perform = player_skill_perform
+
+    from engine.battle.setup_battle_unit import setup_battle_unit
+    setup_battle_unit = setup_battle_unit
+
+    from engine.battle.setup_battle_ui import setup_battle_ui
+    setup_battle_ui = setup_battle_ui
+
+    from engine.battle.shake_camera import shake_camera
+    shake_camera = shake_camera
+
+    from engine.battle.spawn_weather_matter import spawn_weather_matter
+    spawn_weather_matter = spawn_weather_matter
+
+    from engine.battle.time_update import time_update
+    time_update = time_update
+
+    from engine.battle.effect_icon_mouse_over import effect_icon_mouse_over
+    effect_icon_mouse_over = effect_icon_mouse_over
+
+    from engine.battle.escmenu_process import escmenu_process
+    escmenu_process = escmenu_process
+
+    from engine.battle.kill_effect_icon import kill_effect_icon
+    kill_effect_icon = kill_effect_icon
+
+    from engine.battle.wheel_ui_process import wheel_ui_process
+    wheel_ui_process = wheel_ui_process
 
     start_camera_mode = "Follow"
 
@@ -121,9 +151,9 @@ class Battle:
         self.joysticks = game.joysticks
         self.joystick_name = game.joystick_name
 
-        self.battle_map_base = game.battle_base_map
-        self.battle_map_feature = game.battle_feature_map
-        self.battle_map_height = game.battle_height_map
+        self.battle_base_map = game.battle_base_map
+        self.battle_feature_map = game.battle_feature_map
+        self.battle_height_map = game.battle_height_map
         self.battle_map = game.battle_map
 
         self.sprite_indicator = game.sprite_indicator
@@ -152,8 +182,6 @@ class Battle:
         self.input_ui_popup = game.input_ui_popup
         self.confirm_ui = game.confirm_ui
         self.confirm_ui_popup = game.confirm_ui_popup
-
-        self.unit_icon = game.unit_icon
 
         self.time_ui = game.time_ui
         self.time_number = game.time_number
@@ -252,9 +280,9 @@ class Battle:
         self.current_weather = weather.Weather(self.time_ui, 4, 0, 0, self.weather_data)
 
         self.unit_animation_data = None
-        self.gen_body_sprite_pool = None
-        self.gen_weapon_sprite_pool = None
-        self.gen_armour_sprite_pool = None
+        self.body_sprite_pool = None
+        self.weapon_sprite_pool = None
+        self.armour_sprite_pool = None
         self.effect_sprite_pool = None
         self.effect_animation_pool = None
         self.weapon_joint_list = None
@@ -350,35 +378,18 @@ class Battle:
         self.leader_data = self.game.leader_data
 
         self.unit_animation_data = self.game.unit_animation_data
-        self.gen_body_sprite_pool = self.game.gen_body_sprite_pool
-        self.gen_weapon_sprite_pool = self.game.gen_weapon_sprite_pool
-        self.gen_armour_sprite_pool = self.game.gen_armour_sprite_pool
+        self.body_sprite_pool = self.game.body_sprite_pool
+        self.weapon_sprite_pool = self.game.weapon_sprite_pool
+        self.armour_sprite_pool = self.game.armour_sprite_pool
         self.effect_sprite_pool = self.game.effect_sprite_pool
         self.effect_animation_pool = self.game.effect_animation_pool
         self.weapon_joint_list = self.game.weapon_joint_list
         self.team_colour = self.game.team_colour
 
         # Load weather schedule
-        yield set_start_load("weather")
-        if map_type == "preset":
-            try:
-                self.weather_event = csv_read(self.module_dir, "weather.csv",
-                                              ("map", map_type,
-                                               self.map_selected,
-                                               self.map_source), output_type="list")
-                self.weather_event = self.weather_event[1:]
-                utility.convert_str_time(self.weather_event)
-            except (FileNotFoundError,
-                    TypeError):  # If no weather found or no map use light sunny weather start at 9:00 and wind direction at 0 angle
-                new_time = datetime.strptime("09:00:00", "%H:%M:%S").time()
-                new_time = timedelta(hours=new_time.hour, minutes=new_time.minute, seconds=new_time.second)
-                self.weather_event = ((4, new_time, 0, 0),)  # default weather light sunny all day
-        elif map_type == "custom":
-            self.weather_event = self.game.custom_map_data["info"]["weather"].copy()
-            utility.convert_str_time(self.weather_event)
-
+        self.weather_event = [item.copy() for item in self.map_data["info"]["weather"]].copy()
+        utility.convert_str_time(self.weather_event)
         self.weather_playing = self.weather_event[0][1]  # used as the reference for map starting time
-        yield set_done_load()
 
         # Random music played from list
         # yield set_start_load("music")
@@ -441,9 +452,9 @@ class Battle:
         if not images and map_type == "custom":  # custom map battle but use preset map
             images = load_images(self.module_dir,
                                  subfolder=("map", "preset", self.map_selected))
-        self.battle_map_base.draw_image(images["base"])
-        self.battle_map_feature.draw_image(images["feature"])
-        self.battle_map_height.draw_image(images["height"])
+        self.battle_base_map.draw_image(images["base"])
+        self.battle_feature_map.draw_image(images["feature"])
+        self.battle_height_map.draw_image(images["height"])
 
         if "place_name" in images:  # place_name map layer is optional, if not existed in folder then assign None
             place_name_map = images["place_name"]
@@ -452,16 +463,16 @@ class Battle:
         yield set_done_load()
 
         yield set_start_load("draw map")
-        self.battle_map.draw_image(self.battle_map_base, self.battle_map_feature, place_name_map, self.camp_pos, self)
+        self.battle_map.draw_image(self.battle_base_map, self.battle_feature_map, place_name_map, self.camp_pos, self)
         yield set_done_load()
 
         yield set_start_load("common setup")
         self.map_corner = (
-            len(self.battle_map_base.map_array[0]),
-            len(self.battle_map_base.map_array))  # get map size that troop can move
+            len(self.battle_base_map.map_array[0]),
+            len(self.battle_base_map.map_array))  # get map size that troop can move
 
-        self.max_camera = ((self.battle_map_height.image.get_width() - 1),
-                           (self.battle_map_height.image.get_height() - 1))  # reset max camera to new map size
+        self.max_camera = ((self.battle_height_map.image.get_width() - 1),
+                           (self.battle_height_map.image.get_height() - 1))  # reset max camera to new map size
 
         self.active_unit_list = []
         self.visible_unit_list = {}
@@ -473,7 +484,7 @@ class Battle:
         if map_type == "preset":
             self.setup_battle_unit(self.unit_updater)
         elif map_type == "custom":
-            self.setup_battle_unit(self.unit_updater, custom_data=self.game.custom_map_data["battle"])
+            self.setup_battle_unit(self.unit_updater, custom_data=self.map_data["battle"])
 
         for this_group in self.all_team_unit.values():
             this_group.empty()
@@ -1015,10 +1026,9 @@ class Battle:
 
         self.troop_ai_logic_queue = []
 
-        clean_group_object((self.shoot_lines, self.all_units, self.unit_icon,
-                            self.effect_updater, self.weather_matter))
+        clean_group_object((self.shoot_lines, self.all_units, self.effect_updater, self.weather_matter))
 
-        self.command_ui.__init__(self.screen_scale, self.command_ui.weapon_box_images,
+        self.command_ui.__init__(self.command_ui.weapon_box_images,
                                  self.command_ui.status_effect_image)  # reset command ui
 
         self.unit_animation_pool = None
@@ -1027,9 +1037,9 @@ class Battle:
 
         self.sound_effect_queue = {}
 
-        self.battle_map_base.clear_image()
-        self.battle_map_feature.clear_image()
-        self.battle_map_height.clear_image()
+        self.battle_base_map.clear_image()
+        self.battle_feature_map.clear_image()
+        self.battle_height_map.clear_image()
         self.battle_map.clear_image()
 
         self.drama_timer = 0  # reset drama text popup
