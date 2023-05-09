@@ -76,7 +76,7 @@ class Cursor(UIMenu):
         self.pos = (0, 0)
         self.rect = self.image.get_rect(topleft=self.pos)
 
-    def update(self, mouse_pos, mouse_left_up, mouse_left_down):
+    def update(self, mouse_pos, mouse_left_up, mouse_left_down, *args):
         """Update cursor position based on mouse position"""
         self.pos = mouse_pos
         self.rect.topleft = self.pos

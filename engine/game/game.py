@@ -572,7 +572,7 @@ class Game:
                                          load_image(self.module_dir, self.screen_scale, "stat.png",
                                                     ("ui", "mapselect_ui")))  # army stat
         self.unit_stat = {}
-        self.camp_icon = [{}]
+        self.camp_icon = []
 
         model_room_image = load_image(self.module_dir, self.screen_scale, "model_room.png", ("ui", "mapselect_ui"))
         self.unit_model_room = uimenu.ArmyStat((self.screen_rect.center[0] - (model_room_image.get_width() / 2),
@@ -824,7 +824,7 @@ class Game:
         self.start_menu_ui_only = *self.menu_button, self.profile_box  # ui that only appear at the start menu
         self.main_ui_updater.add(*self.start_menu_ui_only)
         self.menu_state = "main_menu"
-        self.input_popup = (None, None)  # popup for text input state
+        self.input_popup = None  # popup for text input state
         self.choosing_faction = True  # swap list between faction and unit, always start with choose faction first as true
 
         self.loading_screen("end")
@@ -911,7 +911,7 @@ class Game:
                     elif event.button == 5:  # Mouse scroll up
                         mouse_scroll_down = True
 
-                    if self.input_popup[0] == "keybind_input":
+                    if self.input_popup and self.input_popup[0] == "keybind_input":
                         if self.config["USER"]["control player 1"] == "keyboard" and not \
                                 self.input_close_button.rect.collidepoint(
                                     self.mouse_pos):  # check for keyboard mouse key
@@ -925,7 +925,7 @@ class Game:
                         self.assign_key(event.button)
 
                 elif event.type == pygame.KEYDOWN:
-                    if self.input_popup[0]:  # event update to input box
+                    if self.input_popup:  # event update to input box
                         if event.key == pygame.K_ESCAPE:
                             input_esc = True
 
@@ -969,8 +969,7 @@ class Game:
             self.screen.fill((0, 0, 0))
             self.screen.blit(self.background, (0, 0))  # blit background over instead of clear() to reset screen
 
-            if self.input_popup[
-                0]:  # currently, have input text pop up on screen, stop everything else until done
+            if self.input_popup:  # currently, have input text pop up on screen, stop everything else until done
                 for button in self.input_button:
                     button.update(self.mouse_pos, mouse_left_up, mouse_left_down)
 
@@ -1039,14 +1038,14 @@ class Game:
                         sys.exit()
 
                     self.input_box.text_start("")
-                    self.input_popup = (None, None)
+                    self.input_popup = None
                     self.main_ui_updater.remove(*self.input_ui_popup, *self.confirm_ui_popup, *self.inform_ui_popup)
 
                 elif self.input_cancel_button.event or self.input_close_button.event or input_esc:
                     self.input_cancel_button.event = False
                     self.input_close_button.event = False
                     self.input_box.text_start("")
-                    self.input_popup = (None, None)
+                    self.input_popup = None
                     self.main_ui_updater.remove(*self.input_ui_popup, *self.confirm_ui_popup, *self.inform_ui_popup)
 
                 elif self.input_popup[0] == "text_input":
@@ -1059,7 +1058,7 @@ class Game:
                         if self.text_delay >= 0.3:
                             self.text_delay = 0
 
-            elif self.input_popup == (None, None):
+            elif not self.input_popup:
                 self.menu_button.update(self.mouse_pos, mouse_left_up, mouse_left_down)
                 if self.menu_state == "main_menu":
                     self.menu_main(mouse_left_up)

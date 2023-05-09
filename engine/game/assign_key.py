@@ -19,7 +19,7 @@ def assign_key(self, key_assign):
                     value.change_key(self.config["USER"]["control player 1"], key_assign, None)
 
         self.input_box.text_start("")
-        self.input_popup = (None, None)
+        self.input_popup = None
         self.main_ui_updater.remove(*self.input_ui_popup, *self.confirm_ui_popup, *self.inform_ui_popup)
 
     else:  # key already exist, confirm to swap key between two actions
