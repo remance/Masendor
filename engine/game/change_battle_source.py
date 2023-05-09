@@ -72,7 +72,7 @@ def change_battle_source(self):
         self.error_log.write("\n No source for map: " + str(self.map_title.name))
         no_source
 
-    self.source_description.change_text(self.source_text)
+    # self.source_description.change_text(self.source_text, self.mouse_pos)
 
     setup_list(uimenu.NameList, self.current_source_row, self.source_name_list,
                self.source_namegroup, self.source_list_box, self.main_ui_updater)

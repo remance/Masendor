@@ -28,4 +28,4 @@ def create_preview_map(self):
 
     description = [self.map_info[self.battle_map_list[self.current_map_select]]["Description 1"],
                    self.map_info[self.battle_map_list[self.current_map_select]]["Description 2"]]
-    self.map_description.change_text(description)
+    # self.map_description.change_text(description, self.mouse_pos)

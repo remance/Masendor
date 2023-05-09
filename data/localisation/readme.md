@@ -1,0 +1,1 @@
+Localisation in this folder contains only translations for common UI or terms used commonly in every module. For module-specific localisation, see the specific localisation folder inside the module folder (e.g., module\historical\localisation). 
