@@ -141,7 +141,7 @@ def convert_str_time(event):
         event[index] = tuple(event[index])
 
 
-def csv_read(main_dir, file, subfolder=(), output_type="dict", header_key=False, language=None):
+def csv_read(main_dir, file, subfolder=(), output_type="dict", header_key=False, dict_value_return_as_str=None):
     """
     Read csv file
     :param main_dir: Game directory folder path
@@ -149,7 +149,7 @@ def csv_read(main_dir, file, subfolder=(), output_type="dict", header_key=False,
     :param subfolder: Array of sub1_folder path
     :param output_type: Type of returned object, either dict or list
     :param header_key: Use header as dict key or not
-    :param language: File language in acronym such as en for English
+    :param dict_value_return_as_str: Returned dict value is stored as string instead of list
     :return:
     """
     return_output = {}
@@ -161,8 +161,6 @@ def csv_read(main_dir, file, subfolder=(), output_type="dict", header_key=False,
         folder_dir = os.path.join(folder_dir, folder)
     folder_dir = os.path.join(folder_dir, file)
     folder_dir = os.path.join(main_dir, folder_dir)
-    if language is not None:
-        folder_dir += "_" + language
     with open(folder_dir, encoding="utf-8", mode="r") as edit_file:
         rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
         rd = [row for row in rd]
@@ -178,7 +176,10 @@ def csv_read(main_dir, file, subfolder=(), output_type="dict", header_key=False,
                     if row_index > 0:  # skip header row
                         return_output[row[0]] = {header[index + 1]: item for index, item in enumerate(row[1:])}
                 else:
-                    return_output[row[0]] = row[1:]
+                    if dict_value_return_as_str:
+                        return_output[row[0]] = ",".join(row[1:])
+                    else:
+                        return_output[row[0]] = row[1:]
             elif output_type == "list":  # return as list
                 return_output.append(row)
         edit_file.close()
@@ -332,7 +333,7 @@ def make_bar_list(main_dir, screen_scale, list_to_do, menu_image, updater):
     for index, bar in enumerate(list_to_do):
         bar_image = (image.copy(), image2.copy(), image3.copy())
         bar = uimenu.MenuButton(bar_image, (menu_image.pos[0], menu_image.pos[1] + image.get_height() * (index + 1)),
-                                updater, text=bar)
+                                updater, key_name=bar)
         bar_list.append(bar)
     return bar_list
 

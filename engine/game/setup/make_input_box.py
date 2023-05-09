@@ -11,14 +11,14 @@ def make_input_box(main_dir, screen_scale, screen_rect, image_list):
                               (screen_rect.width / 2, screen_rect.height / 2))  # user text input ui box popup
     input_ok_button = uimenu.MenuButton(image_list, (input_ui.rect.midleft[0] + (image_list[0].get_width() / 1.2),
                                                      input_ui.rect.midleft[1] + (image_list[0].get_height() / 1.3)),
-                                        text="Confirm", layer=31)
+                                        key_name="confirm_button", layer=31)
     input_close_button = uimenu.MenuButton(image_list, (input_ui.rect.centerx,
                                                         input_ui.rect.midleft[1] + (image_list[0].get_height() / 1.3)),
-                                           text="Close", layer=31)
+                                           key_name="close_button", layer=31)
     input_cancel_button = uimenu.MenuButton(image_list,
                                           (input_ui.rect.midright[0] - (image_list[0].get_width() / 1.2),
                                            input_ui.rect.midright[1] + (image_list[0].get_height() / 1.3)),
-                                          text="Cancel", layer=31)
+                                          key_name="cancel_button", layer=31)
 
     input_box = uimenu.InputBox(input_ui.rect.center, input_ui.image.get_width())  # user text input box
 

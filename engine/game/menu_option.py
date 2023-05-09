@@ -112,4 +112,4 @@ def change_resolution(self, resolution_change):
         pygame.mixer.music.stop()
         pygame.mixer.music.unload()
     pygame.quit()
-    runmenu = game.Game(self.main_dir, self.error_log)  # restart game when change resolution
+    runmenu = game.game.Game(self.main_dir, self.error_log)  # restart game when change resolution

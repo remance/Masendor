@@ -80,8 +80,7 @@ def menu_preset_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
         self.map_back_button.event = False
         self.main_ui_updater.remove(*self.menu_button, self.map_list_box, self.map_list_box.scroll, self.map_option_box,
                                     self.observe_mode_tick_box, self.source_list_box, self.source_list_box.scroll,
-                                    self.source_description, self.army_stat, self.map_preview, self.map_description,
-                                    self.team_coa, self.map_title, self.unit_selector, self.unit_selector.scroll,
+                                    self.army_stat, self.map_preview, self.team_coa, self.map_title, self.unit_selector, self.unit_selector.scroll,
                                     tuple(self.unit_stat.values()), self.unit_model_room)
         self.menu_button.remove(*self.menu_button)
 

@@ -62,6 +62,7 @@ class UIMenu(pygame.sprite.Sprite):
         self.font_dir = Game.font_dir
         self.ui_font = Game.ui_font
         self.screen_size = Game.screen_size
+        self.localisation = Game.localisation
         pygame.sprite.Sprite.__init__(self)
 
 
@@ -324,7 +325,7 @@ class TextBox(UIMenu):
 
 
 class MenuButton(UIMenu, pygame.sprite.Sprite):
-    def __init__(self, images, pos, updater=None, text="", size=28, layer=1):
+    def __init__(self, images, pos, updater=None, key_name="", size=28, layer=1):
         self._layer = layer
         UIMenu.__init__(self)
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -333,14 +334,15 @@ class MenuButton(UIMenu, pygame.sprite.Sprite):
         self.button_over_image = images[1].copy()
         self.button_click_image = images[2].copy()
         self.updater = updater
-        self.text = text
+
         self.font = pygame.font.Font(self.ui_font["main_button"], int(size * self.screen_scale[1]))
         self.base_image0 = self.button_normal_image.copy()
         self.base_image1 = self.button_over_image.copy()
         self.base_image2 = self.button_click_image.copy()
 
-        if text != "":  # draw text into the button images
-            text_surface = self.font.render(self.text, True, (0, 0, 0))
+        if key_name != "":  # draw text into the button images
+            text = self.localisation.grab_text("ui", key_name)
+            text_surface = self.font.render(text, True, (0, 0, 0))
             text_rect = text_surface.get_rect(center=self.button_normal_image.get_rect().center)
             self.button_normal_image.blit(text_surface, text_rect)
             self.button_over_image.blit(text_surface, text_rect)
@@ -361,21 +363,18 @@ class MenuButton(UIMenu, pygame.sprite.Sprite):
                     self.event = True
                     self.image = self.button_click_image
 
-    def change_state(self, text):
-        if text != "":
-            img0 = self.base_image0.copy()
-            img1 = self.base_image1.copy()
-            img2 = self.base_image2.copy()
-            self.images = [img0, img1, img2]
+    def change_state(self, key_name):
+        if key_name != "":
+            text = self.localisation.grab_text("ui", key_name)
+            self.button_normal_image = self.base_image0.copy()
+            self.button_over_image = self.base_image1.copy()
+            self.button_click_image = self.base_image2.copy()
             text_surface = self.font.render(text, True, (0, 0, 0))
-            text_rect = text_surface.get_rect(center=self.images[0].get_rect().center)
-            self.images[0].blit(text_surface, text_rect)
-            self.images[1].blit(text_surface, text_rect)
-            self.images[2].blit(text_surface, text_rect)
-            self.button_normal_image = self.images[0].copy()
-            self.button_over_image = self.images[1].copy()
-            self.button_click_image = self.images[2].copy()
-        self.rect = self.images[0].get_rect(center=self.pos)
+            text_rect = text_surface.get_rect(center=self.button_normal_image.get_rect().center)
+            self.button_normal_image.blit(text_surface, text_rect)
+            self.button_over_image.blit(text_surface, text_rect)
+            self.button_click_image.blit(text_surface, text_rect)
+        self.rect = self.button_normal_image.get_rect(center=self.pos)
         self.event = False
 
 
@@ -428,7 +427,7 @@ class BrownMenuButton(UIMenu, Containable):
 
         return (normal_button, hover_button)
 
-    def __init__(self, pos, text="", width=200, parent=None):
+    def __init__(self, pos, key_name="", width=200, parent=None):
         UIMenu.__init__(self)
         self.pos = pos
         self.parent = parent
@@ -438,6 +437,7 @@ class BrownMenuButton(UIMenu, Containable):
         font = pygame.font.Font(self.ui_font["main_button"], 17)
 
         # draw text into the button images
+        text = self.localisation.grab_text("ui", key_name)
         text_surface = font.render(text, True, (200, 180, 200))
         text_rect = text_surface.get_rect(center=self.button_normal_image.get_rect().center)
         self.button_normal_image.blit(text_surface, text_rect)
@@ -598,23 +598,6 @@ class MapTitle(UIMenu):
         text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
         self.image.blit(text_surface, text_rect)
         self.rect = self.image.get_rect(midtop=self.pos)
-
-
-class DescriptionBox(UIMenu):
-    def __init__(self, image, pos, text_size=26):
-        UIMenu.__init__(self)
-        self.text_size = text_size
-        self.font = pygame.font.Font(self.ui_font["text_paragraph"],
-                                     int(self.text_size * self.screen_scale[1]))
-        self.image = image
-        self.base_image = self.image.copy()
-        self.rect = self.image.get_rect(center=pos)
-
-    def change_text(self, text):
-        self.image = self.base_image.copy()  # reset self.image to new one from the loaded image
-        utility.make_long_text(self.image, text,
-                               (int(self.text_size * self.screen_scale[0]), int(self.text_size * self.screen_scale[1])),
-                               self.font)
 
 
 class TeamCoa(UIMenu, pygame.sprite.Sprite):
@@ -1068,7 +1051,7 @@ class TextPopup(UIMenu):
         self.pos = (0, 0)
         self.text_input = ""
 
-    def pop(self, pos, text_input):
+    def pop(self, pos, text_input, width_text_wrapper=0):
         """Pop out text box with input text list in multiple line, one item equal to one line"""
         if self.pos != pos or self.text_input != text_input:
             self.text_input = text_input
@@ -1077,15 +1060,22 @@ class TextPopup(UIMenu):
             self.pos = pos
 
             text_surface = []
-            max_width = 0
-            max_height = 0
-            for text in self.text_input:
-                surface = self.font.render(text, True, (0, 0, 0))
-                text_surface.append(surface)  # text input font surface
-                text_rect = surface.get_rect(topleft=(1, 1))  # text input position at (1,1) on white box image
-                if text_rect.width > max_width:
-                    max_width = text_rect.width
-                max_height += self.font_size + int(self.font_size / 5)
+            if width_text_wrapper:
+                for text in self.text_input:
+                    text_image = pygame.Surface((width_text_wrapper, len(text) / width_text_wrapper * int(self.font_size * self.screen_scale[1])))
+                    utility.make_long_text(text_image, text,
+                                           (int(self.font_size * self.screen_scale[0]), int(self.font_size * self.screen_scale[1])),
+                                           self.font)
+            else:
+                max_width = 0
+                max_height = 0
+                for text in self.text_input:
+                    surface = self.font.render(text, True, (0, 0, 0))
+                    text_surface.append(surface)  # text input font surface
+                    text_rect = surface.get_rect(topleft=(1, 1))  # text input position at (1,1) on white box image
+                    if text_rect.width > max_width:
+                        max_width = text_rect.width
+                    max_height += self.font_size + int(self.font_size / 5)
 
             self.image = pygame.Surface((max_width + 6, max_height + 6))  # black border
             image = pygame.Surface((max_width + 2, max_height + 2))  # white Box
