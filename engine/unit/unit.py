@@ -537,8 +537,8 @@ class Unit(sprite.Sprite):
             self.group_distance_list = {}
             self.group_pos_list = {}
 
-            if self.troop_id in self.leader_data.images:  # Put leader image into leader slot
-                self.portrait = self.leader_data.images[self.troop_id].copy()
+            if self.troop_id.lower() in self.leader_data.images:  # Put leader image into leader slot
+                self.portrait = self.leader_data.images[self.troop_id.lower()].copy()
             else:  # Use Unknown leader image if there is no specific portrait in data
                 self.portrait = self.leader_data.images["other"].copy()
                 name = self.name.split(" ")[0]
