@@ -399,10 +399,8 @@ class Game:
         Game.localisation = self.localisation
 
         # Battle related data
-        self.troop_data, self.leader_data, self.faction_data = make_faction_troop_leader_data(self.data_dir,
-                                                                                              self.module_dir,
-                                                                                              self.screen_scale,
-                                                                                              self.language)
+        self.troop_data, self.leader_data, self.faction_data = make_faction_troop_leader_data(self.module_dir,
+                                                                                              self.screen_scale)
 
         self.battle_map_data = datamap.BattleMapData(self.module_dir, self.screen_scale, self.language)
 
@@ -784,12 +782,10 @@ class Game:
 
         lorebook.Lorebook.concept_stat = csv_read(self.module_dir, "concept_stat.csv",
                                                   ("lore",), header_key=True)
-        lorebook.Lorebook.concept_lore = csv_read(self.module_dir, "concept_lore" + "_" + self.language + ".csv",
-                                                  ("lore",))
+        lorebook.Lorebook.concept_lore = self.localisation["concept"]
         lorebook.Lorebook.history_stat = csv_read(self.module_dir, "history_stat.csv",
                                                   ("lore",), header_key=True)
-        lorebook.Lorebook.history_lore = csv_read(self.module_dir, "history_lore" + "_" + self.language + ".csv",
-                                                  ("lore",))
+        lorebook.Lorebook.concept_lore = self.localisation["history"]
 
         lorebook.Lorebook.faction_data = self.faction_data
         lorebook.Lorebook.troop_data = self.troop_data
