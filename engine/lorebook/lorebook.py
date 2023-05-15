@@ -262,9 +262,6 @@ class Lorebook(pygame.sprite.Sprite):
         self.max_page = 0  # some subsection may not have lore data in file (maxpage would be just 0)
 
         # Number of maximum page of lore for that subsection (4 para per page) and not count first one (name + description)
-        # print(self.lore_data)
-        # lore_data = self.localisation.grab_text(key=(self.subsection, ), alternative_text_data=self.lore_data)
-        # print(lore_data)
         if len(self.lore_data[self.subsection]) > 2:
             self.max_page = int((len(self.lore_data[subsection]) - 2) / 4)
             main_ui.add(page_button[1])
@@ -585,14 +582,14 @@ class Lorebook(pygame.sprite.Sprite):
 
         else:  # lore page, the paragraph can be in text or image (IMAGE:)
             if self.max_page != 0:
-                if self.page == 1:  # first page skip first two paragraph (name and description)
-                    lore = self.lore_data[self.subsection][2:]
-                else:
-                    lore = self.lore_data[self.subsection][(self.page * 4) + 2:]
+                lore = {key: value for key, value in self.lore_data[self.subsection].items() if "para" in key}
+                if self.page > 1:
+                    print(lore)
+                    lore = {key: value for key, value in lore.items() if int(key[-1]) > (self.page - 1) * 4}
 
                 row = int(80 * self.screen_scale[1])
                 col = int(50 * self.screen_scale[0])
-                for index, text in enumerate(lore):
+                for index, text in enumerate(lore.values()):
                     if text != "":
                         # blit paragraph of text
                         text_surface = pygame.Surface((500 * self.screen_scale[0], 370 * self.screen_scale[1]),
