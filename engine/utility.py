@@ -186,18 +186,17 @@ def csv_read(main_dir, file, subfolder=(), output_type="dict", header_key=False,
     return return_output
 
 
-def lore_csv_read(edit_file, input_dict, output_dict=True):
+def lore_csv_read(edit_file, input_dict):
     rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
     rd = [row for row in rd]
-    for index, row in enumerate(rd):
+    for index, row in enumerate(rd[1:]):
         for n, i in enumerate(row):
             if i.isdigit():
                 row[n] = int(i)
         input_dict[row[0]] = [stuff for index, stuff in enumerate(row[1:])]
         while len(input_dict[row[0]]) > 2 and input_dict[row[0]][-1] == "":  # keep remove last empty text
             input_dict[row[0]] = input_dict[row[0]][:-1]
-        if output_dict:
-            input_dict[row[0]] = {rd[0][index]: value for index, value in enumerate(input_dict[row[0]])}
+        input_dict[row[0]] = {rd[0][index + 1]: value for index, value in enumerate(input_dict[row[0]])}
 
 
 def load_sound(main_dir, file):

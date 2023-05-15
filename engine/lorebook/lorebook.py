@@ -46,6 +46,7 @@ class Lorebook(pygame.sprite.Sprite):
         self.module_dir = game.module_dir
         self.screen_rect = game.screen_rect
         self.screen_scale = game.screen_scale
+        self.localisation = game.localisation
 
         self._layer = 23
         pygame.sprite.Sprite.__init__(self)
@@ -151,11 +152,9 @@ class Lorebook(pygame.sprite.Sprite):
 
         self.skill_lore = {}
         run = 1
-        for stat_list in (
-                self.troop_data.skill_lore, self.leader_data.skill_lore):
-            for index in stat_list:
-                self.skill_lore[run] = stat_list[index]
-                run += 1
+        for index in self.troop_data.skill_lore:  # get only from troop data
+            self.skill_lore[run] = self.localisation.grab_text(key=("skill", index))
+            run += 1
 
         self.section_tag_header = ("Tag", "Tag", "Type", "Troop Class", "Type", "Type", "Type", "Type", "Type",
                                    "Type", "Type",)
@@ -263,6 +262,9 @@ class Lorebook(pygame.sprite.Sprite):
         self.max_page = 0  # some subsection may not have lore data in file (maxpage would be just 0)
 
         # Number of maximum page of lore for that subsection (4 para per page) and not count first one (name + description)
+        # print(self.lore_data)
+        # lore_data = self.localisation.grab_text(key=(self.subsection, ), alternative_text_data=self.lore_data)
+        # print(lore_data)
         if len(self.lore_data[self.subsection]) > 2:
             self.max_page = int((len(self.lore_data[subsection]) - 2) / 4)
             main_ui.add(page_button[1])
@@ -344,13 +346,13 @@ class Lorebook(pygame.sprite.Sprite):
         stat = self.stat_data[self.subsection]
         lore = self.lore_data[self.subsection]
 
-        name = lore[0]
+        name = lore["Name"]
         text_surface = self.font_header.render(str(name), True, (0, 0, 0))
         text_rect = text_surface.get_rect(topleft=(int(28 * self.screen_scale[0]), int(20 * self.screen_scale[1])))
         self.image.blit(text_surface, text_rect)  # add name of item to the top of page
 
         if self.page == 0:
-            description = lore[1]
+            description = lore["Description"]
 
             description_pos = (int(20 * self.screen_scale[1]), int(100 * self.screen_scale[0]))
 

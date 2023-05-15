@@ -194,6 +194,9 @@ class Game:
 
     leader_skill_level_text = ("E", "E+", "D", "D+", "C", "C+", "B", "B+", "A", "A+", "S")
 
+    resolution_list = ("3200 x 1800", "2560 x 1440", "1920 x 1080", "1600 x 900", "1360 x 768",
+                       "1280 x 720", "1024 x 576", "960 x 540", "854 x 480")
+
     def __init__(self, main_dir, error_log):
 
         Game.game = self
@@ -402,7 +405,7 @@ class Game:
         self.troop_data, self.leader_data, self.faction_data = make_faction_troop_leader_data(self.module_dir,
                                                                                               self.screen_scale)
 
-        self.battle_map_data = datamap.BattleMapData(self.module_dir, self.screen_scale, self.language)
+        self.battle_map_data = datamap.BattleMapData()
 
         battlemap.BaseMap.terrain_list = self.battle_map_data.terrain_list
         battlemap.BaseMap.terrain_colour = self.battle_map_data.terrain_colour
@@ -431,6 +434,7 @@ class Game:
         self.preset_map_folder = self.battle_map_data.preset_map_folder
         self.battle_map_list = self.battle_map_data.battle_map_list
         self.battle_map_folder = self.battle_map_data.battle_map_folder
+        self.battle_campaign = self.battle_map_data.battle_campaign
 
         unit.Unit.troop_data = self.troop_data
         unit.Unit.leader_data = self.leader_data
@@ -782,10 +786,10 @@ class Game:
 
         lorebook.Lorebook.concept_stat = csv_read(self.module_dir, "concept_stat.csv",
                                                   ("lore",), header_key=True)
-        lorebook.Lorebook.concept_lore = self.localisation["concept"]
+        lorebook.Lorebook.concept_lore = self.localisation.create_lore_data("concept")
         lorebook.Lorebook.history_stat = csv_read(self.module_dir, "history_stat.csv",
                                                   ("lore",), header_key=True)
-        lorebook.Lorebook.concept_lore = self.localisation["history"]
+        lorebook.Lorebook.concept_lore = self.localisation.create_lore_data("history")
 
         lorebook.Lorebook.faction_data = self.faction_data
         lorebook.Lorebook.troop_data = self.troop_data

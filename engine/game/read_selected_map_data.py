@@ -7,17 +7,21 @@ def read_selected_map_data(self, map_list, file, source=False):
     if self.menu_state == "preset_map" or self.last_select == "preset_map":
         if source:
             data = csv_read(self.module_dir, file,
-                            ("map", "preset", map_list[self.current_map_select],
+                            ("map", "preset", self.battle_campaign[map_list[self.current_map_select]],
+                             map_list[self.current_map_select],
                              str(self.map_source)))
         else:
-            data = csv_read(self.module_dir, file,
-                            ("map", "preset", map_list[self.current_map_select]))
+            data = self.localisation.grab_text(key=("preset_map",
+                                                    self.battle_campaign[map_list[self.current_map_select]],
+                                                    map_list[self.current_map_select],))
     else:
         if map_list[self.current_map_select] != "Random":
             try:
-                data = csv_read(self.module_dir, file, ("map", "custom", map_list[self.current_map_select]))
+                data = self.localisation.grab_text(key=("custom_map", map_list[self.current_map_select]))
             except FileNotFoundError:  # try from preset list
-                data = csv_read(self.module_dir, file, ("map", "preset", map_list[self.current_map_select]))
+                data = self.localisation.grab_text(key=("preset_map",
+                                                        self.battle_campaign[map_list[self.current_map_select]],
+                                                        map_list[self.current_map_select], ))
         else:
             data = {"Name": ["Description 1", "Description 2"], 'Random': ["", ""]}
     header = tuple(data.values())[0]

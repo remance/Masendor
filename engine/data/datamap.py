@@ -9,15 +9,12 @@ import pygame
 from engine.weather import weather
 from engine import utility
 
-from engine.data import datastat
-
-from datastat import GameData
+from engine.data.datastat import GameData
 
 stat_convert = utility.stat_convert
 load_image = utility.load_image
 load_images = utility.load_images
 csv_read = utility.csv_read
-lore_csv_read = utility.lore_csv_read
 fcv = utility.filename_convert_readable
 
 
@@ -84,7 +81,7 @@ class BattleMapData(GameData):
                          self.feature_mod[row[0]]["Night Temperature"]) / 2)
         edit_file.close()
 
-        self.feature_mod_lore = self.localisation["feature_effect"]
+        self.feature_mod_lore = self.localisation.create_lore_data("terrain_effect")
 
         self.empty_image = pygame.Surface((0, 0))  # empty texture image
         self.camp_image = load_image(self.module_dir, (1, 1), "camp.png",
@@ -139,7 +136,7 @@ class BattleMapData(GameData):
         self.weather_list = tuple(self.weather_list)
         edit_file.close()
 
-        self.weather_lore = self.localisation["weather"]
+        self.weather_lore = self.localisation.create_lore_data("weather")
 
         self.weather_matter_images = {}
         for this_weather in weather_list:  # Load weather matter sprite image
@@ -177,20 +174,19 @@ class BattleMapData(GameData):
 
         self.preset_map_list = []  # map name list for map selection list
         self.preset_map_folder = []  # folder for reading later
+        self.battle_campaign = {}
 
         for file_campaign in sub1_directories:
             read_folder = Path(os.path.join(self.module_dir, "map", "preset", file_campaign))
+            campaign_file_name = os.sep.join(os.path.normpath(file_campaign).split(os.sep)[-1:])
             sub2_directories = [x for x in read_folder.iterdir() if x.is_dir()]
             for file_map in sub2_directories:
-                self.preset_map_folder.append(os.sep.join(os.path.normpath(file_map).split(os.sep)[-1:]))
-                print(self.preset_map_folder)
-                with open(os.path.join(str(file_map), "info" + ".csv"), encoding="utf-8",
-                          mode="r") as edit_file:
-                    rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-                    for row in rd:
-                        if row[0] != "Name":
-                            self.preset_map_list.append(row[0])
-                edit_file.close()
+                map_file_name = os.sep.join(os.path.normpath(file_map).split(os.sep)[-1:])
+                self.preset_map_folder.append(map_file_name)
+                map_name = self.localisation.grab_text(key=("preset_map", campaign_file_name,
+                                                            "info", map_file_name, "Name"))
+                self.preset_map_list.append(map_name)
+                self.battle_campaign[map_file_name] = campaign_file_name
 
         # Load custom map list
         read_folder = Path(os.path.join(self.module_dir, "map", "custom"))
@@ -199,12 +195,10 @@ class BattleMapData(GameData):
         self.battle_map_list = self.preset_map_list.copy() + ["Random"]
         self.battle_map_folder = self.preset_map_folder.copy() + ["Random"]
 
-        for file_campaign in sub1_directories:
-            self.battle_map_folder.append(os.sep.join(os.path.normpath(file_campaign).split(os.sep)[-1:]))
-            with open(os.path.join(str(file_campaign), "info" + ".csv"), encoding="utf-8",
-                      mode="r") as edit_file:
-                rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-                for row in rd:
-                    if row[0] != "Name":
-                        self.battle_map_list.append(row[0])
-            edit_file.close()
+        for file_map in sub1_directories:
+            self.battle_map_folder.append(os.sep.join(os.path.normpath(file_map).split(os.sep)[-1:]))
+
+            map_name = self.localisation.grab_text(key=("custom_map",
+                                                        os.sep.join(os.path.normpath(file_map).split(os.sep)[-1:]),
+                                                        "Name"))
+            self.battle_map_list.append(map_name)

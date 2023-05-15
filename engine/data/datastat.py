@@ -80,6 +80,8 @@ class TroopData(GameData):
             if value["Name"] in require_effect_list:
                 self.status_list[value["Name"]] = key
 
+        self.status_lore = self.localisation.create_lore_data("status")
+
         # Race dict
         self.race_list = {}
         with open(os.path.join(self.module_dir, "troop", "troop_race.csv"), encoding="utf-8", mode="r") as edit_file:
@@ -141,6 +143,8 @@ class TroopData(GameData):
                 self.skill_list[row[0]]["Shake Power"] = int(self.skill_list[row[0]]["Sound Distance"] / 10)
         edit_file.close()
 
+        self.skill_lore = self.localisation.create_lore_data("skill")
+
         # Troop trait dict
         self.trait_list = {}
         with open(os.path.join(self.module_dir, "troop", "troop_trait.csv"),
@@ -168,6 +172,8 @@ class TroopData(GameData):
                                        tuple_column=tuple_column, int_column=int_column)
                 self.trait_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
+
+        self.trait_lore = self.localisation.create_lore_data("trait")
 
         # Equipment grade dict
         self.equipment_grade_list = {}
@@ -218,6 +224,8 @@ class TroopData(GameData):
                         self.weapon_list[row[0]]["Bullet Sound Distance"] / 10)
             edit_file.close()
 
+        self.weapon_lore = self.localisation.create_lore_data("weapon")
+
         # Armour dict
         self.armour_list = {}
         with open(os.path.join(self.module_dir, "troop", "troop_armour.csv"),
@@ -237,6 +245,8 @@ class TroopData(GameData):
                 self.armour_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
+        self.armour_lore = self.localisation.create_lore_data("troop_armour")
+
         # Mount dict
         self.mount_list = {}
         with open(os.path.join(self.module_dir, "troop", "mount.csv"),
@@ -255,6 +265,8 @@ class TroopData(GameData):
                                        int_column=int_column)
                 self.mount_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
+
+        self.mount_lore = self.localisation.create_lore_data("mount")
 
         # Mount grade dict
         self.mount_grade_list = {}
@@ -290,6 +302,8 @@ class TroopData(GameData):
                                                   enumerate(row[1:])}
         edit_file.close()
 
+        self.mount_armour_lore = self.localisation.create_lore_data("mount_armour")
+
         # Troop stat dict
         self.troop_list = {}
         with open(os.path.join(self.module_dir, "troop", "preset", "troop_preset.csv"),
@@ -323,6 +337,8 @@ class TroopData(GameData):
                         self.troop_list[key]["size"] = self.race_list[self.troop_list[key]["Race"]]["Size"] / 10
 
         self.troop_name_list = [value["Name"] for value in self.troop_list.values()]
+
+        self.troop_lore = self.localisation.create_lore_data("troop")
 
         # Troop sprite
         self.troop_sprite_list = {}
@@ -462,6 +478,8 @@ class LeaderData(GameData):
                 self.leader_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
+        self.leader_lore = self.localisation.create_lore_data("leader")
+
         # Add leader race size to data
         for key in self.leader_list:
             self.leader_list[key]["Size"] = 1
@@ -512,6 +530,8 @@ class FactionData(GameData):
             edit_file.close()
 
         self.faction_name_list = [value["Name"] for value in self.faction_list.values()]
+
+        self.faction_lore = self.localisation.create_lore_data("faction")
 
         self.faction_unit_list = {}
         part_folder = Path(os.path.join(self.module_dir, "faction", "unit"))
