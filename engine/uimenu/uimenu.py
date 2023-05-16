@@ -432,31 +432,33 @@ class BrownMenuButton(UIMenu, Containable):
         return (.5,.1)
 
 
-
     def __init__(self, pos, key_name="", width=200, parent=None):
         UIMenu.__init__(self)
         self.pos = pos
         self.parent = parent
         self.key_name = key_name
         self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
+        self.mouse_over = False
+        self.event = False
         self.refresh()
 
     def refresh(self):
         key_name = self.key_name
         images = self.make_buttons(size=tuple(self.rect[2:]))
-        self.button_normal_image = images[0].copy()
-        self.button_over_image = images[1].copy()
+        button_normal_image = images[0].copy()
+        button_over_image = images[1].copy()
         font = pygame.font.Font(self.ui_font["main_button"], 17)
 
         # draw text into the button images
         text = self.localisation.grab_text(key=("ui", key_name))
         text_surface = font.render(text, True, (200, 180, 200))
-        text_rect = text_surface.get_rect(center=self.button_normal_image.get_rect().center)
-        self.button_normal_image.blit(text_surface, text_rect)
-        self.button_over_image.blit(text_surface, text_rect)
+        text_rect = text_surface.get_rect(center=button_normal_image.get_rect().center)
+        button_normal_image.blit(text_surface, text_rect)
+        button_over_image.blit(text_surface, text_rect)
 
-        self.image = self.button_normal_image
-        self.event = False
+        self.image = button_normal_image
+        if self.mouse_over:
+            self.image = button_over_image
 
     def get_relative_position_inside_container(self):
         return {
@@ -466,10 +468,8 @@ class BrownMenuButton(UIMenu, Containable):
 
     def update(self, mouse_pos, mouse_up, mouse_down, *args):
         self.mouse_over = False
-        self.image = self.button_normal_image
         if self.rect.collidepoint(mouse_pos):
             self.mouse_over = True
-            self.image = self.button_over_image
             if mouse_up:
                 self.event = True
 
@@ -1159,12 +1159,16 @@ class ListUI(UIMenu, Containable):
         self.pivot = pivot
         self.origin = origin
         self.frame = load_image(game.module_dir, (1, 1), "list_frame.png", ("ui", "mainmenu_ui"))
+        self.scroll_box_frame = load_image(game.module_dir, (1, 1), "scroll_box_frame.png", ("ui", "mainmenu_ui"))
+
+        self.scroll_box = make_image_by_frame(self.scroll_box_frame, (14,40))
         self.on_click = on_click
+        self.scroll_box_down = 0
 
-
-        self.click_ready = False
+        self.click_ready = True
         self.size = size
         self.items = items
+        self.hold_scroll_box = False
 
         self.selected_index = None
         self.image = self.get_refreshed_image()
@@ -1172,7 +1176,6 @@ class ListUI(UIMenu, Containable):
 
     def get_refreshed_image(self):
         self.image = make_image_by_frame(self.frame, self.size)
-        import random
         font = pygame.font.Font(self.ui_font["main_button"], 18)
 
 
@@ -1182,20 +1185,38 @@ class ListUI(UIMenu, Containable):
 
         for e, item in enumerate(self.items):
             self.image.blit(font.render(item, True, ( 255 if e == self.selected_index else 178,)*3), (20, 20+e*36))
+
+
+        pygame.draw.rect(self.image, "black", (self.size[0]-18,6,14,self.size[1]-12))
+
+        self.image.blit(self.scroll_box,(self.size[0]-18,self.scroll_box_down+6))
+
         return self.image
 
 
-    def update(self, mouse_pos, mouse_up, mouse_down):
+    def update(self, mouse_pos, mouse_up, mouse_down, *args):
+
+        print(mouse_up, mouse_down, args)
+
         self.mouse_over = False
         self.selected_index = None
         if mouse_up:
             self.click_ready = True
+            self.hold_scroll_box = False
         if self.rect.collidepoint(mouse_pos):
-            self.selected_index = (mouse_pos[1]-11)//36
-            self.mouse_over = True
+            if mouse_pos[0] < self.rect[0] + self.rect[2] - 18:
+                self.selected_index = (mouse_pos[1]-11)//36
+                self.mouse_over = True
         if self.click_ready and mouse_down and self.selected_index is not None:
             self.click_ready = False
             self.on_click(self.selected_index, self.items[self.selected_index])
+        if self.rect.collidepoint(mouse_pos):
+            if self.click_ready and mouse_down and mouse_pos[0] >= self.rect[0] + self.rect[2] - 18:
+                self.click_ready = False
+                self.hold_scroll_box = True
+
+        if self.hold_scroll_box:
+            self.scroll_box_down = mouse_pos[1]-self.rect[1]-22
 
 
         self.image = self.get_refreshed_image()
