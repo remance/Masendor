@@ -468,7 +468,7 @@ class Unit(sprite.Sprite):
             sprite_list = self.troop_sprite_list
             stat = self.troop_data.troop_list[self.troop_id]
             lore = self.troop_data.troop_lore[self.troop_id]
-            self.name = lore[0]  # name according to the preset
+            self.name = lore["Name"]  # name according to the preset
             self.grade = stat["Grade"]  # training level/class grade
             grade_stat = self.troop_data.grade_list[self.grade]
 
@@ -488,7 +488,7 @@ class Unit(sprite.Sprite):
             sprite_list = self.leader_sprite_list
             stat = self.leader_data.leader_list[troop_id]
             lore = self.leader_data.leader_lore[troop_id]
-            self.name = lore[0]  # name according to the preset
+            self.name = lore["Name"]  # name according to the preset
             self.grade = 12  # leader grade by default
             grade_stat = self.troop_data.grade_list[self.grade]
 
@@ -537,8 +537,8 @@ class Unit(sprite.Sprite):
             self.group_distance_list = {}
             self.group_pos_list = {}
 
-            if self.troop_id in self.leader_data.images:  # Put leader image into leader slot
-                self.portrait = self.leader_data.images[self.troop_id].copy()
+            if self.troop_id.lower() in self.leader_data.images:  # Put leader image into leader slot
+                self.portrait = self.leader_data.images[self.troop_id.lower()].copy()
             else:  # Use Unknown leader image if there is no specific portrait in data
                 self.portrait = self.leader_data.images["other"].copy()
                 name = self.name.split(" ")[0]

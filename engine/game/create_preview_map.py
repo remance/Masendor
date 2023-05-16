@@ -8,8 +8,15 @@ load_images = utility.load_images
 
 def create_preview_map(self):
     # Create map preview image
-    if self.battle_map_folder[self.current_map_select] != "Random":
-        map_images = load_images(self.module_dir, subfolder=("map", "preset", self.battle_map_folder[self.current_map_select]))
+    map_name = self.battle_map_folder[self.current_map_select]
+    if map_name != "Random":
+        if map_name in self.battle_campaign:  # campaign preset map
+            map_images = load_images(self.module_dir, subfolder=("map", "preset",
+                                                                 self.battle_campaign[map_name],
+                                                                 map_name))
+        else:  # custom map
+            map_images = load_images(self.module_dir,
+                                     subfolder=("map", "custom", self.battle_map_folder[self.current_map_select]))
     else:  # random map
         terrain, feature, height = battlemap.create_random_map(self.battle_map_data.terrain_colour,
                                                                self.battle_map_data.feature_colour,
@@ -24,8 +31,7 @@ def create_preview_map(self):
     self.main_ui_updater.add(self.map_title)
 
     # Create map description
-    self.map_info = self.read_selected_map_data(self.battle_map_folder, "info_" + self.language + ".csv")
+    self.map_info = self.read_selected_map_lore()
 
-    description = [self.map_info[self.battle_map_list[self.current_map_select]]["Description 1"],
-                   self.map_info[self.battle_map_list[self.current_map_select]]["Description 2"]]
+    # description = [self.map_info["Description 1"], self.map_info["Description 2"]]
     # self.map_description.change_text(description, self.mouse_pos)

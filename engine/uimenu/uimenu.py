@@ -340,9 +340,10 @@ class MenuButton(UIMenu, pygame.sprite.Sprite):
         self.base_image1 = self.button_over_image.copy()
         self.base_image2 = self.button_click_image.copy()
 
+        self.text = ""
         if key_name != "":  # draw text into the button images
-            text = self.localisation.grab_text("ui", key_name)
-            text_surface = self.font.render(text, True, (0, 0, 0))
+            self.text = self.localisation.grab_text(key=("ui", key_name,))
+            text_surface = self.font.render(self.text, True, (0, 0, 0))
             text_rect = text_surface.get_rect(center=self.button_normal_image.get_rect().center)
             self.button_normal_image.blit(text_surface, text_rect)
             self.button_over_image.blit(text_surface, text_rect)
@@ -365,11 +366,11 @@ class MenuButton(UIMenu, pygame.sprite.Sprite):
 
     def change_state(self, key_name):
         if key_name != "":
-            text = self.localisation.grab_text("ui", key_name)
+            self.text = self.localisation.grab_text(key=("ui", key_name))
             self.button_normal_image = self.base_image0.copy()
             self.button_over_image = self.base_image1.copy()
             self.button_click_image = self.base_image2.copy()
-            text_surface = self.font.render(text, True, (0, 0, 0))
+            text_surface = self.font.render(self.text, True, (0, 0, 0))
             text_rect = text_surface.get_rect(center=self.button_normal_image.get_rect().center)
             self.button_normal_image.blit(text_surface, text_rect)
             self.button_over_image.blit(text_surface, text_rect)
@@ -448,7 +449,7 @@ class BrownMenuButton(UIMenu, Containable):
         font = pygame.font.Font(self.ui_font["main_button"], 17)
 
         # draw text into the button images
-        text = self.localisation.grab_text("ui", key_name)
+        text = self.localisation.grab_text(key=("ui", key_name))
         text_surface = font.render(text, True, (200, 180, 200))
         text_rect = text_surface.get_rect(center=self.button_normal_image.get_rect().center)
         self.button_normal_image.blit(text_surface, text_rect)

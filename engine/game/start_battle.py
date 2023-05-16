@@ -5,7 +5,7 @@ import pygame
 
 def start_battle(self, player_unit=None):
     self.error_log.write("\n Map: " + str(self.map_title.name) + ", Source: " +
-                         str(self.source_name_list[self.map_source]) + ", Character: " + str(player_unit) + "\n")
+                         str(self.map_source) + ", Character: " + str(player_unit) + "\n")
 
     selected_player_unit = player_unit
     if self.enactment:
@@ -13,7 +13,7 @@ def start_battle(self, player_unit=None):
 
     self.battle.prepare_new_game(self.team_selected, self.map_type,
                                  self.map_selected, self.map_source, selected_player_unit,
-                                 self.map_data, self.camp_pos)
+                                 self.source_data, self.camp_pos)
     self.battle.run_game()
     pygame.mixer.music.unload()
     pygame.mixer.music.set_endevent(self.SONG_END)

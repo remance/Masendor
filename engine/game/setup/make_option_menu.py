@@ -26,6 +26,7 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
     # Create option menu button and icon
     from engine.game import game
     localisation = game.Game.localisation
+    resolution_list = game.Game.resolution_list
     font_size = int(32 * screen_scale[1])
 
     back_button = uimenu.MenuButton(image_list, (screen_rect.width / 3, screen_rect.height / 1.2),
@@ -43,7 +44,7 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
 
     fullscreen_text = uimenu.OptionMenuText(
         (fullscreen_box.pos[0] - (fullscreen_box.pos[0] / 4.5), fullscreen_box.pos[1]),
-        localisation.grab_text("ui", "option_full_screen"), font_size)
+        localisation.grab_text(key=("ui", "option_full_screen", )), font_size)
 
     # Volume change scroll bar
     option_menu_images = load_images(main_dir, screen_scale=screen_scale, subfolder=("ui", "option_ui", "slider"))
@@ -67,7 +68,8 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
                                     volume_slider[key].value, int(26 * screen_scale[1])) for key in volume_slider}
 
     volume_texts = {key: uimenu.OptionMenuText((volume_slider[key].pos[0] - (volume_slider[key].pos[0] / 4.5),
-                                                volume_slider[key].pos[1]), localisation.grab_text("ui", "option_" + key + "_volume"),
+                                                volume_slider[key].pos[1]),
+                                               localisation.grab_text(key=("ui", "option_" + key + "_volume",)),
                                                font_size) for key in volume_slider}
 
     # Resolution changing bar that fold out the list when clicked
@@ -78,47 +80,48 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
     resolution_drop = uimenu.MenuButton(image_list, (screen_rect.width / 2, screen_rect.height / 1.8),
                                         updater, key_name=str(screen_width) + " x " + str(screen_height),
                                         size=int(30 * screen_scale[1]))
-    resolution_list = ("3200 x 1800", "2560 x 1440", "1920 x 1080", "1600 x 900", "1360 x 768",
-                       "1280 x 720", "1024 x 576", "960 x 540", "854 x 480")  # add more here
+
     resolution_bar = make_bar_list(main_dir, screen_scale, resolution_list, resolution_drop, updater)
 
     resolution_text = uimenu.OptionMenuText((resolution_drop.pos[0] - (resolution_drop.pos[0] / 4.5),
-                                           resolution_drop.pos[1]), localisation.grab_text("ui", "option_display_resolution"), font_size)
+                                             resolution_drop.pos[1]),
+                                            localisation.grab_text(key=("ui", "option_display_resolution",)),
+                                            font_size)
 
     keybind_text = {"Main Weapon Attack": uimenu.OptionMenuText((screen_rect.width / 4, screen_rect.height / 5),
-                                                                localisation.grab_text("ui", "keybind_main_weapon_attack"), font_size),
+                                                                localisation.grab_text(key=("ui", "keybind_main_weapon_attack",)), font_size),
                     "Sub Weapon Attack": uimenu.OptionMenuText((screen_rect.width / 4, screen_rect.height / 3.5),
-                                                             localisation.grab_text("ui", "keybind_sub_weapon_attack"), font_size),
+                                                             localisation.grab_text(key=("ui", "keybind_sub_weapon_attack",)), font_size),
                     "Move Left": uimenu.OptionMenuText((screen_rect.width / 4, screen_rect.height / 2.5),
-                                                     localisation.grab_text("ui", "keybind_move_left"), font_size),
+                                                     localisation.grab_text(key=("ui", "keybind_move_left",)), font_size),
                     "Move Right": uimenu.OptionMenuText((screen_rect.width / 4, screen_rect.height / 2),
-                                                      localisation.grab_text("ui", "keybind_move_right"), font_size),
+                                                      localisation.grab_text(key=("ui", "keybind_move_right",)), font_size),
                     "Move Up": uimenu.OptionMenuText((screen_rect.width / 4, screen_rect.height / 1.7),
-                                                   localisation.grab_text("ui", "keybind_move_up"), font_size),
+                                                   localisation.grab_text(key=("ui", "keybind_move_up",)), font_size),
                     "Move Down": uimenu.OptionMenuText((screen_rect.width / 4, screen_rect.height / 1.5),
-                                                     localisation.grab_text("ui", "keybind_move_down"), font_size),
+                                                     localisation.grab_text(key=("ui", "keybind_move_down",)), font_size),
                     "Menu/Cancel": uimenu.OptionMenuText((screen_rect.width / 2, screen_rect.height / 5),
-                                                       localisation.grab_text("ui", "keybind_menu"), font_size),
+                                                       localisation.grab_text(key=("ui", "keybind_menu",)), font_size),
                     "Order Menu": uimenu.OptionMenuText((screen_rect.width / 2, screen_rect.height / 3.5),
-                                                      localisation.grab_text("ui", "keybind_order_menu"), font_size),
+                                                      localisation.grab_text(key=("ui", "keybind_order_menu",)), font_size),
                     "Run Input": uimenu.OptionMenuText((screen_rect.width / 2, screen_rect.height / 2.5),
-                                                     localisation.grab_text("ui", "keybind_run_input"), font_size),
+                                                     localisation.grab_text(key=("ui", "keybind_run_input",)), font_size),
                     "Skill 1": uimenu.OptionMenuText((screen_rect.width / 2, screen_rect.height / 2),
-                                                   localisation.grab_text("ui", "keybind_skill1"), font_size),
+                                                   localisation.grab_text(key=("ui", "keybind_skill1",)), font_size),
                     "Skill 2": uimenu.OptionMenuText((screen_rect.width / 2, screen_rect.height / 1.7),
-                                                   localisation.grab_text("ui", "keybind_skill2"), font_size),
+                                                   localisation.grab_text(key=("ui", "keybind_skill2",)), font_size),
                     "Skill 3": uimenu.OptionMenuText((screen_rect.width / 2, screen_rect.height / 1.5),
-                                                   localisation.grab_text("ui", "keybind_skill3"), font_size),
+                                                   localisation.grab_text(key=("ui", "keybind_skill3",)), font_size),
                     "Skill 4": uimenu.OptionMenuText((screen_rect.width / 1.2, screen_rect.height / 5),
-                                                   localisation.grab_text("ui", "keybind_skill4"), font_size),
+                                                   localisation.grab_text(key=("ui", "keybind_skill4",)), font_size),
                     "Swap Weapon Set 1": uimenu.OptionMenuText((screen_rect.width / 1.2, screen_rect.height / 3.5),
-                                                             localisation.grab_text("ui", "keybind_swap_weapon_set1"), font_size),
+                                                             localisation.grab_text(key=("ui", "keybind_swap_weapon_set1",)), font_size),
                     "Swap Weapon Set 2": uimenu.OptionMenuText((screen_rect.width / 1.2, screen_rect.height / 2.5),
-                                                             localisation.grab_text("ui", "keybind_swap_weapon_set2"), font_size),
+                                                             localisation.grab_text(key=("ui", "keybind_swap_weapon_set2",)), font_size),
                     "Toggle Run": uimenu.OptionMenuText((screen_rect.width / 1.2, screen_rect.height / 2),
-                                                      localisation.grab_text("ui", "keybind_toggle_run"), font_size),
+                                                      localisation.grab_text(key=("ui", "keybind_toggle_run",)), font_size),
                     "Auto Move": uimenu.OptionMenuText((screen_rect.width / 1.2, screen_rect.height / 1.7),
-                                                     localisation.grab_text("ui", "keybind_auto_move"), font_size)}
+                                                     localisation.grab_text(key=("ui", "keybind_auto_move",)), font_size)}
 
     control_type = "keyboard"  # make default keyboard for now, get changed later when player enter keybind menu
     keybind = keybind[control_type]

@@ -76,3 +76,6 @@
 75,"Cone Shot",1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,15,,"Buff"
 76,"Inferior Weapon Quality",1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,16,,"Debuff"
 77,"Only Suitable For Flat Terrain",1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,11,,"Debuff"
+78,"Unreliable Weapon",1,,-0.25,,,,-0.25,,,,,,,,,,,,,,,,,,,,,,,,,,
+79,"Very Unreliable Weapon",1,,0.5,,,,0.5,,,,,,,,,,,,,,,,,,,,,,,,,,
+80,"Semi Arc Shot Only",1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

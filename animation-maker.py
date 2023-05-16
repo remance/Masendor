@@ -15,6 +15,7 @@ from engine.data import datastat
 from engine.uimenu import uimenu
 from engine.uibattle import uibattle
 from engine.game.game import Game
+from engine.data.datalocalisation import Localisation
 from engine import utility
 
 csv_read = utility.csv_read
@@ -61,11 +62,19 @@ module_list = csv_read(main_dir, "module_list.csv", ("data", "module"))  # get m
 module_folder = str(module_list[module][0]).strip("/").lower()
 data_dir = os.path.join(main_dir, "data")
 module_dir = os.path.join(data_dir, "module", module_folder)
+language = "en"
 
+Game.main_dir = main_dir
+Game.data_dir = data_dir
+Game.module_dir = module_dir
 Game.screen_size = screen_size
 Game.screen_scale = screen_scale
+Game.language = language
 Game.ui_font = csv_read(module_dir, "ui_font.csv", ("ui",), header_key=True)
 Game.font_dir = os.path.join(data_dir, "font")
+
+localisation = Localisation()
+Game.localisation = localisation
 for item in Game.ui_font:  # add ttf file extension for font data reading.
     Game.ui_font[item] = os.path.join(Game.font_dir, Game.ui_font[item]["Font"] + ".ttf")
 
@@ -1970,11 +1979,11 @@ image_list = load_base_button(module_dir, screen_scale)
 
 input_ok_button = uimenu.MenuButton(image_list, pos=(input_ui.rect.midleft[0] + image_list[0].get_width(),
                                                      input_ui.rect.midleft[1] + image_list[0].get_height()),
-                                  text="Confirm", layer=31)
+                                    key_name="Confirm", layer=31)
 input_cancel_button = uimenu.MenuButton(image_list,
                                         pos=(input_ui.rect.midright[0] - image_list[0].get_width(),
                                            input_ui.rect.midright[1] + image_list[0].get_height()),
-                                        text="Cancel", layer=31)
+                                        key_name="Cancel", layer=31)
 input_button = (input_ok_button, input_cancel_button)
 input_box = uimenu.InputBox(input_ui.rect.center, input_ui.image.get_width())  # user text input box
 
@@ -1993,10 +2002,10 @@ colour_input_box = uimenu.InputBox((colour_ui.rect.center[0], colour_ui.rect.cen
 
 colour_ok_button = uimenu.MenuButton(image_list, pos=(colour_ui.rect.midleft[0] + image_list[0].get_width(),
                                                       colour_ui.rect.midleft[1] + (image_list[0].get_height() * 2)),
-                                   text="Confirm", layer=31)
+                                   key_name="Confirm", layer=31)
 colour_cancel_button = uimenu.MenuButton(image_list, pos=(colour_ui.rect.midright[0] - image_list[0].get_width(),
                                                           colour_ui.rect.midright[1] + (image_list[0].get_height() * 2)),
-                                         text="Cancel", layer=31)
+                                         key_name="Cancel", layer=31)
 colour_ui_popup = (colour_ui, colour_wheel, colour_input_box, colour_ok_button, colour_cancel_button)
 
 box_img = load_image(current_data_dir, screen_scale, "property_box.png", "animation_maker_ui")

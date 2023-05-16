@@ -161,41 +161,45 @@ def csv_read(main_dir, file, subfolder=(), output_type="dict", header_key=False,
         folder_dir = os.path.join(folder_dir, folder)
     folder_dir = os.path.join(folder_dir, file)
     folder_dir = os.path.join(main_dir, folder_dir)
-    with open(folder_dir, encoding="utf-8", mode="r") as edit_file:
-        rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
-        rd = [row for row in rd]
-        header = rd[0]
-        for row_index, row in enumerate(rd):
-            for n, i in enumerate(row):
-                if i.isdigit() or ("-" in i and re.search("[a-zA-Z]", i) is None):
-                    row[n] = int(i)
-                elif re.search("[a-zA-Z]", i) is None and "." in i:
-                    row[n] = float(i)
-            if output_type == "dict":  # return as dict
-                if header_key:
-                    if row_index > 0:  # skip header row
-                        return_output[row[0]] = {header[index + 1]: item for index, item in enumerate(row[1:])}
-                else:
-                    if dict_value_return_as_str:
-                        return_output[row[0]] = ",".join(row[1:])
+    try:
+        with open(folder_dir, encoding="utf-8", mode="r") as edit_file:
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+            rd = [row for row in rd]
+            header = rd[0]
+            for row_index, row in enumerate(rd):
+                for n, i in enumerate(row):
+                    if i.isdigit() or ("-" in i and re.search("[a-zA-Z]", i) is None):
+                        row[n] = int(i)
+                    elif re.search("[a-zA-Z]", i) is None and "." in i:
+                        row[n] = float(i)
+                if output_type == "dict":  # return as dict
+                    if header_key:
+                        if row_index > 0:  # skip header row
+                            return_output[row[0]] = {header[index + 1]: item for index, item in enumerate(row[1:])}
                     else:
-                        return_output[row[0]] = row[1:]
-            elif output_type == "list":  # return as list
-                return_output.append(row)
-        edit_file.close()
+                        if dict_value_return_as_str:
+                            return_output[row[0]] = ",".join(row[1:])
+                        else:
+                            return_output[row[0]] = row[1:]
+                elif output_type == "list":  # return as list
+                    return_output.append(row)
+            edit_file.close()
+    except FileNotFoundError as b:
+        print(b)
     return return_output
 
 
 def lore_csv_read(edit_file, input_dict):
     rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
     rd = [row for row in rd]
-    for index, row in enumerate(rd):
+    for index, row in enumerate(rd[1:]):
         for n, i in enumerate(row):
             if i.isdigit():
                 row[n] = int(i)
         input_dict[row[0]] = [stuff for index, stuff in enumerate(row[1:])]
         while len(input_dict[row[0]]) > 2 and input_dict[row[0]][-1] == "":  # keep remove last empty text
             input_dict[row[0]] = input_dict[row[0]][:-1]
+        input_dict[row[0]] = {rd[0][index + 1]: value for index, value in enumerate(input_dict[row[0]])}
 
 
 def load_sound(main_dir, file):
