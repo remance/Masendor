@@ -51,6 +51,7 @@ def make_image_by_frame(frame: pygame.Surface, final_size):
 
 
 class UIMenu(pygame.sprite.Sprite):
+
     def __init__(self):
         """
         Parent class for all menu user interface
@@ -63,6 +64,7 @@ class UIMenu(pygame.sprite.Sprite):
         self.ui_font = Game.ui_font
         self.screen_size = Game.screen_size
         self.localisation = Game.localisation
+        self.cursor = Game.cursor
         pygame.sprite.Sprite.__init__(self)
 
 
@@ -75,11 +77,36 @@ class Cursor(UIMenu):
         self.image = images["normal"]
         self.pos = (0, 0)
         self.rect = self.image.get_rect(topleft=self.pos)
+        self.is_mouse_left_just_down = False
+        self.is_mouse_left_down = False
+        self.is_mouse_left_just_up = False
 
-    def update(self, mouse_pos, mouse_left_up, mouse_left_down, *args):
-        """Update cursor position based on mouse position"""
+    def update(self, mouse_pos, *args):
+        """Update cursor position based on mouse position and mouse button click"""
         self.pos = mouse_pos
         self.rect.topleft = self.pos
+        if pygame.mouse.get_pressed()[0]:  # press left click
+            print('test', self.is_mouse_left_down)
+            if not self.is_mouse_left_just_down:
+                if not self.is_mouse_left_down:  # fresh press
+                    self.is_mouse_left_just_down = True
+                    print('press left')
+            else:  # already press in previous frame, now hold until release
+                self.is_mouse_left_just_down = False
+                self.is_mouse_left_down = True
+                print('hold left')
+        else:
+            self.is_mouse_left_just_down = False
+            if self.is_mouse_left_just_down or self.is_mouse_left_down:
+                self.is_mouse_left_just_up = True
+                self.is_mouse_left_just_down = False
+                self.is_mouse_left_down = False
+                print('release left')
+            elif self.is_mouse_left_just_up:
+                self.is_mouse_left_just_up = False
+                print('done release left')
+        # elif pygame.mouse.get_pressed()[2]:  # press right click
+        #     self.mouse_right_down = True
 
     def change_image(self, image_name):
         """Change cursor image to whatever input name"""

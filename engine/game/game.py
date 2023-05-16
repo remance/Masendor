@@ -75,6 +75,7 @@ class Game:
     ui_font = None
     language = None
     localisation = None
+    cursor = None
 
     screen_scale = (1, 1)
     screen_size = ()
@@ -391,6 +392,7 @@ class Game:
         # Create game cursor
         cursor_images = load_images(self.module_dir, subfolder=("ui", "cursor"))  # no need to scale cursor
         self.cursor = uimenu.Cursor(cursor_images)
+        Game.cursor = self.cursor
         self.main_ui_updater.add(self.cursor)
         self.battle_ui_updater.add(self.cursor)
 
