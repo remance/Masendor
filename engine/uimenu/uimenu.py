@@ -86,25 +86,20 @@ class Cursor(UIMenu):
         self.pos = mouse_pos
         self.rect.topleft = self.pos
         if pygame.mouse.get_pressed()[0]:  # press left click
-            print('test', self.is_mouse_left_down)
             if not self.is_mouse_left_just_down:
                 if not self.is_mouse_left_down:  # fresh press
                     self.is_mouse_left_just_down = True
-                    print('press left')
             else:  # already press in previous frame, now hold until release
                 self.is_mouse_left_just_down = False
                 self.is_mouse_left_down = True
-                print('hold left')
         else:
             self.is_mouse_left_just_down = False
             if self.is_mouse_left_just_down or self.is_mouse_left_down:
                 self.is_mouse_left_just_up = True
                 self.is_mouse_left_just_down = False
                 self.is_mouse_left_down = False
-                print('release left')
             elif self.is_mouse_left_just_up:
                 self.is_mouse_left_just_up = False
-                print('done release left')
         # elif pygame.mouse.get_pressed()[2]:  # press right click
         #     self.mouse_right_down = True
 
@@ -1223,28 +1218,35 @@ class ListUI(UIMenu, Containable):
 
     def update(self, mouse_pos, mouse_up, mouse_down, *args):
 
-        print(mouse_up, mouse_down, args)
-
+        in_scroll_bar = False
+        in_list = False
         self.mouse_over = False
         self.selected_index = None
-        if mouse_up:
-            self.click_ready = True
+        mljd = self.cursor.is_mouse_left_just_down
+        mld = self.cursor.is_mouse_left_down
+
+        if self.rect.collidepoint(mouse_pos):
+            self.mouse_over = True
+            if mouse_pos[0] >= self.rect[0] + self.rect[2] - 18:
+                in_scroll_bar = True
+            else:
+                in_list = True
+        if not mld:
             self.hold_scroll_box = False
-        if self.rect.collidepoint(mouse_pos):
-            if mouse_pos[0] < self.rect[0] + self.rect[2] - 18:
-                self.selected_index = (mouse_pos[1]-11)//36
-                self.mouse_over = True
-        if self.click_ready and mouse_down and self.selected_index is not None:
-            self.click_ready = False
-            self.on_click(self.selected_index, self.items[self.selected_index])
-        if self.rect.collidepoint(mouse_pos):
-            if self.click_ready and mouse_down and mouse_pos[0] >= self.rect[0] + self.rect[2] - 18:
-                self.click_ready = False
-                self.hold_scroll_box = True
+        if mljd and in_scroll_bar:
+            self.hold_scroll_box = True
 
         if self.hold_scroll_box:
-            self.scroll_box_down = mouse_pos[1]-self.rect[1]-22
+            m = mouse_pos[1]-self.rect[1]-22
+            if m < 0: m = 0
+            if m > self.size[1]-52: m = self.size[1]-52
+            self.scroll_box_down = m
 
+        if in_list and not self.hold_scroll_box:
+            self.selected_index = (mouse_pos[1]-10)//36
+
+        if in_list and mljd and self.selected_index is not None:
+            self.on_click(self.selected_index, self.items[self.selected_index])
 
         self.image = self.get_refreshed_image()
 
