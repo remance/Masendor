@@ -412,22 +412,14 @@ class BrownMenuButton(UIMenu, Containable):
 
     @classmethod
     @lru_cache
-    def make_buttons(cls, width):
+    def make_buttons(cls, size):
         from engine.game.game import Game
         from engine.utility import load_image
         game = Game.game
 
-        image = load_image(game.module_dir, (1, 1), "new_button.png", ("ui", "mainmenu_ui"))
+        frame = load_image(game.module_dir, (1, 1), "new_button.png", ("ui", "mainmenu_ui"))
 
-        height = image.get_size()[1]
-
-        # normal button
-        normal_button = pygame.Surface((width, height))
-
-        normal_button.blit(image, (0, 0), (0, 0, 6, height))
-        for x in range(6, width - 5):
-            normal_button.blit(image, (x, 0), (6, 0, 1, height))
-        normal_button.blit(image, (width - 5, 0), (7, 0, 12, height))
+        normal_button = make_image_by_frame(frame, size)
 
         # hover button
         hover_button = normal_button.copy()
@@ -435,11 +427,22 @@ class BrownMenuButton(UIMenu, Containable):
 
         return (normal_button, hover_button)
 
+    def get_relative_size_inside_container(self):
+        return (.5,.1)
+
+
+
     def __init__(self, pos, key_name="", width=200, parent=None):
         UIMenu.__init__(self)
         self.pos = pos
         self.parent = parent
-        images = self.make_buttons(width=width)
+        self.key_name = key_name
+        self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
+        self.refresh()
+
+    def refresh(self):
+        key_name = self.key_name
+        images = self.make_buttons(size=tuple(self.rect[2:]))
         self.button_normal_image = images[0].copy()
         self.button_over_image = images[1].copy()
         font = pygame.font.Font(self.ui_font["main_button"], 17)
@@ -452,7 +455,6 @@ class BrownMenuButton(UIMenu, Containable):
         self.button_over_image.blit(text_surface, text_rect)
 
         self.image = self.button_normal_image
-        self.rect = self.button_normal_image.get_rect(center=self.pos)
         self.event = False
 
     def get_relative_position_inside_container(self):
@@ -471,6 +473,8 @@ class BrownMenuButton(UIMenu, Containable):
                 self.event = True
 
         self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
+        self.refresh() 
+
 
     def get_size(self):
         return self.image.get_size()
