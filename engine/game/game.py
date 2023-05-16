@@ -173,8 +173,8 @@ class Game:
     from engine.game import menu_custom_unit_setup
     menu_custom_unit_setup = menu_custom_unit_setup.menu_custom_unit_setup
 
-    from engine.game import read_selected_map_data
-    read_selected_map_data = read_selected_map_data.read_selected_map_data
+    from engine.game import read_selected_map_lore
+    read_selected_map_lore = read_selected_map_lore.read_selected_map_lore
 
     from engine.game import start_battle
     start_battle = start_battle.start_battle
@@ -192,7 +192,7 @@ class Game:
                             4: (150, 255, 150), 5: (255, 150, 255), 6: (200, 140, 70), 7: (160, 200, 200),
                             8: (255, 150, 45), 9: (230, 140, 160), 10: (200, 190, 230)}
 
-    leader_skill_level_text = ("E", "E+", "D", "D+", "C", "C+", "B", "B+", "A", "A+", "S")
+    skill_level_text = ("E", "E+", "D", "D+", "C", "C+", "B", "B+", "A", "A+", "S")
 
     resolution_list = ("3200 x 1800", "2560 x 1440", "1920 x 1080", "1600 x 900", "1360 x 768",
                        "1280 x 720", "1024 x 576", "960 x 540", "854 x 480")
@@ -434,7 +434,8 @@ class Game:
         self.preset_map_folder = self.battle_map_data.preset_map_folder
         self.battle_map_list = self.battle_map_data.battle_map_list
         self.battle_map_folder = self.battle_map_data.battle_map_folder
-        self.battle_campaign = self.battle_map_data.battle_campaign
+        self.battle_campaign = self.battle_map_data.battle_campaign  # for reference to preset campaign
+        self.preset_map_data = self.battle_map_data.preset_map_data
 
         unit.Unit.troop_data = self.troop_data
         unit.Unit.leader_data = self.leader_data
@@ -789,7 +790,7 @@ class Game:
         lorebook.Lorebook.concept_lore = self.localisation.create_lore_data("concept")
         lorebook.Lorebook.history_stat = csv_read(self.module_dir, "history_stat.csv",
                                                   ("lore",), header_key=True)
-        lorebook.Lorebook.concept_lore = self.localisation.create_lore_data("history")
+        lorebook.Lorebook.history_lore = self.localisation.create_lore_data("history")
 
         lorebook.Lorebook.faction_data = self.faction_data
         lorebook.Lorebook.troop_data = self.troop_data

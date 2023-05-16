@@ -175,6 +175,7 @@ class BattleMapData(GameData):
         self.preset_map_list = []  # map name list for map selection list
         self.preset_map_folder = []  # folder for reading later
         self.battle_campaign = {}
+        self.preset_map_data = {}
 
         for file_campaign in sub1_directories:
             read_folder = Path(os.path.join(self.module_dir, "map", "preset", file_campaign))
@@ -187,6 +188,20 @@ class BattleMapData(GameData):
                                                             "info", map_file_name, "Name"))
                 self.preset_map_list.append(map_name)
                 self.battle_campaign[map_file_name] = campaign_file_name
+                self.preset_map_data[map_file_name] = {"source": csv_read(file_map, "source.csv", header_key=True)}
+
+                read_folder = Path(os.path.join(self.module_dir, "map", "preset", file_campaign, file_map))
+                sub3_directories = [x for x in read_folder.iterdir() if x.is_dir()]
+                for file_source in sub3_directories:
+                    source_file_name = os.sep.join(os.path.normpath(file_source).split(os.sep)[-1:])
+                    weather_data = csv_read(file_source, "weather.csv", output_type="list")[1:]
+                    if not weather:  # no weather data, make random
+                        weather_data = [[1, "09:00:00", 0, 0], ]
+                    self.preset_map_data[map_file_name][int(source_file_name)] = \
+                        {"unit": self.load_map_unit_data(campaign_file_name, map_file_name, source_file_name),
+                         "map_event": csv_read(file_source, "map_event.csv", header_key=True),
+                         "weather": weather_data,  # weather in list
+                         "eventlog": csv_read(file_source, "eventlog.csv", header_key=True)}
 
         # Load custom map list
         read_folder = Path(os.path.join(self.module_dir, "map", "custom"))
@@ -202,3 +217,30 @@ class BattleMapData(GameData):
                                                         os.sep.join(os.path.normpath(file_map).split(os.sep)[-1:]),
                                                         "Name"))
             self.battle_map_list.append(map_name)
+
+    def load_map_unit_data(self, campaign_id, map_id, map_source):
+        try:
+            with open(os.path.join(self.module_dir, "map", "preset", campaign_id, map_id, map_source,
+                                   "unit_pos.csv"), encoding="utf-8", mode="r") as unit_file:
+                rd = list(csv.reader(unit_file, quoting=csv.QUOTE_ALL))
+                header = rd[0]
+                int_column = ("ID", "Faction", "Team", "Leader")  # value int only
+                list_column = ("POS",)  # value in list only
+                float_column = ("Angle", "Start Health", "Start Stamina")  # value in float
+                dict_column = ("Troop",)
+                int_column = [index for index, item in enumerate(header) if item in int_column]
+                list_column = [index for index, item in enumerate(header) if item in list_column]
+                float_column = [index for index, item in enumerate(header) if item in float_column]
+                dict_column = [index for index, item in enumerate(header) if item in dict_column]
+
+                for data_index, data in enumerate(rd[1:]):  # skip header
+                    for n, i in enumerate(data):
+                        data = stat_convert(data, n, i, list_column=list_column, int_column=int_column,
+                                            float_column=float_column, dict_column=dict_column)
+                    rd[data_index + 1] = {header[index]: stuff for index, stuff in enumerate(data)}
+                troop_data = rd[1:]
+            unit_file.close()
+            return troop_data
+        except FileNotFoundError as b:
+            print(b)
+            return {}

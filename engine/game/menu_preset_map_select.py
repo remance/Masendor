@@ -114,7 +114,7 @@ def menu_preset_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
     elif self.source_list_box.rect.collidepoint(self.mouse_pos):
         self.current_source_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down,
                                               self.source_list_box.scroll, self.source_list_box,
-                                              self.current_source_row, self.source_list,
+                                              self.current_source_row, self.source_name_list,
                                               self.source_namegroup, self.main_ui_updater)
 
     elif self.unit_selector.rect.collidepoint(self.mouse_pos):
@@ -225,16 +225,22 @@ def leader_popup_text(self, icon):
                        self.troop_data.mount_list[stat["Mount"][0]]["Name"] + ", " + \
                        self.troop_data.mount_armour_list[stat["Mount"][2]]["Name"]
 
-    popup_text = [who.name, "Social Class: " + who.social["Leader Social Class"],
-                  "Authority: " + str(who.leader_authority),
-                  "Command: " + "Melee:" + self.leader_skill_level_text[who.melee_command] +
-                  " Ranged:" + self.leader_skill_level_text[who.range_command] +
-                  " Cav:" + self.leader_skill_level_text[who.cav_command],
-                  "Skill: " + leader_skill, "1st Main Weapon: " + leader_primary_main_weapon,
-                  "1st Sub Weapon: " + leader_primary_sub_weapon, "2nd Main Weapon: " + leader_secondary_main_weapon,
-                  "2nd Sub Weapon: " + leader_secondary_sub_weapon, "Armour: " + leader_armour, "Mount: " + leader_mount]
+    popup_text = [who.name,
+                  self.localisation.grab_text(("ui", "Social Class")) + ": " + who.social["Leader Social Class"],
+                  self.localisation.grab_text(("ui", "Authority")) + ": " + str(who.leader_authority),
+                  self.localisation.grab_text(("ui", "Command")) + ": " +
+                  self.localisation.grab_text(("ui", "Melee")) + ":" + self.skill_level_text[who.melee_command] + " " +
+                  self.localisation.grab_text(("ui", "Ranged")) + ":" + self.skill_level_text[who.range_command] + " " +
+                  self.localisation.grab_text(("ui", "cavalry_short")) + ":" + self.skill_level_text[who.cav_command],
+                  self.localisation.grab_text(("ui", "Skill")) + ": " + leader_skill,
+                  self.localisation.grab_text(("ui", "1st_main_weapon")) + ": " + leader_primary_main_weapon,
+                  self.localisation.grab_text(("ui", "1st_sub_weapon")) + ": " + leader_primary_sub_weapon,
+                  self.localisation.grab_text(("ui", "2nd_main_weapon")) + ": " + leader_secondary_main_weapon,
+                  self.localisation.grab_text(("ui", "2nd_sub_weapon")) + ": " + leader_secondary_sub_weapon,
+                  self.localisation.grab_text(("ui", "Armour")) + ": " + leader_armour,
+                  self.localisation.grab_text(("ui", "Mount")) + ": " + leader_mount]
 
-    for item in self.map_data["unit"]:
+    for item in self.source_data["unit"]:
         if item["ID"] == icon.who.map_id:
             for troop, value in item["Troop"].items():
                 popup_text += [self.troop_data.troop_list[troop]["Name"] + ": " +

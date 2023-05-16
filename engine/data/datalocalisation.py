@@ -158,7 +158,6 @@ class Localisation:
                 lore_data[key] = self.text[self.language][key_type][key]
         return lore_data
 
-
     @staticmethod
     def inner_grab_text(key, language, text_data):
         next_level = text_data[language]

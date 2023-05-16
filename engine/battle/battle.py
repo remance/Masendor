@@ -387,7 +387,7 @@ class Battle:
         self.team_colour = self.game.team_colour
 
         # Load weather schedule
-        self.weather_event = [item.copy() for item in self.map_data["info"]["weather"]].copy()
+        self.weather_event = [item.copy() for item in self.map_data["weather"]].copy()
         utility.convert_str_time(self.weather_event)
         self.weather_playing = self.weather_event[0][1]  # used as the reference for map starting time
 
