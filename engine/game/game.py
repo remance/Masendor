@@ -567,8 +567,8 @@ class Game:
         def test_on_click_method(item_index, item_text):
             print("test {0} {1}".format(item_index, item_text))
 
-        self.custom_map_list_box = uimenu.ListUI(pivot=(-1, -1), origin=(-1, -1), size=(200, 600),
-                                                 items=self.battle_map_list, parent=self.screen, on_click=test_on_click_method)
+        self.custom_map_list_box = uimenu.ListUI(pivot=(-1, -1), origin=(-1, -1), size=(.2, .8),
+                                                 items=self.battle_map_list, parent=self.screen, on_click=test_on_click_method, item_size=20)
 
         self.org_chart = uimenu.OrgChart(load_image(self.module_dir, self.screen_scale,
                                                     "org.png", ("ui", "mapselect_ui")),
