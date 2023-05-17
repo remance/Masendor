@@ -1,4 +1,4 @@
-"ID","Name","Race","Strength","Dexterity","Agility","Constitution","Intelligence","Wisdom","Charisma","Melee Speciality","Range Speciality","Cavalry Speciality","Social Class","Primary Main Weapon","Primary Sub Weapon","Secondary Main Weapon","Secondary Sub Weapon","Armour","Mount","Charge Skill","Skill","Trait","Formation","Sprite ID","Faction","Type"
+"ID","Name","Race","Strength","Dexterity","Agility","Constitution","Intelligence","Wisdom","Charisma","Melee Speciality","Range Speciality","Cavalry Speciality","Social Class","Primary Main Weapon","Primary Sub Weapon","Secondary Main Weapon","Secondary Sub Weapon","Armour","Mount","Charge Skill","Skill","Trait","Formation","Sprite ID","Faction","Tag"
 "CSAX-1","Huscarl Captain",1,80,70,70,80,50,55,30,7,4,3,3,"14,4","41,4",,,"5,4",,19,"L26",,"Line,Square","Saxon Leader",2,"Warrior"
 "CSAX-2","Thane",1,65,55,60,60,55,60,40,4,4,2,4,"2,4","41,3",,,"5,4",,21,"L1",,"Line","Saxon Leader",2,"Leader"
 "CNOR-1","High Medieval Norman Noble",1,58,52,50,55,55,60,50,4,3,4,4,"2,4","39,4",,,"5,4","2,3,14",21,,,"Line","Norman Leader",1,"Leader"

@@ -240,7 +240,7 @@ def leader_popup_text(self, icon):
                   self.localisation.grab_text(("ui", "Armour")) + ": " + leader_armour,
                   self.localisation.grab_text(("ui", "Mount")) + ": " + leader_mount]
 
-    for item in self.source_data["unit"]:
+    for item in self.play_source_data["unit"]:
         if item["ID"] == icon.who.map_id:
             for troop, value in item["Troop"].items():
                 popup_text += [self.troop_data.troop_list[troop]["Name"] + ": " +

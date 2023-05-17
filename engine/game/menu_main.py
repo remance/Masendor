@@ -8,7 +8,7 @@ list_scroll = utility.list_scroll
 def menu_main(self, mouse_left_up):
     if self.preset_map_button.event:  # preset map list menu
         self.menu_state = "preset_map"
-        self.map_type = "preset"
+        self.play_map_type = "preset"
         self.last_select = self.menu_state
 
         self.current_map_select = 0
@@ -39,7 +39,7 @@ def menu_main(self, mouse_left_up):
 
     elif self.custom_map_button.event:  # custom map list menu
         self.menu_state = "custom_map"
-        self.map_type = "custom"
+        self.play_map_type = "custom"
         self.last_select = self.menu_state
 
         self.current_map_select = 0

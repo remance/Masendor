@@ -1,4 +1,4 @@
-"ID","Name","Race","Strength","Dexterity","Agility","Constitution","Intelligence","Wisdom","Charisma","Melee Speciality","Range Speciality","Cavalry Speciality","Social Class","Primary Main Weapon","Primary Sub Weapon","Secondary Main Weapon","Secondary Sub Weapon","Armour","Mount","Charge Skill","Skill","Trait","Formation","Sprite ID","Faction","Type"
+"ID","Name","Race","Strength","Dexterity","Agility","Constitution","Intelligence","Wisdom","Charisma","Melee Speciality","Range Speciality","Cavalry Speciality","Social Class","Primary Main Weapon","Primary Sub Weapon","Secondary Main Weapon","Secondary Sub Weapon","Armour","Mount","Charge Skill","Skill","Trait","Formation","Sprite ID","Faction","Tag"
 "BBL-1","Gilgamesh",1,100,96,98,100,95,97,100,10,8,9,7,,,,,,,21,,,"Line,Diamond","None",,"Leader"
 "NOR-1","William of Normandy",1,78,74,65,70,81,83,92,7,4,7,5,"2,4",,"7,5",,"5,5","2,4,14",21,"L3,L61",,"Line,Wedge","William",1,"Leader"
 "NOR-2","Alan the Red",1,70,64,58,68,75,80,70,6,6,6,4,"2,4",,,,"5,4","2,3,14",21,"L21",,"Line","Norman Leader Red Beard",1,"Leader"

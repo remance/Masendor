@@ -12,15 +12,16 @@ stat_convert = utility.stat_convert
 
 def change_battle_source(self):
     """change map data when select new source"""
-    self.map_data = self.preset_map_data[self.map_selected]
-    self.source_data = self.map_data[self.map_source]
-    self.source_lore = self.localisation.grab_text(("preset_map", self.battle_campaign[self.map_selected], self.map_selected))
+    self.play_map_data = self.preset_map_data[self.map_selected]
+    self.play_source_data = self.play_map_data[self.map_source]
+    self.source_lore = self.localisation.grab_text(("preset_map", self.battle_campaign[self.map_selected],
+                                                    self.map_selected))
     self.source_name_list = [self.localisation.grab_text(key=("preset_map", self.battle_campaign[self.map_selected],
                                                               self.map_selected, "source", key, "Source")) for key in
-                             self.map_data if key != "source"]
+                             self.play_map_data if key != "source"]
 
     self.camp_pos = {}
-    for key, value in self.map_data["source"][self.map_source].items():
+    for key, value in self.play_map_data["source"][self.map_source].items():
         if "Camp " in key:
             self.camp_pos[int(key[-1])] = value
 
@@ -39,8 +40,8 @@ def change_battle_source(self):
     setup_list(uimenu.NameList, self.current_source_row, self.source_name_list,
                self.source_namegroup, self.source_list_box, self.main_ui_updater)
 
-    self.team_pos = {row["Team"]: [] for row in self.source_data["unit"]}
-    for row in self.source_data["unit"]:
+    self.team_pos = {row["Team"]: [] for row in self.play_source_data["unit"]}
+    for row in self.play_source_data["unit"]:
         self.team_pos[row["Team"]].append([int(item) for item in row["POS"]])
 
     # reset preview mini map
@@ -70,11 +71,11 @@ def change_battle_source(self):
         break
 
     team_coa = []
-    for key2 in self.map_data["source"][self.map_source]:
+    for key2 in self.play_map_data["source"][self.map_source]:
         if "Team " in key2 and "Camp " not in key2:
-            if type(self.map_data["source"][self.map_source][key2]) == int:
-                self.map_data["source"][self.map_source][key2] = [self.map_data["source"][self.map_source][key2]]
-            elif type(self.map_data["source"][self.map_source][key2]) == str:
-                self.map_data["source"][self.map_source][key2] = [int(item) for item in self.map_data["source"][self.map_source][key2].split(",")]
-            team_coa.append(self.map_data["source"][self.map_source][key2])
+            if type(self.play_map_data["source"][self.map_source][key2]) == int:
+                self.play_map_data["source"][self.map_source][key2] = [self.play_map_data["source"][self.map_source][key2]]
+            elif type(self.play_map_data["source"][self.map_source][key2]) == str:
+                self.play_map_data["source"][self.map_source][key2] = [int(item) for item in self.play_map_data["source"][self.map_source][key2].split(",")]
+            team_coa.append(self.play_map_data["source"][self.map_source][key2])
     self.create_team_coa(team_coa, self.main_ui_updater)

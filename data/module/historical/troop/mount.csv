@@ -1,4 +1,4 @@
-"ID","Name","Speed Bonus","Health Bonus","Charge Bonus","Stamina Bonus","Cost","Trait","Race","Move Sound Include Rider","Type"
+"ID","Name","Speed Bonus","Health Bonus","Charge Bonus","Stamina Bonus","Cost","Trait","Race","Move Sound Include Rider","Tag"
 1,"Arabian Horse",17,30,65,35,0,,2,"FALSE","Early Mount"
 2,"Friesian Horse",10,40,80,50,0,,2,"FALSE","Early Mount"
 3,"Mongolian Horse",6,20,40,100,0,,2,"FALSE","Early Mount"

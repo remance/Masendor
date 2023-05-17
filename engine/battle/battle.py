@@ -263,32 +263,33 @@ class Battle:
         self.center_screen = [self.screen_rect.width / 2, self.screen_rect.height / 2]  # center position of the screen
 
         # data specific to module
-        self.faction_data = None
-        self.coa_list = None
+        self.faction_data = self.game.faction_data
+        self.coa_list = self.faction_data.coa_list
 
-        self.troop_data = None
-        self.leader_data = None
+        self.troop_data = self.game.troop_data
+        self.leader_data = self.game.leader_data
 
-        self.battle_map_data = None
-        self.weather_data = None
-        self.weather_matter_images = None
-        self.weather_effect_images = None
-        self.day_effect_images = None
-        self.weather_list = None
-        self.feature_mod = None
+        self.battle_map_data = self.game.battle_map_data
+        self.weather_data = self.battle_map_data.weather_data
+        self.weather_matter_images = self.battle_map_data.weather_matter_images
+        self.weather_effect_images = self.battle_map_data.weather_effect_images
+        self.day_effect_images = self.battle_map_data.day_effect_images
+        self.weather_list = self.battle_map_data.weather_list
+        self.feature_mod = self.battle_map_data.feature_mod
 
-        self.current_weather = weather.Weather(self.time_ui, 4, 0, 0, self.weather_data)
+        self.unit_animation_data = self.game.unit_animation_data
+        self.body_sprite_pool = self.game.body_sprite_pool
+        self.weapon_sprite_pool = self.game.weapon_sprite_pool
+        self.armour_sprite_pool = self.game.armour_sprite_pool
+        self.effect_sprite_pool = self.game.effect_sprite_pool
+        self.effect_animation_pool = self.game.effect_animation_pool
+        self.weapon_joint_list = self.game.weapon_joint_list
+        self.team_colour = self.game.team_colour
+        self.language = self.game.language
+        self.localisation = self.game.localisation
 
-        self.unit_animation_data = None
-        self.body_sprite_pool = None
-        self.weapon_sprite_pool = None
-        self.armour_sprite_pool = None
-        self.effect_sprite_pool = None
-        self.effect_animation_pool = None
-        self.weapon_joint_list = None
-        self.team_colour = None
+        self.current_weather = weather.Weather(self.time_ui, 4, 0, 0, None)
 
-        self.generic_action_data = None
         self.unit_animation_pool = None
         self.status_animation_pool = None
 
@@ -297,18 +298,14 @@ class Battle:
         self.day_time = "Day"
         self.old_day_time = self.day_time
         self.camp = {}
-        self.all_team_unit = {1: pygame.sprite.Group(),
-                              2: pygame.sprite.Group()}  # more team can be added later
-        self.all_team_enemy = {1: pygame.sprite.Group(),
-                               2: pygame.sprite.Group()}
+        self.all_team_unit = {team: pygame.sprite.Group() for team in range(len(self.team_colour))}
+        self.all_team_enemy = {team: pygame.sprite.Group() for team in range(len(self.team_colour))}
         self.team_troop_number = []  # list of troop number in each team, minimum at one because percentage can't divide by 0
         self.last_team_troop_number = []
         self.battle_scale = []
         self.start_troop_number = []
         self.death_troop_number = []
         self.flee_troop_number = []
-        self.faction_pick = 0
-        self.current_pop_up_row = 0
 
         self.player_input_state = None  # specific player command input and ui
         self.previous_player_input_state = None
@@ -351,43 +348,25 @@ class Battle:
         self.battle_cursor_pos = [0, 0]  # mouse position list in battle map not screen with zoom
         self.command_cursor_pos = [0, 0]  # with zoom and screen scale for unit command
 
-    def prepare_new_game(self, team_selected, map_type, map_selected,
-                         map_source, player_unit, map_data, camp_pos):
+    def prepare_new_game(self, player_unit):
 
-        for message in self.inner_prepare_new_game(team_selected, map_type, map_selected,
-                                                   map_source, player_unit, map_data, camp_pos):
+        for message in self.inner_prepare_new_game(player_unit):
             print(message, end="")
 
-    def inner_prepare_new_game(self, team_selected, map_type, map_selected,
-                               map_source, player_unit, map_data, camp_pos):
+    def inner_prepare_new_game(self, player_unit):
         """Setup stuff when start new battle"""
-        self.language = self.game.language
-
-        self.map_selected = map_selected  # map folder name
-        self.map_source = str(map_source)
-        self.team_selected = team_selected  # player selected team
+        self.map_selected = self.game.map_selected  # map folder name
+        self.map_source = str(self.game.map_source)
+        self.team_selected = self.game.team_selected  # player selected team
 
         self.player_unit = player_unit
-        self.map_data = map_data
-        self.camp_pos = camp_pos
-
-        self.faction_data = self.game.faction_data
-        self.coa_list = self.faction_data.coa_list
-
-        self.troop_data = self.game.troop_data
-        self.leader_data = self.game.leader_data
-
-        self.unit_animation_data = self.game.unit_animation_data
-        self.body_sprite_pool = self.game.body_sprite_pool
-        self.weapon_sprite_pool = self.game.weapon_sprite_pool
-        self.armour_sprite_pool = self.game.armour_sprite_pool
-        self.effect_sprite_pool = self.game.effect_sprite_pool
-        self.effect_animation_pool = self.game.effect_animation_pool
-        self.weapon_joint_list = self.game.weapon_joint_list
-        self.team_colour = self.game.team_colour
+        self.play_map_type = self.game.play_map_type
+        self.play_map_data = self.game.play_map_data
+        self.play_source_data = self.game.play_source_data
+        self.camp_pos = self.game.camp_pos
 
         # Load weather schedule
-        self.weather_event = [item.copy() for item in self.map_data["weather"]].copy()
+        self.weather_event = [item.copy() for item in self.play_source_data["weather"]].copy()
         utility.convert_str_time(self.weather_event)
         self.weather_playing = self.weather_event[0][1]  # used as the reference for map starting time
 
@@ -398,7 +377,7 @@ class Battle:
         #     self.music_list = glob.glob(os.path.join(self.main_dir, "data", "sound", "music", "*.ogg"))
         #     try:
         #         self.music_event = csv_read(self.main_dir, "music_event.csv",
-        #                                     ("data", "module", self.module_folder, "map", map_type,
+        #                                     ("data", "module", self.module_folder, "map", play_map_type,
         #                                      self.map_selected), output_type="list")
         #         self.music_event = self.music_event[1:]
         #         if self.music_event:
@@ -421,13 +400,15 @@ class Battle:
         # yield set_done_load()
 
         yield set_start_load("map events")
-        try:  # get new map event for event log
-            map_event = csv_read(self.module_dir, "eventlog_" + self.language + ".csv",
-                                 ("map", map_type, self.map_selected, self.map_source),
-                                 header_key=True)
-            uibattle.EventLog.map_event = map_event
-        except FileNotFoundError:  # can't find any event file
-            map_event = {}  # create empty list
+        map_event = {}
+        if self.play_map_type == "preset":  # create map event for preset map
+            map_event_text = self.localisation.grab_text(("preset_map", self.game.battle_campaign[self.map_selected],
+                                                          self.map_selected, "eventlog", int(self.map_source)))
+            map_event = self.game.preset_map_data[self.map_selected][int(self.map_source)]["eventlog"]
+            for key in map_event:  # insert localisation text into event data
+                if key in map_event_text:
+                    map_event[key]["Text"] = map_event_text[key]["Text"]
+        uibattle.EventLog.map_event = map_event
 
         self.event_log.make_new_log()  # reset old event log
 
@@ -448,8 +429,9 @@ class Battle:
 
         yield set_start_load("map images")
         images = load_images(self.module_dir,
-                             subfolder=("map", map_type, self.map_selected))
-        if not images and map_type == "custom":  # custom map battle but use preset map
+                             subfolder=("map", self.play_map_type, self.game.battle_campaign[self.map_selected],
+                                        self.map_selected))
+        if not images and self.play_map_type == "custom":  # custom map battle but use preset map
             images = load_images(self.module_dir,
                                  subfolder=("map", "preset", self.map_selected))
         self.battle_base_map.draw_image(images["base"])
@@ -481,21 +463,16 @@ class Battle:
         if not self.player_unit:
             self.camera_mode = "Free"
 
-        if map_type == "preset":
-            self.setup_battle_unit(self.unit_updater)
-        elif map_type == "custom":
-            self.setup_battle_unit(self.unit_updater, custom_data=self.map_data["battle"])
+        self.setup_battle_unit(self.unit_updater)
 
         for this_group in self.all_team_unit.values():
             this_group.empty()
         for this_group in self.all_team_enemy.values():
             this_group.empty()
 
-        self.all_team_unit = {int(key[-1]): pygame.sprite.Group() for key in self.map_data if "Team Faction" in key}
-        self.all_team_enemy = {int(key[-1]): pygame.sprite.Group() for key in self.map_data if "Team Faction" in key}
         self.camp = {key: {} for key in self.all_team_unit.keys()}
         self.team_troop_number = [0 for _ in
-                                  range(len(self.all_team_unit) + 1)]  # reset list of troop number in each team
+                                  range(len(self.all_team_unit))]  # reset list of troop number in each team
         self.battle_scale = [1 for _ in self.team_troop_number]
         self.start_troop_number = [0 for _ in self.team_troop_number]
         self.death_troop_number = [0 for _ in self.team_troop_number]
@@ -516,7 +493,6 @@ class Battle:
         # Create Starting Values
         self.game_state = "battle"  # battle mode
         self.current_weather.__init__(self.time_ui, 4, 0, 0, self.weather_data)  # start weather with sunny first
-        self.current_pop_up_row = 0
         self.input_popup = (None, None)  # no popup asking for user text input state
         self.drama_text.queue = []  # reset drama text popup queue
 
@@ -934,9 +910,9 @@ class Battle:
                                     if "wt" + str(key) in self.event_log.map_event:
                                         self.event_log.add_log(
                                             (0, self.event_log.map_event["wt" + str(key)]["Text"]))
-                                    self.battle_done_box.pop(self.faction_data.faction_list[self.map_data[
+                                    self.battle_done_box.pop(self.faction_data.faction_list[self.play_source_data[
                                         "Team Faction" + str(key)][0]]["Name"], self.coa_list[
-                                                                 int(self.map_data["Team Faction" + str(key)][0])])
+                                                                 int(self.play_source_data["Team Faction" + str(key)][0])])
                                     break
 
                         self.battle_done_button.rect = self.battle_done_button.image.get_rect(
@@ -944,10 +920,10 @@ class Battle:
                         self.battle_ui_updater.add(self.battle_done_box, self.battle_done_button)
                     else:
                         if mouse_left_up and self.battle_done_button.rect.collidepoint(self.mouse_pos):
-                            coa_list = [self.coa_list[self.map_data[key][0]] for key in self.map_data if "Team Faction"
-                                        in key if self.map_data[key]]
+                            coa_list = [self.coa_list[self.play_source_data[key][0]] for key in self.play_source_data if "Team Faction"
+                                        in key if self.play_source_data[key]]
                             if not self.battle_done_box.result_showing:  # show battle result stat
-                                faction_name = {key: self.faction_data.faction_list[self.map_data[
+                                faction_name = {key: self.faction_data.faction_list[self.play_source_data[
                                     "Team Faction" + str(key)][0]]["Name"] for key in self.all_team_unit}
 
                                 self.battle_done_box.show_result(coa_list,

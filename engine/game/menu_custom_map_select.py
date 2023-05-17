@@ -63,7 +63,7 @@ def menu_custom_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
 
         self.create_team_coa([None for _ in range(10)], self.main_ui_updater)
 
-        self.map_data["unit"] = {"pos": {}}
+        self.play_map_data["unit"] = {"pos": {}}
 
         self.main_ui_updater.add(*self.team_select_button, self.custom_map_option_box, self.observe_mode_tick_box,
                                  self.night_battle_tick_box, self.map_back_button, self.map_select_button,

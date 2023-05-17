@@ -156,26 +156,23 @@ class Lorebook(pygame.sprite.Sprite):
             self.skill_lore[run] = self.localisation.grab_text(key=("skill", index))
             run += 1
 
-        self.section_tag_header = ("Tag", "Tag", "Type", "Troop Class", "Type", "Type", "Type", "Type", "Type",
-                                   "Type", "Type",)
-
         self.tag_list = [{stuff["Tag"]: True for stuff in self.concept_stat.values() if stuff["Tag"] != ""},
                          {stuff["Tag"]: True for stuff in self.history_stat.values() if stuff["Tag"] != ""},
-                         {stuff["Type"]: True for stuff in self.faction_data.faction_list.values() if
-                          stuff["Type"] != ""},
-                         {stuff["Troop Class"]: True for stuff in self.troop_data.troop_list.values() if
-                          stuff["Troop Class"] != ""},
-                         {stuff["Type"]: True for stuff in self.equipment_stat.values() if stuff["Type"] != ""},
-                         {stuff["Type"]: True for stuff in self.troop_data.status_list.values() if type(stuff) != int
-                          and stuff["Type"] != ""},
-                         {stuff["Type"]: True for stuff in self.skill_stat.values() if stuff["Type"] != ""},
-                         {stuff["Type"]: True for stuff in self.troop_data.trait_list.values() if stuff["Type"] != ""},
-                         {stuff["Type"]: True for stuff in self.leader_data.leader_list.values() if
-                          stuff["Type"] != ""},
-                         {stuff["Type"]: True for stuff in self.battle_map_data.feature_mod.values() if
-                          stuff["Type"] != ""},
-                         {stuff["Type"]: True for stuff in self.battle_map_data.weather_data.values() if
-                          stuff["Type"] != ""}]
+                         {stuff["Tag"]: True for stuff in self.faction_data.faction_list.values() if
+                          stuff["Tag"] != ""},
+                         {stuff["Tag"]: True for stuff in self.troop_data.troop_list.values() if
+                          stuff["Tag"] != ""},
+                         {stuff["Tag"]: True for stuff in self.equipment_stat.values() if stuff["Tag"] != ""},
+                         {stuff["Tag"]: True for stuff in self.troop_data.status_list.values() if type(stuff) != int
+                          and stuff["Tag"] != ""},
+                         {stuff["Tag"]: True for stuff in self.skill_stat.values() if stuff["Tag"] != ""},
+                         {stuff["Tag"]: True for stuff in self.troop_data.trait_list.values() if stuff["Tag"] != ""},
+                         {stuff["Tag"]: True for stuff in self.leader_data.leader_list.values() if
+                          stuff["Tag"] != ""},
+                         {stuff["Tag"]: True for stuff in self.battle_map_data.feature_mod.values() if
+                          stuff["Tag"] != ""},
+                         {stuff["Tag"]: True for stuff in self.battle_map_data.weather_data.values() if
+                          stuff["Tag"] != ""}]
         for index, tag_list in enumerate(self.tag_list):
             tag_list["No Tag"] = True
             self.tag_list[index] = {"No Tag": self.tag_list[index].pop("No Tag"), **self.tag_list[index]}
@@ -316,8 +313,8 @@ class Lorebook(pygame.sprite.Sprite):
                 if index >= self.current_subsection_row:
                     tag = "No Tag"  # white colour
                     tag_index = 0
-                    if self.stat_data[stat_key[index]][self.section_tag_header[self.section]] != "":
-                        tag = self.stat_data[stat_key[index]][self.section_tag_header[self.section]]
+                    if self.stat_data[stat_key[index]]["Tag"] != "":
+                        tag = self.stat_data[stat_key[index]]["Tag"]
                         tag_index = tuple(self.tag_list[self.section].keys()).index(tag)
                     if self.tag_list[self.section][tag]:  # not creating subsection with disabled tag
                         list_group.add(SubsectionName(self.screen_scale, (pos[0], pos[1] + row), item,
@@ -382,7 +379,7 @@ class Lorebook(pygame.sprite.Sprite):
                         text_surface = pygame.Surface(
                             (int(480 * self.screen_scale[1]), int(300 * self.screen_scale[0])), pygame.SRCALPHA)
                         text_rect = description_surface.get_rect(topleft=(col, row))
-                        make_long_text(text_surface, (key + ": " + str(value)),
+                        make_long_text(text_surface, (self.localisation.grab_text(("ui", key)) + ": " + str(value)),
                                        (int(8 * self.screen_scale[1]), int(8 * self.screen_scale[0])), self.font)
 
                     # blit image instead of text
@@ -418,167 +415,165 @@ class Lorebook(pygame.sprite.Sprite):
                 front_text = {key: value for key, value in stat.items() if key != "Name"}
                 for key, value in front_text.items():
                     if value != "":
-                        if self.section != self.equipment_section:  # equipment section need to be processed differently
-                            create_text = key + ": " + str(value)
-                            if key == "module":
-                                create_text = ""
-                            if self.section == self.troop_section or self.section == self.leader_section:  # troop section
-                                if "Weapon" in key:  # weapon text with quality
-                                    if value:
-                                        create_text = key + ": " + self.troop_data.equipment_grade_list[value[1]][
-                                            "Name"] \
-                                                      + " " + self.troop_data.weapon_list[value[0]]["Name"]
-                                    else:
-                                        create_text = key + ": Standard Unarmed"
+                        if any(ext in key for ext in ("Sprite", "ImageID", "Sound", "Shake", "ID",
+                                                      "Texture", "Spawn", "Travel", "Action")):  # key that will not be put in encyclopedia
+                            pass
+                        else:
+                            if self.section != self.equipment_section:  # equipment section need to be processed differently
+                                create_text = self.localisation.grab_text(("ui", key)) + ": " + str(value)
+                                if self.section == self.troop_section or self.section == self.leader_section:  # troop section
+                                    if "Weapon" in key:  # weapon text with quality
+                                        if value:
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + self.troop_data.equipment_grade_list[value[1]][
+                                                "Name"] \
+                                                          + " " + self.troop_data.weapon_list[value[0]]["Name"]
+                                        else:
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": Standard Unarmed"
 
-                                elif key == "Armour":  # armour text with quality
-                                    if value:
-                                        create_text = key + ": " + self.troop_data.equipment_grade_list[value[1]][
-                                            "Name"] \
-                                                      + " " + self.troop_data.armour_list[value[0]]["Name"]
-                                    else:
-                                        create_text = key + ": No Armour"
+                                    elif key == "Armour":  # armour text with quality
+                                        if value:
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + self.troop_data.equipment_grade_list[value[1]][
+                                                "Name"] \
+                                                          + " " + self.troop_data.armour_list[value[0]]["Name"]
+                                        else:
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": No Armour"
 
-                                elif key == "Race":
-                                    create_text = key + ": " + self.troop_data.race_list[value]["Name"]
+                                    elif key == "Race":
+                                        create_text = self.localisation.grab_text(("ui", key)) + ": " + self.troop_data.race_list[value]["Name"]
 
-                                elif key == "Mount":  # mount text with grade
-                                    if value:
-                                        create_text = key + ": " + self.troop_data.mount_grade_list[value[1]][
-                                            "Name"] + " " + \
-                                                      self.troop_data.mount_list[value[0]]["Name"] + "//" + \
-                                                      self.troop_data.mount_armour_list[value[2]]["Name"]
-                                    else:
-                                        create_text = key + ": No Mount"
+                                    elif key == "Mount":  # mount text with grade
+                                        if value:
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + self.troop_data.mount_grade_list[value[1]][
+                                                "Name"] + " " + \
+                                                          self.troop_data.mount_list[value[0]]["Name"] + "//" + \
+                                                          self.troop_data.mount_armour_list[value[2]]["Name"]
+                                        else:
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": No Mount"
 
-                                elif key == "Trait":  # troop properties list
+                                    elif key == "Trait":  # troop properties list
+                                        trait_list = ""
+                                        if 0 not in value:
+                                            for this_text in value:
+                                                if this_text in self.troop_data.trait_list:  # in case user put in trait not existed in module
+                                                    trait_list += self.troop_data.trait_list[this_text]["Name"] + ", "
+                                            trait_list = trait_list[0:-2]
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + trait_list
+
+                                        else:
+                                            create_text = ""
+                                            pass
+
+                                    if self.section == self.troop_section:  # troop section
+                                        if key == "Grade":  # grade text instead of number
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + self.troop_data.grade_list[value]["Name"]
+
+                                        elif key == "Troop Type":
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + self.troop_data.troop_class_list[value]["Name"]
+
+                                        elif "Skill" in key:  # skill text instead of number
+                                            skill_list = ""
+                                            if key == "Charge Skill":
+                                                if value in self.troop_data.skill_list:  # only include skill if exist in module
+                                                    skill_list += self.troop_data.skill_list[value]["Name"]
+                                                create_text = self.localisation.grab_text(("ui", key)) + ": " + skill_list
+                                            elif 0 not in value:
+                                                for this_text in value:
+                                                    if this_text in self.troop_data.skill_list:  # only include skill in module
+                                                        skill_list += self.troop_data.skill_list[this_text]["Name"] + ", "
+                                                skill_list = skill_list[0:-2]
+                                                create_text = self.localisation.grab_text(("ui", key)) + ": " + skill_list
+                                            else:
+                                                create_text = ""
+                                                pass
+
+                                        elif key == "Role":
+                                            # role is not type, it represents troop classification to suggest what it excels
+                                            role_list = {0: "None", 1: "Offensive", 2: "Defensive", 3: "Skirmisher",
+                                                         4: "Shock", 5: "Support", 6: "Artillery",
+                                                         7: "Ambusher", 8: "Sniper", 9: "Recon", "": ""}
+                                            role = [role_list[item] for item in
+                                                    value]
+
+                                            create_text = "Specilaised Role: "
+                                            if len(role) == 0:
+                                                create_text += "None, "
+                                            for this_role in role:
+                                                create_text += this_role + ", "
+                                            create_text = create_text[0:-2]
+
+                                        elif key == "Type":
+                                            create_text = ""
+                                            pass
+
+                                    else:  # leader section
+                                        if key in ("Melee Command", "Range Command", "Cavalry Command", "Combat"):
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + self.leader_text[value]
+
+                                        elif key == "Social Class":
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + self.leader_data.leader_class[value][
+                                                "Leader Social Class"]
+
+                                        elif key == "Skill":  # skill text instead of number
+                                            skill_list = ""
+                                            if 0 not in value:
+                                                for this_text in value:
+                                                    if this_text in self.leader_data.skill_list:  # only include skill in module
+                                                        skill_list += self.leader_data.skill_list[this_text]["Name"] + ", "
+                                                skill_list = skill_list[0:-2]
+                                                create_text = self.localisation.grab_text(("ui", key)) + ": " + skill_list
+                                            else:
+                                                create_text = ""
+                                                pass
+
+                                        elif key == "Formation":
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + str(value).replace("[", "").replace("]", ""). \
+                                                replace("'", "")
+
+                                        elif key in ("Size", "True ID", "Sprite ID"):
+                                            create_text = ""
+
+                                elif self.section in (self.skill_section, self.trait_section, self.status_section):
+                                    if key == "Status" or key == "Enemy Status":  # status list
+                                        status_list = ""
+                                        if 0 not in value:
+                                            for this_text in value:
+                                                if this_text in self.troop_data.status_list:  # in case user put in trait not existed in module
+                                                    status_list += self.troop_data.status_list[this_text]["Name"] + ", "
+                                            status_list = status_list[0:-2]
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + status_list
+                                        else:
+                                            create_text = ""
+                                            pass
+                                    if self.section == self.skill_section:
+                                        if key == "Troop Type":
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + ("Any", "Infantry", "Cavalry")[value]
+
+                                    if value in (0, 1):
+                                        create_text = ""
+
+                            else:  # equipment section, header depends on equipment type
+                                create_text = self.localisation.grab_text(("ui", key)) + ": " + str(value)
+
+                                if key == "Properties":
                                     trait_list = ""
                                     if 0 not in value:
                                         for this_text in value:
                                             if this_text in self.troop_data.trait_list:  # in case user put in trait not existed in module
-                                                trait_list += self.troop_data.trait_list[this_text]["Name"] + ", "
+                                                trait_list += self.troop_data.trait_list[this_text][0] + ", "
                                         trait_list = trait_list[0:-2]
-                                        create_text = key + ": " + trait_list
-
+                                        create_text = self.localisation.grab_text(("ui", key)) + ": " + trait_list
                                     else:
                                         create_text = ""
                                         pass
 
-                                if self.section == self.troop_section:  # troop section
-                                    if key == "Grade":  # grade text instead of number
-                                        create_text = key + ": " + self.troop_data.grade_list[value]["Name"]
-
-                                    elif key == "Troop Type":
-                                        create_text = key + ": " + self.troop_data.troop_class_list[value]["Name"]
-
-                                    elif "Skill" in key:  # skill text instead of number
-                                        skill_list = ""
-                                        if key == "Charge Skill":
-                                            if value in self.troop_data.skill_list:  # only include skill if exist in module
-                                                skill_list += self.troop_data.skill_list[value]["Name"]
-                                            create_text = key + ": " + skill_list
-                                        elif 0 not in value:
-                                            for this_text in value:
-                                                if this_text in self.troop_data.skill_list:  # only include skill in module
-                                                    skill_list += self.troop_data.skill_list[this_text]["Name"] + ", "
-                                            skill_list = skill_list[0:-2]
-                                            create_text = key + ": " + skill_list
-                                        else:
-                                            create_text = ""
-                                            pass
-
-                                    elif key == "Role":
-                                        # role is not type, it represents troop classification to suggest what it excels
-                                        role_list = {0: "None", 1: "Offensive", 2: "Defensive", 3: "Skirmisher",
-                                                     4: "Shock", 5: "Support", 6: "Artillery",
-                                                     7: "Ambusher", 8: "Sniper", 9: "Recon", "": ""}
-                                        role = [role_list[item] for item in
-                                                value]
-
-                                        create_text = "Specilaised Role: "
-                                        if len(role) == 0:
-                                            create_text += "None, "
-                                        for this_role in role:
-                                            create_text += this_role + ", "
-                                        create_text = create_text[0:-2]
-
-                                    elif key == "Type":
-                                        create_text = ""
-                                        pass
-
-                                else:  # leader section
-                                    if key in ("Melee Command", "Range Command", "Cavalry Command", "Combat"):
-                                        create_text = key + ": " + self.leader_text[value]
-
-                                    elif key == "Social Class":
-                                        create_text = key + ": " + self.leader_data.leader_class[value][
-                                            "Leader Social Class"]
-
-                                    elif key == "Skill":  # skill text instead of number
-                                        skill_list = ""
-                                        if 0 not in value:
-                                            for this_text in value:
-                                                if this_text in self.leader_data.skill_list:  # only include skill in module
-                                                    skill_list += self.leader_data.skill_list[this_text]["Name"] + ", "
-                                            skill_list = skill_list[0:-2]
-                                            create_text = key + ": " + skill_list
-                                        else:
-                                            create_text = ""
-                                            pass
-
-                                    elif key == "Formation":
-                                        create_text = key + ": " + str(value).replace("[", "").replace("]", ""). \
-                                            replace("'", "")
-
-                                    elif key in ("Size", "True ID", "Sprite ID"):
-                                        create_text = ""
-
-                            elif self.section in (self.skill_section, self.trait_section, self.status_section):
-                                if key == "Status" or key == "Enemy Status":  # status list
-                                    status_list = ""
-                                    if 0 not in value:
-                                        for this_text in value:
-                                            if this_text in self.troop_data.status_list:  # in case user put in trait not existed in module
-                                                status_list += self.troop_data.status_list[this_text]["Name"] + ", "
-                                        status_list = status_list[0:-2]
-                                        create_text = key + ": " + status_list
-                                    else:
-                                        create_text = ""
-                                        pass
-                                if self.section == self.skill_section:
-                                    if key == "Troop Type":
-                                        create_text = key + ": " + ("Any", "Infantry", "Cavalry")[value]
-
-                                if value in (0, 1):
-                                    create_text = ""
-
-                        else:  # equipment section, header depends on equipment type
-                            create_text = key + ": " + str(value)
-
-                            if key == "ImageID":  # not used in encyclopedia
-                                create_text = ""
-                                pass
-
-                            elif key == "Properties":
-                                trait_list = ""
-                                if 0 not in value:
-                                    for this_text in value:
-                                        if this_text in self.troop_data.trait_list:  # in case user put in trait not existed in module
-                                            trait_list += self.troop_data.trait_list[this_text][0] + ", "
-                                    trait_list = trait_list[0:-2]
-                                    create_text = key + ": " + trait_list
-                                else:
-                                    create_text = ""
-                                    pass
-
-                        if create_text != "":  # text not empty, draw it. Else do nothing
-                            text_surface = self.font.render(create_text, True, (0, 0, 0))
-                            text_rect = text_surface.get_rect(topleft=(col, row))
-                            self.image.blit(text_surface, text_rect)
-                            row += (30 * self.screen_scale[1])
-                            if row >= 750 * self.screen_scale[1]:
-                                col = 650 * self.screen_scale[0]
-                                row = 50 * self.screen_scale[1]
+                            if create_text != "":  # text not empty, draw it. Else do nothing
+                                text_surface = self.font.render(create_text, True, (0, 0, 0))
+                                text_rect = text_surface.get_rect(topleft=(col, row))
+                                self.image.blit(text_surface, text_rect)
+                                row += (30 * self.screen_scale[1])
+                                if row >= 750 * self.screen_scale[1]:
+                                    col = 650 * self.screen_scale[0]
+                                    row = 50 * self.screen_scale[1]
 
         else:  # lore page, the paragraph can be in text or image (IMAGE:)
             if self.max_page != 0:

@@ -303,6 +303,7 @@ class Game:
         self.team_pos = {}  # for saving preview map unit pos
         self.camp_pos = {}  # for saving preview map camp pos
         self.map_data = None
+        self.source_data = None
         self.map_info = None
         self.map_unit_data = None
 
@@ -425,13 +426,6 @@ class Game:
         uimenu.MapPreview.feature_colour = self.battle_map_data.feature_colour
         uimenu.MapPreview.battle_map_colour = self.battle_map_data.battle_map_colour
 
-        battle.Battle.battle_map_data = self.battle_map_data
-        battle.Battle.weather_data = self.battle_map_data.weather_data
-        battle.Battle.weather_matter_images = self.battle_map_data.weather_matter_images
-        battle.Battle.weather_effect_images = self.battle_map_data.weather_effect_images
-        battle.Battle.day_effect_images = self.battle_map_data.day_effect_images
-        battle.Battle.weather_list = self.battle_map_data.weather_list
-        battle.Battle.feature_mod = self.battle_map_data.feature_mod
         self.preset_map_list = self.battle_map_data.preset_map_list
         self.preset_map_folder = self.battle_map_data.preset_map_folder
         self.battle_map_list = self.battle_map_data.battle_map_list

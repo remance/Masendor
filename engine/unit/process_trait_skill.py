@@ -41,7 +41,7 @@ def process_trait_skill(self):
                             and self.stamina > self.input_skill[skill]["Stamina Cost"] and
                             ("skill" not in self.current_action or self.current_action["skill"] != skill)]
 
-    self.target_skill = {key: value for key, value in self.input_skill.items() if value["Type"] == "Target"}
+    self.target_skill = {key: value for key, value in self.input_skill.items() if value["Action Type"] == "Target"}
     self.weapon_skill = {key: value for key, value in self.weapon_skill.items() if value in self.skill}
 
     ai_skill_condition_list = {"move": [], "melee": [], "range": [], "enemy_near": [], "damaged": [], "retreat": [],

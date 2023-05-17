@@ -1,4 +1,4 @@
-"ID","Name","Health","Weight","Cost","Type"
+"ID","Name","Health","Weight","Cost","Tag"
 1,"None",0,0,0,"Light Mount Armour"
 2,"Padded Armour",12,10,,"Light Mount Armour"
 3,"Leather Armour",9,8,,"Light Mount Armour"

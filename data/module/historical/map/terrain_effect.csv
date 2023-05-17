@@ -1,4 +1,4 @@
-"ID","Name","Infantry Speed Modifier","Infantry Attack Modifier","Infantry Defence Modifier","Cavalry Speed Modifier","Cavalry Attack Modifier","Cavalry Defence Modifier","Range Defence Bonus","Hide Bonus","Discipline Bonus","Day Temperature","Night Temperature","Dust","Status","Texture Density","Type"
+"ID","Name","Infantry Speed Modifier","Infantry Attack Modifier","Infantry Defence Modifier","Cavalry Speed Modifier","Cavalry Attack Modifier","Cavalry Defence Modifier","Range Defence Bonus","Hide Bonus","Discipline Bonus","Day Temperature","Night Temperature","Dust","Status","Texture Density","Tag"
 0,"Grassland",,,,,,,0,5,0,0,-15,10,,10,"Plain"
 1,"Draught",,,,,,,0,0,0,0,-15,20,,10,"Barren"
 2,"Bushland",-0.1,,0.2,-0.2,-0.15,-0.15,15,30,-10,0,-15,5,,30,"Plant Field"
