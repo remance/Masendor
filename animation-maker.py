@@ -1383,7 +1383,7 @@ class Model:
                 if "_weapon" in part_index:
                     if self.animation_part_list[edit_frame][part_index] is not None and \
                             len(self.animation_part_list[edit_frame][part_index]) > 3 and \
-                            "sheath" not in self.part_name_list[edit_frame][part_index][-1]:
+                            "Sheath" not in self.part_name_list[edit_frame][part_index][-1]:
                         hand = "r_"
                         if "sub" in part_index:
                             hand = "l_"
@@ -1838,7 +1838,7 @@ weapon_joint_to_hand_button = Button("W.J.T.H", image, (screen_size[0] - (image.
                                                         p_body_helper.rect.midtop[1] - (image.get_height() * 5)),
                        description=("Weapon Joint To Hand", "Move weapon to person hand part based on its joint.",
                                     "This affects weapon pos in game if fix property enable.",
-                                    "Does not affect weapon part with 'sheath' name."))
+                                    "Does not affect weapon part with 'Sheath' name."))
 
 delete_button = Button("Delete", image, (screen_size[0] - (image.get_width() / 2), image.get_height() / 2),
                        description=("Delete animation", "Delete the current animation."))
@@ -1979,18 +1979,18 @@ image_list = load_base_button(module_dir, screen_scale)
 
 input_ok_button = uimenu.MenuButton(image_list, pos=(input_ui.rect.midleft[0] + image_list[0].get_width(),
                                                      input_ui.rect.midleft[1] + image_list[0].get_height()),
-                                    key_name="Confirm", layer=31)
+                                    key_name="confirm_button", layer=31)
 input_cancel_button = uimenu.MenuButton(image_list,
                                         pos=(input_ui.rect.midright[0] - image_list[0].get_width(),
                                            input_ui.rect.midright[1] + image_list[0].get_height()),
-                                        key_name="Cancel", layer=31)
+                                        key_name="cancel_button", layer=31)
 input_button = (input_ok_button, input_cancel_button)
 input_box = uimenu.InputBox(input_ui.rect.center, input_ui.image.get_width())  # user text input box
 
 input_ui_popup = (input_ui, input_box, input_ok_button, input_cancel_button)
 
 confirm_ui = uimenu.InputUI(load_image(module_dir, screen_scale, "input_ui.png", ("ui", "mainmenu_ui")),
-                          (screen_size[0] / 2, screen_size[1] / 2))  # user confirm input ui box popup
+                            (screen_size[0] / 2, screen_size[1] / 2))  # user confirm input ui box popup
 confirm_ui_popup = (confirm_ui, input_ok_button, input_cancel_button)
 
 colour_ui = uimenu.InputUI(load_image(current_data_dir, screen_scale, "colour.png", "animation_maker_ui"),
@@ -2002,10 +2002,10 @@ colour_input_box = uimenu.InputBox((colour_ui.rect.center[0], colour_ui.rect.cen
 
 colour_ok_button = uimenu.MenuButton(image_list, pos=(colour_ui.rect.midleft[0] + image_list[0].get_width(),
                                                       colour_ui.rect.midleft[1] + (image_list[0].get_height() * 2)),
-                                   key_name="Confirm", layer=31)
+                                   key_name="confirm_button", layer=31)
 colour_cancel_button = uimenu.MenuButton(image_list, pos=(colour_ui.rect.midright[0] - image_list[0].get_width(),
                                                           colour_ui.rect.midright[1] + (image_list[0].get_height() * 2)),
-                                         key_name="Cancel", layer=31)
+                                         key_name="cancel_button", layer=31)
 colour_ui_popup = (colour_ui, colour_wheel, colour_input_box, colour_ok_button, colour_cancel_button)
 
 box_img = load_image(current_data_dir, screen_scale, "property_box.png", "animation_maker_ui")

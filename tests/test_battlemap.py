@@ -13,11 +13,11 @@ def compare_surfaces(surface_a, surface_b, error_margin = 0):
 
 
 def test_recolour_man_and_build_move_and_def_arrays():
-    from engine.battlemap import BeautifulMap
-    from engine.battlemap import BaseMap
-    from engine.battlemap import FeatureMap
-    from engine.battlemap import HeightMap
-    from engine import datamap
+    from engine.battlemap.battlemap import BeautifulMap
+    from engine.battlemap.battlemap import BaseMap
+    from engine.battlemap.battlemap import FeatureMap
+    from engine.battlemap.battlemap import HeightMap
+    from engine.data import datamap
 
     class MinifiedBattle:
 
@@ -27,11 +27,10 @@ def test_recolour_man_and_build_move_and_def_arrays():
 
     main_dir = os.path.join(os.path.split(os.path.abspath(__file__))[0], '..')
     screen_scale = (1.0, 1.0)
-    ruleset_folder = "historical"
     language = "en"
 
     pygame.display.set_mode((0, 0), pygame.HIDDEN)
-    battle_map_data = datamap.BattleMapData(main_dir, screen_scale, ruleset_folder, language)
+    battle_map_data = datamap.BattleMapData(main_dir, screen_scale, language)
 
     height_map = HeightMap()
     height_map.draw_image(pygame.image.load(os.path.join(main_dir, "tests/height_map.png")))

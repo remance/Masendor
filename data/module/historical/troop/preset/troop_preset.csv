@@ -23,7 +23,7 @@
 "SAX+4","Saxon Archer",1,1,,,0,0,20,25,50,0,17,100,50,100,"25,3",,"5,3",,"21,3",,"Saxon Light",2,3,"Range Infantry","Range Infantry"
 "SAX+5","Saxon Slinger",1,1,,,0,0,20,25,50,0,17,100,50,100,"20,3",,"5,3",,"21,3",,"Saxon Light",2,3,"Range Infantry","Range Infantry"
 "SAX+6","Saxon Skirmisher",1,1,,47,0,0,35,30,30,0,19,100,50,100,"22,3",,"5,3","23,3","21,3",,"Saxon Light",2,3,"Range Infantry","Range Infantry"
-"SAX+7","Saxon Knight",2,1,,,0,0,55,45,0,0,19,100,50,100,"2,4","41,4",,,"5,4","2,2,14","Saxon Heavy",2,"1,4","Melee Cavalry","Heavy Cavalry"
+"SAX+7","Saxon Mounted Huscarl",2,1,,,0,0,55,45,0,0,19,100,50,100,"2,4","41,4",,,"5,4","2,2,14","Saxon Heavy",2,"1,4","Melee Cavalry","Heavy Cavalry"
 "SAX+8","Saxon Huscarl",2,1,34,,0,0,45,55,0,0,19,100,70,150,"14,4","41,4",,,"5,4",,"Saxon Heavy",2,"1,2,4","Melee Infantry","Heavy Infantry"
 "SAX+9","Veteran Huscarl",3,1,34,4,0,0,45,55,0,0,19,100,80,170,"14,4","41,4",,,"5,4",,"Saxon Veteran",2,"1,2,4","Melee Infantry","Heavy Infantry"
 "SAX+10","Huscarl Bodyguard",4,1,34,43,0,0,40,60,0,0,19,100,90,190,"14,5","41,5",,,"5,5",,"Saxon Veteran",2,"1,2,4","Melee Infantry","Heavy Infantry"

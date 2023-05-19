@@ -9,7 +9,7 @@ load_image = utility.load_image
 def menu_preset_map_select(self, mouse_scroll_up, mouse_scroll_down, esc_press):
     self.main_ui_updater.remove(self.single_text_popup)
     for this_team in self.team_coa:  # User select any team by clicking on coat of arm
-        if this_team.event:
+        if this_team.event_press:
             self.team_selected = this_team.team
             this_team.change_select(True)
 
@@ -17,36 +17,7 @@ def menu_preset_map_select(self, mouse_scroll_up, mouse_scroll_down, esc_press):
             for this_team2 in self.team_coa:
                 if self.team_selected != this_team2.team and this_team2.selected:
                     this_team2.change_select(False)
-            return
 
-    for index, name in enumerate(self.map_namegroup):  # user click on map name, change map
-        if name.event:
-            self.current_map_select = index
-            self.map_source = 0
-            self.team_selected = 1
-            self.map_selected = self.preset_map_folder[self.current_map_select]
-            self.change_battle_source()
-            return
-
-    for index, name in enumerate(self.source_namegroup):  # user select source
-        if name.event:  # click on source name
-            self.map_source = index
-            self.team_selected = 1
-            self.change_battle_source()
-            return
-
-    for box in (self.observe_mode_tick_box,):
-        if box.event:
-            if box.tick is False:
-                box.change_tick(True)
-            else:
-                box.change_tick(False)
-            if box.option == "observe":
-                self.enactment = box.tick
-
-    for this_team in self.team_coa:
-        if this_team.event:
-            self.team_selected = this_team.team
             for icon in self.preview_unit:
                 icon.kill()
             self.preview_unit.empty()
@@ -69,20 +40,45 @@ def menu_preset_map_select(self, mouse_scroll_up, mouse_scroll_down, esc_press):
                 break
             return
 
-    if self.map_list_box.event:  # click on subsection list scroll
+    for index, name in enumerate(self.map_namegroup):  # user click on map name, change map
+        if name.event_press:
+            self.current_map_select = index
+            self.map_source = 0
+            self.team_selected = 1
+            self.map_selected = self.preset_map_folder[self.current_map_select]
+            self.change_battle_source()
+            return
+
+    for index, name in enumerate(self.source_namegroup):  # user select source
+        if name.event_press:  # click on source name
+            self.map_source = index
+            self.team_selected = 1
+            self.change_battle_source()
+            return
+
+    for box in (self.observe_mode_tick_box,):
+        if box.event_press:
+            if box.tick is False:
+                box.change_tick(True)
+            else:
+                box.change_tick(False)
+            if box.option == "observe":
+                self.enactment = box.tick
+
+    if self.map_list_box.event_press:  # click on subsection list scroll
         self.current_map_row = self.map_list_box.scroll.player_input(
             self.cursor.pos)  # update the scroll and get new current subsection
         setup_list(self.screen_scale, uimenu.NameList, self.current_map_row, self.preset_map_list,
                    self.map_namegroup, self.map_list_box,
                    self.main_ui_updater)
 
-    elif self.source_list_box.event:  # click on subsection list scroll
+    elif self.source_list_box.event_press:  # click on subsection list scroll
         self.current_source_row = self.source_list_box.scroll.player_input(
             self.mouse_pos)  # update the scroll and get new current subsection
         setup_list(self.screen_scale, uimenu.NameList, self.current_source_row, self.source_name_list,
                    self.source_namegroup, self.source_list_box, self.main_ui_updater)
 
-    elif self.map_back_button.event or esc_press:
+    elif self.map_back_button.event_press or esc_press:
         self.menu_state = self.last_select
         self.main_ui_updater.remove(*self.menu_button, self.map_list_box, self.map_list_box.scroll, self.map_option_box,
                                     self.observe_mode_tick_box, self.source_list_box, self.source_list_box.scroll,
@@ -108,7 +104,7 @@ def menu_preset_map_select(self, mouse_scroll_up, mouse_scroll_down, esc_press):
 
         self.back_mainmenu()
 
-    elif self.start_button.event:  # Start Battle
+    elif self.start_button.event_press:  # Start Battle
         self.start_battle(self.unit_selected)
 
     elif self.map_list_box.mouse_over:
@@ -150,7 +146,7 @@ def menu_preset_map_select(self, mouse_scroll_up, mouse_scroll_down, esc_press):
                     popup_text = leader_popup_text(self, icon)
                     self.single_text_popup.pop(self.cursor.pos, popup_text)
                     self.main_ui_updater.add(self.single_text_popup)
-                    if icon.event:
+                    if icon.event_press:
                         for other_icon in self.unit_icon:
                             if other_icon.selected:  # unselected all others first
                                 other_icon.selection()

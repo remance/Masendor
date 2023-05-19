@@ -8,4 +8,4 @@ def back_mainmenu(self):
 
     self.main_ui_updater.add(*self.start_menu_ui_only)
 
-    self.background = self.background_image["main"]
+    # self.background = self.background_image["main"]

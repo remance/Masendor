@@ -77,7 +77,7 @@ def menu_main(self, esc_press):
         self.menu_button.add(*self.option_menu_button)
         self.main_ui_updater.add(*self.menu_button, *self.option_menu_sliders.values(), *self.value_boxes.values(),
                                  *self.option_text_list)
-        self.background = self.background_image["option"]
+        # self.background = self.background_image["option"]
 
     elif self.quit_button.event or esc_press:  # change start_set menu to option menu
         self.input_popup = ("confirm_input", "quit")

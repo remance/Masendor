@@ -8,16 +8,23 @@ lore_csv_read = utility.lore_csv_read
 
 
 class Localisation:
-    def __init__(self):
+    def __init__(self, debug=False):
         from engine.game.game import Game
         self.main_dir = Game.main_dir
         self.data_dir = Game.data_dir
         self.module_dir = Game.module_dir
         self.language = Game.language
+        self.debug = debug
 
         # start with the creation of common UI localisation
         self.text = {"en": {"ui": csv_read(self.data_dir, "en.csv", ("localisation",), dict_value_return_as_str=True)},
-                     self.language: {"ui": csv_read(self.data_dir, "en.csv", ("localisation",), dict_value_return_as_str=True)},}
+                     self.language: {}}
+        try:
+            ui_language_file = csv_read(self.data_dir, self.language + ".csv", ("localisation",), dict_value_return_as_str=True)
+            self.text[self.language]["ui"] = ui_language_file
+        except FileNotFoundError:
+            pass
+
         self.read_module_lore("concept", "concept")
         self.read_module_lore("history", "history")
         self.read_module_lore("faction", "faction")
@@ -59,54 +66,58 @@ class Localisation:
             self.load_preset_map_lore(self.language)
 
     def load_preset_map_lore(self, language):
-        # try:
-        with open(os.path.join(self.module_dir, "localisation", self.language, "map", "preset", "info.csv"),
-                  encoding="utf-8", mode="r") as edit_file:  # read campaign info file
-            lore_csv_read(edit_file, self.text[language]["preset_map"]["info"])
-        edit_file.close()
-
-        read_folder = Path(os.path.join(self.module_dir, "localisation", language, "map", "preset"))
-        sub1_directories = [x for x in read_folder.iterdir() if x.is_dir()]  # load preset map campaign
-        for file_campaign in sub1_directories:
-            campaign_id = os.path.split(file_campaign)[-1]
-            self.text[language]["preset_map"][campaign_id] = {"info": {}}
-
-            with open(os.path.join(self.module_dir, "localisation", self.language, "map", "preset",
-                                   file_campaign, "info.csv"),
+        try:
+            with open(os.path.join(self.module_dir, "localisation", self.language, "map", "preset", "info.csv"),
                       encoding="utf-8", mode="r") as edit_file:  # read campaign info file
-                lore_csv_read(edit_file, self.text[language]["preset_map"][campaign_id]["info"])
+                lore_csv_read(edit_file, self.text[language]["preset_map"]["info"])
             edit_file.close()
 
-            read_folder = Path(os.path.join(self.module_dir, "localisation", language, "map", "preset",
-                                            file_campaign))
-            sub2_directories = [x for x in read_folder.iterdir() if x.is_dir()]
-            for file_map in sub2_directories:
-                file_map_name = os.path.split(file_map)[-1]
-                self.text[language]["preset_map"][campaign_id][file_map_name] = {"source": {},
-                                                                                 "eventlog": {}}
-                read_folder = Path(os.path.join(self.module_dir, "localisation", language, "map", "preset",
-                                                file_campaign, file_map_name))
-                sub2_files = [f for f in os.listdir(read_folder) if f.endswith(".csv")]
-                for data_file in sub2_files:  # load event log
-                    if "eventlog" in data_file:
-                        source_id = int(data_file.split(".csv")[0][-1])
-                        self.text[language]["preset_map"][campaign_id][file_map_name][
-                            "eventlog"][source_id] = {}
-                        with open(os.path.join(self.module_dir, "localisation", self.language, "map", "preset",
-                                               file_campaign, file_map_name, data_file),
-                                  encoding="utf-8", mode="r") as edit_file:  # read source file
-                            lore_csv_read(edit_file,
-                                          self.text[language]["preset_map"][campaign_id][file_map_name][
-                                              "eventlog"][source_id])
-                        edit_file.close()
+            read_folder = Path(os.path.join(self.module_dir, "localisation", language, "map", "preset"))
+            sub1_directories = [x for x in read_folder.iterdir() if x.is_dir()]  # load preset map campaign
+            for file_campaign in sub1_directories:
+                campaign_id = os.path.split(file_campaign)[-1]
+                try:
+                    with open(os.path.join(self.module_dir, "localisation", self.language, "map", "preset",
+                                           file_campaign, "info.csv"),
+                              encoding="utf-8", mode="r") as edit_file:  # read campaign info file
+                        self.text[language]["preset_map"][campaign_id] = {"info": {}}
+                        lore_csv_read(edit_file, self.text[language]["preset_map"][campaign_id]["info"])
+                    edit_file.close()
 
-                    elif "source" in data_file:
-                        with open(os.path.join(self.module_dir, "localisation", self.language, "map", "preset",
-                                               file_campaign, file_map_name, "source.csv"),
-                                  encoding="utf-8", mode="r") as edit_file:  # read source file
-                            lore_csv_read(edit_file,
-                                          self.text[language]["preset_map"][campaign_id][file_map_name]["source"])
-                        edit_file.close()
+                    read_folder = Path(os.path.join(self.module_dir, "localisation", language, "map", "preset",
+                                                    file_campaign))
+                    sub2_directories = [x for x in read_folder.iterdir() if x.is_dir()]
+                    for file_map in sub2_directories:
+                        file_map_name = os.path.split(file_map)[-1]
+                        self.text[language]["preset_map"][campaign_id][file_map_name] = {"source": {},
+                                                                                         "eventlog": {}}
+                        read_folder = Path(os.path.join(self.module_dir, "localisation", language, "map", "preset",
+                                                        file_campaign, file_map_name))
+                        sub2_files = [f for f in os.listdir(read_folder) if f.endswith(".csv")]
+                        for data_file in sub2_files:  # load event log
+                            if "eventlog" in data_file:
+                                source_id = int(data_file.split(".csv")[0][-1])
+                                with open(os.path.join(self.module_dir, "localisation", self.language, "map", "preset",
+                                                       file_campaign, file_map_name, data_file),
+                                          encoding="utf-8", mode="r") as edit_file:  # read source file
+                                    self.text[language]["preset_map"][campaign_id][file_map_name][
+                                        "eventlog"][source_id] = {}
+                                    lore_csv_read(edit_file,
+                                                  self.text[language]["preset_map"][campaign_id][file_map_name][
+                                                      "eventlog"][source_id])
+                                edit_file.close()
+
+                            elif "source" in data_file:
+                                with open(os.path.join(self.module_dir, "localisation", self.language, "map", "preset",
+                                                       file_campaign, file_map_name, "source.csv"),
+                                          encoding="utf-8", mode="r") as edit_file:  # read source file
+                                    lore_csv_read(edit_file,
+                                                  self.text[language]["preset_map"][campaign_id][file_map_name]["source"])
+                                edit_file.close()
+                except FileNotFoundError:
+                    pass
+        except FileNotFoundError:
+            pass
 
     def read_module_lore(self, lore_type, lore_key):
         """
@@ -148,7 +159,8 @@ class Localisation:
             else:
                 return self.inner_grab_text(key, "en", text_data)
         except KeyError:  # no translation found
-            print(self.language, key, " not found, use input key instead")
+            if self.debug:
+                print(self.language, key, " not found, use input key instead")
             return str(key)
 
     def create_lore_data(self, key_type):

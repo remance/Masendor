@@ -30,7 +30,7 @@ def ai_move(self):
 
     move_distance = self.follow_target.distance_to(self.base_pos)
     if follow_order != "Free":  # move to assigned location
-        if self.leader and "charge" in self.leader.current_action and follow_order != "Stay Here":  # charge
+        if self.leader and "charge" in self.leader.current_action and follow_order != "Stay Here":  # charge TODO change charge to include all momentum (reset right away when attack enemy with non full charge) and self charge without unit
             # leader charging, charge with leader do not auto move to enemy on its own
             if self.equipped_weapon != self.charge_weapon_set:  # swap to best charge weapon set for charge
                 self.swap_weapon(self.charge_weapon_set)

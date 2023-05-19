@@ -19,6 +19,7 @@ from engine.effect import effect
 from engine.data import datasprite, datamap, datalocalisation
 from engine.lorebook import lorebook
 from engine.battle import setup_battle_unit
+from engine.menubackground import menubackground
 
 direction_list = datasprite.direction_list
 
@@ -362,8 +363,10 @@ class Game:
         uimenu.MenuButton.containers = self.menu_button
         uimenu.OptionMenuText.containers = self.menu_icon
         uimenu.SliderMenu.containers = self.menu_slider, self.slider_menu
-
         uimenu.TeamCoa.containers = self.team_coa
+
+        menubackground.MenuRotate.containers = self.main_ui_updater
+        menubackground.MenuActor.containers = self.main_ui_updater
 
         lorebook.SubsectionName.containers = self.main_ui_updater, self.battle_ui_updater
 
@@ -762,7 +765,8 @@ class Game:
         # Background image
         self.background_image = load_images(self.module_dir, screen_scale=self.screen_scale,
                                             subfolder=("ui", "mainmenu_ui", "background"))
-        self.background = self.background_image["main"]
+        self.atlas = menubackground.MenuRotate((self.screen_width / 2, self.screen_height / 2), self.background_image["atlas"], 5)
+        # self.background = self.background_image["main"]
 
         # Starting script
         self.main_ui_updater.remove(*self.menu_button)  # remove all button from drawing
@@ -894,8 +898,8 @@ class Game:
             self.main_ui_updater.update()
 
             # Reset screen
-            self.screen.fill((0, 0, 0))
-            self.screen.blit(self.background, (0, 0))  # blit background over instead of clear() to reset screen
+            self.screen.fill((180, 180, 150))
+            # self.screen.blit(self.background, (0, 0))  # blit background over instead of clear() to reset screen
 
             if self.input_popup:  # currently, have input text pop up on screen, stop everything else until done
                 if self.input_ok_button.event_press or key_press[pygame.K_RETURN] or key_press[pygame.K_KP_ENTER]:

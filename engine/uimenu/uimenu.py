@@ -61,6 +61,7 @@ class UIMenu(pygame.sprite.Sprite):
         Parent class for all menu user interface
         """
         from engine.game.game import Game
+        self.game = Game.game
         self.screen_scale = Game.screen_scale
         self.main_dir = Game.main_dir
         self.data_dir = Game.data_dir
@@ -476,6 +477,7 @@ class BrownMenuButton(UIMenu, Containable):
 
         mouse_pos = self.cursor.pos
         sju = self.cursor.is_select_just_up
+        self.event = False
 
         self.mouse_over = False
         if self.rect.collidepoint(mouse_pos):
