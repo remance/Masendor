@@ -5,30 +5,27 @@ setup_list = utility.setup_list
 list_scroll = utility.list_scroll
 
 
-def menu_custom_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
-    if mouse_left_up or mouse_left_down:
-        if mouse_left_up:
-            for index, name in enumerate(self.map_namegroup):  # user click on map name, change map
-                if name.rect.collidepoint(self.mouse_pos):
-                    self.current_map_select = index
-                    self.map_selected = self.battle_map_folder[self.current_map_select]
-                    self.create_preview_map()
-                    break
+def menu_custom_map_select(self, mouse_scroll_up, mouse_scroll_down, esc_press):
+    for index, name in enumerate(self.map_namegroup):  # user click on map name, change map
+        if name.rect.event:
+            self.current_map_select = index
+            self.map_selected = self.battle_map_folder[self.current_map_select]
+            self.create_preview_map()
+            break
 
-        if self.map_list_box.scroll.rect.collidepoint(self.mouse_pos):  # click on subsection list scroll
-            self.current_map_row = self.map_list_box.scroll.player_input(
-                self.mouse_pos)  # update the scroll and get new current subsection
-            setup_list(self.screen_scale, uimenu.NameList, self.current_map_row, self.preset_map_list,
-                       self.map_namegroup, self.map_list_box,
-                       self.main_ui_updater)
+    if self.map_list_box.event:  # click on subsection list scroll
+        self.current_map_row = self.map_list_box.scroll.player_input(
+            self.mouse_pos)  # update the scroll and get new current subsection
+        setup_list(self.screen_scale, uimenu.NameList, self.current_map_row, self.preset_map_list,
+                   self.map_namegroup, self.map_list_box,
+                   self.main_ui_updater)
 
-    if self.map_list_box.rect.collidepoint(self.mouse_pos):
+    elif self.map_list_box.event:
         self.current_map_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down,
                                            self.map_list_box.scroll, self.map_list_box, self.current_map_row,
                                            self.preset_map_list, self.map_namegroup, self.main_ui_updater)
 
-    if self.map_back_button.event or esc_press:
-        self.map_back_button.event = False
+    elif self.map_back_button.event or esc_press:
         self.current_map_row = 0
 
         self.main_ui_updater.remove(self.map_preview, self.custom_map_list_box, self.team_coa, self.map_title)
@@ -42,7 +39,6 @@ def menu_custom_map_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up
 
     elif self.select_button.event:  # select this map, go to team/source selection screen
         self.current_source_row = 0
-        self.select_button.event = False
 
         self.main_ui_updater.remove(*self.map_select_button, self.map_list_box, self.map_list_box.scroll,
                                     self.map_description)

@@ -20,13 +20,23 @@ def change_number(number):
         return str(round(number / 1000, 1)) + "k"
 
 
-class UIButton(UIMenu):
-    def __init__(self, image, event=None, layer=11):
+class UIBattle(UIMenu):
+    def __init__(self, has_containers=False):
+        """
+        Parent class for all battle menu user interface
+        """
+        from engine.battle.battle import Battle
+        UIMenu.__init__(self, has_containers)
+        self.updater = Battle.battle_ui_updater  # change updater to use battle ui updater instead of main menu one
+        self.battle = Battle.battle
+
+
+class ButtonUI(UIBattle):
+    def __init__(self, image, layer=11):
         self._layer = layer
-        UIMenu.__init__(self)
+        UIBattle.__init__(self)
         self.pos = (0, 0)
         self.image = image
-        self.event = event
         self.rect = self.image.get_rect(center=self.pos)
         self.mouse_over = False
 
@@ -35,12 +45,12 @@ class UIButton(UIMenu):
         self.rect = self.image.get_rect(center=self.pos)
 
 
-class HeroUI(UIMenu):
+class HeroUI(UIBattle):
     weapon_sprite_pool = None
 
     def __init__(self, weapon_box_images, status_box_image, text_size=24):
         self._layer = 10
-        UIMenu.__init__(self)
+        UIBattle.__init__(self)
         self.font = pygame.font.Font(self.ui_font["text_paragraph"], int(text_size * self.screen_scale[1]))
 
         self.image = pygame.Surface((400 * self.screen_scale[0], 200 * self.screen_scale[1]))
@@ -366,13 +376,13 @@ class HeroUI(UIMenu):
             self.image.blit(self.status_effect_image, self.status_effect_image_rect)
 
 
-class SkillCardIcon(UIMenu, pygame.sprite.Sprite):
+class SkillCardIcon(UIBattle, pygame.sprite.Sprite):
     cooldown = None
     active_skill = None
 
     def __init__(self, image, pos, key):
         self._layer = 11
-        UIMenu.__init__(self)
+        UIBattle.__init__(self)
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos  # pos of the skill on ui
         self.font = pygame.font.Font(self.ui_font["main_button"], int(24 * self.screen_scale[1]))
@@ -434,10 +444,10 @@ class SkillCardIcon(UIMenu, pygame.sprite.Sprite):
                 self.image.blit(text_surface, text_rect)
 
 
-class FPScount(UIMenu):
+class FPScount(UIBattle):
     def __init__(self):
         self._layer = 12
-        UIMenu.__init__(self)
+        UIBattle.__init__(self)
         self.image = pygame.Surface((50, 50), pygame.SRCALPHA)
         self.base_image = self.image.copy()
         self.font = pygame.font.Font(self.ui_font["main_button"], 18)
@@ -454,13 +464,13 @@ class FPScount(UIMenu):
         self.image.blit(fps_text, text_rect)
 
 
-class SelectedSquad(UIMenu, pygame.sprite.Sprite):
+class SelectedSquad(UIBattle, pygame.sprite.Sprite):
     image = None
 
     def __init__(self, pos, layer=17):
         """Used for showing selected unit in inpeact ui and unit editor"""
         self._layer = layer
-        UIMenu.__init__(self)
+        UIBattle.__init__(self)
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.pos = pos
         self.rect = self.image.get_rect(topleft=self.pos)
@@ -471,13 +481,13 @@ class SelectedSquad(UIMenu, pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=self.pos)
 
 
-class MiniMap(UIMenu):
+class MiniMap(UIBattle):
     colour = None
     selected_colour = None
 
     def __init__(self, pos):
         self._layer = 10
-        UIMenu.__init__(self)
+        UIBattle.__init__(self)
         self.pos = pos
         self.leader_dot_images = {}
         self.player_dot_images = {}
@@ -509,17 +519,15 @@ class MiniMap(UIMenu):
         self.map_scale_height = len(base_map.map_array) / size[1]
         self.base_image = self.image.copy()
         self.camera_border = [camera.image.get_width(), camera.image.get_height()]
-        self.camera_pos = camera.pos
         self.rect = self.image.get_rect(bottomright=self.pos)
 
-    def update(self, camera_pos, subunit_list):
+    def update(self):
         """update troop and leader dot on map"""
         self.update_count += 1
         if self.update_count > 5:
             self.update_count = 0
-            self.camera_pos = camera_pos
             self.image = self.base_image.copy()
-            for subunit in subunit_list:
+            for subunit in self.battle.active_unit_list:
                 scaled_pos = (subunit.base_pos[0] / self.map_scale_width, subunit.base_pos[1] / self.map_scale_height)
                 if subunit.is_leader:
                     if subunit.player_control:
@@ -533,17 +541,17 @@ class MiniMap(UIMenu):
                     self.image.blit(self.troop_dot_images[subunit.team], rect)
 
             pygame.draw.rect(self.image, (0, 0, 0),
-                             ((camera_pos[1][0] / self.screen_scale[0] / (self.map_scale_width)) / 5,
-                              (camera_pos[1][1] / self.screen_scale[1] / (self.map_scale_height)) / 5,
+                             ((self.battle.camera_topleft_corner[0] / self.screen_scale[0] / (self.map_scale_width)) / 5,
+                              (self.battle.camera_topleft_corner[1] / self.screen_scale[1] / (self.map_scale_height)) / 5,
                               (self.camera_border[0] / self.screen_scale[0] / 5) / self.map_scale_width,
                               (self.camera_border[1] / self.screen_scale[1] / 5) / self.map_scale_height), 2)
 
 
-class EventLog(UIMenu):
+class EventLog(UIBattle):
 
     def __init__(self, image, pos):
         self._layer = 10
-        UIMenu.__init__(self)
+        UIBattle.__init__(self)
         self.font = pygame.font.Font(self.ui_font["main_button"], int(image.get_height() / 15))
         self.pos = pos
         self.image = image
@@ -655,7 +663,7 @@ class EventLog(UIMenu):
             self.recreate_image()
 
 
-class UIScroll(UIMenu):
+class UIScroll(UIBattle):
     def __init__(self, ui, pos):
         """
         Scroll for any applicable ui
@@ -665,7 +673,7 @@ class UIScroll(UIMenu):
         """
         self.ui = ui
         self._layer = self.ui.layer + 2  # always 2 layer higher than the ui and its item
-        UIMenu.__init__(self)
+        UIBattle.__init__(self)
 
         self.ui.scroll = self
         self.height_ui = self.ui.image.get_height()
@@ -717,10 +725,10 @@ class UIScroll(UIMenu):
             return self.current_row
 
 
-class UnitSelector(UIMenu):
+class UnitSelector(UIBattle):
     def __init__(self, pos, image, icon_scale=1):
         self._layer = 10
-        UIMenu.__init__(self)
+        UIBattle.__init__(self)
         self.image = image
         self.pos = pos
         self.rect = self.image.get_rect(midbottom=self.pos)
@@ -773,12 +781,12 @@ class UnitSelector(UIMenu):
         self.scroll.change_image(new_row=self.current_row, row_size=self.row_size)
 
 
-class UnitIcon(UIMenu, pygame.sprite.Sprite):
+class UnitIcon(UIBattle, pygame.sprite.Sprite):
     colour = None
 
     def __init__(self, pos, unit, size):
         self._layer = 11
-        UIMenu.__init__(self)
+        UIBattle.__init__(self)
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.who = unit  # link unit object so when click can correctly select or go to position
         self.pos = pos  # pos on unit selector ui
@@ -849,9 +857,9 @@ class UnitIcon(UIMenu, pygame.sprite.Sprite):
                 self.image = self.right_selected_image
 
 
-class TempUnitIcon(UIMenu):
+class TempUnitIcon(UIBattle):
     def __init__(self, team, image, index):
-        UIMenu.__init__(self)
+        UIBattle.__init__(self)
         self.team = team
         self.index = index
         self.portrait = pygame.Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]), pygame.SRCALPHA)
@@ -869,10 +877,10 @@ class TempUnitIcon(UIMenu):
         self.is_leader = True
 
 
-class Timer(UIMenu):
+class Timer(UIBattle):
     def __init__(self, pos, text_size=20):
         self._layer = 11
-        UIMenu.__init__(self)
+        UIBattle.__init__(self)
         self.font = pygame.font.Font(self.ui_font["main_button"], text_size)
         self.pos = pos
         self.image = pygame.Surface((100, 30), pygame.SRCALPHA)
@@ -909,10 +917,10 @@ class Timer(UIMenu):
                 self.image.blit(self.timer_surface, self.timer_rect)
 
 
-class TimeUI(UIMenu):
+class TimeUI(UIBattle):
     def __init__(self, image):
         self._layer = 10
-        UIMenu.__init__(self)
+        UIBattle.__init__(self)
         self.pos = (0, 0)
         self.image = image.copy()
         self.base_image = self.image.copy()
@@ -935,10 +943,10 @@ class TimeUI(UIMenu):
                                        self.rect.center[1]))  # time increase button
 
 
-class BattleScaleUI(UIMenu):
+class BattleScaleUI(UIBattle):
     def __init__(self, image, team_colour):
         self._layer = 10
-        UIMenu.__init__(self)
+        UIBattle.__init__(self)
         self.team_colour = team_colour
         self.font = pygame.font.Font(self.ui_font["main_button"], 12)
         self.pos = (0, 0)
@@ -967,12 +975,12 @@ class BattleScaleUI(UIMenu):
         self.rect = self.image.get_rect(topleft=self.pos)
 
 
-class WheelUI(UIMenu):
+class WheelUI(UIBattle):
     def __init__(self, image, selected_image, pos, text_size=20):
         """Wheel choice ui with text or image inside the choice.
         Works similar to Fallout companion wheel and similar system"""
         self._layer = 11
-        UIMenu.__init__(self)
+        UIBattle.__init__(self)
         self.font = pygame.font.Font(self.ui_font["main_button"], text_size)
         self.pos = pos
         self.choice_list = ()
@@ -1061,29 +1069,49 @@ class WheelUI(UIMenu):
                 self.image.blit(self.wheel_inactive_image_list[index], self.wheel_rect[index])
 
 
-class InspectSubunit(UIMenu):
-    def __init__(self, pos):
-        self._layer = 11
-        UIMenu.__init__(self)
+class EscBox(UIBattle):
+    images = {}
+
+    def __init__(self):
+        self._layer = 24
+        UIBattle.__init__(self)
+        self.pos = (self.screen_size[0] / 2, self.screen_size[1] / 2)
+        self.mode = "menu"  # Current menu mode
+        self.image = self.images[self.mode]
+        self.rect = self.image.get_rect(center=self.pos)
+
+    def change_mode(self, mode):
+        """Change between 0 menu, 1 option, 2 encyclopedia mode"""
+        self.mode = mode
+        if self.mode != "encyclopedia":
+            self.image = self.images[mode]
+            self.rect = self.image.get_rect(center=self.pos)
+
+
+class EscButton(UIBattle):
+    def __init__(self, images, pos, text="", text_size=16):
+        self._layer = 25
+        UIBattle.__init__(self)
         self.pos = pos
-        self.who = None
-        self.image = pygame.Surface((0, 0))
-        self.base_image = self.image.copy()
-        self.rect = self.image.get_rect(topleft=self.pos)
+        self.images = [image.copy() for image in list(images.values())]
+        self.text = text
+        self.font = pygame.font.Font(self.ui_font["main_button"], text_size)
 
-    def add_subunit(self, who):
-        if who:
-            self.who = who
-            self.image = self.who.block_image
-            self.rect = self.image.get_rect(topleft=self.pos)
-        else:
-            self.image = self.base_image.copy()
+        if text != "":  # blit menu text into button image
+            text_surface = self.font.render(self.text, True, (0, 0, 0))
+            text_rect = text_surface.get_rect(center=self.images[0].get_rect().center)
+            self.images[0].blit(text_surface, text_rect)  # button idle image
+            self.images[1].blit(text_surface, text_rect)  # button mouse over image
+            self.images[2].blit(text_surface, text_rect)  # button click image
+
+        self.image = self.images[0]
+        self.rect = self.image.get_rect(center=self.pos)
 
 
-class BattleDone(UIMenu):
+class BattleDone(UIBattle):
     def __init__(self, pos, box_image, result_image):
         self._layer = 18
-        UIMenu.__init__(self)
+        UIBattle.__init__(self)
         self.box_image = box_image
         self.result_image = result_image
         self.font = pygame.font.Font(self.ui_font["name_font"], int(self.screen_scale[1] * 60))
@@ -1149,12 +1177,11 @@ class BattleDone(UIMenu):
         self.rect = self.image.get_rect(center=self.pos)
 
 
-class AimTarget(UIMenu, pygame.sprite.Sprite):
+class AimTarget(pygame.sprite.Sprite):
     aim_images = None
 
     def __init__(self, who):
         self._layer = 2000000
-        UIMenu.__init__(self)
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.who = who
         self.who.shoot_line = self
@@ -1216,22 +1243,21 @@ class SkillAimTarget(AimTarget):
             self.rect.center = self.pos
 
 
-class SpriteIndicator(UIMenu, pygame.sprite.Sprite):
+class SpriteIndicator(pygame.sprite.Sprite):
     def __init__(self, image, who, battle, layer=1):
         """Indicator for unit hitbox and status effect sprite"""
         self.who = who
         self._layer = layer
-        UIMenu.__init__(self)
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.battle = battle
         self.image = image
         self.rect = self.image.get_rect(center=self.who.pos)
 
 
-class Profiler(cProfile.Profile, UIMenu):
+class Profiler(cProfile.Profile, UIBattle):
 
     def __init__(self):
-        UIMenu.__init__(self)
+        UIBattle.__init__(self)
         self.size = (900, 550)
         self.image = pygame.Surface(self.size)
         self.rect = pygame.Rect((0, 0, *self.size))

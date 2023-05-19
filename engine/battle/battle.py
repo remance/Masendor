@@ -11,10 +11,13 @@ from engine.unit import unit
 from engine.effect import effect
 from engine.data import datasprite
 from engine.uibattle import uibattle
+from engine.drama import drama
 from engine.ai import ai
-
+from engine.battle.setup import make_battle_ui, make_esc_menu
 from engine import utility
 
+make_battle_ui = make_battle_ui.make_battle_ui
+make_esc_menu = make_esc_menu.make_esc_menu
 direction_list = datasprite.direction_list
 
 load_image = utility.load_image
@@ -111,10 +114,13 @@ class Battle:
     from engine.battle.wheel_ui_process import wheel_ui_process
     wheel_ui_process = wheel_ui_process
 
+    battle = None
+    battle_ui_updater = None
     start_camera_mode = "Follow"
 
     def __init__(self, game):
         self.game = game
+        Battle.battle = self
 
         self.player_unit = None  # player unit
 
@@ -140,11 +146,10 @@ class Battle:
         self.screen_scale = game.screen_scale
         self.battle_camera = game.battle_camera
         self.battle_ui_updater = game.battle_ui_updater
+        Battle.battle_ui_updater = self.battle_ui_updater
 
         self.unit_updater = game.unit_updater
         self.all_units = game.all_units
-        self.ui_updater = game.ui_updater
-        self.weather_updater = game.weather_updater
         self.effect_updater = game.effect_updater
 
         self.cursor = game.cursor
@@ -159,20 +164,12 @@ class Battle:
         self.sprite_indicator = game.sprite_indicator
         self.shoot_lines = game.shoot_lines
 
-        self.mini_map = game.mini_map
         self.button_ui = game.button_ui
 
-        self.fps_count = game.fps_count
-
         self.single_text_popup = game.single_text_popup
-        self.drama_text = game.drama_text
 
         self.skill_icon = game.skill_icon
         self.effect_icon = game.effect_icon
-
-        self.battle_menu = game.battle_menu
-        self.battle_menu_button = game.battle_menu_button
-        self.esc_option_menu_button = game.esc_option_menu_button
 
         self.input_button = game.input_button
         self.input_box = game.input_box
@@ -182,11 +179,6 @@ class Battle:
         self.input_ui_popup = game.input_ui_popup
         self.confirm_ui = game.confirm_ui
         self.confirm_ui_popup = game.confirm_ui_popup
-
-        self.time_ui = game.time_ui
-        self.time_number = game.time_number
-
-        self.battle_scale_ui = game.battle_scale_ui
 
         self.weather_matter = game.weather_matter
         self.weather_effect = game.weather_effect
@@ -207,11 +199,6 @@ class Battle:
 
         self.troop_ai_logic_queue = []
         self.pathfinding_thread = ai.PathfindingAI(self)
-
-        self.esc_slider_menu = game.esc_slider_menu
-        self.esc_value_boxes = game.esc_value_boxes
-
-        self.wheel_ui = game.wheel_ui
 
         self.unit_behaviour_wheel = \
             {"Main": {"Unit": "Unit", "Formation": "Formation", "Range Attack": "Range Attack", "Setting": "Setting"},
@@ -251,12 +238,6 @@ class Battle:
                                  "Stay Here": "Stay Here"},
              "Setting": {"Height Map": "Height Map", "UI Hide": "UI Hide", "UI Show": "UI Show"}}
 
-        self.command_ui = game.command_ui
-        self.event_log = game.event_log
-
-        self.battle_done_box = game.battle_done_box
-        self.battle_done_button = game.battle_done_button
-
         self.weather_screen_adjust = self.screen_rect.width / self.screen_rect.height  # for weather sprite spawn position
         self.right_corner = self.screen_rect.width - (5 * self.screen_scale[0])
         self.bottom_corner = self.screen_rect.height - (5 * self.screen_scale[1])
@@ -287,8 +268,6 @@ class Battle:
         self.team_colour = self.game.team_colour
         self.language = self.game.language
         self.localisation = self.game.localisation
-
-        self.current_weather = weather.Weather(self.time_ui, 4, 0, 0, None)
 
         self.unit_animation_pool = None
         self.status_animation_pool = None
@@ -321,6 +300,68 @@ class Battle:
         # Assign battle variable to some classes
         unit.Unit.sound_effect_pool = self.sound_effect_pool
         effect.Effect.sound_effect_pool = self.sound_effect_pool
+
+        # Create battle ui
+
+        self.fps_count = uibattle.FPScount()  # FPS number counter
+        self.battle_ui_updater.add(self.fps_count)
+
+        battle_ui_image = load_images(self.module_dir, screen_scale=self.screen_scale, subfolder=("ui", "battle_ui"))
+
+        battle_ui_dict = make_battle_ui(battle_ui_image, self.team_colour,
+                                        self.screen_rect.size)
+        self.time_ui = battle_ui_dict["time_ui"]
+        self.time_number = battle_ui_dict["time_number"]
+        self.battle_scale_ui = battle_ui_dict["battle_scale_ui"]
+        self.battle_ui_updater.add(self.time_ui, self.time_number)
+        self.wheel_ui = battle_ui_dict["wheel_ui"]
+        self.command_ui = battle_ui_dict["command_ui"]
+        self.battle_ui_updater.add(self.command_ui)
+
+        self.current_weather = weather.Weather(self.time_ui, 4, 0, 0, None)
+        weather.Weather.wind_compass_images = {"wind_compass": battle_ui_image["wind_compass"],
+                                               "wind_arrow": battle_ui_image["wind_arrow"]}
+
+        # 4 Skill icons UI
+        uibattle.SkillCardIcon(self.skill_images["0"], (self.command_ui.image.get_width() +
+                                                        self.skill_images["0"].get_width() / 2, 0), "0")
+        uibattle.SkillCardIcon(self.skill_images["0"], (self.command_ui.image.get_width() +
+                                                        self.skill_images["0"].get_width() * 2, 0), "1")
+        uibattle.SkillCardIcon(self.skill_images["0"], (self.command_ui.image.get_width() +
+                                                        self.skill_images["0"].get_width() * 3.5, 0), "2")
+        uibattle.SkillCardIcon(self.skill_images["0"], (self.command_ui.image.get_width() +
+                                                        self.skill_images["0"].get_width() * 5, 0), "3")
+
+        uibattle.AimTarget.aim_images = {0: battle_ui_image["aim_0"], 1: battle_ui_image["aim_1"],
+                                         2: battle_ui_image["aim_2"], 3: pygame.Surface((0, 0))}
+
+        self.battle_done_box = uibattle.BattleDone((self.screen_rect.width / 2, self.screen_rect.height / 2),
+                                                   battle_ui_image["end_box"], battle_ui_image["result_box"])
+        self.battle_done_button = uibattle.ButtonUI(battle_ui_image["end_button"], layer=19)
+        self.battle_done_button.change_pos(
+            (self.battle_done_box.pos[0], self.battle_done_box.box_image.get_height() * 2))
+
+        drama.TextDrama.images = load_images(self.module_dir, screen_scale=self.screen_scale,
+                                             subfolder=("ui", "popup_ui", "drama_text"))
+        drama.TextDrama.screen_rect = self.screen_rect
+        self.drama_text = drama.TextDrama()  # message at the top of screen that show up for important event
+
+        # Battle event log
+        self.event_log = uibattle.EventLog(battle_ui_image["event_log"], (0, self.screen_rect.height))
+        uibattle.UIScroll(self.event_log, self.event_log.rect.topright)  # event log scroll
+        unit.Unit.event_log = self.event_log  # Assign event_log to unit class to broadcast event to the log
+        self.battle_ui_updater.add(self.event_log.scroll)
+
+        # Battle ESC menu
+        esc_menu_dict = make_esc_menu(self.module_dir, self.screen_scale, self.master_volume)
+        self.battle_menu = esc_menu_dict["battle_menu"]
+        self.battle_menu_button = esc_menu_dict["battle_menu_button"]
+        self.esc_option_menu_button = esc_menu_dict["esc_option_menu_button"]
+        self.esc_slider_menu = esc_menu_dict["esc_slider_menu"]
+        self.esc_value_boxes = esc_menu_dict["esc_value_boxes"]
+
+        self.mini_map = uibattle.MiniMap((self.screen_rect.width, self.screen_rect.height))
+        self.battle_ui_updater.add(self.mini_map)
 
         # Create the game camera
         self.camera_mode = "Follow"  # mode of game camera
@@ -547,7 +588,6 @@ class Battle:
             skill_icon.change_key(skill_key_list[index])
 
         self.time_update()
-
         self.effect_updater.update(self.active_unit_list, self.dt)
 
         # self.map_def_array = []
@@ -563,8 +603,6 @@ class Battle:
 
             self.fps_count.fps_show(self.clock)
             event_key_press = None
-            mouse_left_up = False  # left click
-            mouse_left_down = False  # hold left click
             mouse_scroll_down = False
             mouse_scroll_up = False
             key_state = pygame.key.get_pressed()
@@ -625,7 +663,6 @@ class Battle:
                             if hat_name in self.player_key_bind_name:
                                 self.player_key_press[self.player_key_bind_name[hat_name]] = True
 
-            self.cursor.update(self.mouse_pos)
             self.base_cursor_pos = pygame.Vector2((self.mouse_pos[0] - self.center_screen[0] + self.camera_pos[0]),
                                                   (self.mouse_pos[1] - self.center_screen[1] + self.camera_pos[
                                                       1]))  # mouse pos on the map based on camera position
@@ -709,9 +746,7 @@ class Battle:
                                 this_unit.health = 0
 
                 elif event.type == pygame.MOUSEBUTTONUP:
-                    if event.button == 1:  # left click
-                        mouse_left_up = True
-                    elif event.button == 4:  # Mouse scroll up
+                    if event.button == 4:  # Mouse scroll up
                         mouse_scroll_up = True
                     elif event.button == 5:  # Mouse scroll down
                         mouse_scroll_down = True
@@ -865,19 +900,6 @@ class Battle:
 
                         self.troop_ai_logic_queue = self.troop_ai_logic_queue[limit:]
 
-                    # Battle related updater
-                    self.unit_updater.update(self.dt)
-                    self.effect_updater.update(self.active_unit_list, self.dt)
-                    self.weather_updater.update(self.dt, self.time_number.time_number)
-
-                    self.ui_updater.update()  # update ui
-
-                    self.camera.update(self.shown_camera_pos, self.battle_camera)
-
-                    for key, value in self.sound_effect_queue.items():  # play each sound effect initiate in this loop
-                        self.play_sound_effect(key, value[0], shake=value[1])
-                    self.sound_effect_queue = {}
-
                     # Update game time
                     self.dt = self.true_dt * self.game_speed  # apply dt with game_speed for calculation
                     if self.dt > 0.1:
@@ -886,8 +908,17 @@ class Battle:
                     self.ui_timer += self.dt  # ui update by real time instead of self time to reduce workload
                     self.ui_dt = self.dt  # get ui timer before apply self
 
+                    # Battle related updater
+                    self.unit_updater.update(self.dt)
+                    self.effect_updater.update(self.active_unit_list, self.dt)
+
+                    self.camera.update(self.shown_camera_pos, self.battle_camera)
+
+                    for key, value in self.sound_effect_queue.items():  # play each sound effect initiate in this loop
+                        self.play_sound_effect(key, value[0], shake=value[1])
+                    self.sound_effect_queue = {}
+
                     if self.ui_timer >= 0.4:
-                        self.mini_map.update([self.camera_pos, self.camera_topleft_corner], self.active_unit_list)
                         if self.player_unit:
                             self.command_ui.value_input(who=self.player_unit)
                             self.countdown_skill_icon()
@@ -919,7 +950,7 @@ class Battle:
                             midtop=self.battle_done_button.pos)
                         self.battle_ui_updater.add(self.battle_done_box, self.battle_done_button)
                     else:
-                        if mouse_left_up and self.battle_done_button.rect.collidepoint(self.mouse_pos):
+                        if self.battle_done_button.event_press:
                             coa_list = [self.coa_list[self.play_source_data[key][0]] for key in self.play_source_data if "Team Faction"
                                         in key if self.play_source_data[key]]
                             if not self.battle_done_box.result_showing:  # show battle result stat
@@ -940,15 +971,14 @@ class Battle:
                                 return
 
                 elif self.game_state == "menu":  # Complete self pause when open either esc menu or encyclopedia
-                    command = self.escmenu_process(mouse_left_up, mouse_left_down, esc_press, mouse_scroll_up,
-                                                   mouse_scroll_down, self.battle_ui_updater)
+                    command = self.escmenu_process(esc_press)
                     if command == "end_battle":
                         return
 
             elif self.input_popup != (
                     None, None):  # currently, have input text pop up on screen, stop everything else until done
                 for button in self.input_button:
-                    button.update(self.mouse_pos, mouse_left_up, mouse_left_down)
+                    button.update()
 
                 if self.input_ok_button.event:
                     self.input_ok_button.event = False
@@ -976,6 +1006,8 @@ class Battle:
                         self.text_delay += self.true_dt
                         if self.text_delay >= 0.3:
                             self.text_delay = 0
+
+            self.battle_ui_updater.update()  # update ui
 
             # self.screen.fill((0, 0, 0))
             self.screen.blit(self.camera.image, (0, 0))  # Draw the battle camera and everything that appear in it

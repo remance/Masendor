@@ -51,8 +51,9 @@ def make_image_by_frame(frame: pygame.Surface, final_size):
 
 
 class UIMenu(pygame.sprite.Sprite):
+    containers = None
 
-    def __init__(self):
+    def __init__(self, has_containers=False):
         """
         Parent class for all menu user interface
         """
@@ -65,14 +66,36 @@ class UIMenu(pygame.sprite.Sprite):
         self.screen_size = Game.screen_size
         self.localisation = Game.localisation
         self.cursor = Game.cursor
-        pygame.sprite.Sprite.__init__(self)
+        self.updater = Game.main_ui_updater
+        if has_containers:
+            pygame.sprite.Sprite.__init__(self, self.containers)
+        else:
+            pygame.sprite.Sprite.__init__(self)
+        self.event = False
+        self.event_press = False
+        self.event_hold = False
+        self.mouse_over = False
+
+    def update(self):
+        self.event = False
+        self.event_press = False
+        self.event_hold = False  # some UI differentiates between press release or holding, if not just use event
+        self.mouse_over = False
+        if self.rect.collidepoint(self.cursor.pos):
+            self.mouse_over = True
+            if self.cursor.is_mouse_left_just_up or self.cursor.is_mouse_left_down:
+                self.event = True
+                if self.cursor.is_mouse_left_just_up:
+                    self.event_press = True
+                elif self.cursor.is_mouse_left_down:
+                    self.event_hold = True
 
 
 class Cursor(UIMenu):
     def __init__(self, images):
         """Game cursor"""
         self._layer = 100  # as high as possible, always blit last
-        UIMenu.__init__(self)
+        UIMenu.__init__(self, has_containers=True)
         self.images = images
         self.image = images["normal"]
         self.pos = (0, 0)
@@ -80,33 +103,20 @@ class Cursor(UIMenu):
         self.is_mouse_left_just_down = False
         self.is_mouse_left_down = False
         self.is_mouse_left_just_up = False
+        self.is_mouse_right_just_down = False
+        self.is_mouse_right_down = False
+        self.is_mouse_right_just_up = False
 
-    def update(self, mouse_pos, *args):
+    def update(self):
         """Update cursor position based on mouse position and mouse button click"""
-        self.pos = mouse_pos
+        keyboard_mouse_press_check = utility.keyboard_mouse_press_check  # TODO change later when no more use old listui
+        self.pos = pygame.mouse.get_pos()
         self.rect.topleft = self.pos
-        if pygame.mouse.get_pressed()[0]:  # press left click
-            print('test', self.is_mouse_left_down)
-            if not self.is_mouse_left_just_down:
-                if not self.is_mouse_left_down:  # fresh press
-                    self.is_mouse_left_just_down = True
-                    print('press left')
-            else:  # already press in previous frame, now hold until release
-                self.is_mouse_left_just_down = False
-                self.is_mouse_left_down = True
-                print('hold left')
-        else:
-            self.is_mouse_left_just_down = False
-            if self.is_mouse_left_just_down or self.is_mouse_left_down:
-                self.is_mouse_left_just_up = True
-                self.is_mouse_left_just_down = False
-                self.is_mouse_left_down = False
-                print('release left')
-            elif self.is_mouse_left_just_up:
-                self.is_mouse_left_just_up = False
-                print('done release left')
-        # elif pygame.mouse.get_pressed()[2]:  # press right click
-        #     self.mouse_right_down = True
+        self.is_mouse_left_just_down, self.is_mouse_left_down, self.is_mouse_left_just_up = keyboard_mouse_press_check(
+            pygame.mouse, 0, self.is_mouse_left_just_down, self.is_mouse_left_down, self.is_mouse_left_just_up)
+
+        self.is_mouse_right_just_down, self.is_mouse_right_down, self.is_mouse_right_just_up = keyboard_mouse_press_check(
+            pygame.mouse, 0, self.is_mouse_right_just_down, self.is_mouse_right_down, self.is_mouse_right_just_up)
 
     def change_image(self, image_name):
         """Change cursor image to whatever input name"""
@@ -114,49 +124,7 @@ class Cursor(UIMenu):
         self.rect = self.image.get_rect(topleft=self.pos)
 
 
-class EscBox(UIMenu):
-    images = {}
-    screen_rect = None
-
-    def __init__(self):
-        self._layer = 24
-        UIMenu.__init__(self)
-        self.pos = (self.screen_rect.width / 2, self.screen_rect.height / 2)
-        self.mode = "menu"  # Current menu mode
-        self.image = self.images[self.mode]
-        self.rect = self.image.get_rect(center=self.pos)
-
-    def change_mode(self, mode):
-        """Change between 0 menu, 1 option, 2 encyclopedia mode"""
-        self.mode = mode
-        if self.mode != "encyclopedia":
-            self.image = self.images[mode]
-            self.rect = self.image.get_rect(center=self.pos)
-
-
-class EscButton(UIMenu, pygame.sprite.Sprite):
-    def __init__(self, images, pos, text="", text_size=16):
-        self._layer = 25
-        UIMenu.__init__(self)
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        self.pos = pos
-        self.images = [image.copy() for image in list(images.values())]
-        self.text = text
-        self.font = pygame.font.Font(self.ui_font["main_button"], text_size)
-
-        if text != "":  # blit menu text into button image
-            text_surface = self.font.render(self.text, True, (0, 0, 0))
-            text_rect = text_surface.get_rect(center=self.images[0].get_rect().center)
-            self.images[0].blit(text_surface, text_rect)  # button idle image
-            self.images[1].blit(text_surface, text_rect)  # button mouse over image
-            self.images[2].blit(text_surface, text_rect)  # button click image
-
-        self.image = self.images[0]
-        self.rect = self.image.get_rect(center=self.pos)
-        self.event = False
-
-
-class SliderMenu(UIMenu, pygame.sprite.Sprite):
+class SliderMenu(UIMenu):
     def __init__(self, bar_images, button_images, pos, value):
         """
         Slider UI that let player click or drag the setting point in the bar
@@ -166,8 +134,7 @@ class SliderMenu(UIMenu, pygame.sprite.Sprite):
         :param value: Value of the setting
         """
         self._layer = 25
-        UIMenu.__init__(self)
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        UIMenu.__init__(self, has_containers=True)
         self.pos = pos
         self.image = bar_images[0].copy()
         self.slider_size = bar_images[1].get_width()
@@ -186,23 +153,22 @@ class SliderMenu(UIMenu, pygame.sprite.Sprite):
         self.image.blit(self.button_image, button_rect)
         self.rect = self.image.get_rect(center=self.pos)
 
-    def player_input(self, mouse_pos, value_box, forced_value=False):
+    def player_input(self, value_box, forced_value=False):
         """
         Update slider value and position
-        :param mouse_pos: Cursor position
         :param value_box: UI box that show number value
         :param forced_value: forced
         :return:
         """
         if not forced_value:
-            self.mouse_value = mouse_pos[0]
+            self.mouse_value = self.cursor.pos[0]
             if self.mouse_value > self.max_value:
                 self.mouse_value = self.max_value
             elif self.mouse_value < self.min_value:
                 self.mouse_value = self.min_value
             self.value = (self.mouse_value - self.min_value) / 2
         else:  # for revert, cancel or esc in the option menu
-            self.value = mouse_pos
+            self.value = self.cursor.pos
         self.mouse_value = (self.slider_size * self.value / 100) + self.difference
         self.image = self.base_image.copy()
         button_rect = self.button_image_list[1].get_rect(center=(self.mouse_value, self.image.get_height() / 2))
@@ -351,18 +317,26 @@ class TextBox(UIMenu):
         self.image.blit(text_surface, text_rect)
 
 
-class MenuButton(UIMenu, pygame.sprite.Sprite):
-    def __init__(self, images, pos, updater=None, key_name="", size=28, layer=1):
+class MenuImageButton(UIMenu):
+    def __init__(self, pos, images, layer=1):
         self._layer = layer
         UIMenu.__init__(self)
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.pos = pos
+        self.images = images
+        self.image = self.images[0]
+        self.rect = self.image.get_rect(center=self.pos)
+
+
+class MenuButton(UIMenu):
+    def __init__(self, images, pos, key_name="", font_size=28, layer=1):
+        self._layer = layer
+        UIMenu.__init__(self, has_containers=True)
         self.pos = pos
         self.button_normal_image = images[0].copy()
         self.button_over_image = images[1].copy()
         self.button_click_image = images[2].copy()
-        self.updater = updater
 
-        self.font = pygame.font.Font(self.ui_font["main_button"], int(size * self.screen_scale[1]))
+        self.font = pygame.font.Font(self.ui_font["main_button"], int(font_size * self.screen_scale[1]))
         self.base_image0 = self.button_normal_image.copy()
         self.base_image1 = self.button_over_image.copy()
         self.base_image2 = self.button_click_image.copy()
@@ -378,18 +352,19 @@ class MenuButton(UIMenu, pygame.sprite.Sprite):
 
         self.image = self.button_normal_image
         self.rect = self.button_normal_image.get_rect(center=self.pos)
-        self.event = False
 
-    def update(self, mouse_pos, mouse_up, mouse_down, *args):
-        if not self.updater or self in self.updater:
-            self.mouse_over = False
-            self.image = self.button_normal_image
-            if self.rect.collidepoint(mouse_pos):
-                self.mouse_over = True
-                self.image = self.button_over_image
-                if mouse_up:
-                    self.event = True
-                    self.image = self.button_click_image
+    def update(self):
+        self.event = False
+        self.event_press = False
+        self.mouse_over = False
+        self.image = self.button_normal_image
+        if self.rect.collidepoint(self.cursor.pos):
+            self.mouse_over = True
+            self.image = self.button_over_image
+            if self.cursor.is_mouse_left_just_up:
+                self.event = True
+                self.event_press = True
+                self.image = self.button_click_image
 
     def change_state(self, key_name):
         if key_name != "":
@@ -481,7 +456,6 @@ class BrownMenuButton(UIMenu, Containable):
 
         self.image = self.button_normal_image
         self.rect = self.button_normal_image.get_rect(center=self.pos)
-        self.event = False
 
     def get_relative_position_inside_container(self):
         return {
@@ -489,13 +463,14 @@ class BrownMenuButton(UIMenu, Containable):
             "pivot": self.pos,
         }
 
-    def update(self, mouse_pos, mouse_up, mouse_down, *args):
+    def update(self):
         self.mouse_over = False
+        self.event = False
         self.image = self.button_normal_image
-        if self.rect.collidepoint(mouse_pos):
+        if self.rect.collidepoint(self.cursor.pos):
             self.mouse_over = True
             self.image = self.button_over_image
-            if mouse_up:
+            if self.cursor.is_mouse_left_just_up:
                 self.event = True
 
         self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
@@ -636,10 +611,9 @@ class MapTitle(UIMenu):
         self.rect = self.image.get_rect(midtop=self.pos)
 
 
-class TeamCoa(UIMenu, pygame.sprite.Sprite):
+class TeamCoa(UIMenu):
     def __init__(self, coa_size, pos, coa_images, team, team_colour, name):
-        UIMenu.__init__(self)
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        UIMenu.__init__(self, has_containers=True)
 
         self.selected = False
         self.coa_size = coa_size
@@ -1147,7 +1121,7 @@ class BoxUI(UIMenu, Containable, Container):
         self.image = pygame.Surface(self.rect[2:])
         self.image.fill("#222a2e")
 
-    def update(self, *args):
+    def update(self):
         self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
         self.image = pygame.Surface(self.rect[2:])
         self.image.fill("#222a2e")
@@ -1184,7 +1158,6 @@ class ListUI(UIMenu, Containable):
         self.frame = load_image(game.module_dir, (1, 1), "list_frame.png", ("ui", "mainmenu_ui"))
         self.on_click = on_click
 
-
         self.click_ready = False
         self.size = size
         self.items = items
@@ -1207,22 +1180,19 @@ class ListUI(UIMenu, Containable):
             self.image.blit(font.render(item, True, ( 255 if e == self.selected_index else 178,)*3), (20, 20+e*36))
         return self.image
 
-
-    def update(self, mouse_pos, mouse_up, mouse_down):
+    def update(self):
         self.mouse_over = False
         self.selected_index = None
-        if mouse_up:
+        if self.cursor.is_mouse_left_just_up:
             self.click_ready = True
-        if self.rect.collidepoint(mouse_pos):
-            self.selected_index = (mouse_pos[1]-11)//36
+        if self.rect.collidepoint(self.cursor.pos):
+            self.selected_index = (self.cursor.pos[1]-11)//36
             self.mouse_over = True
-        if self.click_ready and mouse_down and self.selected_index is not None:
+        if self.click_ready and self.cursor.is_mouse_left_down and self.selected_index is not None:
             self.click_ready = False
             self.on_click(self.selected_index, self.items[self.selected_index])
 
-
         self.image = self.get_refreshed_image()
-
 
     def get_relative_position_inside_container(self):
         return {

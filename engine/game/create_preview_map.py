@@ -10,10 +10,9 @@ def create_preview_map(self):
     # Create map preview image
     map_name = self.battle_map_folder[self.current_map_select]
     if map_name != "Random":
-        if map_name in self.battle_campaign:  # campaign preset map
-            map_images = load_images(self.module_dir, subfolder=("map", "preset",
-                                                                 self.battle_campaign[map_name],
-                                                                 map_name))
+        if map_name in self.battle_campaign:
+            map_images = load_images(self.module_dir, subfolder=("map", "preset", self.battle_campaign[map_name],
+                                                                 map_name))  # check campaign preset map first
         else:  # custom map
             map_images = load_images(self.module_dir,
                                      subfolder=("map", "custom", self.battle_map_folder[self.current_map_select]))

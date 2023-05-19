@@ -53,7 +53,7 @@ screen_scale = (1, 1)
 pygame.init()
 pen = pygame.display.set_mode(screen_size)
 pygame.display.set_caption("Animation Maker")  # set the self name on program border/tab
-pygame.mouse.set_visible(True)  # set mouse as visible
+pygame.mouse.set_visible(False)  # set mouse as invisible, use cursor object instead
 
 config = configparser.ConfigParser()  # initiate config reader
 config.read_file(open(os.path.join(current_dir, "configuration.ini")))  # read config file
@@ -64,6 +64,14 @@ data_dir = os.path.join(main_dir, "data")
 module_dir = os.path.join(data_dir, "module", module_folder)
 language = "en"
 
+ui = pygame.sprite.LayeredUpdates()
+fake_group = pygame.sprite.LayeredUpdates()  # just fake group to add for container and not get auto update
+
+cursor_images = load_images(module_dir, subfolder=("ui", "cursor"))  # no need to scale cursor
+cursor = uimenu.Cursor(cursor_images)
+Game.cursor = cursor
+ui.add(cursor)
+
 Game.main_dir = main_dir
 Game.data_dir = data_dir
 Game.module_dir = module_dir
@@ -72,6 +80,7 @@ Game.screen_scale = screen_scale
 Game.language = language
 Game.ui_font = csv_read(module_dir, "ui_font.csv", ("ui",), header_key=True)
 Game.font_dir = os.path.join(data_dir, "font")
+Game.main_ui_updater = ui
 
 localisation = Localisation()
 Game.localisation = localisation
@@ -1746,9 +1755,6 @@ text_delay = 0
 text_input_popup = (None, None)
 current_pool = animation_pool_data
 
-ui = pygame.sprite.LayeredUpdates()
-fake_group = pygame.sprite.LayeredUpdates()  # just fake group to add for container and not get auto update
-
 button_group = pygame.sprite.Group()
 text_popup_group = pygame.sprite.Group()
 
@@ -3084,7 +3090,7 @@ while True:
             text_input_popup = (None, None)
             ui.remove(*input_ui_popup, *confirm_ui_popup, *colour_ui_popup)
 
-    ui.update(mouse_pos, mouse_left_up, mouse_left_down)
+    ui.update(mouse_pos)
     anim.play(showroom.image, (0, 0), activate_list)
     current_frame = anim.show_frame
     for strip_index, strip in enumerate(filmstrips):

@@ -15,7 +15,7 @@ load_image = utility.load_image
 def menu_custom_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mouse_right_down,
                              mouse_scroll_up, mouse_scroll_down, esc_press):
     self.main_ui_updater.remove(self.single_text_popup)
-    if self.unit_selector.rect.collidepoint(self.mouse_pos):
+    if self.unit_selector.mouse_over:
         if mouse_scroll_up:
             if self.unit_selector.current_row > 0:
                 self.unit_selector.current_row -= 1
@@ -42,20 +42,19 @@ def menu_custom_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_u
                         self.unit_selector.setup_unit_icon(self.unit_icon, preview_char)
                         break
 
-        elif self.unit_selector.scroll.rect.collidepoint(self.mouse_pos):
-            if mouse_left_down or mouse_left_up:
-                new_row = self.unit_selector.scroll.player_input(self.mouse_pos)
-                if self.unit_selector.current_row != new_row:
-                    self.unit_selector.current_row = new_row
-                    self.unit_selector.scroll.change_image(new_row=new_row, row_size=self.unit_selector.row_size)
-                    for this_team in self.team_coa:
-                        if this_team.selected:
-                            preview_char = [char for char in self.preview_unit if "Temp Leader" not in
-                                            self.play_map_data["unit"][this_team.team][char.index] or
-                                            self.play_map_data["unit"][this_team.team][char.index][
-                                                "Temp Leader"] == ""]
-                            self.unit_selector.setup_unit_icon(self.unit_icon, preview_char)
-                            break
+        elif self.unit_selector.scroll.event:
+            new_row = self.unit_selector.scroll.player_input(self.cursor.mouse_pos)
+            if self.unit_selector.current_row != new_row:
+                self.unit_selector.current_row = new_row
+                self.unit_selector.scroll.change_image(new_row=new_row, row_size=self.unit_selector.row_size)
+                for this_team in self.team_coa:
+                    if this_team.selected:
+                        preview_char = [char for char in self.preview_unit if "Temp Leader" not in
+                                        self.play_map_data["unit"][this_team.team][char.index] or
+                                        self.play_map_data["unit"][this_team.team][char.index][
+                                            "Temp Leader"] == ""]
+                        self.unit_selector.setup_unit_icon(self.unit_icon, preview_char)
+                        break
 
         else:
             for char in self.unit_icon:  # select unit
