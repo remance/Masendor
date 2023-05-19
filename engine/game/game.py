@@ -565,15 +565,16 @@ class Game:
 
         class CustomBattleListAdapter:
 
-            def __init__(self,_list):
+            def __init__(self, _list):
                 self.list = _list
                 self.last_index = -1
+
             def __len__(self):
                 return len(self.list)
 
             def __getitem__(self, item):
                 return self.list[item]
-    
+
             def on_select(self, item_index, item_text):
                 self.last_index = item_index
                 print(item_index, item_text)
