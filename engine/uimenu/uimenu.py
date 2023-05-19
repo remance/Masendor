@@ -28,10 +28,11 @@ def make_image_by_frame(frame: pygame.Surface, final_size):
 
     css = corner_side_size = (frame.get_size()[0]-1)//2
 
-    image = pygame.Surface(final_size)
+    image = pygame.Surface(final_size, pygame.SRCALPHA)
 
     # background color
-    image.fill(frame.get_at((css, css)))
+    c = frame.get_at((css, css))
+    pygame.draw.rect(image,c,(4,4,fs[0]-10,fs[1]-10))
 
     # corners
     image.blit(frame, (0, 0), (0, 0, css, css))
@@ -473,7 +474,7 @@ class BrownMenuButton(UIMenu, Containable):
 
         # draw text into the button images
         text = self.localisation.grab_text(key=("ui", key_name))
-        text_surface = font.render(text, True, (200, 180, 200))
+        text_surface = font.render(text, True, (0,0,0))
         text_rect = text_surface.get_rect(center=button_normal_image.get_rect().center)
         button_normal_image.blit(text_surface, text_rect)
         button_over_image.blit(text_surface, text_rect)
@@ -1143,13 +1144,13 @@ class BoxUI(UIMenu, Containable, Container):
         self._layer = -1  # NOTE: not sure if this is good since underscore indicate it is a private variable but it works for now
         self.pos = (0, 0)
         self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
-        self.image = pygame.Surface(self.rect[2:])
-        self.image.fill("#222a2e")
+        self.image = pygame.Surface(self.rect[2:], pygame.SRCALPHA)
+        self.image.fill("#302d2ce0")
 
     def update(self, *args):
         self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
-        self.image = pygame.Surface(self.rect[2:])
-        self.image.fill("#222a2e")
+        self.image = pygame.Surface(self.rect[2:], pygame.SRCALPHA)
+        self.image.fill("#bbbbaabb")
 
 
 
@@ -1171,7 +1172,7 @@ class BoxUI(UIMenu, Containable, Container):
 
 class ListUI(UIMenu, Containable):
 
-    def __init__(self, origin, pivot, size, items, parent, on_click, item_size):
+    def __init__(self, origin, pivot, size, items, parent, item_size):
 
         from engine.game.game import Game
         from engine.utility import load_image
@@ -1183,7 +1184,6 @@ class ListUI(UIMenu, Containable):
         self.frame = load_image(game.module_dir, (1, 1), "list_frame.png", ("ui", "mainmenu_ui"))
         self.scroll_box_frame = load_image(game.module_dir, (1, 1), "scroll_box_frame.png", ("ui", "mainmenu_ui"))
 
-        self.on_click = on_click
         self.item_size = item_size
 
         self.relative_size_inside_container = size
@@ -1227,8 +1227,14 @@ class ListUI(UIMenu, Containable):
         # draw items
         for i in range(self.item_size):
             item_index = i+self.scroll_box_down
-            if item_index == self.selected_index:
-                pygame.draw.rect(self.image, "#181617", (6,6+i*item_height, size[0]-25,item_height))
+            if item_index == self.selected_index or item_index == self.items.get_highlighted_index():
+
+                color = "#181617"
+                if item_index == self.items.get_highlighted_index():
+                    color = "#551617"
+
+
+                pygame.draw.rect(self.image, color, (6,6+i*item_height, size[0]-25,item_height))
             self.image.blit(font.render(self.items[item_index], True, ( 255 if item_index == self.selected_index else 178,)*3), (20, item_height//2+6-9+i*item_height))
 
         # draw scroll bar
@@ -1290,7 +1296,7 @@ class ListUI(UIMenu, Containable):
             if index >= 0 and index < self.item_size:
                 self.selected_index = index+self.scroll_box_down
         if in_list and mljd and self.selected_index is not None:
-            self.on_click(self.selected_index, self.items[self.selected_index])
+            self.items.on_select(self.selected_index, self.items[self.selected_index])
 
         # refresh image
         self.image = self.get_refreshed_image()

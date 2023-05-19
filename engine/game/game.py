@@ -563,12 +563,26 @@ class Game:
         self.custom_map_option_box = uimenu.MapOptionBox((self.screen_width, 0), battle_select_image["top_box"],
                                                          1)  # ui box for battle option during preparation screen
 
-        # of course this is just for test and to show how it works
-        def test_on_click_method(item_index, item_text):
-            print("test {0} {1}".format(item_index, item_text))
+        class CustomBattleListAdapter:
+
+            def __init__(self,_list):
+                self.list = _list
+                self.last_index = -1
+            def __len__(self):
+                return len(self.list)
+
+            def __getitem__(self, item):
+                return self.list[item]
+    
+            def on_select(self, item_index, item_text):
+                self.last_index = item_index
+                print(item_index, item_text)
+
+            def get_highlighted_index(self):
+                return self.last_index
 
         self.custom_map_list_box = uimenu.ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
-                                                 items=self.battle_map_list, parent=self.screen, on_click=test_on_click_method, item_size=20)
+                                                 items=CustomBattleListAdapter(self.battle_map_list), parent=self.screen, item_size=20)
 
         self.org_chart = uimenu.OrgChart(load_image(self.module_dir, self.screen_scale,
                                                     "org.png", ("ui", "mapselect_ui")),
