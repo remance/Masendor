@@ -11,9 +11,7 @@ def start_battle(self, player_unit=None):
     if self.enactment:
         selected_player_unit = None
 
-    self.battle.prepare_new_game(self.team_selected, self.map_type,
-                                 self.map_selected, self.map_source, selected_player_unit,
-                                 self.source_data, self.camp_pos)
+    self.battle.prepare_new_game(selected_player_unit)
     self.battle.run_game()
     pygame.mixer.music.unload()
     pygame.mixer.music.set_endevent(self.SONG_END)

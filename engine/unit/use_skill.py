@@ -48,15 +48,15 @@ def use_skill(self, which_skill):
                         for status in skill_stat["Status"]:
                             this_unit[0].apply_effect(status, self.status_list[status],
                                                       this_unit[0].status_effect, this_unit[0].status_duration)
-                    if self.team != this_unit[0].team:  # apply status to enemy if there is one in skill effect
+                    if self.team != this_unit[0].team:  # apply status to enemy if tfhere is one in skill effect
                         for status in skill_stat["Enemy Status"]:
                             this_unit[0].apply_effect(status, self.status_list[status],
                                                       this_unit[0].status_effect, this_unit[0].status_duration)
-                    if "Action" in skill_stat["Type"]:  # effect that is use only when unit perform attack
-                        if "Melee" in skill_stat["Type"] and which_skill not in this_unit[0].active_action_skill[
+                    if "Action" in skill_stat["Action Type"]:  # effect that is use only when unit perform attack
+                        if "Melee" in skill_stat["Action Type"] and which_skill not in this_unit[0].active_action_skill[
                             "melee"]:
                             this_unit[0].active_action_skill["melee"].append(which_skill)
-                        elif "Range" in skill_stat["Type"] and which_skill not in this_unit[0].active_action_skill[
+                        elif "Range" in skill_stat["Action Type"] and which_skill not in this_unit[0].active_action_skill[
                             "range"]:
                             this_unit[0].active_action_skill["range"].append(which_skill)
 

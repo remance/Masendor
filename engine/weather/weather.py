@@ -4,15 +4,15 @@ from pygame import sprite, Surface, font, transform, Vector2, SRCALPHA
 
 from engine import utility
 
-from engine.uimenu.uimenu import UIMenu
+from engine.uibattle.uibattle import UIBattle
 
 
-class Weather(UIMenu):
+class Weather(UIBattle):
     weather_icons = {}
     wind_compass_images = {}
 
     def __init__(self, time_ui, weather_type, wind_direction, level, weather_data):
-        UIMenu.__init__(self)
+        UIBattle.__init__(self)
         self.weather_type = weather_type
         if self.weather_type == 0:
             self.weather_type = randint(1, len(weather_data) - 1)
@@ -90,12 +90,12 @@ class Weather(UIMenu):
             time_ui.image.blit(image, rect)
 
 
-class MatterSprite(sprite.Sprite):
+class MatterSprite(UIBattle):
     set_rotate = utility.set_rotate
 
     def __init__(self, start_pos, target, speed, image, screen_rect_size):
         self._layer = 9
-        sprite.Sprite.__init__(self, self.containers)
+        UIBattle.__init__(self, has_containers=True)
         self.speed = speed
         self.base_pos = Vector2(start_pos)  # should be at the end corner of screen
         self.target = Vector2(target)  # should be at another end corner of screen
@@ -106,13 +106,13 @@ class MatterSprite(sprite.Sprite):
                            self.image.get_height() + screen_rect_size[1])
         self.rect = self.image.get_rect(center=self.base_pos)
 
-    def update(self, dt, *args):
+    def update(self):
         """Update sprite position movement"""
         move = self.target - self.base_pos
         move_length = move.length()
         if move_length > 0.1:
             move.normalize_ip()
-            move = move * self.speed * dt
+            move = move * self.speed * self.battle.dt
             if move.length() <= move_length:
                 self.base_pos += move
                 self.rect.center = list(int(v) for v in self.base_pos)
@@ -129,12 +129,12 @@ class MatterSprite(sprite.Sprite):
             self.kill()
 
 
-class SpecialEffect(sprite.Sprite):
+class SpecialEffect(UIBattle):
     """Special effect from weather beyond sprite such as thunder, fog etc."""
 
     def __init__(self, pos, target, speed, image, end_time):
         self._layer = 8
-        sprite.Sprite.__init__(self, self.containers)
+        UIBattle.__init__(self, has_containers=True)
         self.pos = Vector2(pos)
         self.target = Vector2(target)
         self.speed = speed
@@ -142,24 +142,9 @@ class SpecialEffect(sprite.Sprite):
         self.rect = self.image.get_rect(center=self.pos)
         self.end_time = end_time
 
-    def update(self, dt, timer):
-        """Update sprite movement and removal"""
-        move = self.target - self.pos
-        move_length = move.length()
-        if (self.rect.midleft[0] > 0 and timer < self.end_time) or (
-                self.end_time is not None and timer >= self.end_time and self.rect.midright[0] > 0):
-            move.normalize_ip()
-            move = move * self.speed * dt
-            if move.length() <= move_length:
-                self.pos += move
-                if timer < self.end_time and self.pos[0] > 0:  # do not go beyond 0 if weather event not end yet
-                    self.rect.midleft = list(int(v) for v in self.pos)
-                else:
-                    self.rect.midleft = Vector2(0, self.pos[1])
-            else:
-                self.rect.midleft = self.target
-        elif timer >= self.end_time and self.rect.midright[0] < 0:
-            self.kill()
+    def update(self):
+        """TODO later"""
+        pass
 
 
 class SuperEffect(sprite.Sprite):

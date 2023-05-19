@@ -3,29 +3,24 @@ import sys
 import csv
 import configparser
 
-import glob
-from pathlib import Path
-
 import pygame
 import screeninfo
 
 from engine.battlemap import battlemap
-from engine.game import game
-from engine.battle import battle
+from engine.game.game import Game
+from engine.data.datalocalisation import Localisation
 from engine.weather import weather
 from engine.camera import camera
-from engine.unit import unit
 from engine.effect import effect
 from engine.data import datasprite, datamap
 from engine.uibattle import uibattle
 
 from engine.utility import csv_read, load_images, stat_convert
-from engine.battle import setup_battle_unit
 from engine.battle.spawn_weather_matter import spawn_weather_matter
 from engine.game.setup.make_faction_troop_leader_data import make_faction_troop_leader_data
 from engine.game.create_troop_sprite_pool import create_troop_sprite_pool
 
-team_colour = game.Game.team_colour
+team_colour = Game.team_colour
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 data_dir = os.path.join(main_dir, "data")
@@ -93,7 +88,7 @@ class TroopModel(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.pos)
 
 
-class Studio(game.Game):
+class Studio(Game):
     spawn_weather_matter = spawn_weather_matter
     create_troop_sprite_pool = create_troop_sprite_pool
 
@@ -112,9 +107,21 @@ class Studio(game.Game):
         self.data_dir = data_dir
         self.module_dir = os.path.join(data_dir, "module", self.module_folder)
 
-        self.troop_data, self.leader_data, self.faction_data = make_faction_troop_leader_data(self.data_dir, self.module_dir,
-                                                                                              self.screen_scale, "en")
-        self.battle_map_data = datamap.BattleMapData(self.module_dir, self.screen_scale, "en")
+        Game.main_dir = main_dir
+        Game.data_dir = data_dir
+        Game.module_dir = self.module_dir
+        Game.screen_scale = self.screen_scale
+        Game.language = "en"
+        self.localisation = Localisation()
+        Game.localisation = self.localisation
+        Game.font_dir = os.path.join(data_dir, "font")
+        Game.ui_font = csv_read(self.module_dir, "ui_font.csv", ("ui",), header_key=True)
+        for item in Game.ui_font:  # add ttf file extension for font data reading.
+            Game.ui_font[item] = os.path.join(Game.font_dir, Game.ui_font[item]["Font"] + ".ttf")
+
+        self.troop_data, self.leader_data, self.faction_data = make_faction_troop_leader_data(self.module_dir,
+                                                                                              self.screen_scale)
+        self.battle_map_data = datamap.BattleMapData()
 
         self.battle_base_map = battlemap.BaseMap(data_dir)  # create base terrain map
         self.battle_feature_map = battlemap.FeatureMap(data_dir)  # create terrain feature map
@@ -126,6 +133,8 @@ class Studio(game.Game):
         self.battle_feature_map.feature_list = self.battle_map_data.feature_list
         self.battle_feature_map.feature_colour = self.battle_map_data.feature_colour
         self.battle_feature_map.feature_mod = self.battle_map_data.feature_mod
+        self.battle_campaign = self.battle_map_data.battle_campaign  # for reference to preset campaign
+        self.preset_map_data = self.battle_map_data.preset_map_data
 
         self.battle_map.battle_map_colour = self.battle_map_data.battle_map_colour
         self.battle_map.texture_images = self.battle_map_data.map_texture
@@ -136,7 +145,8 @@ class Studio(game.Game):
         self.map_move_array = []
         self.map_def_array = []
 
-        images = load_images(data_dir, subfolder=("module", self.module_folder, "map", "preset", map_name))
+        images = load_images(data_dir, subfolder=("module", self.module_folder, "map", "preset",
+                                                  self.battle_campaign[map_name], map_name))
         if not images:
             images = load_images(data_dir, subfolder=("module", self.module_folder, "map", "custom", map_name))
 
@@ -196,9 +206,9 @@ class Studio(game.Game):
                                                              [str(self.troop_data.race_list[key]["Name"]) for key in
                                                               self.troop_data.race_list], self.team_colour)
         self.unit_animation_data = self.troop_animation.unit_animation_data  # animation data pool
-        self.gen_body_sprite_pool = self.troop_animation.body_sprite_pool  # body sprite pool
-        self.gen_weapon_sprite_pool = self.troop_animation.weapon_sprite_pool  # weapon sprite pool
-        self.gen_armour_sprite_pool = self.troop_animation.armour_sprite_pool  # armour sprite pool
+        self.body_sprite_pool = self.troop_animation.body_sprite_pool  # body sprite pool
+        self.weapon_sprite_pool = self.troop_animation.weapon_sprite_pool  # weapon sprite pool
+        self.armour_sprite_pool = self.troop_animation.armour_sprite_pool  # armour sprite pool
         self.weapon_joint_list = self.troop_animation.weapon_joint_list  # weapon joint data
         self.colour_list = self.troop_animation.colour_list  # skin colour list
 
@@ -227,7 +237,7 @@ class Studio(game.Game):
 
         for stuff in self.battle_data.values():
             if stuff["Type"] == "unit":
-                if type(stuff["ID"]) is str:
+                if "-" in stuff["ID"]:
                     is_leader = True
                     who_todo = {key: value for key, value in self.leader_data.leader_list.items() if key == stuff["ID"]}
                     troop_size = self.troop_data.race_list[self.leader_data.leader_list[stuff["ID"]]["Race"]]["Size"]
@@ -255,7 +265,8 @@ class Studio(game.Game):
                 else:
                     this_effect = effect.Effect(dummy_troop[0], stuff["POS"], stuff["POS"],
                     stuff["ID"], stuff["Animation"])
-                this_effect.image = this_effect.current_animation[int(stuff["Frame"])]
+                if this_effect.current_animation:
+                    this_effect.image = this_effect.current_animation[int(stuff["Frame"])]
                 this_effect.rect = this_effect.image.get_rect(center=this_effect.pos)
 
                 if stuff["Angle"] != 0:

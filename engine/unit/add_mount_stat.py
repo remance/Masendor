@@ -6,7 +6,7 @@ def add_mount_stat(self):
     if mount_size > self.troop_size:  # replace size if mount is larger
         self.troop_size = mount_size
 
-    if self.mount["Type"] == "Combat Equipment":  # Not exactly mount but weapon like artillery
+    if self.mount["Tag"] == "Combat Equipment":  # Not exactly mount but weapon like artillery
         self.original_charge_def = 10
         self.unit_type = 1  # count as range infantry for command buff
         self.feature_mod = "Infantry"  # Use cavalry type for terrain bonus

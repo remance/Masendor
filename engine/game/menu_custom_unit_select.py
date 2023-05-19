@@ -61,7 +61,7 @@ def menu_custom_unit_select(self, mouse_left_up, mouse_left_down, mouse_scroll_u
             for index, icon in enumerate(self.unit_icon):
                 if icon.rect.collidepoint(self.mouse_pos):
                     popup_text = [icon.who.name]
-                    for item in self.map_data["unit"]:
+                    for item in self.play_map_data["unit"]:
                         if item["ID"] == icon.who.map_id:
                             for troop, value in item["Troop"].items():
                                 popup_text += [self.troop_data.troop_list[int(troop)]["Name"] + ": " +

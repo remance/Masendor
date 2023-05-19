@@ -20,10 +20,10 @@ def make_editor_ui(main_dir, screen_scale, screen_rect, listbox_image, image_lis
     uibattle.UIScroll(troop_listbox, troop_listbox.rect.topright)
 
     unit_delete_button = uimenu.MenuButton(image_list, (image_list[0].get_width() / 2, bottom_height),
-                                         updater, key_name="delete_button")
+                                           key_name="delete_button")
     unit_save_button = uimenu.MenuButton(image_list,
                                        ((screen_rect.width - (screen_rect.width - (image_list[0].get_width() * 1.7))),
-                                        bottom_height), updater, key_name="save_button")
+                                        bottom_height), key_name="save_button")
 
     popup_listbox = uimenu.ListBox((0, 0), box_image, 15)  # popup box need to be in higher layer
     uibattle.UIScroll(popup_listbox, popup_listbox.rect.topright)

@@ -5,7 +5,7 @@ def apply_effect(self, effect, effect_stat, status_effect_list, duration_list):
             # play status animation
             self.effect_frame = 0
             self.max_effect_frame = 0
-            if "Type" in effect_stat and self.current_effect != effect_stat["Status Sprite"]:
+            if "Status Sprite" in effect_stat and self.current_effect != effect_stat["Status Sprite"]:
                 self.current_effect = effect_stat["Status Sprite"]
                 self.max_effect_frame = self.status_animation_pool[self.current_effect]["frame_number"]
                 if self.effectbox not in self.battle.battle_camera:

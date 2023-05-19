@@ -5,7 +5,7 @@ from engine import utility
 edit_config = utility.edit_config
 
 
-def menu_keybind(self, mouse_left_up, esc_press):
+def menu_keybind(self, esc_press):
     if self.back_button.event or esc_press:  # back to start_set menu
         self.back_button.event = False
 
@@ -27,41 +27,42 @@ def menu_keybind(self, mouse_left_up, esc_press):
             else:
                 value.change_key(control_type, self.config["USER"]["keybind player 1"][control_type][key], None)
 
-    elif mouse_left_up:
-        if self.control_switch.rect.collidepoint(self.mouse_pos):
-            if self.joysticks:
-                if self.config["USER"]["control player 1"] == "keyboard":
-                    self.config["USER"]["control player 1"] = "joystick"
-                    self.control_switch.change_control("joystick1")
-                else:
-                    # if self.config["USER"]["control player 2"] == "joystick"
-                    self.config["USER"]["control player 1"] = "keyboard"
-                    self.control_switch.change_control("keyboard")
-                edit_config("USER", "control player 1", self.config["USER"]["control player 1"],
-                            "configuration.ini", self.config)
-                for key, value in self.keybind_icon.items():
-                    if self.joysticks:
-                        value.change_key(self.config["USER"]["control player 1"],
-                                         self.player1_key_bind[self.config["USER"]["control player 1"]][key],
-                                         self.joystick_bind_name[
-                                             self.joystick_name[tuple(self.joystick_name.keys())[0]]])
-                    else:
-                        value.change_key(self.config["USER"]["control player 1"],
-                                         self.player1_key_bind[self.config["USER"]["control player 1"]][key],
-                                         None)
-
+    if self.control_switch.event_press:
+        if self.joysticks:
+            if self.config["USER"]["control player 1"] == "keyboard":
+                self.config["USER"]["control player 1"] = "joystick"
+                self.control_switch.change_control("joystick1")
             else:
-                self.input_popup = ("confirm_input", "warning")
-                self.input_ui.change_instruction("No joysticks detected")
-                self.main_ui_updater.add(self.inform_ui_popup)
+                # if self.config["USER"]["control player 2"] == "joystick"
+                self.config["USER"]["control player 1"] = "keyboard"
+                self.control_switch.change_control("keyboard")
+            self.player1_key_bind = self.config["USER"]["control player 1"]
+            self.player1_battle_cursor.change_input(self.player1_key_bind)
+            edit_config("USER", "control player 1", self.config["USER"]["control player 1"],
+                        "configuration.ini", self.config)
+            for key, value in self.keybind_icon.items():
+                if self.joysticks:
+                    value.change_key(self.config["USER"]["control player 1"],
+                                     self.player1_key_bind[self.config["USER"]["control player 1"]][key],
+                                     self.joystick_bind_name[
+                                         self.joystick_name[tuple(self.joystick_name.keys())[0]]])
+                else:
+                    value.change_key(self.config["USER"]["control player 1"],
+                                     self.player1_key_bind[self.config["USER"]["control player 1"]][key],
+                                     None)
 
         else:
-            for key, value in self.keybind_icon.items():
-                if value.rect.collidepoint(self.mouse_pos):
-                    self.input_popup = ("keybind_input", key)
-                    self.input_ui.change_instruction("Assign key for " + key)
-                    current_key = self.player1_key_bind[self.config["USER"]["control player 1"]][key]
-                    if type(current_key) == int:
-                        current_key = pygame.key.name(current_key)
-                    self.input_box.text_start("Current Key: " + current_key)
-                    self.main_ui_updater.add(self.inform_ui_popup)
+            self.input_popup = ("confirm_input", "warning")
+            self.input_ui.change_instruction("No joysticks detected")
+            self.main_ui_updater.add(self.inform_ui_popup)
+
+    else:
+        for key, value in self.keybind_icon.items():
+            if value.event_press:
+                self.input_popup = ("keybind_input", key)
+                self.input_ui.change_instruction("Assign key for " + key)
+                current_key = self.player1_key_bind[self.config["USER"]["control player 1"]][key]
+                if type(current_key) == int:
+                    current_key = pygame.key.name(current_key)
+                self.input_box.text_start("Current Key: " + current_key)
+                self.main_ui_updater.add(self.inform_ui_popup)

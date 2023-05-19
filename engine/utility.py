@@ -43,6 +43,34 @@ def change_group(item, group, change):
         group.remove(item)
 
 
+def keyboard_mouse_press_check(button_type, button, is_button_just_down, is_button_down, is_button_just_up, ):
+    """
+    Check for button just press, holding, and release for keyboard or mouse
+    :param button_type: pygame.key, pygame.mouse, or pygame.
+    :param button: button index
+    :param is_button_just_down: button is just press last update
+    :param is_button_down: button is pressing after first update
+    :param is_button_just_up: button is just release last update
+    :return: new state of is_button_just_down, is_button_down, is_button_just_up
+    """
+    if button_type.get_pressed()[button]:  # press left click
+        if not is_button_just_down:
+            if not is_button_down:  # fresh press
+                is_button_just_down = True
+        else:  # already press in previous frame, now hold until release
+            is_button_just_down = False
+            is_button_down = True
+    else:  # no longer press
+        is_button_just_down = False
+        if is_button_just_down or is_button_down:
+            is_button_just_up = True
+            is_button_just_down = False
+            is_button_down = False
+        elif is_button_just_up:
+            is_button_just_up = False
+    return is_button_just_down, is_button_down, is_button_just_up
+
+
 def load_image(directory, screen_scale, file, subfolder=""):
     """
     loads an image and prepares it for game
@@ -337,7 +365,7 @@ def make_bar_list(main_dir, screen_scale, list_to_do, menu_image, updater):
     for index, bar in enumerate(list_to_do):
         bar_image = (image.copy(), image2.copy(), image3.copy())
         bar = uimenu.MenuButton(bar_image, (menu_image.pos[0], menu_image.pos[1] + image.get_height() * (index + 1)),
-                                updater, key_name=bar)
+                                key_name=bar)
         bar_list.append(bar)
     return bar_list
 

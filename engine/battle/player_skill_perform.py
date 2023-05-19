@@ -10,11 +10,11 @@ def player_skill_perform(self):
         if self.player_unit.shoot_line in self.battle_camera:  # remove shoot line
             self.battle_camera.remove(self.player_unit.shoot_line)
 
-    if self.player_key_press["Main Weapon Attack"] and can_shoot:
+    if self.player1_key_press["Main Weapon Attack"] and can_shoot:
         self.player_unit.current_action["pos"] = self.player_unit.shoot_line.base_target_pos
         self.player_unit.current_action.pop("require input")
         self.player_cancel_input()
-    elif self.player_key_press["Sub Weapon Attack"]:
+    elif self.player1_key_press["Sub Weapon Attack"]:
         self.player_unit.current_action = {}
         self.player_cancel_input()
     else:

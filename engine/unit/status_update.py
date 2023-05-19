@@ -156,15 +156,15 @@ def status_update(self):
             speed_modifier += map_feature_mod[
                 self.feature_mod + " Speed Modifier"]  # double negative effect
 
-    if map_feature_mod[self.feature_mod + " Attack Modifier"] != 1:  # melee melee_attack
+    if map_feature_mod[self.feature_mod + " Melee Modifier"] != 1:  # melee melee_attack
         # combat_mod = self.unit.feature_map.feature_mod[self.unit.feature][self.feature_mod + 1]
         melee_attack_modifier += map_feature_mod[
-            self.feature_mod + " Attack Modifier"]  # get the melee_attack mod appropriate to unit type
+            self.feature_mod + " Melee Modifier"]  # get the melee_attack mod appropriate to unit type
 
-    if map_feature_mod[self.feature_mod + " Defence Modifier"] != 1:  # melee/charge defence
+    if map_feature_mod[self.feature_mod + " Melee Modifier"] != 1:  # melee/charge defence
         melee_def_modifier += map_feature_mod[
-            self.feature_mod + " Defence Modifier"]  # get the defence mod appropriate to unit type
-        charge_def_modifier += map_feature_mod[self.feature_mod + " Defence Modifier"]
+            self.feature_mod + " Melee Modifier"]  # get the defence mod appropriate to unit type
+        charge_def_modifier += map_feature_mod[self.feature_mod + " Melee Modifier"]
 
     range_def_bonus += map_feature_mod["Range Defence Bonus"]  # range defence bonus from terrain
     accuracy_bonus -= (map_feature_mod[
@@ -180,7 +180,7 @@ def status_update(self):
     # Apply effect from skill
     if self.skill_effect:
         for key, value in self.skill_effect.copy().items():
-            if "Action" not in value["Type"]:  # action skill type duration mean per attack action instead of time
+            if "Action" not in value["Action Type"]:  # action skill type duration mean per attack action instead of time
                 self.skill_duration[key] -= self.timer
                 if self.skill_duration[key] <= 0:  # skill end
                     self.skill_duration.pop(key)

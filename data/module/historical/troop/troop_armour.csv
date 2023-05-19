@@ -1,4 +1,4 @@
-"ID","Name","Physical Resistance","Fire Resistance","Water Resistance","Air Resistance","Poison Resistance","Weight","Cost","Trait","Type"
+"ID","Name","Physical Resistance","Fire Resistance","Water Resistance","Air Resistance","Poison Resistance","Weight","Cost","Trait","Tag"
 1,"Bronze Plate Armour",60,,,,,50,4000,,"Medium Armour"
 2,"Padded Armour",35,,,,,20,1000,,"Light Armour"
 3,"Leather Armour",25,,,20,,12,900,,"Light Armour"

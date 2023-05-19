@@ -25,9 +25,9 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                         battle_time = "09:00:00"
                         if self.night_battle_tick_box.tick:  # check for night battle
                             battle_time = "21:00:00"
-                        self.map_data["info"]["weather"] = \
+                        self.play_map_data["info"]["weather"] = \
                             [[int(self.battle_map_data.weather_list.index(name.name) / 3), battle_time,
-                              self.map_data["info"]["weather"][0][2],
+                              self.play_map_data["info"]["weather"][0][2],
                               ("Light", "Normal", "Strong").index(name.name.split(" ")[0])]]
                         for this_name in self.popup_namegroup:  # remove name list
                             this_name.kill()
@@ -50,37 +50,37 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                             if name.name != "None":
                                 faction_index = self.faction_data.faction_name_list.index(name.name)
                                 if mouse_left_up:
-                                    if "Team Faction " + str(coa.team) in self.map_data["info"]:
-                                        if faction_index not in self.map_data["info"][
+                                    if "Team Faction " + str(coa.team) in self.play_map_data["info"]:
+                                        if faction_index not in self.play_map_data["info"][
                                             "Team Faction " + str(coa.team)]:
-                                            self.map_data["info"]["Team Faction " + str(coa.team)].append(
+                                            self.play_map_data["info"]["Team Faction " + str(coa.team)].append(
                                                 faction_index)
                                     else:
-                                        self.map_data["info"]["Team Faction " + str(coa.team)] = [faction_index]
+                                        self.play_map_data["info"]["Team Faction " + str(coa.team)] = [faction_index]
                                     coa.change_coa(
                                         {int(faction): self.faction_data.coa_list[int(faction)] for faction in
-                                         self.map_data["info"]["Team Faction " + str(coa.team)]},
-                                        self.faction_data.faction_list[self.map_data["info"][
+                                         self.play_map_data["info"]["Team Faction " + str(coa.team)]},
+                                        self.faction_data.faction_list[self.play_map_data["info"][
                                             "Team Faction " + str(coa.team)][0]]["Name"])
                                 elif mouse_right_up:
-                                    if faction_index in self.map_data["info"]["Team Faction " + str(coa.team)]:
-                                        self.map_data["info"]["Team Faction " + str(coa.team)].remove(
+                                    if faction_index in self.play_map_data["info"]["Team Faction " + str(coa.team)]:
+                                        self.play_map_data["info"]["Team Faction " + str(coa.team)].remove(
                                             faction_index)
-                                    if self.map_data["info"]["Team Faction " + str(coa.team)]:  # still not empty
+                                    if self.play_map_data["info"]["Team Faction " + str(coa.team)]:  # still not empty
                                         coa.change_coa(
                                             {int(faction): self.faction_data.coa_list[int(faction)] for faction in
-                                             self.map_data["info"]["Team Faction " + str(coa.team)]},
-                                            self.faction_data.faction_list[self.map_data["info"][
+                                             self.play_map_data["info"]["Team Faction " + str(coa.team)]},
+                                            self.faction_data.faction_list[self.play_map_data["info"][
                                                 "Team Faction " + str(coa.team)][0]]["Name"])
                                     else:  # list empty remove data
-                                        self.map_data["info"].pop("Team Faction " + str(coa.team))
+                                        self.play_map_data["info"].pop("Team Faction " + str(coa.team))
                                         coa.change_coa({0: None}, "None")
                             else:
-                                if mouse_left_up and "Team Faction " + str(coa.team) in self.map_data["info"]:
-                                    self.map_data["info"].pop("Team Faction " + str(coa.team))
+                                if mouse_left_up and "Team Faction " + str(coa.team) in self.play_map_data["info"]:
+                                    self.play_map_data["info"].pop("Team Faction " + str(coa.team))
                                 coa.change_coa({0: None}, "None")
 
-                            if "Team Faction " + str(coa.team) in self.map_data["info"]:  # camp, team exist
+                            if "Team Faction " + str(coa.team) in self.play_map_data["info"]:  # camp, team exist
                                 if coa.team not in self.camp_pos:  # new team, camp not exist
                                     self.camp_pos[coa.team] = []
                                     for icon in self.camp_icon:
@@ -114,7 +114,7 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                         battle_time = "09:00:00"
                         if self.night_battle_tick_box.tick:  # check for night battle
                             battle_time = "21:00:00"
-                        self.map_data["info"]["weather"][0][1] = battle_time
+                        self.play_map_data["info"]["weather"][0][1] = battle_time
 
             if mouse_right_up and self.map_preview.rect.collidepoint(self.mouse_pos):
                 for index, icon in enumerate(self.unit_icon):
@@ -200,8 +200,8 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                         break
 
     if self.map_back_button.event or esc_press:
-        self.map_data["info"] = {"weather": self.map_data["info"]["weather"]}  # keep weather setting only
-        self.map_data["unit"] = {"pos": {}}
+        self.play_map_data["info"] = {"weather": self.play_map_data["info"]["weather"]}  # keep weather setting only
+        self.play_map_data["unit"] = {"pos": {}}
         self.camp_pos = {}
         self.menu_state = self.last_select
         self.map_back_button.event = False
@@ -259,12 +259,12 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                 del stuff
 
             for coa in self.team_coa:
-                if coa.coa_images and coa.team not in self.map_data["unit"]:
-                    self.map_data["unit"][coa.team] = []
-                    self.map_data["unit"]["pos"][coa.team] = {}
-                elif coa.team in self.map_data["unit"]:  # non existence team
-                    self.map_data["unit"].pop(coa.team)
-                    self.map_data["unit"]["pos"].pop(coa.team)
+                if coa.coa_images and coa.team not in self.play_map_data["unit"]:
+                    self.play_map_data["unit"][coa.team] = []
+                    self.play_map_data["unit"]["pos"][coa.team] = {}
+                elif coa.team in self.play_map_data["unit"]:  # non existence team
+                    self.play_map_data["unit"].pop(coa.team)
+                    self.play_map_data["unit"]["pos"].pop(coa.team)
 
             self.main_ui_updater.add(self.unit_list_box, self.unit_list_box.scroll)
             for coa in self.team_coa:

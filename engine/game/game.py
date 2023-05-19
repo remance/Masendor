@@ -18,7 +18,6 @@ from engine.unit import unit
 from engine.effect import effect
 from engine.data import datasprite, datamap, datalocalisation
 from engine.lorebook import lorebook
-from engine.drama import drama
 from engine.battle import setup_battle_unit
 
 direction_list = datasprite.direction_list
@@ -36,17 +35,10 @@ list_scroll = utility.list_scroll
 number_to_minus_or_plus = utility.number_to_minus_or_plus
 empty_function = utility.empty_function
 
-# Module that get loads with import in game.setup after
-
-from engine.game.setup import make_battle_ui
-
-make_battle_ui = make_battle_ui.make_battle_ui
+# Module in game.setup
 
 from engine.game.setup import make_editor_ui
 make_editor_ui = make_editor_ui.make_editor_ui
-
-from engine.game.setup import make_esc_menu
-make_esc_menu = make_esc_menu.make_esc_menu
 
 from engine.game.setup import make_faction_troop_leader_data
 make_faction_troop_leader_data = make_faction_troop_leader_data.make_faction_troop_leader_data
@@ -68,6 +60,7 @@ version_name = "Future Visionary"  # Game version name that will appear as game 
 
 class Game:
     game = None
+    battle = None
     main_dir = None
     data_dir = None
     font_dir = None
@@ -76,6 +69,7 @@ class Game:
     language = None
     localisation = None
     cursor = None
+    main_ui_updater = None
 
     screen_scale = (1, 1)
     screen_size = ()
@@ -234,9 +228,10 @@ class Game:
             self.profile_name = str(self.config["USER"]["player_Name"])
             self.language = str(self.config["USER"]["language"])
             self.player1_key_bind = ast.literal_eval(self.config["USER"]["keybind player 1"])
+            self.player1_key_control = self.config["USER"]["control player 1"]
             self.module = int(self.config["USER"]["module"])
             if self.game_version != self.config["VERSION"]["ver"]:  # remake config as game version change
-                reset_config  # cause NameError to reset config file
+                raise KeyError  # cause KeyError to reset config file
         except (KeyError, TypeError, NameError):  # config error will make the game recreate config with default
             config = self.create_config()
             self.config = config
@@ -253,6 +248,7 @@ class Game:
             self.profile_name = str(self.config["USER"]["player_Name"])
             self.language = str(self.config["USER"]["language"])
             self.player1_key_bind = ast.literal_eval(self.config["USER"]["keybind player 1"])
+            self.player1_key_control = self.config["USER"]["control player 1"]
             self.module = int(self.config["USER"]["module"])
 
         Game.language = self.language
@@ -303,6 +299,7 @@ class Game:
         self.team_pos = {}  # for saving preview map unit pos
         self.camp_pos = {}  # for saving preview map camp pos
         self.map_data = None
+        self.source_data = None
         self.map_info = None
         self.map_unit_data = None
 
@@ -317,6 +314,7 @@ class Game:
         # Initialise groups
 
         self.main_ui_updater = pygame.sprite.LayeredUpdates()  # main drawer for ui in main menu
+        Game.main_ui_updater = self.main_ui_updater
 
         # game start menu group
         self.menu_button = pygame.sprite.Group()  # group of menu buttons that are currently get shown and update
@@ -324,7 +322,6 @@ class Game:
         self.menu_slider = pygame.sprite.Group()
 
         # encyclopedia group
-        self.lore_button_ui = pygame.sprite.Group()  # buttons for encyclopedia group
         self.subsection_name = pygame.sprite.Group()  # subsection name objects group in encyclopedia blit on lore_name_list
         self.tag_filter_name = pygame.sprite.Group()  # tag filter objects group in encyclopedia blit on filter_name_list
 
@@ -336,11 +333,10 @@ class Game:
 
         # battle object group
         self.battle_camera = pygame.sprite.LayeredUpdates()  # layer drawer self camera, all image pos should be based on the map not screen
-        self.battle_ui_updater = pygame.sprite.LayeredUpdates()  # this is layer drawer for ui, all image pos should be based on the screen
+        self.battle_ui_updater = pygame.sprite.LayeredUpdates()  # this is updater and drawer for ui, all image pos should be based on the screen
         self.hitbox_layer = pygame.sprite.LayeredUpdates()
 
         self.unit_updater = pygame.sprite.Group()  # updater for unit objects
-        self.ui_updater = pygame.sprite.Group()  # updater for ui objects
         self.weather_updater = pygame.sprite.Group()  # updater for weather objects
         self.effect_updater = pygame.sprite.Group()  # updater for effect objects (e.g. range melee_attack sprite)
 
@@ -356,8 +352,6 @@ class Game:
         self.skill_icon = pygame.sprite.Group()  # skill and trait icon objects
         self.effect_icon = pygame.sprite.Group()  # status effect icon objects
 
-        self.battle_menu_button = pygame.sprite.Group()  # buttons for esc menu object group
-        self.esc_option_menu_button = pygame.sprite.Group()  # buttons for esc menu option object group
         self.slider_menu = pygame.sprite.Group()  # volume slider in esc option menu
 
         self.unit_icon = pygame.sprite.Group()  # Unit icon object group in selector ui
@@ -378,23 +372,22 @@ class Game:
         uibattle.UnitIcon.containers = self.unit_icon, self.main_ui_updater
         uibattle.SpriteIndicator.containers = self.effect_updater, self.battle_camera
         uibattle.AimTarget.containers = self.shoot_lines, self.battle_camera
+        uibattle.BattleCursor.containers = self.battle_ui_updater
 
         effect.Effect.containers = self.effect_updater, self.battle_camera
 
-        uimenu.EscButton.containers = self.battle_menu_button, self.esc_option_menu_button
+        uimenu.MenuCursor.containers = self.main_ui_updater
 
-        weather.MatterSprite.containers = self.weather_matter, self.battle_ui_updater, self.weather_updater
-        weather.SpecialEffect.containers = self.weather_effect, self.battle_ui_updater, self.weather_updater
+        weather.MatterSprite.containers = self.weather_matter, self.battle_ui_updater
+        weather.SpecialEffect.containers = self.weather_effect, self.battle_ui_updater
 
         unit.Troop.containers = self.unit_updater, self.all_units, self.battle_camera
         unit.Leader.containers = self.unit_updater, self.all_units, self.battle_camera
 
-        # Create game cursor
-        cursor_images = load_images(self.module_dir, subfolder=("ui", "cursor"))  # no need to scale cursor
-        self.cursor = uimenu.Cursor(cursor_images)
+        # Create game cursor, make sure it is the first object in ui to be created, so it is always update first
+        cursor_images = load_images(self.module_dir, subfolder=("ui", "cursor_menu"))  # no need to scale cursor
+        self.cursor = uimenu.MenuCursor(cursor_images)
         Game.cursor = self.cursor
-        self.main_ui_updater.add(self.cursor)
-        self.battle_ui_updater.add(self.cursor)
 
         self.game_intro(self.screen, self.clock, False)  # run intro
 
@@ -425,13 +418,6 @@ class Game:
         uimenu.MapPreview.feature_colour = self.battle_map_data.feature_colour
         uimenu.MapPreview.battle_map_colour = self.battle_map_data.battle_map_colour
 
-        battle.Battle.battle_map_data = self.battle_map_data
-        battle.Battle.weather_data = self.battle_map_data.weather_data
-        battle.Battle.weather_matter_images = self.battle_map_data.weather_matter_images
-        battle.Battle.weather_effect_images = self.battle_map_data.weather_effect_images
-        battle.Battle.day_effect_images = self.battle_map_data.day_effect_images
-        battle.Battle.weather_list = self.battle_map_data.weather_list
-        battle.Battle.feature_mod = self.battle_map_data.feature_mod
         self.preset_map_list = self.battle_map_data.preset_map_list
         self.preset_map_folder = self.battle_map_data.preset_map_folder
         self.battle_map_list = self.battle_map_data.battle_map_list
@@ -487,6 +473,9 @@ class Game:
         effect.Effect.effect_sprite_pool = self.effect_sprite_pool
         effect.Effect.effect_animation_pool = self.effect_animation_pool
 
+        # Load sound effect
+        self.sound_effect_pool = self.create_sound_effect_pool()
+
         # Battle map object
         self.battle_base_map = battlemap.BaseMap(self.main_dir)  # create base terrain map
         self.battle_feature_map = battlemap.FeatureMap(self.main_dir)  # create terrain feature map
@@ -498,6 +487,17 @@ class Game:
         unit.Unit.base_map = self.battle_base_map  # add battle map to unit class
         unit.Unit.feature_map = self.battle_feature_map
         unit.Unit.height_map = self.battle_height_map
+
+        # Music player
+        if pygame.mixer and not pygame.mixer.get_init():
+            pygame.mixer = None
+        if pygame.mixer:
+            pygame.mixer.set_num_channels(1000)
+            pygame.mixer.music.set_volume(self.master_volume)
+            self.SONG_END = pygame.USEREVENT + 1
+            self.music_list = glob.glob(self.module_dir + "/sound/music/*.ogg")
+            pygame.mixer.music.load(self.music_list[0])
+            pygame.mixer.music.play(-1)
 
         # Main menu interface
 
@@ -532,15 +532,14 @@ class Game:
         bottom_height = self.screen_rect.height - image_list[0].get_height()
         self.select_button = uimenu.MenuButton(image_list,
                                                (self.screen_rect.width - image_list[0].get_width(), bottom_height),
-                                               self.main_ui_updater, key_name="select_button")
+                                               key_name="select_button")
         self.start_button = uimenu.MenuButton(image_list,
                                               (self.screen_rect.width - image_list[0].get_width(), bottom_height),
-                                              self.main_ui_updater, key_name="start_button")
+                                              key_name="start_button")
         self.map_back_button = uimenu.MenuButton(image_list,
                                                  (self.screen_rect.width - (
                                                          self.screen_rect.width - image_list[0].get_width()),
-                                                  bottom_height),
-                                                 self.main_ui_updater, key_name="back_button")
+                                                  bottom_height), key_name="back_button")
 
         self.map_select_button = (self.select_button, self.map_back_button)
         self.team_select_button = (self.select_button, self.map_back_button)
@@ -565,10 +564,11 @@ class Game:
 
         class CustomBattleListAdapter:
 
-            def __init__(self, _list):
+            def __init__(self, _list, _self):
                 self.list = _list
                 self.last_index = -1
-
+                self._self = _self
+          
             def __len__(self):
                 return len(self.list)
 
@@ -576,9 +576,14 @@ class Game:
                 return self.list[item]
 
             def on_select(self, item_index, item_text):
+                _self = self._self
                 self.last_index = item_index
-                print(item_index, item_text)
-
+                _self.current_map_select = item_index
+                _self.map_selected = _self.battle_map_folder[_self.current_map_select]
+                _self.create_preview_map()
+                print("test {0} {1}".format(item_index, item_text))
+                
+                
             def get_highlighted_index(self):
                 return self.last_index
 
@@ -635,15 +640,15 @@ class Game:
         self.unit_edit_button = uimenu.MenuButton(image_list,
                                                   (self.screen_rect.width / 2,
                                                    self.screen_rect.height - (image_list[0].get_height() * 4)),
-                                                  self.main_ui_updater, key_name="main_menu_unit_editor")
+                                                  key_name="main_menu_unit_editor")
         self.troop_create_button = uimenu.MenuButton(image_list,
                                                      (self.screen_rect.width / 2,
                                                       self.screen_rect.height - (image_list[0].get_height() * 2.5)),
-                                                     self.main_ui_updater, key_name="main_menu_troop_editor")
+                                                     key_name="main_menu_troop_editor")
         self.editor_back_button = uimenu.MenuButton(image_list,
                                                     (self.screen_rect.width / 2,
                                                      self.screen_rect.height - image_list[0].get_height()),
-                                                    self.main_ui_updater, key_name="back_button")
+                                                    key_name="back_button")
         self.editor_button = (self.unit_edit_button, self.troop_create_button, self.editor_back_button)
 
         # Option menu button
@@ -678,57 +683,19 @@ class Game:
         self.profile_box = uimenu.TextBox(profile_box_image, (self.screen_width, 0),
                                           self.profile_name)  # profile name box at top right of screen at start_set menu screen
 
-        # Load sound effect
-        self.sound_effect_pool = self.create_sound_effect_pool()
-
-        # Music player
-        if pygame.mixer and not pygame.mixer.get_init():
-            pygame.mixer = None
-        if pygame.mixer:
-            pygame.mixer.set_num_channels(1000)
-            pygame.mixer.music.set_volume(self.master_volume)
-            self.SONG_END = pygame.USEREVENT + 1
-            self.music_list = glob.glob(self.module_dir + "/sound/music/*.ogg")
-            pygame.mixer.music.load(self.music_list[0])
-            pygame.mixer.music.play(-1)
-
-        # Battle related UI
-        self.fps_count = uibattle.FPScount()  # FPS number counter
-        self.battle_ui_updater.add(self.fps_count)
-
-        battle_ui_image = load_images(self.module_dir, screen_scale=self.screen_scale, subfolder=("ui", "battle_ui"))
-
-        self.status_images, self.role_images, self.trait_images, self.skill_images = make_icon_data(self.module_dir,
-                                                                                                    self.screen_scale)
-
-        self.mini_map = uibattle.MiniMap((self.screen_rect.width, self.screen_rect.height))
-        self.battle_ui_updater.add(self.mini_map)
-
-        battle_ui_dict = make_battle_ui(battle_ui_image, self.team_colour,
-                                        self.screen_rect.size)
-        self.time_ui = battle_ui_dict["time_ui"]
-        self.time_number = battle_ui_dict["time_number"]
-        self.battle_scale_ui = battle_ui_dict["battle_scale_ui"]
-        self.battle_ui_updater.add(self.time_ui, self.time_number)
-        self.wheel_ui = battle_ui_dict["wheel_ui"]
-        self.command_ui = battle_ui_dict["command_ui"]
-        self.ui_updater.add(self.command_ui)
-
-        weather.Weather.wind_compass_images = {"wind_compass": battle_ui_image["wind_compass"],
-                                               "wind_arrow": battle_ui_image["wind_arrow"]}
-
-        # 4 Skill icons UI
-        uibattle.SkillCardIcon(self.skill_images["0"], (self.command_ui.image.get_width() +
-                                                        self.skill_images["0"].get_width() / 2, 0), "0")
-        uibattle.SkillCardIcon(self.skill_images["0"], (self.command_ui.image.get_width() +
-                                                        self.skill_images["0"].get_width() * 2, 0), "1")
-        uibattle.SkillCardIcon(self.skill_images["0"], (self.command_ui.image.get_width() +
-                                                        self.skill_images["0"].get_width() * 3.5, 0), "2")
-        uibattle.SkillCardIcon(self.skill_images["0"], (self.command_ui.image.get_width() +
-                                                        self.skill_images["0"].get_width() * 5, 0), "3")
-
-        uibattle.AimTarget.aim_images = {0: battle_ui_image["aim_0"], 1: battle_ui_image["aim_1"],
-                                         2: battle_ui_image["aim_2"], 3: pygame.Surface((0, 0))}
+        # User input popup ui
+        input_ui_dict = make_input_box(self.module_dir, self.screen_scale, self.screen_rect,
+                                       load_base_button(self.module_dir, self.screen_scale))
+        self.input_ui = input_ui_dict["input_ui"]
+        self.input_ok_button = input_ui_dict["input_ok_button"]
+        self.input_close_button = input_ui_dict["input_close_button"]
+        self.input_cancel_button = input_ui_dict["input_cancel_button"]
+        self.input_box = input_ui_dict["input_box"]
+        self.confirm_ui = input_ui_dict["confirm_ui"]
+        self.input_button = (self.input_ok_button, self.input_cancel_button, self.input_close_button)
+        self.input_ui_popup = (self.input_ui, self.input_box, self.input_ok_button, self.input_cancel_button)
+        self.confirm_ui_popup = (self.confirm_ui, self.input_ok_button, self.input_cancel_button)
+        self.inform_ui_popup = (self.input_ui, self.input_box, self.input_close_button)
 
         box_image = load_image(self.module_dir, self.screen_scale, "unit_presetbox.png", ("ui", "mainmenu_ui"))
         self.popup_list_box = uimenu.ListBox((0, 0), box_image,
@@ -752,55 +719,18 @@ class Game:
                                self.unit_delete_button, self.unit_save_button, self.popup_list_box, self.filter_box,
                                self.filter_tick_box)
 
-        # User input popup ui
-        input_ui_dict = make_input_box(self.module_dir, self.screen_scale, self.screen_rect,
-                                       load_base_button(self.module_dir, self.screen_scale))
-        self.input_ui = input_ui_dict["input_ui"]
-        self.input_ok_button = input_ui_dict["input_ok_button"]
-        self.input_close_button = input_ui_dict["input_close_button"]
-        self.input_cancel_button = input_ui_dict["input_cancel_button"]
-        self.input_box = input_ui_dict["input_box"]
-        self.confirm_ui = input_ui_dict["confirm_ui"]
-        self.input_button = (self.input_ok_button, self.input_cancel_button, self.input_close_button)
-        self.input_ui_popup = (self.input_ui, self.input_box, self.input_ok_button, self.input_cancel_button)
-        self.confirm_ui_popup = (self.confirm_ui, self.input_ok_button, self.input_cancel_button)
-        self.inform_ui_popup = (self.input_ui, self.input_box, self.input_close_button)
+        self.status_images, self.role_images, self.trait_images, self.skill_images = make_icon_data(self.module_dir,
+                                                                                                    self.screen_scale)
 
-        # Other ui in battle
-        self.battle_done_box = uibattle.BattleDone((self.screen_width / 2, self.screen_height / 2),
-                                                   battle_ui_image["end_box"], battle_ui_image["result_box"])
-        self.battle_done_button = uibattle.UIButton(battle_ui_image["end_button"], layer=19)
-        self.battle_done_button.change_pos(
-            (self.battle_done_box.pos[0], self.battle_done_box.box_image.get_height() * 2))
-
-        drama.TextDrama.images = load_images(self.module_dir, screen_scale=self.screen_scale,
-                                             subfolder=("ui", "popup_ui", "drama_text"))
-        drama.TextDrama.screen_rect = self.screen_rect
-        self.drama_text = drama.TextDrama()  # message at the top of screen that show up for important event
-
-        # Battle event log
-        self.event_log = uibattle.EventLog(battle_ui_image["event_log"], (0, self.screen_rect.height))
-        uibattle.UIScroll(self.event_log, self.event_log.rect.topright)  # event log scroll
-        unit.Unit.event_log = self.event_log  # Assign event_log to unit class to broadcast event to the log
-        self.battle_ui_updater.add(self.event_log.scroll)
-
-        # Battle ESC menu
-        esc_menu_dict = make_esc_menu(self.module_dir, self.screen_rect, self.screen_scale, self.master_volume)
-        self.battle_menu = esc_menu_dict["battle_menu"]
-        self.battle_menu_button = esc_menu_dict["battle_menu_button"]
-        self.esc_option_menu_button = esc_menu_dict["esc_option_menu_button"]
-        self.esc_slider_menu = esc_menu_dict["esc_slider_menu"]
-        self.esc_value_boxes = esc_menu_dict["esc_value_boxes"]
-
-        # Text
+        # Text popup
         self.single_text_popup = uimenu.TextPopup()  # popup box that show name when mouse over
 
         # Encyclopedia interface
-        self.encyclopedia, self.lore_name_list, self.filter_tag_list, self.lore_button_ui, self.page_button = make_lorebook(
+        self.encyclopedia, self.lore_name_list, self.filter_tag_list, self.lore_buttons, self.page_button = make_lorebook(
             self, self.module_dir, self.screen_scale, self.screen_rect)
 
         self.encyclopedia_stuff = (self.encyclopedia, self.lore_name_list, self.filter_tag_list,
-                                   self.lore_name_list.scroll, self.filter_tag_list.scroll, *self.lore_button_ui)
+                                   self.lore_name_list.scroll, self.filter_tag_list.scroll, self.lore_buttons.values())
 
         lorebook.Lorebook.concept_stat = csv_read(self.module_dir, "concept_stat.csv",
                                                   ("lore",), header_key=True)
@@ -813,12 +743,13 @@ class Game:
         lorebook.Lorebook.troop_data = self.troop_data
         lorebook.Lorebook.leader_data = self.leader_data
         lorebook.Lorebook.battle_map_data = self.battle_map_data
-        lorebook.Lorebook.screen_rect = self.screen_rect
 
         self.encyclopedia.change_module()
 
         self.battle = battle.Battle(self)
+        self.player1_battle_cursor = self.battle.player1_battle_cursor
 
+        Game.battle = self.battle
         unit.Unit.battle = self.battle
         effect.Effect.battle = self.battle
 
@@ -886,20 +817,10 @@ class Game:
         while True:
             # Get user input
             self.dt = self.clock.get_time() / 1000  # dt before game_speed
-            mouse_left_up = False
-            mouse_left_down = False
-            mouse_center_up = False
-            mouse_right_up = False
-            mouse_right_down = False
             mouse_scroll_down = False
             mouse_scroll_up = False
             esc_press = False
-            input_esc = False
             key_press = pygame.key.get_pressed()
-            if pygame.mouse.get_pressed()[0]:  # Hold left click
-                mouse_left_down = True
-            elif pygame.mouse.get_pressed()[2]:  # Hold left click
-                mouse_right_down = True
 
             if self.config["USER"]["control player 1"] == "joystick" and self.input_popup[0] == "keybind_input":
                 for joystick in self.joysticks.values():  # TODO change this when has multiplayer
@@ -919,21 +840,14 @@ class Game:
 
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONUP:
-                    if event.button == 1:  # left click
-                        mouse_left_up = True
-                    elif event.button == 2:
-                        mouse_center_up = True
-                    elif event.button == 3:
-                        mouse_right_up = True
-                    elif event.button == 4:  # Mouse scroll down
+                    if event.button == 4:  # Mouse scroll down
                         mouse_scroll_up = True
                     elif event.button == 5:  # Mouse scroll up
                         mouse_scroll_down = True
 
                     if self.input_popup and self.input_popup[0] == "keybind_input":
                         if self.config["USER"]["control player 1"] == "keyboard" and not \
-                                self.input_close_button.rect.collidepoint(
-                                    self.mouse_pos):  # check for keyboard mouse key
+                                self.input_close_button.event_press:  # check for keyboard mouse key
                             self.assign_key(tuple(self.mouse_bind.keys())[tuple(
                                 self.mouse_bind.values()).index(event.button)])
 
@@ -946,7 +860,7 @@ class Game:
                 elif event.type == pygame.KEYDOWN:
                     if self.input_popup:  # event update to input box
                         if event.key == pygame.K_ESCAPE:
-                            input_esc = True
+                            esc_press = True
 
                         elif self.input_popup[0] == "keybind_input" and \
                                 self.config["USER"]["control player 1"] == "keyboard":
@@ -975,26 +889,17 @@ class Game:
                     del self.joysticks[event.instance_id]
                     del self.joystick_name[event.instance_id]
 
-                elif event.type == QUIT or self.quit_button.event or (esc_press and self.menu_state == "main_menu"):
-                    self.quit_button.event = False
-                    self.input_popup = ("confirm_input", "quit")
-                    self.confirm_ui.change_instruction("Quit Game?")
-                    self.main_ui_updater.add(*self.confirm_ui_popup)
+                elif event.type == QUIT:
+                    esc_press = True
 
-            self.mouse_pos = pygame.mouse.get_pos()
-            self.main_ui_updater.update(self.mouse_pos, mouse_left_up, mouse_left_down)
+            self.main_ui_updater.update()
 
             # Reset screen
             self.screen.fill((0, 0, 0))
             self.screen.blit(self.background, (0, 0))  # blit background over instead of clear() to reset screen
 
             if self.input_popup:  # currently, have input text pop up on screen, stop everything else until done
-                for button in self.input_button:
-                    button.update(self.mouse_pos, mouse_left_up, mouse_left_down)
-
-                if self.input_ok_button.event or key_press[pygame.K_RETURN] or key_press[pygame.K_KP_ENTER]:
-                    self.input_ok_button.event = False
-
+                if self.input_ok_button.event_press or key_press[pygame.K_RETURN] or key_press[pygame.K_KP_ENTER]:
                     if self.input_popup[1] == "profile_name":
                         self.profile_name = self.input_box.text
                         self.profile_box.change_text(self.profile_name)
@@ -1060,9 +965,8 @@ class Game:
                     self.input_popup = None
                     self.main_ui_updater.remove(*self.input_ui_popup, *self.confirm_ui_popup, *self.inform_ui_popup)
 
-                elif self.input_cancel_button.event or self.input_close_button.event or input_esc:
-                    self.input_cancel_button.event = False
-                    self.input_close_button.event = False
+                elif self.input_cancel_button.event_press or self.input_close_button.event_press or esc_press:
+                    print(self.input_cancel_button.event_press, self.input_close_button.event_press, esc_press)
                     self.input_box.text_start("")
                     self.input_popup = None
                     self.main_ui_updater.remove(*self.input_ui_popup, *self.confirm_ui_popup, *self.inform_ui_popup)
@@ -1078,47 +982,38 @@ class Game:
                             self.text_delay = 0
 
             elif not self.input_popup:
-                self.menu_button.update(self.mouse_pos, mouse_left_up, mouse_left_down)
                 if self.menu_state == "main_menu":
-                    self.menu_main(mouse_left_up)
+                    self.menu_main(esc_press)
 
                 elif self.menu_state == "preset_map":
-                    self.menu_preset_map_select(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down,
-                                                esc_press)
+                    self.menu_preset_map_select(mouse_scroll_up, mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "custom_map":
-                    self.menu_custom_map_select(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down,
-                                                esc_press)
+                    self.menu_custom_map_select(mouse_scroll_up, mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "custom_team_select":
-                    self.menu_custom_team_select(mouse_left_up, mouse_left_down, mouse_right_up,
-                                                 mouse_scroll_up, mouse_scroll_down, esc_press)
+                    self.menu_custom_team_select(mouse_scroll_up, mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "custom_unit_select":
-                    self.menu_custom_unit_select(mouse_left_up, mouse_left_down, mouse_scroll_up,
-                                                 mouse_scroll_down, esc_press)
+                    self.menu_custom_unit_select(mouse_scroll_up, mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "custom_unit_setup":
-                    self.menu_custom_unit_setup(mouse_left_up, mouse_left_down, mouse_right_up, mouse_scroll_up,
-                                                mouse_scroll_down, esc_press)
+                    self.menu_custom_unit_setup(mouse_scroll_up, mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "custom_leader_setup":
-                    self.menu_custom_leader_setup(mouse_left_up, mouse_left_down, mouse_right_up, mouse_right_down,
-                                                  mouse_scroll_up, mouse_scroll_down, esc_press)
+                    self.menu_custom_leader_setup(mouse_scroll_up, mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "game_creator":
-                    self.menu_game_editor(mouse_left_up, mouse_left_down, mouse_scroll_up,
-                                          mouse_scroll_down, esc_press)
+                    self.menu_game_editor(esc_press)
 
                 elif self.menu_state == "option":
-                    self.menu_option(mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press)
+                    self.menu_option(mouse_scroll_up, mouse_scroll_down, esc_press)
 
                 elif self.menu_state == "keybind":
-                    self.menu_keybind(mouse_left_up, esc_press)
+                    self.menu_keybind(esc_press)
 
                 elif self.menu_state == "encyclopedia":
-                    command = self.lorebook_process(self.main_ui_updater, mouse_left_up, mouse_left_down,
-                                                    mouse_scroll_up, mouse_scroll_down, esc_press)
+                    command = self.lorebook_process(mouse_scroll_up, mouse_scroll_down, esc_press)
                     if esc_press or command == "exit":
                         self.menu_state = "main_menu"  # change menu back to default 0
 

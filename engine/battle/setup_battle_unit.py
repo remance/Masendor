@@ -1,6 +1,3 @@
-import csv
-import os
-
 from engine.unit import unit
 from engine import utility
 
@@ -17,8 +14,7 @@ def setup_battle_unit(self, team_unit_list, preview=None):
     """
     leader_unit = {}
     self.last_troop_game_id = 0
-
-    troop_data = self.map_data[self.map_source]["unit"]
+    troop_data = self.play_source_data["unit"]
 
     new_troop_data = []  # rearrange data list to ensure that leader units are made first
     for data in troop_data:  # unit leader first

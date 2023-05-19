@@ -9,11 +9,11 @@ def pick_animation(self):
             weapon = self.current_action["weapon"]
             animation_name = equip_set[weapon] + "_"
             if "run" in self.current_action:
-                animation_name += "Run" + self.action_list[weapon]["Attack"]
+                animation_name += "Run" + self.action_list[weapon]["Attack Action"]
             elif "walk" in self.current_action:
-                animation_name += "Walk" + self.action_list[weapon]["Attack"]
+                animation_name += "Walk" + self.action_list[weapon]["Attack Action"]
             else:
-                animation_name += self.action_list[weapon]["Attack"]
+                animation_name += self.action_list[weapon]["Attack Action"]
 
         elif "charge" in self.current_action:
             weapon = self.current_action["weapon"]
@@ -32,7 +32,6 @@ def pick_animation(self):
         self.current_animation = self.animation_pool["Default"]
         # print(self.name, animation_name)
         # print(list(self.animation_pool.keys()))
-        # asdf
 
     self.current_animation_direction = self.current_animation[self.sprite_direction]
 

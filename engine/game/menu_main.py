@@ -5,16 +5,15 @@ setup_list = utility.setup_list
 list_scroll = utility.list_scroll
 
 
-def menu_main(self, mouse_left_up):
+def menu_main(self, esc_press):
     if self.preset_map_button.event:  # preset map list menu
         self.menu_state = "preset_map"
-        self.map_type = "preset"
+        self.play_map_type = "preset"
         self.last_select = self.menu_state
 
         self.current_map_select = 0
         self.map_selected = self.preset_map_folder[self.current_map_select]
 
-        self.preset_map_button.event = False
         self.main_ui_updater.remove(*self.start_menu_ui_only)
         self.menu_button.remove(*self.menu_button)
 
@@ -38,14 +37,14 @@ def menu_main(self, mouse_left_up):
                                  self.unit_selector.scroll, self.unit_model_room)
 
     elif self.custom_map_button.event:  # custom map list menu
+        print('test')
         self.menu_state = "custom_map"
-        self.map_type = "custom"
+        self.play_map_type = "custom"
         self.last_select = self.menu_state
 
         self.current_map_select = 0
         self.map_selected = self.battle_map_folder[self.current_map_select]
 
-        self.custom_map_button.event = False
         self.main_ui_updater.remove(*self.start_menu_ui_only)
         self.menu_button.remove(*self.menu_button)
 
@@ -56,7 +55,6 @@ def menu_main(self, mouse_left_up):
 
     elif self.game_edit_button.event:  # custom unit/sub-unit editor menu
         self.menu_state = "game_creator"
-        self.game_edit_button.event = False
         self.main_ui_updater.remove(*self.start_menu_ui_only)
         self.menu_button.remove(*self.menu_button)
 
@@ -70,11 +68,9 @@ def menu_main(self, mouse_left_up):
         self.encyclopedia.change_section(0, self.lore_name_list, self.subsection_name, self.tag_filter_name,
                                          self.lore_name_list.scroll, self.filter_tag_list, self.filter_tag_list.scroll,
                                          self.page_button, self.main_ui_updater)
-        self.lore_button.event = False
 
     elif self.option_button.event:  # change start_set menu to option menu
         self.menu_state = "option"
-        self.option_button.event = False
         self.main_ui_updater.remove(*self.start_menu_ui_only)
         self.menu_button.remove(*self.menu_button)
 
@@ -83,29 +79,13 @@ def menu_main(self, mouse_left_up):
                                  *self.option_text_list)
         self.background = self.background_image["option"]
 
-    elif mouse_left_up and self.profile_box.rect.collidepoint(self.mouse_pos):
+    elif self.quit_button.event or esc_press:  # change start_set menu to option menu
+        self.input_popup = ("confirm_input", "quit")
+        self.confirm_ui.change_instruction("Quit Game?")
+        self.main_ui_updater.add(*self.confirm_ui_popup)
+
+    elif self.profile_box.event:
         self.input_popup = ("text_input", "profile_name")
         self.input_box.text_start(self.profile_name)
         self.input_ui.change_instruction("Profile Name:")
         self.main_ui_updater.add(self.input_ui_popup)
-
-    elif self.popup_list_box in self.main_ui_updater:
-        if self.popup_list_box.rect.collidepoint(self.mouse_pos):
-            self.ui_click = True
-            for index, name in enumerate(self.popup_namegroup):
-                if name.rect.collidepoint(self.mouse_pos) and mouse_left_up:  # click on name in list
-                    self.change_game_genre(index)
-
-                    for this_name in self.popup_namegroup:  # remove troop name list
-                        this_name.kill()
-                        del this_name
-
-                    self.main_ui_updater.remove(self.popup_list_box, self.popup_list_box.scroll)
-                    break
-
-        elif self.popup_list_box.scroll.rect.collidepoint(self.mouse_pos):  # scrolling on list
-            self.ui_click = True
-            self.current_popup_row = self.popup_list_box.scroll.player_input(
-                self.mouse_pos)  # update the scroller and get new current subsection
-            setup_list(uimenu.NameList, self.current_popup_row, self.genre_list,
-                       self.popup_namegroup, self.popup_list_box, self.main_ui_updater)
