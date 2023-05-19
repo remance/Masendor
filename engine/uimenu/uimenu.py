@@ -445,18 +445,17 @@ class BrownMenuButton(UIMenu, Containable):
         self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
         self.mouse_over = False
         self.event = False
+        self.font = pygame.font.Font(self.ui_font["main_button"], 17)
+        self.text = self.localisation.grab_text(key=("ui", self.key_name))
         self.refresh()
 
     def refresh(self):
-        key_name = self.key_name
         images = self.make_buttons(size=tuple(self.rect[2:]))
         button_normal_image = images[0].copy()
         button_over_image = images[1].copy()
-        font = pygame.font.Font(self.ui_font["main_button"], 17)
 
         # draw text into the button images
-        text = self.localisation.grab_text(key=("ui", key_name))
-        text_surface = font.render(text, True, (0,)*3)
+        text_surface = self.font.render(self.text, True, (0,)*3)
         text_rect = text_surface.get_rect(center=button_normal_image.get_rect().center)
         button_normal_image.blit(text_surface, text_rect)
         button_over_image.blit(text_surface, text_rect)
