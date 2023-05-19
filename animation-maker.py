@@ -67,10 +67,11 @@ language = "en"
 ui = pygame.sprite.LayeredUpdates()
 fake_group = pygame.sprite.LayeredUpdates()  # just fake group to add for container and not get auto update
 
-cursor_images = load_images(module_dir, subfolder=("ui", "cursor"))  # no need to scale cursor
-cursor = uimenu.Cursor(cursor_images)
+uimenu.MenuCursor.containers = ui
+
+cursor_images = load_images(module_dir, subfolder=("ui", "cursor_menu"))  # no need to scale cursor
+cursor = uimenu.MenuCursor(cursor_images)
 Game.cursor = cursor
-ui.add(cursor)
 
 Game.main_dir = main_dir
 Game.data_dir = data_dir
@@ -1755,13 +1756,6 @@ text_delay = 0
 text_input_popup = (None, None)
 current_pool = animation_pool_data
 
-button_group = pygame.sprite.Group()
-text_popup_group = pygame.sprite.Group()
-
-Button.containers = button_group
-SwitchButton.containers = button_group
-uimenu.TextPopup.containers = text_popup_group
-
 showroom_scale = (default_sprite_size[0] * 2, default_sprite_size[1] * 2)
 showroom_scale_mul = (showroom_scale[0] / default_sprite_size[0], showroom_scale[1] / default_sprite_size[1])
 showroom = Showroom(showroom_scale)
@@ -3090,7 +3084,7 @@ while True:
             text_input_popup = (None, None)
             ui.remove(*input_ui_popup, *confirm_ui_popup, *colour_ui_popup)
 
-    ui.update(mouse_pos)
+    ui.update()
     anim.play(showroom.image, (0, 0), activate_list)
     current_frame = anim.show_frame
     for strip_index, strip in enumerate(filmstrips):

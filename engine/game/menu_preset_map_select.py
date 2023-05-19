@@ -71,7 +71,7 @@ def menu_preset_map_select(self, mouse_scroll_up, mouse_scroll_down, esc_press):
 
     if self.map_list_box.event:  # click on subsection list scroll
         self.current_map_row = self.map_list_box.scroll.player_input(
-            self.mouse_pos)  # update the scroll and get new current subsection
+            self.cursor.pos)  # update the scroll and get new current subsection
         setup_list(self.screen_scale, uimenu.NameList, self.current_map_row, self.preset_map_list,
                    self.map_namegroup, self.map_list_box,
                    self.main_ui_updater)
@@ -148,7 +148,7 @@ def menu_preset_map_select(self, mouse_scroll_up, mouse_scroll_down, esc_press):
             for index, icon in enumerate(self.unit_icon):
                 if icon.mouse_over:
                     popup_text = leader_popup_text(self, icon)
-                    self.single_text_popup.pop(self.cursor.mouse_pos, popup_text)
+                    self.single_text_popup.pop(self.cursor.pos, popup_text)
                     self.main_ui_updater.add(self.single_text_popup)
                     if icon.event:
                         for other_icon in self.unit_icon:

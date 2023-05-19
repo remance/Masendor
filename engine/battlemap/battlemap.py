@@ -205,7 +205,7 @@ class BeautifulMap(pygame.sprite.Sprite):
 
                 map_feature_mod = feature_map.feature_mod[feature]
                 speed_mod = int(map_feature_mod["Infantry Speed Modifier"] * 100)
-                def_mod = int(map_feature_mod["Infantry Defence Modifier"] * 100)
+                def_mod = int(map_feature_mod["Infantry Melee Modifier"] * 100)
                 speed_array.append(speed_mod)
                 def_array.append(def_mod)
             battle.map_move_array.append(speed_array)

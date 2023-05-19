@@ -182,10 +182,15 @@
 "Element","Element"
 "Wind Strength","Wind Strength"
 "Spell","Spell"
-,
-,
-,
-,
+"Day Temperature","Day Temperature"
+"Night Temperature","Night Temperature"
+"Dust","Dust"
+"Twilight Temperature","Twilight Temperature"
+"Infantry Speed Modifier","Infantry Speed Modifier"
+"Infantry Melee Modifier","Infantry Melee Modifier"
+"Cavalry Speed Modifier","Cavalry Speed Modifier"
+"Cavalry Melee Modifier","Cavalry Melee Modifier"
+"Range Defence Bonus","Range Defence Bonus"
 ,
 ,
 "854 x 480","854 x 480"

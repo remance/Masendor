@@ -10,6 +10,7 @@ from engine import utility
 apply_sprite_colour = utility.apply_sprite_colour
 text_render = utility.text_render
 minimise_number_text = utility.minimise_number_text
+number_to_minus_or_plus = utility.number_to_minus_or_plus
 
 
 def change_number(number):
@@ -29,6 +30,51 @@ class UIBattle(UIMenu):
         UIMenu.__init__(self, has_containers)
         self.updater = Battle.battle_ui_updater  # change updater to use battle ui updater instead of main menu one
         self.battle = Battle.battle
+
+
+class BattleCursor(UIBattle):
+    def __init__(self, images, player_input):
+        """Game battle cursor"""
+        self._layer = 9999999999999  # as high as possible, always blit last
+        UIBattle.__init__(self, has_containers=True)
+        self.images = images
+        self.image = images["normal"]
+        self.pos = pygame.Vector2((self.screen_size[0] / 2, self.screen_size[1] / 2))
+        self.rect = self.image.get_rect(topleft=self.pos)
+        self.player_input = player_input
+
+    def change_input(self, player_input):
+        self.player_input = player_input
+
+    def update(self):
+        """Update cursor position based on joystick or mouse input"""
+        if self.player_input == "keyboard":  # keyboard and mouse control
+            self.pos = pygame.mouse.get_pos()
+        else:  # joystick control
+            for joystick in self.battle.joysticks.values():
+                for i in range(joystick.get_numaxes()):
+                    if joystick.get_axis(i) > 0.1 or joystick.get_axis(i) < -0.1:
+                        axis_name = number_to_minus_or_plus(joystick.get_axis(i))
+                        if i == 2:
+                            if axis_name == "+":
+                                self.pos[0] += 5
+                                if self.pos[0] > self.screen_size[0]:
+                                    self.pos[0] = self.screen_size[0]
+                            else:
+                                self.pos[0] -= 5
+                                if self.pos[0] < 0:
+                                    self.pos[0] = 0
+                        if i == 3:
+                            if axis_name == "+":
+                                self.pos[1] += 5
+                                if self.pos[1] > self.screen_size[1]:
+                                    self.pos[1] = self.screen_size[1]
+                            else:
+                                self.pos[1] -= 5
+                                if self.pos[1] < 0:
+                                    self.pos[1] = 0
+
+        self.rect.topleft = self.pos
 
 
 class ButtonUI(UIBattle):
@@ -189,7 +235,7 @@ class HeroUI(UIBattle):
                              self.leader_image_rect)
         self.image = self.base_image.copy()
 
-    def value_input(self, who, *args):
+    def value_input(self, who):
         if self.last_health != who.health:
             self.last_health = who.health
             self.health_bar = self.health_bar_original.copy()

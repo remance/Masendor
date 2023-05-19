@@ -15,27 +15,13 @@ def escmenu_process(self, esc_press: bool):
 
     command = None
     if esc_press and self.battle_menu.mode in ("menu", "option"):  # in menu or option
-        if self.battle_menu.mode == "option":  # option menu
-            self.master_volume = self.old_setting
-            pygame.mixer.music.set_volume(self.master_volume)
-            self.esc_slider_menu[0].player_input(self.master_volume, self.esc_value_boxes[0], forced_value=True)
-            self.battle_menu.change_mode("menu")
-        self.battle_ui_updater.remove(self.battle_menu, *self.battle_menu_button, *self.esc_option_menu_button,
-                                      *self.esc_slider_menu, *self.esc_value_boxes)
-        self.game_state = self.previous_game_state
+        back_to_battle_state(self)
 
-        if self.player_key_control != "keyboard":
-            self.mouse_pos = pygame.Vector2(self.screen_rect.width / 2, self.screen_rect.height / 2)
-
-    elif self.battle_menu.mode == "menu":  # start_set esc menu
+    elif self.battle_menu.mode == "menu":  # esc menu
         for button in self.battle_menu_button:
             if button.event_press:
-                if button.text == "Resume":  # resume self
-                    self.game_state = self.previous_game_state  # resume battle gameplay state
-                    self.battle_ui_updater.remove(self.battle_menu, *self.battle_menu_button, *self.esc_slider_menu,
-                                                  *self.esc_value_boxes)  # remove menu sprite
-                    if self.player_key_control != "keyboard":
-                        self.mouse_pos = pygame.Vector2(self.screen_rect.width / 2, self.screen_rect.height / 2)
+                if button.text == "Resume":  # resume battle
+                    back_to_battle_state(self)
 
                 elif button.text == "Encyclopedia":  # open encyclopedia
                     self.battle_menu.change_mode("encyclopedia")  # change to enclycopedia mode
@@ -91,7 +77,7 @@ def escmenu_process(self, esc_press: bool):
                 elif button.text == "Cancel":  # cancel button, revert the setting to the last saved one
                     self.master_volume = self.old_setting  # revert to old setting
                     pygame.mixer.music.set_volume(self.master_volume)  # set new music player volume
-                    self.esc_slider_menu[0].player_input(self.master_volume, self.esc_value_boxes[0],
+                    self.esc_slider_menu[0].player_input(self.esc_value_boxes[0],
                                                          forced_value=True)  # update slider bar
                     self.battle_menu.change_mode("menu")  # go back to start_set esc menu
                     self.battle_ui_updater.remove(*self.esc_option_menu_button, *self.esc_slider_menu,
@@ -99,3 +85,19 @@ def escmenu_process(self, esc_press: bool):
                     self.battle_ui_updater.add(*self.battle_menu_button)  # add start_set esc menu buttons back
 
     return command
+
+
+def back_to_battle_state(self):
+    if self.battle_menu.mode == "option":  # option menu
+        self.master_volume = self.old_setting
+        pygame.mixer.music.set_volume(self.master_volume)
+        self.esc_slider_menu[0].player_input(self.esc_value_boxes[0], forced_value=True)
+        self.battle_menu.change_mode("menu")
+    self.battle_ui_updater.remove(self.battle_menu, *self.battle_menu_button, *self.esc_option_menu_button,
+                                  *self.esc_slider_menu, *self.esc_value_boxes, self.cursor)
+    self.game_state = self.previous_game_state
+
+    self.battle_ui_updater.add(self.player1_battle_cursor)
+
+    if self.player1_key_control != "keyboard":
+        self.player1_battle_cursor.pos = pygame.Vector2(self.screen_rect.width / 2, self.screen_rect.height / 2)

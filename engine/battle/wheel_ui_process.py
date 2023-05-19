@@ -62,8 +62,8 @@ def wheel_ui_process(self, choice):
                 self.true_camera_pos = Vector2(self.player_unit.base_pos)
                 for shoot_line in self.shoot_lines:
                     shoot_line.delete()  # reset shoot guide lines
-                self.cursor.change_image("aim")
-                self.single_text_popup.pop(self.cursor.rect.bottomright, "")
+                self.player1_battle_cursor.change_image("aim")
+                self.single_text_popup.pop(self.player1_battle_cursor.rect.bottomright, "")
                 self.battle_ui_updater.add(self.single_text_popup)
                 if choice == "Leader Aim":
                     self.player_input_state = "leader aim"

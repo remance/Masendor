@@ -228,6 +228,7 @@ class Game:
             self.profile_name = str(self.config["USER"]["player_Name"])
             self.language = str(self.config["USER"]["language"])
             self.player1_key_bind = ast.literal_eval(self.config["USER"]["keybind player 1"])
+            self.player1_key_control = self.config["USER"]["control player 1"]
             self.module = int(self.config["USER"]["module"])
             if self.game_version != self.config["VERSION"]["ver"]:  # remake config as game version change
                 raise KeyError  # cause KeyError to reset config file
@@ -247,6 +248,7 @@ class Game:
             self.profile_name = str(self.config["USER"]["player_Name"])
             self.language = str(self.config["USER"]["language"])
             self.player1_key_bind = ast.literal_eval(self.config["USER"]["keybind player 1"])
+            self.player1_key_control = self.config["USER"]["control player 1"]
             self.module = int(self.config["USER"]["module"])
 
         Game.language = self.language
@@ -370,10 +372,11 @@ class Game:
         uibattle.UnitIcon.containers = self.unit_icon, self.main_ui_updater
         uibattle.SpriteIndicator.containers = self.effect_updater, self.battle_camera
         uibattle.AimTarget.containers = self.shoot_lines, self.battle_camera
+        uibattle.BattleCursor.containers = self.battle_ui_updater
 
         effect.Effect.containers = self.effect_updater, self.battle_camera
 
-        uimenu.Cursor.containers = self.main_ui_updater, self.battle_ui_updater
+        uimenu.MenuCursor.containers = self.main_ui_updater
 
         weather.MatterSprite.containers = self.weather_matter, self.battle_ui_updater
         weather.SpecialEffect.containers = self.weather_effect, self.battle_ui_updater
@@ -381,9 +384,9 @@ class Game:
         unit.Troop.containers = self.unit_updater, self.all_units, self.battle_camera
         unit.Leader.containers = self.unit_updater, self.all_units, self.battle_camera
 
-        # Create game cursor, make sure it is the first object in ui to be created so it is always update first
-        cursor_images = load_images(self.module_dir, subfolder=("ui", "cursor"))  # no need to scale cursor
-        self.cursor = uimenu.Cursor(cursor_images)
+        # Create game cursor, make sure it is the first object in ui to be created, so it is always update first
+        cursor_images = load_images(self.module_dir, subfolder=("ui", "cursor_menu"))  # no need to scale cursor
+        self.cursor = uimenu.MenuCursor(cursor_images)
         Game.cursor = self.cursor
 
         self.game_intro(self.screen, self.clock, False)  # run intro
@@ -726,6 +729,7 @@ class Game:
         self.encyclopedia.change_module()
 
         self.battle = battle.Battle(self)
+        self.player1_battle_cursor = self.battle.player1_battle_cursor
 
         Game.battle = self.battle
         unit.Unit.battle = self.battle

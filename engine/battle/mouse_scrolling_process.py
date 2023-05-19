@@ -4,7 +4,7 @@ list_scroll = utility.list_scroll
 
 
 def mouse_scrolling_process(self, mouse_scroll_up, mouse_scroll_down):
-    if self.event_log.rect.collidepoint(self.mouse_pos):  # Scrolling when mouse at event log
+    if self.event_log.rect.collidepoint(self.player1_battle_cursor.pos):  # Scrolling when mouse at event log
         if mouse_scroll_up:
             self.event_log.current_start_row -= 1
             if self.event_log.current_start_row < 0:  # can go no further than the first log

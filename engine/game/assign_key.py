@@ -3,7 +3,7 @@ from engine import utility
 edit_config = utility.edit_config
 
 
-def assign_key(self, key_assign):
+def assign_key(self, key_assign):  # TODO prevent player from input right hat joystick (use only for mouse pos)
     if key_assign not in self.player1_key_bind[self.config["USER"]["control player 1"]].values():
         self.player1_key_bind[self.config["USER"]["control player 1"]][
             self.input_popup[1]] = key_assign

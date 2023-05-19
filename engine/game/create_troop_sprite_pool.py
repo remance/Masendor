@@ -42,10 +42,10 @@ def inner_create_troop_sprite_pool(self, who_todo, sprite_pool_hash, preview=Fal
     weapon_list = self.troop_data.weapon_list
     animation_sprite_pool = {}
     status_animation_pool = {}
-    weapon_common_type_list = tuple(set(["_" + value["Common"] + "_" for key, value in weapon_list.items() if
-                                         key != "" and type(value["Common"]) is not int]))  # common type animation set
-    weapon_attack_type_list = tuple(set([value["Attack"] for key, value in weapon_list.items() if
-                                         key != "" and type(value["Attack"]) is not int]))  # attack animation set
+    weapon_common_type_list = tuple(set(["_" + value["Common Action"] + "_" for key, value in weapon_list.items() if
+                                         key != "" and type(value["Common Action"]) is not int]))  # common type animation set
+    weapon_attack_type_list = tuple(set([value["Attack Action"] for key, value in weapon_list.items() if
+                                         key != "" and type(value["Attack Action"]) is not int]))  # attack animation set
     who_todo = {key: value for key, value in who_todo.items() if value["Sprite ID"] != ""}  # skip one with no ID
     if not preview and len(who_todo) > 10:
         jobs = []
@@ -156,21 +156,21 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
         unit_weapon_list = [(weapon_list[primary_main_weapon]["Name"],
                                 weapon_list[primary_sub_weapon]["Name"])]
 
-        weapon_common_action = [(weapon_list[primary_main_weapon]["Common"],
-                                 weapon_list[primary_sub_weapon]["Common"])]
-        weapon_attack_action = [(weapon_list[primary_main_weapon]["Attack"],
-                                 weapon_list[primary_sub_weapon]["Attack"])]
+        weapon_common_action = [(weapon_list[primary_main_weapon]["Common Action"],
+                                 weapon_list[primary_sub_weapon]["Common Action"])]
+        weapon_attack_action = [(weapon_list[primary_main_weapon]["Attack Action"],
+                                 weapon_list[primary_sub_weapon]["Attack Action"])]
 
         if (primary_main_weapon, primary_sub_weapon) != (secondary_main_weapon, secondary_sub_weapon):
             unit_weapon_list = [unit_weapon_list[0],
                                    (weapon_list[secondary_main_weapon]["Name"],
                                     weapon_list[secondary_sub_weapon]["Name"])]
             weapon_common_action = [weapon_common_action[0],
-                                    (weapon_list[secondary_main_weapon]["Common"],
-                                     weapon_list[secondary_sub_weapon]["Common"])]
+                                    (weapon_list[secondary_main_weapon]["Common Action"],
+                                     weapon_list[secondary_sub_weapon]["Common Action"])]
             weapon_attack_action = [weapon_attack_action[0],
-                                    (weapon_list[secondary_main_weapon]["Attack"],
-                                     weapon_list[secondary_sub_weapon]["Attack"])]
+                                    (weapon_list[secondary_main_weapon]["Attack Action"],
+                                     weapon_list[secondary_sub_weapon]["Attack Action"])]
 
         if preview:  # only create random right side sprite for preview in lorebook
             animation = [this_animation for this_animation in self.unit_animation_data[race] if final_race_name in

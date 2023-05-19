@@ -36,6 +36,8 @@ def menu_keybind(self, esc_press):
                 # if self.config["USER"]["control player 2"] == "joystick"
                 self.config["USER"]["control player 1"] = "keyboard"
                 self.control_switch.change_control("keyboard")
+            self.player1_key_bind = self.config["USER"]["control player 1"]
+            self.player1_battle_cursor.change_input(self.player1_key_bind)
             edit_config("USER", "control player 1", self.config["USER"]["control player 1"],
                         "configuration.ini", self.config)
             for key, value in self.keybind_icon.items():

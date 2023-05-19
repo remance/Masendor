@@ -15,8 +15,10 @@ def menu_option(self, mouse_scroll_up, mouse_scroll_down, esc_press):
         self.menu_state = "keybind"
 
         if self.joysticks:
-            if self.config["USER"]["control player 1"] == "joystick":
+            if self.config["USER"]["control player 1"] == "joystick":  # player has joystick when first enter option
                 self.control_switch.change_control("joystick1")
+                self.player1_key_bind = self.config["USER"]["control player 1"]
+                self.player1_battle_cursor.change_input(self.player1_key_bind)
                 for key, value in self.keybind_icon.items():
                     if self.joysticks:
                         value.change_key(self.config["USER"]["control player 1"],
@@ -32,6 +34,8 @@ def menu_option(self, mouse_scroll_up, mouse_scroll_down, esc_press):
             self.config["USER"]["control player 1"] = "keyboard"
             edit_config("USER", "control player 1", "keyboard", "configuration.ini", self.config)
             self.control_switch.change_control("keyboard")
+            self.player1_key_bind = self.config["USER"]["control player 1"]
+            self.player1_battle_cursor.change_input(self.player1_key_bind)
             for key, value in self.keybind_icon.items():
                 if self.joysticks:
                     value.change_key(self.config["USER"]["control player 1"],

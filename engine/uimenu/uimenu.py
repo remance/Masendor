@@ -83,26 +83,26 @@ class UIMenu(pygame.sprite.Sprite):
         self.mouse_over = False
         if self.rect.collidepoint(self.cursor.pos):
             self.mouse_over = True
-            if self.cursor.is_mouse_left_just_up or self.cursor.is_mouse_left_down:
+            if self.cursor.is_select_just_up or self.cursor.is_select_down:
                 self.event = True
-                if self.cursor.is_mouse_left_just_up:
+                if self.cursor.is_select_just_up:
                     self.event_press = True
-                elif self.cursor.is_mouse_left_down:
+                elif self.cursor.is_select_down:
                     self.event_hold = True
 
 
-class Cursor(UIMenu):
+class MenuCursor(UIMenu):
     def __init__(self, images):
-        """Game cursor"""
-        self._layer = 100  # as high as possible, always blit last
+        """Game menu cursor"""
+        self._layer = 1000000  # as high as possible, always blit last
         UIMenu.__init__(self, has_containers=True)
         self.images = images
         self.image = images["normal"]
         self.pos = (0, 0)
         self.rect = self.image.get_rect(topleft=self.pos)
-        self.is_mouse_left_just_down = False
-        self.is_mouse_left_down = False
-        self.is_mouse_left_just_up = False
+        self.is_select_just_down = False
+        self.is_select_down = False
+        self.is_select_just_up = False
         self.is_mouse_right_just_down = False
         self.is_mouse_right_down = False
         self.is_mouse_right_just_up = False
@@ -112,8 +112,8 @@ class Cursor(UIMenu):
         keyboard_mouse_press_check = utility.keyboard_mouse_press_check  # TODO change later when no more use old listui
         self.pos = pygame.mouse.get_pos()
         self.rect.topleft = self.pos
-        self.is_mouse_left_just_down, self.is_mouse_left_down, self.is_mouse_left_just_up = keyboard_mouse_press_check(
-            pygame.mouse, 0, self.is_mouse_left_just_down, self.is_mouse_left_down, self.is_mouse_left_just_up)
+        self.is_select_just_down, self.is_select_down, self.is_select_just_up = keyboard_mouse_press_check(
+            pygame.mouse, 0, self.is_select_just_down, self.is_select_down, self.is_select_just_up)
 
         self.is_mouse_right_just_down, self.is_mouse_right_down, self.is_mouse_right_just_up = keyboard_mouse_press_check(
             pygame.mouse, 0, self.is_mouse_right_just_down, self.is_mouse_right_down, self.is_mouse_right_just_up)
@@ -361,7 +361,7 @@ class MenuButton(UIMenu):
         if self.rect.collidepoint(self.cursor.pos):
             self.mouse_over = True
             self.image = self.button_over_image
-            if self.cursor.is_mouse_left_just_up:
+            if self.cursor.is_select_just_up:
                 self.event = True
                 self.event_press = True
                 self.image = self.button_click_image
@@ -470,7 +470,7 @@ class BrownMenuButton(UIMenu, Containable):
         if self.rect.collidepoint(self.cursor.pos):
             self.mouse_over = True
             self.image = self.button_over_image
-            if self.cursor.is_mouse_left_just_up:
+            if self.cursor.is_select_just_up:
                 self.event = True
 
         self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
@@ -1183,12 +1183,12 @@ class ListUI(UIMenu, Containable):
     def update(self):
         self.mouse_over = False
         self.selected_index = None
-        if self.cursor.is_mouse_left_just_up:
+        if self.cursor.is_select_just_up:
             self.click_ready = True
         if self.rect.collidepoint(self.cursor.pos):
             self.selected_index = (self.cursor.pos[1]-11)//36
             self.mouse_over = True
-        if self.click_ready and self.cursor.is_mouse_left_down and self.selected_index is not None:
+        if self.click_ready and self.cursor.is_select_down and self.selected_index is not None:
             self.click_ready = False
             self.on_click(self.selected_index, self.items[self.selected_index])
 

@@ -58,7 +58,7 @@ def swap_weapon(self, new_weapon_set):
     self.action_list = []
     for item in self.equipped_weapon_data:
         self.action_list.append(
-            {key: value for key, value in item.items() if key in ("Common", "Attack", "Properties")})
+            {key: value for key, value in item.items() if key in ("Common Action", "Attack Action", "Properties")})
 
     self.equipped_power_weapon = self.power_weapon[self.equipped_weapon]
     self.equipped_block_weapon = self.block_weapon[self.equipped_weapon]

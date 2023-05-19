@@ -48,10 +48,10 @@ def keyboard_mouse_press_check(button_type, button, is_button_just_down, is_butt
     Check for button just press, holding, and release for keyboard or mouse
     :param button_type: pygame.key, pygame.mouse, or pygame.
     :param button: button index
-    :param is_button_just_down:
-    :param is_button_down:
-    :param is_button_just_up:
-    :return:
+    :param is_button_just_down: button is just press last update
+    :param is_button_down: button is pressing after first update
+    :param is_button_just_up: button is just release last update
+    :return: new state of is_button_just_down, is_button_down, is_button_just_up
     """
     if button_type.get_pressed()[button]:  # press left click
         if not is_button_just_down:

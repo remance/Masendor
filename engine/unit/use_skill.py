@@ -48,7 +48,7 @@ def use_skill(self, which_skill):
                         for status in skill_stat["Status"]:
                             this_unit[0].apply_effect(status, self.status_list[status],
                                                       this_unit[0].status_effect, this_unit[0].status_duration)
-                    if self.team != this_unit[0].team:  # apply status to enemy if there is one in skill effect
+                    if self.team != this_unit[0].team:  # apply status to enemy if tfhere is one in skill effect
                         for status in skill_stat["Enemy Status"]:
                             this_unit[0].apply_effect(status, self.status_list[status],
                                                       this_unit[0].status_effect, this_unit[0].status_duration)

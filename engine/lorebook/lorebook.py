@@ -410,7 +410,8 @@ class Lorebook(UIMenu):
                 for key, value in front_text.items():
                     if value != "":
                         if any(ext in key for ext in ("Sprite", "ImageID", "Sound", "Shake", "ID",
-                                                      "Texture", "Spawn", "Travel", "Action")):  # key that will not be put in encyclopedia
+                                                      "Texture", "Spawn", "Travel", "Action", "After ",
+                                                      "Properties", "Condition")):  # key that will not be put in encyclopedia
                             pass
                         else:
                             if self.section != self.equipment_section:  # equipment section need to be processed differently
@@ -712,7 +713,7 @@ def lorebook_process(self, mouse_scroll_up, mouse_scroll_down, esc_press):
     command = None
     close = False
     for button_index, button in self.lore_buttons.items():
-        if button in self.main_ui_updater and button.event:  # click button
+        if button in self.main_ui_updater and button.event_press:  # click button
             if type(button_index) is int:  # section button
                 self.encyclopedia.change_section(button_index, self.lore_name_list, self.subsection_name,
                                                  self.tag_filter_name, self.lore_name_list.scroll,
@@ -744,7 +745,7 @@ def lorebook_process(self, mouse_scroll_up, mouse_scroll_down, esc_press):
                                                 self.tag_filter_name, "tag")  # update subsection name list
     else:
         for name in self.subsection_name:
-            if name.event:  # click on subsection name
+            if name.event_press:  # click on subsection name
                 self.encyclopedia.change_subsection(name.subsection, self.page_button,
                                                     self.main_ui_updater)  # change subsection
                 break  # found clicked subsection, break loop
