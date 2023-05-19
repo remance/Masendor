@@ -568,7 +568,7 @@ class Game:
                 self.list = _list
                 self.last_index = -1
                 self._self = _self
-          
+
             def __len__(self):
                 return len(self.list)
 
@@ -582,13 +582,12 @@ class Game:
                 _self.map_selected = _self.battle_map_folder[_self.current_map_select]
                 _self.create_preview_map()
                 print("test {0} {1}".format(item_index, item_text))
-                
-                
+
             def get_highlighted_index(self):
                 return self.last_index
 
         self.custom_map_list_box = uimenu.ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
-                                                 items=CustomBattleListAdapter(self.battle_map_list), parent=self.screen, item_size=20)
+                                                 items=CustomBattleListAdapter(self.battle_map_list, self), parent=self.screen, item_size=20)
 
         self.org_chart = uimenu.OrgChart(load_image(self.module_dir, self.screen_scale,
                                                     "org.png", ("ui", "mapselect_ui")),

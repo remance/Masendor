@@ -463,8 +463,8 @@ class BrownMenuButton(UIMenu, Containable):
         self.image = button_normal_image
         if self.mouse_over:
             self.image = button_over_image
-        self.image = self.button_normal_image
-        self.rect = self.button_normal_image.get_rect(center=self.pos)
+        # self.image = self.button_normal_image
+        # self.rect = self.button_normal_image.get_rect(center=self.pos)
 
     def get_relative_position_inside_container(self):
         return {
@@ -473,11 +473,14 @@ class BrownMenuButton(UIMenu, Containable):
         }
 
     def update(self):
+
+        mouse_pos = self.cursor.pos
+        sju = self.cursor.is_select_just_up
+
         self.mouse_over = False
         if self.rect.collidepoint(mouse_pos):
             self.mouse_over = True
-            if mouse_up:
-
+            if sju:
                 self.event = True
 
         self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
@@ -1227,21 +1230,22 @@ class ListUI(UIMenu, Containable):
 
         return self.image
 
-
     def get_scroll_bar_rect(self):
         return pygame.Rect(self.rect[2]-18, 6, 14, self.scroll_bar_height)
 
     def get_scroll_box_rect(self):
         return pygame.Rect(self.rect[2]-18, self.scroll_box_index*self.scroll_step_height+6, *self.scroll_box.get_size())
 
-    def update(self, mouse_pos, mouse_up, mouse_down, *args):
+    def update(self):
+
+        mouse_pos = self.cursor.pos
         relative_mouse_pos = [mouse_pos[i]-self.rect[i] for i in range(2)]
 
         size = tuple(map(int, self.rect[2:]))
         self.mouse_over = False
         self.selected_index = None
-        mljd = self.cursor.is_mouse_left_just_down
-        mld = self.cursor.is_mouse_left_down
+        mljd = self.cursor.is_select_just_down
+        mld = self.cursor.is_select_down
 
         # detect if in list or over scroll box
         self.in_scroll_box = False
