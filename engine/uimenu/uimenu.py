@@ -28,10 +28,11 @@ def make_image_by_frame(frame: pygame.Surface, final_size):
 
     css = corner_side_size = (frame.get_size()[0]-1)//2
 
-    image = pygame.Surface(final_size)
+    image = pygame.Surface(final_size, pygame.SRCALPHA)
 
     # background color
-    image.fill(frame.get_at((css, css)))
+    bc = background_color = frame.get_at((css, css))
+    pygame.draw.rect(image, bc, (css, css, fs[0]-css*2, fs[1]-css*2))
 
     # corners
     image.blit(frame, (0, 0), (0, 0, css, css))
@@ -46,6 +47,8 @@ def make_image_by_frame(frame: pygame.Surface, final_size):
     for y in range(css, fs[1]-css):
         image.blit(frame, (0, y), (0, css, css, 1))
         image.blit(frame, (fs[0]-css, y), (css+1, css, css*2+1, 1))
+
+    # TODO: crop image
 
     return image
 
@@ -407,7 +410,7 @@ class Containable:
         if rsic is None:
             return pygame.rect.Rect(*[container.get_rect()[i] - (self.get_size()[i] * (origin[i]+1)) // 2 + (pivot[i] + 1) * container.get_rect()[i+2] // 2 for i in range(2)], *self.get_size())
         else:
-            size = [ container.get_size()[i] * rsic[i] for i in range(2) ]
+            size = [container.get_size()[i] * rsic[i] for i in range(2)]
             return pygame.rect.Rect(*[container.get_rect()[i] - (size[i] * (origin[i]+1)) // 2 + (pivot[i] + 1) * container.get_rect()[i+2] // 2 for i in range(2)], *size)
 
 
@@ -415,22 +418,14 @@ class BrownMenuButton(UIMenu, Containable):
 
     @classmethod
     @lru_cache
-    def make_buttons(cls, width):
+    def make_buttons(cls, size):
         from engine.game.game import Game
         from engine.utility import load_image
         game = Game.game
 
-        image = load_image(game.module_dir, (1, 1), "new_button.png", ("ui", "mainmenu_ui"))
+        frame = load_image(game.module_dir, (1, 1), "new_button.png", ("ui", "mainmenu_ui"))
 
-        height = image.get_size()[1]
-
-        # normal button
-        normal_button = pygame.Surface((width, height))
-
-        normal_button.blit(image, (0, 0), (0, 0, 6, height))
-        for x in range(6, width - 5):
-            normal_button.blit(image, (x, 0), (6, 0, 1, height))
-        normal_button.blit(image, (width - 5, 0), (7, 0, 12, height))
+        normal_button = make_image_by_frame(frame, size)
 
         # hover button
         hover_button = normal_button.copy()
@@ -438,24 +433,38 @@ class BrownMenuButton(UIMenu, Containable):
 
         return (normal_button, hover_button)
 
+    def get_relative_size_inside_container(self):
+        return (.5, .1)  # TODO: base this on a variable
+
     def __init__(self, pos, key_name="", width=200, parent=None):
         UIMenu.__init__(self)
         self.pos = pos
         self.parent = parent
-        images = self.make_buttons(width=width)
-        self.button_normal_image = images[0].copy()
-        self.button_over_image = images[1].copy()
+        self.key_name = key_name
+        self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
+        self.mouse_over = False
+        self.event = False
+        self.refresh()
+
+    def refresh(self):
+        key_name = self.key_name
+        images = self.make_buttons(size=tuple(self.rect[2:]))
+        button_normal_image = images[0].copy()
+        button_over_image = images[1].copy()
         font = pygame.font.Font(self.ui_font["main_button"], 17)
 
         # draw text into the button images
         text = self.localisation.grab_text(key=("ui", key_name))
-        text_surface = font.render(text, True, (200, 180, 200))
-        text_rect = text_surface.get_rect(center=self.button_normal_image.get_rect().center)
-        self.button_normal_image.blit(text_surface, text_rect)
-        self.button_over_image.blit(text_surface, text_rect)
+        text_surface = font.render(text, True, (0,)*3)
+        text_rect = text_surface.get_rect(center=button_normal_image.get_rect().center)
+        button_normal_image.blit(text_surface, text_rect)
+        button_over_image.blit(text_surface, text_rect)
 
-        self.image = self.button_normal_image
-        self.rect = self.button_normal_image.get_rect(center=self.pos)
+        self.image = button_normal_image
+        if self.mouse_over:
+            self.image = button_over_image
+        # self.image = self.button_normal_image
+        # self.rect = self.button_normal_image.get_rect(center=self.pos)
 
     def get_relative_position_inside_container(self):
         return {
@@ -464,16 +473,18 @@ class BrownMenuButton(UIMenu, Containable):
         }
 
     def update(self):
+
+        mouse_pos = self.cursor.pos
+        sju = self.cursor.is_select_just_up
+
         self.mouse_over = False
-        self.event = False
-        self.image = self.button_normal_image
-        if self.rect.collidepoint(self.cursor.pos):
+        if self.rect.collidepoint(mouse_pos):
             self.mouse_over = True
-            self.image = self.button_over_image
-            if self.cursor.is_select_just_up:
+            if sju:
                 self.event = True
 
         self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
+        self.refresh()
 
     def get_size(self):
         return self.image.get_size()
@@ -1118,18 +1129,16 @@ class BoxUI(UIMenu, Containable, Container):
         self._layer = -1  # NOTE: not sure if this is good since underscore indicate it is a private variable but it works for now
         self.pos = (0, 0)
         self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
-        self.image = pygame.Surface(self.rect[2:])
-        self.image.fill("#222a2e")
+        self.image = pygame.Surface(self.rect[2:], pygame.SRCALPHA)
+        self.image.fill("#302d2ce0")
 
     def update(self):
         self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
-        self.image = pygame.Surface(self.rect[2:])
-        self.image.fill("#222a2e")
-
-
+        self.image = pygame.Surface(self.rect[2:], pygame.SRCALPHA)
+        self.image.fill("#bbbbaabb")
 
     def get_relative_size_inside_container(self):
-        return (0.3,0.5)
+        return (0.3, 0.5)  # TODO: base this on variable
 
     def get_relative_position_inside_container(self):
         return {
@@ -1146,7 +1155,7 @@ class BoxUI(UIMenu, Containable, Container):
 
 class ListUI(UIMenu, Containable):
 
-    def __init__(self, origin, pivot, size, items, parent, on_click):
+    def __init__(self, origin, pivot, size, items, parent, item_size):
 
         from engine.game.game import Game
         from engine.utility import load_image
@@ -1156,41 +1165,123 @@ class ListUI(UIMenu, Containable):
         self.pivot = pivot
         self.origin = origin
         self.frame = load_image(game.module_dir, (1, 1), "list_frame.png", ("ui", "mainmenu_ui"))
-        self.on_click = on_click
+        self.scroll_box_frame = load_image(game.module_dir, (1, 1), "scroll_box_frame.png", ("ui", "mainmenu_ui"))
 
-        self.click_ready = False
-        self.size = size
+        self.item_size = item_size
+
+        self.relative_size_inside_container = size
+
         self.items = items
 
+        self.in_scroll_box = False
+        self.hold_scroll_box = None
         self.selected_index = None
-        self.image = self.get_refreshed_image()
+
         self.rect = self.get_adjusted_rect_to_be_inside_container(parent)
 
+        self.scroll_bar_height = self.rect[3]-12
+        self.scroll_box_height = int(self.scroll_bar_height*(item_size/len(self.items)))
+        self.scroll_step_height = (self.scroll_bar_height - self.scroll_box_height)/self.get_number_of_items_outside_visible_list()
+
+        self.scroll_box = make_image_by_frame(self.scroll_box_frame, (14, self.scroll_box_height))
+        self.scroll_box_index = 0
+        self.image = self.get_refreshed_image()
+
+    def get_number_of_items_outside_visible_list(self):
+        r = len(self.items)-self.item_size
+        if r <= 0:
+            raise Exception("At the moment ListUI can only handle list that have enough items to require a scroll bar")
+        return r
+
+    def get_item_height(self):
+        return self.scroll_bar_height//self.item_size
+
+    def get_relative_size_inside_container(self):
+        return self.relative_size_inside_container
+
     def get_refreshed_image(self):
-        self.image = make_image_by_frame(self.frame, self.size)
-        import random
+        assert type(self.scroll_box_index) == int, type(self.scroll_box_index)
+        item_height = self.get_item_height()
+        size = self.rect[2:]
+        self.image = make_image_by_frame(self.frame, size)
         font = pygame.font.Font(self.ui_font["main_button"], 18)
+        item_height = self.get_item_height()
 
+        # draw items
+        for i in range(self.item_size):
+            item_index = i+self.scroll_box_index
+            if item_index == self.selected_index or item_index == self.items.get_highlighted_index():
 
-        if self.selected_index is not None:
-            si = self.selected_index
-            pygame.draw.rect(self.image, "#181617", (4, si*36+11, self.size[0]-8, 36))
+                color = "#181617"
+                if item_index == self.items.get_highlighted_index():
+                    color = "#551617"
 
-        for e, item in enumerate(self.items):
-            self.image.blit(font.render(item, True, ( 255 if e == self.selected_index else 178,)*3), (20, 20+e*36))
+                pygame.draw.rect(self.image, color, (6, 6+i*item_height, size[0]-25, item_height))
+            self.image.blit(font.render(self.items[item_index], True, (255 if item_index == self.selected_index else 178,)*3), (20, item_height//2+6-9+i*item_height))
+
+        # draw scroll bar
+        pygame.draw.rect(self.image, "black", self.get_scroll_bar_rect())
+
+        # draw scroll box
+        scroll_box_rect = self.get_scroll_box_rect()
+        self.image.blit(self.scroll_box, scroll_box_rect)
+        if self.in_scroll_box or self.hold_scroll_box is not None:
+            pygame.draw.rect(self.image, (220, 190, 110) if self.hold_scroll_box is not None else (150,)*3, scroll_box_rect, 1)
+
         return self.image
 
+    def get_scroll_bar_rect(self):
+        return pygame.Rect(self.rect[2]-18, 6, 14, self.scroll_bar_height)
+
+    def get_scroll_box_rect(self):
+        return pygame.Rect(self.rect[2]-18, self.scroll_box_index*self.scroll_step_height+6, *self.scroll_box.get_size())
+
     def update(self):
+
+        mouse_pos = self.cursor.pos
+        relative_mouse_pos = [mouse_pos[i]-self.rect[i] for i in range(2)]
+
+        size = tuple(map(int, self.rect[2:]))
         self.mouse_over = False
         self.selected_index = None
-        if self.cursor.is_select_just_up:
-            self.click_ready = True
-        if self.rect.collidepoint(self.cursor.pos):
-            self.selected_index = (self.cursor.pos[1]-11)//36
+        mljd = self.cursor.is_select_just_down
+        mld = self.cursor.is_select_down
+
+        # detect if in list or over scroll box
+        self.in_scroll_box = False
+        in_list = False
+        if self.rect.collidepoint(mouse_pos):
             self.mouse_over = True
-        if self.click_ready and self.cursor.is_select_down and self.selected_index is not None:
-            self.click_ready = False
-            self.on_click(self.selected_index, self.items[self.selected_index])
+            if self.get_scroll_bar_rect().collidepoint(relative_mouse_pos):
+                if self.get_scroll_box_rect().collidepoint(relative_mouse_pos):
+                    self.in_scroll_box = True
+            else:
+                in_list = True
+
+        # scroll box drag handler
+        if not mld:
+            self.hold_scroll_box = None
+        if mljd and self.in_scroll_box:
+            self.hold_scroll_box = relative_mouse_pos[1]
+            self.scroll_box_index_at_hold = self.scroll_box_index
+        if self.hold_scroll_box:
+            self.scroll_box_index = self.scroll_box_index_at_hold + int((relative_mouse_pos[1] - self.hold_scroll_box + self.scroll_step_height/2)/self.scroll_step_height)
+            noiovl = self.get_number_of_items_outside_visible_list()
+            if self.scroll_box_index > noiovl:
+                self.scroll_box_index = noiovl
+            elif self.scroll_box_index < 0:
+                self.scroll_box_index = 0
+
+        # item handler
+        if in_list and not self.hold_scroll_box:
+            item_height = self.get_item_height()
+            relative_index = ((relative_mouse_pos[1]-6)//item_height)
+            if relative_index >= 0 and relative_index < self.item_size:
+                self.selected_index = relative_index+self.scroll_box_index
+        if in_list and mljd and self.selected_index is not None:
+            self.items.on_select(self.selected_index, self.items[self.selected_index])
+
+        # refresh image
 
         self.image = self.get_refreshed_image()
 
