@@ -33,7 +33,7 @@ def make_image_by_frame(frame: pygame.Surface, final_size):
     # offsets
     # ---
     # if the corners has alpha they can appear to make the final image uneven.
-    # that is why we need to adjust the thresholds with some offsets. 
+    # that is why we need to adjust the thresholds with some offsets.
     # these offsets are being calculated by check the margins on each side.
 
     # NOTE/TODO: this is only being implemented on left/right because that is
@@ -447,7 +447,7 @@ class BrownMenuButton(UIMenu, Containable):  # NOTE: the button is not brown any
 
     @classmethod
     @lru_cache
-    def make_buttons(cls, size):
+    def make_buttons(cls, size, text, font):
         from engine.game.game import Game
         from engine.utility import load_image
         game = Game.game
@@ -455,8 +455,10 @@ class BrownMenuButton(UIMenu, Containable):  # NOTE: the button is not brown any
         frame = load_image(game.module_dir, (1, 1), "new_button.png", ("ui", "mainmenu_ui"))
 
         normal_button = make_image_by_frame(frame, size)
+        text_surface = font.render(text, True, (0,)*3)
+        text_rect = text_surface.get_rect(center=normal_button.get_rect().center)
+        normal_button.blit(text_surface, text_rect)
 
-        # hover button
         hover_button = normal_button.copy()
         pygame.draw.rect(hover_button, "#DD0000", hover_button.get_rect(), 1)
 
@@ -478,21 +480,11 @@ class BrownMenuButton(UIMenu, Containable):  # NOTE: the button is not brown any
         self.refresh()
 
     def refresh(self):
-        images = self.make_buttons(size=tuple(self.rect[2:]))
-        button_normal_image = images[0].copy()
-        button_over_image = images[1].copy()
+        images = self.make_buttons(size=tuple(self.rect[2:]), text=self.text, font=self.font)
 
-        # draw text into the button images
-        text_surface = self.font.render(self.text, True, (0,)*3)
-        text_rect = text_surface.get_rect(center=button_normal_image.get_rect().center)
-        button_normal_image.blit(text_surface, text_rect)
-        button_over_image.blit(text_surface, text_rect)
-
-        self.image = button_normal_image
+        self.image = images[0]
         if self.mouse_over:
-            self.image = button_over_image
-        # self.image = self.button_normal_image
-        # self.rect = self.button_normal_image.get_rect(center=self.pos)
+            self.image = images[1]
 
     def get_relative_position_inside_container(self):
         return {
