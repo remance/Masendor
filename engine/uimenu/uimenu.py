@@ -30,25 +30,53 @@ def make_image_by_frame(frame: pygame.Surface, final_size):
 
     image = pygame.Surface(final_size, pygame.SRCALPHA)
 
+    # offsets
+    # ---
+    # if the corners has alpha they can appear to make the final image uneven.
+    # that is why we need to adjust the thresholds with some offsets.
+    # these offsets are being calculated by check the margins on each side.
+
+    # NOTE/TODO: this is only being implemented on left/right because that is
+    #            where we had issues on some image. when we have issues on top/bottom
+    #            let us then implement it on it then.
+    offsets = o = [0]*4  # left, up, right, down
+
+    # left margin
+    lm = frame.get_size()[0]
+    for y in range(frame.get_size()[1]):
+        for x in range(lm):
+            if frame.get_at((x, y)).a != 0:
+                lm = x
+                break
+    o[0] = -lm
+
+    # right margin
+    rm = frame.get_size()[0]
+    for y in range(frame.get_size()[1]):
+        for x in range(rm):
+            if frame.get_at((frame.get_size()[0]-x-1, y)).a != 0:
+                rm = x
+                break
+    o[2] = rm
+    # ---
+
     # background color
     bc = background_color = frame.get_at((css, css))
-    pygame.draw.rect(image, bc, (css, css, fs[0]-css*2, fs[1]-css*2))
+    pygame.draw.rect(image, bc, (css+o[0], css, fs[0]-css*2+o[2]-o[0], fs[1]-css*2))
 
     # corners
-    image.blit(frame, (0, 0), (0, 0, css, css))
-    image.blit(frame, (0, fs[1]-css), (0, css+1, css, css*2+1))
-    image.blit(frame, (fs[0]-css, 0), (css+1, 0, css*2+1, css))
-    image.blit(frame, (fs[0]-css, fs[1]-css), (css+1, css+1, css*2+1, css*2+1))
+    image.blit(frame, (0+o[0], 0), (0, 0, css, css))
+    image.blit(frame, (0+o[0], fs[1]-css), (0, css+1, css, css*2+1))
+    image.blit(frame, (fs[0]-css+o[2], 0), (css+1, 0, css*2+1, css))
+    image.blit(frame, (fs[0]-css+o[2], fs[1]-css), (css+1, css+1, css*2+1, css*2+1))
 
     # sides
-    for x in range(css, fs[0]-css):
+    for x in range(css+o[0], fs[0]-css+o[2]):
         image.blit(frame, (x, 0), (css, 0, 1, css))
         image.blit(frame, (x, fs[1]-css), (css, css+1, 1, css*2+1))
     for y in range(css, fs[1]-css):
-        image.blit(frame, (0, y), (0, css, css, 1))
-        image.blit(frame, (fs[0]-css, y), (css+1, css, css*2+1, 1))
-
-    # TODO: crop image
+        image.blit(frame, (0+o[0], y), (0, css, css, 1))
+        image.blit(frame, (fs[0]-css+o[2], y), (css+1, css, css*2+1, 1))
 
     return image
 
@@ -415,11 +443,11 @@ class Containable:
             return pygame.rect.Rect(*[container.get_rect()[i] - (size[i] * (origin[i]+1)) // 2 + (pivot[i] + 1) * container.get_rect()[i+2] // 2 for i in range(2)], *size)
 
 
-class BrownMenuButton(UIMenu, Containable):
+class BrownMenuButton(UIMenu, Containable):  # NOTE: the button is not brown anymore, it is white/yellow
 
     @classmethod
     @lru_cache
-    def make_buttons(cls, size):
+    def make_buttons(cls, size, text, font):
         from engine.game.game import Game
         from engine.utility import load_image
         game = Game.game
@@ -427,10 +455,12 @@ class BrownMenuButton(UIMenu, Containable):
         frame = load_image(game.module_dir, (1, 1), "new_button.png", ("ui", "mainmenu_ui"))
 
         normal_button = make_image_by_frame(frame, size)
+        text_surface = font.render(text, True, (0,)*3)
+        text_rect = text_surface.get_rect(center=normal_button.get_rect().center)
+        normal_button.blit(text_surface, text_rect)
 
-        # hover button
         hover_button = normal_button.copy()
-        pygame.draw.rect(hover_button, "#CCFF77", hover_button.get_rect(), 1)
+        pygame.draw.rect(hover_button, "#DD0000", hover_button.get_rect(), 1)
 
         return (normal_button, hover_button)
 
@@ -450,21 +480,11 @@ class BrownMenuButton(UIMenu, Containable):
         self.refresh()
 
     def refresh(self):
-        images = self.make_buttons(size=tuple(self.rect[2:]))
-        button_normal_image = images[0].copy()
-        button_over_image = images[1].copy()
+        images = self.make_buttons(size=tuple(self.rect[2:]), text=self.text, font=self.font)
 
-        # draw text into the button images
-        text_surface = self.font.render(self.text, True, (0,)*3)
-        text_rect = text_surface.get_rect(center=button_normal_image.get_rect().center)
-        button_normal_image.blit(text_surface, text_rect)
-        button_over_image.blit(text_surface, text_rect)
-
-        self.image = button_normal_image
+        self.image = images[0]
         if self.mouse_over:
-            self.image = button_over_image
-        # self.image = self.button_normal_image
-        # self.rect = self.button_normal_image.get_rect(center=self.pos)
+            self.image = images[1]
 
     def get_relative_position_inside_container(self):
         return {
