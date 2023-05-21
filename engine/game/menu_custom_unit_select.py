@@ -67,7 +67,7 @@ def menu_custom_unit_select(self, mouse_left_up, mouse_left_down, mouse_scroll_u
                                 popup_text += [self.troop_data.troop_list[int(troop)]["Name"] + ": " +
                                                value]
                             break
-                    self.single_text_popup.pop(self.mouse_pos, popup_text)
+                    self.single_text_popup.popup(self.cursor.rect, popup_text)
                     self.main_ui_updater.add(self.single_text_popup)
                     if mouse_left_up:
                         for other_icon in self.unit_icon:
@@ -77,8 +77,8 @@ def menu_custom_unit_select(self, mouse_left_up, mouse_left_down, mouse_scroll_u
                         who_todo = {key: value for key, value in self.leader_data.leader_list.items() if
                                     key == icon.who.troop_id}
                         preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True)
-                        self.unit_stat["model"].add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"],
-                                                                  icon.who.coa)
+                        self.unit_stat["model"].add_preview_model(model=preview_sprite_pool[icon.who.troop_id]["sprite"],
+                                                                  coa=icon.who.coa)
                         self.map_preview.change_mode(1, team_pos_list=self.team_pos,
                                                      camp_pos_list=self.camp_pos,
                                                      selected=icon.who.base_pos)

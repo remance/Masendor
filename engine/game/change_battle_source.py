@@ -2,6 +2,7 @@ import os
 import csv
 from datetime import datetime, timedelta
 from engine.uimenu import uimenu
+from engine.uibattle import uibattle
 from engine import utility
 
 csv_read = utility.csv_read
@@ -55,20 +56,21 @@ def change_battle_source(self):
         icon.kill()
     self.preview_unit.empty()
 
+    self.preview_unit.add(uibattle.TempUnitIcon(self.team_selected, "None", None))
     self.setup_battle_unit(self.preview_unit, preview=self.team_selected)
 
     self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
 
-    for index, icon in enumerate(self.unit_icon):  # select first unit
-        self.unit_selected = icon.who.map_id
-        icon.selection()
-        who_todo = {key: value for key, value in self.leader_data.leader_list.items() if key == icon.who.troop_id}
-        preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True)
-        self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos,
-                                     selected=icon.who.base_pos)
-        self.unit_model_room.add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"],
-                                               icon.who.coa)
-        break
+    # for index, icon in enumerate(self.unit_icon):
+    #     self.unit_selected = icon.who.map_id
+    #     icon.selection()
+    #     who_todo = {key: value for key, value in self.leader_data.leader_list.items() if key == icon.who.troop_id}
+    #     preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True)
+    #     self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos,
+    #                                  selected=icon.who.base_pos)
+    #     self.unit_model_room.add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"],
+    #                                            icon.who.coa)
+    #     break
 
     team_coa = []
     for key2 in self.play_map_data["source"][self.map_source]:
@@ -78,4 +80,4 @@ def change_battle_source(self):
             elif type(self.play_map_data["source"][self.map_source][key2]) == str:
                 self.play_map_data["source"][self.map_source][key2] = [int(item) for item in self.play_map_data["source"][self.map_source][key2].split(",")]
             team_coa.append(self.play_map_data["source"][self.map_source][key2])
-    self.create_team_coa(team_coa, self.main_ui_updater)
+    self.create_team_coa(team_coa)

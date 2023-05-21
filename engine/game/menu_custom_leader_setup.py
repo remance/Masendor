@@ -69,7 +69,7 @@ def menu_custom_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_u
                                                    troop][0]) + " + " +
                                            str(self.play_map_data["unit"][char.who.team][char.who.index]["Troop"][
                                                    troop][1])]
-                        self.single_text_popup.pop(self.mouse_pos, popup_text)
+                        self.single_text_popup.popup(self.cursor.rect, popup_text)
                         self.main_ui_updater.add(self.single_text_popup)
                     if mouse_left_up:
                         for other_icon in self.unit_icon:
@@ -110,7 +110,7 @@ def menu_custom_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_u
                                                    troop][0]) + " + " +
                                            str(self.play_map_data["unit"][subunit.team][subunit.index]["Troop"][
                                                    troop][1])]
-                        self.single_text_popup.pop(self.mouse_pos, popup_text)
+                        self.single_text_popup.popup(self.cursor.rect, popup_text)
                         self.main_ui_updater.add(self.single_text_popup)
 
                         if mouse_right_up:
@@ -234,7 +234,7 @@ def change_to_char_select_menu(self):
     self.unit_select_row = 0
 
     self.main_ui_updater.remove(*self.map_select_button, self.map_option_box, self.source_list_box,
-                                self.observe_mode_tick_box, self.source_list_box.scroll, self.army_stat)
+                                self.observe_mode_tick_box, self.source_list_box.scroll)
     self.menu_button.remove(*self.map_select_button)
 
     for group in (self.source_namegroup,):  # remove no longer related sprites in group
@@ -259,7 +259,8 @@ def change_to_char_select_menu(self):
         self.unit_stat["unit"].add_leader_stat(icon.who, self.leader_data, self.troop_data)
         who_todo = {key: value for key, value in self.leader_data.leader_list.items() if key == icon.who.troop_id}
         preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True)
-        self.unit_stat["model"].add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"], icon.who.coa)
+        self.unit_stat["model"].add_preview_model(model=preview_sprite_pool[icon.who.troop_id]["sprite"],
+                                                  coa=icon.who.coa)
         self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos,
                                      selected=icon.who.base_pos)
         break

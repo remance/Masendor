@@ -25,10 +25,6 @@ def create_preview_map(self):
     self.map_preview.change_map(map_images["base"], map_images["feature"], map_images["height"])
     self.main_ui_updater.add(self.map_preview)
 
-    # Create map title at the top
-    self.map_title.change_name(self.battle_map_list[self.current_map_select])
-    self.main_ui_updater.add(self.map_title)
-
     # Create map description
     self.map_info = self.read_selected_map_lore()
 

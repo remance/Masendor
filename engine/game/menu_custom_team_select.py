@@ -108,9 +108,7 @@ def menu_custom_team_select(self, mouse_left_up, mouse_left_down, mouse_right_up
                         box.change_tick(True)
                     else:
                         box.change_tick(False)
-                    if box.option == "observe":
-                        self.enactment = box.tick
-                    elif box.option == "night":
+                    if box.option == "night":
                         battle_time = "09:00:00"
                         if self.night_battle_tick_box.tick:  # check for night battle
                             battle_time = "21:00:00"

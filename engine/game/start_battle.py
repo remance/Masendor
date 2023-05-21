@@ -4,12 +4,10 @@ import pygame
 
 
 def start_battle(self, player_unit=None):
-    self.error_log.write("\n Map: " + str(self.map_title.name) + ", Source: " +
+    self.error_log.write("\n Map: " + str(self.map_selected) + ", Source: " +
                          str(self.map_source) + ", Character: " + str(player_unit) + "\n")
 
     selected_player_unit = player_unit
-    if self.enactment:
-        selected_player_unit = None
 
     self.battle.prepare_new_game(selected_player_unit)
     self.battle.run_game()

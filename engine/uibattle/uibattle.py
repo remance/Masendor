@@ -908,6 +908,7 @@ class TempUnitIcon(UIBattle):
         UIBattle.__init__(self)
         self.team = team
         self.index = index
+        self.map_id = None
         self.portrait = pygame.Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]), pygame.SRCALPHA)
         if type(image) in (int, float, str):
             self.name = str(image)

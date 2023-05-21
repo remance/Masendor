@@ -61,7 +61,7 @@ def player_aim(self):
 
         shoot_text = str(shoot_ready[0]) + "/" + str(has_ammo[0]) + ", " + str(shoot_ready[1]) + "/" + str(has_ammo[1])
 
-    self.single_text_popup.pop(self.player1_battle_cursor.rect.bottomright, shoot_text)
+    self.single_text_popup.popup(self.player1_battle_cursor.rect, shoot_text)
 
     if self.player1_key_press["Order Menu"] or not self.player_unit.alive:
         # Cancel manual aim with order menu input or player die

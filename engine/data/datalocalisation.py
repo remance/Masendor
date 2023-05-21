@@ -67,7 +67,7 @@ class Localisation:
 
     def load_preset_map_lore(self, language):
         try:
-            with open(os.path.join(self.module_dir, "localisation", self.language, "map", "preset", "info.csv"),
+            with open(os.path.join(self.module_dir, "localisation", language, "map", "preset", "info.csv"),
                       encoding="utf-8", mode="r") as edit_file:  # read campaign info file
                 lore_csv_read(edit_file, self.text[language]["preset_map"]["info"])
             edit_file.close()
@@ -77,7 +77,7 @@ class Localisation:
             for file_campaign in sub1_directories:
                 campaign_id = os.path.split(file_campaign)[-1]
                 try:
-                    with open(os.path.join(self.module_dir, "localisation", self.language, "map", "preset",
+                    with open(os.path.join(self.module_dir, "localisation", language, "map", "preset",
                                            file_campaign, "info.csv"),
                               encoding="utf-8", mode="r") as edit_file:  # read campaign info file
                         self.text[language]["preset_map"][campaign_id] = {"info": {}}
@@ -97,7 +97,7 @@ class Localisation:
                         for data_file in sub2_files:  # load event log
                             if "eventlog" in data_file:
                                 source_id = int(data_file.split(".csv")[0][-1])
-                                with open(os.path.join(self.module_dir, "localisation", self.language, "map", "preset",
+                                with open(os.path.join(self.module_dir, "localisation", language, "map", "preset",
                                                        file_campaign, file_map_name, data_file),
                                           encoding="utf-8", mode="r") as edit_file:  # read source file
                                     self.text[language]["preset_map"][campaign_id][file_map_name][
@@ -108,7 +108,7 @@ class Localisation:
                                 edit_file.close()
 
                             elif "source" in data_file:
-                                with open(os.path.join(self.module_dir, "localisation", self.language, "map", "preset",
+                                with open(os.path.join(self.module_dir, "localisation", language, "map", "preset",
                                                        file_campaign, file_map_name, "source.csv"),
                                           encoding="utf-8", mode="r") as edit_file:  # read source file
                                     lore_csv_read(edit_file,
@@ -154,14 +154,19 @@ class Localisation:
             text_data = alternative_text_data
 
         try:
-            if self.language in text_data:
+            if self.language in text_data:  # in case config use language that not exist in data
                 return self.inner_grab_text(key, self.language, text_data)
             else:
                 return self.inner_grab_text(key, "en", text_data)
         except KeyError:  # no translation found
             if self.debug:
-                print(self.language, key, " not found, use input key instead")
-            return str(key)
+                raise LookupError(self.language, key, "This key list is not found in " + self.language, " data")
+            try:  # key in language not found now search english
+                return self.inner_grab_text(key, "en", text_data)
+            except KeyError:
+                if self.debug:
+                    raise LookupError(self.language, key, "This key list is not found anywhere")
+                return str(key)
 
     def create_lore_data(self, key_type):
         lore_data = self.text["en"][key_type]
@@ -170,9 +175,10 @@ class Localisation:
                 lore_data[key] = self.text[self.language][key_type][key]
         return lore_data
 
-    @staticmethod
-    def inner_grab_text(key, language, text_data):
+    def inner_grab_text(self, key, language, text_data):
         next_level = text_data[language]
         for subkey in key:
+            if subkey not in next_level and self.debug:
+                raise LookupError(self.language, key, "This key list is not found anywhere")
             next_level = next_level[subkey]
         return next_level

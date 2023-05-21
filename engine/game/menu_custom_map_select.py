@@ -6,29 +6,12 @@ list_scroll = utility.list_scroll
 
 
 def menu_custom_map_select(self, mouse_scroll_up, mouse_scroll_down, esc_press):
-    for index, name in enumerate(self.map_namegroup):  # user click on map name, change map
-        if name.rect.event:
-            self.current_map_select = index
-            self.map_selected = self.battle_map_folder[self.current_map_select]
-            self.create_preview_map()
-            break
+    if self.map_back_button.event or esc_press:
 
-    if self.map_list_box.event:  # click on subsection list scroll
-        self.current_map_row = self.map_list_box.scroll.player_input(
-            self.mouse_pos)  # update the scroll and get new current subsection
-        setup_list(self.screen_scale, uimenu.NameList, self.current_map_row, self.preset_map_list,
-                   self.map_namegroup, self.map_list_box,
-                   self.main_ui_updater)
-
-    elif self.map_list_box.event:
-        self.current_map_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down,
-                                           self.map_list_box.scroll, self.map_list_box, self.current_map_row,
-                                           self.preset_map_list, self.map_namegroup, self.main_ui_updater)
-
-    elif self.map_back_button.event or esc_press:
-        self.current_map_row = 0
-
-        self.main_ui_updater.remove(self.map_preview, self.custom_map_list_box, self.team_coa, self.map_title)
+        self.main_ui_updater.remove(*self.map_select_button, self.custom_map_list_box, self.faction_list_box,
+                                    self.custom_map_option_box, self.unit_selector,
+                                    self.unit_selector.scroll, self.weather_custom_select, self.wind_custom_select,
+                                    self.map_option_box, self.night_battle_tick_box)
 
         for group in (self.map_namegroup, self.team_coa):
             for stuff in group:
@@ -37,11 +20,10 @@ def menu_custom_map_select(self, mouse_scroll_up, mouse_scroll_down, esc_press):
 
         self.back_mainmenu()
 
-    elif self.select_button.event:  # select this map, go to team/source selection screen
+    elif self.select_button.event:  # select this map and team, go to unit setup screen
         self.current_source_row = 0
 
-        self.main_ui_updater.remove(*self.map_select_button, self.map_list_box, self.map_list_box.scroll,
-                                    self.map_description)
+        self.main_ui_updater.remove(*self.map_select_button)
         self.menu_button.remove(*self.map_select_button)
 
         for stuff in self.map_namegroup:  # remove map name item
@@ -57,13 +39,12 @@ def menu_custom_map_select(self, mouse_scroll_up, mouse_scroll_down, esc_press):
 
         self.menu_button.add(*self.team_select_button)
 
-        self.create_team_coa([None for _ in range(10)], self.main_ui_updater)
+        self.create_team_coa([None for _ in range(10)])
 
         self.play_map_data["unit"] = {"pos": {}}
 
         self.main_ui_updater.add(*self.team_select_button, self.custom_map_option_box, self.observe_mode_tick_box,
                                  self.night_battle_tick_box, self.map_back_button, self.map_select_button,
                                  self.source_list_box, self.source_list_box.scroll, self.unit_selector,
-                                 self.unit_selector.scroll, self.weather_custom_select, self.wind_custom_select,
-                                 self.map_option_box)
+                                 self.unit_selector.scroll, self.weather_custom_select, self.wind_custom_select)
         self.menu_state = "custom_team_select"

@@ -363,7 +363,7 @@ class Game:
         uimenu.MenuButton.containers = self.menu_button
         uimenu.OptionMenuText.containers = self.menu_icon
         uimenu.SliderMenu.containers = self.menu_slider, self.slider_menu
-        uimenu.TeamCoa.containers = self.team_coa
+        uimenu.TeamCoa.containers = self.team_coa, self.main_ui_updater
 
         menubackground.MenuRotate.containers = self.main_ui_updater
         menubackground.MenuActor.containers = self.main_ui_updater
@@ -519,18 +519,57 @@ class Game:
         self.mainmenu_button = (self.preset_map_button, self.custom_map_button, self.game_edit_button,
                                 self.lore_button, self.option_button, self.quit_button, main_menu_buttons_box)
 
-
         # Battle map select menu button
+
+        class CustomBattleListAdapter:
+            def __init__(self, _list, _self):
+                self.list = _list
+                self.last_index = -1
+                self._self = _self
+
+            def __len__(self):
+                return len(self.list)
+
+            def __getitem__(self, item):
+                return self.list[item]
+
+            def on_select(self, item_index, item_text):
+                _self = self._self
+                self.last_index = item_index
+                _self.current_map_select = item_index
+                _self.map_selected = _self.battle_map_folder[_self.current_map_select]
+                _self.create_preview_map()
+                print("test {0} {1}".format(item_index, item_text))
+
+            def get_highlighted_index(self):
+                return self.last_index
+
+        self.preset_map_list_box = uimenu.ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
+                                                 items=CustomBattleListAdapter(self.battle_map_list, self),
+                                                 parent=self.screen, item_size=20)  # TODO change to preset map list
+
+        self.custom_map_list_box = uimenu.ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
+                                                 items=CustomBattleListAdapter(self.battle_map_list, self),
+                                                 parent=self.screen, item_size=20)
+
+        self.faction_list_box = uimenu.ListUI(pivot=(0.5, -0.9), origin=(-1, -1), size=(.2, .8),
+                                              items=CustomBattleListAdapter(self.battle_map_list, self),
+                                              parent=self.screen, item_size=20)  # ["None"] + self.faction_data.faction_name_list
+
         battle_select_image = load_images(self.module_dir, screen_scale=self.screen_scale,
                                           subfolder=("ui", "mapselect_ui"))
 
-        self.map_title = uimenu.MapTitle((self.screen_rect.width / 2, 0))
+        self.map_preview = uimenu.MapPreview((self.preset_map_list_box.rect.topright[0],
+                                              self.preset_map_list_box.rect.topright[1]))
 
-        self.map_preview = uimenu.MapPreview((self.screen_rect.width / 2, self.map_title.image.get_height()))
-
-        self.unit_selector = uibattle.UnitSelector((self.screen_rect.width / 2, self.screen_rect.height),
+        self.unit_selector = uibattle.UnitSelector((self.screen_rect.width / 1.3, self.screen_rect.height / 2.2),
                                                    battle_select_image["unit_select"], icon_scale=0.4)
         uibattle.UIScroll(self.unit_selector, self.unit_selector.rect.topright)  # scroll bar for unit pick
+
+        model_room_image = load_image(self.module_dir, self.screen_scale, "model_room.png", ("ui", "mapselect_ui"))
+        self.unit_model_room = uimenu.ArmyStat((self.unit_selector.rect.midtop[0] - (model_room_image.get_width() / 2),
+                                                self.unit_selector.rect.midbottom[1]),
+                                               model_room_image)  # troop stat
 
         bottom_height = self.screen_rect.height - image_list[0].get_height()
         self.select_button = uimenu.MenuButton(image_list,
@@ -565,47 +604,12 @@ class Game:
         self.custom_map_option_box = uimenu.MapOptionBox((self.screen_width, 0), battle_select_image["top_box"],
                                                          1)  # ui box for battle option during preparation screen
 
-        class CustomBattleListAdapter:
-
-            def __init__(self, _list, _self):
-                self.list = _list
-                self.last_index = -1
-                self._self = _self
-
-            def __len__(self):
-                return len(self.list)
-
-            def __getitem__(self, item):
-                return self.list[item]
-
-            def on_select(self, item_index, item_text):
-                _self = self._self
-                self.last_index = item_index
-                _self.current_map_select = item_index
-                _self.map_selected = _self.battle_map_folder[_self.current_map_select]
-                _self.create_preview_map()
-                print("test {0} {1}".format(item_index, item_text))
-
-            def get_highlighted_index(self):
-                return self.last_index
-
-        self.custom_map_list_box = uimenu.ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
-                                                 items=CustomBattleListAdapter(self.battle_map_list, self), parent=self.screen, item_size=20)
-
         self.org_chart = uimenu.OrgChart(load_image(self.module_dir, self.screen_scale,
                                                     "org.png", ("ui", "mapselect_ui")),
                                          (self.screen_rect.center[0] * 1.3, self.screen_rect.height / 12))
 
-        self.army_stat = uimenu.ArmyStat(self.map_option_box.rect.bottomleft,
-                                         load_image(self.module_dir, self.screen_scale, "stat.png",
-                                                    ("ui", "mapselect_ui")))  # army stat
         self.unit_stat = {}
         self.camp_icon = []
-
-        model_room_image = load_image(self.module_dir, self.screen_scale, "model_room.png", ("ui", "mapselect_ui"))
-        self.unit_model_room = uimenu.ArmyStat((self.screen_rect.center[0] - (model_room_image.get_width() / 2),
-                                                self.unit_selector.rect.midtop[1] - model_room_image.get_height()),
-                                               model_room_image)  # troop stat
 
         self.observe_mode_tick_box = uimenu.TickBox((self.map_option_box.rect.topleft[0] * 1.05,
                                                      self.map_option_box.rect.topleft[1] * 1.15),
@@ -629,8 +633,6 @@ class Game:
         self.current_map_select = 0
         self.current_source_row = 0
         self.unit_select_row = 0
-
-        self.enactment = False
 
         self.source_name_list = [""]
         self.source_scale_text = [""]

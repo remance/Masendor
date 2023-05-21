@@ -66,7 +66,7 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
                                 popup_text += [self.troop_data.troop_list[troop]["Name"] + ": " +
                                                str(unit_data["Troop"][troop][0]) + " + " +
                                                str(unit_data["Troop"][troop][1])]
-                            self.single_text_popup.pop(self.mouse_pos, popup_text)
+                            self.single_text_popup.popup(self.cursor.rect, popup_text)
                             self.main_ui_updater.add(self.single_text_popup)
                             break
                     if mouse_left_up:
@@ -141,7 +141,7 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
                                                    troop][0]) + " + " +
                                            str(self.play_map_data["unit"][icon.who.team][icon.who.index]["Troop"][
                                                    troop][1])]
-                        self.single_text_popup.pop(self.mouse_pos, popup_text)
+                        self.single_text_popup.popup(self.cursor.rect, popup_text)
                         self.main_ui_updater.add(self.single_text_popup)
                     if mouse_left_up:
                         for other_icon in self.unit_icon:
@@ -265,7 +265,7 @@ def leader_change_team_unit(self):
                         image = self.leader_data.images[unit["Leader ID"]]
                     else:
                         image = self.leader_data.leader_list[unit["Leader ID"]]["Name"].split(" ")[0]
-                    self.preview_unit.add(uibattle.TempUnitIcon(self.screen_scale, this_team.team, image, unit_index))
+                    self.preview_unit.add(uibattle.TempUnitIcon(this_team.team, image, unit_index))
             self.unit_selector.setup_unit_icon(self.unit_icon, [this_unit for this_unit in self.preview_unit if
                                                                 this_unit.index is None or "Temp Leader" not in
                                                                 self.play_map_data["unit"][this_team.team][
@@ -295,7 +295,7 @@ def unit_change_team_unit(self, new_faction=False, old_selected=None, add_plus=T
                     if unit_index in self.play_map_data["unit"]["pos"][this_team.team] and add_plus:
                         # unit placed on map, put in black-green colour in portrait
                         if type(image) is str:
-                            done_subunit = uibattle.TempUnitIcon(self.screen_scale, this_team.team, image, unit_index)
+                            done_subunit = uibattle.TempUnitIcon(this_team.team, image, unit_index)
                             self.preview_unit.add(done_subunit)
                             new_image = pygame.Surface(self.leader_data.images["0"].get_size(), pygame.SRCALPHA)
                             pygame.draw.circle(new_image, (20, 150, 60),
@@ -309,13 +309,13 @@ def unit_change_team_unit(self, new_faction=False, old_selected=None, add_plus=T
                                                (new_image.get_width() / 2, new_image.get_height() / 2),
                                                new_image.get_width() / 2, width=int(10 * self.screen_scale[1]))
                             self.preview_unit.add(
-                                uibattle.TempUnitIcon(self.screen_scale, this_team.team, new_image, unit_index))
+                                uibattle.TempUnitIcon(this_team.team, new_image, unit_index))
                     else:
                         self.preview_unit.add(
-                            uibattle.TempUnitIcon(self.screen_scale, this_team.team, image, unit_index))
+                            uibattle.TempUnitIcon(this_team.team, image, unit_index))
 
                 if add_plus:
-                    self.preview_unit.add(uibattle.TempUnitIcon(self.screen_scale, this_team.team, "+", None))
+                    self.preview_unit.add(uibattle.TempUnitIcon(this_team.team, "+", None))
 
                 unit_list = create_unit_list(self, this_team)
 

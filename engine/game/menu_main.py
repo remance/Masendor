@@ -17,9 +17,6 @@ def menu_main(self, esc_press):
         self.main_ui_updater.remove(*self.start_menu_ui_only)
         self.menu_button.remove(*self.menu_button)
 
-        setup_list(uimenu.NameList, self.current_map_row, self.preset_map_list, self.map_namegroup,
-                   self.map_list_box, self.main_ui_updater)
-
         self.change_battle_source()
 
         for team in self.team_coa:
@@ -30,20 +27,18 @@ def menu_main(self, esc_press):
         self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos)
 
         self.menu_button.add(*self.unit_select_button)
-        self.main_ui_updater.add(*self.unit_select_button, self.map_list_box, self.map_title, self.map_list_box.scroll,
-                                 self.map_option_box,
-                                 self.observe_mode_tick_box, self.source_list_box, self.source_list_box.scroll,
+        self.main_ui_updater.add(*self.unit_select_button, self.preset_map_list_box,
+                                 self.source_list_box, self.source_list_box.scroll,
                                  self.unit_selector,
                                  self.unit_selector.scroll, self.unit_model_room)
 
     elif self.custom_map_button.event:  # custom map list menu
-        print('test')
         self.menu_state = "custom_map"
         self.play_map_type = "custom"
         self.last_select = self.menu_state
-
         self.current_map_select = 0
         self.map_selected = self.battle_map_folder[self.current_map_select]
+        self.custom_map_list_box.items.on_select(self.current_map_select, self.map_selected)  # reset list
 
         self.main_ui_updater.remove(*self.start_menu_ui_only)
         self.menu_button.remove(*self.menu_button)
@@ -51,7 +46,10 @@ def menu_main(self, esc_press):
         self.create_preview_map()
 
         self.menu_button.add(*self.map_select_button)
-        self.main_ui_updater.add(*self.map_select_button, self.custom_map_list_box, self.map_title)
+        self.main_ui_updater.add(*self.map_select_button, self.custom_map_list_box, self.faction_list_box,
+                                 self.custom_map_option_box, self.unit_selector,
+                                 self.unit_selector.scroll, self.weather_custom_select, self.wind_custom_select,
+                                 self.map_option_box, self.night_battle_tick_box)
 
     elif self.game_edit_button.event:  # custom unit/sub-unit editor menu
         self.menu_state = "game_creator"

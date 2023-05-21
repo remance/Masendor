@@ -6,52 +6,42 @@ edit_config = utility.edit_config
 
 
 def menu_option(self, mouse_scroll_up, mouse_scroll_down, esc_press):
-    if self.back_button.event or esc_press:  # back to start_set menu
+    if self.back_button.event_press or esc_press:  # back to start_set menu
         self.main_ui_updater.remove(*self.option_text_list, *self.option_menu_sliders.values(),
                                     *self.value_boxes.values())
         self.back_mainmenu()
 
-    elif self.keybind_button.event:
+    elif self.keybind_button.event_press:
         self.menu_state = "keybind"
 
         if self.joysticks:
             if self.config["USER"]["control player 1"] == "joystick":  # player has joystick when first enter option
                 self.control_switch.change_control("joystick1")
-                self.player1_key_bind = self.config["USER"]["control player 1"]
+                self.player1_key_control = self.config["USER"]["control player 1"]
                 self.player1_battle_cursor.change_input(self.player1_key_bind)
                 for key, value in self.keybind_icon.items():
-                    if self.joysticks:
-                        value.change_key(self.config["USER"]["control player 1"],
-                                         self.player1_key_bind[self.config["USER"]["control player 1"]][key],
-                                         self.joystick_bind_name[
-                                             self.joystick_name[tuple(self.joystick_name.keys())[0]]])
-                    else:
-                        value.change_key(self.config["USER"]["control player 1"],
-                                         self.player1_key_bind[self.config["USER"]["control player 1"]][key],
-                                         None)
+                    value.change_key(self.config["USER"]["control player 1"],
+                                     self.player1_key_bind[self.config["USER"]["control player 1"]][key],
+                                     self.joystick_bind_name[
+                                         self.joystick_name[tuple(self.joystick_name.keys())[0]]])
 
         else:  # no joystick, reset player 1 to keyboard
             self.config["USER"]["control player 1"] = "keyboard"
             edit_config("USER", "control player 1", "keyboard", "configuration.ini", self.config)
             self.control_switch.change_control("keyboard")
-            self.player1_key_bind = self.config["USER"]["control player 1"]
+            self.player1_key_control = self.config["USER"]["control player 1"]
             self.player1_battle_cursor.change_input(self.player1_key_bind)
             for key, value in self.keybind_icon.items():
-                if self.joysticks:
-                    value.change_key(self.config["USER"]["control player 1"],
-                                     self.player1_key_bind[self.config["USER"]["control player 1"]][key],
-                                     self.joystick_bind_name[self.joystick_name[tuple(self.joystick_name.keys())[0]]])
-                else:
-                    value.change_key(self.config["USER"]["control player 1"],
-                                     self.player1_key_bind[self.config["USER"]["control player 1"]][key],
-                                     None)
+                value.change_key(self.config["USER"]["control player 1"],
+                                 self.player1_key_bind[self.config["USER"]["control player 1"]][key],
+                                 None)
 
         self.main_ui_updater.remove(*self.option_text_list, *self.option_menu_sliders.values(),
                                     *self.value_boxes.values(), self.option_menu_button)
         self.main_ui_updater.add(*self.keybind_text.values(), *self.keybind_icon.values(), self.control_switch,
                                  self.back_button, self.default_button)
 
-    elif self.default_button.event:  # revert all setting to original
+    elif self.default_button.event_press:  # revert all setting to original
         for setting in self.config["DEFAULT"]:
             if setting not in ("genre", "language", "player_name", "keybind"):
                 edit_config("USER", setting, self.config["DEFAULT"][setting], "configuration.ini", self.config)
