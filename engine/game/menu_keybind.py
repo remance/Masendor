@@ -10,9 +10,9 @@ def menu_keybind(self, esc_press):
         self.back_button.event = False
 
         self.menu_state = "option"
-        self.main_ui_updater.remove(*self.keybind_text.values(), self.keybind_icon.values(), self.control_switch)
-        self.main_ui_updater.add(*self.menu_button, *self.option_menu_sliders.values(), *self.value_boxes.values())
-        self.main_ui_updater.add(*self.option_text_list)
+        self.remove_ui_updater(*self.keybind_text.values(), self.keybind_icon.values(), self.control_switch)
+        self.add_ui_updater(*self.option_menu_button, *self.option_menu_sliders.values(), *self.value_boxes.values())
+        self.add_ui_updater(*self.option_text_list)
 
     elif self.default_button.event:  # revert all keybind to original
         self.default_button.event = False
@@ -54,7 +54,7 @@ def menu_keybind(self, esc_press):
         else:
             self.input_popup = ("confirm_input", "warning")
             self.input_ui.change_instruction("No joysticks detected")
-            self.main_ui_updater.add(self.inform_ui_popup)
+            self.add_ui_updater(self.inform_ui_popup)
 
     else:
         for key, value in self.keybind_icon.items():
@@ -65,4 +65,4 @@ def menu_keybind(self, esc_press):
                 if type(current_key) == int:
                     current_key = pygame.key.name(current_key)
                 self.input_box.text_start("Current Key: " + current_key)
-                self.main_ui_updater.add(self.inform_ui_popup)
+                self.add_ui_updater(self.inform_ui_popup)

@@ -22,12 +22,12 @@ def change_number(number):
 
 
 class UIBattle(UIMenu):
-    def __init__(self, has_containers=False):
+    def __init__(self, player_interact=True, has_containers=False):
         """
         Parent class for all battle menu user interface
         """
         from engine.battle.battle import Battle
-        UIMenu.__init__(self, has_containers)
+        UIMenu.__init__(self, player_interact=player_interact, has_containers=has_containers)
         self.updater = Battle.battle_ui_updater  # change updater to use battle ui updater instead of main menu one
         self.battle = Battle.battle
 
@@ -493,7 +493,7 @@ class SkillCardIcon(UIBattle, pygame.sprite.Sprite):
 class FPScount(UIBattle):
     def __init__(self):
         self._layer = 12
-        UIBattle.__init__(self)
+        UIBattle.__init__(self, player_interact=False)
         self.image = pygame.Surface((50, 50), pygame.SRCALPHA)
         self.base_image = self.image.copy()
         self.font = pygame.font.Font(self.ui_font["main_button"], 18)
@@ -510,30 +510,13 @@ class FPScount(UIBattle):
         self.image.blit(fps_text, text_rect)
 
 
-class SelectedSquad(UIBattle, pygame.sprite.Sprite):
-    image = None
-
-    def __init__(self, pos, layer=17):
-        """Used for showing selected unit in inpeact ui and unit editor"""
-        self._layer = layer
-        UIBattle.__init__(self)
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        self.pos = pos
-        self.rect = self.image.get_rect(topleft=self.pos)
-
-    def pop(self, pos):
-        """pop out at the selected unit in inspect uo"""
-        self.pos = pos
-        self.rect = self.image.get_rect(topleft=self.pos)
-
-
 class MiniMap(UIBattle):
     colour = None
     selected_colour = None
 
     def __init__(self, pos):
         self._layer = 10
-        UIBattle.__init__(self)
+        UIBattle.__init__(self, player_interact=False)
         self.pos = pos
         self.leader_dot_images = {}
         self.player_dot_images = {}
@@ -774,7 +757,7 @@ class UIScroll(UIBattle):
 class UnitSelector(UIBattle):
     def __init__(self, pos, image, icon_scale=1):
         self._layer = 10
-        UIBattle.__init__(self)
+        UIBattle.__init__(self, player_interact=False)
         self.image = image
         self.pos = pos
         self.rect = self.image.get_rect(midbottom=self.pos)
@@ -927,7 +910,7 @@ class TempUnitIcon(UIBattle):
 class Timer(UIBattle):
     def __init__(self, pos, text_size=20):
         self._layer = 11
-        UIBattle.__init__(self)
+        UIBattle.__init__(self, player_interact=False)
         self.font = pygame.font.Font(self.ui_font["main_button"], text_size)
         self.pos = pos
         self.image = pygame.Surface((100, 30), pygame.SRCALPHA)
@@ -967,7 +950,7 @@ class Timer(UIBattle):
 class TimeUI(UIBattle):
     def __init__(self, image):
         self._layer = 10
-        UIBattle.__init__(self)
+        UIBattle.__init__(self, player_interact=False)
         self.pos = (0, 0)
         self.image = image.copy()
         self.base_image = self.image.copy()
@@ -993,7 +976,7 @@ class TimeUI(UIBattle):
 class BattleScaleUI(UIBattle):
     def __init__(self, image, team_colour):
         self._layer = 10
-        UIBattle.__init__(self)
+        UIBattle.__init__(self, player_interact=False)
         self.team_colour = team_colour
         self.font = pygame.font.Font(self.ui_font["main_button"], 12)
         self.pos = (0, 0)
@@ -1121,7 +1104,7 @@ class EscBox(UIBattle):
 
     def __init__(self):
         self._layer = 24
-        UIBattle.__init__(self)
+        UIBattle.__init__(self, player_interact=False)
         self.pos = (self.screen_size[0] / 2, self.screen_size[1] / 2)
         self.mode = "menu"  # Current menu mode
         self.image = self.images[self.mode]
@@ -1158,7 +1141,7 @@ class EscButton(UIBattle):
 class BattleDone(UIBattle):
     def __init__(self, pos, box_image, result_image):
         self._layer = 18
-        UIBattle.__init__(self)
+        UIBattle.__init__(self, player_interact=False)
         self.box_image = box_image
         self.result_image = result_image
         self.font = pygame.font.Font(self.ui_font["name_font"], int(self.screen_scale[1] * 60))
@@ -1304,7 +1287,7 @@ class SpriteIndicator(pygame.sprite.Sprite):
 class Profiler(cProfile.Profile, UIBattle):
 
     def __init__(self):
-        UIBattle.__init__(self)
+        UIBattle.__init__(self, player_interact=False)
         self.size = (900, 550)
         self.image = pygame.Surface(self.size)
         self.rect = pygame.Rect((0, 0, *self.size))

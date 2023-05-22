@@ -20,7 +20,7 @@ def assign_key(self, key_assign):  # TODO prevent player from input right hat jo
 
         self.input_box.text_start("")
         self.input_popup = None
-        self.main_ui_updater.remove(*self.input_ui_popup, *self.confirm_ui_popup, *self.inform_ui_popup)
+        self.remove_ui_updater(*self.input_ui_popup, *self.confirm_ui_popup, *self.inform_ui_popup)
 
     else:  # key already exist, confirm to swap key between two actions
         old_action = tuple(self.player1_key_bind[
@@ -32,5 +32,5 @@ def assign_key(self, key_assign):  # TODO prevent player from input right hat jo
         self.confirm_ui.change_instruction("Swap key with " + old_action + " ?")
         self.input_popup = (
             "confirm_input", ("replace key", self.input_popup[1], old_action))
-        self.main_ui_updater.remove(*self.input_ui_popup, *self.confirm_ui_popup, *self.inform_ui_popup)
-        self.main_ui_updater.add(self.confirm_ui_popup)
+        self.remove_ui_updater(*self.input_ui_popup, *self.confirm_ui_popup, *self.inform_ui_popup)
+        self.add_ui_updater(self.confirm_ui_popup)

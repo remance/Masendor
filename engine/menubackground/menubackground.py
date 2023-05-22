@@ -7,7 +7,7 @@ from engine.uimenu.uimenu import UIMenu
 
 class MenuRotate(UIMenu):
     def __init__(self, pos, image, rotate_speed):
-        UIMenu.__init__(self, has_containers=True)
+        UIMenu.__init__(self, player_interact=False, has_containers=True)
         self.image = image
         self.image_base = self.image.copy()
         self.pos = pos

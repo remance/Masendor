@@ -47,10 +47,10 @@ def set_done_load():
     return " DONE ({0}s)\n".format(duration)
 
 
-# ---
-
-
 class Battle:
+    from engine.battle.add_skill_icon import add_skill_icon
+    add_skill_icon = add_skill_icon
+
     from engine.battle.add_sound_effect_queue import add_sound_effect_queue
     add_sound_effect_queue = add_sound_effect_queue
 
@@ -90,9 +90,6 @@ class Battle:
     from engine.battle.setup_battle_unit import setup_battle_unit
     setup_battle_unit = setup_battle_unit
 
-    from engine.battle.setup_battle_ui import setup_battle_ui
-    setup_battle_ui = setup_battle_ui
-
     from engine.battle.shake_camera import shake_camera
     shake_camera = shake_camera
 
@@ -116,6 +113,7 @@ class Battle:
 
     battle = None
     battle_ui_updater = None
+    battle_ui_drawer = None
     start_camera_mode = "Follow"
 
     def __init__(self, game):
@@ -136,15 +134,15 @@ class Battle:
         self.player1_key_bind_name = {value: key for key, value in self.player1_key_bind.items()}
         self.player1_key_press = {key: False for key in self.player1_key_bind}
         self.player1_key_hold = {key: False for key in self.player1_key_bind if "Attack" in key or
-                                "Move" in key or "Input" in key}  # key that consider holding
+                                 "Move" in key or "Input" in key}  # key that consider holding
         self.screen_rect = game.screen_rect
         self.main_dir = game.main_dir
         self.data_dri = game.data_dir
         self.module_dir = game.module_dir
         self.screen_scale = game.screen_scale
         self.battle_camera = game.battle_camera
-        self.battle_ui_updater = game.battle_ui_updater
-        Battle.battle_ui_updater = self.battle_ui_updater
+        Battle.battle_ui_updater = game.battle_ui_updater
+        Battle.battle_ui_drawer = game.battle_ui_drawer
 
         self.unit_updater = game.unit_updater
         self.all_units = game.all_units
@@ -274,7 +272,6 @@ class Battle:
         self.game_speed_list = (0, 0.5, 1, 2, 4, 6)  # available game speed
         self.day_time = "Day"
         self.old_day_time = self.day_time
-        self.camp = {}
         self.all_team_unit = {team: pygame.sprite.Group() for team in range(len(self.team_colour))}
         self.all_team_enemy = {team: pygame.sprite.Group() for team in range(len(self.team_colour))}
         self.team_troop_number = []  # list of troop number in each team, minimum at one because percentage can't divide by 0
@@ -305,7 +302,7 @@ class Battle:
         self.player1_battle_cursor = uibattle.BattleCursor(cursor_images, self.player1_key_control)
 
         self.fps_count = uibattle.FPScount()  # FPS number counter
-        self.battle_ui_updater.add(self.fps_count)
+        self.add_ui_updater(self.fps_count)
 
         battle_ui_image = load_images(self.module_dir, screen_scale=self.screen_scale, subfolder=("ui", "battle_ui"))
 
@@ -314,10 +311,10 @@ class Battle:
         self.time_ui = battle_ui_dict["time_ui"]
         self.time_number = battle_ui_dict["time_number"]
         self.battle_scale_ui = battle_ui_dict["battle_scale_ui"]
-        self.battle_ui_updater.add(self.time_ui, self.time_number)
+        self.add_ui_updater(self.time_ui, self.time_number)
         self.wheel_ui = battle_ui_dict["wheel_ui"]
         self.command_ui = battle_ui_dict["command_ui"]
-        self.battle_ui_updater.add(self.command_ui)
+        self.add_ui_updater(self.command_ui)
 
         self.current_weather = weather.Weather(self.time_ui, 4, 0, 0, None)
         weather.Weather.wind_compass_images = {"wind_compass": battle_ui_image["wind_compass"],
@@ -351,7 +348,7 @@ class Battle:
         self.event_log = uibattle.EventLog(battle_ui_image["event_log"], (0, self.screen_rect.height))
         uibattle.UIScroll(self.event_log, self.event_log.rect.topright)  # event log scroll
         unit.Unit.event_log = self.event_log  # Assign event_log to unit class to broadcast event to the log
-        self.battle_ui_updater.add(self.event_log.scroll)
+        self.add_ui_updater(self.event_log.scroll)
 
         # Battle ESC menu
         esc_menu_dict = make_esc_menu(self.module_dir, self.screen_scale, self.master_volume)
@@ -362,7 +359,7 @@ class Battle:
         self.esc_value_boxes = esc_menu_dict["esc_value_boxes"]
 
         self.mini_map = uibattle.MiniMap((self.screen_rect.width, self.screen_rect.height))
-        self.battle_ui_updater.add(self.mini_map)
+        self.add_ui_updater(self.mini_map)
 
         # Create the game camera
         self.camera_mode = "Follow"  # mode of game camera
@@ -513,7 +510,6 @@ class Battle:
         for this_group in self.all_team_enemy.values():
             this_group.empty()
 
-        self.camp = {key: {} for key in self.all_team_unit.keys()}
         self.team_troop_number = [0 for _ in
                                   range(len(self.all_team_unit))]  # reset list of troop number in each team
         self.battle_scale = [1 for _ in self.team_troop_number]
@@ -541,7 +537,14 @@ class Battle:
 
         self.change_battle_state()
 
-        self.setup_battle_ui("add")
+        self.time_ui.change_pos((self.screen_rect.width - self.time_ui.image.get_width(),
+                                 0), self.time_number)
+
+        self.battle_scale_ui.change_pos(self.time_ui.rect.bottomleft)
+
+        if self.player_unit:
+            self.add_ui_updater(self.command_ui)
+            self.add_skill_icon()
 
         self.shown_camera_pos = self.camera_pos
 
@@ -553,7 +556,6 @@ class Battle:
         self.dt = 0  # Realtime used for time calculation
         self.ui_dt = 0  # Realtime used for ui timer
         self.weather_spawn_timer = 0
-        self.click_any = False  # For checking if mouse click on anything, if not close ui related to unit
 
         self.player_input_state = None
         self.previous_player_input_state = None
@@ -608,14 +610,13 @@ class Battle:
             mouse_scroll_up = False
             key_state = pygame.key.get_pressed()
             esc_press = False
-            self.click_any = False
 
             self.player1_key_press = dict.fromkeys(self.player1_key_press, False)
             self.player1_key_hold = dict.fromkeys(self.player1_key_hold, False)
 
             self.true_dt = self.clock.get_time() / 1000  # dt before game_speed
 
-            self.battle_ui_updater.remove(self.single_text_popup)  # remove button text popup every update
+            self.remove_ui_updater(self.single_text_popup)  # remove button text popup every update
 
             if self.player1_key_control == "keyboard" or self.game_state in ("menu", "end") or self.input_popup:
                 if self.player1_key_control == "keyboard":
@@ -656,7 +657,7 @@ class Battle:
                 if event.type == QUIT:  # quit self
                     self.input_popup = ("confirm_input", "quit")
                     self.confirm_ui.change_instruction("Quit Game?")
-                    self.battle_ui_updater.add(*self.confirm_ui_popup)
+                    self.add_ui_updater(*self.confirm_ui_popup)
 
                 # elif event.type == self.SONG_END:  # change music track
                 #     pygame.mixer.music.unload()
@@ -721,7 +722,7 @@ class Battle:
                         if not hasattr(self.game, "profiler"):
                             self.game.setup_profiler()
                         self.game.profiler.switch_show_hide()
-                    elif event.key == K_F9:  # show/hide profiler
+                    elif event.key == K_F9:
                         for this_unit in self.unit_updater:
                             if this_unit.team == 1:
                                 this_unit.health = 0
@@ -768,11 +769,10 @@ class Battle:
                 if esc_press:  # open/close menu
                     if self.game_state == "battle":  # in battle
                         self.game_state = "menu"  # open menu
-                        self.battle_ui_updater.add(self.battle_menu,
-                                                   *self.battle_menu_button)  # add menu and its buttons to drawer
+                        self.add_ui_updater(self.battle_menu, *self.battle_menu_button)  # add menu and its buttons to drawer
                         esc_press = False  # reset esc press, so it not stops esc menu when open
-                        self.battle_ui_updater.add(self.cursor)
-                        self.battle_ui_updater.remove(self.player1_battle_cursor)
+                        self.add_ui_updater(self.cursor)
+                        self.remove_ui_updater(self.player1_battle_cursor)
 
                 if self.game_state == "battle":  # game in battle state
                     if not self.player_input_state:  # register user input during gameplay
@@ -791,7 +791,7 @@ class Battle:
                                 if self.player1_key_press["Main Weapon Attack"]:
                                     self.wheel_ui_process(choice)
                                 elif self.player1_key_press["Order Menu"]:  # Close unit command wheel ui
-                                    self.battle_ui_updater.remove(self.wheel_ui)
+                                    self.remove_ui_updater(self.wheel_ui)
                                     old_player_input_state = self.player_input_state
                                     self.player_input_state = self.previous_player_input_state
                                     self.previous_player_input_state = old_player_input_state
@@ -803,15 +803,15 @@ class Battle:
 
                     # Drama text function
                     if not self.drama_timer and self.drama_text.queue:  # Start timer and draw if there is event queue
-                        self.battle_ui_updater.add(self.drama_text)
+                        self.add_ui_updater(self.drama_text)
                         self.drama_text.process_queue()
                         self.drama_timer = 0.1
                     elif self.drama_timer:
                         self.drama_text.play_animation()
                         self.drama_timer += self.ui_dt
-                        if self.drama_timer > 3:
+                        if self.drama_timer > 5:  # drama popup last for 5 seconds
                             self.drama_timer = 0
-                            self.battle_ui_updater.remove(self.drama_text)
+                            self.remove_ui_updater(self.drama_text)
 
                     if self.dt:  # Part that run when game not pause only
                         # Event log
@@ -931,7 +931,7 @@ class Battle:
 
                         self.battle_done_button.rect = self.battle_done_button.image.get_rect(
                             midtop=self.battle_done_button.pos)
-                        self.battle_ui_updater.add(self.battle_done_box, self.battle_done_button)
+                        self.add_ui_updater(self.battle_done_box, self.battle_done_button)
                     else:
                         if self.battle_done_button.event_press:
                             coa_list = [self.coa_list[self.play_source_data[key][0]] for key in self.play_source_data if "Team Faction"
@@ -958,10 +958,7 @@ class Battle:
                     if command == "end_battle":
                         return
 
-            elif self.input_popup:  # currently, have input text pop up on screen, stop everything else until done
-                for button in self.input_button:
-                    button.update()
-
+            else:  # currently, have input text pop up on screen, stop everything else until done
                 if self.input_ok_button.event:
                     self.input_ok_button.event = False
 
@@ -971,13 +968,13 @@ class Battle:
 
                     self.input_box.text_start("")
                     self.input_popup = None
-                    self.battle_ui_updater.remove(*self.input_ui_popup, *self.confirm_ui_popup)
+                    self.remove_ui_updater(*self.input_ui_popup, *self.confirm_ui_popup)
 
                 elif self.input_cancel_button.event or esc_press:
                     self.input_cancel_button.event = False
                     self.input_box.text_start("")
                     self.input_popup = None
-                    self.battle_ui_updater.remove(*self.input_ui_popup, *self.confirm_ui_popup)
+                    self.remove_ui_updater(*self.input_ui_popup, *self.confirm_ui_popup)
 
                 elif self.input_popup[0] == "text_input":
                     if self.text_delay == 0:
@@ -992,20 +989,28 @@ class Battle:
             self.battle_ui_updater.update()  # update ui
 
             # self.screen.fill((0, 0, 0))
-            self.screen.blit(self.camera.image, (0, 0))  # Draw the battle camera and everything that appear in it
-            self.battle_ui_updater.draw(self.screen)  # Draw the UI
+            self.screen.blit(self.camera.image, (0, 0))  # draw the battle camera and everything that appear in it
+            self.battle_ui_drawer.draw(self.screen)  # draw the UI
             pygame.display.update()  # update self display, draw everything
             self.clock.tick(60)  # clock update even if self pause
 
+    def add_ui_updater(self, *args):
+        self.battle_ui_updater.add(*args)
+        self.battle_ui_drawer.add(*args)
+
+    def remove_ui_updater(self, *args):
+        self.battle_ui_updater.remove(*args)
+        self.battle_ui_drawer.remove(*args)
+
     def exit_battle(self):
-        self.battle_ui_updater.clear(self.screen, self.background)  # remove all sprite
-        self.battle_camera.clear(self.screen, self.background)  # remove all sprite
+        self.battle_ui_updater.clear(self.screen, self.background)  # clear all sprite
+        self.battle_camera.clear(self.screen, self.background)  # clear all sprite
 
-        self.setup_battle_ui("remove")  # remove ui from group
+        self.remove_ui_updater(self.battle_scale_ui)
 
-        self.battle_ui_updater.remove(self.battle_menu, *self.battle_menu_button, *self.esc_slider_menu,
-                                      *self.esc_value_boxes, self.battle_done_box,
-                                      self.battle_done_button)  # remove menu
+        self.remove_ui_updater(self.battle_menu, *self.battle_menu_button, *self.esc_slider_menu,
+                               *self.esc_value_boxes, self.battle_done_box,
+                               self.battle_done_button)  # remove menu
 
         # remove all reference from battle object
         self.player_unit = None
@@ -1033,4 +1038,4 @@ class Battle:
         self.battle_map.clear_image()
 
         self.drama_timer = 0  # reset drama text popup
-        self.battle_ui_updater.remove(self.drama_text)
+        self.remove_ui_updater(self.drama_text)

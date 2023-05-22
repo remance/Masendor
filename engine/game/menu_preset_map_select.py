@@ -7,8 +7,8 @@ list_scroll = utility.list_scroll
 load_image = utility.load_image
 
 
-def menu_preset_map_select(self, mouse_scroll_up, mouse_scroll_down, esc_press):
-    self.main_ui_updater.remove(self.single_text_popup)
+def menu_preset_map_select(self, esc_press):
+    self.remove_ui_updater(self.single_text_popup)
     for this_team in self.team_coa:  # User select any team by clicking on coat of arm
         if this_team.event_press:
             self.team_selected = this_team.team
@@ -30,15 +30,6 @@ def menu_preset_map_select(self, mouse_scroll_up, mouse_scroll_down, esc_press):
 
             return
 
-    for index, name in enumerate(self.map_namegroup):  # user click on map name, change map
-        if name.event_press:
-            self.current_map_select = index
-            self.map_source = 0
-            self.team_selected = 1
-            self.map_selected = self.preset_map_folder[self.current_map_select]
-            self.change_battle_source()
-            return
-
     for index, name in enumerate(self.source_namegroup):  # user select source
         if name.event_press:  # click on source name
             self.map_source = index
@@ -46,27 +37,19 @@ def menu_preset_map_select(self, mouse_scroll_up, mouse_scroll_down, esc_press):
             self.change_battle_source()
             return
 
-    if self.map_list_box.event_press:  # click on subsection list scroll
-        self.current_map_row = self.map_list_box.scroll.player_input(
-            self.cursor.pos)  # update the scroll and get new current subsection
-        setup_list(self.screen_scale, uimenu.NameList, self.current_map_row, self.preset_map_list,
-                   self.map_namegroup, self.map_list_box,
-                   self.main_ui_updater)
-
-    elif self.source_list_box.event_press:  # click on subsection list scroll
+    if self.source_list_box.event_press:  # click on subsection list scroll
         self.current_source_row = self.source_list_box.scroll.player_input(
             self.cursor.pos)  # update the scroll and get new current subsection
-        setup_list(self.screen_scale, uimenu.NameList, self.current_source_row, self.source_name_list,
+        setup_list(uimenu.NameList, self.current_source_row, self.source_name_list,
                    self.source_namegroup, self.source_list_box, self.main_ui_updater)
 
     elif self.map_back_button.event_press or esc_press:
         self.menu_state = self.last_select
-        self.main_ui_updater.remove(*self.menu_button, self.preset_map_list_box,
-                                    self.source_list_box, self.source_list_box.scroll,
-                                    self.map_preview, self.team_coa,
-                                    self.unit_selector, self.unit_selector.scroll,
-                                    tuple(self.unit_stat.values()), self.unit_model_room)
-        self.menu_button.remove(*self.menu_button)
+        self.remove_ui_updater(self.start_button, self.map_back_button, self.preset_map_list_box,
+                               self.source_list_box, self.source_list_box.scroll,
+                               self.map_preview, self.team_coa,
+                               self.unit_selector, self.unit_selector.scroll,
+                               tuple(self.unit_stat.values()), self.unit_model_room)
 
         # Reset selected team
         for team in self.team_coa:
@@ -89,26 +72,21 @@ def menu_preset_map_select(self, mouse_scroll_up, mouse_scroll_down, esc_press):
     elif self.start_button.event_press:  # Start Battle
         self.start_battle(self.unit_selected)
 
-    elif self.map_list_box.mouse_over:
-        self.current_map_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down,
-                                           self.map_list_box.scroll, self.map_list_box, self.current_map_row,
-                                           self.preset_map_list, self.map_namegroup, self.main_ui_updater)
-
     elif self.source_list_box.mouse_over:
-        self.current_source_row = list_scroll(self.screen_scale, mouse_scroll_up, mouse_scroll_down,
+        self.current_source_row = list_scroll(self.screen_scale, self.cursor.scroll_up, self.cursor.scroll_down,
                                               self.source_list_box.scroll, self.source_list_box,
                                               self.current_source_row, self.source_name_list,
                                               self.source_namegroup, self.main_ui_updater)
 
     elif self.unit_selector.mouse_over:
-        if mouse_scroll_up:
+        if self.cursor.scroll_up:
             if self.unit_selector.current_row > 0:
                 self.unit_selector.current_row -= 1
                 self.unit_selector.scroll.change_image(new_row=self.unit_selector.current_row,
                                                        row_size=self.unit_selector.row_size)
                 self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
 
-        elif mouse_scroll_down:
+        elif self.cursor.scroll_down:
             if self.unit_selector.current_row < self.unit_selector.row_size:
                 self.unit_selector.current_row += 1
                 self.unit_selector.scroll.change_image(new_row=self.unit_selector.current_row,
@@ -127,7 +105,7 @@ def menu_preset_map_select(self, mouse_scroll_up, mouse_scroll_down, esc_press):
                 if icon.mouse_over:
                     popup_text = leader_popup_text(self, icon)
                     self.single_text_popup.popup(self.cursor.rect, popup_text)
-                    self.main_ui_updater.add(self.single_text_popup)
+                    self.add_ui_updater(self.single_text_popup)
                     if icon.event_press:
                         for other_icon in self.unit_icon:
                             if other_icon.selected:  # unselected all others first
@@ -154,9 +132,8 @@ def menu_preset_map_select(self, mouse_scroll_up, mouse_scroll_down, esc_press):
 
 
 def change_char(self):
-    self.main_ui_updater.add(self.unit_selector, self.unit_selector.scroll,
-                             tuple(self.unit_stat.values()), *self.unit_select_button)
-    self.menu_button.add(*self.unit_select_button)
+    self.add_ui_updater(self.unit_selector, self.unit_selector.scroll,
+                        tuple(self.unit_stat.values()), *self.unit_select_button)
 
 
 def leader_popup_text(self, icon):

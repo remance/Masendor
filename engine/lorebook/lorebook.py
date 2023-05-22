@@ -419,16 +419,18 @@ class Lorebook(UIMenu):
                                 if self.section == self.troop_section or self.section == self.leader_section:  # troop section
                                     if "Weapon" in key:  # weapon text with quality
                                         if value:
-                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + self.troop_data.equipment_grade_list[value[1]][
-                                                "Name"] \
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + \
+                                                          self.troop_data.equipment_grade_list[value[1]][
+                                                              "Name"] \
                                                           + " " + self.troop_data.weapon_list[value[0]]["Name"]
                                         else:
                                             create_text = self.localisation.grab_text(("ui", key)) + ": Standard Unarmed"
 
                                     elif key == "Armour":  # armour text with quality
                                         if value:
-                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + self.troop_data.equipment_grade_list[value[1]][
-                                                "Name"] \
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + \
+                                                          self.troop_data.equipment_grade_list[value[1]][
+                                                              "Name"] \
                                                           + " " + self.troop_data.armour_list[value[0]]["Name"]
                                         else:
                                             create_text = self.localisation.grab_text(("ui", key)) + ": No Armour"
@@ -438,8 +440,9 @@ class Lorebook(UIMenu):
 
                                     elif key == "Mount":  # mount text with grade
                                         if value:
-                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + self.troop_data.mount_grade_list[value[1]][
-                                                "Name"] + " " + \
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + \
+                                                          self.troop_data.mount_grade_list[value[1]][
+                                                              "Name"] + " " + \
                                                           self.troop_data.mount_list[value[0]]["Name"] + "//" + \
                                                           self.troop_data.mount_armour_list[value[2]]["Name"]
                                         else:
@@ -463,7 +466,8 @@ class Lorebook(UIMenu):
                                             create_text = self.localisation.grab_text(("ui", key)) + ": " + self.troop_data.grade_list[value]["Name"]
 
                                         elif key == "Troop Type":
-                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + self.troop_data.troop_class_list[value]["Name"]
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + self.troop_data.troop_class_list[value][
+                                                "Name"]
 
                                         elif "Skill" in key:  # skill text instead of number
                                             skill_list = ""
@@ -521,7 +525,8 @@ class Lorebook(UIMenu):
                                                 pass
 
                                         elif key == "Formation":
-                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + str(value).replace("[", "").replace("]", ""). \
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + str(value).replace("[", "").replace("]",
+                                                                                                                                                ""). \
                                                 replace("'", "")
 
                                         elif key in ("Size", "True ID", "Sprite ID"):
@@ -708,7 +713,7 @@ class SubsectionName(UIMenu):
 #         newcharacter = pygame.key.name(input)
 #         self.text += newcharacter
 
-def lorebook_process(self, mouse_scroll_up, mouse_scroll_down, esc_press):
+def lorebook_process(self, esc_press):
     """Lorebook user interaction"""
     command = None
     close = False
@@ -757,7 +762,7 @@ def lorebook_process(self, mouse_scroll_up, mouse_scroll_down, esc_press):
                                                         "subsection")  # update subsection name list
                 break  # found clicked subsection, break loop
 
-    if mouse_scroll_up:
+    if self.cursor.scroll_up:
         if self.lore_name_list.mouse_over:  # Scrolling at lore book subsection list
             if self.encyclopedia.current_subsection_row > 0:
                 self.encyclopedia.current_subsection_row -= 1
@@ -769,7 +774,7 @@ def lorebook_process(self, mouse_scroll_up, mouse_scroll_down, esc_press):
                 self.encyclopedia.setup_subsection_list(self.filter_tag_list, self.tag_filter_name, "tag")
                 self.filter_tag_list.scroll.change_image(new_row=self.encyclopedia.current_filter_row)
 
-    elif mouse_scroll_down:
+    elif self.cursor.scroll_down:
         if self.lore_name_list.mouse_over:  # Scrolling at lore book subsection list
             if self.encyclopedia.current_subsection_row + self.encyclopedia.max_row_show - 1 < self.encyclopedia.row_size:
                 self.encyclopedia.current_subsection_row += 1
@@ -784,7 +789,7 @@ def lorebook_process(self, mouse_scroll_up, mouse_scroll_down, esc_press):
 
     if close or esc_press:
         self.portrait = None
-        self.main_ui_updater.remove(self.encyclopedia_stuff)  # remove encyclopedia related sprites
+        self.remove_ui_updater(self.encyclopedia_stuff)  # remove encyclopedia related sprites
         for group in (self.subsection_name, self.tag_filter_name):
             for name in group:  # remove subsection name
                 name.kill()

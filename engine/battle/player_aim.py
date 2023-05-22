@@ -11,7 +11,7 @@ def player_aim(self):
     shoot_ready = [0, 0]
     has_ammo = [0, 0]
     shoot_ready_list = [[], []]
-    self.battle_ui_updater.add(self.single_text_popup)
+    self.add_ui_updater(self.single_text_popup)
     base_target_pos = self.command_cursor_pos
     target_pos = self.base_cursor_pos
 

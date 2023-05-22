@@ -22,7 +22,7 @@ def player_input_process(self):
         self.player_unit.player_input(self.command_cursor_pos)
 
     if self.player1_key_press["Order Menu"]:  # Open unit command wheel ui
-        self.battle_ui_updater.add(self.wheel_ui)
+        self.add_ui_updater(self.wheel_ui)
         self.previous_player_input_state = self.player_input_state
         self.player_input_state = self.wheel_ui
         self.wheel_ui.generate(self.unit_behaviour_wheel["Main"])

@@ -1,8 +1,3 @@
-from engine.battle import setup_battle_ui
-
-add_skill_icon = setup_battle_ui.add_skill_icon
-
-
 def process_trait_skill(self):
     """
     Process unit traits and skills into dict with their stat, occur in swap_weapon
@@ -67,7 +62,7 @@ def process_trait_skill(self):
         self.move_far_skill = ai_skill_condition_list["move_far"]
 
     if self.player_control:  # change skill ui
-        add_skill_icon(self.battle)
+        self.battle.add_skill_icon()
 
 
 def skill_convert(self, skill_list, add_charge_skill=False):

@@ -348,14 +348,13 @@ def circle_points(r):
     return points
 
 
-def make_bar_list(main_dir, screen_scale, list_to_do, menu_image, updater):
+def make_bar_list(main_dir, screen_scale, list_to_do, menu_image):
     """
     Make a drop down bar list option button
     :param main_dir: Game directory folder path
     :param screen_scale: Resolution scale of game
     :param list_to_do: List of text
     :param menu_image: Menu image that will get drop list
-    :param updater: Pygame Updater group
     :return: List of bar button objects
     """
     bar_list = []

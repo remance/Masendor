@@ -26,7 +26,7 @@ def make_image_by_frame(frame: pygame.Surface, final_size):
     assert frame.get_size()[0] == frame.get_size()[1]
     assert frame.get_size()[0] % 2 == 1
 
-    css = corner_side_size = (frame.get_size()[0]-1)//2
+    css = corner_side_size = (frame.get_size()[0] - 1) // 2
 
     image = pygame.Surface(final_size, pygame.SRCALPHA)
 
@@ -39,7 +39,7 @@ def make_image_by_frame(frame: pygame.Surface, final_size):
     # NOTE/TODO: this is only being implemented on left/right because that is
     #            where we had issues on some image. when we have issues on top/bottom
     #            let us then implement it on it then.
-    offsets = o = [0]*4  # left, up, right, down
+    offsets = o = [0] * 4  # left, up, right, down
 
     # left margin
     lm = frame.get_size()[0]
@@ -54,7 +54,7 @@ def make_image_by_frame(frame: pygame.Surface, final_size):
     rm = frame.get_size()[0]
     for y in range(frame.get_size()[1]):
         for x in range(rm):
-            if frame.get_at((frame.get_size()[0]-x-1, y)).a != 0:
+            if frame.get_at((frame.get_size()[0] - x - 1, y)).a != 0:
                 rm = x
                 break
     o[2] = rm
@@ -62,21 +62,21 @@ def make_image_by_frame(frame: pygame.Surface, final_size):
 
     # background color
     bc = background_color = frame.get_at((css, css))
-    pygame.draw.rect(image, bc, (css+o[0], css, fs[0]-css*2+o[2]-o[0], fs[1]-css*2))
+    pygame.draw.rect(image, bc, (css + o[0], css, fs[0] - css * 2 + o[2] - o[0], fs[1] - css * 2))
 
     # corners
-    image.blit(frame, (0+o[0], 0), (0, 0, css, css))
-    image.blit(frame, (0+o[0], fs[1]-css), (0, css+1, css, css*2+1))
-    image.blit(frame, (fs[0]-css+o[2], 0), (css+1, 0, css*2+1, css))
-    image.blit(frame, (fs[0]-css+o[2], fs[1]-css), (css+1, css+1, css*2+1, css*2+1))
+    image.blit(frame, (0 + o[0], 0), (0, 0, css, css))
+    image.blit(frame, (0 + o[0], fs[1] - css), (0, css + 1, css, css * 2 + 1))
+    image.blit(frame, (fs[0] - css + o[2], 0), (css + 1, 0, css * 2 + 1, css))
+    image.blit(frame, (fs[0] - css + o[2], fs[1] - css), (css + 1, css + 1, css * 2 + 1, css * 2 + 1))
 
     # sides
-    for x in range(css+o[0], fs[0]-css+o[2]):
+    for x in range(css + o[0], fs[0] - css + o[2]):
         image.blit(frame, (x, 0), (css, 0, 1, css))
-        image.blit(frame, (x, fs[1]-css), (css, css+1, 1, css*2+1))
-    for y in range(css, fs[1]-css):
-        image.blit(frame, (0+o[0], y), (0, css, css, 1))
-        image.blit(frame, (fs[0]-css+o[2], y), (css+1, css, css*2+1, 1))
+        image.blit(frame, (x, fs[1] - css), (css, css + 1, 1, css * 2 + 1))
+    for y in range(css, fs[1] - css):
+        image.blit(frame, (0 + o[0], y), (0, css, css, 1))
+        image.blit(frame, (fs[0] - css + o[2], y), (css + 1, css, css * 2 + 1, 1))
 
     return image
 
@@ -84,7 +84,7 @@ def make_image_by_frame(frame: pygame.Surface, final_size):
 class UIMenu(pygame.sprite.Sprite):
     containers = None
 
-    def __init__(self, has_containers=False):
+    def __init__(self, player_interact=True, has_containers=False):
         """
         Parent class for all menu user interface
         """
@@ -99,6 +99,7 @@ class UIMenu(pygame.sprite.Sprite):
         self.localisation = Game.localisation
         self.cursor = Game.cursor
         self.updater = Game.main_ui_updater
+        self.player_interact = player_interact
         if has_containers:
             pygame.sprite.Sprite.__init__(self, self.containers)
         else:
@@ -115,12 +116,15 @@ class UIMenu(pygame.sprite.Sprite):
         self.mouse_over = False
         if self.rect.collidepoint(self.cursor.pos):
             self.mouse_over = True
-            if self.cursor.is_select_just_up or self.cursor.is_select_down:
-                self.event = True
-                if self.cursor.is_select_just_up:
-                    self.event_press = True
-                elif self.cursor.is_select_down:
-                    self.event_hold = True
+            if self.player_interact:
+                if self.cursor.is_select_just_up or self.cursor.is_select_down:
+                    self.event = True
+                    if self.cursor.is_select_just_up:
+                        self.event_press = True
+                        self.cursor.is_select_just_up = False  # reset select button to prevent overlap interaction
+                    elif self.cursor.is_select_down:
+                        self.event_hold = True
+                        self.cursor.is_select_just_down = False  # reset select button to prevent overlap interaction
 
 
 class MenuCursor(UIMenu):
@@ -138,6 +142,8 @@ class MenuCursor(UIMenu):
         self.is_mouse_right_just_down = False
         self.is_mouse_right_down = False
         self.is_mouse_right_just_up = False
+        self.scroll_up = False
+        self.scroll_down = False
 
     def update(self):
         """Update cursor position based on mouse position and mouse button click"""
@@ -211,7 +217,7 @@ class SliderMenu(UIMenu):
 class InputUI(UIMenu):
     def __init__(self, image, pos):
         self._layer = 30
-        UIMenu.__init__(self)
+        UIMenu.__init__(self, player_interact=False)
 
         self.pos = pos
         self.image = image
@@ -232,7 +238,7 @@ class InputUI(UIMenu):
 
 class InputBox(UIMenu):
     def __init__(self, pos, width, text="", click_input=False):
-        UIMenu.__init__(self)
+        UIMenu.__init__(self, player_interact=False)
         self._layer = 31
         self.font = pygame.font.Font(self.ui_font["main_button"], int(30 * self.screen_scale[1]))
         self.pos = pos
@@ -328,7 +334,7 @@ class InputBox(UIMenu):
 class TextBox(UIMenu):
     def __init__(self, image, pos, text):
         self._layer = 13
-        UIMenu.__init__(self)
+        UIMenu.__init__(self, player_interact=False)
 
         self.font = pygame.font.Font(self.ui_font["main_button"], int(36 * self.screen_scale[1]))
         self.image = image
@@ -362,7 +368,7 @@ class MenuImageButton(UIMenu):
 class MenuButton(UIMenu):
     def __init__(self, images, pos, key_name="", font_size=28, layer=1):
         self._layer = layer
-        UIMenu.__init__(self, has_containers=True)
+        UIMenu.__init__(self)
         self.pos = pos
         self.button_normal_image = images[0].copy()
         self.button_over_image = images[1].copy()
@@ -397,6 +403,10 @@ class MenuButton(UIMenu):
                 self.event = True
                 self.event_press = True
                 self.image = self.button_click_image
+                self.cursor.is_select_just_up = False  # reset select button to prevent overlap interaction
+            elif self.cursor.is_select_down:
+                self.event_hold = True
+                self.cursor.is_select_just_down = False  # reset select button to prevent overlap interaction
 
     def change_state(self, key_name):
         if key_name != "":
@@ -437,10 +447,14 @@ class Containable:
         origin = rpic["origin"]
 
         if rsic is None:
-            return pygame.rect.Rect(*[container.get_rect()[i] - (self.get_size()[i] * (origin[i]+1)) // 2 + (pivot[i] + 1) * container.get_rect()[i+2] // 2 for i in range(2)], *self.get_size())
+            return pygame.rect.Rect(
+                *[container.get_rect()[i] - (self.get_size()[i] * (origin[i] + 1)) // 2 + (pivot[i] + 1) * container.get_rect()[i + 2] // 2 for i in
+                  range(2)], *self.get_size())
         else:
             size = [container.get_size()[i] * rsic[i] for i in range(2)]
-            return pygame.rect.Rect(*[container.get_rect()[i] - (size[i] * (origin[i]+1)) // 2 + (pivot[i] + 1) * container.get_rect()[i+2] // 2 for i in range(2)], *size)
+            return pygame.rect.Rect(
+                *[container.get_rect()[i] - (size[i] * (origin[i] + 1)) // 2 + (pivot[i] + 1) * container.get_rect()[i + 2] // 2 for i in range(2)],
+                *size)
 
 
 class BrownMenuButton(UIMenu, Containable):  # NOTE: the button is not brown anymore, it is white/yellow
@@ -455,7 +469,7 @@ class BrownMenuButton(UIMenu, Containable):  # NOTE: the button is not brown any
         frame = load_image(game.module_dir, (1, 1), "new_button.png", ("ui", "mainmenu_ui"))
 
         normal_button = make_image_by_frame(frame, size)
-        text_surface = font.render(text, True, (0,)*3)
+        text_surface = font.render(text, True, (0,) * 3)
         text_rect = text_surface.get_rect(center=normal_button.get_rect().center)
         normal_button.blit(text_surface, text_rect)
 
@@ -503,6 +517,7 @@ class BrownMenuButton(UIMenu, Containable):  # NOTE: the button is not brown any
             self.mouse_over = True
             if sju:
                 self.event = True
+                self.cursor.is_select_just_up = False  # reset select button to prevent overlap interaction
 
         self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
         self.refresh()
@@ -518,7 +533,7 @@ class OptionMenuText(UIMenu):
     def __init__(self, pos, text, text_size):
         text_render = utility.text_render
 
-        UIMenu.__init__(self)
+        UIMenu.__init__(self, player_interact=False)
         self.pos = pos
         self.font = pygame.font.Font(self.ui_font["main_button"], text_size)
         self.image = text_render(text, self.font, pygame.Color("black"))
@@ -596,7 +611,7 @@ class KeybindIcon(UIMenu):
 class ValueBox(UIMenu):
     def __init__(self, image, pos, value, text_size):
         self._layer = 26
-        UIMenu.__init__(self)
+        UIMenu.__init__(self, player_interact=False)
         self.font = pygame.font.Font(self.ui_font["main_button"], text_size)
         self.pos = pos
         self.image = image.copy()
@@ -613,34 +628,6 @@ class ValueBox(UIMenu):
         text_surface = self.font.render(str(self.value), True, (0, 0, 0))
         text_rect = text_surface.get_rect(center=self.image.get_rect().center)
         self.image.blit(text_surface, text_rect)
-
-
-class MapTitle(UIMenu):
-    def __init__(self, pos):
-        UIMenu.__init__(self)
-
-        self.font = pygame.font.Font(self.ui_font["name_font"], int(70 * self.screen_scale[1]))
-        self.pos = pos
-        self.name = ""
-        text_surface = self.font.render(str(self.name), True, (0, 0, 0))
-        self.image = pygame.Surface((int(text_surface.get_width() + (20 * self.screen_scale[0])),
-                                     int(text_surface.get_height() + (20 * self.screen_scale[1]))))
-
-    def change_name(self, name):
-        self.name = name
-        text_surface = self.font.render(str(self.name), True, (0, 0, 0))
-        self.image = pygame.Surface((int(text_surface.get_width() + (20 * self.screen_scale[0])),
-                                     int(text_surface.get_height() + (20 * self.screen_scale[1]))))
-        self.image.fill((0, 0, 0))
-
-        white_body = pygame.Surface((text_surface.get_width(), text_surface.get_height()))
-        white_body.fill((239, 228, 176))
-        white_rect = white_body.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
-        self.image.blit(white_body, white_rect)
-
-        text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
-        self.image.blit(text_surface, text_rect)
-        self.rect = self.image.get_rect(midtop=self.pos)
 
 
 class TeamCoa(UIMenu):
@@ -735,7 +722,7 @@ class TeamCoa(UIMenu):
 class ArmyStat(UIMenu):
     def __init__(self, pos, image):
         self._layer = 1
-        UIMenu.__init__(self)
+        UIMenu.__init__(self, player_interact=False)
         self.font_size = int(32 * self.screen_scale[1])
 
         self.leader_font = pygame.font.Font(self.ui_font["text_paragraph"], int(36 * self.screen_scale[1]))
@@ -784,7 +771,7 @@ class ArmyStat(UIMenu):
 class ListBox(UIMenu):
     def __init__(self, pos, image, layer=14):
         self._layer = layer
-        UIMenu.__init__(self)
+        UIMenu.__init__(self, player_interact=False)
         self.image = image.copy()
         self.name_list_start = (self.image.get_width(), self.image.get_height())
         self.pos = pos
@@ -881,7 +868,7 @@ class TickBox(UIMenu):
 class MapOptionBox(UIMenu):
     def __init__(self, pos, image, mode):
         self._layer = 13
-        UIMenu.__init__(self)
+        UIMenu.__init__(self, player_interact=False)
         self.image = image.copy()
 
         self.font = pygame.font.Font(self.ui_font["main_button"], int(20 * self.screen_scale[1]))
@@ -907,7 +894,7 @@ class MapPreview(UIMenu):
     selected_colour = None
 
     def __init__(self, pos):
-        UIMenu.__init__(self)
+        UIMenu.__init__(self, player_interact=False)
 
         self.pos = pos
 
@@ -1006,7 +993,7 @@ class MapPreview(UIMenu):
 
 class OrgChart(UIMenu):
     def __init__(self, image, pos):
-        UIMenu.__init__(self)
+        UIMenu.__init__(self, player_interact=False)
         self.node_rect = {}
         self.image = image
         self.base_image = self.image.copy()
@@ -1082,30 +1069,10 @@ class OrgChart(UIMenu):
                                      self.node_rect[unit].midtop, width=line_width)
 
 
-class SelectedPresetBorder(UIMenu):
-    def __init__(self, size):
-        self._layer = 16
-        UIMenu.__init__(self)
-        self.image = pygame.Surface((size[0] + 1, size[1] + 1), pygame.SRCALPHA)
-        pygame.draw.rect(self.image, (203, 176, 99), (0, 0, self.image.get_width(), self.image.get_height()), 3)
-        self.rect = self.image.get_rect(topleft=(0, 0))
-
-    def change_pos(self, pos):
-        self.rect = self.image.get_rect(topleft=pos)
-
-
-class FilterBox(UIMenu):
-    def __init__(self, pos, image):
-        self._layer = 10
-        UIMenu.__init__(self)
-        self.image = image
-        self.rect = self.image.get_rect(topleft=pos)
-
-
 class TextPopup(UIMenu):
     def __init__(self):
         self._layer = 15
-        UIMenu.__init__(self)
+        UIMenu.__init__(self, player_interact=False)
         self.font_size = int(24 * self.screen_scale[1])
         self.font = pygame.font.Font(self.ui_font["main_button"], self.font_size)
         self.pos = (0, 0)
@@ -1162,7 +1129,7 @@ class TextPopup(UIMenu):
 class BoxUI(UIMenu, Containable, Container):
 
     def __init__(self, size, parent):
-        UIMenu.__init__(self)
+        UIMenu.__init__(self, player_interact=False)
         self.parent = parent
         self.size = size
         self._layer = -1  # NOTE: not sure if this is good since underscore indicate it is a private variable but it works for now
@@ -1218,22 +1185,22 @@ class ListUI(UIMenu, Containable):
 
         self.rect = self.get_adjusted_rect_to_be_inside_container(parent)
 
-        self.scroll_bar_height = self.rect[3]-12
-        self.scroll_box_height = int(self.scroll_bar_height*(item_size/len(self.items)))
-        self.scroll_step_height = (self.scroll_bar_height - self.scroll_box_height)/self.get_number_of_items_outside_visible_list()
+        self.scroll_bar_height = self.rect[3] - 12
+        self.scroll_box_height = int(self.scroll_bar_height * (item_size / len(self.items)))
+        self.scroll_step_height = (self.scroll_bar_height - self.scroll_box_height) / self.get_number_of_items_outside_visible_list()
 
         self.scroll_box = make_image_by_frame(self.scroll_box_frame, (14, self.scroll_box_height))
         self.scroll_box_index = 0
         self.image = self.get_refreshed_image()
 
     def get_number_of_items_outside_visible_list(self):
-        r = len(self.items)-self.item_size
+        r = len(self.items) - self.item_size
         if r <= 0:
             raise Exception("At the moment ListUI can only handle list that have enough items to require a scroll bar")
         return r
 
     def get_item_height(self):
-        return self.scroll_bar_height//self.item_size
+        return self.scroll_bar_height // self.item_size
 
     def get_relative_size_inside_container(self):
         return self.relative_size_inside_container
@@ -1248,15 +1215,16 @@ class ListUI(UIMenu, Containable):
 
         # draw items
         for i in range(self.item_size):
-            item_index = i+self.scroll_box_index
+            item_index = i + self.scroll_box_index
             if item_index == self.selected_index or item_index == self.items.get_highlighted_index():
 
                 color = "#181617"
                 if item_index == self.items.get_highlighted_index():
                     color = "#551617"
 
-                pygame.draw.rect(self.image, color, (6, 6+i*item_height, size[0]-25, item_height))
-            self.image.blit(font.render(self.items[item_index], True, (255 if item_index == self.selected_index else 178,)*3), (20, item_height//2+6-9+i*item_height))
+                pygame.draw.rect(self.image, color, (6, 6 + i * item_height, size[0] - 25, item_height))
+            self.image.blit(font.render(self.items[item_index], True, (255 if item_index == self.selected_index else 178,) * 3),
+                            (20, item_height // 2 + 6 - 9 + i * item_height))
 
         # draw scroll bar
         pygame.draw.rect(self.image, "black", self.get_scroll_bar_rect())
@@ -1265,20 +1233,20 @@ class ListUI(UIMenu, Containable):
         scroll_box_rect = self.get_scroll_box_rect()
         self.image.blit(self.scroll_box, scroll_box_rect)
         if self.in_scroll_box or self.hold_scroll_box is not None:
-            pygame.draw.rect(self.image, (220, 190, 110) if self.hold_scroll_box is not None else (150,)*3, scroll_box_rect, 1)
+            pygame.draw.rect(self.image, (220, 190, 110) if self.hold_scroll_box is not None else (150,) * 3, scroll_box_rect, 1)
 
         return self.image
 
     def get_scroll_bar_rect(self):
-        return pygame.Rect(self.rect[2]-18, 6, 14, self.scroll_bar_height)
+        return pygame.Rect(self.rect[2] - 18, 6, 14, self.scroll_bar_height)
 
     def get_scroll_box_rect(self):
-        return pygame.Rect(self.rect[2]-18, self.scroll_box_index*self.scroll_step_height+6, *self.scroll_box.get_size())
+        return pygame.Rect(self.rect[2] - 18, self.scroll_box_index * self.scroll_step_height + 6, *self.scroll_box.get_size())
 
     def update(self):
 
         mouse_pos = self.cursor.pos
-        relative_mouse_pos = [mouse_pos[i]-self.rect[i] for i in range(2)]
+        relative_mouse_pos = [mouse_pos[i] - self.rect[i] for i in range(2)]
 
         size = tuple(map(int, self.rect[2:]))
         self.mouse_over = False
@@ -1304,7 +1272,8 @@ class ListUI(UIMenu, Containable):
             self.hold_scroll_box = relative_mouse_pos[1]
             self.scroll_box_index_at_hold = self.scroll_box_index
         if self.hold_scroll_box:
-            self.scroll_box_index = self.scroll_box_index_at_hold + int((relative_mouse_pos[1] - self.hold_scroll_box + self.scroll_step_height/2)/self.scroll_step_height)
+            self.scroll_box_index = self.scroll_box_index_at_hold + int(
+                (relative_mouse_pos[1] - self.hold_scroll_box + self.scroll_step_height / 2) / self.scroll_step_height)
             noiovl = self.get_number_of_items_outside_visible_list()
             if self.scroll_box_index > noiovl:
                 self.scroll_box_index = noiovl
@@ -1314,9 +1283,9 @@ class ListUI(UIMenu, Containable):
         # item handler
         if in_list and not self.hold_scroll_box:
             item_height = self.get_item_height()
-            relative_index = ((relative_mouse_pos[1]-6)//item_height)
+            relative_index = ((relative_mouse_pos[1] - 6) // item_height)
             if relative_index >= 0 and relative_index < self.item_size:
-                self.selected_index = relative_index+self.scroll_box_index
+                self.selected_index = relative_index + self.scroll_box_index
         if in_list and mljd and self.selected_index is not None:
             self.items.on_select(self.selected_index, self.items[self.selected_index])
 

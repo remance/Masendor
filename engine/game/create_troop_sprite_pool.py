@@ -14,7 +14,6 @@ from engine.data.datacacher import save_pickle_with_surfaces
 md5_dir = utility.md5_dir
 crop_sprite = utility.crop_sprite
 
-
 default_sprite_size = create_troop_sprite.default_sprite_size
 create_troop_sprite = create_troop_sprite.create_troop_sprite
 
@@ -155,7 +154,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
         skill_list = tuple(set([item for item in skill_list if item != "Action"]))
 
         unit_weapon_list = [(weapon_list[primary_main_weapon]["Name"],
-                                weapon_list[primary_sub_weapon]["Name"])]
+                             weapon_list[primary_sub_weapon]["Name"])]
 
         weapon_common_action = [(weapon_list[primary_main_weapon]["Common Action"],
                                  weapon_list[primary_sub_weapon]["Common Action"])]
@@ -164,8 +163,8 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
 
         if (primary_main_weapon, primary_sub_weapon) != (secondary_main_weapon, secondary_sub_weapon):
             unit_weapon_list = [unit_weapon_list[0],
-                                   (weapon_list[secondary_main_weapon]["Name"],
-                                    weapon_list[secondary_sub_weapon]["Name"])]
+                                (weapon_list[secondary_main_weapon]["Name"],
+                                 weapon_list[secondary_sub_weapon]["Name"])]
             weapon_common_action = [weapon_common_action[0],
                                     (weapon_list[secondary_main_weapon]["Common Action"],
                                      weapon_list[secondary_sub_weapon]["Common Action"])]
@@ -261,10 +260,10 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                     sprite_pic = pygame.transform.flip(sprite_pic, True, False)
 
             animation_sprite_pool[unit_id] = {"sprite": sprite_pic,
-                                                 "animation_property": sprite_dict["animation_property"],
-                                                 "frame_property": sprite_dict[
-                                                     "frame_property"],
-                                                 "center_offset": center_offset}  # preview pool use unit_id only
+                                              "animation_property": sprite_dict["animation_property"],
+                                              "frame_property": sprite_dict[
+                                                  "frame_property"],
+                                              "center_offset": center_offset}  # preview pool use unit_id only
 
         else:
             cache_file_path = os.path.join(self.main_dir, "cache", self.module_folder, sprite_id + "_sprite")

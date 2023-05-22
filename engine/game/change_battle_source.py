@@ -78,6 +78,7 @@ def change_battle_source(self):
             if type(self.play_map_data["source"][self.map_source][key2]) == int:
                 self.play_map_data["source"][self.map_source][key2] = [self.play_map_data["source"][self.map_source][key2]]
             elif type(self.play_map_data["source"][self.map_source][key2]) == str:
-                self.play_map_data["source"][self.map_source][key2] = [int(item) for item in self.play_map_data["source"][self.map_source][key2].split(",")]
+                self.play_map_data["source"][self.map_source][key2] = [int(item) for item in
+                                                                       self.play_map_data["source"][self.map_source][key2].split(",")]
             team_coa.append(self.play_map_data["source"][self.map_source][key2])
     self.create_team_coa(team_coa)

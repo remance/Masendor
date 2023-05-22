@@ -245,9 +245,9 @@ def change_to_char_select_menu(self):
     self.main_ui_updater.remove(self.team_coa)
 
     self.unit_stat["model"] = uimenu.ArmyStat(self.screen_scale,
-                                            (self.screen_rect.center[0] * 1.3, self.screen_rect.height / 8),
-                                            load_image(self.data_dir, self.screen_scale,
-                                                       "unit_stat.png", ("ui", "mapselect_ui")))  # troop stat
+                                              (self.screen_rect.center[0] * 1.3, self.screen_rect.height / 8),
+                                              load_image(self.data_dir, self.screen_scale,
+                                                         "unit_stat.png", ("ui", "mapselect_ui")))  # troop stat
 
     self.setup_battle_unit(self.preview_unit, preview=self.team_selected)
 

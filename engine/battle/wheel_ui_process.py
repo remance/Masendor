@@ -55,7 +55,7 @@ def wheel_ui_process(self, choice):
                 self.player_unit.change_formation("group", formation=choice)
 
             elif choice in self.unit_behaviour_wheel["Range Attack"]:
-                self.battle_ui_updater.remove(self.wheel_ui)
+                self.remove_ui_updater(self.wheel_ui)
                 self.previous_player_input_state = self.player_input_state
                 self.player_input_state = None
                 self.camera_mode = "Free"
@@ -64,7 +64,7 @@ def wheel_ui_process(self, choice):
                     shoot_line.delete()  # reset shoot guide lines
                 self.player1_battle_cursor.change_image("aim")
                 self.single_text_popup.popup(self.player1_battle_cursor.rect, "")
-                self.battle_ui_updater.add(self.single_text_popup)
+                self.add_ui_updater(self.single_text_popup)
                 if choice == "Leader Aim":
                     self.player_input_state = "leader aim"
                     AimTarget(self.player_unit)

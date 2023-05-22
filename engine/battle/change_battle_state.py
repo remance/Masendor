@@ -14,7 +14,7 @@ def change_battle_state(self):
         # self.command_ui.rect = self.command_ui.image.get_rect(
         #     center=(self.command_ui.image.get_width() / 2, self.command_ui.image.get_height() / 2))  # change leader ui position back
 
-        self.battle_ui_updater.add(self.event_log, self.event_log.scroll)
+        self.add_ui_updater(self.event_log, self.event_log.scroll)
 
         self.game_speed = 1
 
