@@ -288,8 +288,8 @@ class Game:
         uibattle.MiniMap.selected_colour = self.selected_team_colour
         uibattle.UnitIcon.colour = self.team_colour
         effect.Effect.screen_scale = self.screen_scale
-        battlemap.BeautifulMap.team_colour = self.team_colour
-        battlemap.BeautifulMap.selected_team_colour = self.selected_team_colour
+        battlemap.FinalMap.team_colour = self.team_colour
+        battlemap.FinalMap.selected_team_colour = self.selected_team_colour
 
         self.clock = pygame.time.Clock()  # set get clock
 
@@ -410,18 +410,6 @@ class Game:
 
         self.battle_map_data = datamap.BattleMapData()
 
-        battlemap.BaseMap.terrain_list = self.battle_map_data.terrain_list
-        battlemap.BaseMap.terrain_colour = self.battle_map_data.terrain_colour
-        battlemap.FeatureMap.feature_list = self.battle_map_data.feature_list
-        battlemap.FeatureMap.feature_colour = self.battle_map_data.feature_colour
-        battlemap.FeatureMap.feature_mod = self.battle_map_data.feature_mod
-
-        battlemap.BeautifulMap.battle_map_colour = self.battle_map_data.battle_map_colour
-        battlemap.BeautifulMap.texture_images = self.battle_map_data.map_texture
-        battlemap.BeautifulMap.load_texture_list = self.battle_map_data.texture_folder
-        battlemap.BeautifulMap.empty_texture = self.battle_map_data.empty_image
-        battlemap.BeautifulMap.camp_texture = self.battle_map_data.camp_image
-
         uimenu.MapPreview.terrain_colour = self.battle_map_data.terrain_colour
         uimenu.MapPreview.feature_colour = self.battle_map_data.feature_colour
         uimenu.MapPreview.battle_map_colour = self.battle_map_data.battle_map_colour
@@ -485,10 +473,10 @@ class Game:
         self.sound_effect_pool = self.create_sound_effect_pool()
 
         # Battle map object
-        self.battle_base_map = battlemap.BaseMap(self.main_dir)  # create base terrain map
-        self.battle_feature_map = battlemap.FeatureMap(self.main_dir)  # create terrain feature map
+        self.battle_base_map = battlemap.BaseMap()  # create base terrain map
+        self.battle_feature_map = battlemap.FeatureMap()  # create terrain feature map
         self.battle_height_map = battlemap.HeightMap()  # create height map
-        self.battle_map = battlemap.BeautifulMap(self.main_dir, self.screen_scale, self.battle_height_map)
+        self.battle_map = battlemap.FinalMap(self.battle_height_map)
         self.battle_camera.add(self.battle_map)
 
         effect.Effect.height_map = self.battle_height_map

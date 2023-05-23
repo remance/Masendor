@@ -12,8 +12,6 @@ import pygame
 import pygame.freetype
 from PIL import Image, ImageOps
 
-from engine.uimenu import uimenu
-
 accept_image_types = ("png", "jpg", "jpeg", "svg", "gif", "bmp")
 direction_angle = {"r_side": radians(90), "l_side": radians(270), "back": radians(180),
                    "front": radians(0), "r_sidedown": radians(135), "l_sidedown": radians(225),
@@ -357,6 +355,7 @@ def make_bar_list(main_dir, screen_scale, list_to_do, menu_image):
     :param menu_image: Menu image that will get drop list
     :return: List of bar button objects
     """
+    from engine.uimenu import uimenu
     bar_list = []
     image = load_image(main_dir, screen_scale, "bar_normal.jpg", ("ui", "mainmenu_ui"))
     image2 = load_image(main_dir, screen_scale, "bar_mouse.jpg", ("ui", "mainmenu_ui"))
@@ -587,6 +586,7 @@ def list_scroll(screen_scale, mouse_scroll_up, mouse_scroll_down, scroll, box, c
     :param layer: Layer of the scroll
     :return: New current_row after scrolling
     """
+    from engine.uimenu import uimenu
     if mouse_scroll_up:
         current_row -= 1
         if current_row < 0:
@@ -615,6 +615,7 @@ def popup_list_open(self, new_rect, new_list, ui_type, rect_pos, updater):
     :param rect_pos: Keyword argument for rect position of get_rect
     :param updater: Updater group
     """
+    from engine.uimenu import uimenu
     self.current_popup_row = 0
 
     if rect_pos == "top":

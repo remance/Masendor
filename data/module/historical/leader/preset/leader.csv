@@ -40,7 +40,7 @@
 "NOR-38","Guy of la Val III",1,,,,,,,,,,,,,,,,,,,,,,,1,
 "NOR-39","Rogier of Montgomeri",1,,,,,,,,,,,,,,,,,,,,,,,1,
 "NOR-40","Roger Bigod",1,,,,,,,,,,,,,,,,,,,,,,,1,
-"NOR-41","Richard of Courcy",1,,,,,,,,,,,,,,,,,,,,,,,1,
+"NOR-41","Richard of Courcy",1,58,61,68,70,63,71,60,4,3,6,4,,,,,,,,,,,,1,
 "NOR-42","William of Aubigny",1,,,,,,,,,,,,,,,,,,,,,,,1,
 "NOR-43","William of Vieuxpont",1,,,,,,,,,,,,,,,,,,,,,,,1,
 "NOR-44","Raoul II of Taisson",1,,,,,,,,,,,,,,,,,,,,,,,1,
@@ -48,8 +48,8 @@
 "NOR-46","Hugh III of Gournay",1,,,,,,,,,,,,,,,,,,,,,,,1,
 "NOR-47","William I of Moyon",1,,,,,,,,,,,,,,,,,,,,,,,1,
 "NOR-48","Eudo al Chapel",1,,,,,,,,,,,,,,,,,,,,,,,1,
-"NOR-49","Fulk of Aulnay",1,,,,,,,,,,,,,,,,,,,,,,,1,
-"NOR-50","Robert I FitzErneis",1,,,,,,,,,,,,,,,,,,,,,,,1,
+"NOR-49","Fulk of Aulney",1,53,47,59,54,48,45,40,2,2,4,4,,,,,,,,,,,,1,
+"NOR-50","Robert I FitzErneis",1,55,43,41,43,50,53,46,4,3,4,4,,,,,,,,,,,,1,
 "NOR-51","Richard of Neville",1,,,,,,,,,,,,,,,,,,,,,,,1,
 "NOR-52","Niel II of Saint-Sauveur",1,,,,,,,,,,,,,,,,,,,,,,,1,
 "NOR-53","Ralph FitzGerald",1,,,,,,,,,,,,,,,,,,,,,,,1,
@@ -76,13 +76,14 @@
 "NOR-74","Robert of Say",1,57,60,58,66,65,62,64,4,5,5,4,,,,,,,,,,,,,
 "NOR-75","Hugh of Port",1,54,53,50,65,72,75,72,6,3,6,4,,,,,,,,,,,,1,
 "NOR-76","William Paverel",1,52,58,42,68,64,72,70,,,,,,,,,,,,,,,,1,
+"NOR-77","Drogo of Brevere",,,,,,,,,,,,,,,,,,,,,,,,,
 "SAX-1","Harold Godwinson",1,77,68,70,73,78,80,85,8,2,6,7,"2,5","39,4",,,"5,5",,21,"L26,L49",,"Line,Square","Saxon Leader",2,"Leader"
 "SAX-2","Gyrth Godwinson",1,70,60,53,54,70,67,74,6,4,5,5,"2,5","39,4",,,"5,5",,21,"L3",,"Line","Saxon Leader",2,"Leader"
 "SAX-3","Leofwine Godwinson",1,72,51,60,58,68,64,73,6,4,5,5,"2,5","39,4",,,"5,5",,21,"L3",,"Line","Saxon Leader",2,"Leader"
 "SAX-4","Godric of Berkshire",1,63,58,63,42,49,54,60,4,4,4,4,"2,4",,,,"5,3",,21,"L19",,"Line","Saxon Leader",2,"Warrior"
 "SAX-5","Thurkill",1,65,55,68,48,42,51,44,4,3,1,4,"2,4",,,,"5,3",,21,"L29",,"Line","Saxon Leader",2,"Warrior"
 "SAX-6","Edric the Deacon",1,59,60,62,58,60,58,48,4,3,2,4,"2,4",,,,"5,3",,21,"L46",,"Line","Saxon Leader",2,"Warrior"
-"SAX-7","Breme",1,67,41,40,51,48,51,48,4,4,1,4,"2,4",,,,"5,3",,21,"L19",,"Line","Saxon Leader",2,"Warrior"
+"SAX-7","Breme",1,67,41,40,51,48,51,62,4,4,1,4,"2,4",,,,"5,3",,21,"L19",,"Line","Saxon Leader",2,"Warrior"
 "SAX-8","Aelfwig of New Minster",1,61,58,55,60,75,71,55,5,1,1,5,"8,4",,,,"5,3",,19,"L6",,"Line","Christian Monk Leader",2,"Supporter"
 "SAX-9","Aelfric",1,58,46,48,52,60,62,50,5,4,1,4,"2,4",,,,"5,3",,21,"L17",,"Line","Saxon Leader",2,"Leader"
 "SAX-10","Son of Helloc",1,70,68,69,71,51,48,41,5,3,3,3,"2,4",,,,"5,3",,19,"L18",,"Line","Saxon Leader",2,"Warrior"

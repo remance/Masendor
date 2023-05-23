@@ -4,27 +4,27 @@ import os
 
 from pathlib import Path
 
-import pygame
 
 from engine.weather import weather
-from engine import utility
+from engine.utility import stat_convert, load_images, csv_read, filename_convert_readable as fcv
 
 from engine.data.datastat import GameData
 
-stat_convert = utility.stat_convert
-load_image = utility.load_image
-load_images = utility.load_images
-csv_read = utility.csv_read
-fcv = utility.filename_convert_readable
-
 
 class BattleMapData(GameData):
+    terrain_list = None
+    terrain_colour = None
+    feature_colour = None
+    feature_list = None
+    feature_mod = None
+    battle_map_colour = None
+
     def __init__(self):
         """
         For keeping all data related to battle map.
         """
         GameData.__init__(self)
-        self.terrain_colour = {}
+        BattleMapData.terrain_colour = {}
         with open(os.path.join(self.module_dir, "map", "terrain.csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
@@ -35,11 +35,11 @@ class BattleMapData(GameData):
                             row[n] = int(i)
                         elif "," in i:
                             row[n] = ast.literal_eval(i)
-                    self.terrain_colour[row[0]] = row[1:]
-        self.terrain_list = tuple(self.terrain_colour.keys())
-        self.terrain_colour = tuple([value[0] for value in self.terrain_colour.values()])
+                    BattleMapData.terrain_colour[row[0]] = row[1:]
+        BattleMapData.terrain_list = tuple(BattleMapData.terrain_colour.keys())
+        BattleMapData.terrain_colour = tuple([value[0] for value in BattleMapData.terrain_colour.values()])
 
-        self.feature_colour = {}
+        BattleMapData.feature_colour = {}
         with open(os.path.join(self.module_dir, "map", "feature.csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
@@ -50,13 +50,13 @@ class BattleMapData(GameData):
                             row[n] = int(i)
                         elif "," in i:
                             row[n] = ast.literal_eval(i)
-                    self.feature_colour[row[0]] = row[1:]
+                    BattleMapData.feature_colour[row[0]] = row[1:]
 
-        self.feature_list = tuple(self.feature_colour.keys())
-        self.feature_colour = tuple([value[0] for value in self.feature_colour.values()])
+        BattleMapData.feature_list = tuple(BattleMapData.feature_colour.keys())
+        BattleMapData.feature_colour = tuple([value[0] for value in BattleMapData.feature_colour.values()])
 
         # read terrain feature mode
-        self.feature_mod = {}
+        BattleMapData.feature_mod = {}
         with open(os.path.join(self.module_dir, "map", "terrain_effect.csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
@@ -73,33 +73,17 @@ class BattleMapData(GameData):
                 for n, i in enumerate(row):
                     row = stat_convert(row, n, i, mod_column=mod_column, tuple_column=tuple_column,
                                        int_column=int_column)
-                self.feature_mod[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
+                BattleMapData.feature_mod[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
 
                 # Add twilight temperature
-                self.feature_mod[row[0]]["Twilight Temperature"] = \
-                    int((self.feature_mod[row[0]]["Day Temperature"] +
-                         self.feature_mod[row[0]]["Night Temperature"]) / 2)
+                BattleMapData.feature_mod[row[0]]["Twilight Temperature"] = \
+                    int((BattleMapData.feature_mod[row[0]]["Day Temperature"] +
+                         BattleMapData.feature_mod[row[0]]["Night Temperature"]) / 2)
         edit_file.close()
 
         self.feature_mod_lore = self.localisation.create_lore_data("terrain_effect")
 
-        self.empty_image = pygame.Surface((0, 0))  # empty texture image
-        self.camp_image = load_image(self.module_dir, (1, 1), "camp.png",
-                                     ("map", "texture"))  # war camp texture image
-
-        self.map_texture = []
-        self.texture_folder = [item["Name"] for item in self.feature_mod.values() if
-                               item["Name"] != ""]
-
-        for index, folder in enumerate(self.texture_folder):
-            images = load_images(self.module_dir, subfolder=("map", "texture", fcv(folder, revert=True)),
-                                 key_file_name_readable=True)
-            self.map_texture.append(list(images.values()))
-
-        self.day_effect_images = load_images(self.module_dir, screen_scale=self.screen_scale,
-                                             subfolder=("map", "day"), key_file_name_readable=True)
-
-        self.battle_map_colour = {}
+        BattleMapData.battle_map_colour = {}
         with open(os.path.join(self.module_dir, "map", "map_colour.csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
@@ -110,7 +94,7 @@ class BattleMapData(GameData):
                             row[n] = int(i)
                         elif "," in i:
                             row[n] = ast.literal_eval(i)
-                    self.battle_map_colour[row[0]] = row[1:]
+                    BattleMapData.battle_map_colour[row[0]] = row[1:]
 
         self.weather_data = {}
         with open(os.path.join(self.module_dir, "map", "weather", "weather.csv"),

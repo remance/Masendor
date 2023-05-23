@@ -190,9 +190,6 @@ class Battle:
         self.map_corner = (1000, 1000)
         self.max_camera = (1000, 1000)
 
-        self.map_move_array = []  # array for pathfinding
-        self.map_def_array = []  # array for defence calculation
-
         self.troop_ai_logic_queue = []
         self.pathfinding_thread = ai.PathfindingAI(self)
 
@@ -250,7 +247,7 @@ class Battle:
         self.weather_data = self.battle_map_data.weather_data
         self.weather_matter_images = self.battle_map_data.weather_matter_images
         self.weather_effect_images = self.battle_map_data.weather_effect_images
-        self.day_effect_images = self.battle_map_data.day_effect_images
+        self.day_effect_images = self.battle_map.day_effect_images
         self.weather_list = self.battle_map_data.weather_list
         self.feature_mod = self.battle_map_data.feature_mod
 
@@ -1016,8 +1013,6 @@ class Battle:
         self.player_unit = None
 
         self.active_unit_list = []
-        self.map_move_array = []
-        self.map_def_array = []
 
         self.troop_ai_logic_queue = []
 

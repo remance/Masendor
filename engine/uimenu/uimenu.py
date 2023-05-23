@@ -4,7 +4,9 @@ import pygame.transform
 import pyperclip
 from functools import lru_cache
 
-from engine import utility
+from engine.battlemap.battlemap import BattleMap
+
+from engine.utility import keyboard_mouse_press_check, text_render, minimise_number_text, make_long_text
 
 
 def make_image_by_frame(frame: pygame.Surface, final_size):
@@ -147,7 +149,6 @@ class MenuCursor(UIMenu):
 
     def update(self):
         """Update cursor position based on mouse position and mouse button click"""
-        keyboard_mouse_press_check = utility.keyboard_mouse_press_check  # TODO change later when no more use old listui
         self.pos = pygame.mouse.get_pos()
         self.rect.topleft = self.pos
         self.is_select_just_down, self.is_select_down, self.is_select_just_up = keyboard_mouse_press_check(
@@ -531,8 +532,6 @@ class BrownMenuButton(UIMenu, Containable):  # NOTE: the button is not brown any
 
 class OptionMenuText(UIMenu):
     def __init__(self, pos, text, text_size):
-        text_render = utility.text_render
-
         UIMenu.__init__(self, player_interact=False)
         self.pos = pos
         self.font = pygame.font.Font(self.ui_font["main_button"], text_size)
@@ -678,7 +677,6 @@ class TeamCoa(UIMenu):
 
     def change_coa(self, coa_images, name):
         self.coa_images = coa_images
-        text_render = utility.text_render
 
         # Only main coat of arms for not selected image
         self.not_selected_image = self.not_selected_image_base.copy()
@@ -750,7 +748,7 @@ class ArmyStat(UIMenu):
 
         for index, text in enumerate(troop_number):
             text = str(text).replace("[", "").replace("]", "").split(",")
-            text = str([utility.minimise_number_text(item) for item in text]).replace("'", "").replace("[", "").replace(
+            text = str([minimise_number_text(item) for item in text]).replace("'", "").replace("[", "").replace(
                 "]", "").replace(",", " +")
             text_surface = self.font.render(text, True, (0, 0, 0))
             text_rect = text_surface.get_rect(midleft=self.type_number_pos[index])
@@ -886,20 +884,15 @@ class MapOptionBox(UIMenu):
         self.rect = self.image.get_rect(topright=pos)
 
 
-class MapPreview(UIMenu):
-    terrain_colour = None
-    feature_colour = None
-    battle_map_colour = None
-    colour = None
-    selected_colour = None
-
+class MapPreview(UIMenu, BattleMap):
     def __init__(self, pos):
         UIMenu.__init__(self, player_interact=False)
+        BattleMap.__init__(self)
 
         self.pos = pos
 
         self.image = pygame.Surface((450 * self.screen_scale[0], 450 * self.screen_scale[1]))
-        self.leader_dot = {team: {True: None, False: None} for team in self.colour.keys()}
+        self.leader_dot = {team: {True: None, False: None} for team in self.team_colour.keys()}
 
         self.map_scale_width = 1
         self.map_scale_height = 1
@@ -909,14 +902,14 @@ class MapPreview(UIMenu):
         leader_colour_dot = pygame.Surface((8 * self.screen_scale[0], 8 * self.screen_scale[1]))
         rect = leader_dot.get_rect(topleft=(2 * self.screen_scale[0], 2 * self.screen_scale[1]))
 
-        for team, colour in self.colour.items():
+        for team, colour in self.team_colour.items():
             new_dot = leader_colour_dot.copy()
             new_dot.fill(colour)
             add_dot = leader_dot.copy()
             add_dot.blit(new_dot, rect)
             self.leader_dot[team][False] = add_dot
 
-        for team, colour in self.selected_colour.items():
+        for team, colour in self.selected_team_colour.items():
             new_selected_dot = leader_colour_dot.copy()
             new_selected_dot.fill(colour)
             new_selected_dot.fill(colour)
@@ -966,9 +959,9 @@ class MapPreview(UIMenu):
             if camp_pos_list:
                 for team, pos_list in camp_pos_list.items():
                     for pos in pos_list:
-                        colour = self.colour[team]
+                        colour = self.team_colour[team]
                         if pos == camp_selected:
-                            colour = self.selected_colour[team]
+                            colour = self.selected_team_colour[team]
                         pygame.draw.circle(self.image, colour,
                                            (pos[0][0] * ((450 * self.screen_scale[0]) / 1000),
                                             pos[0][1] * ((450 * self.screen_scale[1]) / 1000)),
@@ -1089,9 +1082,9 @@ class TextPopup(UIMenu):
             if width_text_wrapper:
                 for text in self.text_input:
                     text_image = pygame.Surface((width_text_wrapper, len(text) / width_text_wrapper * int(self.font_size * self.screen_scale[1])))
-                    utility.make_long_text(text_image, text,
-                                           (int(self.font_size * self.screen_scale[0]), int(self.font_size * self.screen_scale[1])),
-                                           self.font)
+                    make_long_text(text_image, text,
+                                   (int(self.font_size * self.screen_scale[0]), int(self.font_size * self.screen_scale[1])),
+                                   self.font)
             else:
                 max_width = 0
                 max_height = 0

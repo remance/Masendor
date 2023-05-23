@@ -37,7 +37,7 @@ def recursive_check_dict(data, data2, previous_k):
                 f(v, data2[k], k)
 
 
-class MyTestCase(unittest.TestCase):
+class TestLocalisation(unittest.TestCase):
     def test(self):
         """Check for key existence in input language data compared to English localisation data"""
         localisation = datalocalisation.Localisation(debug=True)

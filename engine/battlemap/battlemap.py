@@ -6,19 +6,34 @@ import numpy as np
 import pygame
 from PIL import Image, ImageFilter, ImageOps
 
-from engine import utility
-
-apply_sprite_colour = utility.apply_sprite_colour
+from engine.utility import apply_sprite_colour, load_image, load_images, filename_convert_readable as fcv
 
 
-class BaseMap(pygame.sprite.Sprite):
-    terrain_list = None
-    terrain_colour = None
+class BattleMap(pygame.sprite.Sprite):
+    def __init__(self):
+        from engine.game.game import Game
+        from engine.data.datamap import BattleMapData
+        self.main_dir = Game.main_dir
+        self.module_dir = Game.module_dir
+        self.terrain_list = BattleMapData.terrain_list
+        self.terrain_colour = BattleMapData.terrain_colour
+        self.feature_mod = BattleMapData.feature_mod
+        self.feature_list = BattleMapData.feature_list
+        self.feature_colour = BattleMapData.feature_colour
+        self.battle_map_colour = BattleMapData.battle_map_colour
+        self.team_colour = Game.team_colour
+        self.selected_team_colour = Game.selected_team_colour
+        self.screen_scale = Game.screen_scale
+        self.battle = Game.battle
 
-    def __init__(self, main_dir):
         self._layer = 0
         pygame.sprite.Sprite.__init__(self)
-        self.main_dir = main_dir
+
+
+class BaseMap(BattleMap):
+
+    def __init__(self):
+        BattleMap.__init__(self)
 
         self.map_array = ()
         self.max_map_array = (0, 0)
@@ -38,16 +53,9 @@ class BaseMap(pygame.sprite.Sprite):
         self.max_map_array = (0, 0)
 
 
-class FeatureMap(pygame.sprite.Sprite):
-    main_dir = None
-    feature_mod = None
-    feature_list = None
-    feature_colour = None
-
-    def __init__(self, main_dir):
-        self._layer = 0
-        pygame.sprite.Sprite.__init__(self)
-        self.main_dir = main_dir
+class FeatureMap(BattleMap):
+    def __init__(self):
+        BattleMap.__init__(self)
 
         self.map_array = ()
         self.max_map_array = (0, 0)
@@ -79,12 +87,11 @@ class FeatureMap(pygame.sprite.Sprite):
         self.max_map_array = (0, 0)
 
 
-class HeightMap(pygame.sprite.Sprite):
+class HeightMap(BattleMap):
     poster_level = 4
 
     def __init__(self):
-        self._layer = 0
-        pygame.sprite.Sprite.__init__(self)
+        BattleMap.__init__(self)
         self.map_array = ()
         self.max_map_array = (0, 0)
         self.image = None
@@ -112,10 +119,6 @@ class HeightMap(pygame.sprite.Sprite):
         surface = pygame.Surface(surface_inverted.get_rect().size)
         surface.fill((255,) * 3)
         surface.blit(surface_inverted, (0, 0), special_flags=pygame.BLEND_RGB_SUB)
-
-        # TODO: I think we should consider having the origin of the height map data being the actual grey scale
-        #       and use that grey scale to make the red-alpha version of the height map.
-        #       I can see this being better. /coppermouse
 
         return surface
 
@@ -164,21 +167,10 @@ class HeightMap(pygame.sprite.Sprite):
         self.max_map_array = (0, 0)
 
 
-class BeautifulMap(pygame.sprite.Sprite):
-    texture_images = []
-    empty_texture = None
-    camp_texture = None
-    load_texture_list = None
-    main_dir = None
-    battle_map_colour = None
-    team_colour = None
-    selected_team_colour = None
-
-    def __init__(self, main_dir, screen_scale, height_map):
+class FinalMap(BattleMap):
+    def __init__(self, height_map):
         self._layer = 0
-        pygame.sprite.Sprite.__init__(self)
-        self.main_dir = main_dir
-        self.screen_scale = screen_scale
+        BattleMap.__init__(self)
         self.height_map = height_map
         self.scale = 1
         self.mode = 1
@@ -187,7 +179,26 @@ class BeautifulMap(pygame.sprite.Sprite):
         self.base_image = None  # image before adding height map mode
         self.image = None  # image after adding height map mode
 
-    def recolour_map_and_build_move_and_def_arrays(self, feature_map, base_map, battle):
+        self.empty_texture = pygame.Surface((0, 0))  # empty texture image
+        self.camp_texture = load_image(self.module_dir, (1, 1), "camp.png",
+                                     ("map", "texture"))  # war camp texture image
+
+        self.map_texture = []
+        self.load_texture_list = [item["Name"] for item in self.feature_mod.values() if
+                               item["Name"] != ""]
+
+        for index, folder in enumerate(self.load_texture_list):
+            images = load_images(self.module_dir, subfolder=("map", "texture", fcv(folder, revert=True)),
+                                 key_file_name_readable=True)
+            self.map_texture.append(list(images.values()))
+
+        self.day_effect_images = load_images(self.module_dir, screen_scale=self.screen_scale,
+                                             subfolder=("map", "day"), key_file_name_readable=True)
+
+        self.map_move_array = []
+        self.map_def_array = []
+
+    def recolour_map_and_build_move_and_def_arrays(self, feature_map, base_map):
 
         if (type(feature_map), type(base_map)) != (FeatureMap, BaseMap):
             raise TypeError()
@@ -208,16 +219,16 @@ class BeautifulMap(pygame.sprite.Sprite):
                 def_mod = int(map_feature_mod["Infantry Melee Modifier"] * 100)
                 speed_array.append(speed_mod)
                 def_array.append(def_mod)
-            battle.map_move_array.append(speed_array)
-            battle.map_def_array.append(def_array)
+            self.map_move_array.append(speed_array)
+            self.map_def_array.append(def_array)
 
         self.image.blit(self.height_map.get_battle_map_overlay(), (0, 0), special_flags=pygame.BLEND_RGB_ADD)
 
-    def draw_image(self, base_map, feature_map, place_name, camp_pos, battle):
+    def draw_image(self, base_map, feature_map, place_name, camp_pos):
         self.image = pygame.Surface((len(base_map.map_array[0]), len(base_map.map_array)))
         self.rect = self.image.get_rect(topleft=(0, 0))
 
-        self.recolour_map_and_build_move_and_def_arrays(feature_map, base_map, battle)
+        self.recolour_map_and_build_move_and_def_arrays(feature_map, base_map)
 
         # Blur map to make it look older
         data = pygame.image.tostring(self.image, "RGB")  # convert image to string data for filtering effect
@@ -237,7 +248,7 @@ class BeautifulMap(pygame.sprite.Sprite):
                 if row_pos % 20 == 0 and col_pos % 20 == 0:
                     random_pos = (row_pos + randint(0, 19), col_pos + randint(0, 19))
                     terrain, this_feature = feature_map.get_feature(random_pos, base_map)
-                    feature = self.texture_images[
+                    feature = self.map_texture[
                         self.load_texture_list.index(self.battle_map_colour[this_feature][0])]
 
                     choose = randint(0, len(feature) - 1)

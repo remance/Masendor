@@ -31,8 +31,8 @@ def test_pickleable_surface():
        lambda self, other: self.surface == other.surface)
 def test_recursive_surface_to_pickleable_surface():
     import pygame
-    from engine.datacacher import recursive_cast_surface_to_pickleable_surface
-    from engine.datacacher import PickleableSurface
+    from engine.data.datacacher import recursive_cast_surface_to_pickleable_surface
+    from engine.data.datacacher import PickleableSurface
 
     surface = pygame.Surface((64,)*2)
     pygame.draw.circle(surface, 'red', (32, 32), 32)

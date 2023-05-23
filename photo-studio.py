@@ -126,7 +126,7 @@ class Studio(Game):
         self.battle_base_map = battlemap.BaseMap(data_dir)  # create base terrain map
         self.battle_feature_map = battlemap.FeatureMap(data_dir)  # create terrain feature map
         self.battle_height_map = battlemap.HeightMap()  # create height map
-        self.battle_map = battlemap.BeautifulMap(data_dir, self.screen_scale, self.battle_height_map)
+        self.battle_map = battlemap.FinalMap(data_dir, self.screen_scale, self.battle_height_map)
 
         self.battle_base_map.terrain_list = self.battle_map_data.terrain_list
         self.battle_base_map.terrain_colour = self.battle_map_data.terrain_colour
