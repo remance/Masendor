@@ -41,7 +41,7 @@ def menu_main(self, esc_press):
 
         self.create_preview_map()
 
-        self.create_team_coa([None for _ in range(10)])
+        # self.create_team_coa([None for _ in range(10)])
 
         self.add_ui_updater(*self.map_select_button, self.custom_map_list_box, self.faction_list_box,
                             self.custom_map_option_box, self.unit_selector,

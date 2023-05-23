@@ -11,7 +11,7 @@ def menu_custom_map_select(self, esc_press):
         self.remove_ui_updater(*self.map_select_button, self.custom_map_list_box, self.faction_list_box,
                                self.custom_map_option_box, self.unit_selector,
                                self.unit_selector.scroll, self.weather_custom_select, self.wind_custom_select,
-                               self.map_option_box, self.night_battle_tick_box)
+                               self.map_option_box, self.night_battle_tick_box, self.map_preview)
 
         for group in (self.map_namegroup, self.team_coa):
             for stuff in group:
