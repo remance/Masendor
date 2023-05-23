@@ -1180,7 +1180,13 @@ class ListUI(UIMenu, Containable):
 
         self.scroll_bar_height = self.rect[3] - 12
         self.scroll_box_height = int(self.scroll_bar_height * (item_size / len(self.items)))
-        self.scroll_step_height = (self.scroll_bar_height - self.scroll_box_height) / self.get_number_of_items_outside_visible_list()
+        divider = self.get_number_of_items_outside_visible_list()
+
+        if divider is not None:
+            self.has_scroll = True
+            self.scroll_step_height = (self.scroll_bar_height - self.scroll_box_height) / divider
+        else:
+            self.has_scroll = False
 
         self.scroll_box = make_image_by_frame(self.scroll_box_frame, (14, self.scroll_box_height))
         self.scroll_box_index = 0
@@ -1189,7 +1195,7 @@ class ListUI(UIMenu, Containable):
     def get_number_of_items_outside_visible_list(self):
         r = len(self.items) - self.item_size
         if r <= 0:
-            raise Exception("At the moment ListUI can only handle list that have enough items to require a scroll bar")
+            return None
         return r
 
     def get_item_height(self):
@@ -1215,25 +1221,28 @@ class ListUI(UIMenu, Containable):
                 if item_index == self.items.get_highlighted_index():
                     color = "#551617"
 
-                pygame.draw.rect(self.image, color, (6, 6 + i * item_height, size[0] - 25, item_height))
+                pygame.draw.rect(self.image, color, (6, 6 + i * item_height, size[0] - 13*self.has_scroll-12, item_height))
             self.image.blit(font.render(self.items[item_index], True, (255 if item_index == self.selected_index else 178,) * 3),
                             (20, item_height // 2 + 6 - 9 + i * item_height))
 
         # draw scroll bar
-        pygame.draw.rect(self.image, "black", self.get_scroll_bar_rect())
+        if scroll_bar_rect := self.get_scroll_bar_rect():
+            pygame.draw.rect(self.image, "black", scroll_bar_rect)
 
         # draw scroll box
-        scroll_box_rect = self.get_scroll_box_rect()
-        self.image.blit(self.scroll_box, scroll_box_rect)
-        if self.in_scroll_box or self.hold_scroll_box is not None:
-            pygame.draw.rect(self.image, (220, 190, 110) if self.hold_scroll_box is not None else (150,) * 3, scroll_box_rect, 1)
+        if scroll_box_rect := self.get_scroll_box_rect():
+            self.image.blit(self.scroll_box, scroll_box_rect)
+            if self.in_scroll_box or self.hold_scroll_box is not None:
+                pygame.draw.rect(self.image, (220, 190, 110) if self.hold_scroll_box is not None else (150,) * 3, scroll_box_rect, 1)
 
         return self.image
 
     def get_scroll_bar_rect(self):
+        if not self.has_scroll: return None
         return pygame.Rect(self.rect[2] - 18, 6, 14, self.scroll_bar_height)
 
     def get_scroll_box_rect(self):
+        if not self.has_scroll: return None
         return pygame.Rect(self.rect[2] - 18, self.scroll_box_index * self.scroll_step_height + 6, *self.scroll_box.get_size())
 
     def update(self):
@@ -1251,12 +1260,13 @@ class ListUI(UIMenu, Containable):
         self.in_scroll_box = False
         in_list = False
         if self.rect.collidepoint(mouse_pos):
+            in_list = True
             self.mouse_over = True
-            if self.get_scroll_bar_rect().collidepoint(relative_mouse_pos):
-                if self.get_scroll_box_rect().collidepoint(relative_mouse_pos):
-                    self.in_scroll_box = True
-            else:
-                in_list = True
+            if scroll_bar_rect := self.get_scroll_bar_rect():
+                if scroll_bar_rect.collidepoint(relative_mouse_pos):
+                    if self.get_scroll_box_rect().collidepoint(relative_mouse_pos):
+                        self.in_scroll_box = True
+                    in_list = False
 
         # scroll box drag handler
         if not mld:
@@ -1279,6 +1289,11 @@ class ListUI(UIMenu, Containable):
             relative_index = ((relative_mouse_pos[1] - 6) // item_height)
             if relative_index >= 0 and relative_index < self.item_size:
                 self.selected_index = relative_index + self.scroll_box_index
+
+
+        if self.selected_index is not None:
+            if self.selected_index >= len(self.items): self.selected_index = None
+
         if in_list and mljd and self.selected_index is not None:
             self.items.on_select(self.selected_index, self.items[self.selected_index])
 

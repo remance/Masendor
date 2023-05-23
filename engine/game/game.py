@@ -524,6 +524,7 @@ class Game:
                 return len(self.list)
 
             def __getitem__(self, item):
+                if item > len(self.list)-1: return None
                 return self.list[item]
 
             def on_select(self, item_index, item_text):
@@ -543,7 +544,7 @@ class Game:
 
         self.custom_map_list_box = uimenu.ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
                                                  items=CustomBattleListAdapter(self.battle_map_list, self),
-                                                 parent=self.screen, item_size=20)
+                                                 parent=self.screen, item_size=40)
 
         self.faction_list_box = uimenu.ListUI(pivot=(0.5, -0.9), origin=(-1, -1), size=(.2, .8),
                                               items=CustomBattleListAdapter(self.battle_map_list, self),
