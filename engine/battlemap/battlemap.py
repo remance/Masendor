@@ -42,7 +42,7 @@ class BaseMap(BattleMap):
         self.map_array = tuple([[tuple(col) for col in row] for row in pygame.surfarray.array3d(image).tolist()])
         self.max_map_array = (len(self.map_array) - 1, len(self.map_array[0]) - 1)
 
-    def get_terrain(self, pos):
+    def get_terrain(self, pos, debug=False):
         """get the base terrain at that exact position, typically called in get_feature"""
         terrain = self.map_array[int(pos[0])][int(pos[1])]  # use already calculated pos from get_feature
         terrain_index = self.terrain_colour.index(terrain)
@@ -64,7 +64,7 @@ class FeatureMap(BattleMap):
         self.map_array = tuple([[tuple(col) for col in row] for row in pygame.surfarray.array3d(image).tolist()])
         self.max_map_array = (len(self.map_array) - 1, len(self.map_array[0]) - 1)
 
-    def get_feature(self, pos, base_map):
+    def get_feature(self, pos, base_map, debug=False):
         """get the terrain feature at that exact position"""
         new_pos = pygame.Vector2(pos)  # create new pos to avoid replacing input one
         if new_pos[0] < 0:
@@ -78,6 +78,8 @@ class FeatureMap(BattleMap):
             new_pos[1] = self.max_map_array[1]
 
         terrain_index = base_map.get_terrain(new_pos)
+        if debug and self.map_array[int(new_pos[0])][int(new_pos[1])] not in self.feature_colour:
+            print(new_pos, self.map_array[int(new_pos[0])][int(new_pos[1])])
         feature_index = (terrain_index * len(self.feature_colour)) + \
                         self.feature_colour.index(self.map_array[int(new_pos[0])][int(new_pos[1])])
         return terrain_index, feature_index
@@ -198,7 +200,7 @@ class FinalMap(BattleMap):
         self.map_move_array = []
         self.map_def_array = []
 
-    def recolour_map_and_build_move_and_def_arrays(self, feature_map, base_map):
+    def recolour_map_and_build_move_and_def_arrays(self, feature_map, base_map, debug=False):
 
         if (type(feature_map), type(base_map)) != (FeatureMap, BaseMap):
             raise TypeError()
@@ -207,7 +209,7 @@ class FinalMap(BattleMap):
             speed_array = []
             def_array = []
             for col_pos in range(0, self.image.get_height()):
-                terrain, feature = feature_map.get_feature((row_pos, col_pos), base_map)
+                terrain, feature = feature_map.get_feature((row_pos, col_pos), base_map, debug=True)
                 new_colour = self.battle_map_colour[feature][1]
                 height = self.height_map.get_height((row_pos, col_pos)) / 50
                 new_colour = pygame.Color(new_colour).correct_gamma(height)
@@ -224,11 +226,11 @@ class FinalMap(BattleMap):
 
         self.image.blit(self.height_map.get_battle_map_overlay(), (0, 0), special_flags=pygame.BLEND_RGB_ADD)
 
-    def draw_image(self, base_map, feature_map, place_name, camp_pos):
+    def draw_image(self, base_map, feature_map, place_name, camp_pos, debug=False):
         self.image = pygame.Surface((len(base_map.map_array[0]), len(base_map.map_array)))
         self.rect = self.image.get_rect(topleft=(0, 0))
 
-        self.recolour_map_and_build_move_and_def_arrays(feature_map, base_map)
+        self.recolour_map_and_build_move_and_def_arrays(feature_map, base_map, debug=debug)
 
         # Blur map to make it look older
         data = pygame.image.tostring(self.image, "RGB")  # convert image to string data for filtering effect

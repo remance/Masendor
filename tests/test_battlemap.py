@@ -76,7 +76,7 @@ class TestBattleMap(unittest.TestCase, Test):
 
         Test.__init__(self, "en", "historical")
 
-        map_selected = "fulford"
+        map_selected = "kadesh"
 
         pygame.display.set_mode((0, 0), pygame.HIDDEN)
         battle_map_data = datamap.BattleMapData()
@@ -111,6 +111,6 @@ class TestBattleMap(unittest.TestCase, Test):
         else:
             place_name_map = None
 
-        battle_map.draw_image(base_map, feature_map, place_name_map, {})
+        battle_map.draw_image(base_map, feature_map, place_name_map, {}, debug=True)
 
         assert battle_map
