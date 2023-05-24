@@ -18,10 +18,6 @@ def menu_main(self, esc_press):
 
         self.change_battle_source()
 
-        for team in self.team_coa:
-            if self.team_selected == team.team:
-                team.change_select(True)
-
         # reset preview mini map
         self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos)
 
@@ -41,12 +37,16 @@ def menu_main(self, esc_press):
 
         self.create_preview_map()
 
-        # self.create_team_coa([None for _ in range(10)])
+        self.create_team_coa([None for _ in range(10)])
+
+        for team in self.team_coa:
+            if self.team_selected == team.team:
+                team.change_select(True)
 
         self.add_ui_updater(*self.map_select_button, self.custom_map_list_box, self.faction_list_box,
                             self.custom_map_option_box, self.unit_selector,
                             self.unit_selector.scroll, self.weather_custom_select, self.wind_custom_select,
-                            self.map_option_box, self.night_battle_tick_box)
+                            self.night_battle_tick_box)
 
     elif self.game_edit_button.event:  # custom unit/sub-unit editor menu
         self.menu_state = "game_creator"

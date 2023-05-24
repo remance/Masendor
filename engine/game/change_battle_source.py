@@ -32,8 +32,9 @@ def change_battle_source(self):
         else:
             pos_list = [pos_list]
         for index, pos in enumerate(pos_list):
-            pos_list[index] = pos.replace("(", "").replace(")", "").split(",")
-            pos_list[index] = ((int(pos_list[index][0]), int(pos_list[index][1])), int(pos_list[index][2]))
+            if pos:
+                pos_list[index] = pos.replace("(", "").replace(")", "").split(",")
+                pos_list[index] = ((int(pos_list[index][0]), int(pos_list[index][1])), int(pos_list[index][2]))
         self.camp_pos[team] = pos_list
 
     # self.source_description.change_text(self.source_text, self.mouse_pos)

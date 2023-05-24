@@ -681,31 +681,34 @@ class TeamCoa(UIMenu):
         # Only main coat of arms for not selected image
         self.not_selected_image = self.not_selected_image_base.copy()
         self.selected_image = self.selected_image_base.copy()
-        coa_image = pygame.transform.smoothscale(tuple(self.coa_images.values())[0],
-                                                 (int(self.coa_size[0] * 0.7), int(self.coa_size[1] * 0.7)))
-        coa_rect = coa_image.get_rect(
-            center=(self.not_selected_image.get_width() / 2, self.not_selected_image.get_height() / 2))
-        self.not_selected_image.blit(coa_image, coa_rect)
+        if tuple(self.coa_images.values())[0]:  # coa image is not None
+            coa_image = pygame.transform.smoothscale(tuple(self.coa_images.values())[0],
+                                                     (int(self.coa_size[0] * 0.7), int(self.coa_size[1] * 0.7)))
+            coa_rect = coa_image.get_rect(
+                center=(self.not_selected_image.get_width() / 2, self.not_selected_image.get_height() / 2))
+            self.not_selected_image.blit(coa_image, coa_rect)
 
-        # All Coat of arms to selected image and main faction name
-        small_coa_pos = [int(self.selected_coa_size[0] * 0.2), int(self.selected_coa_size[1] * 0.2)]
-        for index, image in enumerate(self.coa_images.values()):
-            if image:
-                if index == 0:  # first one as main faction coa
-                    coa_image = pygame.transform.smoothscale(image, (
-                        int(self.selected_coa_size[0] * 0.65), int(self.selected_coa_size[1] * 0.65)))
-                    coa_rect = coa_image.get_rect(
-                        midtop=(self.selected_image.get_width() / 2, self.selected_coa_size[1] * 0.05))
-                else:
-                    coa_image = pygame.transform.smoothscale(image,
-                                                             (int(self.selected_coa_size[0] * 0.3), int(self.selected_coa_size[1] * 0.3)))
-                    coa_rect = coa_image.get_rect(center=small_coa_pos)
-                    small_coa_pos[1] += int(self.selected_coa_size[1] * 0.3)
-                    if index % 3 == 0:
-                        small_coa_pos = [small_coa_pos[0] + int(self.selected_coa_size[0] * 0.4), int(self.selected_coa_size[1] * 0.2)]
-                    if index == 6:
-                        small_coa_pos[0] = int(self.selected_coa_size[0] * 1.8)
-                self.selected_image.blit(coa_image, coa_rect)
+            # All Coat of arms to selected image and main faction name
+            small_coa_pos = [int(self.selected_coa_size[0] * 0.2), int(self.selected_coa_size[1] * 0.2)]
+            for index, image in enumerate(self.coa_images.values()):
+                if image:
+                    if index == 0:  # first one as main faction coa
+                        coa_image = pygame.transform.smoothscale(image, (
+                            int(self.selected_coa_size[0] * 0.65), int(self.selected_coa_size[1] * 0.65)))
+                        coa_rect = coa_image.get_rect(
+                            midtop=(self.selected_image.get_width() / 2, self.selected_coa_size[1] * 0.05))
+                    else:
+                        coa_image = pygame.transform.smoothscale(image,
+                                                                 (int(self.selected_coa_size[0] * 0.3),
+                                                                  int(self.selected_coa_size[1] * 0.3)))
+                        coa_rect = coa_image.get_rect(center=small_coa_pos)
+                        small_coa_pos[1] += int(self.selected_coa_size[1] * 0.3)
+                        if index % 3 == 0:
+                            small_coa_pos = [small_coa_pos[0] + int(self.selected_coa_size[0] * 0.4),
+                                             int(self.selected_coa_size[1] * 0.2)]
+                        if index == 6:
+                            small_coa_pos[0] = int(self.selected_coa_size[0] * 1.8)
+                    self.selected_image.blit(coa_image, coa_rect)
 
         self.name = name
         font_size = int(self.selected_image_base.get_height() / 5)
