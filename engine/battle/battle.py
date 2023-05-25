@@ -482,7 +482,7 @@ class Battle:
         yield set_done_load()
 
         yield set_start_load("draw map")
-        self.battle_map.draw_image(self.battle_base_map, self.battle_feature_map, place_name_map, self.camp_pos, self)
+        self.battle_map.draw_image(self.battle_base_map, self.battle_feature_map, place_name_map, self.camp_pos)
         yield set_done_load()
 
         yield set_start_load("common setup")

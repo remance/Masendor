@@ -203,16 +203,11 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
             stuff.kill()
             del stuff
 
-        setup_list(self.screen_scale, uimenu.NameList, self.current_source_row,
-                   ["None"] + self.faction_data.faction_name_list,
-                   self.source_namegroup, self.source_list_box, self.main_ui_updater)
-
         self.unit_selector.setup_unit_icon(self.unit_icon, self.camp_icon)
 
         self.main_ui_updater.add(*self.map_select_button, self.custom_map_option_box, self.observe_mode_tick_box,
-                                 self.night_battle_tick_box, self.source_list_box, self.source_list_box.scroll,
-                                 self.unit_selector, self.unit_selector.scroll, self.team_coa,
-                                 self.weather_custom_select, self.wind_custom_select)
+                                 self.night_battle_tick_box, self.unit_selector, self.unit_selector.scroll,
+                                 self.team_coa, self.weather_custom_select, self.wind_custom_select)
 
     elif self.select_button.event:  # go to unit leader setup screen
         self.select_button.event = False

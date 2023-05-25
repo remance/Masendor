@@ -160,7 +160,7 @@ class Studio(Game):
             place_name_map = images["place_name"]
         else:
             place_name_map = None
-        self.battle_map.draw_image(self.battle_base_map, self.battle_feature_map, place_name_map, {}, self)
+        self.battle_map.draw_image(self.battle_base_map, self.battle_feature_map, place_name_map, {})
 
         self.weather_updater = pygame.sprite.Group()  # updater for weather objects
         self.weather_matter = pygame.sprite.Group()  # sprite of weather effect group such as rain sprite

@@ -12,7 +12,7 @@ def menu_custom_unit_select(self, mouse_left_up, mouse_left_down, mouse_scroll_u
         self.map_back_button.event = False
         clean_group_object((self.unit_updater, self.all_units, self.preview_unit, self.unit_icon))
 
-        self.main_ui_updater.remove(tuple(self.unit_stat.values()), self.start_button)
+        self.main_ui_updater.remove(self.unit_model_room, self.start_button)
         self.menu_button.remove(self.start_button)
         self.menu_state = "custom_leader_setup"
         self.unit_select_row = 0
@@ -77,7 +77,7 @@ def menu_custom_unit_select(self, mouse_left_up, mouse_left_down, mouse_scroll_u
                         who_todo = {key: value for key, value in self.leader_data.leader_list.items() if
                                     key == icon.who.troop_id}
                         preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True)
-                        self.unit_stat["model"].add_preview_model(model=preview_sprite_pool[icon.who.troop_id]["sprite"],
+                        self.unit_model_room.add_preview_model(model=preview_sprite_pool[icon.who.troop_id]["sprite"],
                                                                   coa=icon.who.coa)
                         self.map_preview.change_mode(1, team_pos_list=self.team_pos,
                                                      camp_pos_list=self.camp_pos,
