@@ -39,9 +39,6 @@ def change_battle_source(self):
 
     # self.source_description.change_text(self.source_text, self.mouse_pos)
 
-    setup_list(uimenu.NameList, self.current_source_row, self.source_name_list,
-               self.source_namegroup, self.source_list_box, self.main_ui_updater)
-
     self.team_pos = {row["Team"]: [] for row in self.play_source_data["unit"]}
     for row in self.play_source_data["unit"]:
         self.team_pos[row["Team"]].append([int(item) for item in row["POS"]])
@@ -83,3 +80,7 @@ def change_battle_source(self):
                                                                        self.play_map_data["source"][self.map_source][key2].split(",")]
             team_coa.append(self.play_map_data["source"][self.map_source][key2])
     self.create_team_coa(team_coa)
+
+    for index, this_team in enumerate(self.team_coa):
+        if self.team_selected == this_team.team:
+            this_team.change_select(True)

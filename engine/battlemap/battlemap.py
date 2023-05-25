@@ -43,8 +43,11 @@ class BaseMap(BattleMap):
         self.max_map_array = (len(self.map_array) - 1, len(self.map_array[0]) - 1)
 
     def get_terrain(self, pos, debug=False):
-        """get the base terrain at that exact position, typically called in get_feature"""
+        """get the base terrain at that exact position
+        typically called in get_feature so no need to check for map border"""
         terrain = self.map_array[int(pos[0])][int(pos[1])]  # use already calculated pos from get_feature
+        if debug and terrain not in self.feature_colour:
+            print(pos, terrain)
         terrain_index = self.terrain_colour.index(terrain)
         return terrain_index
 
@@ -77,7 +80,7 @@ class FeatureMap(BattleMap):
         elif new_pos[1] > self.max_map_array[1]:
             new_pos[1] = self.max_map_array[1]
 
-        terrain_index = base_map.get_terrain(new_pos)
+        terrain_index = base_map.get_terrain(new_pos, debug=True)
         if debug and self.map_array[int(new_pos[0])][int(new_pos[1])] not in self.feature_colour:
             print(new_pos, self.map_array[int(new_pos[0])][int(new_pos[1])])
         feature_index = (terrain_index * len(self.feature_colour)) + \

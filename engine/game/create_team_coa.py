@@ -23,5 +23,4 @@ def create_team_coa(self, data):
                        faction_name)
         pos[1] += 70 * self.screen_scale[1]
         if team and team % 3 == 0:
-            print(team)
             pos = [pos[0] + 100, self.screen_rect.height / 1.6]

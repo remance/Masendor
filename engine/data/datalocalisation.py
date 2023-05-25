@@ -17,10 +17,12 @@ class Localisation:
         self.debug = debug
 
         # start with the creation of common UI localisation
-        self.text = {"en": {"ui": csv_read(self.data_dir, "en.csv", ("localisation",), dict_value_return_as_str=True)},
+        self.text = {"en": {"ui": csv_read(self.module_dir, "ui.csv", ("localisation", "en"),
+                                           dict_value_return_as_str=True)},
                      self.language: {}}
         try:
-            ui_language_file = csv_read(self.data_dir, self.language + ".csv", ("localisation",), dict_value_return_as_str=True)
+            ui_language_file = csv_read(self.module_dir, "ui.csv", ("localisation", self.language),
+                                        dict_value_return_as_str=True)
             self.text[self.language]["ui"] = ui_language_file
         except FileNotFoundError:
             pass

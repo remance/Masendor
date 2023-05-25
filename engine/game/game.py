@@ -150,9 +150,6 @@ class Game:
     from engine.game import menu_custom_unit_select
     menu_custom_unit_select = menu_custom_unit_select.menu_custom_unit_select
 
-    from engine.game import menu_custom_team_select
-    menu_custom_team_select = menu_custom_team_select.menu_custom_team_select
-
     from engine.game import menu_game_editor
     menu_game_editor = menu_game_editor.menu_game_editor
 
@@ -302,11 +299,11 @@ class Game:
         self.map_type = ""
         self.map_source = 0  # current selected map source
         self.team_selected = 1
-        self.unit_selected = 0
+        self.unit_selected = None
         self.current_popup_row = 0
         self.team_pos = {}  # for saving preview map unit pos
         self.camp_pos = {}  # for saving preview map camp pos
-        self.map_data = None
+        self.play_map_data = {"info": {"weather": [[0, "09:00:00", 0, 0]]}, "unit": {"pos": {}}}
         self.source_data = None
         self.map_info = None
         self.map_unit_data = None
@@ -545,24 +542,29 @@ class Game:
                                                  items=CustomBattleListAdapter(self.battle_map_list, self),
                                                  parent=self.screen, item_size=20)
 
-        self.faction_list_box = uimenu.ListUI(pivot=(0.5, -0.9), origin=(-1, -1), size=(.2, .8),
+        self.faction_list_box = uimenu.ListUI(pivot=(0.3, -0.1), origin=(-1, -1), size=(.3, .4),
                                               items=CustomBattleListAdapter(self.battle_map_list, self),
-                                              parent=self.screen, item_size=20)  # ["None"] + self.faction_data.faction_name_list
+                                              parent=self.screen, item_size=10)  # ["None"] + self.faction_data.faction_name_list
+
+        self.unit_list_box = uimenu.ListUI(pivot=(0.3, -0.1), origin=(-1, -1), size=(.3, .4),
+                                           items=CustomBattleListAdapter(self.battle_map_list, self),
+                                           parent=self.screen, item_size=10)  # ["None"] + self.faction_data.faction_name_list
+
+        # self.weather_list_box = uimenu.ListUI(pivot=(0.3, -0.1), origin=(-1, -1), size=(.3, .4),
+        #                                       items=CustomBattleListAdapter(self.battle_map_data.weather_list, self),
+        #                                       parent=self.screen, item_size=10)
 
         battle_select_image = load_images(self.module_dir, screen_scale=self.screen_scale,
                                           subfolder=("ui", "mapselect_ui"))
 
-        self.map_preview = uimenu.MapPreview((self.preset_map_list_box.rect.topright[0],
-                                              self.preset_map_list_box.rect.topright[1]))
+        self.map_preview = uimenu.MapPreview(self.preset_map_list_box.rect.topright)
 
-        self.unit_selector = uibattle.UnitSelector((self.screen_rect.width / 1.3, self.screen_rect.height / 2.2),
+        self.unit_selector = uibattle.UnitSelector(self.map_preview.rect.topright,
                                                    battle_select_image["unit_select"], icon_scale=0.4)
         uibattle.UIScroll(self.unit_selector, self.unit_selector.rect.topright)  # scroll bar for unit pick
 
-        model_room_image = load_image(self.module_dir, self.screen_scale, "model_room.png", ("ui", "mapselect_ui"))
-        self.unit_model_room = uimenu.ArmyStat((self.unit_selector.rect.midtop[0] - (model_room_image.get_width() / 2),
-                                                self.unit_selector.rect.midbottom[1]),
-                                               model_room_image)  # troop stat
+        self.unit_model_room = uimenu.LeaderModel(self.unit_selector.rect.bottomleft,
+                                                  battle_select_image["small_box"])  # troop stat
 
         bottom_height = self.screen_rect.height - image_list[0].get_height()
         self.select_button = uimenu.MenuButton(image_list,
@@ -580,46 +582,36 @@ class Game:
         self.team_select_button = (self.select_button, self.map_back_button)
         self.unit_select_button = (self.start_button, self.map_back_button)
 
-        self.map_list_box = uimenu.ListBox((self.screen_width - (battle_select_image["name_list"].get_width() * 2), 0),
-                                           battle_select_image["name_list"])
-        uibattle.UIScroll(self.map_list_box, self.map_list_box.rect.topright)  # scroll bar for map list
-
         self.unit_list_box = uimenu.ListBox((self.screen_width - battle_select_image["unit_list"].get_width(), 0),
                                             battle_select_image["unit_list"])
         uibattle.UIScroll(self.unit_list_box, self.unit_list_box.rect.topright)  # scroll bar for map list
 
-        self.source_list_box = uimenu.ListBox((self.screen_width - (battle_select_image["name_list"].get_width()), 0),
-                                              battle_select_image["top_box"])  # source list ui box
-        uibattle.UIScroll(self.source_list_box, self.source_list_box.rect.topright)  # scroll bar for source list
-        self.map_option_box = uimenu.MapOptionBox((self.screen_width, battle_select_image["top_box"].get_height()),
-                                                  battle_select_image["top_box"],
-                                                  0)  # ui box for battle option during preset map preparation screen
-        self.custom_map_option_box = uimenu.MapOptionBox((self.screen_width, 0), battle_select_image["top_box"],
-                                                         1)  # ui box for battle option during preparation screen
+        # ui box for battle option during preset map preparation screen
+        self.custom_map_option_box = uimenu.MapOptionBox(self.unit_model_room.rect.bottomleft,
+                                                         battle_select_image["small_box"])
 
         self.org_chart = uimenu.OrgChart(load_image(self.module_dir, self.screen_scale,
                                                     "org.png", ("ui", "mapselect_ui")),
                                          (self.screen_rect.center[0] * 1.3, self.screen_rect.height / 12))
 
-        self.unit_stat = {}
         self.camp_icon = []
 
-        self.observe_mode_tick_box = uimenu.TickBox((self.map_option_box.rect.topleft[0] * 1.05,
-                                                     self.map_option_box.rect.topleft[1] * 1.15),
+        self.observe_mode_tick_box = uimenu.TickBox((self.custom_map_option_box.rect.topleft[0] * 1.05,
+                                                     self.custom_map_option_box.rect.topleft[1] * 1.15),
                                                     battle_select_image["untick"], battle_select_image["tick"],
                                                     "observe")
-        self.night_battle_tick_box = uimenu.TickBox((self.map_option_box.rect.topleft[0] * 1.05,
-                                                     self.map_option_box.rect.topleft[1] * 1.3),
+        self.night_battle_tick_box = uimenu.TickBox((self.custom_map_option_box.rect.topleft[0] * 1.05,
+                                                     self.custom_map_option_box.rect.topleft[1] * 1.1),
                                                     battle_select_image["untick"], battle_select_image["tick"], "night")
-        self.weather_custom_select = uimenu.NameList(self.map_option_box,
-                                                     (self.map_option_box.rect.midleft[0],
-                                                      self.map_option_box.rect.midleft[
-                                                          1] + self.map_option_box.image.get_height() / 4),
+        self.weather_custom_select = uimenu.NameList(self.custom_map_option_box,
+                                                     (self.custom_map_option_box.rect.midleft[0],
+                                                      self.custom_map_option_box.rect.midleft[
+                                                          1] + self.custom_map_option_box.image.get_height() / 4),
                                                      "Weather: Light Random")
-        self.wind_custom_select = uimenu.NameList(self.map_option_box,
-                                                  (self.map_option_box.rect.midleft[0],
-                                                   self.map_option_box.rect.midleft[
-                                                       1] + self.map_option_box.image.get_height() / 10),
+        self.wind_custom_select = uimenu.NameList(self.custom_map_option_box,
+                                                  (self.custom_map_option_box.rect.midleft[0],
+                                                   self.custom_map_option_box.rect.midleft[
+                                                       1] + self.custom_map_option_box.image.get_height() / 10),
                                                   "Wind Direction: 0")
 
         self.current_map_row = 0
@@ -948,7 +940,7 @@ class Game:
                                                          self.input_popup[1][2]], None)
 
                     elif "wind" in self.input_popup[1] and self.input_box.text.isdigit():
-                        self.map_data["info"]["weather"][0][2] = int(self.input_box.text)
+                        self.play_map_data["info"]["weather"][0][2] = int(self.input_box.text)
                         self.wind_custom_select.rename("Wind Direction: " + self.input_box.text)
 
                     elif self.input_popup[1] == "quit":
@@ -987,9 +979,6 @@ class Game:
 
                 elif self.menu_state == "custom_map":
                     self.menu_custom_map_select(esc_press)
-
-                elif self.menu_state == "custom_team_select":
-                    self.menu_custom_team_select(esc_press)
 
                 elif self.menu_state == "custom_unit_select":
                     self.menu_custom_unit_select(esc_press)

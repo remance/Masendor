@@ -11,6 +11,7 @@ def menu_main(self, esc_press):
         self.play_map_type = "preset"
         self.last_select = self.menu_state
 
+        self.unit_selected = None
         self.current_map_select = 0
         self.map_selected = self.preset_map_folder[self.current_map_select]
 
@@ -22,13 +23,14 @@ def menu_main(self, esc_press):
         self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos)
 
         self.add_ui_updater(*self.unit_select_button, self.preset_map_list_box,
-                            self.source_list_box, self.source_list_box.scroll,
                             self.unit_selector, self.unit_selector.scroll, self.unit_model_room)
 
     elif self.custom_map_button.event:  # custom map list menu
         self.menu_state = "custom_map"
         self.play_map_type = "custom"
         self.last_select = self.menu_state
+        self.play_map_data = {"info": {"weather": [[0, "09:00:00", 0, 0]]}, "unit": {"pos": {}}}
+        self.unit_selected = None
         self.current_map_select = 0
         self.map_selected = self.battle_map_folder[self.current_map_select]
         self.custom_map_list_box.items.on_select(self.current_map_select, self.map_selected)  # reset list
@@ -46,7 +48,7 @@ def menu_main(self, esc_press):
         self.add_ui_updater(*self.map_select_button, self.custom_map_list_box, self.faction_list_box,
                             self.custom_map_option_box, self.unit_selector,
                             self.unit_selector.scroll, self.weather_custom_select, self.wind_custom_select,
-                            self.night_battle_tick_box)
+                            self.night_battle_tick_box, self.unit_model_room)
 
     elif self.game_edit_button.event:  # custom unit/sub-unit editor menu
         self.menu_state = "game_creator"

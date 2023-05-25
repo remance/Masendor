@@ -233,8 +233,7 @@ def change_to_char_select_menu(self):
     self.select_button.event = False
     self.unit_select_row = 0
 
-    self.main_ui_updater.remove(*self.map_select_button, self.map_option_box, self.source_list_box,
-                                self.observe_mode_tick_box, self.source_list_box.scroll)
+    self.main_ui_updater.remove(*self.map_select_button, self.custom_map_option_box, self.observe_mode_tick_box)
     self.menu_button.remove(*self.map_select_button)
 
     for group in (self.source_namegroup,):  # remove no longer related sprites in group
@@ -244,11 +243,6 @@ def change_to_char_select_menu(self):
 
     self.main_ui_updater.remove(self.team_coa)
 
-    self.unit_stat["model"] = uimenu.ArmyStat(self.screen_scale,
-                                              (self.screen_rect.center[0] * 1.3, self.screen_rect.height / 8),
-                                              load_image(self.data_dir, self.screen_scale,
-                                                         "unit_stat.png", ("ui", "mapselect_ui")))  # troop stat
-
     self.setup_battle_unit(self.preview_unit, preview=self.team_selected)
 
     self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
@@ -256,15 +250,14 @@ def change_to_char_select_menu(self):
     for index, icon in enumerate(self.unit_icon):  # select first unit
         self.unit_selected = icon.who.map_id
         icon.selection()
-        self.unit_stat["unit"].add_leader_stat(icon.who, self.leader_data, self.troop_data)
         who_todo = {key: value for key, value in self.leader_data.leader_list.items() if key == icon.who.troop_id}
         preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True)
-        self.unit_stat["model"].add_preview_model(model=preview_sprite_pool[icon.who.troop_id]["sprite"],
+        self.unit_model_room.add_preview_model(model=preview_sprite_pool[icon.who.troop_id]["sprite"],
                                                   coa=icon.who.coa)
         self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos,
                                      selected=icon.who.base_pos)
         break
 
     self.main_ui_updater.add(self.unit_selector, self.unit_selector.scroll,
-                             tuple(self.unit_stat.values()), *self.unit_select_button)
+                             self.unit_model_room, *self.unit_select_button)
     self.menu_button.add(*self.unit_select_button)

@@ -30,26 +30,19 @@ def menu_preset_map_select(self, esc_press):
 
             return
 
-    for index, name in enumerate(self.source_namegroup):  # user select source
-        if name.event_press:  # click on source name
-            self.map_source = index
-            self.team_selected = 1
-            self.change_battle_source()
-            return
+    # for index, name in enumerate(self.source_namegroup):  # user select source
+    #     if name.event_press:  # click on source name
+    #         self.map_source = index
+    #         self.team_selected = 1
+    #         self.change_battle_source()
+    #         return
 
-    if self.source_list_box.event_press:  # click on subsection list scroll
-        self.current_source_row = self.source_list_box.scroll.player_input(
-            self.cursor.pos)  # update the scroll and get new current subsection
-        setup_list(uimenu.NameList, self.current_source_row, self.source_name_list,
-                   self.source_namegroup, self.source_list_box, self.main_ui_updater)
-
-    elif self.map_back_button.event_press or esc_press:
+    if self.map_back_button.event_press or esc_press:
         self.menu_state = self.last_select
         self.remove_ui_updater(self.start_button, self.map_back_button, self.preset_map_list_box,
-                               self.source_list_box, self.source_list_box.scroll,
                                self.map_preview, self.team_coa,
                                self.unit_selector, self.unit_selector.scroll,
-                               tuple(self.unit_stat.values()), self.unit_model_room)
+                               self.unit_model_room)
 
         # Reset selected team
         for team in self.team_coa:
@@ -59,8 +52,7 @@ def menu_preset_map_select(self, esc_press):
         self.map_source = 0
         self.map_preview.change_mode(0)  # revert map preview back to without unit dot
 
-        for group in (self.map_namegroup, self.team_coa, self.source_namegroup, self.preview_unit,
-                      self.unit_icon):  # remove map name, source name and coa item
+        for group in (self.team_coa, self.preview_unit, self.unit_icon):  # remove group item no longer used
             for stuff in group:
                 stuff.kill()
                 del stuff
@@ -72,11 +64,14 @@ def menu_preset_map_select(self, esc_press):
     elif self.start_button.event_press:  # Start Battle
         self.start_battle(self.unit_selected)
 
-    elif self.source_list_box.mouse_over:
-        self.current_source_row = list_scroll(self.screen_scale, self.cursor.scroll_up, self.cursor.scroll_down,
-                                              self.source_list_box.scroll, self.source_list_box,
-                                              self.current_source_row, self.source_name_list,
-                                              self.source_namegroup, self.main_ui_updater)
+    elif self.unit_model_room.mouse_over:
+        if self.unit_selected is not None:
+            self.single_text_popup.popup(self.cursor.rect,
+                                         (self.leader_data.leader_lore[
+                                             [item for item in self.play_map_data[self.map_source]['unit'] if
+                                              item["ID"] == self.unit_selected][0]["Leader ID"]]["Description"], ),
+                                         width_text_wrapper=500)
+            self.add_ui_updater(self.single_text_popup)
 
     elif self.unit_selector.mouse_over:
         if self.cursor.scroll_up:
@@ -133,7 +128,7 @@ def menu_preset_map_select(self, esc_press):
 
 def change_char(self):
     self.add_ui_updater(self.unit_selector, self.unit_selector.scroll,
-                        tuple(self.unit_stat.values()), *self.unit_select_button)
+                        self.unit_model_room, *self.unit_select_button)
 
 
 def leader_popup_text(self, icon):
@@ -161,11 +156,11 @@ def leader_popup_text(self, icon):
             secondary_sub_weapon = (1, 3)
 
         leader_primary_main_weapon = self.troop_data.equipment_grade_list[primary_main_weapon[1]]["Name"] + " " + \
-                                     self.troop_data.weapon_list[primary_main_weapon[0]]["Name"] + ", "
+                                     self.troop_data.weapon_list[primary_main_weapon[0]]["Name"]
         leader_primary_sub_weapon = self.troop_data.equipment_grade_list[primary_sub_weapon[1]]["Name"] + " " + \
                                     self.troop_data.weapon_list[primary_sub_weapon[0]]["Name"]
         leader_secondary_main_weapon = self.troop_data.equipment_grade_list[secondary_main_weapon[1]]["Name"] + " " + \
-                                       self.troop_data.weapon_list[secondary_main_weapon[0]]["Name"] + ", "
+                                       self.troop_data.weapon_list[secondary_main_weapon[0]]["Name"]
         leader_secondary_sub_weapon = self.troop_data.equipment_grade_list[secondary_sub_weapon[1]]["Name"] + " " + \
                                       self.troop_data.weapon_list[secondary_sub_weapon[0]]["Name"]
         leader_armour = "No Armour"
