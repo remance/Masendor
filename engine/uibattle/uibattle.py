@@ -760,7 +760,7 @@ class UnitSelector(UIBattle):
         UIBattle.__init__(self, player_interact=False)
         self.image = image
         self.pos = pos
-        self.rect = self.image.get_rect(midbottom=self.pos)
+        self.rect = self.image.get_rect(topleft=self.pos)
         self.icon_scale = icon_scale
         self.current_row = 0
         self.max_row_show = 2

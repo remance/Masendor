@@ -32,14 +32,12 @@ def change_battle_source(self):
         else:
             pos_list = [pos_list]
         for index, pos in enumerate(pos_list):
-            pos_list[index] = pos.replace("(", "").replace(")", "").split(",")
-            pos_list[index] = ((int(pos_list[index][0]), int(pos_list[index][1])), int(pos_list[index][2]))
+            if pos:
+                pos_list[index] = pos.replace("(", "").replace(")", "").split(",")
+                pos_list[index] = ((int(pos_list[index][0]), int(pos_list[index][1])), int(pos_list[index][2]))
         self.camp_pos[team] = pos_list
 
     # self.source_description.change_text(self.source_text, self.mouse_pos)
-
-    setup_list(uimenu.NameList, self.current_source_row, self.source_name_list,
-               self.source_namegroup, self.source_list_box, self.main_ui_updater)
 
     self.team_pos = {row["Team"]: [] for row in self.play_source_data["unit"]}
     for row in self.play_source_data["unit"]:
@@ -61,17 +59,6 @@ def change_battle_source(self):
 
     self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
 
-    # for index, icon in enumerate(self.unit_icon):
-    #     self.unit_selected = icon.who.map_id
-    #     icon.selection()
-    #     who_todo = {key: value for key, value in self.leader_data.leader_list.items() if key == icon.who.troop_id}
-    #     preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True)
-    #     self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos,
-    #                                  selected=icon.who.base_pos)
-    #     self.unit_model_room.add_preview_model(preview_sprite_pool[icon.who.troop_id]["sprite"],
-    #                                            icon.who.coa)
-    #     break
-
     team_coa = []
     for key2 in self.play_map_data["source"][self.map_source]:
         if "Team " in key2 and "Camp " not in key2:
@@ -82,3 +69,7 @@ def change_battle_source(self):
                                                                        self.play_map_data["source"][self.map_source][key2].split(",")]
             team_coa.append(self.play_map_data["source"][self.map_source][key2])
     self.create_team_coa(team_coa)
+
+    for index, this_team in enumerate(self.team_coa):
+        if self.team_selected == this_team.team:
+            this_team.change_select(True)

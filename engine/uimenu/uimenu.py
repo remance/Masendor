@@ -681,31 +681,34 @@ class TeamCoa(UIMenu):
         # Only main coat of arms for not selected image
         self.not_selected_image = self.not_selected_image_base.copy()
         self.selected_image = self.selected_image_base.copy()
-        coa_image = pygame.transform.smoothscale(tuple(self.coa_images.values())[0],
-                                                 (int(self.coa_size[0] * 0.7), int(self.coa_size[1] * 0.7)))
-        coa_rect = coa_image.get_rect(
-            center=(self.not_selected_image.get_width() / 2, self.not_selected_image.get_height() / 2))
-        self.not_selected_image.blit(coa_image, coa_rect)
+        if tuple(self.coa_images.values())[0]:  # coa image is not None
+            coa_image = pygame.transform.smoothscale(tuple(self.coa_images.values())[0],
+                                                     (int(self.coa_size[0] * 0.7), int(self.coa_size[1] * 0.7)))
+            coa_rect = coa_image.get_rect(
+                center=(self.not_selected_image.get_width() / 2, self.not_selected_image.get_height() / 2))
+            self.not_selected_image.blit(coa_image, coa_rect)
 
-        # All Coat of arms to selected image and main faction name
-        small_coa_pos = [int(self.selected_coa_size[0] * 0.2), int(self.selected_coa_size[1] * 0.2)]
-        for index, image in enumerate(self.coa_images.values()):
-            if image:
-                if index == 0:  # first one as main faction coa
-                    coa_image = pygame.transform.smoothscale(image, (
-                        int(self.selected_coa_size[0] * 0.65), int(self.selected_coa_size[1] * 0.65)))
-                    coa_rect = coa_image.get_rect(
-                        midtop=(self.selected_image.get_width() / 2, self.selected_coa_size[1] * 0.05))
-                else:
-                    coa_image = pygame.transform.smoothscale(image,
-                                                             (int(self.selected_coa_size[0] * 0.3), int(self.selected_coa_size[1] * 0.3)))
-                    coa_rect = coa_image.get_rect(center=small_coa_pos)
-                    small_coa_pos[1] += int(self.selected_coa_size[1] * 0.3)
-                    if index % 3 == 0:
-                        small_coa_pos = [small_coa_pos[0] + int(self.selected_coa_size[0] * 0.4), int(self.selected_coa_size[1] * 0.2)]
-                    if index == 6:
-                        small_coa_pos[0] = int(self.selected_coa_size[0] * 1.8)
-                self.selected_image.blit(coa_image, coa_rect)
+            # All Coat of arms to selected image and main faction name
+            small_coa_pos = [int(self.selected_coa_size[0] * 0.2), int(self.selected_coa_size[1] * 0.2)]
+            for index, image in enumerate(self.coa_images.values()):
+                if image:
+                    if index == 0:  # first one as main faction coa
+                        coa_image = pygame.transform.smoothscale(image, (
+                            int(self.selected_coa_size[0] * 0.65), int(self.selected_coa_size[1] * 0.65)))
+                        coa_rect = coa_image.get_rect(
+                            midtop=(self.selected_image.get_width() / 2, self.selected_coa_size[1] * 0.05))
+                    else:
+                        coa_image = pygame.transform.smoothscale(image,
+                                                                 (int(self.selected_coa_size[0] * 0.3),
+                                                                  int(self.selected_coa_size[1] * 0.3)))
+                        coa_rect = coa_image.get_rect(center=small_coa_pos)
+                        small_coa_pos[1] += int(self.selected_coa_size[1] * 0.3)
+                        if index % 3 == 0:
+                            small_coa_pos = [small_coa_pos[0] + int(self.selected_coa_size[0] * 0.4),
+                                             int(self.selected_coa_size[1] * 0.2)]
+                        if index == 6:
+                            small_coa_pos[0] = int(self.selected_coa_size[0] * 1.8)
+                    self.selected_image.blit(coa_image, coa_rect)
 
         self.name = name
         font_size = int(self.selected_image_base.get_height() / 5)
@@ -717,7 +720,7 @@ class TeamCoa(UIMenu):
         self.change_select(False)
 
 
-class ArmyStat(UIMenu):
+class LeaderModel(UIMenu):
     def __init__(self, pos, image):
         self._layer = 1
         UIMenu.__init__(self, player_interact=False)
@@ -737,24 +740,8 @@ class ArmyStat(UIMenu):
 
         self.rect = self.image.get_rect(topleft=pos)
 
-    def add_army_stat(self, troop_number, leader_name):
-        """troop_number need to be in list format as follows:[total, melee infantry, range infantry,
-        cavalry, range cavalry]"""
-        self.image = self.base_image.copy()
-
-        text_surface = self.font.render(str(leader_name), True, (0, 0, 0))
-        text_rect = text_surface.get_rect(midleft=(self.image.get_width() / 10, self.image.get_height() / 8))
-        self.image.blit(text_surface, text_rect)
-
-        for index, text in enumerate(troop_number):
-            text = str(text).replace("[", "").replace("]", "").split(",")
-            text = str([minimise_number_text(item) for item in text]).replace("'", "").replace("[", "").replace(
-                "]", "").replace(",", " +")
-            text_surface = self.font.render(text, True, (0, 0, 0))
-            text_rect = text_surface.get_rect(midleft=self.type_number_pos[index])
-            self.image.blit(text_surface, text_rect)
-
     def add_preview_model(self, model=None, coa=None):
+        """Add coat of arms as background and/or leader model"""
         self.image = self.base_image.copy()
         if coa:
             new_coa = pygame.transform.smoothscale(coa, (200 * self.screen_scale[0],
@@ -864,24 +851,18 @@ class TickBox(UIMenu):
 
 
 class MapOptionBox(UIMenu):
-    def __init__(self, pos, image, mode):
+    def __init__(self, pos, image):
         self._layer = 13
         UIMenu.__init__(self, player_interact=False)
         self.image = image.copy()
 
         self.font = pygame.font.Font(self.ui_font["main_button"], int(20 * self.screen_scale[1]))
 
-        # Observation mode option text
-        text_surface = self.font.render("Observation Mode", True, (0, 0, 0))
+        text_surface = self.font.render("Night Battle", True, (0, 0, 0))
         text_rect = text_surface.get_rect(midleft=(self.image.get_width() / 3.5, self.image.get_height() / 5))
         self.image.blit(text_surface, text_rect)
 
-        if mode == 1:  # custom map option
-            text_surface = self.font.render("Night Battle", True, (0, 0, 0))
-            text_rect = text_surface.get_rect(midleft=(self.image.get_width() / 3.5, self.image.get_height() / 2.5))
-            self.image.blit(text_surface, text_rect)
-
-        self.rect = self.image.get_rect(topright=pos)
+        self.rect = self.image.get_rect(topleft=pos)
 
 
 class MapPreview(UIMenu, BattleMap):
@@ -1080,11 +1061,15 @@ class TextPopup(UIMenu):
 
             text_surface = []
             if width_text_wrapper:
+                max_height = 0
+                max_width = 0
                 for text in self.text_input:
-                    text_image = pygame.Surface((width_text_wrapper, len(text) / width_text_wrapper * int(self.font_size * self.screen_scale[1])))
-                    make_long_text(text_image, text,
-                                   (int(self.font_size * self.screen_scale[0]), int(self.font_size * self.screen_scale[1])),
-                                   self.font)
+                    text_image = pygame.Surface((width_text_wrapper, (len(text) * (self.font_size ** 2 / 1.3) / width_text_wrapper)))
+                    text_image.fill((255, 255, 255))
+                    make_long_text(text_image, text, (self.font_size, self.font_size), self.font)
+                    text_surface.append(text_image)
+                    max_width = text_image.get_width()
+                    max_height += text_image.get_height() + self.font_size + int(self.font_size / 5)
             else:
                 max_width = 0
                 max_height = 0
@@ -1109,14 +1094,23 @@ class TextPopup(UIMenu):
                 self.image.blit(surface, text_rect)  # blit text
                 height += self.font_size + int(self.font_size / 10)
 
-        if cursor_rect.bottomright[0] + self.image.get_width() > self.screen_size[0]:  # exceed screen width
+        self.rect = self.image.get_rect(bottomleft=cursor_rect.bottomright)
+
+        exceed_right = False
+        if cursor_rect.bottomright[0] + self.image.get_width() > self.screen_size[0]:  # exceed right screen
             self.rect = self.image.get_rect(topright=cursor_rect.bottomleft)
-            if cursor_rect.bottomright[1] + self.image.get_height() > self.screen_size[1]:  # also exceed height screen
+            exceed_right = True
+        elif cursor_rect.bottomleft[0] - self.image.get_width() < 0:  # exceed left side screen
+            self.rect = self.image.get_rect(topleft=cursor_rect.bottomright)
+
+        if cursor_rect.bottomright[1] + self.image.get_height() > self.screen_size[1]:  # exceed bottom screen
+            self.rect = self.image.get_rect(bottomleft=cursor_rect.topright)
+            if exceed_right:
                 self.rect = self.image.get_rect(bottomright=cursor_rect.topleft)
-        elif cursor_rect.bottomleft[0] - self.image.get_height() < 0:  # exceed left side screen
-            self.rect = self.image.get_rect(topleft=cursor_rect.topright)
-        else:  # not exceed any
-            self.rect = self.image.get_rect(bottomleft=cursor_rect.bottomright)
+        elif cursor_rect.bottomright[1] - self.image.get_height() < 0:  # exceed top screen
+            self.rect = self.image.get_rect(topleft=cursor_rect.bottomright)
+            if exceed_right:
+                self.rect = self.image.get_rect(topright=cursor_rect.bottomleft)
 
 
 class BoxUI(UIMenu, Containable, Container):
