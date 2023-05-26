@@ -868,6 +868,13 @@ class CustomBattleListAdapter(ListAdapter):
     def __init__(self, _list, _self):
         ListAdapter.__init__(self, _list, _self)
 
+    def __getitem__(self, item):
+        if item > len(self.list)-1: return None
+        return self.list[item]
+
+    def __len__(self):
+        return len(self.list)
+
     def on_select(self, item_index, item_text):
         _self = self._self
         self.last_index = item_index
@@ -1227,7 +1234,8 @@ class ListUI(UIMenu, Containable):
         self.pivot = pivot
         self.origin = origin
         self.parent = parent
-        self.frame = load_image(game.module_dir, (1, 1), "list_frame.png", ("ui", "mainmenu_ui"))
+        frame_file = "new_button.png"  # "list_frame.png" # using the button frame to test if it looks good
+        self.frame = load_image(game.module_dir, (1, 1), frame_file, ("ui", "mainmenu_ui"))
         self.scroll_box_frame = load_image(game.module_dir, (1, 1), "scroll_box_frame.png", ("ui", "mainmenu_ui"))
 
         self.item_size = item_size
@@ -1286,7 +1294,7 @@ class ListUI(UIMenu, Containable):
                     color = "#551617"
 
                 pygame.draw.rect(self.image, color, (6, 6 + i * item_height, size[0] - 13*self.has_scroll-12, item_height))
-            self.image.blit(font.render(self.items[item_index], True, (255 if item_index == self.selected_index else 178,) * 3),
+            self.image.blit(font.render(self.items[item_index], True, (255 if item_index == self.selected_index else 0,) * 3),
                             (20, item_height // 2 + 6 - 9 + i * item_height))
 
         # draw scroll bar
@@ -1347,7 +1355,7 @@ class ListUI(UIMenu, Containable):
                 if self.scroll_box_index < 0:
                     self.scroll_box_index = 0
 
-            if self.get_scroll_bar_rect().collidepoint(relative_mouse_pos):
+            if self.has_scroll and self.get_scroll_bar_rect().collidepoint(relative_mouse_pos):
                 if self.get_scroll_box_rect().collidepoint(relative_mouse_pos):
                     self.in_scroll_box = True
             else:

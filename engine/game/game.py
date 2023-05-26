@@ -509,6 +509,7 @@ class Game:
 
         # Battle map select menu button
 
+        # NOTE: not used anymore? if so, remove
         class CustomBattleListAdapter:
             def __init__(self, _list, _self):
                 self.list = _list
