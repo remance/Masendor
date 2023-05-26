@@ -233,7 +233,7 @@ def change_to_char_select_menu(self):
     self.select_button.event = False
     self.unit_select_row = 0
 
-    self.main_ui_updater.remove(*self.map_select_button, self.custom_map_option_box, self.observe_mode_tick_box)
+    self.main_ui_updater.remove(*self.map_select_button, self.night_battle_tick_box, self.custom_map_option_box)
     self.menu_button.remove(*self.map_select_button)
 
     for group in (self.source_namegroup,):  # remove no longer related sprites in group

@@ -18,7 +18,7 @@ from engine import utility  # nopep8
 from engine.game.create_troop_sprite_pool import create_troop_sprite_pool  # nopep8
 from engine.game.game import Game  # nopep8
 from engine.game.setup.make_faction_troop_leader_data import make_faction_troop_leader_data  # nopep8
-from engine.data import datasprite  # nopep8
+from engine.data import datasprite, datalocalisation  # nopep8
 
 csv_read = utility.csv_read
 
@@ -37,15 +37,17 @@ class MinifiedGame(Game):
         """
             Minified init-method. Prevents the game from starting an only setup a required state.
         """
-        self.main_dir = main_dir
-        self.data_dir = os.path.join(self.main_dir, "data")
-        self.screen_scale = (1, 1)
+        Game.main_dir = main_dir
+        Game.data_dir = os.path.join(Game.main_dir, "data")
+        Game.screen_scale = (1, 1)
         self.module = 0
         self.module_list = csv_read(
             self.main_dir, "module_list.csv", ("data", "module"))
-        self.module_folder = str(self.module_list[self.module][0]).strip("/").lower()
-        self.module_dir = os.path.join(self.data_dir, "module", self.module_folder)
-        self.language = 'en'
+        Game.module_folder = str(self.module_list[self.module][0]).strip("/").lower()
+        Game.module_dir = os.path.join(self.data_dir, "module", self.module_folder)
+        Game.language = 'en'
+        localisation = datalocalisation.Localisation()
+        Game.localisation = localisation
 
     def change_module(self):
         """
@@ -53,7 +55,7 @@ class MinifiedGame(Game):
             the script to be able to run.
         """
 
-        self.troop_data, self.leader_data, self.faction_data = make_faction_troop_leader_data(self.data_dir, self.module_dir, self.screen_scale, self.language)
+        self.troop_data, self.leader_data, self.faction_data = make_faction_troop_leader_data(self.module_dir, self.screen_scale)
 
         self.troop_animation = datasprite.TroopAnimationData(self.data_dir, self.module_dir,
                                                              [str(self.troop_data.race_list[key]["Name"])
@@ -133,7 +135,7 @@ def index():
 def regions():
     regions = set()
     for faction in game.faction_data.faction_list.values():
-        regions.add(faction['Type'])
+        regions.add(faction['Tag'])
 
     # There is a "All" Region/Type found on the faction "All Factions" in faction.csv.
     # This is obviously not an actual faction nor region so I discard it from being visible.
@@ -146,18 +148,18 @@ def regions():
 
     for leader in game.leader_data.leader_list.values():
         for faction in leader["Faction"]:
-            region_no_leaders[faction_data[faction]["Type"]] += 1
+            region_no_leaders[faction_data[faction]["Tag"]] += 1
 
     for troop in game.troop_data.troop_list.values():
         for faction in troop["Faction"]:
-            region_no_troop_types[faction_data[faction]["Type"]] += 1
+            region_no_troop_types[faction_data[faction]["Tag"]] += 1
 
     regions = [
         {
             "id": region.lower().replace(" ", "-"),  # there is not such thing as an region id (yet?) so we have
             # to rely on the name (but make it more id-like)
             "name": region,
-            "no-factions": len([1 for f in game.faction_data.faction_list.values() if f["Type"] == region]),
+            "no-factions": len([1 for f in game.faction_data.faction_list.values() if f["Tag"] == region]),
             "no-leaders": region_no_leaders[region],
             "no-troop-types": region_no_troop_types[region],
         }
@@ -191,7 +193,7 @@ def factions():
                 "strengths": v["Strengths"],
                 "weaknesses": v["Weaknesses"],
                 "favoured-troop": v["Favoured Troop"],
-                "region": v["Type"],
+                "region": v["Tag"],
                 "no-leaders": faction_no_leaders[k],
                 "no-troop-types": faction_no_troop_types[k],
             }
@@ -473,7 +475,7 @@ def leaders(leader_id=None):
                      [leader_skill_list[item]["Name"] for item in v.get('Skill')],
             "trait": v.get('Trait'),
             "formations": v.get('Formation'),
-            "type": v.get('Type'),
+            "type": v.get('Tag'),
             "size": v.get('Size'),
         }
 

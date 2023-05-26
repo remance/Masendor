@@ -32,6 +32,8 @@ class TroopData(GameData):
         For keeping all data related to troop.
         """
         GameData.__init__(self)
+        self.troop_class = self.localisation.create_lore_data("troop_class")
+
         # Troop special status effect dict, not module related
         self.special_effect_list = {}
         with open(os.path.join(self.data_dir, "troop", "troop_special_effect.csv"), encoding="utf-8",

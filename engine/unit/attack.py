@@ -4,7 +4,7 @@ from random import choice, uniform, randint
 from pygame import Vector2
 
 from engine import utility
-from engine.effect.effect import MeleeDamageEffect, RangeDamageEffect, ChargeDamageEffect, EffectDamageEffect
+from engine.effect.effect import MeleeDamageEffect, RangeDamageEffect, EffectDamageEffect
 
 convert_degree_to_360 = utility.convert_degree_to_360
 
@@ -26,9 +26,8 @@ def attack(self, attack_type):
 
         if attack_type == "range":
             max_range = self.shoot_range[weapon]
-            if max_range <= 0:
-                print(self.name, weapon, self.shoot_range, self.current_action, self.equipped_weapon)
-                crash
+            if max_range <= 0:  # TODO Fix this bug
+                raise Exception((self.name, weapon, self.shoot_range, self.current_action, self.equipped_weapon))
 
             accuracy = self.accuracy
             sight_penalty = 1
@@ -114,8 +113,7 @@ def attack(self, attack_type):
             try:
                 self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
             except KeyError:
-                print(self.name, weapon, self.equipped_weapon, self.current_action, self.ammo_now)
-                crash
+                raise Exception(self.name, weapon, self.equipped_weapon, self.current_action, self.ammo_now)
 
             if self.ammo_now[self.equipped_weapon][weapon] == 0 and \
                     self.magazine_count[self.equipped_weapon][weapon] == 0:
@@ -139,24 +137,6 @@ def attack(self, attack_type):
                     choice(self.sound_effect_pool[equipped_weapon_data["Sound Effect"]]),
                     self.base_pos, equipped_weapon_data["Sound Distance"],
                     equipped_weapon_data["Shake Power"])
-
-        elif attack_type == "charge":
-            if weapon:
-                dmg = {key: value[0] for key, value in self.weapon_dmg[weapon].items() if value[0]}
-                impact = self.weapon_impact[self.equipped_weapon][weapon]
-                penetrate = self.weapon_penetrate[self.equipped_weapon][weapon]
-                stat = equipped_weapon_data
-            else:  # charge without using weapon (by running)
-                dmg = self.body_weapon_damage
-                impact = self.body_weapon_impact
-                penetrate = self.body_weapon_penetrate
-                stat = self.body_weapon_stat
-            if self.charge_sprite:  # charge sprite already existed
-                self.charge_sprite.change_weapon(dmg, penetrate, impact)
-            else:
-                self.charge_sprite = ChargeDamageEffect(self, weapon, dmg, penetrate, impact, stat,
-                                                        "charge", self.base_pos, self.base_pos,
-                                                        accuracy=self.melee_attack)
 
         else:  # melee attack
             accuracy = self.melee_attack

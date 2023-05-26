@@ -180,7 +180,6 @@ class Game:
     from engine.game import start_battle
     start_battle = start_battle.start_battle
 
-    popup_list_open = utility.popup_list_open
     lorebook_process = lorebook.lorebook_process
     setup_battle_unit = setup_battle_unit.setup_battle_unit
 
@@ -188,10 +187,11 @@ class Game:
 
     team_colour = {0: (50, 50, 50), 1: (50, 50, 150), 2: (200, 50, 50), 3: (200, 200, 0), 4: (0, 200, 0),
                    5: (200, 0, 200), 6: (140, 90, 40), 7: (100, 170, 170), 8: (230, 120, 0), 9: (230, 60, 110),
-                   10: (130, 120, 200)}
+                   10: (130, 120, 200), 11: (100, 150, 120), 12: (175, 165, 115)}
     selected_team_colour = {0: (200, 200, 200), 1: (180, 180, 255), 2: (255, 150, 150), 3: (255, 255, 150),
                             4: (150, 255, 150), 5: (255, 150, 255), 6: (200, 140, 70), 7: (160, 200, 200),
-                            8: (255, 150, 45), 9: (230, 140, 160), 10: (200, 190, 230)}
+                            8: (255, 150, 45), 9: (230, 140, 160), 10: (200, 190, 230), 11: (170, 200, 180),
+                            12: (210, 200, 170)}
 
     skill_level_text = ("E", "E+", "D", "D+", "C", "C+", "B", "B+", "A", "A+", "S")
 
@@ -300,7 +300,6 @@ class Game:
         self.map_source = 0  # current selected map source
         self.team_selected = 1
         self.unit_selected = None
-        self.current_popup_row = 0
         self.team_pos = {}  # for saving preview map unit pos
         self.camp_pos = {}  # for saving preview map camp pos
         self.play_map_data = {"info": {"weather": [[0, "09:00:00", 0, 0]]}, "unit": {"pos": {}}}
@@ -331,7 +330,6 @@ class Game:
 
         # battle select menu group
         self.map_namegroup = pygame.sprite.Group()  # map name list group
-        self.popup_namegroup = pygame.sprite.Group()
         self.team_coa = pygame.sprite.Group()  # team coat of arm that also act as team selection icon
         self.source_namegroup = pygame.sprite.Group()  # source name list group
 
@@ -536,24 +534,29 @@ class Game:
                 return self.last_index
 
         self.preset_map_list_box = uimenu.ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
-                                                 items=CustomBattleListAdapter(self.battle_map_list, self),
+                                                 items=uimenu.ListAdapter(self.battle_map_list, self),
                                                  parent=self.screen, item_size=20)  # TODO change to preset map list
 
+        # NOTE: not used anymore? if so, remove
         self.custom_map_list_box = uimenu.ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
                                                  items=CustomBattleListAdapter(self.battle_map_list, self),
                                                  parent=self.screen, item_size=40)
 
-        self.faction_list_box = uimenu.ListUI(pivot=(0.3, -0.1), origin=(-1, -1), size=(.3, .4),
-                                              items=CustomBattleListAdapter(self.battle_map_list, self),
-                                              parent=self.screen, item_size=10)  # ["None"] + self.faction_data.faction_name_list
+        self.custom_battle_map_list_box = uimenu.ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
+                                                        items=uimenu.CustomBattleListAdapter(self.battle_map_list, self),
+                                                        parent=self.screen, item_size=20)
+
+        self.custom_battle_faction_list_box = uimenu.ListUI(pivot=(-0.03, -0.1), origin=(-1, -1), size=(.3, .4),
+                                                            items=uimenu.CustomBattleFactionListAdapter(["None"] + self.faction_data.faction_name_list, self),
+                                                            parent=self.screen, item_size=10)
 
         self.unit_list_box = uimenu.ListUI(pivot=(0.3, -0.1), origin=(-1, -1), size=(.3, .4),
-                                           items=CustomBattleListAdapter(self.battle_map_list, self),
-                                           parent=self.screen, item_size=10)  # ["None"] + self.faction_data.faction_name_list
+                                           items=uimenu.ListAdapter(self.battle_map_list, self),
+                                           parent=self.screen, item_size=10)
 
-        # self.weather_list_box = uimenu.ListUI(pivot=(0.3, -0.1), origin=(-1, -1), size=(.3, .4),
-        #                                       items=CustomBattleListAdapter(self.battle_map_data.weather_list, self),
-        #                                       parent=self.screen, item_size=10)
+        self.weather_list_box = uimenu.ListUI(pivot=(0, -0.1), origin=(-1, -1), size=(.3, .4),
+                                              items=uimenu.WeatherListAdapter(self.battle_map_data.weather_list, self),
+                                              parent=self.screen, item_size=10, layer=20)
 
         battle_select_image = load_images(self.module_dir, screen_scale=self.screen_scale,
                                           subfolder=("ui", "mapselect_ui"))
@@ -564,7 +567,7 @@ class Game:
                                                    battle_select_image["unit_select"], icon_scale=0.4)
         uibattle.UIScroll(self.unit_selector, self.unit_selector.rect.topright)  # scroll bar for unit pick
 
-        self.unit_model_room = uimenu.LeaderModel(self.unit_selector.rect.bottomleft,
+        self.unit_model_room = uimenu.LeaderModel(self.unit_selector.rect.bottomright,
                                                   battle_select_image["small_box"])  # troop stat
 
         bottom_height = self.screen_rect.height - image_list[0].get_height()
@@ -588,7 +591,7 @@ class Game:
         uibattle.UIScroll(self.unit_list_box, self.unit_list_box.rect.topright)  # scroll bar for map list
 
         # ui box for battle option during preset map preparation screen
-        self.custom_map_option_box = uimenu.MapOptionBox(self.unit_model_room.rect.bottomleft,
+        self.custom_map_option_box = uimenu.MapOptionBox(self.unit_model_room.rect.bottomright,
                                                          battle_select_image["small_box"])
 
         self.org_chart = uimenu.OrgChart(load_image(self.module_dir, self.screen_scale,
@@ -597,13 +600,10 @@ class Game:
 
         self.camp_icon = []
 
-        self.observe_mode_tick_box = uimenu.TickBox((self.custom_map_option_box.rect.topleft[0] * 1.05,
-                                                     self.custom_map_option_box.rect.topleft[1] * 1.15),
-                                                    battle_select_image["untick"], battle_select_image["tick"],
-                                                    "observe")
         self.night_battle_tick_box = uimenu.TickBox((self.custom_map_option_box.rect.topleft[0] * 1.05,
-                                                     self.custom_map_option_box.rect.topleft[1] * 1.1),
-                                                    battle_select_image["untick"], battle_select_image["tick"], "night")
+                                                     self.custom_map_option_box.rect.topleft[1] * 1.05),
+                                                    battle_select_image["untick"], battle_select_image["tick"],
+                                                    "night")
         self.weather_custom_select = uimenu.NameList(self.custom_map_option_box,
                                                      (self.custom_map_option_box.rect.midleft[0],
                                                       self.custom_map_option_box.rect.midleft[
@@ -667,7 +667,6 @@ class Game:
             self.back_button, self.default_button, self.keybind_button, self.resolution_drop, self.fullscreen_box)
 
         # Profile box
-        self.profile_name = self.profile_name
         profile_box_image = load_image(self.module_dir, self.screen_scale, "profile_box.png", ("ui", "mainmenu_ui"))
         self.profile_box = uimenu.TextBox(profile_box_image, (self.screen_width, 0),
                                           self.profile_name)  # profile name box at top right of screen at start_set menu screen
@@ -686,11 +685,6 @@ class Game:
         self.confirm_ui_popup = (self.input_ok_button, self.input_cancel_button, self.confirm_ui)
         self.inform_ui_popup = (self.input_close_button, self.input_ui, self.input_box)
 
-        box_image = load_image(self.module_dir, self.screen_scale, "unit_presetbox.png", ("ui", "mainmenu_ui"))
-        self.popup_list_box = uimenu.ListBox((0, 0), box_image,
-                                             15)  # popup box need to be in higher layer
-        uibattle.UIScroll(self.popup_list_box, self.popup_list_box.rect.topright)
-
         editor_dict = make_editor_ui(self.module_dir, self.screen_scale, self.screen_rect,
                                      load_image(self.module_dir, self.screen_scale, "name_list.png",
                                                 ("ui", "mapselect_ui")),
@@ -699,10 +693,9 @@ class Game:
         self.editor_troop_list_box = editor_dict["troop_listbox"]
         self.unit_delete_button = editor_dict["unit_delete_button"]
         self.unit_save_button = editor_dict["unit_save_button"]
-        self.popup_list_box = editor_dict["popup_listbox"]
 
         self.unit_editor_ui = (self.unit_preset_list_box, self.editor_troop_list_box,
-                               self.unit_delete_button, self.unit_save_button, self.popup_list_box)
+                               self.unit_delete_button, self.unit_save_button)
 
         self.status_images, self.role_images, self.trait_images, self.skill_images = make_icon_data(self.module_dir,
                                                                                                     self.screen_scale)
@@ -711,12 +704,6 @@ class Game:
         self.single_text_popup = uimenu.TextPopup()  # popup box that show name when mouse over
 
         # Encyclopedia interface
-        self.encyclopedia, self.lore_name_list, self.filter_tag_list, self.lore_buttons, self.page_button = make_lorebook(
-            self, self.module_dir, self.screen_scale, self.screen_rect)
-
-        self.encyclopedia_stuff = (self.encyclopedia, self.lore_name_list, self.filter_tag_list,
-                                   self.lore_name_list.scroll, self.filter_tag_list.scroll, self.lore_buttons.values())
-
         lorebook.Lorebook.concept_stat = csv_read(self.module_dir, "concept_stat.csv",
                                                   ("lore",), header_key=True)
         lorebook.Lorebook.concept_lore = self.localisation.create_lore_data("concept")
@@ -729,7 +716,11 @@ class Game:
         lorebook.Lorebook.leader_data = self.leader_data
         lorebook.Lorebook.battle_map_data = self.battle_map_data
 
-        self.encyclopedia.change_module()
+        self.encyclopedia, self.lore_name_list, self.filter_tag_list, self.lore_buttons, self.page_button = make_lorebook(
+            self, self.module_dir, self.screen_scale, self.screen_rect)
+
+        self.encyclopedia_stuff = (self.encyclopedia, self.lore_name_list, self.filter_tag_list,
+                                   self.lore_name_list.scroll, self.filter_tag_list.scroll, self.lore_buttons.values())
 
         self.battle = battle.Battle(self)
         self.player1_battle_cursor = self.battle.player1_battle_cursor
@@ -754,7 +745,7 @@ class Game:
         # Starting script
         self.add_ui_updater(*self.mainmenu_button)
 
-        self.start_menu_ui_only = *self.mainmenu_button, self.profile_box  # ui that only appear at the start menu
+        self.start_menu_ui_only = self.mainmenu_button  # ui that only appear at the start menu
         self.add_ui_updater(*self.start_menu_ui_only)
         self.menu_state = "main_menu"
         self.input_popup = None  # popup for text input state
@@ -886,7 +877,7 @@ class Game:
             self.main_ui_updater.update()
 
             # Reset screen
-            self.screen.fill((180, 180, 150))
+            self.screen.fill((220, 220, 180))
             # self.screen.blit(self.background, (0, 0))  # blit background over instead of clear() to reset screen
 
             if self.input_popup:  # currently, have input text pop up on screen, stop everything else until done
@@ -901,7 +892,7 @@ class Game:
                         pos = self.input_popup[1].split("/")[1]
                         pos = pos.replace("(", "").replace(")", "").split(", ")
                         pos = [float(item) for item in pos]
-                        self.camp_pos[0][int(self.input_popup[1][-1])].insert(0, [pos, int(self.input_box.text)])
+                        self.camp_pos[int(self.input_popup[1][-1])].insert(0, [pos, int(self.input_box.text)])
                         self.camp_icon.insert(0, uibattle.TempUnitIcon(int(self.input_popup[1][-1]),
                                                                        self.input_box.text, 0))
                         self.unit_selector.setup_unit_icon(self.unit_icon, self.camp_icon)

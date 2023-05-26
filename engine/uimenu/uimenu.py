@@ -5,6 +5,7 @@ import pyperclip
 from functools import lru_cache
 
 from engine.battlemap.battlemap import BattleMap
+from engine.game.menu_custom_map_select import custom_faction_list_on_select, custom_weather_list_on_select
 
 from engine.utility import keyboard_mouse_press_check, text_render, minimise_number_text, make_long_text
 
@@ -133,7 +134,7 @@ class MenuCursor(UIMenu):
     def __init__(self, images):
         """Game menu cursor"""
         self._layer = 1000000  # as high as possible, always blit last
-        UIMenu.__init__(self, has_containers=True)
+        UIMenu.__init__(self, player_interact=False, has_containers=True)
         self.images = images
         self.image = images["normal"]
         self.pos = (0, 0)
@@ -141,9 +142,9 @@ class MenuCursor(UIMenu):
         self.is_select_just_down = False
         self.is_select_down = False
         self.is_select_just_up = False
-        self.is_mouse_right_just_down = False
-        self.is_mouse_right_down = False
-        self.is_mouse_right_just_up = False
+        self.is_alt_select_just_down = False
+        self.is_alt_select_down = False
+        self.is_alt_select_just_up = False
         self.scroll_up = False
         self.scroll_down = False
 
@@ -154,8 +155,9 @@ class MenuCursor(UIMenu):
         self.is_select_just_down, self.is_select_down, self.is_select_just_up = keyboard_mouse_press_check(
             pygame.mouse, 0, self.is_select_just_down, self.is_select_down, self.is_select_just_up)
 
-        self.is_mouse_right_just_down, self.is_mouse_right_down, self.is_mouse_right_just_up = keyboard_mouse_press_check(
-            pygame.mouse, 0, self.is_mouse_right_just_down, self.is_mouse_right_down, self.is_mouse_right_just_up)
+        # Alternative select press button, like mouse right
+        self.is_alt_select_just_down, self.is_alt_select_down, self.is_alt_select_just_up = keyboard_mouse_press_check(
+            pygame.mouse, 2, self.is_alt_select_just_down, self.is_alt_select_down, self.is_alt_select_just_up)
 
     def change_image(self, image_name):
         """Change cursor image to whatever input name"""
@@ -335,7 +337,7 @@ class InputBox(UIMenu):
 class TextBox(UIMenu):
     def __init__(self, image, pos, text):
         self._layer = 13
-        UIMenu.__init__(self, player_interact=False)
+        UIMenu.__init__(self)
 
         self.font = pygame.font.Font(self.ui_font["main_button"], int(36 * self.screen_scale[1]))
         self.image = image
@@ -440,6 +442,27 @@ class Containable:
 
     def get_size(self):
         raise NotImplementedError()
+
+    def converse_pos_origin(self, pos, container):
+        """Convert pos to origin value (-1, 1 scale)"""
+        origin = [pos[0], pos[1]]
+        for index, this_pos in enumerate(origin):
+            container_size = container.get_size()[index]
+            this_pos = container_size - this_pos  # some magic to make it appear not too far from pos
+            if this_pos > container.get_size()[index] / 2:  # + scale
+                origin[index] = round(this_pos / container_size, 2)
+            elif this_pos < container.get_size()[index] / 2:  # - scale
+                if this_pos == 0:  # 0 value mean at most left/top
+                    origin[index] = -1
+                else:
+                    origin[index] = -1 + round(this_pos / container_size, 2)
+            else:  # center
+                origin[index] = 0
+        return origin
+
+    def change_origin_with_pos(self, pos):
+        self.origin = self.converse_pos_origin(pos, self.parent)
+        self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
 
     def get_adjusted_rect_to_be_inside_container(self, container):
         rpic = self.get_relative_position_inside_container()
@@ -717,7 +740,7 @@ class TeamCoa(UIMenu):
         text_rect = text_surface.get_rect(
             center=(int(self.selected_image.get_width() / 2), self.selected_image.get_height() - font_size))
         self.selected_image.blit(text_surface, text_rect)
-        self.change_select(False)
+        self.change_select(self.selected)
 
 
 class LeaderModel(UIMenu):
@@ -738,7 +761,7 @@ class LeaderModel(UIMenu):
                                 (self.image.get_width() / 1.4, self.image.get_height() / 1.8),  # cav range
                                 (self.image.get_width() / 3, self.image.get_height() / 1.32))  # total unit number
 
-        self.rect = self.image.get_rect(topleft=pos)
+        self.rect = self.image.get_rect(topright=pos)
 
     def add_preview_model(self, model=None, coa=None):
         """Add coat of arms as background and/or leader model"""
@@ -822,6 +845,52 @@ class NameList(UIMenu):
         self.not_selected_image = self.image.copy()
 
 
+class ListAdapter:
+    def __init__(self, _list, _self):
+        self.list = _list
+        self.last_index = -1
+        self._self = _self
+
+    def __len__(self):
+        return len(self.list)
+
+    def __getitem__(self, item):
+        return self.list[item]
+
+    def on_select(self, item_index, item_text):
+        pass
+
+    def get_highlighted_index(self):
+        return self.last_index
+
+
+class CustomBattleListAdapter(ListAdapter):
+    def __init__(self, _list, _self):
+        ListAdapter.__init__(self, _list, _self)
+
+    def on_select(self, item_index, item_text):
+        _self = self._self
+        self.last_index = item_index
+        _self.current_map_select = item_index
+        _self.map_selected = _self.battle_map_folder[_self.current_map_select]
+        _self.create_preview_map()
+        print("test {0} {1}".format(item_index, item_text))
+
+
+class WeatherListAdapter(ListAdapter):
+    on_select = custom_weather_list_on_select
+
+    def __init__(self, _list, _self):
+        ListAdapter.__init__(self, _list, _self)
+
+
+class CustomBattleFactionListAdapter(ListAdapter):
+    on_select = custom_faction_list_on_select
+
+    def __init__(self, _list, _self):
+        ListAdapter.__init__(self, _list, _self)
+
+
 class TickBox(UIMenu):
     def __init__(self, pos, image, tick_image, option):
         """option is in str text for identifying what kind of tick_box it is"""
@@ -862,7 +931,7 @@ class MapOptionBox(UIMenu):
         text_rect = text_surface.get_rect(midleft=(self.image.get_width() / 3.5, self.image.get_height() / 5))
         self.image.blit(text_surface, text_rect)
 
-        self.rect = self.image.get_rect(topleft=pos)
+        self.rect = self.image.get_rect(topright=pos)
 
 
 class MapPreview(UIMenu, BattleMap):
@@ -1148,15 +1217,16 @@ class BoxUI(UIMenu, Containable, Container):
 
 class ListUI(UIMenu, Containable):
 
-    def __init__(self, origin, pivot, size, items, parent, item_size):
+    def __init__(self, origin, pivot, size, items, parent, item_size, layer=0):
 
         from engine.game.game import Game
         from engine.utility import load_image
         game = Game.game
-
+        self._layer = layer
         UIMenu.__init__(self)
         self.pivot = pivot
         self.origin = origin
+        self.parent = parent
         self.frame = load_image(game.module_dir, (1, 1), "list_frame.png", ("ui", "mainmenu_ui"))
         self.scroll_box_frame = load_image(game.module_dir, (1, 1), "scroll_box_frame.png", ("ui", "mainmenu_ui"))
 
@@ -1170,7 +1240,7 @@ class ListUI(UIMenu, Containable):
         self.hold_scroll_box = None
         self.selected_index = None
 
-        self.rect = self.get_adjusted_rect_to_be_inside_container(parent)
+        self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
 
         self.scroll_bar_height = self.rect[3] - 12
         self.scroll_box_height = int(self.scroll_bar_height * (item_size / len(self.items)))
@@ -1249,6 +1319,10 @@ class ListUI(UIMenu, Containable):
         self.selected_index = None
         mljd = self.cursor.is_select_just_down
         mld = self.cursor.is_select_down
+        mlju = self.cursor.is_select_just_up
+        mrju = self.cursor.is_alt_select_just_up
+        msu = self.cursor.scroll_up
+        msd = self.cursor.scroll_down
 
         # detect if in list or over scroll box
         self.in_scroll_box = False
@@ -1262,12 +1336,30 @@ class ListUI(UIMenu, Containable):
                         self.in_scroll_box = True
                     in_list = False
 
+            # Check for scrolling button
+            noiovl = self.get_number_of_items_outside_visible_list()
+            if msd:
+                self.scroll_box_index += 1
+                if self.scroll_box_index > noiovl:
+                    self.scroll_box_index = noiovl
+            elif msu:
+                self.scroll_box_index -= 1
+                if self.scroll_box_index < 0:
+                    self.scroll_box_index = 0
+
+            if self.get_scroll_bar_rect().collidepoint(relative_mouse_pos):
+                if self.get_scroll_box_rect().collidepoint(relative_mouse_pos):
+                    self.in_scroll_box = True
+            else:
+                in_list = True
+
         # scroll box drag handler
         if not mld:
             self.hold_scroll_box = None
-        if mljd and self.in_scroll_box:
+        if self.in_scroll_box and mljd:
             self.hold_scroll_box = relative_mouse_pos[1]
             self.scroll_box_index_at_hold = self.scroll_box_index
+
         if self.hold_scroll_box:
             self.scroll_box_index = self.scroll_box_index_at_hold + int(
                 (relative_mouse_pos[1] - self.hold_scroll_box + self.scroll_step_height / 2) / self.scroll_step_height)
@@ -1288,7 +1380,8 @@ class ListUI(UIMenu, Containable):
         if self.selected_index is not None:
             if self.selected_index >= len(self.items): self.selected_index = None
 
-        if in_list and mljd and self.selected_index is not None:
+        #if in_list and mljd and self.selected_index is not None:
+        if in_list and (mlju or mrju) and self.selected_index is not None:
             self.items.on_select(self.selected_index, self.items[self.selected_index])
 
         # refresh image

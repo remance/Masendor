@@ -35,19 +35,19 @@ def menu_main(self, esc_press):
         self.unit_model_room.add_preview_model()  # reset model room
         self.current_map_select = 0
         self.map_selected = self.battle_map_folder[self.current_map_select]
-        self.custom_map_list_box.items.on_select(self.current_map_select, self.map_selected)  # reset list
+        self.custom_battle_map_list_box.items.on_select(self.current_map_select, self.map_selected)  # reset list
 
         self.remove_ui_updater(*self.start_menu_ui_only)
 
         self.create_preview_map()
 
-        self.create_team_coa([None for _ in range(10)])
+        self.create_team_coa([None for _ in range(12)])
 
         for team in self.team_coa:
             if self.team_selected == team.team:
                 team.change_select(True)
 
-        self.add_ui_updater(*self.map_select_button, self.custom_map_list_box, self.faction_list_box,
+        self.add_ui_updater(*self.map_select_button, self.custom_battle_map_list_box, self.custom_battle_faction_list_box,
                             self.custom_map_option_box, self.unit_selector,
                             self.unit_selector.scroll, self.weather_custom_select, self.wind_custom_select,
                             self.night_battle_tick_box, self.unit_model_room)
@@ -71,16 +71,10 @@ def menu_main(self, esc_press):
         self.remove_ui_updater(*self.start_menu_ui_only)
 
         self.add_ui_updater(self.option_menu_button, self.option_menu_sliders.values(), self.value_boxes.values(),
-                            self.option_text_list)
+                            self.option_text_list, self.profile_box)
         # self.background = self.background_image["option"]
 
     elif self.quit_button.event or esc_press:  # open quit game confirmation input
         self.input_popup = ("confirm_input", "quit")
         self.confirm_ui.change_instruction("Quit Game?")
         self.add_ui_updater(self.confirm_ui_popup)
-
-    elif self.profile_box.event:
-        self.input_popup = ("text_input", "profile_name")
-        self.input_box.text_start(self.profile_name)
-        self.input_ui.change_instruction("Profile Name:")
-        self.add_ui_updater(self.input_ui_popup)

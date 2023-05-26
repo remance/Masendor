@@ -6,9 +6,20 @@ edit_config = utility.edit_config
 
 
 def menu_option(self, esc_press):
+    bar_press = False
+    for bar in self.resolution_bar:  # loop to find which resolution bar is selected, this happens outside of clicking check below
+        if bar.event_press:
+            self.resolution_drop.change_state(bar.text)  # change button value based on new selected value
+            resolution_change = bar.text.split()
+            change_resolution(self, resolution_change)
+            self.remove_ui_updater(self.resolution_bar)
+            bar_press = True
+    if not bar_press and self.cursor.is_select_just_up:
+        self.remove_ui_updater(self.resolution_bar)
+
     if self.back_button.event_press or esc_press:  # back to start_set menu
         self.remove_ui_updater(*self.option_menu_button, *self.option_text_list, *self.option_menu_sliders.values(),
-                               *self.value_boxes.values())
+                               *self.value_boxes.values(), self.resolution_bar, self.profile_box)
         self.back_mainmenu()
 
     elif self.keybind_button.event_press:
@@ -66,14 +77,12 @@ def menu_option(self, esc_press):
                     self.config)
         change_resolution(self, (self.screen_width, "", self.screen_height))
 
-    else:
-        for bar in self.resolution_bar:  # loop to find which resolution bar is selected, this happens outside of clicking check below
-            if bar.event_press:
-                self.resolution_drop.change_state(bar.text)  # change button value based on new selected value
-                resolution_change = bar.text.split()
-                change_resolution(self, resolution_change)
-                break
-        self.remove_ui_updater(self.resolution_bar)
+    elif self.profile_box.event_press:
+        print('test')
+        self.input_popup = ("text_input", "profile_name")
+        self.input_box.text_start(self.profile_name)
+        self.input_ui.change_instruction("Profile Name:")
+        self.add_ui_updater(self.input_ui_popup)
 
     for key, value in self.option_menu_sliders.items():
         if value.event:  # press on slider bar
@@ -98,4 +107,4 @@ def change_resolution(self, resolution_change):
         pygame.mixer.music.stop()
         pygame.mixer.music.unload()
     pygame.quit()
-    runmenu = game.game.Game(self.main_dir, self.error_log)  # restart game when change resolution
+    game.game.Game(self.main_dir, self.error_log)  # restart game when change resolution

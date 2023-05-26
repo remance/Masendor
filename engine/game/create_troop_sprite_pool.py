@@ -199,7 +199,15 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                 else:
                     animation = [this_animation for this_animation in animation if
                                  this_animation == specific_preview[0][:-2]]
-                animation = animation[0]
+                if not any(ext in specific_preview[0] for ext in ("_Main_", "_Sub_", "_Both_")):  # no specific weapon input, use main one
+                    test_animation = [this_animation for this_animation in animation if weapon_common_action[weapon_set][0] in
+                                      this_animation]
+                    if not test_animation:
+                        animation = animation[0]
+                    else:
+                        animation = test_animation[0]
+                else:
+                    animation = animation[0]
             else:
                 animation = [this_animation for this_animation in animation
                              if (any(ext in this_animation for ext in weapon_common_type_list) is False or
