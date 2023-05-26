@@ -674,12 +674,6 @@ class Game:
         self.single_text_popup = uimenu.TextPopup()  # popup box that show name when mouse over
 
         # Encyclopedia interface
-        self.encyclopedia, self.lore_name_list, self.filter_tag_list, self.lore_buttons, self.page_button = make_lorebook(
-            self, self.module_dir, self.screen_scale, self.screen_rect)
-
-        self.encyclopedia_stuff = (self.encyclopedia, self.lore_name_list, self.filter_tag_list,
-                                   self.lore_name_list.scroll, self.filter_tag_list.scroll, self.lore_buttons.values())
-
         lorebook.Lorebook.concept_stat = csv_read(self.module_dir, "concept_stat.csv",
                                                   ("lore",), header_key=True)
         lorebook.Lorebook.concept_lore = self.localisation.create_lore_data("concept")
@@ -691,6 +685,12 @@ class Game:
         lorebook.Lorebook.troop_data = self.troop_data
         lorebook.Lorebook.leader_data = self.leader_data
         lorebook.Lorebook.battle_map_data = self.battle_map_data
+
+        self.encyclopedia, self.lore_name_list, self.filter_tag_list, self.lore_buttons, self.page_button = make_lorebook(
+            self, self.module_dir, self.screen_scale, self.screen_rect)
+
+        self.encyclopedia_stuff = (self.encyclopedia, self.lore_name_list, self.filter_tag_list,
+                                   self.lore_name_list.scroll, self.filter_tag_list.scroll, self.lore_buttons.values())
 
         self.battle = battle.Battle(self)
         self.player1_battle_cursor = self.battle.player1_battle_cursor
