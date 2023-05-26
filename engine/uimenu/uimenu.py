@@ -1320,14 +1320,8 @@ class ListUI(UIMenu, Containable):
         in_list = False
         if self.rect.collidepoint(mouse_pos):
             self.mouse_over = True
-            if self.get_scroll_bar_rect().collidepoint(relative_mouse_pos):
-                if self.get_scroll_box_rect().collidepoint(relative_mouse_pos):
-                    self.in_scroll_box = True
-            else:
-                in_list = True
 
-        # scroll box drag handler
-        if self.in_scroll_box or self.mouse_over:
+            # Check for scrolling button
             noiovl = self.get_number_of_items_outside_visible_list()
             if msd:
                 self.scroll_box_index += 1
@@ -1338,6 +1332,13 @@ class ListUI(UIMenu, Containable):
                 if self.scroll_box_index < 0:
                     self.scroll_box_index = 0
 
+            if self.get_scroll_bar_rect().collidepoint(relative_mouse_pos):
+                if self.get_scroll_box_rect().collidepoint(relative_mouse_pos):
+                    self.in_scroll_box = True
+            else:
+                in_list = True
+
+        # scroll box drag handler
         if not mld:
             self.hold_scroll_box = None
         if self.in_scroll_box and mljd:

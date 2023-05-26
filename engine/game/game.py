@@ -692,8 +692,6 @@ class Game:
         lorebook.Lorebook.leader_data = self.leader_data
         lorebook.Lorebook.battle_map_data = self.battle_map_data
 
-        self.encyclopedia.change_module()
-
         self.battle = battle.Battle(self)
         self.player1_battle_cursor = self.battle.player1_battle_cursor
 

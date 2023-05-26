@@ -76,7 +76,6 @@ class Lorebook(UIMenu):
         self.max_page = 0
         self.rect = self.image.get_rect(center=(self.screen_size[0] / 2, self.screen_size[1] / 2))
 
-    def change_module(self):
         # Make new equipment list that contain all type weapon, armour, mount
         self.equipment_stat = {}
         run = 1

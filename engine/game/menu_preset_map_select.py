@@ -133,7 +133,7 @@ def change_char(self):
 def leader_popup_text(self, icon):
     who = icon.who
     if not hasattr(who, "troop_id"):  # None unit for enactment mode
-        return [who.name]
+        return [who.name, "Selecting this unit lets you observe the battle between AI."]
     else:
         stat = self.leader_data.leader_list[who.troop_id]
 
