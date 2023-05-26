@@ -516,7 +516,7 @@ class Game:
                                                         items=uimenu.CustomBattleListAdapter(self.battle_map_list, self),
                                                         parent=self.screen, item_size=20)
 
-        self.custom_battle_faction_list_box = uimenu.ListUI(pivot=(0.3, -0.1), origin=(-1, -1), size=(.3, .4),
+        self.custom_battle_faction_list_box = uimenu.ListUI(pivot=(-0.03, -0.1), origin=(-1, -1), size=(.3, .4),
                                                             items=uimenu.CustomBattleFactionListAdapter(["None"] + self.faction_data.faction_name_list, self),
                                                             parent=self.screen, item_size=10)
 
@@ -537,7 +537,7 @@ class Game:
                                                    battle_select_image["unit_select"], icon_scale=0.4)
         uibattle.UIScroll(self.unit_selector, self.unit_selector.rect.topright)  # scroll bar for unit pick
 
-        self.unit_model_room = uimenu.LeaderModel(self.unit_selector.rect.bottomleft,
+        self.unit_model_room = uimenu.LeaderModel(self.unit_selector.rect.bottomright,
                                                   battle_select_image["small_box"])  # troop stat
 
         bottom_height = self.screen_rect.height - image_list[0].get_height()
@@ -561,7 +561,7 @@ class Game:
         uibattle.UIScroll(self.unit_list_box, self.unit_list_box.rect.topright)  # scroll bar for map list
 
         # ui box for battle option during preset map preparation screen
-        self.custom_map_option_box = uimenu.MapOptionBox(self.unit_model_room.rect.bottomleft,
+        self.custom_map_option_box = uimenu.MapOptionBox(self.unit_model_room.rect.bottomright,
                                                          battle_select_image["small_box"])
 
         self.org_chart = uimenu.OrgChart(load_image(self.module_dir, self.screen_scale,
@@ -571,7 +571,7 @@ class Game:
         self.camp_icon = []
 
         self.night_battle_tick_box = uimenu.TickBox((self.custom_map_option_box.rect.topleft[0] * 1.05,
-                                                     self.custom_map_option_box.rect.topleft[1] * 1.1),
+                                                     self.custom_map_option_box.rect.topleft[1] * 1.05),
                                                     battle_select_image["untick"], battle_select_image["tick"],
                                                     "night")
         self.weather_custom_select = uimenu.NameList(self.custom_map_option_box,
@@ -637,7 +637,6 @@ class Game:
             self.back_button, self.default_button, self.keybind_button, self.resolution_drop, self.fullscreen_box)
 
         # Profile box
-        self.profile_name = self.profile_name
         profile_box_image = load_image(self.module_dir, self.screen_scale, "profile_box.png", ("ui", "mainmenu_ui"))
         self.profile_box = uimenu.TextBox(profile_box_image, (self.screen_width, 0),
                                           self.profile_name)  # profile name box at top right of screen at start_set menu screen
@@ -718,7 +717,7 @@ class Game:
         # Starting script
         self.add_ui_updater(*self.mainmenu_button)
 
-        self.start_menu_ui_only = *self.mainmenu_button, self.profile_box  # ui that only appear at the start menu
+        self.start_menu_ui_only = self.mainmenu_button  # ui that only appear at the start menu
         self.add_ui_updater(*self.start_menu_ui_only)
         self.menu_state = "main_menu"
         self.input_popup = None  # popup for text input state

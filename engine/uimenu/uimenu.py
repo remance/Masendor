@@ -337,7 +337,7 @@ class InputBox(UIMenu):
 class TextBox(UIMenu):
     def __init__(self, image, pos, text):
         self._layer = 13
-        UIMenu.__init__(self, player_interact=False)
+        UIMenu.__init__(self)
 
         self.font = pygame.font.Font(self.ui_font["main_button"], int(36 * self.screen_scale[1]))
         self.image = image
@@ -761,7 +761,7 @@ class LeaderModel(UIMenu):
                                 (self.image.get_width() / 1.4, self.image.get_height() / 1.8),  # cav range
                                 (self.image.get_width() / 3, self.image.get_height() / 1.32))  # total unit number
 
-        self.rect = self.image.get_rect(topleft=pos)
+        self.rect = self.image.get_rect(topright=pos)
 
     def add_preview_model(self, model=None, coa=None):
         """Add coat of arms as background and/or leader model"""
@@ -931,7 +931,7 @@ class MapOptionBox(UIMenu):
         text_rect = text_surface.get_rect(midleft=(self.image.get_width() / 3.5, self.image.get_height() / 5))
         self.image.blit(text_surface, text_rect)
 
-        self.rect = self.image.get_rect(topleft=pos)
+        self.rect = self.image.get_rect(topright=pos)
 
 
 class MapPreview(UIMenu, BattleMap):
@@ -1312,6 +1312,8 @@ class ListUI(UIMenu, Containable):
         mld = self.cursor.is_select_down
         mlju = self.cursor.is_select_just_up
         mrju = self.cursor.is_alt_select_just_up
+        msu = self.cursor.scroll_up
+        msd = self.cursor.scroll_down
 
         # detect if in list or over scroll box
         self.in_scroll_box = False
@@ -1325,11 +1327,23 @@ class ListUI(UIMenu, Containable):
                 in_list = True
 
         # scroll box drag handler
+        if self.in_scroll_box or self.mouse_over:
+            noiovl = self.get_number_of_items_outside_visible_list()
+            if msd:
+                self.scroll_box_index += 1
+                if self.scroll_box_index > noiovl:
+                    self.scroll_box_index = noiovl
+            elif msu:
+                self.scroll_box_index -= 1
+                if self.scroll_box_index < 0:
+                    self.scroll_box_index = 0
+
         if not mld:
             self.hold_scroll_box = None
-        if mljd and self.in_scroll_box:
+        if self.in_scroll_box and mljd:
             self.hold_scroll_box = relative_mouse_pos[1]
             self.scroll_box_index_at_hold = self.scroll_box_index
+
         if self.hold_scroll_box:
             self.scroll_box_index = self.scroll_box_index_at_hold + int(
                 (relative_mouse_pos[1] - self.hold_scroll_box + self.scroll_step_height / 2) / self.scroll_step_height)

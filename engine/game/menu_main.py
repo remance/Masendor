@@ -71,16 +71,10 @@ def menu_main(self, esc_press):
         self.remove_ui_updater(*self.start_menu_ui_only)
 
         self.add_ui_updater(self.option_menu_button, self.option_menu_sliders.values(), self.value_boxes.values(),
-                            self.option_text_list)
+                            self.option_text_list, self.profile_box)
         # self.background = self.background_image["option"]
 
     elif self.quit_button.event or esc_press:  # open quit game confirmation input
         self.input_popup = ("confirm_input", "quit")
         self.confirm_ui.change_instruction("Quit Game?")
         self.add_ui_updater(self.confirm_ui_popup)
-
-    elif self.profile_box.event:
-        self.input_popup = ("text_input", "profile_name")
-        self.input_box.text_start(self.profile_name)
-        self.input_ui.change_instruction("Profile Name:")
-        self.add_ui_updater(self.input_ui_popup)
