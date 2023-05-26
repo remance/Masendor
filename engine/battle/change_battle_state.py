@@ -1,5 +1,6 @@
 import pygame
 
+from engine.effect.effect import ChargeDamageEffect
 from engine.uibattle.uibattle import SpriteIndicator
 
 
@@ -20,8 +21,8 @@ def change_battle_state(self):
 
         # Run enter_battle method
         for this_unit in self.unit_updater:
-            this_unit.hitbox = SpriteIndicator(this_unit.hitbox_image, this_unit, self)
-            this_unit.effectbox = SpriteIndicator(pygame.Surface((0, 0)), this_unit, self, layer=10000001)
+            this_unit.hitbox = ChargeDamageEffect(this_unit, this_unit.hitbox_image)
+            this_unit.effectbox = SpriteIndicator(pygame.Surface((0, 0)), this_unit, layer=10000001)
             this_unit.enter_battle(self.unit_animation_pool, self.status_animation_pool)
 
         # Setup formation for leader

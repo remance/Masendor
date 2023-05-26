@@ -6,7 +6,7 @@ from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 
-from engine.uibattle.uibattle import SkillAimTarget, SpriteIndicator
+from engine.uibattle.uibattle import SkillAimTarget
 from engine import utility
 
 rotation_list = (90, -90)
@@ -220,6 +220,9 @@ class Unit(sprite.Sprite):
     from engine.unit.skill_command_input import skill_command_input
     skill_command_input = skill_command_input
 
+    from engine.unit.spawn_troop import spawn_troop
+    spawn_troop = spawn_troop
+
     from engine.unit.status_update import status_update
     status_update = status_update
 
@@ -426,6 +429,7 @@ class Unit(sprite.Sprite):
         self.take_range_dmg = 0
         self.take_aoe_dmg = 0
 
+        self.at_camp = False
         self.reserve_ready_timer = 0
 
         self.terrain = 0
@@ -995,43 +999,20 @@ class Unit(sprite.Sprite):
                     if self.in_melee_combat_timer < 0:
                         self.in_melee_combat_timer = 0
 
-                if self.reserve_ready_timer > 0:
-                    if self.base_pos.distance_to(self.current_camp_pos) <= self.current_camp_radius:
-                        if not self.take_melee_dmg and not self.take_aoe_dmg and not self.take_range_dmg:
-                            self.reserve_ready_timer += dt
-                            if self.health < self.max_health:  # leader regen health in camp
-                                self.health += dt * 5
-                                if self.health > self.max_health:
-                                    self.health = self.max_health
-                        if self.reserve_ready_timer > 10:  # troop reinforcement take 10 seconds
-                            for troop_id, number in self.troop_dead_list.items():
-                                for _ in range(number):
-                                    if self.troop_reserve_list[troop_id] > 0:
-                                        add_unit = Unit(troop_id, self.battle.last_troop_game_id, None, self.team,
-                                                        self.base_pos, self.angle, self.start_hp,
-                                                        self.start_stamina,
-                                                        self, self.coa)
-                                        add_unit.hitbox = SpriteIndicator(add_unit.hitbox_image, add_unit,
-                                                                          self)
-                                        add_unit.effectbox = SpriteIndicator(Surface((0, 0)), add_unit,
-                                                                             self, layer=10000001)
-                                        add_unit.enter_battle(self.battle.unit_animation_pool,
-                                                              self.battle.status_animation_pool)
-                                        self.troop_dead_list[troop_id] -= 1
-                                        self.battle.last_troop_game_id += 1
-                                        self.troop_reserve_list[troop_id] -= 1
-                                    else:
-                                        break
+                if self.reserve_ready_timer:
+                    self.reserve_ready_timer += dt
+                    if self.at_camp:
+                        if self.reserve_ready_timer > 1:  # take 1 second to respawn each troop in camp
+                            self.spawn_troop()
+                    elif self.reserve_ready_timer > 10:  # troop respawn take 10 seconds when not at camp
+                        self.spawn_troop()
 
-                                if not self.troop_reserve_list[troop_id]:  # troop reserve run out, remove from dict
-                                    self.troop_reserve_list.pop(troop_id)
-                                    break
-
-                            self.find_formation_size(troop=True)
-                            self.change_formation("troop")
-                            self.reserve_ready_timer = 0
-                    else:
-                        self.reserve_ready_timer = 0
+                if self.at_camp:  # regen health in camp
+                    if not self.take_melee_dmg and not self.take_aoe_dmg and not self.take_range_dmg:
+                        if self.health < self.max_health:
+                            self.health += dt * 5
+                            if self.health > self.max_health:
+                                self.health = self.max_health
 
                 if self.take_melee_dmg > 0:
                     self.take_melee_dmg -= dt
@@ -1052,24 +1033,21 @@ class Unit(sprite.Sprite):
                     if self not in self.battle.troop_ai_logic_queue:
                         self.battle.troop_ai_logic_queue.append(self)
 
-                    if self.charging:  # keep checking for charge type in case unit stop or start using weapon charge
-                        if "weapon" in self.current_action:
-                            if self.charging == "run":
-                                self.charging = "charge"
-                                self.attack("charge")
-                        else:  # no longer use weapon
-                            if self.charging == "charge":
-                                self.charging = "run"
-                                self.attack("charge")
+                    # Check if staying at camp
+                    self.current_camp_pos = None
+                    self.current_camp_radius = None
+                    self.at_camp = False
 
-                    if self.is_leader and self.camp_pos and self.reserve_ready_timer == 0 and \
-                            ((any(value > 0 for value in self.troop_dead_list.values()) and self.troop_reserve_list)
-                             or self.health < self.max_health):
-                        for index, camp_pos in enumerate(self.camp_pos):
+                    if self.camp_pos:
+                        if not self.reserve_ready_timer and self.is_leader and \
+                                any(value > 0 for value in self.troop_dead_list.values()) and self.troop_reserve_list:
+                            self.reserve_ready_timer = 0.1  # start respawning troop if camp exist and troop dead
+
+                        for index, camp_pos in enumerate(self.camp_pos):  # check if at camp
                             if self.base_pos.distance_to(camp_pos) <= self.camp_radius[index]:
                                 self.current_camp_pos = camp_pos
                                 self.current_camp_radius = self.camp_radius[index]
-                                self.reserve_ready_timer = 0.1  # start respawning troop
+                                self.at_camp = True
                                 break
 
                     self.timer -= 0.5
@@ -1079,9 +1057,9 @@ class Unit(sprite.Sprite):
                 if self.not_broken:
                     if not self.player_control and "uncontrollable" not in self.current_action and "uncontrollable" not in self.command_action:
                         self.ai_combat()
-                        if self.reserve_ready_timer and self.health < self.max_health:  # in camp
+                        if self.at_camp and self.health < self.max_health:  # in camp
                             # AI wait until heal to max health before moving somewhere else
-                            if self.command_target.distance_to(self.base_pos) < self.current_camp_radius:
+                            if self.at_camp and self.command_target.distance_to(self.base_pos) < self.current_camp_radius:
                                 self.ai_move()
                         else:
                             self.ai_move()

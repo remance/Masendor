@@ -76,8 +76,8 @@
 "NOR-74","Robert of Say",1,57,60,58,66,65,62,64,4,5,5,4,,,,,,,,,,,,,
 "NOR-75","Hugh of Port",1,54,53,50,65,72,75,72,6,3,6,4,,,,,,,,,,,,1,
 "NOR-76","William Paverel",1,52,58,42,68,64,72,70,,,,,,,,,,,,,,,,1,
-"NOR-77","Drogo of Brevere",,,,,,,,,,,,,,,,,,,,,,,,,
-"SAX-1","Harold Godwinson",1,77,68,70,73,78,80,85,8,2,6,7,"2,5","39,4",,,"5,5",,21,"L26,L49",,"Line,Square","Saxon Leader",2,"Leader"
+"NOR-77","Drogo of Brevere",1,,,,,,,,,,,,,,,,,,,,,,,,
+"SAX-1","Harold Godwinson",1,77,68,70,73,78,80,85,8,2,6,7,"2,5","39,4",,,"5,5",,21,"L26,L49",,"Line,Square","Harold",2,"Leader"
 "SAX-2","Gyrth Godwinson",1,70,60,53,54,70,67,74,6,4,5,5,"2,5","39,4",,,"5,5",,21,"L3",,"Line","Saxon Leader",2,"Leader"
 "SAX-3","Leofwine Godwinson",1,72,51,60,58,68,64,73,6,4,5,5,"2,5","39,4",,,"5,5",,21,"L3",,"Line","Saxon Leader",2,"Leader"
 "SAX-4","Godric of Berkshire",1,63,58,63,42,49,54,60,4,4,4,4,"2,4",,,,"5,3",,21,"L19",,"Line","Saxon Leader",2,"Warrior"
@@ -166,11 +166,11 @@
 "TEST-3","Cannonguy Deletelater",1,55,55,55,55,55,55,55,3,8,1,4,"M14,3","M15,3","M16,3",,"12,3","81,8,19",21,,,,"Landsknecht Cannon Leader",,"Test"
 "TEST-4","Hamster Man",1,80,80,80,80,80,80,80,7,7,7,4,"71,4",,,,"20,4",,21,,,,"Hamster",,"Joke"
 ,,,,,,,,,,,,,,,,,,,,,,,,,,
-"NW-1","Harald Hardrada",,,,,,,,,,,,,,,,,,,,,,,,,
-"NW-2","Magnus Haraldsson",,,,,,,,,,,,,,,,,,,,,,,,,
-"NW-3","Olaf Haraldsson",,,,,,,,,,,,,,,,,,,,,,,,,
-"NW-4","Paul Thorfinnsson",,,,,,,,,,,,,,,,,,,,,,,,,
-"NW-5","Erlend Thorfinnsson",,,,,,,,,,,,,,,,,,,,,,,,,
-"NW-6","Eystein Orre",,,,,,,,,,,,,,,,,,,,,,,,,
-"NW-7","Tostig Godwinson",,,,,,,,,,,,,,,,,,,,,,,,,
-"NW-8","Frírek ",,,,,,,,,,,,,,,,,,,,,,,,,
+"NW-1","Harald Hardrada",1,95,70,63,70,53,55,76,10,7,2,7,,,,,,,,,,,,,
+"NW-2","Magnus Haraldsson",1,,,,,,,,,,,,,,,,,,,,,,,,
+"NW-3","Olaf Haraldsson",1,,,,,,,,,,,,,,,,,,,,,,,,
+"NW-4","Paul Thorfinnsson",1,,,,,,,,,,,,,,,,,,,,,,,,
+"NW-5","Erlend Thorfinnsson",1,,,,,,,,,,,,,,,,,,,,,,,,
+"NW-6","Eystein Orre",1,,,,,,,,,,,,,,,,,,,,,,,,
+"NW-7","Tostig Godwinson",1,,,,,,,,,,,,,,,,,,,,,,,,
+"NW-8","Frírek ",1,,,,,,,,,,,,,,,,,,,,,,,,

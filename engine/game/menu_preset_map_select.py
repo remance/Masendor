@@ -1,4 +1,3 @@
-from engine.uimenu import uimenu
 from engine.uibattle import uibattle
 from engine import utility
 

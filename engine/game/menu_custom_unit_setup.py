@@ -205,7 +205,7 @@ def menu_custom_unit_setup(self, mouse_left_up, mouse_left_down, mouse_right_up,
 
         self.unit_selector.setup_unit_icon(self.unit_icon, self.camp_icon)
 
-        self.main_ui_updater.add(*self.map_select_button, self.custom_map_option_box, self.observe_mode_tick_box,
+        self.main_ui_updater.add(*self.map_select_button, self.custom_map_option_box,
                                  self.night_battle_tick_box, self.unit_selector, self.unit_selector.scroll,
                                  self.team_coa, self.weather_custom_select, self.wind_custom_select)
 

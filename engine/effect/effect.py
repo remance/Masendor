@@ -339,25 +339,26 @@ class RangeDamageEffect(DamageEffect):
                 self.rect.center = self.pos
 
 
-class ChargeDamageEffect(DamageEffect):
-    def __init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
-                 accuracy=None, reach_effect=None):
-        """Charge damage sprite"""
-        DamageEffect.__init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, base_pos, base_target,
-                              None, None, attacker.angle, accuracy=accuracy, reach_effect=reach_effect)
-        self.base_pos = base_pos  # always move along with attacker, no Vector2
-        self.charge_power = 0
-        if weapon:
-            self.charge_power = self.attacker.weapon_data[self.attacker.equipped_weapon][weapon]["Charge"]
-
-        self.rect = self.attacker.hitbox.rect
-
-        self.battle.battle_camera.remove(self)  # no sprite to play since it use unit sprite as damage sprite
+class ChargeDamageEffect(Effect):
+    def __init__(self, attacker, image):
+        """Charge damage sprite, also served as hitbox for unit"""
+        Effect.__init__(self, attacker, attacker.base_pos, None, None, None, layer=1, make_sound=False)
+        self.image = image
+        self.base_pos = self.attacker.base_pos  # always move along with attacker
+        self.already_hit = []
+        self.rect = self.image.get_rect(center=self.base_pos)
 
     def change_weapon(self, dmg, penetrate, impact):
-        self.dmg = dmg
-        self.penetrate = penetrate
-        self.knock_power = impact
+        if weapon:
+            dmg = {key: value[0] for key, value in self.weapon_dmg[weapon].items() if value[0]}
+            impact = self.weapon_impact[self.equipped_weapon][weapon]
+            penetrate = self.weapon_penetrate[self.equipped_weapon][weapon]
+            stat = equipped_weapon_data
+        else:  # charge without using weapon (by running)
+            dmg = self.body_weapon_damage
+            impact = self.body_weapon_impact
+            penetrate = self.body_weapon_penetrate
+            stat = self.body_weapon_stat
 
     def update(self, unit_list, dt):
         self.timer += dt
@@ -371,11 +372,6 @@ class ChargeDamageEffect(DamageEffect):
                     this_unit.hitbox.rect.colliderect(self.rect):
                 self.hit_register(this_unit)
                 self.already_hit.append(this_unit.game_id)
-
-        if not self.attacker.charging:  # remove sprite when attacker no longer charge
-            self.attacker.charge_sprite = None
-            self.clean_object()
-            return
 
 
 class EffectDamageEffect(DamageEffect):

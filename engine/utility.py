@@ -605,36 +605,6 @@ def list_scroll(screen_scale, mouse_scroll_up, mouse_scroll_down, scroll, box, c
     return current_row
 
 
-def popup_list_open(self, new_rect, new_list, ui_type, rect_pos):
-    """
-    Move popup_listbox and scroll sprite to new location and create new name list
-    :param self: Game or Battle object
-    :param new_rect: New rect position
-    :param new_list: List of texts that will be used in the popup
-    :param ui_type: Type of ui that open list
-    :param rect_pos: Keyword argument for rect position of get_rect
-    """
-    from engine.uimenu import uimenu
-    self.current_popup_row = 0
-
-    if rect_pos == "top":
-        self.popup_list_box.rect = self.popup_list_box.image.get_rect(topleft=new_rect)
-    elif rect_pos == "bottom":
-        self.popup_list_box.rect = self.popup_list_box.image.get_rect(bottomleft=new_rect)
-
-    setup_list(uimenu.NameList, 0, new_list, self.popup_namegroup,
-               self.popup_list_box, self.battle_ui_updater, layer=19)
-
-    self.popup_list_box.scroll.pos = self.popup_list_box.rect.topright  # change position variable
-    self.popup_list_box.scroll.rect = self.popup_list_box.image.get_rect(topleft=self.popup_list_box.rect.topright)  #
-    self.popup_list_box.scroll.change_image(new_row=0, row_size=len(new_list))
-
-    self.add_ui_updater(self.popup_list_box, *self.popup_namegroup,
-                        self.popup_list_box.scroll)  # add the option list to screen
-
-    self.popup_list_box.type = ui_type
-
-
 def number_to_minus_or_plus(number):
     """Number should not be 0"""
     if number > 0:

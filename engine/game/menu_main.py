@@ -35,19 +35,19 @@ def menu_main(self, esc_press):
         self.unit_model_room.add_preview_model()  # reset model room
         self.current_map_select = 0
         self.map_selected = self.battle_map_folder[self.current_map_select]
-        self.custom_map_list_box.items.on_select(self.current_map_select, self.map_selected)  # reset list
+        self.custom_battle_map_list_box.items.on_select(self.current_map_select, self.map_selected)  # reset list
 
         self.remove_ui_updater(*self.start_menu_ui_only)
 
         self.create_preview_map()
 
-        self.create_team_coa([None for _ in range(10)])
+        self.create_team_coa([None for _ in range(12)])
 
         for team in self.team_coa:
             if self.team_selected == team.team:
                 team.change_select(True)
 
-        self.add_ui_updater(*self.map_select_button, self.custom_map_list_box, self.faction_list_box,
+        self.add_ui_updater(*self.map_select_button, self.custom_battle_map_list_box, self.custom_battle_faction_list_box,
                             self.custom_map_option_box, self.unit_selector,
                             self.unit_selector.scroll, self.weather_custom_select, self.wind_custom_select,
                             self.night_battle_tick_box, self.unit_model_room)
