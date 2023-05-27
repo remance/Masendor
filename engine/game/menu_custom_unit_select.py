@@ -6,7 +6,7 @@ leader_change_team_unit = menu_custom_unit_setup.leader_change_team_unit
 clean_group_object = utility.clean_group_object
 
 
-def menu_custom_unit_select(self, mouse_left_up, mouse_left_down, mouse_scroll_up, mouse_scroll_down, esc_press):
+def menu_custom_unit_select(self, esc_press):
     self.main_ui_updater.remove(self.single_text_popup)
     if self.map_back_button.event or esc_press or self.start_button.event:  # go back to team/source selection screen
         self.map_back_button.event = False

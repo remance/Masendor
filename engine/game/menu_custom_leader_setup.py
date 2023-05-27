@@ -12,8 +12,7 @@ list_scroll = utility.list_scroll
 load_image = utility.load_image
 
 
-def menu_custom_leader_setup(self, mouse_left_up, mouse_left_down, mouse_right_up, mouse_right_down,
-                             mouse_scroll_up, mouse_scroll_down, esc_press):
+def menu_custom_leader_setup(self, esc_press):
     self.main_ui_updater.remove(self.single_text_popup)
     if self.unit_selector.mouse_over:
         if mouse_scroll_up:

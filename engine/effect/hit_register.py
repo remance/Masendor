@@ -17,5 +17,7 @@ def hit_register(self, unit):
         self.cal_range_hit(self.attacker, unit, hit_side, hit_angle)
     elif self.attack_type == "effect":
         self.cal_effect_hit(unit, hit_angle)
+    elif self.attack_type == "charge":
+        self.cal_charge_hit(self.attacker, unit, hit_side, hit_angle)
     else:
         self.cal_melee_hit(self.attacker, self.weapon, unit, hit_side, hit_angle)

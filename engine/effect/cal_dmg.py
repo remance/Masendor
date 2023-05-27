@@ -55,8 +55,8 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
                 side_cal = combat_side_cal[hit_side]
                 if target.check_special_effect("All Side Full Defence"):  # defence all side
                     side_cal = 1
-                target_charge_def = target.charge_def_power * side_cal
-                charge_power_diff = attacker.charge_power + self.charge_power - target_charge_def
+                target_charge_def = target.charge_def * side_cal
+                charge_power_diff = self.charge_power - target_charge_def
                 if charge_power_diff > 0:
                     troop_dmg += troop_dmg * charge_power_diff / 100
                     impact *= 2
@@ -76,17 +76,15 @@ def cal_dmg(self, attacker, target, hit, defence, weapon, hit_side=None):
                                                            volume_mod=attacker.hit_volume_mod)
 
             else:  # ignore charge defence if have trait
-                troop_dmg += troop_dmg * attacker.charge_power / 100
+                troop_dmg += troop_dmg * self.charge_power / 100
         else:
             troop_dmg, element_effect = cal_dmg_penetrate(self, target, reduce_penetrate=False)
             self.penetrate -= target.troop_mass  # melee use troop mass to reduce penetrate
 
         if target.charging:  # also include its own charge defence in dmg if enemy also charging
             if not attacker.check_special_effect("Ignore Charge Defence", weapon=weapon):
-                charge_def_cal = attacker.charge_def_power - target.charge_power
-                if charge_def_cal > 0:  # charge def is higher than enemy charge then deal additional dmg
-                    impact *= 2
-                    troop_dmg += troop_dmg * charge_def_cal / 100
+                if attacker.charge_def > 0:  # add charge def as additional dmg modifier
+                    troop_dmg += troop_dmg * attacker.charge_def / 100
 
         troop_dmg *= hit_score
 

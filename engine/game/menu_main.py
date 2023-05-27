@@ -30,6 +30,7 @@ def menu_main(self, esc_press):
         self.menu_state = "custom_map"
         self.play_map_type = "custom"
         self.last_select = self.menu_state
+        self.camp_pos = {}
         self.play_map_data = {"info": {"weather": [[0, "09:00:00", 0, 0]]}, "unit": {"pos": {}}}
         self.unit_selected = None  # reset unit selected
         self.unit_model_room.add_preview_model()  # reset model room

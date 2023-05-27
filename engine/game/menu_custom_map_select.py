@@ -5,16 +5,19 @@ def menu_custom_map_select(self, esc_press):
 
     if self.map_back_button.event or esc_press:
 
-        self.remove_ui_updater(*self.map_select_button, self.custom_battle_map_list_box, self.custom_battle_faction_list_box,
-                               self.custom_map_option_box, self.unit_selector,
+        for icon in self.unit_icon:
+            icon.kill()
+        self.unit_icon.empty()
+
+        self.remove_ui_updater(*self.map_select_button, self.custom_battle_map_list_box,
+                               self.custom_battle_faction_list_box, self.custom_map_option_box, self.unit_selector,
                                self.unit_selector.scroll, self.weather_custom_select, self.wind_custom_select,
                                self.custom_map_option_box, self.night_battle_tick_box, self.map_preview,
                                self.unit_model_room, self.weather_list_box)
 
-        for group in (self.map_namegroup, self.team_coa):
-            for stuff in group:
-                stuff.kill()
-                del stuff
+        for stuff in self.team_coa:
+            stuff.kill()
+            del stuff
 
         self.back_mainmenu()
 
@@ -25,10 +28,15 @@ def menu_custom_map_select(self, esc_press):
 
             self.play_map_data["unit"] = {"pos": {}}
 
-            self.add_ui_updater(self.unit_list_box, self.map_list_box)
+            self.add_ui_updater(self.custom_preset_army_list_box, self.unit_list_box)
 
-            self.remove_ui_updater(self.custom_map_option_box, self.night_battle_tick_box, self.weather_custom_select,
-                                   self.wind_custom_select, self.custom_battle_faction_list_box)
+            for icon in self.unit_icon:
+                icon.kill()
+            self.unit_icon.empty()
+
+            self.remove_ui_updater(self.custom_battle_map_list_box, self.custom_map_option_box, self.night_battle_tick_box,
+                                   self.weather_custom_select, self.wind_custom_select,
+                                   self.custom_battle_faction_list_box)
 
             for coa in self.team_coa:
                 if coa.coa_images and coa.team not in self.play_map_data["unit"]:
@@ -38,22 +46,22 @@ def menu_custom_map_select(self, esc_press):
                     self.play_map_data["unit"].pop(coa.team)
                     self.play_map_data["unit"]["pos"].pop(coa.team)
 
-            self.add_ui_updater(self.unit_list_box, self.unit_list_box.scroll)
-            for coa in self.team_coa:
-                if coa.selected:  # get unit for selected team
-                    unit_list = []
-                    for faction in coa.coa_images:
-                        if faction == 0:  # all faction
-                            for this_faction in self.faction_data.faction_unit_list:
-                                unit_list += list(self.faction_data.faction_unit_list[this_faction].keys())
-                        else:
-                            unit_list += list(self.faction_data.faction_unit_list[faction].keys())
-
-                        unit_list = sorted((set(unit_list)), key=unit_list.index)
-
-                    # setup_list(self.screen_scale, uimenu.NameList, self.current_map_row, unit_list,
-                    #            self.map_namegroup, self.unit_list_box, self.main_ui_updater)
-                    break
+            # self.add_ui_updater(self.unit_list_box, self.unit_list_box.scroll)
+            # for coa in self.team_coa:
+            #     if coa.selected:  # get unit for selected team
+            #         unit_list = []
+            #         for faction in coa.coa_images:
+            #             if faction == 0:  # all faction
+            #                 for this_faction in self.faction_data.faction_unit_list:
+            #                     unit_list += list(self.faction_data.faction_unit_list[this_faction].keys())
+            #             else:
+            #                 unit_list += list(self.faction_data.faction_unit_list[faction].keys())
+            #
+            #             unit_list = sorted((set(unit_list)), key=unit_list.index)
+            #
+            #         # setup_list(self.screen_scale, uimenu.NameList, self.current_map_row, unit_list,
+            #         #            self.map_namegroup, self.unit_list_box, self.main_ui_updater)
+            #         break
         else:
             self.input_popup = ("confirm_input", "warning")
             self.input_ui.change_instruction("Require at least 2 teams")
@@ -157,6 +165,14 @@ def change_team_coa(self):
                 if self.team_selected != this_team2.team and this_team2.selected:
                     this_team2.change_select(False)
             break
+
+
+def custom_map_list_on_select(self, item_index, item_text):
+    _self = self._self
+    self.last_index = item_index
+    _self.current_map_select = item_index
+    _self.map_selected = _self.battle_map_folder[_self.current_map_select]
+    _self.create_preview_map()
 
 
 def custom_faction_list_on_select(self, item_index, item_text):
