@@ -2,10 +2,10 @@ import networkx as nx
 import pygame
 import pygame.transform
 import pyperclip
+import types
 from functools import lru_cache
 
 from engine.battlemap.battlemap import BattleMap
-from engine.game.menu_custom_map_select import custom_faction_list_on_select, custom_weather_list_on_select
 
 from engine.utility import keyboard_mouse_press_check, text_render, minimise_number_text, make_long_text
 
@@ -657,11 +657,12 @@ class TeamCoa(UIMenu):
         UIMenu.__init__(self, has_containers=True)
 
         self.selected = False
+
         self.coa_size = (int(60 * self.screen_scale[0]), int(60 * self.screen_scale[1]))
         self.selected_coa_size = (int(120 * self.screen_scale[0]), int(120 * self.screen_scale[1]))
         self.not_selected_image_base = pygame.Surface((self.coa_size[0], self.coa_size[1]))
         self.not_selected_image_base.fill((0, 0, 0))  # black border when not selected
-        self.selected_image_base = pygame.Surface((self.coa_size[0] * 5, self.coa_size[1] * 2))
+        self.selected_image_base = pygame.Surface((400 * self.screen_scale[0], self.coa_size[1] * 2.5))
         self.selected_image_base.fill((0, 0, 0))  # black border when selected
 
         team_body = pygame.Surface((self.not_selected_image_base.get_width() * 0.95,
@@ -670,7 +671,7 @@ class TeamCoa(UIMenu):
         white_rect = team_body.get_rect(
             center=(self.not_selected_image_base.get_width() / 2, self.not_selected_image_base.get_height() / 2))
         self.not_selected_image_base.blit(team_body, white_rect)
-        team_body = pygame.Surface((self.selected_image_base.get_width() * 0.95,
+        team_body = pygame.Surface((self.selected_image_base.get_width() * 0.98,
                                     self.selected_image_base.get_height() * 0.95))
         team_body.fill(team_colour)
         white_rect = team_body.get_rect(
@@ -685,6 +686,9 @@ class TeamCoa(UIMenu):
         self.image = None
         self.rect = None
         self.team = team
+
+        self.font_size = int(self.selected_image_base.get_height() / 3.5)
+        self.font = pygame.font.Font(self.ui_font["name_font"], self.font_size)
 
         self.change_coa(coa_images, name)
 
@@ -726,19 +730,17 @@ class TeamCoa(UIMenu):
                                                                   int(self.selected_coa_size[1] * 0.3)))
                         coa_rect = coa_image.get_rect(center=small_coa_pos)
                         small_coa_pos[1] += int(self.selected_coa_size[1] * 0.3)
-                        if index % 3 == 0:
+                        if index % 2 == 0:
                             small_coa_pos = [small_coa_pos[0] + int(self.selected_coa_size[0] * 0.4),
                                              int(self.selected_coa_size[1] * 0.2)]
                         if index == 6:
-                            small_coa_pos[0] = int(self.selected_coa_size[0] * 1.8)
+                            small_coa_pos[0] = int(self.selected_coa_size[0] * 2.3)
                     self.selected_image.blit(coa_image, coa_rect)
 
         self.name = name
-        font_size = int(self.selected_image_base.get_height() / 5)
-        font = pygame.font.Font(self.ui_font["name_font"], font_size)
-        text_surface = text_render(str(self.name), font, pygame.Color("black"))
+        text_surface = text_render(str(self.name), self.font, pygame.Color("black"))
         text_rect = text_surface.get_rect(
-            center=(int(self.selected_image.get_width() / 2), self.selected_image.get_height() - font_size))
+            center=(int(self.selected_image.get_width() / 2), self.selected_image.get_height() - self.font_size))
         self.selected_image.blit(text_surface, text_rect)
         self.change_select(self.selected)
 
@@ -846,10 +848,12 @@ class NameList(UIMenu):
 
 
 class ListAdapter:
-    def __init__(self, _list, _self):
+    def __init__(self, _list, _self, replace_on_select=None):
         self.list = _list
         self.last_index = -1
         self._self = _self
+        if replace_on_select:
+            self.on_select = types.MethodType(replace_on_select, self)
 
     def __len__(self):
         return len(self.list)
@@ -862,40 +866,6 @@ class ListAdapter:
 
     def get_highlighted_index(self):
         return self.last_index
-
-
-class CustomBattleListAdapter(ListAdapter):
-    def __init__(self, _list, _self):
-        ListAdapter.__init__(self, _list, _self)
-
-    def __getitem__(self, item):
-        if item > len(self.list)-1: return None
-        return self.list[item]
-
-    def __len__(self):
-        return len(self.list)
-
-    def on_select(self, item_index, item_text):
-        _self = self._self
-        self.last_index = item_index
-        _self.current_map_select = item_index
-        _self.map_selected = _self.battle_map_folder[_self.current_map_select]
-        _self.create_preview_map()
-        print("test {0} {1}".format(item_index, item_text))
-
-
-class WeatherListAdapter(ListAdapter):
-    on_select = custom_weather_list_on_select
-
-    def __init__(self, _list, _self):
-        ListAdapter.__init__(self, _list, _self)
-
-
-class CustomBattleFactionListAdapter(ListAdapter):
-    on_select = custom_faction_list_on_select
-
-    def __init__(self, _list, _self):
-        ListAdapter.__init__(self, _list, _self)
 
 
 class TickBox(UIMenu):

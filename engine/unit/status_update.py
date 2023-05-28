@@ -329,9 +329,9 @@ def status_update(self):
     troop_mass = self.troop_mass
     if "less mass" in self.current_action:  # knockdown reduce mass
         troop_mass = int(self.troop_mass / self.current_action["less mass"])
-    self.charge_power = (self.charge + self.speed + troop_mass) * self.momentum
 
-    self.charge_def_power = self.charge_def + troop_mass
+    self.charge += troop_mass
+    self.charge_def += troop_mass
 
     if self.hold_timer and "weapon" in self.current_action:  # holding weapon
         self.melee_dodge /= 2  # reduce dodge during any holding
@@ -341,7 +341,7 @@ def status_update(self):
             self.range_def *= 2
 
         if self.current_action["weapon"] in self.equipped_charge_block_weapon:  # double charge def but reduce dodge
-            self.charge_def_power *= 2
+            self.charge_def *= 2
 
     if weapon_dmg_modifier != 1:
         for weapon in self.weapon_dmg:
@@ -353,7 +353,7 @@ def status_update(self):
         # self.hidden *= 0.9
         # if self.momentum:
         #     self.hidden *= 0.5
-        self.charge_def_power /= 2  # reduce charge def by half when moving
+        self.charge_def /= 2  # reduce charge def by half when moving
 
     if self.melee_attack < 0:  # seem like using if 0 is faster than max(0,)
         self.melee_attack = 0
@@ -371,10 +371,10 @@ def status_update(self):
         self.accuracy = 0
     if self.reload < 0:
         self.reload = 0
-    if self.charge_power < 0:
-        self.charge_power = 0
-    if self.charge_def_power < 0:
-        self.charge_def_power = 0
+    if self.charge < 0:
+        self.charge = 0
+    if self.charge_def < 0:
+        self.charge_def = 0
 
     if self.equipped_weapon in self.ammo_now:  # add reload speed skill to reduce ranged weapon cooldown
         for weapon in self.ammo_now[self.equipped_weapon]:

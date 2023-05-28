@@ -870,9 +870,7 @@ class Unit(sprite.Sprite):
         self.morale = self.base_morale
         self.discipline = self.base_discipline
         self.charge = self.base_charge
-        self.charge_power = (self.charge + self.speed + self.troop_mass) * self.momentum
         self.charge_def = self.base_charge_def
-        self.charge_def_power = self.charge_def + self.troop_mass
         self.hp_regen = self.base_hp_regen
         self.stamina_regen = self.base_stamina_regen
         self.morale_regen = self.base_morale_regen

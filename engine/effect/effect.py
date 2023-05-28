@@ -4,8 +4,8 @@ from random import choice, uniform
 from pygame import sprite, mixer, Vector2
 
 from engine import utility
-from engine.effect import adjust_sprite, cal_dmg, cal_effect_hit, cal_melee_hit, cal_range_hit, find_random_direction, \
-    hit_register, play_animation
+from engine.effect import adjust_sprite, cal_dmg, cal_charge_hit, cal_effect_hit, cal_melee_hit, cal_range_hit, \
+    find_random_direction, hit_register, play_animation
 
 direction_angle = utility.direction_angle
 
@@ -26,6 +26,7 @@ class Effect(sprite.Sprite):
     height_map = None
 
     adjust_sprite = adjust_sprite.adjust_sprite
+    cal_charge_hit = cal_charge_hit.cal_charge_hit
     cal_dmg = cal_dmg.cal_dmg
     cal_effect_hit = cal_effect_hit.cal_effect_hit
     cal_melee_hit = cal_melee_hit.cal_melee_hit
@@ -368,8 +369,10 @@ class ChargeDamageEffect(Effect):
 
         for unit in self.attacker.near_enemy:  # collide check
             this_unit = unit[0]
-            if this_unit.alive and this_unit.game_id not in self.already_hit and \
-                    this_unit.hitbox.rect.colliderect(self.rect):
+            hit_angle = self.set_rotate(this_unit.base_pos)
+            if abs(hit_angle - self.attacker.angle) >= 135 and this_unit.alive and \
+                    this_unit.game_id not in self.already_hit and this_unit.hitbox.rect.colliderect(self.rect):
+                # Charge damage only hit those at front of charger
                 self.hit_register(this_unit)
                 self.already_hit.append(this_unit.game_id)
 

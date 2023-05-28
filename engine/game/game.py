@@ -22,6 +22,9 @@ from engine.battle import setup_battle_unit
 from engine.menubackground import menubackground
 from engine.updater import updater
 
+from engine.game.menu_custom_map_select import custom_map_list_on_select, custom_faction_list_on_select, \
+    custom_weather_list_on_select
+
 direction_list = datasprite.direction_list
 
 load_image = utility.load_image
@@ -544,19 +547,23 @@ class Game:
                                                  parent=self.screen, item_size=40)
 
         self.custom_battle_map_list_box = uimenu.ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
-                                                        items=uimenu.CustomBattleListAdapter(self.battle_map_list, self),
+                                                        items=uimenu.ListAdapter(self.battle_map_list, self, replace_on_select=custom_map_list_on_select),
                                                         parent=self.screen, item_size=20)
 
+        self.custom_preset_army_list_box = uimenu.ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
+                                                         items=uimenu.ListAdapter(self.battle_map_list, self),
+                                                         parent=self.screen, item_size=20)
+
         self.custom_battle_faction_list_box = uimenu.ListUI(pivot=(-0.03, -0.1), origin=(-1, -1), size=(.3, .4),
-                                                            items=uimenu.CustomBattleFactionListAdapter(["None"] + self.faction_data.faction_name_list, self),
+                                                            items=uimenu.ListAdapter(["None"] + self.faction_data.faction_name_list, self, replace_on_select=custom_faction_list_on_select),
                                                             parent=self.screen, item_size=10)
 
-        self.unit_list_box = uimenu.ListUI(pivot=(0.3, -0.1), origin=(-1, -1), size=(.3, .4),
+        self.unit_list_box = uimenu.ListUI(pivot=(-0.03, -0.1), origin=(-1, -1), size=(.3, .4),
                                            items=uimenu.ListAdapter(self.battle_map_list, self),
                                            parent=self.screen, item_size=10)
 
         self.weather_list_box = uimenu.ListUI(pivot=(0, -0.1), origin=(-1, -1), size=(.3, .4),
-                                              items=uimenu.WeatherListAdapter(self.battle_map_data.weather_list, self),
+                                              items=uimenu.ListAdapter(self.battle_map_data.weather_list, self, replace_on_select=custom_weather_list_on_select),
                                               parent=self.screen, item_size=10, layer=20)
 
         battle_select_image = load_images(self.module_dir, screen_scale=self.screen_scale,
@@ -586,10 +593,6 @@ class Game:
         self.map_select_button = (self.select_button, self.map_back_button)
         self.team_select_button = (self.select_button, self.map_back_button)
         self.unit_select_button = (self.start_button, self.map_back_button)
-
-        self.unit_list_box = uimenu.ListBox((self.screen_width - battle_select_image["unit_list"].get_width(), 0),
-                                            battle_select_image["unit_list"])
-        uibattle.UIScroll(self.unit_list_box, self.unit_list_box.rect.topright)  # scroll bar for map list
 
         # ui box for battle option during preset map preparation screen
         self.custom_map_option_box = uimenu.MapOptionBox(self.unit_model_room.rect.bottomright,

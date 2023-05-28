@@ -104,7 +104,7 @@ huge size battle)
 
 ![alt text](https://github.com/remance/preview/blob/main/preview.png?raw=true)
 
-Working on Battle of Mohacs
+Reworking game code structure and menu interface.
 
 ---------------
 
@@ -244,26 +244,29 @@ Photo studio to make battle screen to your liking. Simply add subunit and effect
 # Future Plan
 
 **Ver 0.7 Future Visionary:** custom unit and troop editor, march sound system, keybinding, loading screen,
-Battle of Walaja, Battle of Dorylaeum
+England Campaign
 
-**0.7 and 0.7.1:** console stick, control key binding, rework Battle of Hastings, Battle of Mohács
+**0.7 and 0.7.1:** console stick, control key binding
 
-**0.7.2 and 0.7.3:** Companion system, Battle of Dorylaeum
+**0.7.2 and 0.7.3:** Companion system
 
 **0.7.4 to 0.7.6:** custom unit editor and march sound system
 
-**0.7.7:** custom troop editor, Battle of Walaja
+**0.7.7:** custom troop editor
 
 **0.7.8 and 0.7.9:** specific Leader command, loading screen, Minor battle: 764 Irish
 abbey war
 
-**Ver 0.8 Authentic Attraction:** In-game art, better-looking UI, add intro screen, Battle of Isandlwana, Battle of Hwangsanbeol
+**Ver 0.8 Authentic Attraction:** In-game art, better-looking UI, add intro screen, Egypt Campaign
+
+**0.8 and 0.8.1:** Rework ranged attack bullet system to include height calculation
+
+**0.8.2 and 0.8.3:** Improve UI art
 
 **Ver 0.9 Gaze of New Life:** AI and pathfinding (The most challenging step unless cut corner to the point of braindead
-AI), final code optimisation before full 1.0
+AI), Ottoman Campaign, final code optimisation before full 1.0
 
-**Ver 1 Pax Paradisum:** historical battle simulation game, Battle of Waterloo, Battle of Dunsinane, Battle of Yijing,
-Battle of Jengland
+**Ver 1 Pax Paradisum:** Release version, historical battle simulation game
 
 **Ver 1 - 1.5:** More art, sound effects and in-game music (May need to use royalty-free music but will see) + Ingame
 Encyclopedia at main menu + more historical battles
