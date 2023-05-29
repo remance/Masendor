@@ -412,8 +412,9 @@ class Game:
         uimenu.MapPreview.feature_colour = self.battle_map_data.feature_colour
         uimenu.MapPreview.battle_map_colour = self.battle_map_data.battle_map_colour
 
-        self.preset_map_list = self.battle_map_data.preset_map_list
+        self.preset_map_list = self.battle_map_data.preset_map_list  # TODO remove later when campaign list can expand
         self.preset_map_folder = self.battle_map_data.preset_map_folder
+        self.campaign_map_list = self.battle_map_data.campaign_map_list
         self.battle_map_list = self.battle_map_data.battle_map_list
         self.battle_map_folder = self.battle_map_data.battle_map_folder
         self.battle_campaign = self.battle_map_data.battle_campaign  # for reference to preset campaign
@@ -515,6 +516,10 @@ class Game:
         self.preset_map_list_box = uimenu.ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
                                                  items=uimenu.ListAdapter(self.battle_map_list, self),
                                                  parent=self.screen, item_size=20)  # TODO change to preset map list
+
+        self.campaign_map_list_box = uimenu.ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
+                                                   items=uimenu.ListAdapter(self.campaign_map_list, self),
+                                                   parent=self.screen, item_size=20)
 
         self.custom_battle_map_list_box = uimenu.ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
                                                         items=uimenu.ListAdapter(self.battle_map_list, self, replace_on_select=custom_map_list_on_select),
@@ -716,7 +721,7 @@ class Game:
         # self.background = self.background_image["main"]
 
         # Starting script
-        self.add_ui_updater(*self.mainmenu_button)
+        self.add_ui_updater(*self.mainmenu_button, self.campaign_map_list_box)
 
         self.start_menu_ui_only = self.mainmenu_button  # ui that only appear at the start menu
         self.add_ui_updater(*self.start_menu_ui_only)
