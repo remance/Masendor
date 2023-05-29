@@ -868,6 +868,58 @@ class ListAdapter:
         return self.last_index
 
 
+class ListAdapterHideExpand:
+
+    def __init__(self, _list, _self, replace_on_select=None):
+        self.list = _list
+        self.open = [ False for element in _list]
+
+    def is_actual_index_hidden(self, index):
+
+        # top level is never hidden
+        if not self.list[index].startswith(">"):
+            return False
+
+        # scan up in the list till you hit a top level element and check if it is open
+        # and if it is, this element should be open
+        for i in range(1,128): # i do not like while loops because they can freeze the game, just keeps a big number here instead
+            u = index-i
+            if not self.list[u].startswith(">"):
+                break
+      
+        return not self.open[u]
+
+    def __len__(self):
+        return len(self.list)
+
+    def __getitem__(self, item):
+        r = list()
+        for index, element in enumerate(self.list):
+            if self.is_actual_index_hidden(index): continue
+            r.append(element)
+        if item >= len(r): return None
+
+        actual_index = self.get_visible_index_actual_index()[item]
+        return ("O " if self.open[actual_index] else "")+r[item]
+
+    def get_visible_index_actual_index(self):
+        r = dict()
+        visible_index = -1
+        for actual_index in range(len(self.list)):
+            if self.is_actual_index_hidden(actual_index): continue
+            visible_index += 1
+            r[visible_index] = actual_index
+        return r
+
+    def get_highlighted_index(self):
+        return -1
+
+    def on_select(self, item_index, item_text):
+        actual_index = self.get_visible_index_actual_index()[item_index]
+        self.open[actual_index] = not self.open[actual_index]
+        
+
+
 class TickBox(UIMenu):
     def __init__(self, pos, image, tick_image, option):
         """option is in str text for identifying what kind of tick_box it is"""
