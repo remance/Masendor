@@ -23,7 +23,6 @@ def cal_loss(self, final_dmg, impact, final_morale_dmg, element_effect, hit_angl
         self.command_action = self.knockdown_command_action
         self.move_speed = impact_check
         self.momentum = 0
-        self.charging = False
         self.forced_target = Vector2(self.base_pos[0] - (impact_check / 2 * sin(radians(hit_angle))),
                                      self.base_pos[1] - (impact_check / 2 * cos(radians(hit_angle))))
         self.battle.add_sound_effect_queue(self.sound_effect_pool["Knock Down"][0], self.base_pos,
@@ -36,7 +35,6 @@ def cal_loss(self, final_dmg, impact, final_morale_dmg, element_effect, hit_angl
         self.command_action = self.heavy_damaged_command_action
         self.move_speed = self.walk_speed
         self.momentum = 0
-        self.charging = False
         self.forced_target = Vector2(self.base_pos[0] - (impact_check * sin(radians(hit_angle))),
                                      self.base_pos[1] - (impact_check * cos(radians(hit_angle))))
         self.battle.add_sound_effect_queue(self.sound_effect_pool["Heavy Damaged"][0], self.base_pos,
@@ -49,7 +47,6 @@ def cal_loss(self, final_dmg, impact, final_morale_dmg, element_effect, hit_angl
         self.command_action = self.damaged_command_action
         self.move_speed = self.walk_speed
         self.momentum = 0
-        self.charging = False
         self.forced_target = Vector2(self.base_pos[0] - (impact_check * sin(radians(hit_angle))),
                                      self.base_pos[1] - (impact_check * cos(radians(hit_angle))))
 

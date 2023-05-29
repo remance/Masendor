@@ -5,7 +5,6 @@ die_command_action = unit.die_command_action
 
 def die(self, how):
     """Unit left battle, either dead or flee"""
-    self.charging = False
     self.skill_cooldown = {}  # remove all cooldown
     self.skill_effect = {}  # remove all skill effects
 

@@ -344,22 +344,12 @@ class ChargeDamageEffect(Effect):
     def __init__(self, attacker, image):
         """Charge damage sprite, also served as hitbox for unit"""
         Effect.__init__(self, attacker, attacker.base_pos, None, None, None, layer=1, make_sound=False)
+        self.aoe = 0
         self.image = image
+        self.attack_type = "charge"
         self.base_pos = self.attacker.base_pos  # always move along with attacker
         self.already_hit = []
         self.rect = self.image.get_rect(center=self.base_pos)
-
-    def change_weapon(self, dmg, penetrate, impact):
-        if weapon:
-            dmg = {key: value[0] for key, value in self.weapon_dmg[weapon].items() if value[0]}
-            impact = self.weapon_impact[self.equipped_weapon][weapon]
-            penetrate = self.weapon_penetrate[self.equipped_weapon][weapon]
-            stat = equipped_weapon_data
-        else:  # charge without using weapon (by running)
-            dmg = self.body_weapon_damage
-            impact = self.body_weapon_impact
-            penetrate = self.body_weapon_penetrate
-            stat = self.body_weapon_stat
 
     def update(self, unit_list, dt):
         self.timer += dt
@@ -370,7 +360,7 @@ class ChargeDamageEffect(Effect):
         for unit in self.attacker.near_enemy:  # collide check
             this_unit = unit[0]
             hit_angle = self.set_rotate(this_unit.base_pos)
-            if abs(hit_angle - self.attacker.angle) >= 135 and this_unit.alive and \
+            if abs(hit_angle - self.attacker.angle) <= 45 and this_unit.alive and \
                     this_unit.game_id not in self.already_hit and this_unit.hitbox.rect.colliderect(self.rect):
                 # Charge damage only hit those at front of charger
                 self.hit_register(this_unit)

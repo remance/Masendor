@@ -42,3 +42,18 @@ class ReversedLayeredUpdates(LayeredUpdates):
             mid += 1
         sprites.insert(mid, sprite)
         sprites.reverse()  # revert to top to bottom
+
+    def remove_internal(self, sprite):
+        """
+        For removing a sprite from this group internally.
+
+        :param sprite: The sprite we are removing.
+        """
+        lost_rect = self.spritedict[sprite]
+        if lost_rect:
+            self.lostsprites.append(lost_rect)
+        sprite.event = False
+        sprite.event_press = False
+        sprite.event_hold = False
+        sprite.mouse_over = False
+        del self.spritedict[sprite]

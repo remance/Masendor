@@ -512,39 +512,9 @@ class Game:
 
         # Battle map select menu button
 
-        # NOTE: not used anymore? if so, remove
-        class CustomBattleListAdapter:
-            def __init__(self, _list, _self):
-                self.list = _list
-                self.last_index = -1
-                self._self = _self
-
-            def __len__(self):
-                return len(self.list)
-
-            def __getitem__(self, item):
-                if item > len(self.list)-1: return None
-                return self.list[item]
-
-            def on_select(self, item_index, item_text):
-                _self = self._self
-                self.last_index = item_index
-                _self.current_map_select = item_index
-                _self.map_selected = _self.battle_map_folder[_self.current_map_select]
-                _self.create_preview_map()
-                print("test {0} {1}".format(item_index, item_text))
-
-            def get_highlighted_index(self):
-                return self.last_index
-
         self.preset_map_list_box = uimenu.ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
                                                  items=uimenu.ListAdapter(self.battle_map_list, self),
                                                  parent=self.screen, item_size=20)  # TODO change to preset map list
-
-        # NOTE: not used anymore? if so, remove
-        self.custom_map_list_box = uimenu.ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
-                                                 items=CustomBattleListAdapter(self.battle_map_list, self),
-                                                 parent=self.screen, item_size=40)
 
         self.custom_battle_map_list_box = uimenu.ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
                                                         items=uimenu.ListAdapter(self.battle_map_list, self, replace_on_select=custom_map_list_on_select),
@@ -684,7 +654,6 @@ class Game:
         self.input_cancel_button = input_ui_dict["input_cancel_button"]
         self.input_box = input_ui_dict["input_box"]
         self.confirm_ui = input_ui_dict["confirm_ui"]
-        self.input_button = (self.input_ok_button, self.input_cancel_button, self.input_close_button)
         self.input_ui_popup = (self.input_ok_button, self.input_cancel_button, self.input_ui, self.input_box)
         self.confirm_ui_popup = (self.input_ok_button, self.input_cancel_button, self.confirm_ui)
         self.inform_ui_popup = (self.input_close_button, self.input_ui, self.input_box)
@@ -886,6 +855,7 @@ class Game:
 
             if self.input_popup:  # currently, have input text pop up on screen, stop everything else until done
                 if self.input_ok_button.event_press or key_press[pygame.K_RETURN] or key_press[pygame.K_KP_ENTER]:
+                    print(self.input_ok_button.event_press , key_press[pygame.K_RETURN] , key_press[pygame.K_KP_ENTER])
                     if self.input_popup[1] == "profile_name":
                         self.profile_name = self.input_box.text
                         self.profile_box.change_text(self.profile_name)
@@ -952,6 +922,7 @@ class Game:
                     self.remove_ui_updater(*self.input_ui_popup, *self.confirm_ui_popup, *self.inform_ui_popup)
 
                 elif self.input_cancel_button.event_press or self.input_close_button.event_press or esc_press:
+                    print("can", self.input_cancel_button.event_press, self.input_close_button.event_press)
                     self.input_box.text_start("")
                     self.input_popup = None
                     self.remove_ui_updater(*self.input_ui_popup, *self.confirm_ui_popup, *self.inform_ui_popup)

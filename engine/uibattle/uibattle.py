@@ -285,10 +285,10 @@ class HeroUI(UIBattle):
             self.image.blit(troop_count_text_box, self.troop_count_text_rect)
 
         weapon_filter_change = False
-        if (who.hold_timer > 1 or who.charging) and "weapon" in who.current_action and True not in self.weapon_holding:
+        if (who.hold_timer > 1 or who.momentum) and "weapon" in who.current_action and True not in self.weapon_holding:
             self.weapon_holding[who.current_action["weapon"]] = True
             weapon_filter_change = True
-        elif (who.hold_timer == 0 and not who.charging) and True in self.weapon_holding:
+        elif (who.hold_timer == 0 and not who.momentum) and True in self.weapon_holding:
             self.weapon_holding = [False, False]
             weapon_filter_change = True
         elif self.weapon_cooldown != who.weapon_cooldown:

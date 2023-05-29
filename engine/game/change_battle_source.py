@@ -23,19 +23,20 @@ def change_battle_source(self):
 
     self.camp_pos = {}
     for key, value in self.play_map_data["source"][self.map_source].items():
-        if "Camp " in key:
+        if "Camp " in key and value:
             self.camp_pos[int(key[-1])] = value
 
     for team, pos_list in self.camp_pos.items():
-        if ";" in pos_list:
-            pos_list = pos_list.split(";")
-        else:
-            pos_list = [pos_list]
-        for index, pos in enumerate(pos_list):
-            if pos:
-                pos_list[index] = pos.replace("(", "").replace(")", "").split(",")
-                pos_list[index] = ((int(pos_list[index][0]), int(pos_list[index][1])), int(pos_list[index][2]))
-        self.camp_pos[team] = pos_list
+        if pos_list:
+            if ";" in pos_list:
+                pos_list = pos_list.split(";")
+            else:
+                pos_list = [pos_list]
+            for index, pos in enumerate(pos_list):
+                if pos:
+                    pos_list[index] = pos.replace("(", "").replace(")", "").split(",")
+                    pos_list[index] = ((int(pos_list[index][0]), int(pos_list[index][1])), int(pos_list[index][2]))
+            self.camp_pos[team] = pos_list
 
     # self.source_description.change_text(self.source_text, self.mouse_pos)
 

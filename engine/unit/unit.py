@@ -302,7 +302,6 @@ class Unit(sprite.Sprite):
 
         self.not_broken = True
         self.move = False  # currently moving
-        self.charging = False
         self.attack_unit = None  # target for attacking
         self.melee_target = None  # current target of melee combat
         self.player_control = False  # unit controlled by player
@@ -1109,20 +1108,11 @@ class Unit(sprite.Sprite):
 
                 done, frame_start = self.play_animation(dt, hold_check)
 
-                if self.charging and self.momentum != 1:  # no longer charge
-                    self.charging = False
-
                 if frame_start:
                     if "melee attack" in self.current_action and \
                             self.current_animation[self.show_frame]["dmg_sprite"]:
                         # perform melee attack when frame that produce dmg effect starts
                         self.attack(self.current_animation[self.show_frame]["dmg_sprite"])
-                    elif self.momentum == 1 and not self.charging:
-                        # add charge damage effect
-                        self.charging = "run"
-                        if "weapon" in self.current_action:
-                            self.charging = "charge"
-                        self.attack("charge")
                     elif "skill" in self.current_action and self.current_animation[self.show_frame]["dmg_sprite"]:
                         # spawn skill effect and sound
                         self.use_skill(self.current_action["skill"])

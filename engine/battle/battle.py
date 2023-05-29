@@ -167,7 +167,6 @@ class Battle:
         self.skill_icon = game.skill_icon
         self.effect_icon = game.effect_icon
 
-        self.input_button = game.input_button
         self.input_box = game.input_box
         self.input_ui = game.input_ui
         self.input_ok_button = game.input_ok_button

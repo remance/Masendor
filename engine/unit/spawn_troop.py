@@ -15,7 +15,7 @@ def spawn_troop(self):
             add_unit = Troop(troop_id, self.battle.last_troop_game_id, None, self.team,
                              spawn_pos, self.angle, self.start_hp,
                              self.start_stamina, self, self.coa)
-            add_unit.hitbox = ChargeDamageEffect(add_unit, self, add_unit.hitbox_image)
+            add_unit.hitbox = ChargeDamageEffect(add_unit, add_unit.hitbox_image)
             add_unit.effectbox = SpriteIndicator(Surface((0, 0)), add_unit, layer=10000001)
             add_unit.enter_battle(self.battle.unit_animation_pool,
                                   self.battle.status_animation_pool)
