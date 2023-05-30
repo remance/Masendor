@@ -541,6 +541,8 @@ class Battle:
         if self.player_unit:
             self.add_ui_updater(self.command_ui)
             self.add_skill_icon()
+        else:
+            self.remove_ui_updater(self.command_ui, self.skill_icon)
 
         self.shown_camera_pos = self.camera_pos
 
@@ -653,7 +655,7 @@ class Battle:
                 if event.type == QUIT:  # quit self
                     self.input_popup = ("confirm_input", "quit")
                     self.confirm_ui.change_instruction("Quit Game?")
-                    self.add_ui_updater(*self.confirm_ui_popup)
+                    self.add_ui_updater(self.confirm_ui_popup, self.cursor)
 
                 # elif event.type == self.SONG_END:  # change music track
                 #     pygame.mixer.music.unload()
@@ -761,14 +763,15 @@ class Battle:
                 if self.player_unit_input_delay < 0:
                     self.player_unit_input_delay = 0
 
+            self.battle_ui_updater.update()  # update ui before more specific update
+
             if not self.input_popup:
                 if esc_press:  # open/close menu
                     if self.game_state == "battle":  # in battle
                         self.game_state = "menu"  # open menu
-                        self.add_ui_updater(self.battle_menu, *self.battle_menu_button)  # add menu and its buttons to drawer
+                        self.add_ui_updater(self.battle_menu, self.battle_menu_button)  # add menu and its buttons to drawer
                         esc_press = False  # reset esc press, so it not stops esc menu when open
                         self.add_ui_updater(self.cursor)
-                        self.remove_ui_updater(self.player1_battle_cursor)
 
                 if self.game_state == "battle":  # game in battle state
                     if not self.player_input_state:  # register user input during gameplay
@@ -881,7 +884,7 @@ class Battle:
 
                     # Update game time
                     self.dt = self.true_dt * self.game_speed  # apply dt with game_speed for calculation
-                    if self.dt > 0.1:
+                    if self.dt > 0.1:  # one frame update should not be longer than 0.1 second for calculation
                         self.dt = 0.1  # make it so stutter and lag does not cause overtime issue
 
                     self.ui_timer += self.dt  # ui update by real time instead of self time to reduce workload
@@ -955,22 +958,23 @@ class Battle:
                         return
 
             else:  # currently, have input text pop up on screen, stop everything else until done
-                if self.input_ok_button.event:
-                    self.input_ok_button.event = False
-
+                if self.input_ok_button.event_press:
                     if self.input_popup[1] == "quit":  # quit game
                         pygame.quit()
                         sys.exit()
 
                     self.input_box.text_start("")
                     self.input_popup = None
-                    self.remove_ui_updater(*self.input_ui_popup, *self.confirm_ui_popup)
+                    self.remove_ui_updater(self.input_ui_popup, self.confirm_ui_popup)
+                    if self.game_state == "battle":
+                        self.remove_ui_updater(self.cursor)
 
-                elif self.input_cancel_button.event or esc_press:
-                    self.input_cancel_button.event = False
+                elif self.input_cancel_button.event_press or esc_press:
                     self.input_box.text_start("")
                     self.input_popup = None
-                    self.remove_ui_updater(*self.input_ui_popup, *self.confirm_ui_popup)
+                    self.remove_ui_updater(self.input_ui_popup, self.confirm_ui_popup)
+                    if self.game_state == "battle":
+                        self.remove_ui_updater(self.cursor)
 
                 elif self.input_popup[0] == "text_input":
                     if self.text_delay == 0:
@@ -981,8 +985,6 @@ class Battle:
                         self.text_delay += self.true_dt
                         if self.text_delay >= 0.3:
                             self.text_delay = 0
-
-            self.battle_ui_updater.update()  # update ui
 
             # self.screen.fill((0, 0, 0))
             self.screen.blit(self.camera.image, (0, 0))  # draw the battle camera and everything that appear in it
@@ -1004,8 +1006,8 @@ class Battle:
 
         self.remove_ui_updater(self.battle_scale_ui)
 
-        self.remove_ui_updater(self.battle_menu, *self.battle_menu_button, *self.esc_slider_menu,
-                               *self.esc_value_boxes, self.battle_done_box,
+        self.remove_ui_updater(self.battle_menu, self.battle_menu_button, self.esc_slider_menu,
+                               self.esc_value_boxes, self.battle_done_box,
                                self.battle_done_button)  # remove menu
 
         # remove all reference from battle object

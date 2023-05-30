@@ -219,7 +219,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                 # remove animation not suitable for preview
                 animation = [this_animation for this_animation in animation if
                              any(ext in this_animation for ext in
-                                 ("_Default", "_Die", "_Flee", "_Damaged", "KnockDown", "_Music_",
+                                 ("_Default", "_Die", "_Flee", "_Damaged", "KnockDown", "_Music_", "_Menu_"
                                   "_Standup", "_HeavyDamaged")) is False and "_Sub_" not in this_animation]
                 if len(animation) > 0:
                     animation = choice(animation)  # random animation
@@ -232,7 +232,10 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                 race_type = race
 
             if specific_preview:
-                frame_data = self.unit_animation_data[race_type][animation][specific_preview[1]]
+                if specific_preview[1] is not None:
+                    frame_data = self.unit_animation_data[race_type][animation][specific_preview[1]]
+                else:
+                    frame_data = self.unit_animation_data[race_type][animation]
             else:
                 frame_data = choice(self.unit_animation_data[race_type][animation])  # random frame
             animation_property = self.unit_animation_data[race_type][animation][0]["animation_property"].copy()
@@ -246,32 +249,63 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
             if idle_animation_name not in self.unit_animation_data[race]:  # try any
                 idle_animation_name = final_race_name + "any_Idle"
 
-            sprite_dict = self.create_troop_sprite(animation, this_unit["Size"], frame_data,
-                                                   sprite_data, animation_property,
-                                                   (weapon_set, unit_weapon_list[weapon_set],
-                                                    (self.troop_data.weapon_list[primary_main_weapon]["Hand"],
-                                                     self.troop_data.weapon_list[primary_sub_weapon]["Hand"])),
-                                                   armour_name,
-                                                   self.unit_animation_data[race][idle_animation_name][0], False)
-            sprite_pic, center_offset = crop_sprite(sprite_dict["sprite"])
+            if len(frame_data) > 1:
+                animation_sprite_pool[unit_id] = {}
+                for index, frame in enumerate(frame_data):
+                    sprite_dict = self.create_troop_sprite(animation, this_unit["Size"], frame,
+                                                           sprite_data, animation_property,
+                                                           (weapon_set, unit_weapon_list[weapon_set],
+                                                            (self.troop_data.weapon_list[primary_main_weapon]["Hand"],
+                                                             self.troop_data.weapon_list[primary_sub_weapon]["Hand"])),
+                                                           armour_name,
+                                                           self.unit_animation_data[race][idle_animation_name][0],
+                                                           False)
+                    if not specific_preview or "no-crop" not in specific_preview:
+                        sprite_pic, center_offset = crop_sprite(sprite_dict["sprite"])
 
-            if max_preview_size:
-                scale = min(max_preview_size * self.screen_scale[0] / sprite_pic.get_width(),
-                            max_preview_size * self.screen_scale[1] / sprite_pic.get_height())
-                if scale != 1:  # scale down to fit ui like encyclopedia
-                    sprite_pic = pygame.transform.smoothscale(sprite_pic, (
-                        sprite_pic.get_width() * scale,
-                        sprite_pic.get_height() * scale))
+                    if max_preview_size:
+                        scale = min(max_preview_size * self.screen_scale[0] / sprite_pic.get_width(),
+                                    max_preview_size * self.screen_scale[1] / sprite_pic.get_height())
+                        if scale != 1:  # scale down to fit ui like encyclopedia
+                            sprite_pic = pygame.transform.smoothscale(sprite_pic, (
+                                sprite_pic.get_width() * scale,
+                                sprite_pic.get_height() * scale))
 
-            if specific_preview:
-                if specific_preview[2][0:2] == "l_":
-                    sprite_pic = pygame.transform.flip(sprite_pic, True, False)
+                    if specific_preview:
+                        if specific_preview[2][0:2] == "l_":
+                            sprite_pic = pygame.transform.flip(sprite_pic, True, False)
 
-            animation_sprite_pool[unit_id] = {"sprite": sprite_pic,
-                                              "animation_property": sprite_dict["animation_property"],
-                                              "frame_property": sprite_dict[
-                                                  "frame_property"],
-                                              "center_offset": center_offset}  # preview pool use unit_id only
+                    animation_sprite_pool[unit_id][index] = {"sprite": sprite_pic,
+                                                             "animation_property": sprite_dict["animation_property"],
+                                                             "frame_property": sprite_dict["frame_property"],
+                                                             "center_offset": center_offset}
+            else:
+                sprite_dict = self.create_troop_sprite(animation, this_unit["Size"], frame_data,
+                                                       sprite_data, animation_property,
+                                                       (weapon_set, unit_weapon_list[weapon_set],
+                                                        (self.troop_data.weapon_list[primary_main_weapon]["Hand"],
+                                                         self.troop_data.weapon_list[primary_sub_weapon]["Hand"])),
+                                                       armour_name,
+                                                       self.unit_animation_data[race][idle_animation_name][0], False)
+                sprite_pic, center_offset = crop_sprite(sprite_dict["sprite"])
+
+                if max_preview_size:
+                    scale = min(max_preview_size * self.screen_scale[0] / sprite_pic.get_width(),
+                                max_preview_size * self.screen_scale[1] / sprite_pic.get_height())
+                    if scale != 1:  # scale down to fit ui like encyclopedia
+                        sprite_pic = pygame.transform.smoothscale(sprite_pic, (
+                            sprite_pic.get_width() * scale,
+                            sprite_pic.get_height() * scale))
+
+                if specific_preview:
+                    if specific_preview[2][0:2] == "l_":
+                        sprite_pic = pygame.transform.flip(sprite_pic, True, False)
+
+                animation_sprite_pool[unit_id] = {"sprite": sprite_pic,
+                                                  "animation_property": sprite_dict["animation_property"],
+                                                  "frame_property": sprite_dict[
+                                                      "frame_property"],
+                                                  "center_offset": center_offset}  # preview pool use unit_id only
 
         else:
             cache_file_path = os.path.join(self.main_dir, "cache", self.module_folder, sprite_id + "_sprite")
@@ -307,8 +341,9 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
             animation_list = list(self.unit_animation_data[race].keys())
             animation_list = [item for item in animation_list if "_Default" in item] + \
                              [item for item in animation_list if "_Default" not in item]  # move default to first
-            animation_list = [this_animation for this_animation in animation_list if "_Preview" not in
-                              this_animation and final_race_name in this_animation and
+            animation_list = [this_animation for this_animation in animation_list if
+                              not any(ext in this_animation for ext in ("_Music_", "_Menu_", "_Preview_")) and
+                              final_race_name in this_animation and
                               ("_Skill_" not in this_animation or any(ext in this_animation for ext in skill_list))]
             temp_animation_list = animation_list.copy()
             animation_list = [this_animation for this_animation in animation_list if "_any_" not in this_animation

@@ -29,9 +29,10 @@ class MenuActor(UIMenu):
         self.current_animation = images
         self.pos = pos
         self.frame_timer = 0
-        self.animation_frame_play_time = 1
+        self.animation_frame_play_time = 0.1
         self.show_frame = 0
-        self.image = self.current_animation[self.show_frame]
+        self.image = self.current_animation[self.show_frame]["sprite"]
+        self.rect = self.image.get_rect(midbottom=self.pos)
 
     def update(self):
         self.frame_timer += self.game.dt
@@ -39,9 +40,10 @@ class MenuActor(UIMenu):
             self.frame_timer = 0
             if self.show_frame < len(self.current_animation) - 1:
                 self.show_frame += 1
-                self.image = self.current_animation[self.show_frame]
+                self.image = self.current_animation[self.show_frame]["sprite"]
             else:
                 self.show_frame = 0
-                self.image = self.current_animation[self.show_frame]
+                self.image = self.current_animation[self.show_frame]["sprite"]
+            self.rect = self.image.get_rect(midbottom=self.pos)
 
         # self.image = rotate(self.image, self.angle)

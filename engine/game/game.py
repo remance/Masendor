@@ -490,7 +490,7 @@ class Game:
             pygame.mixer.set_num_channels(1000)
             pygame.mixer.music.set_volume(self.master_volume)
             self.SONG_END = pygame.USEREVENT + 1
-            self.music_list = glob.glob(self.module_dir + "/sound/music/*.ogg")
+            self.music_list = glob.glob(self.module_dir + "/sound/music/menu.ogg")
             pygame.mixer.music.load(self.music_list[0])
             pygame.mixer.music.play(-1)
 
@@ -718,6 +718,27 @@ class Game:
         self.background_image = load_images(self.module_dir, screen_scale=self.screen_scale,
                                             subfolder=("ui", "mainmenu_ui", "background"))
         self.atlas = menubackground.MenuRotate((self.screen_width / 2, self.screen_height / 2), self.background_image["atlas"], 5)
+        self.menu_actor_data = csv_read(self.module_dir, "menu_actor.csv", ("ui",), header_key=True)
+        self.menu_actors = []
+        print(self.menu_actor_data)
+        for stuff in self.menu_actor_data.values():
+            if stuff["Type"] == "unit":
+                if "-" in stuff["ID"]:
+                    who_todo = {key: value for key, value in self.leader_data.leader_list.items() if key == stuff["ID"]}
+                else:
+                    who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key == stuff["ID"]}
+                sprite_direction = unit.rotation_dict[min(unit.rotation_list, key=lambda x: abs(
+                    x - stuff["Angle"]))]  # find closest in list of rotation for sprite direction
+                preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True,
+                                                                       specific_preview=(stuff["Animation"],
+                                                                                         None,
+                                                                                         sprite_direction),
+                                                                       max_preview_size=None)
+
+                self.menu_actors.append(menubackground.MenuActor((float(stuff["POS"].split(",")[0]) * self.screen_width,
+                                                                  float(stuff["POS"].split(",")[1]) * self.screen_height),
+                                                                 preview_sprite_pool[stuff["ID"]]))
+
         # self.background = self.background_image["main"]
 
         # Starting script
@@ -860,7 +881,6 @@ class Game:
 
             if self.input_popup:  # currently, have input text pop up on screen, stop everything else until done
                 if self.input_ok_button.event_press or key_press[pygame.K_RETURN] or key_press[pygame.K_KP_ENTER]:
-                    print(self.input_ok_button.event_press , key_press[pygame.K_RETURN] , key_press[pygame.K_KP_ENTER])
                     if self.input_popup[1] == "profile_name":
                         self.profile_name = self.input_box.text
                         self.profile_box.change_text(self.profile_name)
@@ -927,7 +947,6 @@ class Game:
                     self.remove_ui_updater(*self.input_ui_popup, *self.confirm_ui_popup, *self.inform_ui_popup)
 
                 elif self.input_cancel_button.event_press or self.input_close_button.event_press or esc_press:
-                    print("can", self.input_cancel_button.event_press, self.input_close_button.event_press)
                     self.input_box.text_start("")
                     self.input_popup = None
                     self.remove_ui_updater(*self.input_ui_popup, *self.confirm_ui_popup, *self.inform_ui_popup)

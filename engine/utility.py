@@ -196,7 +196,7 @@ def csv_read(main_dir, file, subfolder=(), output_type="dict", header_key=False,
                 for n, i in enumerate(row):
                     if i.isdigit() or ("-" in i and re.search("[a-zA-Z]", i) is None):
                         row[n] = int(i)
-                    elif re.search("[a-zA-Z]", i) is None and "." in i:
+                    elif re.search("[a-zA-Z]", i) is None and "." in i and "," not in i:
                         row[n] = float(i)
                 if output_type == "dict":  # return as dict
                     if header_key:

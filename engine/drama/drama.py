@@ -18,6 +18,7 @@ class TextDrama(UIMenu):
         self.queue = []  # text list to popup
         self.blit_text = False
         self.current_length = 0
+        self.max_length = 0
         self.text_input = ""
         self.left_corner_rect = self.left_corner.get_rect(topleft=(0, 0))  # The starting point
 

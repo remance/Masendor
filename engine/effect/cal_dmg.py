@@ -122,34 +122,34 @@ def cal_charge_dmg(self, target, hit_side):
             element_effect[key] = value / 10
 
     charge_power = (self.attacker.charge + self.attacker.speed) * self.attacker.momentum
+    if charge_power:
+        if not self.attacker.check_special_effect("Ignore Charge Defence",
+                                                  weapon=weapon):
+            side_cal = combat_side_cal[hit_side]
+            if target.check_special_effect("All Side Full Defence"):  # defence all side
+                side_cal = 1
+            target_charge_def = target.charge_def * side_cal
+            charge_power_diff = charge_power - target_charge_def
+            if charge_power_diff > 0:
+                troop_dmg += troop_dmg * charge_power_diff / 100
+                impact *= charge_power_diff / 100
+            else:  # enemy charge def is higher
+                troop_dmg = 0
+                impact = 0
+                self.attacker.interrupt_animation = True
+                self.attacker.command_action = self.attacker.damaged_command_action
+                self.attacker.momentum = 0
+                self.attacker.forced_target = Vector2(
+                    self.attacker.base_pos[0] - (5 * sin(radians(self.attacker.angle))),
+                    self.attacker.base_pos[1] - (5 * cos(radians(self.attacker.angle))))
 
-    if not self.attacker.check_special_effect("Ignore Charge Defence",
-                                              weapon=weapon):
-        side_cal = combat_side_cal[hit_side]
-        if target.check_special_effect("All Side Full Defence"):  # defence all side
-            side_cal = 1
-        target_charge_def = target.charge_def * side_cal
-        charge_power_diff = charge_power - target_charge_def
-        if charge_power_diff > 0:
-            troop_dmg += troop_dmg * charge_power_diff / 100
-            impact *= charge_power_diff / 100
-        else:  # enemy charge def is higher
-            troop_dmg = 0
-            impact = 0
-            self.attacker.interrupt_animation = True
-            self.attacker.command_action = self.attacker.damaged_command_action
-            self.attacker.momentum = 0
-            self.attacker.forced_target = Vector2(
-                self.attacker.base_pos[0] - (5 * sin(radians(self.attacker.angle))),
-                self.attacker.base_pos[1] - (5 * cos(radians(self.attacker.angle))))
+                self.attacker.battle.add_sound_effect_queue(self.attacker.sound_effect_pool["Damaged"][0],
+                                                            self.attacker.base_pos,
+                                                            self.attacker.dmg_sound_distance,
+                                                            self.attacker.dmg_sound_shake,
+                                                            volume_mod=self.attacker.hit_volume_mod)
 
-            self.attacker.battle.add_sound_effect_queue(self.attacker.sound_effect_pool["Damaged"][0],
-                                                        self.attacker.base_pos,
-                                                        self.attacker.dmg_sound_distance,
-                                                        self.attacker.dmg_sound_shake,
-                                                        volume_mod=self.attacker.hit_volume_mod)
-
-    else:  # ignore charge defence if have trait
-        troop_dmg += troop_dmg * self.charge_power / 100
+        else:  # ignore charge defence if have trait
+            troop_dmg += troop_dmg * self.charge_power / 100
 
     return troop_dmg, element_effect, impact
