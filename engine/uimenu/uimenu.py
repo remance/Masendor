@@ -879,15 +879,22 @@ class ListAdapter:
 
 class ListAdapterHideExpand:
 
+    # actual list refer to the origin full list
+    # visual list refer to the list after some if any of the elements been hidden
+
     def __init__(self, _list, _self, replace_on_select=None):
-        self.list = _list
-        self.open = [False for element in _list]
+        self.actual_list = actual_list = _list
+        self.actual_list_open_index = [False for element in actual_list]
+        self.actual_list_level = [ self.get_level_by_str(element) for element in actual_list ]       
+ 
+    @classmethod
+    def get_level_by_str(cls, _str):
+        for e, c in enumerate(_str):      
+            if c != '>': return e
+        raise Exception()
 
     def get_actual_index_level(self, index):
-        if not self.list[index].startswith(">"): return 0
-        if self.list[index].startswith("> "): return 1
-        if self.list[index].startswith(">> "): return 2
-        raise Exception("unknown level. implement more levels?")
+        return self.actual_list_level[index]
 
     def is_actual_index_hidden(self, index):
 
@@ -898,31 +905,33 @@ class ListAdapterHideExpand:
 
         # scan up in the list till you hit a top level element and check if it is open
         # and if it is, this element should be open
-        for i in range(1,
-                       128):  # i do not like while loops because they can freeze the game, just keeps a big number here instead
+        for i in range(1, len(self.actual_list)): 
             u = index - i
             if self.get_actual_index_level(u) == level - 1:
                 break
 
-        return not self.open[u]
+        if level > 1 and self.is_actual_index_hidden(u):
+            return True
+
+        return not self.actual_list_open_index[u]
 
     def __len__(self):
-        return len([i for i in range(len(self.list)) if not self.is_actual_index_hidden(i)])
+        return len([i for i in range(len(self.actual_list)) if not self.is_actual_index_hidden(i)])
 
     def __getitem__(self, item):
         r = list()
-        for index, element in enumerate(self.list):
+        for index, element in enumerate(self.actual_list):
             if self.is_actual_index_hidden(index): continue
             r.append(element)
         if item >= len(r): return None
 
         actual_index = self.get_visible_index_actual_index()[item]
-        return ("O " if self.open[actual_index] else "") + r[item]
+        return ("O " if self.actual_list_open_index[actual_index] else "") + r[item]
 
     def get_visible_index_actual_index(self):
         r = dict()
         visible_index = -1
-        for actual_index in range(len(self.list)):
+        for actual_index in range(len(self.actual_list)):
             if self.is_actual_index_hidden(actual_index): continue
             visible_index += 1
             r[visible_index] = actual_index
@@ -934,7 +943,7 @@ class ListAdapterHideExpand:
     def on_select(self, item_index, item_text):
         actual_index = self.get_visible_index_actual_index().get(item_index)
         if actual_index is None: return
-        self.open[actual_index] = not self.open[actual_index]
+        self.actual_list_open_index[actual_index] = not self.actual_list_open_index[actual_index]
 
 
 class TickBox(UIMenu):
@@ -1352,7 +1361,7 @@ class ListUI(UIMenu, Containable):
         if scroll_box_rect := self.get_scroll_box_rect():
             self.image.blit(self.scroll_box, scroll_box_rect)
             if self.in_scroll_box or self.hold_scroll_box is not None:
-                draw.rect(self.image, (220, 190, 110) if self.hold_scroll_box is not None else (150,) * 3,
+                draw.rect(self.image, (100, 0, 0) if self.hold_scroll_box is not None else (50,) * 3,
                           scroll_box_rect, 1)
 
         return self.image
