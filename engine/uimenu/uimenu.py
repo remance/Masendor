@@ -868,6 +868,66 @@ class ListAdapter:
         return self.last_index
 
 
+class ListAdapterHideExpand:
+
+    def __init__(self, _list, _self, replace_on_select=None):
+        self.list = _list
+        self.open = [ False for element in _list ]
+
+    def get_actual_index_level(self, index):
+        if not self.list[index].startswith(">"): return 0
+        if self.list[index].startswith("> "): return 1
+        if self.list[index].startswith(">> "): return 2
+        raise Exception("unknown level. implement more levels?")
+
+    def is_actual_index_hidden(self, index):
+
+        level = self.get_actual_index_level(index)
+
+        if level == 0:
+            return False
+
+        # scan up in the list till you hit a top level element and check if it is open
+        # and if it is, this element should be open
+        for i in range(1,128): # i do not like while loops because they can freeze the game, just keeps a big number here instead
+            u = index-i
+            if self.get_actual_index_level(u) == level-1:
+                break
+      
+        return not self.open[u]
+
+    def __len__(self):
+        return len([ i for i in range(len(self.list)) if not self.is_actual_index_hidden(i) ]  )
+
+    def __getitem__(self, item):
+        r = list()
+        for index, element in enumerate(self.list):
+            if self.is_actual_index_hidden(index): continue
+            r.append(element)
+        if item >= len(r): return None
+
+        actual_index = self.get_visible_index_actual_index()[item]
+        return ("O " if self.open[actual_index] else "")+r[item]
+
+    def get_visible_index_actual_index(self):
+        r = dict()
+        visible_index = -1
+        for actual_index in range(len(self.list)):
+            if self.is_actual_index_hidden(actual_index): continue
+            visible_index += 1
+            r[visible_index] = actual_index
+        return r
+
+    def get_highlighted_index(self):
+        return -1
+
+    def on_select(self, item_index, item_text):
+        actual_index = self.get_visible_index_actual_index().get(item_index)
+        if actual_index is None: return
+        self.open[actual_index] = not self.open[actual_index]
+        
+
+
 class TickBox(UIMenu):
     def __init__(self, pos, image, tick_image, option):
         """option is in str text for identifying what kind of tick_box it is"""
@@ -1220,6 +1280,13 @@ class ListUI(UIMenu, Containable):
 
         self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
 
+        self.last_length_check = len(self.items)
+
+        self.calc_scroll_bar()
+        self.image = self.get_refreshed_image()
+
+    def calc_scroll_bar(self):
+        item_size = self.item_size
         self.scroll_bar_height = self.rect[3] - 12
         self.scroll_box_height = int(self.scroll_bar_height * (item_size / len(self.items)))
         divider = self.get_number_of_items_outside_visible_list()
@@ -1232,7 +1299,8 @@ class ListUI(UIMenu, Containable):
 
         self.scroll_box = make_image_by_frame(self.scroll_box_frame, (14, self.scroll_box_height))
         self.scroll_box_index = 0
-        self.image = self.get_refreshed_image()
+
+
 
     def get_number_of_items_outside_visible_list(self):
         r = len(self.items) - self.item_size
@@ -1259,17 +1327,17 @@ class ListUI(UIMenu, Containable):
             item_index = i + self.scroll_box_index
             if item_index == self.selected_index or item_index == self.items.get_highlighted_index():
 
-                color = "#181617"
+                color = "#cbc2a9"
                 if item_index == self.items.get_highlighted_index():
-                    color = "#551617"
+                    color = "#cbc2a9"
 
                 pygame.draw.rect(self.image, color, (6, 6 + i * item_height, size[0] - 13*self.has_scroll-12, item_height))
-            self.image.blit(font.render(self.items[item_index], True, (255 if item_index == self.selected_index else 0,) * 3),
+            self.image.blit(font.render(self.items[item_index], True, (47 if item_index == self.selected_index else 0,) * 3),
                             (20, item_height // 2 + 6 - 9 + i * item_height))
 
         # draw scroll bar
         if scroll_bar_rect := self.get_scroll_bar_rect():
-            pygame.draw.rect(self.image, "black", scroll_bar_rect)
+            pygame.draw.rect(self.image, "#d2cab4", scroll_bar_rect)
 
         # draw scroll box
         if scroll_box_rect := self.get_scroll_box_rect():
@@ -1288,6 +1356,10 @@ class ListUI(UIMenu, Containable):
         return pygame.Rect(self.rect[2] - 18, self.scroll_box_index * self.scroll_step_height + 6, *self.scroll_box.get_size())
 
     def update(self):
+
+        if self.last_length_check != len(self.items):
+            self.last_length_check = len(self.items)
+            self.calc_scroll_bar()
 
         mouse_pos = self.cursor.pos
         relative_mouse_pos = [mouse_pos[i] - self.rect[i] for i in range(2)]

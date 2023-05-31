@@ -518,7 +518,7 @@ class Game:
                                                  parent=self.screen, item_size=20)  # TODO change to preset map list
 
         self.campaign_map_list_box = uimenu.ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
-                                                   items=uimenu.ListAdapter(self.campaign_map_list, self),
+                                                   items=uimenu.ListAdapterHideExpand(self.campaign_map_list, self),
                                                    parent=self.screen, item_size=20)
 
         self.custom_battle_map_list_box = uimenu.ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
