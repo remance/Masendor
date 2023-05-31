@@ -1,8 +1,3 @@
-from engine import utility
-
-list_scroll = utility.list_scroll
-
-
 def mouse_scrolling_process(self, mouse_scroll_up, mouse_scroll_down):
     if self.event_log.rect.collidepoint(self.player1_battle_cursor.pos):  # Scrolling when mouse at event log
         if mouse_scroll_up:

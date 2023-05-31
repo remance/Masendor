@@ -2,15 +2,13 @@ import cProfile
 import datetime
 from math import cos, sin, radians
 
-import pygame
+from pygame import Vector2, Surface, SRCALPHA, Color, Rect, mouse, draw
+from pygame.font import Font
+from pygame.sprite import Sprite
+from pygame.transform import flip, smoothscale, scale
 
 from engine.uimenu.uimenu import UIMenu
-from engine import utility
-
-apply_sprite_colour = utility.apply_sprite_colour
-text_render = utility.text_render
-minimise_number_text = utility.minimise_number_text
-number_to_minus_or_plus = utility.number_to_minus_or_plus
+from engine.utility import text_render, minimise_number_text, number_to_minus_or_plus
 
 
 def change_number(number):
@@ -39,7 +37,7 @@ class BattleCursor(UIBattle):
         UIBattle.__init__(self, has_containers=True)
         self.images = images
         self.image = images["normal"]
-        self.pos = pygame.Vector2((self.screen_size[0] / 2, self.screen_size[1] / 2))
+        self.pos = Vector2((self.screen_size[0] / 2, self.screen_size[1] / 2))
         self.rect = self.image.get_rect(topleft=self.pos)
         self.player_input = player_input
 
@@ -49,7 +47,7 @@ class BattleCursor(UIBattle):
     def update(self):
         """Update cursor position based on joystick or mouse input"""
         if self.player_input == "keyboard":  # keyboard and mouse control
-            self.pos = pygame.mouse.get_pos()
+            self.pos = mouse.get_pos()
         else:  # joystick control
             for joystick in self.battle.joysticks.values():
                 for i in range(joystick.get_numaxes()):
@@ -97,14 +95,14 @@ class HeroUI(UIBattle):
     def __init__(self, weapon_box_images, status_box_image, text_size=24):
         self._layer = 10
         UIBattle.__init__(self)
-        self.font = pygame.font.Font(self.ui_font["text_paragraph"], int(text_size * self.screen_scale[1]))
+        self.font = Font(self.ui_font["text_paragraph"], int(text_size * self.screen_scale[1]))
 
-        self.image = pygame.Surface((400 * self.screen_scale[0], 200 * self.screen_scale[1]))
+        self.image = Surface((400 * self.screen_scale[0], 200 * self.screen_scale[1]))
         self.image.fill((255, 255, 255))
         self.base_image = self.image.copy()
 
         self.health_bar_size = (10 * self.screen_scale[0], self.image.get_height())
-        self.health_bar = pygame.Surface(self.health_bar_size, pygame.SRCALPHA)
+        self.health_bar = Surface(self.health_bar_size, SRCALPHA)
         self.health_bar.fill((0, 0, 0))
         self.health_bar_original = self.health_bar.copy()
         self.health_bar_rect = self.health_bar.get_rect(topright=(self.image.get_width() - self.health_bar_size[0], 0))
@@ -112,21 +110,21 @@ class HeroUI(UIBattle):
 
         self.health_bar_height = self.health_bar.get_height()
 
-        self.stamina_bar = pygame.Surface(self.health_bar_size, pygame.SRCALPHA)
+        self.stamina_bar = Surface(self.health_bar_size, SRCALPHA)
         self.stamina_bar.fill((0, 0, 0))
         self.stamina_bar_original = self.stamina_bar.copy()
         self.stamina_bar_rect = self.stamina_bar.get_rect(topright=(self.image.get_width(), 0))
         self.stamina_bar.fill((0, 200, 0))
 
         self.weapon_box_images = weapon_box_images
-        self.weapon_image = pygame.Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]),
-                                           pygame.SRCALPHA)
+        self.weapon_image = Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]),
+                                    SRCALPHA)
 
         self.prim_main_weapon_box_rect = self.weapon_box_images[0].get_rect(topleft=(0, 0))
         self.weapon_image.blit(self.weapon_box_images[0], self.prim_main_weapon_box_rect)
         self.prim_sub_weapon_box_rect = self.weapon_box_images[0].get_rect(
             topleft=(self.weapon_box_images[0].get_width(), 0))
-        self.weapon_image.blit(pygame.transform.flip(self.weapon_box_images[0], True, False),
+        self.weapon_image.blit(flip(self.weapon_box_images[0], True, False),
                                self.prim_sub_weapon_box_rect)
 
         self.sec_main_weapon_box_rect = self.weapon_box_images[1].get_rect(
@@ -143,7 +141,7 @@ class HeroUI(UIBattle):
         self.ammo_count_rect = ((self.prim_main_weapon_box_rect.midbottom, self.prim_sub_weapon_box_rect.midbottom),
                                 (self.sec_main_weapon_box_rect.midbottom, self.sec_sub_weapon_box_rect.midbottom))
 
-        self.weapon_image.blit(pygame.transform.flip(self.weapon_box_images[1], True, False),
+        self.weapon_image.blit(flip(self.weapon_box_images[1], True, False),
                                self.sec_sub_weapon_box_rect)
 
         self.weapon_image_set_pos = ((self.prim_main_weapon_box_rect.center, self.prim_sub_weapon_box_rect.center),
@@ -175,17 +173,17 @@ class HeroUI(UIBattle):
             bottomright=(self.health_bar_rect.bottomleft[0],
                          self.health_bar_rect.bottomleft[1]))
 
-        bar_bad = pygame.Surface((18 * self.screen_scale[0], 13 * self.screen_scale[1]))
+        bar_bad = Surface((18 * self.screen_scale[0], 13 * self.screen_scale[1]))
         bar_bad.fill((100, 0, 0))
-        bar_worst = pygame.Surface((18 * self.screen_scale[0], 13 * self.screen_scale[1]))
+        bar_worst = Surface((18 * self.screen_scale[0], 13 * self.screen_scale[1]))
         bar_worst.fill((200, 0, 0))
 
-        bar_good = pygame.Surface((18 * self.screen_scale[0], 13 * self.screen_scale[1]))
+        bar_good = Surface((18 * self.screen_scale[0], 13 * self.screen_scale[1]))
         bar_good.fill((0, 100, 0))
-        bar_best = pygame.Surface((18 * self.screen_scale[0], 13 * self.screen_scale[1]))
+        bar_best = Surface((18 * self.screen_scale[0], 13 * self.screen_scale[1]))
         bar_best.fill((0, 200, 0))
 
-        bar_normal = pygame.Surface((18 * self.screen_scale[0], 13 * self.screen_scale[1]))
+        bar_normal = Surface((18 * self.screen_scale[0], 13 * self.screen_scale[1]))
         bar_normal.fill((100, 100, 100))
 
         self.status_bar_image = {-1: bar_worst, 0: bar_bad, 1: bar_normal, 2: bar_good, 3: bar_best}
@@ -230,8 +228,8 @@ class HeroUI(UIBattle):
         self.rect = self.image.get_rect(topleft=self.pos)
 
     def add_leader_image(self, leader_image):
-        self.base_image.blit(pygame.transform.smoothscale(leader_image,
-                                                          (150 * self.screen_scale[0], 150 * self.screen_scale[1])),
+        self.base_image.blit(smoothscale(leader_image,
+                                         (150 * self.screen_scale[0], 150 * self.screen_scale[1])),
                              self.leader_image_rect)
         self.image = self.base_image.copy()
 
@@ -240,7 +238,7 @@ class HeroUI(UIBattle):
             self.last_health = who.health
             self.health_bar = self.health_bar_original.copy()
             health_percent = who.health / who.max_health
-            health_bar = pygame.Surface((self.health_bar_size[0], self.health_bar_size[1] * health_percent))
+            health_bar = Surface((self.health_bar_size[0], self.health_bar_size[1] * health_percent))
             health_bar.fill((200, 0, 0))
             health_bar_rect = health_bar.get_rect(bottomleft=(0, self.health_bar_height))
             self.health_bar.blit(health_bar, health_bar_rect)
@@ -254,7 +252,7 @@ class HeroUI(UIBattle):
             stamina_percent = who.stamina / who.max_stamina
             if stamina_percent < 0:
                 stamina_percent = 0
-            stamina_bar = pygame.Surface((self.health_bar_size[0], self.health_bar_size[1] * stamina_percent))
+            stamina_bar = Surface((self.health_bar_size[0], self.health_bar_size[1] * stamina_percent))
             stamina_bar.fill((0, 200, 0))
             stamina_bar_rect = stamina_bar.get_rect(bottomleft=(0, self.health_bar_height))
             self.stamina_bar.blit(stamina_bar, stamina_bar_rect)
@@ -316,9 +314,9 @@ class HeroUI(UIBattle):
                         weapon_image = self.weapon_sprite_pool[this_weapon]["Common"]["Icon"].copy()
 
                     if index > 0:  # unequipped weapon
-                        weapon_image = pygame.transform.scale(weapon_image,
-                                                              (self.weapon_image.get_width() / 5,
-                                                               self.weapon_image.get_height() / 5))
+                        weapon_image = scale(weapon_image,
+                                             (self.weapon_image.get_width() / 5,
+                                              self.weapon_image.get_height() / 5))
                     self.weapon_image.blit(weapon_image,
                                            weapon_image.get_rect(center=self.weapon_image_set_pos[index][index2]))
             self.weapon_base_image2 = self.weapon_image.copy()
@@ -332,14 +330,14 @@ class HeroUI(UIBattle):
                         cooldown = who.weapon_cooldown[index2]
                         speed = who.weapon_speed[index2]
                         if 0 < cooldown < speed:
-                            cooldown_image = pygame.Surface((self.weapon_box_images[0].get_width(),
-                                                             self.weapon_box_images[0].get_height() *
-                                                             (1 - (cooldown / speed))), pygame.SRCALPHA)
+                            cooldown_image = Surface((self.weapon_box_images[0].get_width(),
+                                                      self.weapon_box_images[0].get_height() *
+                                                      (1 - (cooldown / speed))), SRCALPHA)
                             cooldown_image.fill((255, 50, 50, 200))
                             self.weapon_image.blit(cooldown_image, self.weapon_cooldown_rect[index2])
                         elif self.weapon_holding[index2]:  # holding weapon animation
-                            hold_image = pygame.Surface((self.weapon_box_images[0].get_width(),
-                                                         self.weapon_box_images[0].get_height()), pygame.SRCALPHA)
+                            hold_image = Surface((self.weapon_box_images[0].get_width(),
+                                                  self.weapon_box_images[0].get_height()), SRCALPHA)
                             hold_image.fill((100, 200, 100, 200))
                             self.weapon_image.blit(hold_image, self.weapon_cooldown_rect[index2])
 
@@ -422,16 +420,16 @@ class HeroUI(UIBattle):
             self.image.blit(self.status_effect_image, self.status_effect_image_rect)
 
 
-class SkillCardIcon(UIBattle, pygame.sprite.Sprite):
+class SkillCardIcon(UIBattle, Sprite):
     cooldown = None
     active_skill = None
 
     def __init__(self, image, pos, key):
         self._layer = 11
         UIBattle.__init__(self)
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        Sprite.__init__(self, self.containers)
         self.pos = pos  # pos of the skill on ui
-        self.font = pygame.font.Font(self.ui_font["main_button"], int(24 * self.screen_scale[1]))
+        self.font = Font(self.ui_font["main_button"], int(24 * self.screen_scale[1]))
 
         self.cooldown_check = 0  # cooldown number
         self.active_check = 0  # active timer number
@@ -439,13 +437,13 @@ class SkillCardIcon(UIBattle, pygame.sprite.Sprite):
 
         self.key_font_size = int(24 * self.screen_scale[1])
 
-        self.image = pygame.Surface((image.get_width(), image.get_height() + (self.key_font_size * 1.5)),
-                                    pygame.SRCALPHA)
+        self.image = Surface((image.get_width(), image.get_height() + (self.key_font_size * 1.5)),
+                             SRCALPHA)
         image_rect = image.get_rect(midtop=(self.image.get_width() / 2, 0))
         self.image.blit(image, image_rect)
         self.base_image = self.image.copy()  # original image before adding key name
 
-        key_font = pygame.font.Font(self.ui_font["main_button"], self.key_font_size)
+        key_font = Font(self.ui_font["main_button"], self.key_font_size)
         text_surface = text_render(key, key_font)
         text_rect = text_surface.get_rect(midbottom=(self.image.get_width() / 2, self.image.get_height()))
         self.image.blit(text_surface, text_rect)
@@ -456,7 +454,7 @@ class SkillCardIcon(UIBattle, pygame.sprite.Sprite):
 
     def change_key(self, key):
         self.image = self.base_image.copy()
-        key_font = pygame.font.Font(self.ui_font["main_button"], self.key_font_size)
+        key_font = Font(self.ui_font["main_button"], self.key_font_size)
         text_surface = text_render(key, key_font)
         text_rect = text_surface.get_rect(midbottom=(self.image.get_width() / 2, self.image.get_height()))
         self.image.blit(text_surface, text_rect)
@@ -494,10 +492,10 @@ class FPScount(UIBattle):
     def __init__(self):
         self._layer = 12
         UIBattle.__init__(self, player_interact=False)
-        self.image = pygame.Surface((50, 50), pygame.SRCALPHA)
+        self.image = Surface((50, 50), SRCALPHA)
         self.base_image = self.image.copy()
-        self.font = pygame.font.Font(self.ui_font["main_button"], 18)
-        fps_text = self.font.render("60", True, pygame.Color("red"))
+        self.font = Font(self.ui_font["main_button"], 18)
+        fps_text = self.font.render("60", True, Color("red"))
         self.text_rect = fps_text.get_rect(center=(10, 10))
         self.rect = self.image.get_rect(topleft=(0, 0))
 
@@ -505,7 +503,7 @@ class FPScount(UIBattle):
         """Update current fps"""
         self.image = self.base_image.copy()
         fps = str(int(clock.get_fps()))
-        fps_text = self.font.render(fps, True, pygame.Color("red"))
+        fps_text = self.font.render(fps, True, Color("red"))
         text_rect = fps_text.get_rect(center=(10, 10))
         self.image.blit(fps_text, text_rect)
 
@@ -525,10 +523,10 @@ class MiniMap(UIBattle):
         self.update_count = 0
 
         for team in self.colour:
-            leader_dot = pygame.Surface(
+            leader_dot = Surface(
                 (10 * self.screen_scale[0], 10 * self.screen_scale[1]))  # dot for team2 leader
             leader_dot.fill((0, 0, 0))  # black corner
-            team_part = pygame.Surface((8 * self.screen_scale[0], 8 * self.screen_scale[1]))  # size 6x6
+            team_part = Surface((8 * self.screen_scale[0], 8 * self.screen_scale[1]))  # size 6x6
             team_part.fill(self.colour[team])  # colour rect
             rect = leader_dot.get_rect(
                 center=(leader_dot.get_width() / 2, leader_dot.get_height() / 2))
@@ -537,7 +535,7 @@ class MiniMap(UIBattle):
             team_part.fill(self.selected_colour[team])
             leader_dot.blit(team_part, rect)
             self.player_dot_images[team] = leader_dot.copy()
-            troop_dot = pygame.Surface((4 * self.screen_scale[0], 4 * self.screen_scale[1]))  # dot for team2 leader
+            troop_dot = Surface((4 * self.screen_scale[0], 4 * self.screen_scale[1]))  # dot for team2 leader
             troop_dot.fill(self.colour[team])
             self.troop_dot_images[team] = troop_dot
 
@@ -569,11 +567,11 @@ class MiniMap(UIBattle):
                     rect = self.troop_dot_images[subunit.team].get_rect(center=scaled_pos)
                     self.image.blit(self.troop_dot_images[subunit.team], rect)
 
-            pygame.draw.rect(self.image, (0, 0, 0),
-                             ((self.battle.camera_topleft_corner[0] / self.screen_scale[0] / (self.map_scale_width)) / 5,
-                              (self.battle.camera_topleft_corner[1] / self.screen_scale[1] / (self.map_scale_height)) / 5,
-                              (self.camera_border[0] / self.screen_scale[0] / 5) / self.map_scale_width,
-                              (self.camera_border[1] / self.screen_scale[1] / 5) / self.map_scale_height), 2)
+            draw.rect(self.image, (0, 0, 0),
+                      ((self.battle.camera_topleft_corner[0] / self.screen_scale[0] / (self.map_scale_width)) / 5,
+                       (self.battle.camera_topleft_corner[1] / self.screen_scale[1] / (self.map_scale_height)) / 5,
+                       (self.camera_border[0] / self.screen_scale[0] / 5) / self.map_scale_width,
+                       (self.camera_border[1] / self.screen_scale[1] / 5) / self.map_scale_height), 2)
 
 
 class EventLog(UIBattle):
@@ -581,7 +579,7 @@ class EventLog(UIBattle):
     def __init__(self, image, pos):
         self._layer = 10
         UIBattle.__init__(self)
-        self.font = pygame.font.Font(self.ui_font["main_button"], int(image.get_height() / 15))
+        self.font = Font(self.ui_font["main_button"], int(image.get_height() / 15))
         self.pos = pos
         self.image = image
         self.max_row_show = int(image.get_height() / self.font.get_height())
@@ -708,11 +706,11 @@ class UIScroll(UIBattle):
         self.height_ui = self.ui.image.get_height()
         self.max_row_show = self.ui.max_row_show
         self.pos = pos
-        self.image = pygame.Surface((10, self.height_ui))
+        self.image = Surface((10, self.height_ui))
         self.image.fill((255, 255, 255))
         self.base_image = self.image.copy()
         self.button_colour = (100, 100, 100)
-        pygame.draw.rect(self.image, self.button_colour, (0, 0, self.image.get_width(), self.height_ui))
+        draw.rect(self.image, self.button_colour, (0, 0, self.image.get_width(), self.height_ui))
         self.rect = self.image.get_rect(topright=self.pos)
         self.current_row = 0
         self.row_size = 0
@@ -725,9 +723,9 @@ class UIScroll(UIBattle):
             percent_row = self.current_row * 100 / self.row_size
             max_row = (self.current_row + self.max_row_show) * 100 / self.row_size
         max_row = max_row - percent_row
-        pygame.draw.rect(self.image, self.button_colour,
-                         (0, int(self.height_ui * percent_row / 100), self.image.get_width(),
-                          int(self.height_ui * max_row / 100)))
+        draw.rect(self.image, self.button_colour,
+                  (0, int(self.height_ui * percent_row / 100), self.image.get_width(),
+                   int(self.height_ui * max_row / 100)))
 
     def change_image(self, new_row=None, row_size=None):
         """New row is input of scrolling by user to new row, row_size is changing based on adding more log or clear"""
@@ -810,13 +808,13 @@ class UnitSelector(UIBattle):
         self.scroll.change_image(new_row=self.current_row, row_size=self.row_size)
 
 
-class UnitIcon(UIBattle, pygame.sprite.Sprite):
+class UnitIcon(UIBattle, Sprite):
     colour = None
 
     def __init__(self, pos, unit, size):
         self._layer = 11
         UIBattle.__init__(self)
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        Sprite.__init__(self, self.containers)
         self.who = unit  # link unit object so when click can correctly select or go to position
         self.pos = pos  # pos on unit selector ui
         self.place_pos = pos  # pos when drag by mouse
@@ -824,11 +822,11 @@ class UnitIcon(UIBattle, pygame.sprite.Sprite):
         self.selected = False
         self.right_selected = False
 
-        self.leader_image = pygame.transform.scale(unit.portrait,
-                                                   size)  # scale leader image to fit the icon
-        self.not_selected_image = pygame.Surface((self.leader_image.get_width() + (self.leader_image.get_width() / 7),
-                                                  self.leader_image.get_height() + (
-                                                          self.leader_image.get_height() / 7)))  # create image black corner block
+        self.leader_image = scale(unit.portrait,
+                                  size)  # scale leader image to fit the icon
+        self.not_selected_image = Surface((self.leader_image.get_width() + (self.leader_image.get_width() / 7),
+                                           self.leader_image.get_height() + (
+                                                   self.leader_image.get_height() / 7)))  # create image black corner block
         self.selected_image = self.not_selected_image.copy()
         self.selected_image.fill((0, 0, 0))  # fill black corner
         self.right_selected_image = self.not_selected_image.copy()
@@ -838,9 +836,9 @@ class UnitIcon(UIBattle, pygame.sprite.Sprite):
         for image in (
                 self.not_selected_image, self.selected_image,
                 self.right_selected_image):  # add team colour and leader image
-            center_image = pygame.Surface((self.leader_image.get_width() + (self.leader_image.get_width() / 14),
-                                           self.leader_image.get_height() + (
-                                                   self.leader_image.get_height() / 14)))  # create image block
+            center_image = Surface((self.leader_image.get_width() + (self.leader_image.get_width() / 14),
+                                    self.leader_image.get_height() + (
+                                            self.leader_image.get_height() / 14)))  # create image block
             center_image.fill(self.colour[self.who.team])  # fill colour according to team
             image_rect = center_image.get_rect(center=((image.get_width() / 2),
                                                        (image.get_height() / 2)))
@@ -892,11 +890,11 @@ class TempUnitIcon(UIBattle):
         self.team = team
         self.index = index
         self.map_id = None
-        self.portrait = pygame.Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]), pygame.SRCALPHA)
+        self.portrait = Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]), SRCALPHA)
         if type(image) in (int, float, str):
             self.name = str(image)
-            font = pygame.font.Font(self.ui_font["main_button"],
-                                    int(120 / (len(self.name) / 3) * self.screen_scale[1]))
+            font = Font(self.ui_font["main_button"],
+                        int(120 / (len(self.name) / 3) * self.screen_scale[1]))
             image_surface = font.render(self.name, True, (0, 0, 0))
             image_rect = image_surface.get_rect(center=(self.portrait.get_width() / 2, self.portrait.get_height() / 2))
             self.portrait.blit(image_surface, image_rect)
@@ -911,9 +909,9 @@ class Timer(UIBattle):
     def __init__(self, pos, text_size=20):
         self._layer = 11
         UIBattle.__init__(self, player_interact=False)
-        self.font = pygame.font.Font(self.ui_font["main_button"], text_size)
+        self.font = Font(self.ui_font["main_button"], text_size)
         self.pos = pos
-        self.image = pygame.Surface((100, 30), pygame.SRCALPHA)
+        self.image = Surface((100, 30), SRCALPHA)
         self.base_image = self.image.copy()
         self.rect = self.image.get_rect(topleft=pos)
         self.timer = 0
@@ -978,7 +976,7 @@ class BattleScaleUI(UIBattle):
         self._layer = 10
         UIBattle.__init__(self, player_interact=False)
         self.team_colour = team_colour
-        self.font = pygame.font.Font(self.ui_font["main_button"], 12)
+        self.font = Font(self.ui_font["main_button"], 12)
         self.pos = (0, 0)
         self.image = image
         self.image_width = self.image.get_width()
@@ -1011,15 +1009,15 @@ class WheelUI(UIBattle):
         Works similar to Fallout companion wheel and similar system"""
         self._layer = 11
         UIBattle.__init__(self)
-        self.font = pygame.font.Font(self.ui_font["main_button"], text_size)
+        self.font = Font(self.ui_font["main_button"], text_size)
         self.pos = pos
         self.choice_list = ()
 
         self.wheel_button_image = image
         self.wheel_selected_button_image = selected_image
 
-        self.base_image2 = pygame.Surface((image.get_width() * 6,
-                                           image.get_height() * 6), pygame.SRCALPHA)  # empty image
+        self.base_image2 = Surface((image.get_width() * 6,
+                                    image.get_height() * 6), SRCALPHA)  # empty image
         self.rect = self.base_image2.get_rect(center=self.pos)
 
         self.wheel_image_with_stuff = []
@@ -1034,10 +1032,10 @@ class WheelUI(UIBattle):
         angle_space = 360 / len(blit_list)
         angle = 0
         for wheel_button in range(len(blit_list)):
-            base_target = pygame.Vector2(image_center[0] - (image_center[0] / 2 *
-                                                            sin(radians(angle))),
-                                         image_center[1] + (image_center[1] / 2 *
-                                                            cos(radians(angle))))
+            base_target = Vector2(image_center[0] - (image_center[0] / 2 *
+                                                     sin(radians(angle))),
+                                  image_center[1] + (image_center[1] / 2 *
+                                                     cos(radians(angle))))
             angle += angle_space
 
             self.wheel_image_with_stuff.append(self.wheel_button_image.copy())
@@ -1053,10 +1051,10 @@ class WheelUI(UIBattle):
     def selection(self, mouse_pos):
         closest_rect_distance = None
         closest_rect_index = None
-        new_mouse_pos = pygame.Vector2(mouse_pos[0] / self.screen_size[0] * self.image.get_width(),
-                                       mouse_pos[1] / self.screen_size[1] * self.image.get_height())
+        new_mouse_pos = Vector2(mouse_pos[0] / self.screen_size[0] * self.image.get_width(),
+                                mouse_pos[1] / self.screen_size[1] * self.image.get_height())
         for index, rect in enumerate(self.wheel_rect):
-            distance = pygame.Vector2(rect.center).distance_to(new_mouse_pos)
+            distance = Vector2(rect.center).distance_to(new_mouse_pos)
             if closest_rect_distance is None or distance < closest_rect_distance:
                 closest_rect_index = index
                 closest_rect_distance = distance
@@ -1069,8 +1067,8 @@ class WheelUI(UIBattle):
                 self.image.blit(self.wheel_image_with_stuff[index], rect)
         if self.choice_list and closest_rect_index <= len(self.choice_list) - 1:
             text_surface = self.font.render(self.choice_list[closest_rect_index], True, (0, 0, 0))
-            text_box = pygame.Surface((text_surface.get_width() * 1.2,
-                                       text_surface.get_height() * 1.2))  # empty image
+            text_box = Surface((text_surface.get_width() * 1.2,
+                                text_surface.get_height() * 1.2))  # empty image
             text_box.fill((255, 255, 255))
             text_rect = text_surface.get_rect(center=(text_box.get_width() / 2,
                                                       text_box.get_height() / 2))
@@ -1125,7 +1123,7 @@ class EscButton(UIBattle):
         self.pos = pos
         self.images = [image.copy() for image in list(images.values())]
         self.text = text
-        self.font = pygame.font.Font(self.ui_font["main_button"], text_size)
+        self.font = Font(self.ui_font["main_button"], text_size)
 
         if text != "":  # blit menu text into button image
             text_surface = self.font.render(self.text, True, (0, 0, 0))
@@ -1144,9 +1142,9 @@ class BattleDone(UIBattle):
         UIBattle.__init__(self, player_interact=False)
         self.box_image = box_image
         self.result_image = result_image
-        self.font = pygame.font.Font(self.ui_font["name_font"], int(self.screen_scale[1] * 60))
-        self.header_font = pygame.font.Font(self.ui_font["text_paragraph_bold"], int(self.screen_scale[1] * 36))
-        self.text_font = pygame.font.Font(self.ui_font["text_paragraph"], int(self.screen_scale[1] * 24))
+        self.font = Font(self.ui_font["name_font"], int(self.screen_scale[1] * 60))
+        self.header_font = Font(self.ui_font["text_paragraph_bold"], int(self.screen_scale[1] * 36))
+        self.text_font = Font(self.ui_font["text_paragraph"], int(self.screen_scale[1] * 24))
         self.pos = pos
         self.image = self.box_image.copy()
         self.rect = self.image.get_rect(center=self.pos)
@@ -1168,7 +1166,7 @@ class BattleDone(UIBattle):
             text_surface = self.font.render("Victory", True, (0, 0, 0))
             text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, int(self.screen_scale[1] * 60) * 2))
             self.image.blit(text_surface, text_rect)
-            new_coa = pygame.transform.smoothscale(coa, (200 * self.screen_scale[0], 200 * self.screen_scale[1]))
+            new_coa = smoothscale(coa, (200 * self.screen_scale[0], 200 * self.screen_scale[1]))
             coa_rect = new_coa.get_rect(midtop=text_rect.midbottom)
             self.image.blit(new_coa, coa_rect)
         self.result_showing = False
@@ -1185,10 +1183,10 @@ class BattleDone(UIBattle):
                 text_rect = text_surface.get_rect(midright=(value, 60 * self.screen_scale[1]))
             self.image.blit(text_surface, text_rect)
 
-        # pygame.draw.line(self.image, "black", )
+        # draw.line(self.image, "black", )
         y = 150 * self.screen_scale[1]
         for team, coa in enumerate(team_coa):
-            new_coa = pygame.transform.smoothscale(coa, (50 * self.screen_scale[0], 50 * self.screen_scale[1]))
+            new_coa = smoothscale(coa, (50 * self.screen_scale[0], 50 * self.screen_scale[1]))
             coa_rect = new_coa.get_rect(midleft=(10 * self.screen_scale[0], y))
             self.image.blit(new_coa, coa_rect)
             for key, value in self.result_text_x.items():
@@ -1207,15 +1205,15 @@ class BattleDone(UIBattle):
         self.rect = self.image.get_rect(center=self.pos)
 
 
-class AimTarget(pygame.sprite.Sprite):
+class AimTarget(Sprite):
     aim_images = None
 
     def __init__(self, who):
         self._layer = 2000000
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        Sprite.__init__(self, self.containers)
         self.who = who
         self.who.shoot_line = self
-        self.pos = pygame.Vector2(self.who.pos)
+        self.pos = Vector2(self.who.pos)
         self.base_target_pos = None
         self.can_shoot = [False, False]
 
@@ -1249,17 +1247,17 @@ class AimTarget(pygame.sprite.Sprite):
 
 
 class SkillAimTarget(AimTarget):
-    base_image = pygame.Surface((500, 500), pygame.SRCALPHA)
-    pygame.draw.circle(base_image, (0, 0, 0, 200), (base_image.get_width() / 2, base_image.get_height() / 2),
-                       base_image.get_width() / 2, width=20)
-    pygame.draw.circle(base_image, (125, 125, 125, 200), (base_image.get_width() / 2, base_image.get_height() / 2),
-                       base_image.get_width() / 4, width=20)
+    base_image = Surface((500, 500), SRCALPHA)
+    draw.circle(base_image, (0, 0, 0, 200), (base_image.get_width() / 2, base_image.get_height() / 2),
+                base_image.get_width() / 2, width=20)
+    draw.circle(base_image, (125, 125, 125, 200), (base_image.get_width() / 2, base_image.get_height() / 2),
+                base_image.get_width() / 4, width=20)
 
     def __init__(self, who, aoe_size):
         AimTarget.__init__(who)
-        self.image = pygame.transform.smoothscale(self.base_image,
-                                                  (aoe_size * 5 * self.screen_scale[0],
-                                                   aoe_size * 5 * self.screen_scale[1]))
+        self.image = smoothscale(self.base_image,
+                                 (aoe_size * 5 * self.screen_scale[0],
+                                  aoe_size * 5 * self.screen_scale[1]))
         self.rect = self.image.get_rect(center=self.pos)
 
     def update(self, base_target_pos, target_pos, can_shoot):
@@ -1273,12 +1271,12 @@ class SkillAimTarget(AimTarget):
             self.rect.center = self.pos
 
 
-class SpriteIndicator(pygame.sprite.Sprite):
+class SpriteIndicator(Sprite):
     def __init__(self, image, who, layer=1):
         """Indicator for unit status effect sprite"""
         self.who = who
         self._layer = layer
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        Sprite.__init__(self, self.containers)
         self.image = image
         self.rect = self.image.get_rect(center=self.who.pos)
 
@@ -1288,9 +1286,9 @@ class Profiler(cProfile.Profile, UIBattle):
     def __init__(self):
         UIBattle.__init__(self, player_interact=False)
         self.size = (900, 550)
-        self.image = pygame.Surface(self.size)
-        self.rect = pygame.Rect((0, 0, *self.size))
-        self.font = pygame.font.Font(self.ui_font["main_button"], 16)
+        self.image = Surface(self.size)
+        self.rect = Rect((0, 0, *self.size))
+        self.font = Font(self.ui_font["main_button"], 16)
         self._layer = 12
         self.visible = False
 
@@ -1302,18 +1300,18 @@ class Profiler(cProfile.Profile, UIBattle):
         # I didn't get it to work so I did this solution instead
 
         if self.visible:
-            self.image = pygame.Surface(self.size)
+            self.image = Surface(self.size)
             s_io = io.StringIO()
             stats = Stats(self, stream=s_io)
             stats.sort_stats('tottime').print_stats(20)
             info_str = s_io.getvalue()
             self.enable()  # profiler must be re-enabled after get stats
             self.image.fill(0x112233)
-            self.image.blit(self.font.render("press F7 to clear times", True, pygame.Color("white")), (0, 0))
+            self.image.blit(self.font.render("press F7 to clear times", True, Color("white")), (0, 0))
             for e, line in enumerate(info_str.split("\n"), 1):
-                self.image.blit(self.font.render(line, True, pygame.Color("white")), (0, e * 20))
+                self.image.blit(self.font.render(line, True, Color("white")), (0, e * 20))
         else:
-            self.image = pygame.Surface((1, 1))
+            self.image = Surface((1, 1))
 
     def switch_show_hide(self):
         self.visible = not self.visible

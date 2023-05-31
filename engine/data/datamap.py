@@ -4,8 +4,7 @@ import os
 
 from pathlib import Path
 
-
-from engine.weather import weather
+from engine.weather.weather import Weather
 from engine.utility import stat_convert, load_images, csv_read, filename_convert_readable as fcv
 
 from engine.data.datastat import GameData
@@ -151,7 +150,7 @@ class BattleMapData(GameData):
                         new_weather_icon[new_name] = weather_icon_list[item]
                         break
 
-        weather.Weather.weather_icons = new_weather_icon
+        Weather.weather_icons = new_weather_icon
 
         read_folder = Path(os.path.join(self.module_dir, "map", "preset"))
         sub1_directories = [x for x in read_folder.iterdir() if x.is_dir()]
@@ -187,7 +186,7 @@ class BattleMapData(GameData):
                                                                    "Source"))
                     self.campaign_map_list.append(">> " + source_name)
                     weather_data = csv_read(file_source, "weather.csv", output_type="list")[1:]
-                    if not weather:  # no weather data, make random
+                    if not weather_data:  # no weather data, make random
                         weather_data = [[1, "09:00:00", 0, 0], ]
                     self.preset_map_data[map_file_name][int(source_file_name)] = \
                         {"unit": self.load_map_unit_data(campaign_file_name, map_file_name, source_file_name),

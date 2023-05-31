@@ -1,16 +1,21 @@
 import networkx as nx
-import pygame
-import pygame.transform
+
 import pyperclip
 import types
 from functools import lru_cache
 
+import pygame
+from pygame import Surface, SRCALPHA, Rect, Color, Vector2, draw, mouse
+from pygame.sprite import Sprite
+from pygame.font import Font
+from pygame.transform import smoothscale, scale
+
 from engine.battlemap.battlemap import BattleMap
 
-from engine.utility import keyboard_mouse_press_check, text_render, minimise_number_text, make_long_text
+from engine.utility import keyboard_mouse_press_check, text_render, make_long_text
 
 
-def make_image_by_frame(frame: pygame.Surface, final_size):
+def make_image_by_frame(frame: Surface, final_size):
     """
         Makes a bigger frame based image out of a frame surface.
 
@@ -31,7 +36,7 @@ def make_image_by_frame(frame: pygame.Surface, final_size):
 
     css = corner_side_size = (frame.get_size()[0] - 1) // 2
 
-    image = pygame.Surface(final_size, pygame.SRCALPHA)
+    image = Surface(final_size, SRCALPHA)
 
     # offsets
     # ---
@@ -65,7 +70,7 @@ def make_image_by_frame(frame: pygame.Surface, final_size):
 
     # background color
     bc = background_color = frame.get_at((css, css))
-    pygame.draw.rect(image, bc, (css + o[0], css, fs[0] - css * 2 + o[2] - o[0], fs[1] - css * 2))
+    draw.rect(image, bc, (css + o[0], css, fs[0] - css * 2 + o[2] - o[0], fs[1] - css * 2))
 
     # corners
     image.blit(frame, (0 + o[0], 0), (0, 0, css, css))
@@ -84,7 +89,7 @@ def make_image_by_frame(frame: pygame.Surface, final_size):
     return image
 
 
-class UIMenu(pygame.sprite.Sprite):
+class UIMenu(Sprite):
     containers = None
 
     def __init__(self, player_interact=True, has_containers=False):
@@ -98,15 +103,16 @@ class UIMenu(pygame.sprite.Sprite):
         self.data_dir = Game.data_dir
         self.font_dir = Game.font_dir
         self.ui_font = Game.ui_font
+        self.screen_rect = Game.screen_rect
         self.screen_size = Game.screen_size
         self.localisation = Game.localisation
         self.cursor = Game.cursor
         self.updater = Game.main_ui_updater
         self.player_interact = player_interact
         if has_containers:
-            pygame.sprite.Sprite.__init__(self, self.containers)
+            Sprite.__init__(self, self.containers)
         else:
-            pygame.sprite.Sprite.__init__(self)
+            Sprite.__init__(self)
         self.event = False
         self.event_press = False
         self.event_hold = False
@@ -150,14 +156,14 @@ class MenuCursor(UIMenu):
 
     def update(self):
         """Update cursor position based on mouse position and mouse button click"""
-        self.pos = pygame.mouse.get_pos()
+        self.pos = mouse.get_pos()
         self.rect.topleft = self.pos
         self.is_select_just_down, self.is_select_down, self.is_select_just_up = keyboard_mouse_press_check(
-            pygame.mouse, 0, self.is_select_just_down, self.is_select_down, self.is_select_just_up)
+            mouse, 0, self.is_select_just_down, self.is_select_down, self.is_select_just_up)
 
         # Alternative select press button, like mouse right
         self.is_alt_select_just_down, self.is_alt_select_down, self.is_alt_select_just_up = keyboard_mouse_press_check(
-            pygame.mouse, 2, self.is_alt_select_just_down, self.is_alt_select_down, self.is_alt_select_just_up)
+            mouse, 2, self.is_alt_select_just_down, self.is_alt_select_down, self.is_alt_select_just_up)
 
     def change_image(self, image_name):
         """Change cursor image to whatever input name"""
@@ -227,7 +233,7 @@ class InputUI(UIMenu):
 
         self.base_image = self.image.copy()
 
-        self.font = pygame.font.Font(self.ui_font["main_button"], int(48 * self.screen_scale[1]))
+        self.font = Font(self.ui_font["main_button"], int(48 * self.screen_scale[1]))
 
         self.rect = self.image.get_rect(center=self.pos)
 
@@ -243,9 +249,9 @@ class InputBox(UIMenu):
     def __init__(self, pos, width, text="", click_input=False):
         UIMenu.__init__(self, player_interact=False)
         self._layer = 31
-        self.font = pygame.font.Font(self.ui_font["main_button"], int(30 * self.screen_scale[1]))
+        self.font = Font(self.ui_font["main_button"], int(30 * self.screen_scale[1]))
         self.pos = pos
-        self.image = pygame.Surface((width - 10, int(34 * self.screen_scale[1])))
+        self.image = Surface((width - 10, int(34 * self.screen_scale[1])))
         self.max_text = int((self.image.get_width() / int(30 * self.screen_scale[1])) * 2.2)
         self.image.fill((255, 255, 255))
 
@@ -339,7 +345,7 @@ class TextBox(UIMenu):
         self._layer = 13
         UIMenu.__init__(self)
 
-        self.font = pygame.font.Font(self.ui_font["main_button"], int(36 * self.screen_scale[1]))
+        self.font = Font(self.ui_font["main_button"], int(36 * self.screen_scale[1]))
         self.image = image
 
         self.base_image = self.image.copy()
@@ -377,7 +383,7 @@ class MenuButton(UIMenu):
         self.button_over_image = images[1].copy()
         self.button_click_image = images[2].copy()
 
-        self.font = pygame.font.Font(self.ui_font["main_button"], int(font_size * self.screen_scale[1]))
+        self.font = Font(self.ui_font["main_button"], int(font_size * self.screen_scale[1]))
         self.base_image0 = self.button_normal_image.copy()
         self.base_image1 = self.button_over_image.copy()
         self.base_image2 = self.button_click_image.copy()
@@ -471,13 +477,15 @@ class Containable:
         origin = rpic["origin"]
 
         if rsic is None:
-            return pygame.rect.Rect(
-                *[container.get_rect()[i] - (self.get_size()[i] * (origin[i] + 1)) // 2 + (pivot[i] + 1) * container.get_rect()[i + 2] // 2 for i in
+            return Rect(
+                *[container.get_rect()[i] - (self.get_size()[i] * (origin[i] + 1)) // 2 + (pivot[i] + 1) *
+                  container.get_rect()[i + 2] // 2 for i in
                   range(2)], *self.get_size())
         else:
             size = [container.get_size()[i] * rsic[i] for i in range(2)]
-            return pygame.rect.Rect(
-                *[container.get_rect()[i] - (size[i] * (origin[i] + 1)) // 2 + (pivot[i] + 1) * container.get_rect()[i + 2] // 2 for i in range(2)],
+            return Rect(
+                *[container.get_rect()[i] - (size[i] * (origin[i] + 1)) // 2 + (pivot[i] + 1) * container.get_rect()[
+                    i + 2] // 2 for i in range(2)],
                 *size)
 
 
@@ -498,7 +506,7 @@ class BrownMenuButton(UIMenu, Containable):  # NOTE: the button is not brown any
         normal_button.blit(text_surface, text_rect)
 
         hover_button = normal_button.copy()
-        pygame.draw.rect(hover_button, "#DD0000", hover_button.get_rect(), 1)
+        draw.rect(hover_button, "#DD0000", hover_button.get_rect(), 1)
 
         return (normal_button, hover_button)
 
@@ -513,7 +521,7 @@ class BrownMenuButton(UIMenu, Containable):  # NOTE: the button is not brown any
         self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
         self.mouse_over = False
         self.event = False
-        self.font = pygame.font.Font(self.ui_font["main_button"], 17)
+        self.font = Font(self.ui_font["main_button"], 17)
         self.text = self.localisation.grab_text(key=("ui", self.key_name))
         self.refresh()
 
@@ -557,8 +565,8 @@ class OptionMenuText(UIMenu):
     def __init__(self, pos, text, text_size):
         UIMenu.__init__(self, player_interact=False)
         self.pos = pos
-        self.font = pygame.font.Font(self.ui_font["main_button"], text_size)
-        self.image = text_render(text, self.font, pygame.Color("black"))
+        self.font = Font(self.ui_font["main_button"], text_size)
+        self.image = text_render(text, self.font, Color("black"))
         self.rect = self.image.get_rect(center=(self.pos[0] - (self.image.get_width() / 2), self.pos[1]))
 
 
@@ -566,7 +574,7 @@ class ControllerIcon(UIMenu):
     def __init__(self, pos, images, control_type):
         UIMenu.__init__(self)
         self.pos = pos
-        self.font = pygame.font.Font(self.ui_font["main_button"], int(46 * self.screen_scale[1]))
+        self.font = Font(self.ui_font["main_button"], int(46 * self.screen_scale[1]))
         self.images = images
         self.image = self.images[control_type].copy()
         self.rect = self.image.get_rect(center=self.pos)
@@ -587,7 +595,7 @@ class KeybindIcon(UIMenu):
 
     def __init__(self, pos, text_size, control_type, key):
         UIMenu.__init__(self)
-        self.font = pygame.font.Font(self.ui_font["main_button"], text_size)
+        self.font = Font(self.ui_font["main_button"], text_size)
         self.pos = pos
         self.change_key(control_type, key, keybind_name=None)
         self.rect = self.image.get_rect(center=self.pos)
@@ -608,11 +616,11 @@ class KeybindIcon(UIMenu):
         image_size = size[0] * 2
         if size[0] < 40:
             image_size = size[0] * 4
-        self.image = pygame.Surface((image_size, size[1] * 2), pygame.SRCALPHA)
-        pygame.draw.rect(self.image, (50, 50, 50), (0, 0, image_size, size[1] * 2), border_radius=2)
-        pygame.draw.rect(self.image, (255, 255, 255),
-                         (image_size * 0.1, size[1] * 0.3, image_size * 0.8, size[1] * 1.5),
-                         border_radius=2)
+        self.image = Surface((image_size, size[1] * 2), SRCALPHA)
+        draw.rect(self.image, (50, 50, 50), (0, 0, image_size, size[1] * 2), border_radius=2)
+        draw.rect(self.image, (255, 255, 255),
+                  (image_size * 0.1, size[1] * 0.3, image_size * 0.8, size[1] * 1.5),
+                  border_radius=2)
         text_rect = text_surface.get_rect(center=self.image.get_rect().center)
         self.image.blit(text_surface, text_rect)
 
@@ -623,9 +631,9 @@ class KeybindIcon(UIMenu):
         image_size = size[0] * 2
         if size[0] < 40:
             image_size = size[0] * 4
-        self.image = pygame.Surface((image_size, size[1] * 2), pygame.SRCALPHA)
-        pygame.draw.circle(self.image, (255, 255, 255), (self.image.get_width() / 2, self.image.get_height() / 2),
-                           self.image.get_width() / 2)
+        self.image = Surface((image_size, size[1] * 2), SRCALPHA)
+        draw.circle(self.image, (255, 255, 255), (self.image.get_width() / 2, self.image.get_height() / 2),
+                    self.image.get_width() / 2)
         text_rect = text_surface.get_rect(center=self.image.get_rect().center)
         self.image.blit(text_surface, text_rect)
 
@@ -634,7 +642,7 @@ class ValueBox(UIMenu):
     def __init__(self, image, pos, value, text_size):
         self._layer = 26
         UIMenu.__init__(self, player_interact=False)
-        self.font = pygame.font.Font(self.ui_font["main_button"], text_size)
+        self.font = Font(self.ui_font["main_button"], text_size)
         self.pos = pos
         self.image = image.copy()
         self.base_image = self.image.copy()
@@ -660,19 +668,19 @@ class TeamCoa(UIMenu):
 
         self.coa_size = (int(60 * self.screen_scale[0]), int(60 * self.screen_scale[1]))
         self.selected_coa_size = (int(120 * self.screen_scale[0]), int(120 * self.screen_scale[1]))
-        self.not_selected_image_base = pygame.Surface((self.coa_size[0], self.coa_size[1]))
+        self.not_selected_image_base = Surface((self.coa_size[0], self.coa_size[1]))
         self.not_selected_image_base.fill((0, 0, 0))  # black border when not selected
-        self.selected_image_base = pygame.Surface((400 * self.screen_scale[0], self.coa_size[1] * 2.5))
+        self.selected_image_base = Surface((400 * self.screen_scale[0], self.coa_size[1] * 2.5))
         self.selected_image_base.fill((0, 0, 0))  # black border when selected
 
-        team_body = pygame.Surface((self.not_selected_image_base.get_width() * 0.95,
-                                    self.not_selected_image_base.get_height() * 0.95))
+        team_body = Surface((self.not_selected_image_base.get_width() * 0.95,
+                             self.not_selected_image_base.get_height() * 0.95))
         team_body.fill(team_colour)
         white_rect = team_body.get_rect(
             center=(self.not_selected_image_base.get_width() / 2, self.not_selected_image_base.get_height() / 2))
         self.not_selected_image_base.blit(team_body, white_rect)
-        team_body = pygame.Surface((self.selected_image_base.get_width() * 0.98,
-                                    self.selected_image_base.get_height() * 0.95))
+        team_body = Surface((self.selected_image_base.get_width() * 0.98,
+                             self.selected_image_base.get_height() * 0.95))
         team_body.fill(team_colour)
         white_rect = team_body.get_rect(
             center=(self.selected_image_base.get_width() / 2, self.selected_image_base.get_height() / 2))
@@ -688,7 +696,7 @@ class TeamCoa(UIMenu):
         self.team = team
 
         self.font_size = int(self.selected_image_base.get_height() / 3.5)
-        self.font = pygame.font.Font(self.ui_font["name_font"], self.font_size)
+        self.font = Font(self.ui_font["name_font"], self.font_size)
 
         self.change_coa(coa_images, name)
 
@@ -709,8 +717,8 @@ class TeamCoa(UIMenu):
         self.not_selected_image = self.not_selected_image_base.copy()
         self.selected_image = self.selected_image_base.copy()
         if tuple(self.coa_images.values())[0]:  # coa image is not None
-            coa_image = pygame.transform.smoothscale(tuple(self.coa_images.values())[0],
-                                                     (int(self.coa_size[0] * 0.7), int(self.coa_size[1] * 0.7)))
+            coa_image = smoothscale(tuple(self.coa_images.values())[0],
+                                    (int(self.coa_size[0] * 0.7), int(self.coa_size[1] * 0.7)))
             coa_rect = coa_image.get_rect(
                 center=(self.not_selected_image.get_width() / 2, self.not_selected_image.get_height() / 2))
             self.not_selected_image.blit(coa_image, coa_rect)
@@ -720,14 +728,14 @@ class TeamCoa(UIMenu):
             for index, image in enumerate(self.coa_images.values()):
                 if image:
                     if index == 0:  # first one as main faction coa
-                        coa_image = pygame.transform.smoothscale(image, (
+                        coa_image = smoothscale(image, (
                             int(self.selected_coa_size[0] * 0.65), int(self.selected_coa_size[1] * 0.65)))
                         coa_rect = coa_image.get_rect(
                             midtop=(self.selected_image.get_width() / 2, self.selected_coa_size[1] * 0.05))
                     else:
-                        coa_image = pygame.transform.smoothscale(image,
-                                                                 (int(self.selected_coa_size[0] * 0.3),
-                                                                  int(self.selected_coa_size[1] * 0.3)))
+                        coa_image = smoothscale(image,
+                                                (int(self.selected_coa_size[0] * 0.3),
+                                                 int(self.selected_coa_size[1] * 0.3)))
                         coa_rect = coa_image.get_rect(center=small_coa_pos)
                         small_coa_pos[1] += int(self.selected_coa_size[1] * 0.3)
                         if index % 2 == 0:
@@ -738,7 +746,7 @@ class TeamCoa(UIMenu):
                     self.selected_image.blit(coa_image, coa_rect)
 
         self.name = name
-        text_surface = text_render(str(self.name), self.font, pygame.Color("black"))
+        text_surface = text_render(str(self.name), self.font, Color("black"))
         text_rect = text_surface.get_rect(
             center=(int(self.selected_image.get_width() / 2), self.selected_image.get_height() - self.font_size))
         self.selected_image.blit(text_surface, text_rect)
@@ -751,8 +759,8 @@ class LeaderModel(UIMenu):
         UIMenu.__init__(self, player_interact=False)
         self.font_size = int(32 * self.screen_scale[1])
 
-        self.leader_font = pygame.font.Font(self.ui_font["text_paragraph"], int(36 * self.screen_scale[1]))
-        self.font = pygame.font.Font(self.ui_font["text_paragraph"], self.font_size)
+        self.leader_font = Font(self.ui_font["text_paragraph"], int(36 * self.screen_scale[1]))
+        self.font = Font(self.ui_font["text_paragraph"], self.font_size)
 
         self.base_image = image.copy()
         self.image = self.base_image.copy()
@@ -769,8 +777,8 @@ class LeaderModel(UIMenu):
         """Add coat of arms as background and/or leader model"""
         self.image = self.base_image.copy()
         if coa:
-            new_coa = pygame.transform.smoothscale(coa, (200 * self.screen_scale[0],
-                                                         200 * self.screen_scale[1]))
+            new_coa = smoothscale(coa, (200 * self.screen_scale[0],
+                                        200 * self.screen_scale[1]))
             rect = new_coa.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
             self.image.blit(new_coa, rect)
         if model:
@@ -789,17 +797,18 @@ class ListBox(UIMenu):
 
         image_height = int(26 * self.screen_scale[1])
         self.max_row_show = int(
-            self.image.get_height() / (image_height + (6 * self.screen_scale[1])))  # max number of map on list can be shown
+            self.image.get_height() / (
+                        image_height + (6 * self.screen_scale[1])))  # max number of map on list can be shown
 
 
 class NameList(UIMenu):
     def __init__(self, box, pos, name, text_size=26, layer=15):
         self._layer = layer
         UIMenu.__init__(self)
-        self.font = pygame.font.Font(self.ui_font["main_button"], int(self.screen_scale[1] * text_size))
+        self.font = Font(self.ui_font["main_button"], int(self.screen_scale[1] * text_size))
         self.name = str(name)
 
-        self.image = pygame.Surface(
+        self.image = Surface(
             (box.image.get_width() - int(18 * self.screen_scale[0]),
              int((text_size + 4) * self.screen_scale[1])))  # black corner
         self.image.fill((0, 0, 0))
@@ -807,7 +816,7 @@ class NameList(UIMenu):
         self.selected = False
 
         # White body square
-        small_image = pygame.Surface(
+        small_image = Surface(
             (box.image.get_width() - int(16 * self.screen_scale[0]), int((text_size + 2) * self.screen_scale[1])))
         small_image.fill((255, 255, 255))
         small_rect = small_image.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
@@ -872,7 +881,7 @@ class ListAdapterHideExpand:
 
     def __init__(self, _list, _self, replace_on_select=None):
         self.list = _list
-        self.open = [ False for element in _list ]
+        self.open = [False for element in _list]
 
     def get_actual_index_level(self, index):
         if not self.list[index].startswith(">"): return 0
@@ -889,15 +898,16 @@ class ListAdapterHideExpand:
 
         # scan up in the list till you hit a top level element and check if it is open
         # and if it is, this element should be open
-        for i in range(1,128): # i do not like while loops because they can freeze the game, just keeps a big number here instead
-            u = index-i
-            if self.get_actual_index_level(u) == level-1:
+        for i in range(1,
+                       128):  # i do not like while loops because they can freeze the game, just keeps a big number here instead
+            u = index - i
+            if self.get_actual_index_level(u) == level - 1:
                 break
-      
+
         return not self.open[u]
 
     def __len__(self):
-        return len([ i for i in range(len(self.list)) if not self.is_actual_index_hidden(i) ]  )
+        return len([i for i in range(len(self.list)) if not self.is_actual_index_hidden(i)])
 
     def __getitem__(self, item):
         r = list()
@@ -907,7 +917,7 @@ class ListAdapterHideExpand:
         if item >= len(r): return None
 
         actual_index = self.get_visible_index_actual_index()[item]
-        return ("O " if self.open[actual_index] else "")+r[item]
+        return ("O " if self.open[actual_index] else "") + r[item]
 
     def get_visible_index_actual_index(self):
         r = dict()
@@ -925,7 +935,6 @@ class ListAdapterHideExpand:
         actual_index = self.get_visible_index_actual_index().get(item_index)
         if actual_index is None: return
         self.open[actual_index] = not self.open[actual_index]
-        
 
 
 class TickBox(UIMenu):
@@ -962,7 +971,7 @@ class MapOptionBox(UIMenu):
         UIMenu.__init__(self, player_interact=False)
         self.image = image.copy()
 
-        self.font = pygame.font.Font(self.ui_font["main_button"], int(20 * self.screen_scale[1]))
+        self.font = Font(self.ui_font["main_button"], int(20 * self.screen_scale[1]))
 
         text_surface = self.font.render("Night Battle", True, (0, 0, 0))
         text_rect = text_surface.get_rect(midleft=(self.image.get_width() / 3.5, self.image.get_height() / 5))
@@ -978,15 +987,15 @@ class MapPreview(UIMenu, BattleMap):
 
         self.pos = pos
 
-        self.image = pygame.Surface((450 * self.screen_scale[0], 450 * self.screen_scale[1]))
+        self.image = Surface((450 * self.screen_scale[0], 450 * self.screen_scale[1]))
         self.leader_dot = {team: {True: None, False: None} for team in self.team_colour.keys()}
 
         self.map_scale_width = 1
         self.map_scale_height = 1
 
-        leader_dot = pygame.Surface((10 * self.screen_scale[0], 10 * self.screen_scale[1]))  # dot for team unit
+        leader_dot = Surface((10 * self.screen_scale[0], 10 * self.screen_scale[1]))  # dot for team unit
         leader_dot.fill((0, 0, 0))  # black corner
-        leader_colour_dot = pygame.Surface((8 * self.screen_scale[0], 8 * self.screen_scale[1]))
+        leader_colour_dot = Surface((8 * self.screen_scale[0], 8 * self.screen_scale[1]))
         rect = leader_dot.get_rect(topleft=(2 * self.screen_scale[0], 2 * self.screen_scale[1]))
 
         for team, colour in self.team_colour.items():
@@ -1010,14 +1019,14 @@ class MapPreview(UIMenu, BattleMap):
 
         from engine.battlemap.battlemap import topology_map_creation
 
-        new_base_map = pygame.transform.scale(base_map, (300, 300))
-        new_feature_map = pygame.transform.scale(feature_map, (300, 300))
-        new_height_map = topology_map_creation(pygame.transform.scale(height_map, (300, 300)), 4)
+        new_base_map = scale(base_map, (300, 300))
+        new_feature_map = scale(feature_map, (300, 300))
+        new_height_map = topology_map_creation(scale(height_map, (300, 300)), 4)
 
         self.map_scale_width = base_map.get_width() / (450 * self.screen_scale[0])
         self.map_scale_height = base_map.get_height() / (450 * self.screen_scale[1])
 
-        map_image = pygame.Surface((300, 300))
+        map_image = Surface((300, 300))
         for row_pos in range(0, 300):  # recolour the map
             for col_pos in range(0, 300):
                 terrain = new_base_map.get_at((row_pos, col_pos))  # get colour at pos to obtain the terrain type
@@ -1029,12 +1038,12 @@ class MapPreview(UIMenu, BattleMap):
                     feature_index = self.feature_colour.index(feature)
                     feature_index = feature_index + (terrain_index * len(self.feature_colour))
                 new_colour = self.battle_map_colour[feature_index][1]
-                rect = pygame.Rect(row_pos, col_pos, 1, 1)
+                rect = Rect(row_pos, col_pos, 1, 1)
                 map_image.fill(new_colour, rect)
 
         map_image.blit(new_height_map, map_image.get_rect(topleft=(0, 0)))
 
-        map_image = pygame.transform.scale(map_image, (450 * self.screen_scale[0], 450 * self.screen_scale[1]))
+        map_image = scale(map_image, (450 * self.screen_scale[0], 450 * self.screen_scale[1]))
         image_rect = map_image.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
         self.image.blit(map_image, image_rect)
         self.base_image = self.image.copy()
@@ -1049,11 +1058,11 @@ class MapPreview(UIMenu, BattleMap):
                         colour = self.team_colour[team]
                         if pos == camp_selected:
                             colour = self.selected_team_colour[team]
-                        pygame.draw.circle(self.image, colour,
-                                           (pos[0][0] * ((450 * self.screen_scale[0]) / 1000),
-                                            pos[0][1] * ((450 * self.screen_scale[1]) / 1000)),
-                                           pos[1] * ((450 * self.screen_scale[0]) / 1000),
-                                           int(5 * self.screen_scale[0]))
+                        draw.circle(self.image, colour,
+                                    (pos[0][0] * ((450 * self.screen_scale[0]) / 1000),
+                                     pos[0][1] * ((450 * self.screen_scale[1]) / 1000)),
+                                    pos[1] * ((450 * self.screen_scale[0]) / 1000),
+                                    int(5 * self.screen_scale[0]))
             if team_pos_list:
                 for team, pos_list in team_pos_list.items():
                     if type(pos_list) is dict:
@@ -1064,8 +1073,8 @@ class MapPreview(UIMenu, BattleMap):
                         select = False
                         if pos == selected:
                             select = True
-                        scaled_pos = pygame.Vector2(pos[0] * ((450 * self.screen_scale[0]) / 1000),
-                                                    pos[1] * ((450 * self.screen_scale[1]) / 1000))
+                        scaled_pos = Vector2(pos[0] * ((450 * self.screen_scale[0]) / 1000),
+                                             pos[1] * ((450 * self.screen_scale[1]) / 1000))
                         rect = self.leader_dot[team][select].get_rect(center=scaled_pos)
                         self.image.blit(self.leader_dot[team][select], rect)
         self.rect = self.image.get_rect(topleft=self.pos)
@@ -1135,7 +1144,7 @@ class OrgChart(UIMenu):
             for unit in pos:
                 for unit_index, icon in enumerate(preview_unit):
                     if unit_index == unit:
-                        image = pygame.transform.smoothscale(icon.portrait, image_size)
+                        image = smoothscale(icon.portrait, image_size)
                         self.node_rect[unit] = image.get_rect(center=pos[unit])
                         self.image.blit(image, self.node_rect[unit])
                         break
@@ -1145,8 +1154,8 @@ class OrgChart(UIMenu):
                     line_width = int(self.image.get_width() / 100)
                     if line_width < 1:
                         line_width = 1
-                    pygame.draw.line(self.image, (0, 0, 0), self.node_rect[unit_data[unit]["Temp Leader"]].midbottom,
-                                     self.node_rect[unit].midtop, width=line_width)
+                    draw.line(self.image, (0, 0, 0), self.node_rect[unit_data[unit]["Temp Leader"]].midbottom,
+                              self.node_rect[unit].midtop, width=line_width)
 
 
 class TextPopup(UIMenu):
@@ -1154,7 +1163,7 @@ class TextPopup(UIMenu):
         self._layer = 15
         UIMenu.__init__(self, player_interact=False)
         self.font_size = int(24 * self.screen_scale[1])
-        self.font = pygame.font.Font(self.ui_font["main_button"], self.font_size)
+        self.font = Font(self.ui_font["main_button"], self.font_size)
         self.pos = (0, 0)
         self.text_input = ""
 
@@ -1170,7 +1179,8 @@ class TextPopup(UIMenu):
                 max_height = 0
                 max_width = 0
                 for text in self.text_input:
-                    text_image = pygame.Surface((width_text_wrapper, (len(text) * (self.font_size ** 2 / 1.3) / width_text_wrapper)))
+                    text_image = Surface(
+                        (width_text_wrapper, (len(text) * (self.font_size ** 2 / 1.3) / width_text_wrapper)))
                     text_image.fill((255, 255, 255))
                     make_long_text(text_image, text, (self.font_size, self.font_size), self.font)
                     text_surface.append(text_image)
@@ -1187,8 +1197,8 @@ class TextPopup(UIMenu):
                         max_width = text_rect.width
                     max_height += self.font_size + int(self.font_size / 5)
 
-            self.image = pygame.Surface((max_width + 6, max_height + 6))  # black border
-            image = pygame.Surface((max_width + 2, max_height + 2))  # white Box
+            self.image = Surface((max_width + 6, max_height + 6))  # black border
+            image = Surface((max_width + 2, max_height + 2))  # white Box
             image.fill((255, 255, 255))
             rect = self.image.get_rect(topleft=(2, 2))  # white box image position at (2,2) on black border image
             self.image.blit(image, rect)
@@ -1228,12 +1238,12 @@ class BoxUI(UIMenu, Containable, Container):
         self._layer = -1  # NOTE: not sure if this is good since underscore indicate it is a private variable but it works for now
         self.pos = (0, 0)
         self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
-        self.image = pygame.Surface(self.rect[2:], pygame.SRCALPHA)
+        self.image = Surface(self.rect[2:], SRCALPHA)
         self.image.fill("#302d2ce0")
 
     def update(self):
         self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
-        self.image = pygame.Surface(self.rect[2:], pygame.SRCALPHA)
+        self.image = Surface(self.rect[2:], SRCALPHA)
         self.image.fill("#bbbbaabb")
 
     def get_relative_size_inside_container(self):
@@ -1300,8 +1310,6 @@ class ListUI(UIMenu, Containable):
         self.scroll_box = make_image_by_frame(self.scroll_box_frame, (14, self.scroll_box_height))
         self.scroll_box_index = 0
 
-
-
     def get_number_of_items_outside_visible_list(self):
         r = len(self.items) - self.item_size
         if r <= 0:
@@ -1319,7 +1327,7 @@ class ListUI(UIMenu, Containable):
         item_height = self.get_item_height()
         size = self.rect[2:]
         self.image = make_image_by_frame(self.frame, size)
-        font = pygame.font.Font(self.ui_font["main_button"], 18)
+        font = Font(self.ui_font["main_button"], 18)
         item_height = self.get_item_height()
 
         # draw items
@@ -1331,29 +1339,31 @@ class ListUI(UIMenu, Containable):
                 if item_index == self.items.get_highlighted_index():
                     color = "#cbc2a9"
 
-                pygame.draw.rect(self.image, color, (6, 6 + i * item_height, size[0] - 13*self.has_scroll-12, item_height))
-            self.image.blit(font.render(self.items[item_index], True, (47 if item_index == self.selected_index else 0,) * 3),
-                            (20, item_height // 2 + 6 - 9 + i * item_height))
+                draw.rect(self.image, color, (6, 6 + i * item_height, size[0] - 13 * self.has_scroll - 12, item_height))
+            self.image.blit(
+                font.render(self.items[item_index], True, (47 if item_index == self.selected_index else 0,) * 3),
+                (20, item_height // 2 + 6 - 9 + i * item_height))
 
         # draw scroll bar
         if scroll_bar_rect := self.get_scroll_bar_rect():
-            pygame.draw.rect(self.image, "#d2cab4", scroll_bar_rect)
+            draw.rect(self.image, "#d2cab4", scroll_bar_rect)
 
         # draw scroll box
         if scroll_box_rect := self.get_scroll_box_rect():
             self.image.blit(self.scroll_box, scroll_box_rect)
             if self.in_scroll_box or self.hold_scroll_box is not None:
-                pygame.draw.rect(self.image, (220, 190, 110) if self.hold_scroll_box is not None else (150,) * 3, scroll_box_rect, 1)
+                draw.rect(self.image, (220, 190, 110) if self.hold_scroll_box is not None else (150,) * 3,
+                          scroll_box_rect, 1)
 
         return self.image
 
     def get_scroll_bar_rect(self):
         if not self.has_scroll: return None
-        return pygame.Rect(self.rect[2] - 18, 6, 14, self.scroll_bar_height)
+        return Rect(self.rect[2] - 18, 6, 14, self.scroll_bar_height)
 
     def get_scroll_box_rect(self):
         if not self.has_scroll: return None
-        return pygame.Rect(self.rect[2] - 18, self.scroll_box_index * self.scroll_step_height + 6, *self.scroll_box.get_size())
+        return Rect(self.rect[2] - 18, self.scroll_box_index * self.scroll_step_height + 6, *self.scroll_box.get_size())
 
     def update(self):
 
@@ -1426,11 +1436,10 @@ class ListUI(UIMenu, Containable):
             if relative_index >= 0 and relative_index < self.item_size:
                 self.selected_index = relative_index + self.scroll_box_index
 
-
         if self.selected_index is not None:
             if self.selected_index >= len(self.items): self.selected_index = None
 
-        #if in_list and mljd and self.selected_index is not None:
+        # if in_list and mljd and self.selected_index is not None:
         if in_list and (mlju or mrju) and self.selected_index is not None:
             self.items.on_select(self.selected_index, self.items[self.selected_index])
 

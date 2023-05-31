@@ -1,9 +1,4 @@
-from engine.uibattle import uibattle
-from engine import utility
-
-setup_list = utility.setup_list
-list_scroll = utility.list_scroll
-load_image = utility.load_image
+from engine.uibattle.uibattle import TempUnitIcon
 
 
 def menu_preset_map_select(self, esc_press):
@@ -22,7 +17,7 @@ def menu_preset_map_select(self, esc_press):
                 icon.kill()
             self.preview_unit.empty()
 
-            self.preview_unit.add(uibattle.TempUnitIcon(this_team.team, "None", None))
+            self.preview_unit.add(TempUnitIcon(this_team.team, "None", None))
             self.setup_battle_unit(self.preview_unit, preview=self.team_selected)
 
             self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
@@ -67,8 +62,8 @@ def menu_preset_map_select(self, esc_press):
         if self.unit_selected is not None:
             self.single_text_popup.popup(self.cursor.rect,
                                          (self.leader_data.leader_lore[
-                                             [item for item in self.play_map_data[self.map_source]['unit'] if
-                                              item["ID"] == self.unit_selected][0]["Leader ID"]]["Description"], ),
+                                              [item for item in self.play_map_data[self.map_source]['unit'] if
+                                               item["ID"] == self.unit_selected][0]["Leader ID"]]["Description"],),
                                          width_text_wrapper=500)
             self.add_ui_updater(self.single_text_popup)
 
@@ -110,8 +105,9 @@ def menu_preset_map_select(self, esc_press):
                             who_todo = {key: value for key, value in self.leader_data.leader_list.items() if
                                         key == icon.who.troop_id}
                             preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True)
-                            self.unit_model_room.add_preview_model(model=preview_sprite_pool[icon.who.troop_id]["sprite"],
-                                                                   coa=icon.who.coa)
+                            self.unit_model_room.add_preview_model(
+                                model=preview_sprite_pool[icon.who.troop_id]["sprite"],
+                                coa=icon.who.coa)
                             self.map_preview.change_mode(1, team_pos_list=self.team_pos,
                                                          camp_pos_list=self.camp_pos,
                                                          selected=icon.who.base_pos)
@@ -180,9 +176,12 @@ def leader_popup_text(self, icon):
                       self.localisation.grab_text(("ui", "Social Class")) + ": " + who.social["Leader Social Class"],
                       self.localisation.grab_text(("ui", "Authority")) + ": " + str(who.leader_authority),
                       self.localisation.grab_text(("ui", "Command")) + ": " +
-                      self.localisation.grab_text(("ui", "Melee")) + ":" + self.skill_level_text[who.melee_command] + " " +
-                      self.localisation.grab_text(("ui", "Ranged")) + ":" + self.skill_level_text[who.range_command] + " " +
-                      self.localisation.grab_text(("ui", "cavalry_short")) + ":" + self.skill_level_text[who.cav_command],
+                      self.localisation.grab_text(("ui", "Melee")) + ":" + self.skill_level_text[
+                          who.melee_command] + " " +
+                      self.localisation.grab_text(("ui", "Ranged")) + ":" + self.skill_level_text[
+                          who.range_command] + " " +
+                      self.localisation.grab_text(("ui", "cavalry_short")) + ":" + self.skill_level_text[
+                          who.cav_command],
                       self.localisation.grab_text(("ui", "Skill")) + ": " + leader_skill,
                       self.localisation.grab_text(("ui", "1st_main_weapon")) + ": " + leader_primary_main_weapon,
                       self.localisation.grab_text(("ui", "1st_sub_weapon")) + ": " + leader_primary_sub_weapon,

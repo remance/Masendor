@@ -2,9 +2,7 @@ from math import cos, sin
 
 from pygame import Vector2
 
-from engine import utility
-
-rotation_xy = utility.rotation_xy
+from engine.utility import rotation_xy
 
 
 def make_front_pos(self):

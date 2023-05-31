@@ -7,64 +7,37 @@ import sys
 import pygame
 from pygame.locals import *
 
-from engine import utility
-
-from engine.battlemap import battlemap
-from engine.weather import weather
-from engine.uibattle import uibattle
-from engine.uimenu import uimenu
-from engine.battle import battle
-from engine.unit import unit
-from engine.effect import effect
-from engine.data import datasprite, datamap, datalocalisation
-from engine.lorebook import lorebook
-from engine.battle import setup_battle_unit
-from engine.menubackground import menubackground
-from engine.updater import updater
+from engine.battlemap.battlemap import BaseMap, FeatureMap, HeightMap, FinalMap
+from engine.weather.weather import MatterSprite, SpecialWeatherEffect
+from engine.uibattle.uibattle import MiniMap, UnitIcon, SkillCardIcon, SpriteIndicator, AimTarget, BattleCursor, \
+    HeroUI, UnitSelector, UIScroll, Profiler, TempUnitIcon
+from engine.uimenu.uimenu import MapPreview, OptionMenuText, SliderMenu, TeamCoa, MenuCursor, BoxUI, BrownMenuButton, \
+    ListUI, ListAdapter, ListAdapterHideExpand, LeaderModel, MenuButton, MapOptionBox, OrgChart, TickBox, NameList, \
+    TextBox, TextPopup
+from engine.battle.battle import Battle
+from engine.unit.unit import Unit, Troop, Leader, rotation_dict, rotation_list
+from engine.effect.effect import Effect
+from engine.data.datasprite import TroopAnimationData
+from engine.data.datamap import BattleMapData
+from engine.data.datalocalisation import Localisation
+from engine.lorebook.lorebook import Lorebook, SubsectionName, lorebook_process
+from engine.battle.setup_battle_unit import setup_battle_unit
+from engine.menubackground.menubackground import MenuActor, MenuRotate
+from engine.updater.updater import ReversedLayeredUpdates
 
 from engine.game.menu_custom_map_select import custom_map_list_on_select, custom_faction_list_on_select, \
     custom_weather_list_on_select
 
-direction_list = datasprite.direction_list
+from engine.utility import load_image, load_images, csv_read, edit_config, load_base_button, text_objects, \
+    number_to_minus_or_plus
 
-load_image = utility.load_image
-load_images = utility.load_images
-csv_read = utility.csv_read
-load_sound = utility.load_sound
-edit_config = utility.edit_config
-make_bar_list = utility.make_bar_list
-load_base_button = utility.load_base_button
-text_objects = utility.text_objects
-setup_list = utility.setup_list
-list_scroll = utility.list_scroll
-number_to_minus_or_plus = utility.number_to_minus_or_plus
-empty_function = utility.empty_function
-
-# Module in game.setup
-
-from engine.game.setup import make_editor_ui
-
-make_editor_ui = make_editor_ui.make_editor_ui
-
-from engine.game.setup import make_faction_troop_leader_data
-
-make_faction_troop_leader_data = make_faction_troop_leader_data.make_faction_troop_leader_data
-
-from engine.game.setup import make_icon_data
-
-make_icon_data = make_icon_data.make_icon_data
-
-from engine.game.setup import make_input_box
-
-make_input_box = make_input_box.make_input_box
-
-from engine.game.setup import make_lorebook
-
-make_lorebook = make_lorebook.make_lorebook
-
-from engine.game.setup import make_option_menu
-
-make_option_menu = make_option_menu.make_option_menu
+# Method in game.setup
+from engine.game.setup.make_editor_ui import make_editor_ui
+from engine.game.setup.make_faction_troop_leader_data import make_faction_troop_leader_data
+from engine.game.setup.make_icon_data import make_icon_data
+from engine.game.setup.make_input_box import make_input_box
+from engine.game.setup.make_lorebook import make_lorebook
+from engine.game.setup.make_option_menu import make_option_menu
 
 version_name = "Future Visionary"  # Game version name that will appear as game name
 
@@ -83,6 +56,7 @@ class Game:
     main_ui_updater = None
     main_ui_drawer = None
 
+    screen_rect = None
     screen_scale = (1, 1)
     screen_size = ()
 
@@ -183,8 +157,8 @@ class Game:
     from engine.game import start_battle
     start_battle = start_battle.start_battle
 
-    lorebook_process = lorebook.lorebook_process
-    setup_battle_unit = setup_battle_unit.setup_battle_unit
+    lorebook_process = lorebook_process
+    setup_battle_unit = setup_battle_unit
 
     troop_sprite_size = (200, 200)
 
@@ -271,7 +245,7 @@ class Game:
         for item in Game.ui_font:  # add ttf file extension for font data reading.
             Game.ui_font[item] = os.path.join(self.font_dir, Game.ui_font[item]["Font"] + ".ttf")
         # Set the display mode
-        self.screen_rect = pygame.Rect(0, 0, self.screen_width, self.screen_height)
+        Game.screen_rect = pygame.Rect(0, 0, self.screen_width, self.screen_height)
         Game.screen_scale = (self.screen_rect.width / 1920, self.screen_rect.height / 1080)
         Game.screen_size = self.screen_rect.size
 
@@ -280,16 +254,16 @@ class Game:
             self.window_style = pygame.FULLSCREEN
         self.screen = pygame.display.set_mode(self.screen_rect.size, self.window_style)
 
-        unit.Unit.screen_scale = self.screen_scale
-        unit.Unit.team_colour = self.team_colour
-        uimenu.MapPreview.colour = self.team_colour
-        uimenu.MapPreview.selected_colour = self.selected_team_colour
-        uibattle.MiniMap.colour = self.team_colour
-        uibattle.MiniMap.selected_colour = self.selected_team_colour
-        uibattle.UnitIcon.colour = self.team_colour
-        effect.Effect.screen_scale = self.screen_scale
-        battlemap.FinalMap.team_colour = self.team_colour
-        battlemap.FinalMap.selected_team_colour = self.selected_team_colour
+        Unit.screen_scale = self.screen_scale
+        Unit.team_colour = self.team_colour
+        MapPreview.colour = self.team_colour
+        MapPreview.selected_colour = self.selected_team_colour
+        MiniMap.colour = self.team_colour
+        MiniMap.selected_colour = self.selected_team_colour
+        UnitIcon.colour = self.team_colour
+        Effect.screen_scale = self.screen_scale
+        FinalMap.team_colour = self.team_colour
+        FinalMap.selected_team_colour = self.selected_team_colour
 
         self.clock = pygame.time.Clock()  # set get clock
 
@@ -320,7 +294,7 @@ class Game:
 
         # Initialise groups
 
-        Game.main_ui_updater = updater.ReversedLayeredUpdates()  # main drawer for ui in main menu
+        Game.main_ui_updater = ReversedLayeredUpdates()  # main drawer for ui in main menu
         Game.main_ui_drawer = pygame.sprite.LayeredUpdates()
 
         # game start menu group
@@ -338,7 +312,7 @@ class Game:
 
         # battle object group
         self.battle_camera = pygame.sprite.LayeredUpdates()  # layer drawer self camera, all image pos should be based on the map not screen
-        self.battle_ui_updater = updater.ReversedLayeredUpdates()  # this is updater and drawer for ui, all image pos should be based on the screen
+        self.battle_ui_updater = ReversedLayeredUpdates()  # this is updater and drawer for ui, all image pos should be based on the screen
         self.battle_ui_drawer = pygame.sprite.LayeredUpdates()
 
         self.unit_updater = pygame.sprite.Group()  # updater for unit objects
@@ -364,53 +338,53 @@ class Game:
         self.weather_effect = pygame.sprite.Group()  # sprite of special weather effect group such as fog that cover whole screen
 
         # Assign containers
-        uimenu.OptionMenuText.containers = self.menu_icon
-        uimenu.SliderMenu.containers = self.menu_slider, self.slider_menu
-        uimenu.TeamCoa.containers = self.team_coa, self.main_ui_updater, self.main_ui_drawer
+        OptionMenuText.containers = self.menu_icon
+        SliderMenu.containers = self.menu_slider, self.slider_menu
+        TeamCoa.containers = self.team_coa, self.main_ui_updater, self.main_ui_drawer
 
-        menubackground.MenuRotate.containers = self.main_ui_updater, self.main_ui_drawer
-        menubackground.MenuActor.containers = self.main_ui_updater, self.main_ui_drawer
+        MenuRotate.containers = self.main_ui_updater, self.main_ui_drawer
+        MenuActor.containers = self.main_ui_updater, self.main_ui_drawer
 
-        lorebook.SubsectionName.containers = self.main_ui_updater, self.main_ui_drawer, self.battle_ui_updater, self.battle_ui_drawer
+        SubsectionName.containers = self.main_ui_updater, self.main_ui_drawer, self.battle_ui_updater, self.battle_ui_drawer
 
         # battle containers
-        uibattle.SkillCardIcon.containers = self.skill_icon, self.battle_ui_updater, self.battle_ui_drawer
-        uibattle.UnitIcon.containers = self.unit_icon, self.main_ui_updater, self.main_ui_drawer
-        uibattle.SpriteIndicator.containers = self.effect_updater, self.battle_camera
-        uibattle.AimTarget.containers = self.shoot_lines, self.battle_camera
-        uibattle.BattleCursor.containers = self.battle_ui_updater, self.battle_ui_drawer
+        SkillCardIcon.containers = self.skill_icon, self.battle_ui_updater, self.battle_ui_drawer
+        UnitIcon.containers = self.unit_icon, self.main_ui_updater, self.main_ui_drawer
+        SpriteIndicator.containers = self.effect_updater, self.battle_camera
+        AimTarget.containers = self.shoot_lines, self.battle_camera
+        BattleCursor.containers = self.battle_ui_updater, self.battle_ui_drawer
 
-        effect.Effect.containers = self.effect_updater, self.battle_camera
+        Effect.containers = self.effect_updater, self.battle_camera
 
-        uimenu.MenuCursor.containers = self.main_ui_updater, self.main_ui_drawer
+        MenuCursor.containers = self.main_ui_updater, self.main_ui_drawer
 
-        weather.MatterSprite.containers = self.weather_matter, self.battle_ui_updater, self.battle_ui_drawer
-        weather.SpecialEffect.containers = self.weather_effect, self.battle_ui_updater, self.battle_ui_drawer
+        MatterSprite.containers = self.weather_matter, self.battle_ui_updater, self.battle_ui_drawer
+        SpecialWeatherEffect.containers = self.weather_effect, self.battle_ui_updater, self.battle_ui_drawer
 
-        unit.Troop.containers = self.unit_updater, self.all_units, self.battle_camera
-        unit.Leader.containers = self.unit_updater, self.all_units, self.battle_camera
+        Troop.containers = self.unit_updater, self.all_units, self.battle_camera
+        Leader.containers = self.unit_updater, self.all_units, self.battle_camera
 
         # Create game cursor, make sure it is the first object in ui to be created, so it is always update first
         cursor_images = load_images(self.module_dir, subfolder=("ui", "cursor_menu"))  # no need to scale cursor
-        self.cursor = uimenu.MenuCursor(cursor_images)
+        self.cursor = MenuCursor(cursor_images)
         Game.cursor = self.cursor
 
         self.game_intro(self.screen, self.clock, False)  # run intro
 
         # Load game localisation data
 
-        self.localisation = datalocalisation.Localisation()
+        self.localisation = Localisation()
         Game.localisation = self.localisation
 
         # Battle related data
         self.troop_data, self.leader_data, self.faction_data = make_faction_troop_leader_data(self.module_dir,
                                                                                               self.screen_scale)
 
-        self.battle_map_data = datamap.BattleMapData()
+        self.battle_map_data = BattleMapData()
 
-        uimenu.MapPreview.terrain_colour = self.battle_map_data.terrain_colour
-        uimenu.MapPreview.feature_colour = self.battle_map_data.feature_colour
-        uimenu.MapPreview.battle_map_colour = self.battle_map_data.battle_map_colour
+        MapPreview.terrain_colour = self.battle_map_data.terrain_colour
+        MapPreview.feature_colour = self.battle_map_data.feature_colour
+        MapPreview.battle_map_colour = self.battle_map_data.battle_map_colour
 
         self.preset_map_list = self.battle_map_data.preset_map_list  # TODO remove later when campaign list can expand
         self.preset_map_folder = self.battle_map_data.preset_map_folder
@@ -420,19 +394,19 @@ class Game:
         self.battle_campaign = self.battle_map_data.battle_campaign  # for reference to preset campaign
         self.preset_map_data = self.battle_map_data.preset_map_data
 
-        unit.Unit.troop_data = self.troop_data
-        unit.Unit.leader_data = self.leader_data
-        unit.Unit.troop_sprite_list = self.troop_data.troop_sprite_list
-        unit.Unit.leader_sprite_list = self.leader_data.leader_sprite_list
-        unit.Unit.status_list = self.troop_data.status_list
-        unit.Unit.all_formation_list = self.troop_data.default_formation_list
-        unit.Unit.effect_list = self.troop_data.effect_list
+        Unit.troop_data = self.troop_data
+        Unit.leader_data = self.leader_data
+        Unit.troop_sprite_list = self.troop_data.troop_sprite_list
+        Unit.leader_sprite_list = self.leader_data.leader_sprite_list
+        Unit.status_list = self.troop_data.status_list
+        Unit.all_formation_list = self.troop_data.default_formation_list
+        Unit.effect_list = self.troop_data.effect_list
 
-        effect.Effect.effect_list = self.troop_data.effect_list
+        Effect.effect_list = self.troop_data.effect_list
 
-        self.troop_animation = datasprite.TroopAnimationData(self.data_dir, self.module_dir,
-                                                             [str(self.troop_data.race_list[key]["Name"]) for key in
-                                                              self.troop_data.race_list], self.team_colour)
+        self.troop_animation = TroopAnimationData(self.data_dir, self.module_dir,
+                                                  [str(self.troop_data.race_list[key]["Name"]) for key in
+                                                   self.troop_data.race_list], self.team_colour)
         self.unit_animation_data = self.troop_animation.unit_animation_data  # animation data pool
         self.body_sprite_pool = self.troop_animation.body_sprite_pool  # body sprite pool
         self.weapon_sprite_pool = self.troop_animation.weapon_sprite_pool  # weapon sprite pool
@@ -443,7 +417,7 @@ class Game:
         self.effect_sprite_pool = self.troop_animation.effect_sprite_pool  # effect sprite pool
         self.effect_animation_pool = self.troop_animation.effect_animation_pool  # effect sprite animation pool
 
-        uibattle.HeroUI.weapon_sprite_pool = self.weapon_sprite_pool
+        HeroUI.weapon_sprite_pool = self.weapon_sprite_pool
 
         # flip (covert for ingame angle)
         bullet_sprite_pool = {}
@@ -463,25 +437,25 @@ class Game:
                         image = pygame.transform.flip(value3, False, True)
                         bullet_weapon_sprite_pool[key][key2][key3] = image
 
-        effect.Effect.bullet_sprite_pool = bullet_sprite_pool
-        effect.Effect.bullet_weapon_sprite_pool = bullet_weapon_sprite_pool
-        effect.Effect.effect_sprite_pool = self.effect_sprite_pool
-        effect.Effect.effect_animation_pool = self.effect_animation_pool
+        Effect.bullet_sprite_pool = bullet_sprite_pool
+        Effect.bullet_weapon_sprite_pool = bullet_weapon_sprite_pool
+        Effect.effect_sprite_pool = self.effect_sprite_pool
+        Effect.effect_animation_pool = self.effect_animation_pool
 
         # Load sound effect
         self.sound_effect_pool = self.create_sound_effect_pool()
 
         # Battle map object
-        self.battle_base_map = battlemap.BaseMap()  # create base terrain map
-        self.battle_feature_map = battlemap.FeatureMap()  # create terrain feature map
-        self.battle_height_map = battlemap.HeightMap()  # create height map
-        self.battle_map = battlemap.FinalMap(self.battle_height_map)
+        self.battle_base_map = BaseMap()  # create base terrain map
+        self.battle_feature_map = FeatureMap()  # create terrain feature map
+        self.battle_height_map = HeightMap()  # create height map
+        self.battle_map = FinalMap(self.battle_height_map)
         self.battle_camera.add(self.battle_map)
 
-        effect.Effect.height_map = self.battle_height_map
-        unit.Unit.base_map = self.battle_base_map  # add battle map to unit class
-        unit.Unit.feature_map = self.battle_feature_map
-        unit.Unit.height_map = self.battle_height_map
+        Effect.height_map = self.battle_height_map
+        Unit.base_map = self.battle_base_map  # add battle map to unit class
+        Unit.feature_map = self.battle_feature_map
+        Unit.height_map = self.battle_height_map
 
         # Music player
         if pygame.mixer and not pygame.mixer.get_init():
@@ -498,101 +472,104 @@ class Game:
 
         image_list = load_base_button(self.module_dir, self.screen_scale)
 
-        main_menu_buttons_box = uimenu.BoxUI((400, 500), parent=self.screen)
+        main_menu_buttons_box = BoxUI((400, 500), parent=self.screen)
 
         f = 0.68
-        self.preset_map_button = uimenu.BrownMenuButton((0, -1 * f), key_name="main_menu_preset_map", parent=main_menu_buttons_box)
-        self.custom_map_button = uimenu.BrownMenuButton((0, -0.6 * f), key_name="main_menu_custom_map", parent=main_menu_buttons_box)
-        self.game_edit_button = uimenu.BrownMenuButton((0, -0.2 * f), key_name="main_menu_editor", parent=main_menu_buttons_box)
-        self.lore_button = uimenu.BrownMenuButton((0, 0.2 * f), key_name="main_menu_lorebook", parent=main_menu_buttons_box)
-        self.option_button = uimenu.BrownMenuButton((0, 0.6 * f), key_name="game_option", parent=main_menu_buttons_box)
-        self.quit_button = uimenu.BrownMenuButton((0, 1 * f), key_name="game_quit", parent=main_menu_buttons_box)
+        self.preset_map_button = BrownMenuButton((0, -1 * f), key_name="main_menu_preset_map",
+                                                 parent=main_menu_buttons_box)
+        self.custom_map_button = BrownMenuButton((0, -0.6 * f), key_name="main_menu_custom_map",
+                                                 parent=main_menu_buttons_box)
+        self.game_edit_button = BrownMenuButton((0, -0.2 * f), key_name="main_menu_editor",
+                                                parent=main_menu_buttons_box)
+        self.lore_button = BrownMenuButton((0, 0.2 * f), key_name="main_menu_lorebook", parent=main_menu_buttons_box)
+        self.option_button = BrownMenuButton((0, 0.6 * f), key_name="game_option", parent=main_menu_buttons_box)
+        self.quit_button = BrownMenuButton((0, 1 * f), key_name="game_quit", parent=main_menu_buttons_box)
 
         self.mainmenu_button = (self.preset_map_button, self.custom_map_button, self.game_edit_button,
                                 self.lore_button, self.option_button, self.quit_button, main_menu_buttons_box)
 
         # Battle map select menu button
 
-        self.preset_map_list_box = uimenu.ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
-                                                 items=uimenu.ListAdapter(self.battle_map_list, self),
-                                                 parent=self.screen, item_size=20)  # TODO change to preset map list
+        self.preset_map_list_box = ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
+                                          items=ListAdapter(self.battle_map_list, self),
+                                          parent=self.screen, item_size=20)  # TODO change to preset map list
 
-        self.campaign_map_list_box = uimenu.ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
-                                                   items=uimenu.ListAdapterHideExpand(self.campaign_map_list, self),
-                                                   parent=self.screen, item_size=20)
+        self.campaign_map_list_box = ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
+                                            items=ListAdapterHideExpand(self.campaign_map_list, self),
+                                            parent=self.screen, item_size=20)
 
-        self.custom_battle_map_list_box = uimenu.ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
-                                                        items=uimenu.ListAdapter(self.battle_map_list, self, replace_on_select=custom_map_list_on_select),
-                                                        parent=self.screen, item_size=20)
+        self.custom_battle_map_list_box = ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
+                                                 items=ListAdapter(self.battle_map_list, self,
+                                                                   replace_on_select=custom_map_list_on_select),
+                                                 parent=self.screen, item_size=20)
 
-        self.custom_preset_army_list_box = uimenu.ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
-                                                         items=uimenu.ListAdapter(self.battle_map_list, self),
-                                                         parent=self.screen, item_size=20)
+        self.custom_preset_army_list_box = ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
+                                                  items=ListAdapter(self.battle_map_list, self),
+                                                  parent=self.screen, item_size=20)
 
-        self.custom_battle_faction_list_box = uimenu.ListUI(pivot=(-0.03, -0.1), origin=(-1, -1), size=(.3, .4),
-                                                            items=uimenu.ListAdapter(["None"] + self.faction_data.faction_name_list, self, replace_on_select=custom_faction_list_on_select),
-                                                            parent=self.screen, item_size=10)
+        self.custom_battle_faction_list_box = ListUI(pivot=(-0.03, -0.1), origin=(-1, -1), size=(.3, .4),
+                                                     items=ListAdapter(["None"] + self.faction_data.faction_name_list,
+                                                                       self,
+                                                                       replace_on_select=custom_faction_list_on_select),
+                                                     parent=self.screen, item_size=10)
 
-        self.unit_list_box = uimenu.ListUI(pivot=(-0.03, -0.1), origin=(-1, -1), size=(.3, .4),
-                                           items=uimenu.ListAdapter(self.battle_map_list, self),
-                                           parent=self.screen, item_size=10)
+        self.unit_list_box = ListUI(pivot=(-0.03, -0.1), origin=(-1, -1), size=(.3, .4),
+                                    items=ListAdapter(self.battle_map_list, self), parent=self.screen, item_size=10)
 
-        self.weather_list_box = uimenu.ListUI(pivot=(0, -0.1), origin=(-1, -1), size=(.3, .4),
-                                              items=uimenu.ListAdapter(self.battle_map_data.weather_list, self, replace_on_select=custom_weather_list_on_select),
-                                              parent=self.screen, item_size=10, layer=20)
+        self.weather_list_box = ListUI(pivot=(0, -0.1), origin=(-1, -1), size=(.3, .4),
+                                       items=ListAdapter(self.battle_map_data.weather_list, self,
+                                                         replace_on_select=custom_weather_list_on_select),
+                                       parent=self.screen, item_size=10, layer=20)
 
         battle_select_image = load_images(self.module_dir, screen_scale=self.screen_scale,
                                           subfolder=("ui", "mapselect_ui"))
 
-        self.map_preview = uimenu.MapPreview(self.preset_map_list_box.rect.topright)
+        self.map_preview = MapPreview(self.preset_map_list_box.rect.topright)
 
-        self.unit_selector = uibattle.UnitSelector(self.map_preview.rect.topright,
-                                                   battle_select_image["unit_select"], icon_scale=0.4)
-        uibattle.UIScroll(self.unit_selector, self.unit_selector.rect.topright)  # scroll bar for unit pick
+        self.unit_selector = UnitSelector(self.map_preview.rect.topright,
+                                          battle_select_image["unit_select"], icon_scale=0.4)
+        UIScroll(self.unit_selector, self.unit_selector.rect.topright)  # scroll bar for unit pick
 
-        self.unit_model_room = uimenu.LeaderModel(self.unit_selector.rect.bottomright,
-                                                  battle_select_image["small_box"])  # troop stat
+        self.unit_model_room = LeaderModel(self.unit_selector.rect.bottomright,
+                                           battle_select_image["small_box"])  # troop stat
 
         bottom_height = self.screen_rect.height - image_list[0].get_height()
-        self.select_button = uimenu.MenuButton(image_list,
-                                               (self.screen_rect.width - image_list[0].get_width(), bottom_height),
-                                               key_name="select_button")
-        self.start_button = uimenu.MenuButton(image_list,
-                                              (self.screen_rect.width - image_list[0].get_width(), bottom_height),
-                                              key_name="start_button")
-        self.map_back_button = uimenu.MenuButton(image_list,
-                                                 (self.screen_rect.width - (
-                                                         self.screen_rect.width - image_list[0].get_width()),
-                                                  bottom_height), key_name="back_button")
+        self.select_button = MenuButton(image_list, (self.screen_rect.width - image_list[0].get_width(), bottom_height),
+                                        key_name="select_button")
+        self.start_button = MenuButton(image_list, (self.screen_rect.width - image_list[0].get_width(), bottom_height),
+                                       key_name="start_button")
+        self.map_back_button = MenuButton(image_list,
+                                          (
+                                          self.screen_rect.width - (self.screen_rect.width - image_list[0].get_width()),
+                                          bottom_height), key_name="back_button")
 
         self.map_select_button = (self.select_button, self.map_back_button)
         self.team_select_button = (self.select_button, self.map_back_button)
         self.unit_select_button = (self.start_button, self.map_back_button)
 
         # ui box for battle option during preset map preparation screen
-        self.custom_map_option_box = uimenu.MapOptionBox(self.unit_model_room.rect.bottomright,
-                                                         battle_select_image["small_box"])
+        self.custom_map_option_box = MapOptionBox(self.unit_model_room.rect.bottomright,
+                                                  battle_select_image["small_box"])
 
-        self.org_chart = uimenu.OrgChart(load_image(self.module_dir, self.screen_scale,
-                                                    "org.png", ("ui", "mapselect_ui")),
-                                         (self.screen_rect.center[0] * 1.3, self.screen_rect.height / 12))
+        self.org_chart = OrgChart(load_image(self.module_dir, self.screen_scale, "org.png", ("ui", "mapselect_ui")),
+                                  (self.screen_rect.center[0] * 1.3, self.screen_rect.height / 12))
 
         self.camp_icon = []
 
-        self.night_battle_tick_box = uimenu.TickBox((self.custom_map_option_box.rect.topleft[0] * 1.05,
-                                                     self.custom_map_option_box.rect.topleft[1] * 1.05),
-                                                    battle_select_image["untick"], battle_select_image["tick"],
-                                                    "night")
-        self.weather_custom_select = uimenu.NameList(self.custom_map_option_box,
-                                                     (self.custom_map_option_box.rect.midleft[0],
-                                                      self.custom_map_option_box.rect.midleft[
-                                                          1] + self.custom_map_option_box.image.get_height() / 4),
-                                                     "Weather: Light Random")
-        self.wind_custom_select = uimenu.NameList(self.custom_map_option_box,
-                                                  (self.custom_map_option_box.rect.midleft[0],
-                                                   self.custom_map_option_box.rect.midleft[
-                                                       1] + self.custom_map_option_box.image.get_height() / 10),
-                                                  "Wind Direction: 0")
+        self.night_battle_tick_box = TickBox((self.custom_map_option_box.rect.topleft[0] * 1.05,
+                                              self.custom_map_option_box.rect.topleft[1] * 1.05),
+                                             battle_select_image["untick"], battle_select_image["tick"],
+                                             "night")
+        self.weather_custom_select = NameList(self.custom_map_option_box,
+                                              (self.custom_map_option_box.rect.midleft[0],
+                                               self.custom_map_option_box.rect.midleft[1] +
+                                               self.custom_map_option_box.image.get_height() / 4),
+                                              "Weather: Light Random")
+        self.wind_custom_select = NameList(self.custom_map_option_box,
+                                           (self.custom_map_option_box.rect.midleft[0],
+                                            self.custom_map_option_box.rect.midleft[1] +
+                                            self.custom_map_option_box.image.get_height() / 10),
+                                           "Wind Direction: 0")
 
         self.current_map_row = 0
         self.current_map_select = 0
@@ -606,18 +583,16 @@ class Game:
 
         # Unit and troop editor button in game start menu
 
-        self.unit_edit_button = uimenu.MenuButton(image_list,
-                                                  (self.screen_rect.width / 2,
-                                                   self.screen_rect.height - (image_list[0].get_height() * 4)),
-                                                  key_name="main_menu_unit_editor")
-        self.troop_create_button = uimenu.MenuButton(image_list,
-                                                     (self.screen_rect.width / 2,
-                                                      self.screen_rect.height - (image_list[0].get_height() * 2.5)),
-                                                     key_name="main_menu_troop_editor")
-        self.editor_back_button = uimenu.MenuButton(image_list,
-                                                    (self.screen_rect.width / 2,
-                                                     self.screen_rect.height - image_list[0].get_height()),
-                                                    key_name="back_button")
+        self.unit_edit_button = MenuButton(image_list, (self.screen_rect.width / 2,
+                                                        self.screen_rect.height - (image_list[0].get_height() * 4)),
+                                           key_name="main_menu_unit_editor")
+        self.troop_create_button = MenuButton(image_list, (self.screen_rect.width / 2,
+                                                           self.screen_rect.height - (
+                                                                       image_list[0].get_height() * 2.5)),
+                                              key_name="main_menu_troop_editor")
+        self.editor_back_button = MenuButton(image_list, (self.screen_rect.width / 2,
+                                                          self.screen_rect.height - image_list[0].get_height()),
+                                             key_name="back_button")
         self.editor_button = (self.unit_edit_button, self.troop_create_button, self.editor_back_button)
 
         # Option menu button
@@ -647,8 +622,8 @@ class Game:
 
         # Profile box
         profile_box_image = load_image(self.module_dir, self.screen_scale, "profile_box.png", ("ui", "mainmenu_ui"))
-        self.profile_box = uimenu.TextBox(profile_box_image, (self.screen_width, 0),
-                                          self.profile_name)  # profile name box at top right of screen at start_set menu screen
+        self.profile_box = TextBox(profile_box_image, (self.screen_width, 0),
+                                   self.profile_name)  # profile name box at top right of screen at start_set menu screen
 
         # User input popup ui
         input_ui_dict = make_input_box(self.module_dir, self.screen_scale, self.screen_rect,
@@ -679,33 +654,31 @@ class Game:
                                                                                                     self.screen_scale)
 
         # Text popup
-        self.single_text_popup = uimenu.TextPopup()  # popup box that show name when mouse over
+        self.single_text_popup = TextPopup()  # popup box that show name when mouse over
 
         # Encyclopedia interface
-        lorebook.Lorebook.concept_stat = csv_read(self.module_dir, "concept_stat.csv",
-                                                  ("lore",), header_key=True)
-        lorebook.Lorebook.concept_lore = self.localisation.create_lore_data("concept")
-        lorebook.Lorebook.history_stat = csv_read(self.module_dir, "history_stat.csv",
-                                                  ("lore",), header_key=True)
-        lorebook.Lorebook.history_lore = self.localisation.create_lore_data("history")
+        Lorebook.concept_stat = csv_read(self.module_dir, "concept_stat.csv", ("lore",), header_key=True)
+        Lorebook.concept_lore = self.localisation.create_lore_data("concept")
+        Lorebook.history_stat = csv_read(self.module_dir, "history_stat.csv", ("lore",), header_key=True)
+        Lorebook.history_lore = self.localisation.create_lore_data("history")
 
-        lorebook.Lorebook.faction_data = self.faction_data
-        lorebook.Lorebook.troop_data = self.troop_data
-        lorebook.Lorebook.leader_data = self.leader_data
-        lorebook.Lorebook.battle_map_data = self.battle_map_data
+        Lorebook.faction_data = self.faction_data
+        Lorebook.troop_data = self.troop_data
+        Lorebook.leader_data = self.leader_data
+        Lorebook.battle_map_data = self.battle_map_data
 
         self.encyclopedia, self.lore_name_list, self.filter_tag_list, self.lore_buttons, self.page_button = make_lorebook(
-            self, self.module_dir, self.screen_scale, self.screen_rect)
+            self)
 
         self.encyclopedia_stuff = (self.encyclopedia, self.lore_name_list, self.filter_tag_list,
                                    self.lore_name_list.scroll, self.filter_tag_list.scroll, self.lore_buttons.values())
 
-        self.battle = battle.Battle(self)
+        self.battle = Battle(self)
         self.player1_battle_cursor = self.battle.player1_battle_cursor
 
         Game.battle = self.battle
-        unit.Unit.battle = self.battle
-        effect.Effect.battle = self.battle
+        Unit.battle = self.battle
+        Effect.battle = self.battle
 
         unit_to_make = tuple(set([this_unit for this_unit in self.troop_data.troop_list] +
                                  [this_unit for this_unit in self.leader_data.leader_list]))
@@ -717,17 +690,16 @@ class Game:
         # Background image
         self.background_image = load_images(self.module_dir, screen_scale=self.screen_scale,
                                             subfolder=("ui", "mainmenu_ui", "background"))
-        self.atlas = menubackground.MenuRotate((self.screen_width / 2, self.screen_height / 2), self.background_image["atlas"], 5)
+        self.atlas = MenuRotate((self.screen_width / 2, self.screen_height / 2), self.background_image["atlas"], 5)
         self.menu_actor_data = csv_read(self.module_dir, "menu_actor.csv", ("ui",), header_key=True)
         self.menu_actors = []
-        print(self.menu_actor_data)
         for stuff in self.menu_actor_data.values():
             if stuff["Type"] == "unit":
                 if "-" in stuff["ID"]:
                     who_todo = {key: value for key, value in self.leader_data.leader_list.items() if key == stuff["ID"]}
                 else:
                     who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key == stuff["ID"]}
-                sprite_direction = unit.rotation_dict[min(unit.rotation_list, key=lambda x: abs(
+                sprite_direction = rotation_dict[min(rotation_list, key=lambda x: abs(
                     x - stuff["Angle"]))]  # find closest in list of rotation for sprite direction
                 preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True,
                                                                        specific_preview=(stuff["Animation"],
@@ -735,9 +707,9 @@ class Game:
                                                                                          sprite_direction),
                                                                        max_preview_size=None)
 
-                self.menu_actors.append(menubackground.MenuActor((float(stuff["POS"].split(",")[0]) * self.screen_width,
-                                                                  float(stuff["POS"].split(",")[1]) * self.screen_height),
-                                                                 preview_sprite_pool[stuff["ID"]]))
+                self.menu_actors.append(MenuActor((float(stuff["POS"].split(",")[0]) * self.screen_width,
+                                                   float(stuff["POS"].split(",")[1]) * self.screen_height),
+                                                  preview_sprite_pool[stuff["ID"]]))
 
         # self.background = self.background_image["main"]
 
@@ -789,7 +761,6 @@ class Game:
         self.main_ui_drawer.remove(*args)
 
     def setup_profiler(self):
-        from engine.uibattle.uibattle import Profiler
         self.profiler = Profiler()
         self.profiler.enable()
         self.battle.add_ui_updater(self.profiler)
@@ -892,8 +863,7 @@ class Game:
                         pos = pos.replace("(", "").replace(")", "").split(", ")
                         pos = [float(item) for item in pos]
                         self.camp_pos[int(self.input_popup[1][-1])].insert(0, [pos, int(self.input_box.text)])
-                        self.camp_icon.insert(0, uibattle.TempUnitIcon(int(self.input_popup[1][-1]),
-                                                                       self.input_box.text, 0))
+                        self.camp_icon.insert(0, TempUnitIcon(int(self.input_popup[1][-1]), self.input_box.text, 0))
                         self.unit_selector.setup_unit_icon(self.unit_icon, self.camp_icon)
                         self.map_preview.change_mode(1, camp_pos_list=self.camp_pos)
 

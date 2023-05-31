@@ -3,7 +3,7 @@ from random import randint
 
 from pygame import Vector2
 
-from engine.weather import weather
+from engine.weather.weather import MatterSprite
 
 
 def spawn_weather_matter(self):
@@ -38,6 +38,6 @@ def spawn_weather_matter(self):
                         target[1] - (screen_rect_height * cos(radians(spawn_angle))))
 
     random_pic = randint(0, len(self.weather_matter_images[self.current_weather.name]) - 1)
-    self.weather_matter.add(weather.MatterSprite(start_pos, target, self.current_weather.speed,
-                                                 self.weather_matter_images[self.current_weather.name][random_pic],
-                                                 self.screen_rect.size))
+    self.weather_matter.add(MatterSprite(start_pos, target, self.current_weather.speed,
+                                         self.weather_matter_images[self.current_weather.name][random_pic],
+                                         self.screen_rect.size))

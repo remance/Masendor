@@ -1,7 +1,7 @@
 "ID","Name","Race","Strength","Dexterity","Agility","Constitution","Intelligence","Wisdom","Charisma","Melee Speciality","Range Speciality","Cavalry Speciality","Social Class","Primary Main Weapon","Primary Sub Weapon","Secondary Main Weapon","Secondary Sub Weapon","Armour","Mount","Charge Skill","Skill","Trait","Formation","Sprite ID","Faction","Tag"
 "BBL-1","Gilgamesh",1,100,96,98,100,95,97,100,10,8,9,7,,,,,,,21,,,"Line,Diamond","None",,"Leader"
 "NOR-1","William of Normandy",1,78,74,65,70,81,83,92,7,4,7,5,"2,4",,"7,5",,"5,5","2,4,14",21,"L3,L61",,"Line,Wedge","William",1,"Leader"
-"NOR-2","Alan the Red",1,70,64,58,68,75,80,70,6,6,6,4,"2,4",,,,"5,4","2,3,14",21,"L21",,"Line","Norman Leader Red Beard",1,"Leader"
+"NOR-2","Alan the Red",1,70,64,58,68,75,80,70,6,6,6,4,"2,4",,,,"5,4","2,3,14",21,"L21",,"Line","Alan The Red",1,"Leader"
 "NOR-3","William FitzOsbern",1,65,52,63,71,68,71,72,7,7,7,4,"2,4",,,,"5,4","2,3,14",21,"L1",,"Line","Norman Leader",1,"Leader"
 "NOR-4","Eustace II",1,67,58,61,69,70,75,75,7,3,8,4,"52,4",,"2,4",,"5,4","2,3,14",21,"L28",,"Line","Eustace",1,"Leader"
 "NOR-5","William of Évreux",1,64,59,54,65,75,73,60,6,5,4,4,"2,4",,,,"5,4","2,3,14",21,"L19",,"Line","Norman Leader",1,"Leader"
@@ -87,6 +87,8 @@
 "SAX-8","Aelfwig of New Minster",1,61,58,55,60,75,71,55,5,1,1,5,"8,4",,,,"5,3",,19,"L6",,"Line","Christian Monk Leader",2,"Supporter"
 "SAX-9","Aelfric",1,58,46,48,52,60,62,50,5,4,1,4,"2,4",,,,"5,3",,21,"L17",,"Line","Saxon Leader",2,"Leader"
 "SAX-10","Son of Helloc",1,70,68,69,71,51,48,41,5,3,3,3,"2,4",,,,"5,3",,19,"L18",,"Line","Saxon Leader",2,"Warrior"
+"SAX-11","Morcar of Northumbria",,,,,,,,,,,,,,,,,,,,,,,,,
+"SAX-12","Edwin of Mercia",,,,,,,,,,,,,,,,,,,,,,,,,
 "NK-1","Thutmose III",1,69,84,71,75,95,94,95,6,5,8,7,"32,5",,"6,4",,"6,4","100,4,13",21,"L49,L61",,"Line,Wedge","Pharaoh",3,"Leader"
 "CNA-1","King of Kadesh",1,51,72,64,73,64,70,75,7,5,5,7,"25,4",,"6,4",,"6,4","99,4,13",21,"L19",,"Line","Canaan Leader",4,"Leader"
 "CNA-2","Prince of Megiddo",1,60,75,68,71,68,68,70,6,6,6,5,"25,4",,"6,4",,"6,4","99,4,13",21,"L3",,"Line","Canaan Leader",4,"Leader"

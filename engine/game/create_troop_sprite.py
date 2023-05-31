@@ -3,10 +3,7 @@ import math
 import pygame
 from PIL import Image, ImageFilter, ImageEnhance
 
-from engine import utility
-
-rotation_xy = utility.rotation_xy
-apply_sprite_colour = utility.apply_sprite_colour
+from engine.utility import rotation_xy, apply_sprite_colour
 
 default_sprite_size = (200, 200)
 

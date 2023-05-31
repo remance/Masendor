@@ -1,6 +1,6 @@
 import gc
 
-import pygame
+from pygame.mixer import music
 
 
 def start_battle(self, player_unit=None):
@@ -8,13 +8,14 @@ def start_battle(self, player_unit=None):
                          str(self.map_source) + ", Character: " + str(player_unit) + "\n")
 
     selected_player_unit = player_unit
-
+    music.unload()
+    music.set_endevent(self.SONG_END)
     self.battle.prepare_new_game(selected_player_unit)
     self.battle.run_game()
-    pygame.mixer.music.unload()
-    pygame.mixer.music.set_endevent(self.SONG_END)
-    pygame.mixer.music.load(self.music_list[0])
-    pygame.mixer.music.play(-1)
+    music.unload()
+    music.set_endevent(self.SONG_END)
+    music.load(self.music_list[0])
+    music.play(-1)
     gc.collect()  # collect no longer used object in previous battle from memory
 
     # for when memory leak checking

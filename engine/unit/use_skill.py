@@ -2,7 +2,7 @@ from random import choice
 
 from pygame import Vector2
 
-from engine.effect import effect
+from engine.effect.effect import Effect
 
 
 def use_skill(self, which_skill):
@@ -17,8 +17,8 @@ def use_skill(self, which_skill):
                 base_pos = self.current_action["pos"]
                 pos = Vector2(base_pos[0] * self.screen_scale[0], base_pos[1] * self.screen_scale[1]) * 5
             if skill_stat["Effect Sprite"]:
-                effect.Effect(self, base_pos, pos, skill_stat["Effect Sprite"][0],
-                              skill_stat["Effect Sprite"][1])
+                Effect(self, base_pos, pos, skill_stat["Effect Sprite"][0],
+                       skill_stat["Effect Sprite"][1])
             if skill_stat["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
                 self.battle.add_sound_effect_queue(choice(self.sound_effect_pool[skill_stat["Sound Effect"]]),
                                                    base_pos, skill_stat["Sound Distance"],
@@ -56,8 +56,9 @@ def use_skill(self, which_skill):
                         if "Melee" in skill_stat["Action Type"] and which_skill not in this_unit[0].active_action_skill[
                             "melee"]:
                             this_unit[0].active_action_skill["melee"].append(which_skill)
-                        elif "Range" in skill_stat["Action Type"] and which_skill not in this_unit[0].active_action_skill[
-                            "range"]:
+                        elif "Range" in skill_stat["Action Type"] and which_skill not in \
+                                this_unit[0].active_action_skill[
+                                    "range"]:
                             this_unit[0].active_action_skill["range"].append(which_skill)
 
                 elif use_center:  # exceed distance from this unit pos center onward in list

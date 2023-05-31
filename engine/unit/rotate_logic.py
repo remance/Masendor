@@ -1,12 +1,6 @@
 from math import radians
 
-from engine.unit import unit
-from engine import utility
-
-rotation_xy = utility.rotation_xy
-
-rotation_list = unit.rotation_list
-rotation_dict = unit.rotation_dict
+from engine.unit.unit import rotation_dict
 
 
 def rotate_logic(self, *args):
@@ -16,7 +10,7 @@ def rotate_logic(self, *args):
         sprite_angle = 90
     else:
         sprite_angle = -90
-    # sprite_angle = min(rotation_list, key=lambda x: abs(x - self.new_angle))  # find closest in list of rotation
+
     if self.sprite_direction != rotation_dict[sprite_angle]:
         self.sprite_direction = rotation_dict[sprite_angle]  # find closest in list of rotation for sprite direction
         self.current_animation_direction = self.current_animation[self.sprite_direction]

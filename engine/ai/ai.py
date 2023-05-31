@@ -30,7 +30,8 @@ class PathfindingAI:
                 end_point = (max((min(999, int_base_pos[0] + 5), min(999, int_base_target[0] + 5))),
                              max((min(999, int_base_pos[1] + 5), min(999, int_base_target[1] + 5))))
 
-                move_array = self.move_array[start_point[1]: end_point[1]]  # cut 1000x1000 array into smaller one by row
+                move_array = self.move_array[
+                             start_point[1]: end_point[1]]  # cut 1000x1000 array into smaller one by row
                 move_array = [this_array[start_point[0]: end_point[0]] for this_array in move_array]  # cut by column
 
                 grid = unit.Grid(matrix=move_array)

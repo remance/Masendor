@@ -1,10 +1,3 @@
-from engine.uimenu import uimenu
-from engine import utility
-
-setup_list = utility.setup_list
-list_scroll = utility.list_scroll
-
-
 def menu_main(self, esc_press):
     if self.preset_map_button.event:  # preset map list menu
         self.menu_state = "preset_map"
@@ -48,7 +41,8 @@ def menu_main(self, esc_press):
             if self.team_selected == team.team:
                 team.change_select(True)
 
-        self.add_ui_updater(*self.map_select_button, self.custom_battle_map_list_box, self.custom_battle_faction_list_box,
+        self.add_ui_updater(*self.map_select_button, self.custom_battle_map_list_box,
+                            self.custom_battle_faction_list_box,
                             self.custom_map_option_box, self.unit_selector,
                             self.unit_selector.scroll, self.weather_custom_select, self.wind_custom_select,
                             self.night_battle_tick_box, self.unit_model_room)

@@ -1,7 +1,7 @@
 import os
 import sys
 
-from engine.uimenu import uimenu
+from engine.uimenu.uimenu import NameList
 
 current_dir = os.path.split(os.path.abspath(__file__))[0]
 main_dir = current_dir[:current_dir.rfind("\\") + 1].split("\\")
@@ -53,7 +53,7 @@ def list_scroll(mouse_scroll_up, mouse_scroll_down, listbox, current_row, name_l
     elif current_row + listbox.max_row_show - 1 >= len(name_list):
         current_row -= 1
     else:
-        setup_list(uimenu.NameList, current_row, name_list, name_group, listbox, ui_object, screen_scale, layer=layer,
+        setup_list(NameList, current_row, name_list, name_group, listbox, ui_object, screen_scale, layer=layer,
                    old_list=old_list)
         listbox.scroll.change_image(new_row=current_row, row_size=len(name_list))
 
@@ -70,7 +70,7 @@ def popup_list_open(popup_listbox, popup_namegroup, ui_class,
         popup_listbox.rect = popup_listbox.image.get_rect(bottomleft=new_rect)
     popup_listbox.namelist = new_list
     popup_listbox.action = action
-    setup_list(uimenu.NameList, current_row, new_list, popup_namegroup,
+    setup_list(NameList, current_row, new_list, popup_namegroup,
                popup_listbox, ui_class, screen_scale, layer=21)
 
     popup_listbox.scroll.pos = popup_listbox.rect.topright  # change position variable

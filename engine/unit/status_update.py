@@ -180,7 +180,8 @@ def status_update(self):
     # Apply effect from skill
     if self.skill_effect:
         for key, value in self.skill_effect.copy().items():
-            if "Action" not in value["Action Type"]:  # action skill type duration mean per attack action instead of time
+            if "Action" not in value[
+                "Action Type"]:  # action skill type duration mean per attack action instead of time
                 self.skill_duration[key] -= self.timer
                 if self.skill_duration[key] <= 0:  # skill end
                     self.skill_duration.pop(key)

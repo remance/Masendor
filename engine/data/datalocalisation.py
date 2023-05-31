@@ -1,10 +1,7 @@
 import os
 from pathlib import Path
 
-from engine import utility
-
-csv_read = utility.csv_read
-lore_csv_read = utility.lore_csv_read
+from engine.utility import csv_read, lore_csv_read
 
 
 class Localisation:
@@ -114,7 +111,8 @@ class Localisation:
                                                        file_campaign, file_map_name, "source.csv"),
                                           encoding="utf-8", mode="r") as edit_file:  # read source file
                                     lore_csv_read(edit_file,
-                                                  self.text[language]["preset_map"][campaign_id][file_map_name]["source"])
+                                                  self.text[language]["preset_map"][campaign_id][file_map_name][
+                                                      "source"])
                                 edit_file.close()
                 except FileNotFoundError:
                     pass

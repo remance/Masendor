@@ -1,6 +1,4 @@
-from engine import utility
-
-rotation_xy = utility.rotation_xy
+from engine.utility import rotation_xy
 
 
 def ai_unit(self):

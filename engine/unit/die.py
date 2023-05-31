@@ -1,6 +1,4 @@
-from engine.unit import unit
-
-die_command_action = unit.die_command_action
+from engine.unit.unit import die_command_action
 
 
 def die(self, how):

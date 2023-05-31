@@ -8,11 +8,7 @@ from pathlib import Path
 
 import numpy as np
 
-from engine import utility
-
-fcv = utility.filename_convert_readable
-stat_convert = utility.stat_convert
-load_images = utility.load_images
+from engine.utility import stat_convert, load_images, filename_convert_readable as fcv
 
 
 class GameData:
@@ -130,9 +126,10 @@ class TroopData(GameData):
             int_column = ("ID", "Troop Type", "Area of Effect", "Cost", "Charge Skill")  # value int only
             list_column = ("Action",)
             tuple_column = ("Status", "Enemy Status", "Effect Sprite", "AI Use Condition")  # value in tuple only
-            mod_column = ("Melee Attack Modifier", "Melee Defence Modifier", "Ranged Defence Modifier", "Speed Modifier",
-                          "Accuracy Modifier", "Range Modifier", "Melee Speed Modifier", "Reload Modifier", "Charge Modifier",
-                          "Critical Modifier", "Damage Modifier", "Weapon Impact Modifier")
+            mod_column = (
+            "Melee Attack Modifier", "Melee Defence Modifier", "Ranged Defence Modifier", "Speed Modifier",
+            "Accuracy Modifier", "Range Modifier", "Melee Speed Modifier", "Reload Modifier", "Charge Modifier",
+            "Critical Modifier", "Damage Modifier", "Weapon Impact Modifier")
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
@@ -416,9 +413,10 @@ class LeaderData(GameData):
                 int_column = ("Troop Type", "Range", "Area of Effect", "Cost", "Charge Skill")  # value int only
                 list_column = ("Action",)
                 tuple_column = ("Replace", "Status", "Enemy Status", "Effect Sprite", "AI Use Condition")
-                mod_column = ("Melee Attack Modifier", "Melee Defence Modifier", "Ranged Defence Modifier", "Speed Modifier",
-                              "Accuracy Modifier", "Range Modifier", "Melee Speed Modifier", "Reload Modifier", "Charge Modifier",
-                              "Critical Modifier", "Damage Modifier", "Weapon Impact Modifier")
+                mod_column = (
+                "Melee Attack Modifier", "Melee Defence Modifier", "Ranged Defence Modifier", "Speed Modifier",
+                "Accuracy Modifier", "Range Modifier", "Melee Speed Modifier", "Reload Modifier", "Charge Modifier",
+                "Critical Modifier", "Damage Modifier", "Weapon Impact Modifier")
                 int_column = [index for index, item in enumerate(header) if item in int_column]
                 list_column = [index for index, item in enumerate(header) if item in list_column]
                 tuple_column = [index for index, item in enumerate(header) if item in tuple_column]

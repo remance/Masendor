@@ -1,9 +1,7 @@
 import random
 
-from engine.battlemap import battlemap
-from engine import utility
-
-load_images = utility.load_images
+from engine.battlemap.battlemap import create_random_map
+from engine.utility import load_images
 
 
 def create_preview_map(self):
@@ -17,10 +15,10 @@ def create_preview_map(self):
             map_images = load_images(self.module_dir,
                                      subfolder=("map", "custom", self.battle_map_folder[self.current_map_select]))
     else:  # random map
-        terrain, feature, height = battlemap.create_random_map(self.battle_map_data.terrain_colour,
-                                                               self.battle_map_data.feature_colour,
-                                                               random.randint(1, 3), random.randint(4, 9),
-                                                               random.randint(1, 4))
+        terrain, feature, height = create_random_map(self.battle_map_data.terrain_colour,
+                                                     self.battle_map_data.feature_colour,
+                                                     random.randint(1, 3), random.randint(4, 9),
+                                                     random.randint(1, 4))
         map_images = {"base": terrain, "feature": feature, "height": height}
     self.map_preview.change_map(map_images["base"], map_images["feature"], map_images["height"])
     self.add_ui_updater(self.map_preview)

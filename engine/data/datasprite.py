@@ -2,14 +2,9 @@ import csv
 import os
 from pathlib import Path
 
-import pygame
+from pygame import Vector2
 
-from engine import utility
-
-apply_sprite_colour = utility.apply_sprite_colour
-load_images = utility.load_images
-stat_convert = utility.stat_convert
-fcv = utility.filename_convert_readable
+from engine.utility import apply_sprite_colour, load_images, stat_convert, filename_convert_readable as fcv
 
 direction_list = ("side",)
 
@@ -91,7 +86,7 @@ class TroopAnimationData:
                     if position == ["center"] or not position:
                         position = "center"
                     else:
-                        position = pygame.Vector2(position[0], position[1])
+                        position = Vector2(position[0], position[1])
 
                     self.weapon_joint_list[key] = position
             edit_file.close()

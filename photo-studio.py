@@ -183,7 +183,7 @@ class Studio(Game):
 
         TroopModel.containers = self.troop_model
         weather.MatterSprite.containers = self.weather_matter, self.sky_camera, self.weather_updater
-        weather.SpecialEffect.containers = self.weather_effect, self.sky_camera, self.weather_updater
+        weather.SpecialWeatherEffect.containers = self.weather_effect, self.sky_camera, self.weather_updater
         effect.Effect.containers = self.ground_camera
         uibattle.SpriteIndicator.containers = self.ground_camera
 

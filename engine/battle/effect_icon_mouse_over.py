@@ -1,7 +1,7 @@
-from engine.lorebook import lorebook
+from engine.lorebook.lorebook import Lorebook
 
-status_section = lorebook.Lorebook.status_section
-skill_section = lorebook.Lorebook.skill_section
+status_section = Lorebook.status_section
+skill_section = Lorebook.skill_section
 
 
 def effect_icon_mouse_over(self, icon_list, mouse_right):

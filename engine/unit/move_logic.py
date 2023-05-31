@@ -1,8 +1,7 @@
 from pygame import Vector2
 
-from engine import utility
+from engine.utility import rotation_xy
 
-rotation_xy = utility.rotation_xy
 infinity = float("inf")
 
 

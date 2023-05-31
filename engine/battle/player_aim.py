@@ -1,6 +1,6 @@
 from math import cos, sin, radians
 
-import pygame
+from pygame import Vector2
 
 
 def player_aim(self):
@@ -31,9 +31,8 @@ def player_aim(self):
             if self.player_input_state == "line aim":
                 angle = self.player_unit.set_rotate(self.command_cursor_pos)
                 distance = self.player_unit.base_pos.distance_to(self.command_cursor_pos)
-                base_target_pos = pygame.Vector2(
-                    this_unit.base_pos[0] - (distance * sin(radians(angle))),
-                    this_unit.base_pos[1] - (distance * cos(radians(angle))))
+                base_target_pos = Vector2(this_unit.base_pos[0] - (distance * sin(radians(angle))),
+                                          this_unit.base_pos[1] - (distance * cos(radians(angle))))
                 target_pos = (base_target_pos[0] * 5 * self.screen_scale[0],
                               base_target_pos[1] * 5 * self.screen_scale[1])
 

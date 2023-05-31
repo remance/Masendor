@@ -1,15 +1,11 @@
 import pygame
 
-from engine import utility
+from engine.utility import setup_list
 from engine.game import menu_custom_unit_setup
 from engine.uimenu import uimenu
 
 unit_change_team_unit = menu_custom_unit_setup.unit_change_team_unit
 leader_change_team_unit = menu_custom_unit_setup.leader_change_team_unit
-
-setup_list = utility.setup_list
-list_scroll = utility.list_scroll
-load_image = utility.load_image
 
 
 def menu_custom_leader_setup(self, esc_press):
@@ -252,7 +248,7 @@ def change_to_char_select_menu(self):
         who_todo = {key: value for key, value in self.leader_data.leader_list.items() if key == icon.who.troop_id}
         preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True)
         self.unit_model_room.add_preview_model(model=preview_sprite_pool[icon.who.troop_id]["sprite"],
-                                                  coa=icon.who.coa)
+                                               coa=icon.who.coa)
         self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos,
                                      selected=icon.who.base_pos)
         break

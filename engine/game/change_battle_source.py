@@ -1,14 +1,4 @@
-import os
-import csv
-from datetime import datetime, timedelta
-from engine.uimenu import uimenu
-from engine.uibattle import uibattle
-from engine import utility
-
-csv_read = utility.csv_read
-setup_list = utility.setup_list
-list_scroll = utility.list_scroll
-stat_convert = utility.stat_convert
+from engine.uibattle.uibattle import TempUnitIcon
 
 
 def change_battle_source(self):
@@ -55,7 +45,7 @@ def change_battle_source(self):
         icon.kill()
     self.preview_unit.empty()
 
-    self.preview_unit.add(uibattle.TempUnitIcon(self.team_selected, "None", None))
+    self.preview_unit.add(TempUnitIcon(self.team_selected, "None", None))
     self.setup_battle_unit(self.preview_unit, preview=self.team_selected)
 
     self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
@@ -64,10 +54,12 @@ def change_battle_source(self):
     for key2 in self.play_map_data["source"][self.map_source]:
         if "Team " in key2 and "Camp " not in key2:
             if type(self.play_map_data["source"][self.map_source][key2]) == int:
-                self.play_map_data["source"][self.map_source][key2] = [self.play_map_data["source"][self.map_source][key2]]
+                self.play_map_data["source"][self.map_source][key2] = [
+                    self.play_map_data["source"][self.map_source][key2]]
             elif type(self.play_map_data["source"][self.map_source][key2]) == str:
                 self.play_map_data["source"][self.map_source][key2] = [int(item) for item in
-                                                                       self.play_map_data["source"][self.map_source][key2].split(",")]
+                                                                       self.play_map_data["source"][self.map_source][
+                                                                           key2].split(",")]
             team_coa.append(self.play_map_data["source"][self.map_source][key2])
     self.create_team_coa(team_coa)
 

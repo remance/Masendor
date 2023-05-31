@@ -10,6 +10,11 @@ from pathlib import Path
 
 import pygame
 import pygame.freetype
+
+from pygame import Vector2, Color, Surface
+from pygame.mixer import Sound
+from pygame.transform import smoothscale
+
 from PIL import Image, ImageOps
 
 accept_image_types = ("png", "jpg", "jpeg", "svg", "gif", "bmp")
@@ -85,9 +90,8 @@ def load_image(directory, screen_scale, file, subfolder=""):
             new_subfolder = os.path.join(new_subfolder, folder)
     this_file = os.path.join(directory, new_subfolder, file)
     surface = pygame.image.load(this_file).convert_alpha()
-    surface = pygame.transform.smoothscale(surface,
-                                           (surface.get_width() * screen_scale[0],
-                                            surface.get_height() * screen_scale[1]))
+    surface = smoothscale(surface, (surface.get_width() * screen_scale[0],
+                                    surface.get_height() * screen_scale[1]))
     return surface
 
 
@@ -236,7 +240,7 @@ def load_sound(main_dir, file):
     :return: Pygame Sound
     """
     file = os.path.join(main_dir, "data", "sound", file)
-    sound = pygame.mixer.Sound(file)
+    sound = Sound(file)
     return sound
 
 
@@ -265,7 +269,7 @@ def edit_config(section, option, value, filename, config):
         config.write(configfile)
 
 
-def make_long_text(surface, text, pos, font, color=pygame.Color("black")):
+def make_long_text(surface, text, pos, font, color=Color("black")):
     """
     Blit long text into separate row of text
     :param surface: Input Pygame Surface
@@ -294,7 +298,7 @@ def make_long_text(surface, text, pos, font, color=pygame.Color("black")):
             y += word_height  # start on new row
 
 
-def text_render(text, font, gf_colour=pygame.Color("black"), o_colour=(255, 255, 255), opx=2):
+def text_render(text, font, gf_colour=Color("black"), o_colour=(255, 255, 255), opx=2):
     """
     Render text with background border
     :param text: Text strings
@@ -308,7 +312,7 @@ def text_render(text, font, gf_colour=pygame.Color("black"), o_colour=(255, 255,
     w = text_surface.get_width() + 2 * opx
     h = font.get_height()
 
-    osurf = pygame.Surface((w, h + 2 * opx)).convert_alpha()
+    osurf = Surface((w, h + 2 * opx)).convert_alpha()
     osurf.fill((0, 0, 0, 0))
 
     surface = osurf.copy()
@@ -391,7 +395,7 @@ def rotation_xy(origin, point, angle):
     px, py = point
     x = ox + cos(angle) * (px - ox) - sin(angle) * (py - oy)
     y = oy + sin(angle) * (px - ox) + cos(angle) * (py - oy)
-    return pygame.Vector2(x, y)
+    return Vector2(x, y)
 
 
 def set_rotate(self, base_target, convert=True):
@@ -445,22 +449,22 @@ def travel_to_map_border(pos, angle, map_size):
         y = (-pos[0]) * dy / dx + pos[1]
 
         if 0 <= y <= map_size[1]:
-            return pygame.Vector2((0, y))
+            return Vector2((0, y))
 
     if dx > 1.0e-16:  # right border
         y = (map_size[0] - pos[0]) * dy / dx + pos[1]
         if 0 <= y <= map_size[1]:
-            return pygame.Vector2((map_size[0], y))
+            return Vector2((map_size[0], y))
 
     if dy < 1.0e-16:  # top border
         x = (-pos[1]) * dx / dy + pos[0]
         if 0 <= x <= map_size[0]:
-            return pygame.Vector2((x, 0))
+            return Vector2((x, 0))
 
     if dy > 1.0e-16:  # bottom border
         x = (map_size[1] - pos[1]) * dx / dy + pos[0]
         if 0 <= x <= map_size[0]:
-            return pygame.Vector2((x, map_size[1]))
+            return Vector2((x, map_size[1]))
 
 
 def crop_sprite(sprite_pic):
@@ -471,8 +475,7 @@ def crop_sprite(sprite_pic):
 
     # Find optimal cropped sprite size and center offset
     size = sprite_pic.get_size()
-    data = pygame.image.tostring(sprite_pic,
-                                 "RGBA")  # convert image to string data for filtering effect
+    data = pygame.image.tostring(sprite_pic, "RGBA")  # convert image to string data for filtering effect
     data = Image.frombytes("RGBA", size, data)  # use PIL to get image data
     bbox = data.getbbox()
     if low_x0 > bbox[0]:
@@ -502,7 +505,7 @@ def crop_sprite(sprite_pic):
     center_y_offset = ((low_y0 + high_y1) / 2) + (((100 - low_y0) - (high_y1 - 100)) / 10)
     center_offset = (center[0] - center_x_offset, center[1] - center_y_offset)
 
-    # sprite_pic_new = pygame.Surface(size)
+    # sprite_pic_new = Surface(size)
     # sprite_pic_new.fill((0,0,0))
     # rect = sprite_pic.get_rect(topleft=(0, 0))
     # sprite_pic_new.blit(sprite_pic, rect)

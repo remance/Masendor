@@ -34,7 +34,8 @@ def menu_custom_map_select(self, esc_press):
                 icon.kill()
             self.unit_icon.empty()
 
-            self.remove_ui_updater(self.custom_battle_map_list_box, self.custom_map_option_box, self.night_battle_tick_box,
+            self.remove_ui_updater(self.custom_battle_map_list_box, self.custom_map_option_box,
+                                   self.night_battle_tick_box,
                                    self.weather_custom_select, self.wind_custom_select,
                                    self.custom_battle_faction_list_box)
 

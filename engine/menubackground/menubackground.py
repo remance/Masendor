@@ -1,5 +1,3 @@
-import pygame
-
 from pygame.transform import rotate
 
 from engine.uimenu.uimenu import UIMenu
@@ -35,15 +33,16 @@ class MenuActor(UIMenu):
         self.rect = self.image.get_rect(midbottom=self.pos)
 
     def update(self):
-        self.frame_timer += self.game.dt
-        if self.frame_timer >= self.animation_frame_play_time:
-            self.frame_timer = 0
-            if self.show_frame < len(self.current_animation) - 1:
-                self.show_frame += 1
-                self.image = self.current_animation[self.show_frame]["sprite"]
-            else:
-                self.show_frame = 0
-                self.image = self.current_animation[self.show_frame]["sprite"]
-            self.rect = self.image.get_rect(midbottom=self.pos)
+        if self.current_animation:  # play animation if more than 1 frame
+            self.frame_timer += self.game.dt
+            if self.frame_timer >= self.animation_frame_play_time:
+                self.frame_timer = 0
+                if self.show_frame < len(self.current_animation) - 1:
+                    self.show_frame += 1
+                    self.image = self.current_animation[self.show_frame]["sprite"]
+                else:
+                    self.show_frame = 0
+                    self.image = self.current_animation[self.show_frame]["sprite"]
+                self.rect = self.image.get_rect(midbottom=self.pos)
 
         # self.image = rotate(self.image, self.angle)

@@ -1,8 +1,6 @@
 import os
 
-from engine import utility
-
-fcv = utility.filename_convert_readable
+from engine.utility import filename_convert_readable as fcv
 
 
 def create_sound_effect_pool(self):

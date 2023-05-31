@@ -46,7 +46,8 @@ def add_weapon_stat(self):
                                                                   "Stat Modifier"])
 
             self.weapon_penetrate[set_index][weapon_index] = weapon_stat["Armour Penetration"] * \
-                                                             (1 + self.troop_data.equipment_grade_list[weapon[1]]["Stat Modifier"])
+                                                             (1 + self.troop_data.equipment_grade_list[weapon[1]][
+                                                                 "Stat Modifier"])
 
             if weapon_index == 1 and weapon_stat["Hand"] == 2:  # 2 handed weapon as sub weapon get attack speed penalty
                 self.original_weapon_speed[set_index][weapon_index] = (weapon_stat["Cooldown"] - (

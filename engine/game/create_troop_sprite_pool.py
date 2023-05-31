@@ -2,20 +2,12 @@ import hashlib
 import os
 import threading
 from random import choice
-from engine import utility
+from engine.utility import md5_dir, crop_sprite
 
 import pygame
-from PIL import Image
 
-from engine.game import create_troop_sprite
-from engine.data.datacacher import load_pickle_with_surfaces
-from engine.data.datacacher import save_pickle_with_surfaces
-
-md5_dir = utility.md5_dir
-crop_sprite = utility.crop_sprite
-
-default_sprite_size = create_troop_sprite.default_sprite_size
-create_troop_sprite = create_troop_sprite.create_troop_sprite
+from engine.game.create_troop_sprite import default_sprite_size
+from engine.data.datacacher import load_pickle_with_surfaces, save_pickle_with_surfaces
 
 
 def create_troop_sprite_pool(self, who_todo, preview=False, specific_preview=None, max_preview_size=200):
@@ -43,9 +35,11 @@ def inner_create_troop_sprite_pool(self, who_todo, sprite_pool_hash, preview=Fal
     animation_sprite_pool = {}
     status_animation_pool = {}
     weapon_common_type_list = tuple(set(["_" + value["Common Action"] + "_" for key, value in weapon_list.items() if
-                                         key != "" and type(value["Common Action"]) is not int]))  # common type animation set
+                                         key != "" and type(
+                                             value["Common Action"]) is not int]))  # common type animation set
     weapon_attack_type_list = tuple(set([value["Attack Action"] for key, value in weapon_list.items() if
-                                         key != "" and type(value["Attack Action"]) is not int]))  # attack animation set
+                                         key != "" and type(
+                                             value["Attack Action"]) is not int]))  # attack animation set
     who_todo = {key: value for key, value in who_todo.items() if value["Sprite ID"] != ""}  # skip one with no ID
     if not preview and len(who_todo) > 10:
         jobs = []
@@ -199,8 +193,10 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                 else:
                     animation = [this_animation for this_animation in animation if
                                  this_animation == specific_preview[0][:-2]]
-                if not any(ext in specific_preview[0] for ext in ("_Main_", "_Sub_", "_Both_")):  # no specific weapon input, use main one
-                    test_animation = [this_animation for this_animation in animation if weapon_common_action[weapon_set][0] in
+                if not any(ext in specific_preview[0] for ext in
+                           ("_Main_", "_Sub_", "_Both_")):  # no specific weapon input, use main one
+                    test_animation = [this_animation for this_animation in animation if
+                                      weapon_common_action[weapon_set][0] in
                                       this_animation]
                     if not test_animation:
                         animation = animation[0]
@@ -220,7 +216,8 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                 animation = [this_animation for this_animation in animation if
                              any(ext in this_animation for ext in
                                  ("_Default", "_Die", "_Flee", "_Damaged", "KnockDown", "_Music_", "_Menu_"
-                                  "_Standup", "_HeavyDamaged")) is False and "_Sub_" not in this_animation]
+                                                                                                   "_Standup",
+                                  "_HeavyDamaged")) is False and "_Sub_" not in this_animation]
                 if len(animation) > 0:
                     animation = choice(animation)  # random animation
                 else:  # no animation found, use race default
@@ -248,8 +245,7 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
             idle_animation_name = final_race_name + weapon_common_action[0][0] + "_Idle"
             if idle_animation_name not in self.unit_animation_data[race]:  # try any
                 idle_animation_name = final_race_name + "any_Idle"
-
-            if len(frame_data) > 1:
+            if type(frame_data) is list:
                 animation_sprite_pool[unit_id] = {}
                 for index, frame in enumerate(frame_data):
                     sprite_dict = self.create_troop_sprite(animation, this_unit["Size"], frame,

@@ -1,12 +1,13 @@
-import configparser
 import os
 
 import pygame
 import screeninfo
 
+from configparser import ConfigParser
+
 
 def create_config(self):
-    config = configparser.ConfigParser()
+    config = ConfigParser()
 
     screen = screeninfo.get_monitors()[0]
     screen_width = int(screen.width)

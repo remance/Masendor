@@ -1,9 +1,6 @@
 from math import radians
 
-from engine import utility
-
-rotation_xy = utility.rotation_xy
-travel_to_map_border = utility.travel_to_map_border
+from engine.utility import rotation_xy, travel_to_map_border
 
 retreat_angle = (radians(90), radians(270), radians(180), radians(0), radians(135),
                  radians(225), radians(45), radians(315))

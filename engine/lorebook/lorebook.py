@@ -1,7 +1,7 @@
 import pygame
 
 from engine.uimenu.uimenu import UIMenu
-from engine import utility
+from engine.utility import make_long_text, load_image
 
 # TODO paragraph syntax,
 
@@ -328,8 +328,6 @@ class Lorebook(UIMenu):
 
     def page_design(self):
         """Lore book format position of the text"""
-        make_long_text = utility.make_long_text
-
         stat = self.stat_data[self.subsection]
         lore = self.lore_data[self.subsection]
 
@@ -379,15 +377,15 @@ class Lorebook(UIMenu):
                     else:
                         if "FULLIMAGE:" in value:  # full image to whole two pages
                             filename = value[10:].split("\\")[-1]
-                            text_surface = utility.load_image(self.main_dir, self.screen_scale, filename,
-                                                              value[10:].replace(filename, ""))
+                            text_surface = load_image(self.main_dir, self.screen_scale, filename,
+                                                      value[10:].replace(filename, ""))
                             text_surface = pygame.transform.scale(text_surface,
                                                                   (self.image.get_width(), self.image.get_height()))
                             text_rect = description_surface.get_rect(topleft=(0, 0))
                         else:
                             filename = value[6:].split("\\")[-1]
-                            text_surface = utility.load_image(self.main_dir, self.screen_scale, filename,
-                                                              value[6:].replace(filename, ""))
+                            text_surface = load_image(self.main_dir, self.screen_scale, filename,
+                                                      value[6:].replace(filename, ""))
                             text_rect = description_surface.get_rect(topleft=(col, row))
                     self.image.blit(text_surface, text_rect)
 
@@ -410,7 +408,8 @@ class Lorebook(UIMenu):
                     if value != "":
                         if any(ext in key for ext in ("Sprite", "ImageID", "Sound", "Shake", "ID",
                                                       "Texture", "Spawn", "Travel", "Action", "After ",
-                                                      "Properties", "Condition")):  # key that will not be put in encyclopedia
+                                                      "Properties",
+                                                      "Condition")):  # key that will not be put in encyclopedia
                             pass
                         else:
                             if self.section != self.equipment_section:  # equipment section need to be processed differently
@@ -423,7 +422,8 @@ class Lorebook(UIMenu):
                                                               "Name"] \
                                                           + " " + self.troop_data.weapon_list[value[0]]["Name"]
                                         else:
-                                            create_text = self.localisation.grab_text(("ui", key)) + ": Standard Unarmed"
+                                            create_text = self.localisation.grab_text(
+                                                ("ui", key)) + ": Standard Unarmed"
 
                                     elif key == "Armour":  # armour text with quality
                                         if value:
@@ -435,7 +435,8 @@ class Lorebook(UIMenu):
                                             create_text = self.localisation.grab_text(("ui", key)) + ": No Armour"
 
                                     elif key == "Race":
-                                        create_text = self.localisation.grab_text(("ui", key)) + ": " + self.troop_data.race_list[value]["Name"]
+                                        create_text = self.localisation.grab_text(("ui", key)) + ": " + \
+                                                      self.troop_data.race_list[value]["Name"]
 
                                     elif key == "Mount":  # mount text with grade
                                         if value:
@@ -462,24 +463,29 @@ class Lorebook(UIMenu):
 
                                     if self.section == self.troop_section:  # troop section
                                         if key == "Grade":  # grade text instead of number
-                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + self.troop_data.grade_list[value]["Name"]
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + \
+                                                          self.troop_data.grade_list[value]["Name"]
 
                                         elif key == "Troop Type":
-                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + self.troop_data.troop_class_list[value][
-                                                "Name"]
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + \
+                                                          self.troop_data.troop_class_list[value][
+                                                              "Name"]
 
                                         elif "Skill" in key:  # skill text instead of number
                                             skill_list = ""
                                             if key == "Charge Skill":
                                                 if value in self.troop_data.skill_list:  # only include skill if exist in module
                                                     skill_list += self.troop_data.skill_list[value]["Name"]
-                                                create_text = self.localisation.grab_text(("ui", key)) + ": " + skill_list
+                                                create_text = self.localisation.grab_text(
+                                                    ("ui", key)) + ": " + skill_list
                                             elif 0 not in value:
                                                 for this_text in value:
                                                     if this_text in self.troop_data.skill_list:  # only include skill in module
-                                                        skill_list += self.troop_data.skill_list[this_text]["Name"] + ", "
+                                                        skill_list += self.troop_data.skill_list[this_text][
+                                                                          "Name"] + ", "
                                                 skill_list = skill_list[0:-2]
-                                                create_text = self.localisation.grab_text(("ui", key)) + ": " + skill_list
+                                                create_text = self.localisation.grab_text(
+                                                    ("ui", key)) + ": " + skill_list
                                             else:
                                                 create_text = ""
                                                 pass
@@ -505,27 +511,32 @@ class Lorebook(UIMenu):
 
                                     else:  # leader section
                                         if key in ("Melee Command", "Range Command", "Cavalry Command", "Combat"):
-                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + self.leader_text[value]
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + \
+                                                          self.leader_text[value]
 
                                         elif key == "Social Class":
-                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + self.leader_data.leader_class[value][
-                                                "Leader Social Class"]
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + \
+                                                          self.leader_data.leader_class[value][
+                                                              "Leader Social Class"]
 
                                         elif key == "Skill":  # skill text instead of number
                                             skill_list = ""
                                             if 0 not in value:
                                                 for this_text in value:
                                                     if this_text in self.leader_data.skill_list:  # only include skill in module
-                                                        skill_list += self.leader_data.skill_list[this_text]["Name"] + ", "
+                                                        skill_list += self.leader_data.skill_list[this_text][
+                                                                          "Name"] + ", "
                                                 skill_list = skill_list[0:-2]
-                                                create_text = self.localisation.grab_text(("ui", key)) + ": " + skill_list
+                                                create_text = self.localisation.grab_text(
+                                                    ("ui", key)) + ": " + skill_list
                                             else:
                                                 create_text = ""
                                                 pass
 
                                         elif key == "Formation":
-                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + str(value).replace("[", "").replace("]",
-                                                                                                                                                ""). \
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + str(
+                                                value).replace("[", "").replace("]",
+                                                                                ""). \
                                                 replace("'", "")
 
                                         elif key in ("Size", "True ID", "Sprite ID"):
@@ -545,7 +556,8 @@ class Lorebook(UIMenu):
                                             pass
                                     if self.section == self.skill_section:
                                         if key == "Troop Type":
-                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + ("Any", "Infantry", "Cavalry")[value]
+                                            create_text = self.localisation.grab_text(("ui", key)) + ": " + \
+                                                          ("Any", "Infantry", "Cavalry")[value]
 
                                     if value in (0, 1):
                                         create_text = ""
@@ -595,15 +607,15 @@ class Lorebook(UIMenu):
                             for this_syntax in syntax:
                                 if "FULLIMAGE:" in this_syntax:  # blit image to whole lore book image
                                     filename = this_syntax[10:].split("\\")[-1]
-                                    image_surface = utility.load_image(self.module_dir, self.screen_scale, filename,
-                                                                       this_syntax[10:].replace(filename, "").split("\\"))
+                                    image_surface = load_image(self.module_dir, self.screen_scale, filename,
+                                                               this_syntax[10:].replace(filename, "").split("\\"))
                                     image_surface = pygame.transform.scale(image_surface, (self.image.get_width(),
                                                                                            self.image.get_height()))
                                     self.image.blit(image_surface, image_surface.get_rect(topleft=(0, 0)))
                                 elif "IMAGE:" in this_syntax:  # blit image to paragraph
                                     filename = this_syntax[6:].split("\\")[-1]
-                                    image_surface = utility.load_image(self.module_dir, self.screen_scale, filename,
-                                                                       this_syntax[6:].replace(filename, "").split("\\"))
+                                    image_surface = load_image(self.module_dir, self.screen_scale, filename,
+                                                               this_syntax[6:].replace(filename, "").split("\\"))
                                     self.image.blit(image_surface, image_surface.get_rect(topleft=(col, row)))
                                 elif "FONT:" in this_syntax:
                                     new_font = this_syntax[4:].split("\\")[0]
@@ -722,7 +734,8 @@ def lorebook_process(self, esc_press):
                 self.encyclopedia.change_section(button_index, self.lore_name_list, self.subsection_name,
                                                  self.tag_filter_name, self.lore_name_list.scroll,
                                                  self.filter_tag_list, self.filter_tag_list.scroll,
-                                                 self.page_button, self.main_ui_updater)  # change to section of that button
+                                                 self.page_button,
+                                                 self.main_ui_updater)  # change to section of that button
 
             elif button_index == "close" or esc_press:  # Close button
                 close = True

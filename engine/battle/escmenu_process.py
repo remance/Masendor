@@ -1,8 +1,8 @@
-import pygame
+from pygame import Vector2
 
-from engine import utility
+from pygame.mixer import music
 
-edit_config = utility.edit_config
+from engine.utility import edit_config
 
 
 def escmenu_process(self, esc_press: bool):
@@ -70,13 +70,13 @@ def escmenu_process(self, esc_press: bool):
 
                 elif button.text == "Apply":  # apply button, save the setting
                     self.old_setting = self.master_volume  # save mixer volume
-                    pygame.mixer.music.set_volume(self.master_volume)  # set new music player volume
+                    music.set_volume(self.master_volume)  # set new music player volume
                     edit_config("USER", "master_volume", self.esc_slider_menu[0].value, "configuration.ini",
                                 self.config)  # save to config file
 
                 elif button.text == "Cancel":  # cancel button, revert the setting to the last saved one
                     self.master_volume = self.old_setting  # revert to old setting
-                    pygame.mixer.music.set_volume(self.master_volume)  # set new music player volume
+                    music.set_volume(self.master_volume)  # set new music player volume
                     self.esc_slider_menu[0].player_input(self.esc_value_boxes[0],
                                                          forced_value=True)  # update slider bar
                     self.battle_menu.change_mode("menu")  # go back to start_set esc menu
@@ -90,7 +90,7 @@ def escmenu_process(self, esc_press: bool):
 def back_to_battle_state(self):
     if self.battle_menu.mode == "option":  # option menu
         self.master_volume = self.old_setting
-        pygame.mixer.music.set_volume(self.master_volume)
+        music.set_volume(self.master_volume)
         self.esc_slider_menu[0].player_input(self.esc_value_boxes[0], forced_value=True)
         self.battle_menu.change_mode("menu")
     self.remove_ui_updater(self.battle_menu, *self.battle_menu_button, *self.esc_option_menu_button,
@@ -100,4 +100,4 @@ def back_to_battle_state(self):
     self.add_ui_updater(self.player1_battle_cursor)
 
     if self.player1_key_control != "keyboard":
-        self.player1_battle_cursor.pos = pygame.Vector2(self.screen_rect.width / 2, self.screen_rect.height / 2)
+        self.player1_battle_cursor.pos = Vector2(self.screen_rect.width / 2, self.screen_rect.height / 2)

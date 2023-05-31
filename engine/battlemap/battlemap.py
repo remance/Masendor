@@ -186,11 +186,11 @@ class FinalMap(BattleMap):
 
         self.empty_texture = pygame.Surface((0, 0))  # empty texture image
         self.camp_texture = load_image(self.module_dir, (1, 1), "camp.png",
-                                     ("map", "texture"))  # war camp texture image
+                                       ("map", "texture"))  # war camp texture image
 
         self.map_texture = []
         self.load_texture_list = [item["Name"] for item in self.feature_mod.values() if
-                               item["Name"] != ""]
+                                  item["Name"] != ""]
 
         for index, folder in enumerate(self.load_texture_list):
             images = load_images(self.module_dir, subfolder=("map", "texture", fcv(folder, revert=True)),

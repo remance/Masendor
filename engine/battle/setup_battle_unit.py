@@ -1,7 +1,4 @@
-from engine.unit import unit
-from engine import utility
-
-stat_convert = utility.stat_convert
+from engine.unit.unit import PreviewUnit, Leader, Troop
 
 
 def setup_battle_unit(self, team_unit_list, preview=None):
@@ -37,19 +34,19 @@ def setup_battle_unit(self, team_unit_list, preview=None):
                                  data["Troop"].items()}
 
             if preview:  # make only leader for preview
-                team_unit_list.add(unit.PreviewUnit(data["Leader ID"], self.last_troop_game_id, data["ID"],
-                                                    data["Team"], data["POS"], data["Angle"], data["Start Health"],
-                                                    data["Start Stamina"], None,
-                                                    self.faction_data.coa_list[data["Faction"]]))
+                team_unit_list.add(PreviewUnit(data["Leader ID"], self.last_troop_game_id, data["ID"],
+                                               data["Team"], data["POS"], data["Angle"], data["Start Health"],
+                                               data["Start Stamina"], None,
+                                               self.faction_data.coa_list[data["Faction"]]))
             else:
                 leader = None
                 if data["Leader"] != 0 and leader_unit[data["Leader"]].team == data["Team"]:
                     # avoid different team leader assign, in case of data mistake
                     leader = leader_unit[data["Leader"]]
 
-                add_leader = unit.Leader(data["Leader ID"], self.last_troop_game_id, data["ID"], data["Team"],
-                                         data["POS"], data["Angle"], data["Start Health"], data["Start Stamina"],
-                                         leader, self.faction_data.coa_list[data["Faction"]])
+                add_leader = Leader(data["Leader ID"], self.last_troop_game_id, data["ID"], data["Team"],
+                                    data["POS"], data["Angle"], data["Start Health"], data["Start Stamina"],
+                                    leader, self.faction_data.coa_list[data["Faction"]])
                 add_leader.troop_reserve_list = {key: value[1] for key, value in troop_number_list.items()}
                 add_leader.troop_dead_list = {key: 0 for key, value in troop_number_list.items()}
 
@@ -57,7 +54,7 @@ def setup_battle_unit(self, team_unit_list, preview=None):
                 self.last_troop_game_id += 1
                 for key, value in troop_number_list.items():
                     for _ in range(value[0]):
-                        unit.Troop(key, self.last_troop_game_id, None, data["Team"],
-                                   data["POS"], data["Angle"], data["Start Health"], data["Start Stamina"], add_leader,
-                                   self.faction_data.coa_list[data["Faction"]])
+                        Troop(key, self.last_troop_game_id, None, data["Team"],
+                              data["POS"], data["Angle"], data["Start Health"], data["Start Stamina"], add_leader,
+                              self.faction_data.coa_list[data["Faction"]])
                         self.last_troop_game_id += 1

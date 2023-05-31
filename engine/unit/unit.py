@@ -2,18 +2,17 @@ from math import radians
 from random import random, getrandbits
 
 from pygame import sprite, font, draw, Color, Vector2, Surface, SRCALPHA
+
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 
+from engine.utility import set_rotate
 from engine.uibattle.uibattle import SkillAimTarget
-from engine import utility
 
 rotation_list = (90, -90)
 rotation_name = ("l_side", "r_side")
 rotation_dict = {key: rotation_name[index] for index, key in enumerate(rotation_list)}
-
-clean_object = utility.clean_object
 
 infinity = float("inf")
 
@@ -100,7 +99,7 @@ class Unit(sprite.Sprite):
     sound_effect_pool = None
     team_colour = None
 
-    set_rotate = utility.set_rotate
+    set_rotate = set_rotate
 
     DiagonalMovement = DiagonalMovement
     Grid = Grid
@@ -545,7 +544,8 @@ class Unit(sprite.Sprite):
             else:  # Use Unknown leader image if there is no specific portrait in data
                 self.portrait = self.leader_data.images["other"].copy()
                 name = self.name.split(" ")[0]
-                text_font = font.Font(self.battle.game.ui_font["text_paragraph"], int(90 / (len(name) / 3) * self.screen_scale[1]))
+                text_font = font.Font(self.battle.game.ui_font["text_paragraph"],
+                                      int(90 / (len(name) / 3) * self.screen_scale[1]))
                 text_image = text_font.render(name, True, Color("white"))
                 text_rect = text_image.get_rect(center=(self.portrait.get_width() / 2,
                                                         self.portrait.get_height() / 1.3))
@@ -1056,7 +1056,8 @@ class Unit(sprite.Sprite):
                         self.ai_combat()
                         if self.at_camp and self.health < self.max_health:  # in camp
                             # AI wait until heal to max health before moving somewhere else
-                            if self.at_camp and self.command_target.distance_to(self.base_pos) < self.current_camp_radius:
+                            if self.at_camp and self.command_target.distance_to(
+                                    self.base_pos) < self.current_camp_radius:
                                 self.ai_move()
                         else:
                             self.ai_move()

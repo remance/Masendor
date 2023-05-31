@@ -3,16 +3,14 @@ from math import cos, sin, radians
 from random import choice, uniform
 from pygame import sprite, mixer, Vector2
 
-from engine import utility
+from engine.utility import clean_object, set_rotate
 from engine.effect import adjust_sprite, cal_dmg, cal_charge_hit, cal_effect_hit, cal_melee_hit, cal_range_hit, \
     find_random_direction, hit_register, play_animation
 
-direction_angle = utility.direction_angle
-
 
 class Effect(sprite.Sprite):
-    clean_object = utility.clean_object
-    set_rotate = utility.set_rotate
+    clean_object = clean_object
+    set_rotate = set_rotate
 
     effect_sprite_pool = None
     effect_animation_pool = None

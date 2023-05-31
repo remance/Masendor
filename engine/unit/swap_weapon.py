@@ -47,8 +47,10 @@ def swap_weapon(self, new_weapon_set):
 
     for weapon_index, weapon in enumerate(self.weapon_set[self.equipped_weapon]):
         weapon_stat = self.equipped_weapon_data[weapon_index]
-        self.base_melee_def += weapon_stat["Defence"] * (1 + self.troop_data.equipment_grade_list[weapon[1]]["Stat Modifier"])
-        self.base_range_def += weapon_stat["Defence"] * (1 + self.troop_data.equipment_grade_list[weapon[1]]["Stat Modifier"])
+        self.base_melee_def += weapon_stat["Defence"] * (
+                    1 + self.troop_data.equipment_grade_list[weapon[1]]["Stat Modifier"])
+        self.base_range_def += weapon_stat["Defence"] * (
+                    1 + self.troop_data.equipment_grade_list[weapon[1]]["Stat Modifier"])
         if weapon_stat["Skill"]:
             self.skill.append(weapon_stat["Skill"][0])  # take only first skill
             self.weapon_skill[weapon_index] = weapon_stat["Skill"][0]

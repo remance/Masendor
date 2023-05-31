@@ -5,29 +5,17 @@ import time
 import pygame
 from pygame.locals import *
 
-from engine.weather import weather
-from engine.camera import camera
-from engine.unit import unit
-from engine.effect import effect
-from engine.data import datasprite
-from engine.uibattle import uibattle
-from engine.drama import drama
+from engine.weather.weather import Weather
+from engine.camera.camera import Camera
+from engine.unit.unit import Unit
+from engine.effect.effect import Effect
+from engine.uibattle.uibattle import BattleCursor, FPScount, SkillCardIcon, AimTarget, BattleDone, ButtonUI, EventLog, \
+    UIScroll, MiniMap
+from engine.drama.drama import TextDrama
 from engine.ai import ai
-from engine.battle.setup import make_battle_ui, make_esc_menu
-from engine import utility
-
-make_battle_ui = make_battle_ui.make_battle_ui
-make_esc_menu = make_esc_menu.make_esc_menu
-direction_list = datasprite.direction_list
-
-load_image = utility.load_image
-load_images = utility.load_images
-csv_read = utility.csv_read
-load_sound = utility.load_sound
-edit_config = utility.edit_config
-setup_list = utility.setup_list
-number_to_minus_or_plus = utility.number_to_minus_or_plus
-clean_group_object = utility.clean_group_object
+from engine.battle.setup.make_battle_ui import make_battle_ui
+from engine.battle.setup.make_esc_menu import make_esc_menu
+from engine.utility import load_images, number_to_minus_or_plus, clean_group_object, convert_str_time
 
 script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
 
@@ -289,15 +277,15 @@ class Battle:
                                               self.best_depth)  # set up self screen
 
         # Assign battle variable to some classes
-        unit.Unit.sound_effect_pool = self.sound_effect_pool
-        effect.Effect.sound_effect_pool = self.sound_effect_pool
+        Unit.sound_effect_pool = self.sound_effect_pool
+        Effect.sound_effect_pool = self.sound_effect_pool
 
         # Create battle ui
 
         cursor_images = load_images(self.module_dir, subfolder=("ui", "cursor_battle"))  # no need to scale cursor
-        self.player1_battle_cursor = uibattle.BattleCursor(cursor_images, self.player1_key_control)
+        self.player1_battle_cursor = BattleCursor(cursor_images, self.player1_key_control)
 
-        self.fps_count = uibattle.FPScount()  # FPS number counter
+        self.fps_count = FPScount()  # FPS number counter
         self.add_ui_updater(self.fps_count)
 
         battle_ui_image = load_images(self.module_dir, screen_scale=self.screen_scale, subfolder=("ui", "battle_ui"))
@@ -312,38 +300,37 @@ class Battle:
         self.command_ui = battle_ui_dict["command_ui"]
         self.add_ui_updater(self.command_ui)
 
-        self.current_weather = weather.Weather(self.time_ui, 4, 0, 0, None)
-        weather.Weather.wind_compass_images = {"wind_compass": battle_ui_image["wind_compass"],
-                                               "wind_arrow": battle_ui_image["wind_arrow"]}
+        self.current_weather = Weather(self.time_ui, 4, 0, 0, None)
+        Weather.wind_compass_images = {"wind_compass": battle_ui_image["wind_compass"],
+                                       "wind_arrow": battle_ui_image["wind_arrow"]}
 
         # 4 Skill icons UI
-        uibattle.SkillCardIcon(self.skill_images["0"], (self.command_ui.image.get_width() +
-                                                        self.skill_images["0"].get_width() / 2, 0), "0")
-        uibattle.SkillCardIcon(self.skill_images["0"], (self.command_ui.image.get_width() +
-                                                        self.skill_images["0"].get_width() * 2, 0), "1")
-        uibattle.SkillCardIcon(self.skill_images["0"], (self.command_ui.image.get_width() +
-                                                        self.skill_images["0"].get_width() * 3.5, 0), "2")
-        uibattle.SkillCardIcon(self.skill_images["0"], (self.command_ui.image.get_width() +
-                                                        self.skill_images["0"].get_width() * 5, 0), "3")
+        SkillCardIcon(self.skill_images["0"], (self.command_ui.image.get_width() +
+                                               self.skill_images["0"].get_width() / 2, 0), "0")
+        SkillCardIcon(self.skill_images["0"], (self.command_ui.image.get_width() +
+                                               self.skill_images["0"].get_width() * 2, 0), "1")
+        SkillCardIcon(self.skill_images["0"], (self.command_ui.image.get_width() +
+                                               self.skill_images["0"].get_width() * 3.5, 0), "2")
+        SkillCardIcon(self.skill_images["0"], (self.command_ui.image.get_width() +
+                                               self.skill_images["0"].get_width() * 5, 0), "3")
 
-        uibattle.AimTarget.aim_images = {0: battle_ui_image["aim_0"], 1: battle_ui_image["aim_1"],
-                                         2: battle_ui_image["aim_2"], 3: pygame.Surface((0, 0))}
+        AimTarget.aim_images = {0: battle_ui_image["aim_0"], 1: battle_ui_image["aim_1"],
+                                2: battle_ui_image["aim_2"], 3: pygame.Surface((0, 0))}
 
-        self.battle_done_box = uibattle.BattleDone((self.screen_rect.width / 2, self.screen_rect.height / 2),
-                                                   battle_ui_image["end_box"], battle_ui_image["result_box"])
-        self.battle_done_button = uibattle.ButtonUI(battle_ui_image["end_button"], layer=19)
+        self.battle_done_box = BattleDone((self.screen_rect.width / 2, self.screen_rect.height / 2),
+                                          battle_ui_image["end_box"], battle_ui_image["result_box"])
+        self.battle_done_button = ButtonUI(battle_ui_image["end_button"], layer=19)
         self.battle_done_button.change_pos(
             (self.battle_done_box.pos[0], self.battle_done_box.box_image.get_height() * 2))
 
-        drama.TextDrama.images = load_images(self.module_dir, screen_scale=self.screen_scale,
-                                             subfolder=("ui", "popup_ui", "drama_text"))
-        drama.TextDrama.screen_rect = self.screen_rect
-        self.drama_text = drama.TextDrama()  # message at the top of screen that show up for important event
+        TextDrama.images = load_images(self.module_dir, screen_scale=self.screen_scale,
+                                       subfolder=("ui", "popup_ui", "drama_text"))
+        self.drama_text = TextDrama()  # message at the top of screen that show up for important event
 
         # Battle event log
-        self.event_log = uibattle.EventLog(battle_ui_image["event_log"], (0, self.screen_rect.height))
-        uibattle.UIScroll(self.event_log, self.event_log.rect.topright)  # event log scroll
-        unit.Unit.event_log = self.event_log  # Assign event_log to unit class to broadcast event to the log
+        self.event_log = EventLog(battle_ui_image["event_log"], (0, self.screen_rect.height))
+        UIScroll(self.event_log, self.event_log.rect.topright)  # event log scroll
+        Unit.event_log = self.event_log  # Assign event_log to unit class to broadcast event to the log
         self.add_ui_updater(self.event_log.scroll)
 
         # Battle ESC menu
@@ -354,7 +341,7 @@ class Battle:
         self.esc_slider_menu = esc_menu_dict["esc_slider_menu"]
         self.esc_value_boxes = esc_menu_dict["esc_value_boxes"]
 
-        self.mini_map = uibattle.MiniMap((self.screen_rect.width, self.screen_rect.height))
+        self.mini_map = MiniMap((self.screen_rect.width, self.screen_rect.height))
         self.add_ui_updater(self.mini_map)
 
         # Create the game camera
@@ -372,7 +359,7 @@ class Battle:
                                       self.camera_pos[1] - self.center_screen[
                                           1])  # calculate top left corner of camera position
 
-        self.camera = camera.Camera(self.shown_camera_pos, self.screen_rect)
+        self.camera = Camera(self.shown_camera_pos, self.screen_rect)
 
         self.clock = pygame.time.Clock()  # Game clock to keep track of realtime pass
 
@@ -402,7 +389,7 @@ class Battle:
 
         # Load weather schedule
         self.weather_event = [item.copy() for item in self.play_source_data["weather"]].copy()
-        utility.convert_str_time(self.weather_event)
+        convert_str_time(self.weather_event)
         self.weather_playing = self.weather_event[0][1]  # used as the reference for map starting time
 
         # Random music played from list
@@ -444,7 +431,7 @@ class Battle:
                 map_event[key] = map_event[key].copy()  # make a copy to prevent replacement
                 if key in map_event_text:
                     map_event[key]["Text"] = map_event_text[key]["Text"]
-        uibattle.EventLog.map_event = map_event
+        EventLog.map_event = map_event
 
         self.event_log.make_new_log()  # reset old event log
 
@@ -643,9 +630,10 @@ class Battle:
                             if hat_name in self.player1_key_bind_name:
                                 self.player1_key_press[self.player1_key_bind_name[hat_name]] = True
 
-            self.base_cursor_pos = pygame.Vector2((self.player1_battle_cursor.pos[0] - self.center_screen[0] + self.camera_pos[0]),
-                                                  (self.player1_battle_cursor.pos[1] - self.center_screen[1] + self.camera_pos[
-                                                      1]))  # mouse pos on the map based on camera position
+            self.base_cursor_pos = pygame.Vector2(
+                (self.player1_battle_cursor.pos[0] - self.center_screen[0] + self.camera_pos[0]),
+                (self.player1_battle_cursor.pos[1] - self.center_screen[1] + self.camera_pos[
+                    1]))  # mouse pos on the map based on camera position
             self.battle_cursor_pos = self.base_cursor_pos / 5  # mouse pos on the map at current camera zoom scale
             self.command_cursor_pos = pygame.Vector2(self.battle_cursor_pos[0] / self.screen_scale[0],
                                                      self.battle_cursor_pos[1] / self.screen_scale[
@@ -769,7 +757,8 @@ class Battle:
                 if esc_press:  # open/close menu
                     if self.game_state == "battle":  # in battle
                         self.game_state = "menu"  # open menu
-                        self.add_ui_updater(self.battle_menu, self.battle_menu_button)  # add menu and its buttons to drawer
+                        self.add_ui_updater(self.battle_menu,
+                                            self.battle_menu_button)  # add menu and its buttons to drawer
                         esc_press = False  # reset esc press, so it not stops esc menu when open
                         self.add_ui_updater(self.cursor)
 
@@ -925,7 +914,8 @@ class Battle:
                                             (0, self.event_log.map_event["wt" + str(key)]["Text"]))
                                     self.battle_done_box.pop(self.faction_data.faction_list[self.play_source_data[
                                         "Team Faction" + str(key)][0]]["Name"], self.coa_list[
-                                                                 int(self.play_source_data["Team Faction" + str(key)][0])])
+                                                                 int(self.play_source_data["Team Faction" + str(key)][
+                                                                         0])])
                                     break
 
                         self.battle_done_button.rect = self.battle_done_button.image.get_rect(
@@ -933,7 +923,8 @@ class Battle:
                         self.add_ui_updater(self.battle_done_box, self.battle_done_button)
                     else:
                         if self.battle_done_button.event_press:
-                            coa_list = [self.coa_list[self.play_source_data[key][0]] for key in self.play_source_data if "Team Faction"
+                            coa_list = [self.coa_list[self.play_source_data[key][0]] for key in self.play_source_data if
+                                        "Team Faction"
                                         in key if self.play_source_data[key]]
                             if not self.battle_done_box.result_showing:  # show battle result stat
                                 faction_name = {key: self.faction_data.faction_list[self.play_source_data[

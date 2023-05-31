@@ -3,10 +3,8 @@ from random import choice, uniform, randint
 
 from pygame import Vector2
 
-from engine import utility
+from engine.utility import convert_degree_to_360
 from engine.effect.effect import MeleeDamageEffect, RangeDamageEffect, EffectDamageEffect
-
-convert_degree_to_360 = utility.convert_degree_to_360
 
 
 def attack(self, attack_type):

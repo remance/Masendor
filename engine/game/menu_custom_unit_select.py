@@ -78,7 +78,7 @@ def menu_custom_unit_select(self, esc_press):
                                     key == icon.who.troop_id}
                         preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True)
                         self.unit_model_room.add_preview_model(model=preview_sprite_pool[icon.who.troop_id]["sprite"],
-                                                                  coa=icon.who.coa)
+                                                               coa=icon.who.coa)
                         self.map_preview.change_mode(1, team_pos_list=self.team_pos,
                                                      camp_pos_list=self.camp_pos,
                                                      selected=icon.who.base_pos)

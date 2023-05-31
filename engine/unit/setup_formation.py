@@ -1,8 +1,6 @@
 import numpy as np
 
-from engine import utility
-
-rotation_xy = utility.rotation_xy
+from engine.utility import rotation_xy
 
 formation_density_distance = {"Very Tight": 2, "Tight": 4,
                               "Very Loose": 15, "Loose": 8}
