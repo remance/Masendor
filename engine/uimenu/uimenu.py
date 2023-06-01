@@ -955,22 +955,22 @@ class CampaignListAdapter(ListAdapterHideExpand):
         self.game = Game.game
         self.localisation = Game.localisation
         self.campaign_map_list = []
-        self.campaign_map_index_list = []
+        self.campaign_map_index_list = {}
         for campaign_file_name in map_data:  # add campaign
             campaign_name = self.localisation.grab_text(key=("preset_map", "info", campaign_file_name, "Name"))
             self.campaign_map_list.append(campaign_name)
-            self.campaign_map_index_list.append(campaign_file_name)
             for map_file_name in map_data[campaign_file_name]:  # add map
                 map_name = self.localisation.grab_text(key=("preset_map", campaign_file_name,
                                                             "info", map_file_name, "Name"))
                 self.campaign_map_list.append("> " + map_name)
-                self.campaign_map_index_list.append(map_file_name)
                 for source_file_name in map_data[campaign_file_name][map_file_name]["source"]:  # add source
                     source_name = self.localisation.grab_text(key=("preset_map", campaign_file_name,
                                                                    map_file_name, "source", int(source_file_name),
                                                                    "Source"))
+                    self.campaign_map_index_list[len(self.campaign_map_list)] = (campaign_name, map_name, source_name)
                     self.campaign_map_list.append(">> " + source_name)
-                    self.campaign_map_index_list.append(source_file_name)
+
+
         ListAdapterHideExpand.__init__(self, self.campaign_map_list, _self, replace_on_select=replace_on_select)
 
         # try make the list here. set up so you know what index correspond to what. if index is source than make sure we store battle as well on that index
@@ -980,6 +980,9 @@ class CampaignListAdapter(ListAdapterHideExpand):
         pass
 
     def on_select(self, item_index, item_text):
+
+
+        actual_index = self.get_visible_index_actual_index()[item_index]
 
         # detect if click on a source, than make sure that the battle and source is loaded.
 
@@ -995,12 +998,13 @@ class CampaignListAdapter(ListAdapterHideExpand):
 
         # same goes for click on campaign
         if ">>" in item_text:  # click on source, need some way to find what this source belong to which map
-            source_index = self.campaign_map_index_list[item_index]
+            source_index = self.campaign_map_index_list[actual_index]
+            print("load:", source_index)
             self.game.current_map_select = item_index
             self.game.map_selected = self.game.preset_map_folder[self.game.current_map_select]
             self.game.campaign_selected = self.game.battle_campaign[self.game.map_selected]
-
-        super.on_select()
+        else:
+            super().on_select(item_index, item_text)
 
 
 class TickBox(UIMenu):
