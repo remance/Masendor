@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 from engine.weather.weather import Weather
-from engine.utility import stat_convert, load_images, csv_read, filename_convert_readable as fcv
+from engine.utility import stat_convert, load_images, csv_read, sort_list_dir_with_str, filename_convert_readable as fcv
 
 from engine.data.datastat import GameData
 
@@ -154,6 +154,8 @@ class BattleMapData(GameData):
 
         read_folder = Path(os.path.join(self.module_dir, "map", "preset"))
         sub1_directories = [x for x in read_folder.iterdir() if x.is_dir()]
+        sub1_directories = sort_list_dir_with_str(sub1_directories,
+                                                  tuple(self.localisation.text["en"]["preset_map"]["info"].keys()))
 
         self.preset_map_list = []  # map name list for map selection list
         self.preset_map_folder = []  # folder for reading later
@@ -165,6 +167,8 @@ class BattleMapData(GameData):
             read_folder = Path(os.path.join(self.module_dir, "map", "preset", file_campaign))
             campaign_file_name = os.sep.join(os.path.normpath(file_campaign).split(os.sep)[-1:])
             sub2_directories = [x for x in read_folder.iterdir() if x.is_dir()]
+            sub2_directories = sort_list_dir_with_str(sub2_directories,
+                                                      tuple(self.localisation.text["en"]["preset_map"][campaign_file_name]["info"].keys()))
             campaign_name = self.localisation.grab_text(key=("preset_map", "info", campaign_file_name, "Name"))
             self.campaign_map_list.append(campaign_name)
             for file_map in sub2_directories:

@@ -730,6 +730,18 @@ def md5_dir(directory):
     return md5_update_from_dir(directory, hashlib.md5()).hexdigest()
 
 
+def sort_list_dir_with_str(dir_list, str_list):
+    sorted_dir = []
+    for index in range(len(str_list)):
+        for x in dir_list:
+            if os.path.normpath(x).split(os.sep)[-1:][0] == str_list[index]:
+                sorted_dir.append(x)
+    for item in dir_list:  # add item not in already sorted to the end of list
+        if item not in sorted_dir:
+            sorted_dir.append(item)
+    return sorted_dir
+
+
 def clean_group_object(groups):
     """Clean all attributes of every object in group in list"""
     for group in groups:

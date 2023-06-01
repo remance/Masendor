@@ -885,7 +885,7 @@ class ListAdapterHideExpand:
     def __init__(self, _list, _self, replace_on_select=None):
         self.actual_list = actual_list = _list
         self.actual_list_open_index = [False for element in actual_list]
-        self.actual_list_level = [ self.get_level_by_str(element) for element in actual_list ]       
+        self.actual_list_level = [ self.get_level_by_str(element) for element in actual_list ]
  
     @classmethod
     def get_level_by_str(cls, _str):
@@ -926,7 +926,10 @@ class ListAdapterHideExpand:
         if item >= len(r): return None
 
         actual_index = self.get_visible_index_actual_index()[item]
-        return ("O " if self.actual_list_open_index[actual_index] else "") + r[item]
+        if self.actual_list_open_index[actual_index]:
+            return r[item].replace(">", "|")
+        else:
+            return r[item]
 
     def get_visible_index_actual_index(self):
         r = dict()
@@ -1336,7 +1339,6 @@ class ListUI(UIMenu, Containable):
         item_height = self.get_item_height()
         size = self.rect[2:]
         self.image = make_image_by_frame(self.frame, size)
-        font = Font(self.ui_font["main_button"], 18)
         item_height = self.get_item_height()
 
         # draw items
@@ -1349,8 +1351,19 @@ class ListUI(UIMenu, Containable):
                     color = "#cbc2a9"
 
                 draw.rect(self.image, color, (6, 6 + i * item_height, size[0] - 13 * self.has_scroll - 12, item_height))
+
+            font = Font(self.ui_font["main_button"], 20)
+            blit_text = self.items[item_index]
+            if self.items[item_index] is not None:  # assuming list ui has only 3 levels
+                if ">>" in self.items[item_index] or "||" in self.items[item_index]:
+                    font = Font(self.ui_font["main_button"], 14)
+                    blit_text = "  " + blit_text
+                elif ">" in self.items[item_index] or "|" in self.items[item_index]:
+                    font = Font(self.ui_font["main_button"], 18)
+                    blit_text = " " + blit_text
+
             self.image.blit(
-                font.render(self.items[item_index], True, (47 if item_index == self.selected_index else 0,) * 3),
+                font.render(blit_text, True, (47 if item_index == self.selected_index else 0,) * 3),
                 (20, item_height // 2 + 6 - 9 + i * item_height))
 
         # draw scroll bar
