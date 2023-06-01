@@ -358,11 +358,14 @@ class ChargeDamageEffect(Effect):
         for unit in self.attacker.near_enemy:  # collide check
             this_unit = unit[0]
             hit_angle = self.set_rotate(this_unit.base_pos)
-            if abs(hit_angle - self.attacker.angle) <= 45 and this_unit.alive and \
-                    this_unit.game_id not in self.already_hit and this_unit.hitbox.rect.colliderect(self.rect):
-                # Charge damage only hit those at front of charger
-                self.hit_register(this_unit)
-                self.already_hit.append(this_unit.game_id)
+            if this_unit.hitbox.rect.colliderect(self.rect):  # TODO change this later to check for hitbox size
+                if abs(hit_angle - self.attacker.angle) <= 45 and this_unit.alive and \
+                        this_unit.game_id not in self.already_hit:
+                    # Charge damage only hit those at front of charger
+                    self.hit_register(this_unit)
+                    self.already_hit.append(this_unit.game_id)
+            else:
+                break
 
 
 class EffectDamageEffect(DamageEffect):

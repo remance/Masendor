@@ -7,6 +7,18 @@ from engine.utility import load_images
 def create_preview_map(self):
     # Create map preview image
     map_name = self.battle_map_folder[self.current_map_select]
+
+    if self.menu_state == "preset_map":
+        self.map_title.change_name(self.localisation.grab_text(key=("preset_map", "info", self.campaign_selected, "Name")) +
+                                   " / " + self.localisation.grab_text(key=("preset_map", self.campaign_selected, "info", self.map_selected, "Name")) + " / " +
+                                   self.localisation.grab_text(key=("preset_map", self.campaign_selected, self.map_selected, "source", self.map_source_selected, "Source")))
+
+    else:
+        self.map_title.change_name(
+            self.localisation.grab_text(key=("preset_map", "info", self.campaign_selected, "Name")) +
+            " / " + self.localisation.grab_text(
+                key=("preset_map", self.campaign_selected, "info", self.map_selected, "Name")))
+
     if map_name != "Random":
         if map_name in self.battle_campaign:
             map_images = load_images(self.module_dir, subfolder=("map", "preset", self.battle_campaign[map_name],

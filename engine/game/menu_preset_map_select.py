@@ -33,10 +33,10 @@ def menu_preset_map_select(self, esc_press):
 
     if self.map_back_button.event_press or esc_press:
         self.menu_state = self.last_select
-        self.remove_ui_updater(self.start_button, self.map_back_button, self.campaign_map_list_box,
+        self.remove_ui_updater(self.start_button, self.map_back_button, self.preset_map_list_box,
                                self.map_preview, self.team_coa,
                                self.unit_selector, self.unit_selector.scroll,
-                               self.unit_model_room)
+                               self.unit_model_room, self.map_title)
 
         # Reset selected team
         for team in self.team_coa:

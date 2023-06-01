@@ -786,6 +786,34 @@ class LeaderModel(UIMenu):
             self.image.blit(model, rect)
 
 
+class MapTitle(UIMenu):
+    def __init__(self, pos):
+        UIMenu.__init__(self)
+
+        self.font = Font(self.ui_font["name_font"], int(44 * self.screen_scale[1]))
+        self.pos = pos
+        self.name = ""
+        text_surface = self.font.render(str(self.name), True, (0, 0, 0))
+        self.image = pygame.Surface((int(text_surface.get_width() + (5 * self.screen_scale[0])),
+                                     int(text_surface.get_height() + (5 * self.screen_scale[1]))))
+
+    def change_name(self, name):
+        self.name = name
+        text_surface = self.font.render(str(self.name), True, (0, 0, 0))
+        self.image = pygame.Surface((int(text_surface.get_width() + (5 * self.screen_scale[0])),
+                                     int(text_surface.get_height() + (5 * self.screen_scale[1]))))
+        self.image.fill((0, 0, 0))
+
+        white_body = pygame.Surface((text_surface.get_width(), text_surface.get_height()))
+        white_body.fill((239, 228, 176))
+        white_rect = white_body.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
+        self.image.blit(white_body, white_rect)
+
+        text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
+        self.image.blit(text_surface, text_rect)
+        self.rect = self.image.get_rect(midtop=self.pos)
+
+
 class ListBox(UIMenu):
     def __init__(self, pos, image, layer=14):
         self._layer = layer
@@ -963,14 +991,15 @@ class CampaignListAdapter(ListAdapterHideExpand):
                 map_name = self.localisation.grab_text(key=("preset_map", campaign_file_name,
                                                             "info", map_file_name, "Name"))
                 self.campaign_map_list.append("> " + map_name)
+                print(map_name, map_data[campaign_file_name][map_file_name]["source"])
                 for source_file_name in map_data[campaign_file_name][map_file_name]["source"]:  # add source
                     source_name = self.localisation.grab_text(key=("preset_map", campaign_file_name,
                                                                    map_file_name, "source", int(source_file_name),
                                                                    "Source"))
-                    self.campaign_map_index_list[len(self.campaign_map_list)] = (campaign_name, map_name, source_name)
+                    self.campaign_map_index_list[len(self.campaign_map_list)] = (campaign_file_name, map_file_name,
+                                                                                 source_file_name)
                     self.campaign_map_list.append(">> " + source_name)
-
-
+        print(self.campaign_map_index_list)
         ListAdapterHideExpand.__init__(self, self.campaign_map_list, _self, replace_on_select=replace_on_select)
 
         # try make the list here. set up so you know what index correspond to what. if index is source than make sure we store battle as well on that index
@@ -980,7 +1009,6 @@ class CampaignListAdapter(ListAdapterHideExpand):
         pass
 
     def on_select(self, item_index, item_text):
-
 
         actual_index = self.get_visible_index_actual_index()[item_index]
 
@@ -997,13 +1025,15 @@ class CampaignListAdapter(ListAdapterHideExpand):
         source_selected = self.game.map_source_selected
 
         # same goes for click on campaign
-        if ">>" in item_text:  # click on source, need some way to find what this source belong to which map
+        if ">>" in item_text:  # click on map source, need some way to find what this source belong to which map
             source_index = self.campaign_map_index_list[actual_index]
             print("load:", source_index)
-            self.game.current_map_select = item_index
-            self.game.map_selected = self.game.preset_map_folder[self.game.current_map_select]
+            self.game.current_map_select = self.game.preset_map_folder.index(source_index[1])
+            self.game.map_selected = source_index[1]
             self.game.campaign_selected = self.game.battle_campaign[self.game.map_selected]
-        else:
+            self.game.map_source_selected = source_index[2]
+            self.game.change_battle_source()
+        else:  # click parent item like campaign or map
             super().on_select(item_index, item_text)
 
 

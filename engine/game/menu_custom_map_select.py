@@ -13,7 +13,7 @@ def menu_custom_map_select(self, esc_press):
                                self.custom_battle_faction_list_box, self.custom_map_option_box, self.unit_selector,
                                self.unit_selector.scroll, self.weather_custom_select, self.wind_custom_select,
                                self.custom_map_option_box, self.night_battle_tick_box, self.map_preview,
-                               self.unit_model_room, self.weather_list_box)
+                               self.unit_model_room, self.weather_list_box, self.map_title)
 
         for stuff in self.team_coa:
             stuff.kill()
