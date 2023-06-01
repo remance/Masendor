@@ -3,8 +3,8 @@ from engine.uibattle.uibattle import TempUnitIcon
 
 def change_battle_source(self):
     """change map data when select new source"""
-    self.play_map_data = self.preset_map_data[self.map_selected]
-    self.play_source_data = self.play_map_data[self.map_source]
+    self.play_map_data = self.preset_map_data[self.campaign_selected][self.map_selected]
+    self.play_source_data = self.play_map_data[self.map_source_selected]
     self.source_lore = self.localisation.grab_text(("preset_map", self.battle_campaign[self.map_selected],
                                                     self.map_selected))
     self.source_name_list = [self.localisation.grab_text(key=("preset_map", self.battle_campaign[self.map_selected],
@@ -12,7 +12,7 @@ def change_battle_source(self):
                              self.play_map_data if key != "source"]
 
     self.camp_pos = {}
-    for key, value in self.play_map_data["source"][self.map_source].items():
+    for key, value in self.play_map_data["source"][self.map_source_selected].items():
         if "Camp " in key and value:
             self.camp_pos[int(key[-1])] = value
 
@@ -51,16 +51,16 @@ def change_battle_source(self):
     self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
 
     team_coa = []
-    for key2 in self.play_map_data["source"][self.map_source]:
+    for key2 in self.play_map_data["source"][self.map_source_selected]:
         if "Team " in key2 and "Camp " not in key2:
-            if type(self.play_map_data["source"][self.map_source][key2]) == int:
-                self.play_map_data["source"][self.map_source][key2] = [
-                    self.play_map_data["source"][self.map_source][key2]]
-            elif type(self.play_map_data["source"][self.map_source][key2]) == str:
-                self.play_map_data["source"][self.map_source][key2] = [int(item) for item in
-                                                                       self.play_map_data["source"][self.map_source][
+            if type(self.play_map_data["source"][self.map_source_selected][key2]) == int:
+                self.play_map_data["source"][self.map_source_selected][key2] = [
+                    self.play_map_data["source"][self.map_source_selected][key2]]
+            elif type(self.play_map_data["source"][self.map_source_selected][key2]) == str:
+                self.play_map_data["source"][self.map_source_selected][key2] = [int(item) for item in
+                                                                                self.play_map_data["source"][self.map_source_selected][
                                                                            key2].split(",")]
-            team_coa.append(self.play_map_data["source"][self.map_source][key2])
+            team_coa.append(self.play_map_data["source"][self.map_source_selected][key2])
     self.create_team_coa(team_coa)
 
     for index, this_team in enumerate(self.team_coa):

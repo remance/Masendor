@@ -949,6 +949,60 @@ class ListAdapterHideExpand:
         self.actual_list_open_index[actual_index] = not self.actual_list_open_index[actual_index]
 
 
+class CampaignListAdapter(ListAdapterHideExpand):
+    def __init__(self, map_data, _self, replace_on_select=None):
+        from engine.game.game import Game
+        self.game = Game.game
+        self.localisation = Game.localisation
+        self.campaign_map_list = []
+        self.campaign_map_index_list = []
+        for campaign_file_name in map_data:  # add campaign
+            campaign_name = self.localisation.grab_text(key=("preset_map", "info", campaign_file_name, "Name"))
+            self.campaign_map_list.append(campaign_name)
+            self.campaign_map_index_list.append(campaign_file_name)
+            for map_file_name in map_data[campaign_file_name]:  # add map
+                map_name = self.localisation.grab_text(key=("preset_map", campaign_file_name,
+                                                            "info", map_file_name, "Name"))
+                self.campaign_map_list.append("> " + map_name)
+                self.campaign_map_index_list.append(map_file_name)
+                for source_file_name in map_data[campaign_file_name][map_file_name]["source"]:  # add source
+                    source_name = self.localisation.grab_text(key=("preset_map", campaign_file_name,
+                                                                   map_file_name, "source", int(source_file_name),
+                                                                   "Source"))
+                    self.campaign_map_list.append(">> " + source_name)
+                    self.campaign_map_index_list.append(source_file_name)
+        ListAdapterHideExpand.__init__(self, self.campaign_map_list, _self, replace_on_select=replace_on_select)
+
+        # try make the list here. set up so you know what index correspond to what. if index is source than make sure we store battle as well on that index
+
+    def get_highlight(self, index):
+        # try find out what battle and source been loaded and compare to index. if same return True
+        pass
+
+    def on_select(self, item_index, item_text):
+
+        # detect if click on a source, than make sure that the battle and source is loaded.
+
+        # if click on battle and is being expanded
+        # load battle first source in list
+
+        # if click on battle and being hidden, unload battle and source if that battle and source just got hidden
+
+        # Check what campaign, map, source is currently loaded
+        map_selected = self.game.map_selected
+        campaign_selected = self.game.campaign_selected
+        source_selected = self.game.map_source_selected
+
+        # same goes for click on campaign
+        if ">>" in item_text:  # click on source, need some way to find what this source belong to which map
+            source_index = self.campaign_map_index_list[item_index]
+            self.game.current_map_select = item_index
+            self.game.map_selected = self.game.preset_map_folder[self.game.current_map_select]
+            self.game.campaign_selected = self.game.battle_campaign[self.game.map_selected]
+
+        super.on_select()
+
+
 class TickBox(UIMenu):
     def __init__(self, pos, image, tick_image, option):
         """option is in str text for identifying what kind of tick_box it is"""

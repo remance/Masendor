@@ -12,8 +12,8 @@ from engine.weather.weather import MatterSprite, SpecialWeatherEffect
 from engine.uibattle.uibattle import MiniMap, UnitIcon, SkillCardIcon, SpriteIndicator, AimTarget, BattleCursor, \
     HeroUI, UnitSelector, UIScroll, Profiler, TempUnitIcon
 from engine.uimenu.uimenu import MapPreview, OptionMenuText, SliderMenu, TeamCoa, MenuCursor, BoxUI, BrownMenuButton, \
-    ListUI, ListAdapter, ListAdapterHideExpand, LeaderModel, MenuButton, MapOptionBox, OrgChart, TickBox, NameList, \
-    TextBox, TextPopup
+    ListUI, ListAdapter, ListAdapterHideExpand, CampaignListAdapter, LeaderModel, MenuButton, MapOptionBox, OrgChart, \
+    TickBox, NameList, TextBox, TextPopup
 from engine.battle.battle import Battle
 from engine.unit.unit import Unit, Troop, Leader, rotation_dict, rotation_list
 from engine.effect.effect import Effect
@@ -389,6 +389,7 @@ class Game:
         self.preset_map_list = self.battle_map_data.preset_map_list  # TODO remove later when campaign list can expand
         self.preset_map_folder = self.battle_map_data.preset_map_folder
         self.campaign_map_list = self.battle_map_data.campaign_map_list
+        self.campaign_map_index = self.battle_map_data.campaign_map_index_list
         self.battle_map_list = self.battle_map_data.battle_map_list
         self.battle_map_folder = self.battle_map_data.battle_map_folder
         self.battle_campaign = self.battle_map_data.battle_campaign  # for reference to preset campaign
@@ -490,12 +491,8 @@ class Game:
 
         # Battle map select menu button
 
-        self.preset_map_list_box = ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
-                                          items=ListAdapter(self.battle_map_list, self),
-                                          parent=self.screen, item_size=20)  # TODO change to preset map list
-
         self.campaign_map_list_box = ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
-                                            items=ListAdapterHideExpand(self.campaign_map_list, self),
+                                            items=CampaignListAdapter(self.preset_map_data, self),
                                             parent=self.screen, item_size=20)
 
         self.custom_battle_map_list_box = ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
@@ -524,7 +521,7 @@ class Game:
         battle_select_image = load_images(self.module_dir, screen_scale=self.screen_scale,
                                           subfolder=("ui", "mapselect_ui"))
 
-        self.map_preview = MapPreview(self.preset_map_list_box.rect.topright)
+        self.map_preview = MapPreview(self.campaign_map_list_box.rect.topright)
 
         self.unit_selector = UnitSelector(self.map_preview.rect.topright,
                                           battle_select_image["unit_select"], icon_scale=0.4)
@@ -714,7 +711,7 @@ class Game:
         # self.background = self.background_image["main"]
 
         # Starting script
-        self.add_ui_updater(*self.mainmenu_button, self.campaign_map_list_box)
+        self.add_ui_updater(*self.mainmenu_button)
 
         self.start_menu_ui_only = self.mainmenu_button  # ui that only appear at the start menu
         self.add_ui_updater(*self.start_menu_ui_only)

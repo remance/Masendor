@@ -160,6 +160,7 @@ class BattleMapData(GameData):
         self.preset_map_list = []  # map name list for map selection list
         self.preset_map_folder = []  # folder for reading later
         self.campaign_map_list = []
+        self.campaign_map_index_list = []
         self.battle_campaign = {}
         self.preset_map_data = {}
 
@@ -171,6 +172,8 @@ class BattleMapData(GameData):
                                                       tuple(self.localisation.text["en"]["preset_map"][campaign_file_name]["info"].keys()))
             campaign_name = self.localisation.grab_text(key=("preset_map", "info", campaign_file_name, "Name"))
             self.campaign_map_list.append(campaign_name)
+            self.campaign_map_index_list.append(campaign_file_name)
+            self.preset_map_data[campaign_file_name] = {}
             for file_map in sub2_directories:
                 map_file_name = os.sep.join(os.path.normpath(file_map).split(os.sep)[-1:])
                 self.preset_map_folder.append(map_file_name)
@@ -178,8 +181,9 @@ class BattleMapData(GameData):
                                                             "info", map_file_name, "Name"))
                 self.preset_map_list.append(map_name)
                 self.campaign_map_list.append("> " + map_name)
+                self.campaign_map_index_list.append(map_file_name)
                 self.battle_campaign[map_file_name] = campaign_file_name
-                self.preset_map_data[map_file_name] = {"source": csv_read(file_map, "source.csv", header_key=True)}
+                self.preset_map_data[campaign_file_name][map_file_name] = {"source": csv_read(file_map, "source.csv", header_key=True)}
 
                 read_folder = Path(os.path.join(self.module_dir, "map", "preset", file_campaign, file_map))
                 sub3_directories = [x for x in read_folder.iterdir() if x.is_dir()]
@@ -189,10 +193,11 @@ class BattleMapData(GameData):
                                                                    map_file_name, "source", int(source_file_name),
                                                                    "Source"))
                     self.campaign_map_list.append(">> " + source_name)
+                    self.campaign_map_index_list.append(source_file_name)
                     weather_data = csv_read(file_source, "weather.csv", output_type="list")[1:]
                     if not weather_data:  # no weather data, make random
                         weather_data = [[1, "09:00:00", 0, 0], ]
-                    self.preset_map_data[map_file_name][int(source_file_name)] = \
+                    self.preset_map_data[campaign_file_name][map_file_name][int(source_file_name)] = \
                         {"unit": self.load_map_unit_data(campaign_file_name, map_file_name, source_file_name),
                          "map_event": csv_read(file_source, "map_event.csv", header_key=True),
                          "weather": weather_data,  # weather in list

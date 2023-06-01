@@ -377,8 +377,9 @@ class Battle:
 
     def inner_prepare_new_game(self, player_unit):
         """Setup stuff when start new battle"""
+        self.campaign_selected = self.game.campaign_selected  # campaign name
         self.map_selected = self.game.map_selected  # map folder name
-        self.map_source = str(self.game.map_source)
+        self.map_source_selected = str(self.game.map_source_selected)
         self.team_selected = self.game.team_selected  # player selected team
 
         self.player_unit = player_unit
@@ -425,8 +426,8 @@ class Battle:
         map_event = {}
         if self.play_map_type == "preset":  # create map event for preset map
             map_event_text = self.localisation.grab_text(("preset_map", self.game.battle_campaign[self.map_selected],
-                                                          self.map_selected, "eventlog", int(self.map_source)))
-            map_event = self.game.preset_map_data[self.map_selected][int(self.map_source)]["eventlog"].copy()
+                                                          self.map_selected, "eventlog", int(self.map_source_selected)))
+            map_event = self.game.preset_map_data[self.campaign_selected][self.map_selected][int(self.map_source_selected)]["eventlog"].copy()
             for key in map_event:  # insert localisation text into event data
                 map_event[key] = map_event[key].copy()  # make a copy to prevent replacement
                 if key in map_event_text:

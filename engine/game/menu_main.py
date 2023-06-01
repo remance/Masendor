@@ -8,6 +8,8 @@ def menu_main(self, esc_press):
         self.unit_model_room.add_preview_model()  # reset model room
         self.current_map_select = 0
         self.map_selected = self.preset_map_folder[self.current_map_select]
+        self.campaign_selected = self.battle_campaign[self.map_selected]
+        self.map_source_selected = 0
 
         self.remove_ui_updater(*self.start_menu_ui_only)
 
@@ -16,7 +18,7 @@ def menu_main(self, esc_press):
         # reset preview mini map
         self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos)
 
-        self.add_ui_updater(*self.unit_select_button, self.preset_map_list_box,
+        self.add_ui_updater(*self.unit_select_button, self.campaign_map_list_box,
                             self.unit_selector, self.unit_selector.scroll, self.unit_model_room)
 
     elif self.custom_map_button.event:  # custom map list menu

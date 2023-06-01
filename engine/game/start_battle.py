@@ -5,7 +5,7 @@ from pygame.mixer import music
 
 def start_battle(self, player_unit=None):
     self.error_log.write("\n Map: " + str(self.map_selected) + ", Source: " +
-                         str(self.map_source) + ", Character: " + str(player_unit) + "\n")
+                         str(self.map_source_selected) + ", Character: " + str(player_unit) + "\n")
 
     selected_player_unit = player_unit
     music.unload()

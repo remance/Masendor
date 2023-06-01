@@ -26,14 +26,14 @@ def menu_preset_map_select(self, esc_press):
 
     # for index, name in enumerate(self.source_namegroup):  # user select source
     #     if name.event_press:  # click on source name
-    #         self.map_source = index
+    #         self.map_source_selected = index
     #         self.team_selected = 1
     #         self.change_battle_source()
     #         return
 
     if self.map_back_button.event_press or esc_press:
         self.menu_state = self.last_select
-        self.remove_ui_updater(self.start_button, self.map_back_button, self.preset_map_list_box,
+        self.remove_ui_updater(self.start_button, self.map_back_button, self.campaign_map_list_box,
                                self.map_preview, self.team_coa,
                                self.unit_selector, self.unit_selector.scroll,
                                self.unit_model_room)
@@ -43,7 +43,7 @@ def menu_preset_map_select(self, esc_press):
             team.change_select(False)
         self.team_selected = 1
 
-        self.map_source = 0
+        self.map_source_selected = 0
         self.map_preview.change_mode(0)  # revert map preview back to without unit dot
 
         for group in (self.team_coa, self.preview_unit, self.unit_icon):  # remove group item no longer used
@@ -62,7 +62,7 @@ def menu_preset_map_select(self, esc_press):
         if self.unit_selected is not None:
             self.single_text_popup.popup(self.cursor.rect,
                                          (self.leader_data.leader_lore[
-                                              [item for item in self.play_map_data[self.map_source]['unit'] if
+                                              [item for item in self.play_map_data[self.map_source_selected]['unit'] if
                                                item["ID"] == self.unit_selected][0]["Leader ID"]]["Description"],),
                                          width_text_wrapper=500)
             self.add_ui_updater(self.single_text_popup)
