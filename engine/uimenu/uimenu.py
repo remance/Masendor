@@ -1407,11 +1407,11 @@ class ListUI(UIMenu, Containable):
 
             # Check for scrolling button
             noiovl = self.get_number_of_items_outside_visible_list()
-            if msd:
+            if msd and noiovl:
                 self.scroll_box_index += 1
                 if self.scroll_box_index > noiovl:
                     self.scroll_box_index = noiovl
-            elif msu:
+            elif msu and noiovl:
                 self.scroll_box_index -= 1
                 if self.scroll_box_index < 0:
                     self.scroll_box_index = 0
