@@ -984,6 +984,7 @@ class CampaignListAdapter(ListAdapterHideExpand):
         self.localisation = Game.localisation
         self.campaign_map_list = []
         self.campaign_map_index_list = {}
+        self.map_source_index = dict()
         for campaign_file_name in map_data:  # add campaign
             campaign_name = self.localisation.grab_text(key=("preset_map", "info", campaign_file_name, "Name"))
             self.campaign_map_list.append(campaign_name)
@@ -998,15 +999,20 @@ class CampaignListAdapter(ListAdapterHideExpand):
                                                                    "Source"))
                     self.campaign_map_index_list[len(self.campaign_map_list)] = (campaign_file_name, map_file_name,
                                                                                  source_file_name)
+                    self.map_source_index[(map_file_name,source_file_name)] = len(self.campaign_map_list)
                     self.campaign_map_list.append(">> " + source_name)
         print(self.campaign_map_index_list)
         ListAdapterHideExpand.__init__(self, self.campaign_map_list, _self, replace_on_select=replace_on_select)
 
         # try make the list here. set up so you know what index correspond to what. if index is source than make sure we store battle as well on that index
 
-    def get_highlight(self, index):
-        # try find out what battle and source been loaded and compare to index. if same return True
-        pass
+
+    def get_highlighted_index(self):
+        try:
+            x = { v:k for k,v in self.get_visible_index_actual_index().items() }
+            return x[self.map_source_index[(self.game.map_selected, self.game.map_source_selected)]]
+        except:
+            return -1
 
     def on_select(self, item_index, item_text):
 
@@ -1432,13 +1438,14 @@ class ListUI(UIMenu, Containable):
         # draw items
         for i in range(self.item_size):
             item_index = i + self.scroll_box_index
+            text_color = (47 if item_index == self.selected_index else 0,) * 3
             if item_index == self.selected_index or item_index == self.items.get_highlighted_index():
 
-                color = "#cbc2a9"
+                background_color = "#cbc2a9"
                 if item_index == self.items.get_highlighted_index():
-                    color = "#cbc2a9"
-
-                draw.rect(self.image, color, (6, 6 + i * item_height, size[0] - 13 * self.has_scroll - 12, item_height))
+                    background_color = "#776622"
+                    text_color = "#eeeeee"
+                draw.rect(self.image, background_color, (6, 6 + i * item_height, size[0] - 13 * self.has_scroll - 12, item_height))
 
             font = Font(self.ui_font["main_button"], 20)
             blit_text = self.items[item_index]
@@ -1451,7 +1458,7 @@ class ListUI(UIMenu, Containable):
                     blit_text = " " + blit_text
 
             self.image.blit(
-                font.render(blit_text, True, (47 if item_index == self.selected_index else 0,) * 3),
+                font.render(blit_text, True, text_color),
                 (20, item_height // 2 + 6 - 9 + i * item_height))
 
         # draw scroll bar
