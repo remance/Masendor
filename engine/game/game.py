@@ -489,7 +489,7 @@ class Game:
         # Battle map select menu button
 
         self.preset_map_list_box = ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
-                                          items=CampaignListAdapter(self.preset_map_data, self),
+                                          items=CampaignListAdapter(),
                                           parent=self.screen, item_size=20)
 
         self.custom_battle_map_list_box = ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
