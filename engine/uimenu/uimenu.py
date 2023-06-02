@@ -910,16 +910,10 @@ class ListAdapterHideExpand:
     # actual list refer to the origin full list
     # visual list refer to the list after some if any of the elements been hidden
 
-    def __init__(self, _list, _self, replace_on_select=None):
-        self.actual_list = actual_list = _list
+    def __init__(self, _list, _self=None, replace_on_select=None):
+        self.actual_list = actual_list = [ c[1] for c in _list ]
         self.actual_list_open_index = [False for element in actual_list]
-        self.actual_list_level = [ self.get_level_by_str(element) for element in actual_list ]
- 
-    @classmethod
-    def get_level_by_str(cls, _str):
-        for e, c in enumerate(_str):      
-            if c != '>': return e
-        raise Exception()
+        self.actual_list_level = [ element[0] for element in _list ]
 
     def get_actual_index_level(self, index):
         return self.actual_list_level[index]
@@ -968,6 +962,9 @@ class ListAdapterHideExpand:
             r[visible_index] = actual_index
         return r
 
+    def get_actual_index_visible_index(self):
+        return { v:k for k,v in self.get_visible_index_actual_index().items() }
+
     def get_highlighted_index(self):
         return -1
 
@@ -978,68 +975,48 @@ class ListAdapterHideExpand:
 
 
 class CampaignListAdapter(ListAdapterHideExpand):
-    def __init__(self, map_data, _self, replace_on_select=None):
+    
+    def __init__(self):
         from engine.game.game import Game
         self.game = Game.game
-        self.localisation = Game.localisation
-        self.campaign_map_list = []
-        self.campaign_map_index_list = {}
-        self.map_source_index = dict()
+        self.map_source_index = dict() # stores the map-sources 's list index. ex { ('atestmap', 1): 3, ('varaville1', 0): 6 }
+        localisation = Game.localisation
+        map_data = self.game.preset_map_data
+        actual_level_list = []
+
         for campaign_file_name in map_data:  # add campaign
-            campaign_name = self.localisation.grab_text(key=("preset_map", "info", campaign_file_name, "Name"))
-            self.campaign_map_list.append(campaign_name)
+            campaign_name = localisation.grab_text(key=("preset_map", "info", campaign_file_name, "Name"))
+            actual_level_list.append((0,campaign_name))
             for map_file_name in map_data[campaign_file_name]:  # add map
-                map_name = self.localisation.grab_text(key=("preset_map", campaign_file_name,
-                                                            "info", map_file_name, "Name"))
-                self.campaign_map_list.append("> " + map_name)
-                print(map_name, map_data[campaign_file_name][map_file_name]["source"])
+                map_name = localisation.grab_text(key=("preset_map", campaign_file_name, "info", map_file_name, "Name"))
+                actual_level_list.append((1,"> " + map_name))
                 for source_file_name in map_data[campaign_file_name][map_file_name]["source"]:  # add source
-                    source_name = self.localisation.grab_text(key=("preset_map", campaign_file_name,
-                                                                   map_file_name, "source", int(source_file_name),
-                                                                   "Source"))
-                    self.campaign_map_index_list[len(self.campaign_map_list)] = (campaign_file_name, map_file_name,
-                                                                                 source_file_name)
-                    self.map_source_index[(map_file_name,source_file_name)] = len(self.campaign_map_list)
-                    self.campaign_map_list.append(">> " + source_name)
-        print(self.campaign_map_index_list)
-        ListAdapterHideExpand.__init__(self, self.campaign_map_list, _self, replace_on_select=replace_on_select)
+                    source_name = localisation.grab_text(key=("preset_map", campaign_file_name, map_file_name, "source", int(source_file_name), "Source"))
+                    current_index = len(actual_level_list)
+                    self.map_source_index[(map_file_name,source_file_name)] = current_index
+                    actual_level_list.append((2,">> " + source_name))
 
-        # try make the list here. set up so you know what index correspond to what. if index is source than make sure we store battle as well on that index
-
+        ListAdapterHideExpand.__init__(self, actual_level_list)
 
     def get_highlighted_index(self):
-        try:
-            x = { v:k for k,v in self.get_visible_index_actual_index().items() }
-            return x[self.map_source_index[(self.game.map_selected, self.game.map_source_selected)]]
-        except:
-            return -1
+        if not hasattr(self.game, 'map_selected'): return None
+        return self.get_actual_index_visible_index().get(self.map_source_index[(self.game.map_selected, self.game.map_source_selected)])
 
     def on_select(self, item_index, item_text):
 
         actual_index = self.get_visible_index_actual_index()[item_index]
 
-        # detect if click on a source, than make sure that the battle and source is loaded.
-
-        # if click on battle and is being expanded
-        # load battle first source in list
-
-        # if click on battle and being hidden, unload battle and source if that battle and source just got hidden
-
-        # Check what campaign, map, source is currently loaded
-        map_selected = self.game.map_selected
-        campaign_selected = self.game.campaign_selected
-        source_selected = self.game.map_source_selected
-
-        # same goes for click on campaign
-        if ">>" in item_text:  # click on map source, need some way to find what this source belong to which map
-            source_index = self.campaign_map_index_list[actual_index]
-            print("load:", source_index)
-            self.game.current_map_select = self.game.preset_map_folder.index(source_index[1])
-            self.game.map_selected = source_index[1]
-            self.game.campaign_selected = self.game.battle_campaign[self.game.map_selected]
-            self.game.map_source_selected = source_index[2]
+        # if click on a source then load it
+        if self.get_actual_index_level(actual_index) == 2: # 2 = source
+            _map, source = { v:k for k,v in self.map_source_index.items() }[actual_index]
+            self.game.current_map_select = self.game.preset_map_folder.index(_map)
+            self.game.map_selected = _map
+            self.game.campaign_selected = self.game.battle_campaign[_map]
+            self.game.map_source_selected = source
             self.game.change_battle_source()
-        else:  # click parent item like campaign or map
+
+        # if not fall back to the normal behaviour of a hide-expand elements
+        else:
             super().on_select(item_index, item_text)
 
 
