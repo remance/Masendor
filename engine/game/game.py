@@ -486,8 +486,7 @@ class Game:
         # Battle map select menu button
 
         self.preset_map_list_box = ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
-                                          items=CampaignListAdapter(self.preset_map_data, self,
-                                                                    replace_on_mouse_over=preset_map_list_on_mouse_over),
+                                          items=CampaignListAdapter(),
                                           parent=self.screen, item_size=20)
 
         self.custom_battle_map_list_box = ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
