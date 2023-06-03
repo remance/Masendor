@@ -25,7 +25,6 @@ from engine.battle.setup_battle_unit import setup_battle_unit
 from engine.menubackground.menubackground import MenuActor, MenuRotate
 from engine.updater.updater import ReversedLayeredUpdates
 
-from engine.game.menu_preset_map_select import preset_map_list_on_mouse_over
 from engine.game.menu_custom_map_select import custom_map_list_on_select, custom_faction_list_on_select, \
     custom_weather_list_on_select
 

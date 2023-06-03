@@ -1029,6 +1029,26 @@ class CampaignListAdapter(ListAdapterHideExpand):
         else:  # if not fall back to the normal behaviour of a hide-expand elements
             super().on_select(item_index, item_text)
 
+    def on_mouse_over(self, item_index, item_text):
+        """
+        Method for campaign map list where player hovering over item will display historical information of campaign, map,
+        or map source
+        :param self: Listui object
+        :param item_index: Index of selected item in list
+        :param item_text: Text of selected item
+        """
+        # self.last_index = item_index
+
+        # if ">>" in item_text or "||" in item_text:
+        #     popup_text = self.game.localisation.grab_text(("preset_map", ))
+        # elif ">" in item_text or "|" in item_text:
+        #     popup_text = self.game.localisation.grab_text(("preset_map", ))
+        # else:  # campaign item
+        #     popup_text = self.game.localisation.grab_text(("preset_map", ))
+        print(item_text)
+        # _self.single_text_popup.popup(_self.cursor.rect, popup_text, width_text_wrapper=500 * self.game.screen_scale[0])
+        # _self.add_ui_updater(_self.single_text_popup)
+
 
 class TickBox(UIMenu):
     def __init__(self, pos, image, tick_image, option):

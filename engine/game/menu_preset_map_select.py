@@ -120,26 +120,6 @@ def menu_preset_map_select(self, esc_press):
                     break
 
 
-def preset_map_list_on_mouse_over(self, item_index, item_text):
-    """
-    Method for faction list where player can select faction into the current selected team
-    :param self: Listui object
-    :param item_index: Index of selected item in list
-    :param item_text: Text of selected item
-    """
-    # self.last_index = item_index
-
-    # if ">>" in item_text or "||" in item_text:
-    #     popup_text = self.game.localisation.grab_text(("preset_map", ))
-    # elif ">" in item_text or "|" in item_text:
-    #     popup_text = self.game.localisation.grab_text(("preset_map", ))
-    # else:  # campaign item
-    #     popup_text = self.game.localisation.grab_text(("preset_map", ))
-    print(item_text)
-    # _self.single_text_popup.popup(_self.cursor.rect, popup_text, width_text_wrapper=500 * self.game.screen_scale[0])
-    # _self.add_ui_updater(_self.single_text_popup)
-
-
 def leader_popup_text(self, icon):
     who = icon.who
     if not hasattr(who, "troop_id"):  # None unit for enactment mode
