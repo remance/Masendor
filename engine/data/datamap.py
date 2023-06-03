@@ -200,12 +200,13 @@ class BattleMapData(GameData):
         self.battle_map_folder = self.preset_map_folder.copy() + ["Random"]
 
         for file_map in sub1_directories:
-            self.battle_map_folder.append(os.sep.join(os.path.normpath(file_map).split(os.sep)[-1:]))
+            map_file_name = os.sep.join(os.path.normpath(file_map).split(os.sep)[-1:])
+            self.battle_map_folder.append(map_file_name)
 
-            map_name = self.localisation.grab_text(key=("custom_map",
-                                                        os.sep.join(os.path.normpath(file_map).split(os.sep)[-1:]),
-                                                        "Name"))
+            map_name = self.localisation.grab_text(key=("custom_map", map_file_name, "Name"))
+            self.battle_campaign[map_file_name] = "Custom Map"
             self.battle_map_list.append(map_name)
+        self.battle_campaign["Random"] = "Custom Map"  # add random map as custom map campaign
 
     def load_map_unit_data(self, campaign_id, map_id, map_source):
         try:

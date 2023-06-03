@@ -7,7 +7,6 @@ clean_group_object = utility.clean_group_object
 
 
 def menu_custom_unit_select(self, esc_press):
-    self.main_ui_updater.remove(self.single_text_popup)
     if self.map_back_button.event or esc_press or self.start_button.event:  # go back to team/source selection screen
         self.map_back_button.event = False
         clean_group_object((self.unit_updater, self.all_units, self.preview_unit, self.unit_icon))
@@ -80,7 +79,7 @@ def menu_custom_unit_select(self, esc_press):
                         self.unit_model_room.add_preview_model(model=preview_sprite_pool[icon.who.troop_id]["sprite"],
                                                                coa=icon.who.coa)
                         self.map_preview.change_mode(1, team_pos_list=self.team_pos,
-                                                     camp_pos_list=self.camp_pos,
+                                                     camp_pos_list=self.play_map_data["camp_pos"],
                                                      selected=icon.who.base_pos)
 
                         self.unit_selected = icon.who.map_id

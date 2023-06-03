@@ -670,7 +670,7 @@ class TeamCoa(UIMenu):
         self.selected_coa_size = (int(120 * self.screen_scale[0]), int(120 * self.screen_scale[1]))
         self.not_selected_image_base = Surface((self.coa_size[0], self.coa_size[1]))
         self.not_selected_image_base.fill((0, 0, 0))  # black border when not selected
-        self.selected_image_base = Surface((400 * self.screen_scale[0], self.coa_size[1] * 2.5))
+        self.selected_image_base = Surface((400 * self.screen_scale[0], self.coa_size[1] * 2.2))
         self.selected_image_base.fill((0, 0, 0))  # black border when selected
 
         team_body = Surface((self.not_selected_image_base.get_width() * 0.95,
@@ -885,12 +885,15 @@ class NameList(UIMenu):
 
 
 class ListAdapter:
-    def __init__(self, _list, _self, replace_on_select=None):
+    def __init__(self, _list, replace_on_select=None, replace_on_mouse_over=None):
+        from engine.game.game import Game
+        self.game = Game.game
         self.list = _list
         self.last_index = -1
-        self._self = _self
         if replace_on_select:
             self.on_select = types.MethodType(replace_on_select, self)
+        if replace_on_mouse_over:
+            self.on_mouse_over = types.MethodType(replace_on_mouse_over, self)
 
     def __len__(self):
         return len(self.list)
@@ -899,6 +902,9 @@ class ListAdapter:
         return self.list[item]
 
     def on_select(self, item_index, item_text):
+        pass
+
+    def on_mouse_over(self, item_index, item_text):
         pass
 
     def get_highlighted_index(self):
@@ -910,10 +916,14 @@ class ListAdapterHideExpand:
     # actual list refer to the origin full list
     # visual list refer to the list after some if any of the elements been hidden
 
-    def __init__(self, _list, _self, replace_on_select=None):
+    def __init__(self, _list, _self, replace_on_select=None, replace_on_mouse_over=None):
         self.actual_list = actual_list = _list
         self.actual_list_open_index = [False for element in actual_list]
         self.actual_list_level = [ self.get_level_by_str(element) for element in actual_list ]
+        if replace_on_select:
+            self.on_select = types.MethodType(replace_on_select, self)
+        if replace_on_mouse_over:
+            self.on_mouse_over = types.MethodType(replace_on_mouse_over, self)
  
     @classmethod
     def get_level_by_str(cls, _str):
@@ -978,7 +988,7 @@ class ListAdapterHideExpand:
 
 
 class CampaignListAdapter(ListAdapterHideExpand):
-    def __init__(self, map_data, _self, replace_on_select=None):
+    def __init__(self, map_data, _self, replace_on_select=None, replace_on_mouse_over=None):
         from engine.game.game import Game
         self.game = Game.game
         self.localisation = Game.localisation
@@ -991,7 +1001,6 @@ class CampaignListAdapter(ListAdapterHideExpand):
                 map_name = self.localisation.grab_text(key=("preset_map", campaign_file_name,
                                                             "info", map_file_name, "Name"))
                 self.campaign_map_list.append("> " + map_name)
-                print(map_name, map_data[campaign_file_name][map_file_name]["source"])
                 for source_file_name in map_data[campaign_file_name][map_file_name]["source"]:  # add source
                     source_name = self.localisation.grab_text(key=("preset_map", campaign_file_name,
                                                                    map_file_name, "source", int(source_file_name),
@@ -999,8 +1008,9 @@ class CampaignListAdapter(ListAdapterHideExpand):
                     self.campaign_map_index_list[len(self.campaign_map_list)] = (campaign_file_name, map_file_name,
                                                                                  source_file_name)
                     self.campaign_map_list.append(">> " + source_name)
-        print(self.campaign_map_index_list)
-        ListAdapterHideExpand.__init__(self, self.campaign_map_list, _self, replace_on_select=replace_on_select)
+
+        ListAdapterHideExpand.__init__(self, self.campaign_map_list, _self, replace_on_select=replace_on_select,
+                                       replace_on_mouse_over=replace_on_mouse_over)
 
         # try make the list here. set up so you know what index correspond to what. if index is source than make sure we store battle as well on that index
 
@@ -1019,13 +1029,7 @@ class CampaignListAdapter(ListAdapterHideExpand):
 
         # if click on battle and being hidden, unload battle and source if that battle and source just got hidden
 
-        # Check what campaign, map, source is currently loaded
-        map_selected = self.game.map_selected
-        campaign_selected = self.game.campaign_selected
-        source_selected = self.game.map_source_selected
-
-        # same goes for click on campaign
-        if ">>" in item_text:  # click on map source, need some way to find what this source belong to which map
+        if ">>" in item_text:  # click on map source
             source_index = self.campaign_map_index_list[actual_index]
             print("load:", source_index)
             self.game.current_map_select = self.game.preset_map_folder.index(source_index[1])
@@ -1430,7 +1434,10 @@ class ListUI(UIMenu, Containable):
         item_height = self.get_item_height()
 
         # draw items
-        for i in range(self.item_size):
+        item_size = self.item_size
+        if len(self.items) < item_size:  # For listui with item less than provided size
+            item_size = len(self.items)
+        for i in range(item_size):
             item_index = i + self.scroll_box_index
             if item_index == self.selected_index or item_index == self.items.get_highlighted_index():
 
@@ -1484,20 +1491,14 @@ class ListUI(UIMenu, Containable):
         mouse_pos = self.cursor.pos
         relative_mouse_pos = [mouse_pos[i] - self.rect[i] for i in range(2)]
 
-        size = tuple(map(int, self.rect[2:]))
+        # size = tuple(map(int, self.rect[2:]))
         self.mouse_over = False
         self.selected_index = None
-        mljd = self.cursor.is_select_just_down
-        mld = self.cursor.is_select_down
-        mlju = self.cursor.is_select_just_up
-        mrju = self.cursor.is_alt_select_just_up
-        msu = self.cursor.scroll_up
-        msd = self.cursor.scroll_down
 
         # detect if in list or over scroll box
         self.in_scroll_box = False
-        in_list = False
         if self.rect.collidepoint(mouse_pos):
+
             in_list = True
             self.mouse_over = True
             if scroll_bar_rect := self.get_scroll_bar_rect():
@@ -1508,11 +1509,11 @@ class ListUI(UIMenu, Containable):
 
             # Check for scrolling button
             noiovl = self.get_number_of_items_outside_visible_list()
-            if msd and noiovl:
+            if self.cursor.scroll_down and noiovl:
                 self.scroll_box_index += 1
                 if self.scroll_box_index > noiovl:
                     self.scroll_box_index = noiovl
-            elif msu and noiovl:
+            elif self.cursor.scroll_up and noiovl:
                 self.scroll_box_index -= 1
                 if self.scroll_box_index < 0:
                     self.scroll_box_index = 0
@@ -1523,39 +1524,42 @@ class ListUI(UIMenu, Containable):
             else:
                 in_list = True
 
-        # scroll box drag handler
-        if not mld:
-            self.hold_scroll_box = None
-        if self.in_scroll_box and mljd:
-            self.hold_scroll_box = relative_mouse_pos[1]
-            self.scroll_box_index_at_hold = self.scroll_box_index
+            # scroll box drag handler
+            if not self.cursor.is_select_down:
+                self.hold_scroll_box = None
+            if self.in_scroll_box and self.cursor.is_select_just_down:
+                self.hold_scroll_box = relative_mouse_pos[1]
+                self.scroll_box_index_at_hold = self.scroll_box_index
 
-        if self.hold_scroll_box:
-            self.scroll_box_index = self.scroll_box_index_at_hold + int(
-                (relative_mouse_pos[1] - self.hold_scroll_box + self.scroll_step_height / 2) / self.scroll_step_height)
-            noiovl = self.get_number_of_items_outside_visible_list()
-            if self.scroll_box_index > noiovl:
-                self.scroll_box_index = noiovl
-            elif self.scroll_box_index < 0:
-                self.scroll_box_index = 0
+            if self.hold_scroll_box:
+                self.scroll_box_index = self.scroll_box_index_at_hold + int(
+                    (relative_mouse_pos[1] - self.hold_scroll_box + self.scroll_step_height / 2) / self.scroll_step_height)
+                noiovl = self.get_number_of_items_outside_visible_list()
+                if self.scroll_box_index > noiovl:
+                    self.scroll_box_index = noiovl
+                elif self.scroll_box_index < 0:
+                    self.scroll_box_index = 0
 
-        # item handler
-        if in_list and not self.hold_scroll_box:
-            item_height = self.get_item_height()
-            relative_index = ((relative_mouse_pos[1] - 6) // item_height)
-            if relative_index >= 0 and relative_index < self.item_size:
-                self.selected_index = relative_index + self.scroll_box_index
+            # item handler
+            if in_list and not self.hold_scroll_box:
+                item_height = self.get_item_height()
+                relative_index = ((relative_mouse_pos[1] - 6) // item_height)
+                if relative_index >= 0 and relative_index < self.item_size:
+                    self.selected_index = relative_index + self.scroll_box_index
 
-        if self.selected_index is not None:
-            if self.selected_index >= len(self.items): self.selected_index = None
+            if self.selected_index is not None:
+                if self.selected_index >= len(self.items): self.selected_index = None
 
-        # if in_list and mljd and self.selected_index is not None:
-        if in_list and (mlju or mrju) and self.selected_index is not None:
-            self.items.on_select(self.selected_index, self.items[self.selected_index])
+            if in_list and self.selected_index is not None:
+                self.items.on_mouse_over(self.selected_index, self.items[self.selected_index])
+                if self.cursor.is_select_just_up or self.cursor.is_alt_select_just_up:
+                    self.items.on_select(self.selected_index, self.items[self.selected_index])
+                    self.cursor.is_select_just_up = False
+                    self.cursor.is_alt_select_just_up = False
 
-        # refresh image
+            # refresh image
 
-        self.image = self.get_refreshed_image()
+            self.image = self.get_refreshed_image()
 
     def get_relative_position_inside_container(self):
         return {

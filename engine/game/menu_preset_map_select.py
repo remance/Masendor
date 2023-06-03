@@ -2,7 +2,6 @@ from engine.uibattle.uibattle import TempUnitIcon
 
 
 def menu_preset_map_select(self, esc_press):
-    self.remove_ui_updater(self.single_text_popup)
     for this_team in self.team_coa:  # User select any team by clicking on coat of arm
         if this_team.event_press:
             self.team_selected = this_team.team
@@ -109,7 +108,7 @@ def menu_preset_map_select(self, esc_press):
                                 model=preview_sprite_pool[icon.who.troop_id]["sprite"],
                                 coa=icon.who.coa)
                             self.map_preview.change_mode(1, team_pos_list=self.team_pos,
-                                                         camp_pos_list=self.camp_pos,
+                                                         camp_pos_list=self.play_map_data["camp_pos"],
                                                          selected=icon.who.base_pos)
 
                             self.unit_selected = icon.who.map_id
@@ -117,13 +116,28 @@ def menu_preset_map_select(self, esc_press):
                             self.unit_selected = None
                             self.unit_model_room.add_preview_model()
                             self.map_preview.change_mode(1, team_pos_list=self.team_pos,
-                                                         camp_pos_list=self.camp_pos)
+                                                         camp_pos_list=self.play_map_data["camp_pos"])
                     break
 
 
-def change_char(self):
-    self.add_ui_updater(self.unit_selector, self.unit_selector.scroll,
-                        self.unit_model_room, *self.unit_select_button)
+def preset_map_list_on_mouse_over(self, item_index, item_text):
+    """
+    Method for faction list where player can select faction into the current selected team
+    :param self: Listui object
+    :param item_index: Index of selected item in list
+    :param item_text: Text of selected item
+    """
+    # self.last_index = item_index
+
+    # if ">>" in item_text or "||" in item_text:
+    #     popup_text = self.game.localisation.grab_text(("preset_map", ))
+    # elif ">" in item_text or "|" in item_text:
+    #     popup_text = self.game.localisation.grab_text(("preset_map", ))
+    # else:  # campaign item
+    #     popup_text = self.game.localisation.grab_text(("preset_map", ))
+    print(item_text)
+    # _self.single_text_popup.popup(_self.cursor.rect, popup_text, width_text_wrapper=500 * self.game.screen_scale[0])
+    # _self.add_ui_updater(_self.single_text_popup)
 
 
 def leader_popup_text(self, icon):
@@ -137,7 +151,7 @@ def leader_popup_text(self, icon):
         stat = self.leader_data.leader_list[who.troop_id]
 
         leader_skill = ""
-        for skill in who.skill:
+        for skill in stat["Skill"]:
             leader_skill += self.leader_data.skill_list[skill]["Name"] + ", "
         leader_skill = leader_skill[:-2]
         primary_main_weapon = stat["Primary Main Weapon"]
@@ -173,15 +187,16 @@ def leader_popup_text(self, icon):
                            self.troop_data.mount_armour_list[stat["Mount"][2]]["Name"]
 
         popup_text = [who.name,
-                      self.localisation.grab_text(("ui", "Social Class")) + ": " + who.social["Leader Social Class"],
-                      self.localisation.grab_text(("ui", "Authority")) + ": " + str(who.leader_authority),
+                      self.localisation.grab_text(("ui", "Social Class")) + ": " +
+                      self.leader_data.leader_class[stat["Social Class"]]["Leader Social Class"],
+                      self.localisation.grab_text(("ui", "Authority")) + ": " + str(stat["Charisma"]),
                       self.localisation.grab_text(("ui", "Command")) + ": " +
                       self.localisation.grab_text(("ui", "Melee")) + ":" + self.skill_level_text[
-                          who.melee_command] + " " +
+                          stat["Melee Speciality"]] + " " +
                       self.localisation.grab_text(("ui", "Ranged")) + ":" + self.skill_level_text[
-                          who.range_command] + " " +
+                          stat["Range Speciality"]] + " " +
                       self.localisation.grab_text(("ui", "cavalry_short")) + ":" + self.skill_level_text[
-                          who.cav_command],
+                          stat["Cavalry Speciality"]],
                       self.localisation.grab_text(("ui", "Skill")) + ": " + leader_skill,
                       self.localisation.grab_text(("ui", "1st_main_weapon")) + ": " + leader_primary_main_weapon,
                       self.localisation.grab_text(("ui", "1st_sub_weapon")) + ": " + leader_primary_sub_weapon,
@@ -189,12 +204,14 @@ def leader_popup_text(self, icon):
                       self.localisation.grab_text(("ui", "2nd_sub_weapon")) + ": " + leader_secondary_sub_weapon,
                       self.localisation.grab_text(("ui", "Armour")) + ": " + leader_armour,
                       self.localisation.grab_text(("ui", "Mount")) + ": " + leader_mount]
-
         for item in self.play_source_data["unit"]:
             if item["ID"] == icon.who.map_id:
                 for troop, value in item["Troop"].items():
+                    new_value = value
+                    if type(new_value) is list:
+                        new_value = str(new_value[0]) + "/" + str(new_value[1])
                     popup_text += [self.troop_data.troop_list[troop]["Name"] + ": " +
-                                   value]
+                                   new_value]
                 break
 
         return popup_text

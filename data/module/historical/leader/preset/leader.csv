@@ -1,5 +1,5 @@
 "ID","Name","Race","Strength","Dexterity","Agility","Constitution","Intelligence","Wisdom","Charisma","Melee Speciality","Range Speciality","Cavalry Speciality","Social Class","Primary Main Weapon","Primary Sub Weapon","Secondary Main Weapon","Secondary Sub Weapon","Armour","Mount","Charge Skill","Skill","Trait","Formation","Sprite ID","Faction","Tag"
-"BBL-1","Gilgamesh",1,100,96,98,100,95,97,100,10,8,9,7,,,,,,,21,,,"Line,Diamond","None",,"Leader"
+"BBL-1","Gilgamesh",1,100,96,98,100,95,97,100,10,8,9,7,,,,,,,21,,,"Line,Diamond","None",0,"Leader"
 "NOR-1","William of Normandy",1,78,74,65,70,81,83,92,7,4,7,5,"2,4",,"7,5",,"5,5","2,4,14",21,"L3,L61",,"Line,Wedge","William",1,"Leader"
 "NOR-2","William FitzOsbern",1,65,52,63,71,68,71,72,7,7,7,4,"2,4",,,,"5,4","2,3,14",21,"L1",,"Line","Norman Leader",1,"Leader"
 "NOR-3","Eustace II",1,67,58,61,69,70,75,75,7,3,8,4,"52,4",,"2,4",,"5,4","2,3,14",21,"L28",,"Line","Eustace",1,"Leader"
@@ -26,8 +26,8 @@
 "NOR-24","Odo of Champagne",1,63,70,72,67,63,62,68,5,6,4,4,"2,4",,,,"5,4","2,3,14",21,"L18",,"Line","Norman Leader",1,"Warrior"
 "NOR-25","Richard of Évreux",1,52,56,55,58,62,67,64,5,5,6,4,"2,4",,,,"5,4","2,3,14",21,"L19",,"Line","Norman Leader",1,"Leader"
 "NOR-26","Baldwin FitzGilbert",1,46,49,48,60,68,70,67,4,5,4,4,"2,4",,,,"5,4","2,3,14",21,"L17",,"Line","Norman Leader",1,"Leader"
-"NOR-27","Gerbod the Fleming",1,44,51,47,64,60,54,48,5,5,4,4,"2,4",,,,"5,4","2,3,14",21,"L26",,"Line","Norman Leader",1,"Leader"
-"NOR-28","Ralph of Gael",1,71,70,67,67,64,68,81,7,6,6,4,"2,4",,,,"5,4","2,3,14",21,"L3,L46",,"Line","Norman Leader",1,"Leader"
+"NOR-27",,,,,,,,,,,,,,,,,,,,,,,,,,
+"NOR-28",,,,,,,,,,,,,,,,,,,,,,,,,,
 "NOR-29","Gilbert II Crispin",1,58,63,63,66,60,58,65,6,5,5,4,"2,4",,,,"5,4","2,3,14",21,,,"Line","Norman Leader",1,"Leader"
 "NOR-30","William Crispin",1,59,60,60,68,62,60,66,5,6,6,4,"2,4",,,,"5,4","2,3,14",21,,,"Line","Norman Leader",1,"Leader"
 "NOR-31","Henry of Ferrers",1,50,55,48,65,75,78,74,3,5,6,4,,,,,,,,,,,,1,
@@ -70,28 +70,31 @@
 "NOR-68","Walter of Aincourt",1,,,,,,,,,,,,,,,,,,,,,,,1,
 "NOR-69","Samson of Ansneville",1,,,,,,,,,,,,,,,,,,,,,,,1,
 "NOR-70","William of Say",1,62,62,56,62,60,58,58,5,4,5,4,,,,,,,,,,,,1,
-"NOR-71","Robert of Say",1,57,60,58,66,65,62,64,4,5,5,4,,,,,,,,,,,,,
+"NOR-71","Robert of Say",1,57,60,58,66,65,62,64,4,5,5,4,,,,,,,,,,,,1,
 "NOR-72","Hugh of Port",1,54,53,50,65,72,75,72,6,3,6,4,,,,,,,,,,,,1,
 "NOR-73","William Paverel",1,52,58,42,68,64,72,70,6,7,6,4,,,,,,,,,,,,1,
-"NOR-74","William of Ferrers",1,45,50,46,54,60,57,55,2,5,4,4,,,,,,,,,,,,,
-"NOR-75","Guy of Burgundy",1,,,,,,,,,,,,,,,,,,,,,,,,
-"NOR-76","Rannulf of the Bessin,",1,,,,,,,,,,,,,,,,,,,,,,,,
-"NOR-77","Hamon Dentatus",1,,,,,,,,,,,,,,,,,,,,,,,,
-"NOR-78","Grimoald of Plessis",1,,,,,,,,,,,,,,,,,,,,,,,,
-"NOR-79","Ralph Tesson",1,,,,,,,,,,,,,,,,,,,,,,,,
+"NOR-74","William of Ferrers",1,45,50,46,54,60,57,55,2,5,4,4,,,,,,,,,,,,1,
+"NOR-75","Guy of Burgundy",1,,,,,,,,,,,,,,,,,,,,,,,1,
+"NOR-76","Rannulf of the Bessin,",1,,,,,,,,,,,,,,,,,,,,,,,1,
+"NOR-77","Hamon Dentatus",1,,,,,,,,,,,,,,,,,,,,,,,1,
+"NOR-78","Grimoald of Plessis",1,,,,,,,,,,,,,,,,,,,,,,,1,
+"NOR-79","Ralph Tesson",1,,,,,,,,,,,,,,,,,,,,,,,1,
 ,,1,,,,,,,,,,,,,,,,,,,,,,,,
-"BRT-1","Alan the Red",1,70,64,58,68,75,80,70,6,6,6,4,"2,4",,,,"5,4","2,3,14",21,"L21",,"Line","Alan The Red",1,"Leader"
-"BRT-2","Alain Fergant",1,,,,,,,,,,,,,,,,,,,,,,,1,
-"BRT-3","Alan the Black",1,,,,,,,,,,,,,,,,,,,,,,,,
-"BRT-4","Brian of Brittany",,,,,,,,,,,,,,,,,,,,,,,,,
-"BRT-5","Conan II of Brittany",,,,,,,,,,,,,,,,,,,,,,,,,
-"BRT-6","Rivallon I of Dol",,,,,,,,,,,,,,,,,,,,,,,,,
-"FR-1","Henry I of France",1,,,,,,,,,,,,,,,,,,,,,,,,
-"FR-2",,1,,,,,,,,,,,,,,,,,,,,,,,,
-"FR-3",,1,,,,,,,,,,,,,,,,,,,,,,,,
-"FR-4","Hamo of Crevecceur",1,48,49,55,60,54,58,42,5,4,2,4,,,,,,,,,,,,1,
-"FR-5","Drogo of Brevere",1,62,60,68,63,76,85,74,5,5,7,4,,,,,,,,,,,,,
-"FR-6","Aimery IV of Thouars",1,56,54,58,47,51,48,68,6,4,5,4,"2,4",,,,"5,4","2,3,14",21,"L21",,"Line","Norman Leader",1,"Supporter"
+"BRT-1","Alan the Red",1,70,64,58,68,75,80,70,6,6,6,4,"2,4",,,,"5,4","2,3,14",21,"L21",,"Line","Alan The Red",12,"Leader"
+"BRT-2","Alain Fergant",1,,,,,,,,,,,,,,,,,,,,,,,12,
+"BRT-3","Alan the Black",1,,,,,,,,,,,,,,,,,,,,,,,12,
+"BRT-4","Brian of Brittany",,,,,,,,,,,,,,,,,,,,,,,,12,
+"BRT-5","Conan II of Brittany",,,,,,,,,,,,,,,,,,,,,,,,12,
+"BRT-6","Rivallon I of Dol",,,,,,,,,,,,,,,,,,,,,,,,12,
+"BRT-7","Ralph of Gael",1,71,70,67,67,64,68,81,7,6,6,4,"2,4",,,,"5,4","2,3,14",21,"L3,L46",,"Line","Norman Leader",12,"Leader"
+"FR-1","Henry I of France",1,,,,,,,,,,,,,,,,,,,,,,,13,
+"FR-2",,1,,,,,,,,,,,,,,,,,,,,,,,13,
+"FR-3",,1,,,,,,,,,,,,,,,,,,,,,,,13,
+"FR-4","Hamo of Crevecceur",1,48,49,55,60,54,58,42,5,4,2,4,,,,,,,,,,,,13,
+"FR-5","Drogo of Brevere",1,62,60,68,63,76,85,74,5,5,7,4,,,,,,,,,,,,13,
+"FR-6","Aimery IV of Thouars",1,56,54,58,47,51,48,68,6,4,5,4,"2,4",,,,"5,4","2,3,14",21,"L21",,"Line","Norman Leader",13,"Supporter"
+"FR-7","Gerbod the Fleming",1,44,51,47,64,60,54,48,5,5,4,4,"2,4",,,,"5,4","2,3,14",21,"L26",,"Line","Norman Leader",13,"Leader"
+,,,,,,,,,,,,,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,,,,,,,,,
 "SAX-1","Harold Godwinson",1,77,68,70,73,78,80,85,8,2,6,7,"2,5","39,4",,,"5,5",,21,"L26,L49",,"Line,Square","Harold",2,"Leader"
 "SAX-2","Gyrth Godwinson",1,70,60,53,54,70,67,74,6,4,5,5,"2,5","39,4",,,"5,5",,21,"L3",,"Line","Saxon Leader",2,"Leader"

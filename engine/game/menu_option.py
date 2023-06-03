@@ -76,7 +76,6 @@ def menu_option(self, esc_press):
         change_resolution(self, (self.screen_width, "", self.screen_height))
 
     elif self.profile_box.event_press:
-        print('test')
         self.input_popup = ("text_input", "profile_name")
         self.input_box.text_start(self.profile_name)
         self.input_ui.change_instruction("Profile Name:")

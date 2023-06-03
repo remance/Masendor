@@ -10,13 +10,12 @@ def change_battle_source(self):
     self.source_name_list = [self.localisation.grab_text(key=("preset_map", self.battle_campaign[self.map_selected],
                                                               self.map_selected, "source", key, "Source")) for key in
                              self.play_map_data if key != "source"]
-
-    self.camp_pos = {}
+    self.play_map_data["camp_pos"] = {}
     for key, value in self.play_map_data["source"][self.map_source_selected].items():
         if "Camp " in key and value:
-            self.camp_pos[int(key[-1])] = value
+            self.play_map_data["camp_pos"][int(key[-1])] = value
 
-    for team, pos_list in self.camp_pos.items():
+    for team, pos_list in self.play_map_data["camp_pos"].items():
         if pos_list:
             if ";" in pos_list:
                 pos_list = pos_list.split(";")
@@ -26,7 +25,7 @@ def change_battle_source(self):
                 if pos:
                     pos_list[index] = pos.replace("(", "").replace(")", "").split(",")
                     pos_list[index] = ((int(pos_list[index][0]), int(pos_list[index][1])), int(pos_list[index][2]))
-            self.camp_pos[team] = pos_list
+            self.play_map_data["camp_pos"][team] = pos_list
 
     # self.source_description.change_text(self.source_text, self.mouse_pos)
 
@@ -36,7 +35,7 @@ def change_battle_source(self):
 
     # reset preview mini map
     self.create_preview_map()
-    self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos)
+    self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.play_map_data["camp_pos"])
 
     # Reset character selection UI
     self.unit_select_row = 0

@@ -885,13 +885,14 @@ class UnitIcon(UIBattle, Sprite):
 
 
 class TempUnitIcon(UIBattle):
-    def __init__(self, team, image, index):
+    def __init__(self, team, image, index, map_id=None, coa=None):
         UIBattle.__init__(self)
         self.team = team
         self.index = index
-        self.map_id = None
+        self.map_id = map_id
+        self.coa = coa
         self.portrait = Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]), SRCALPHA)
-        if type(image) in (int, float, str):
+        if type(image) in (int, float, str):  # text instead of picture
             self.name = str(image)
             font = Font(self.ui_font["main_button"],
                         int(120 / (len(self.name) / 3) * self.screen_scale[1]))

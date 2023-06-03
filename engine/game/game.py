@@ -25,6 +25,7 @@ from engine.battle.setup_battle_unit import setup_battle_unit
 from engine.menubackground.menubackground import MenuActor, MenuRotate
 from engine.updater.updater import ReversedLayeredUpdates
 
+from engine.game.menu_preset_map_select import preset_map_list_on_mouse_over
 from engine.game.menu_custom_map_select import custom_map_list_on_select, custom_faction_list_on_select, \
     custom_weather_list_on_select
 
@@ -244,6 +245,7 @@ class Game:
         Game.ui_font = csv_read(self.module_dir, "ui_font.csv", ("ui",), header_key=True)
         for item in Game.ui_font:  # add ttf file extension for font data reading.
             Game.ui_font[item] = os.path.join(self.font_dir, Game.ui_font[item]["Font"] + ".ttf")
+
         # Set the display mode
         Game.screen_rect = pygame.Rect(0, 0, self.screen_width, self.screen_height)
         Game.screen_scale = (self.screen_rect.width / 1920, self.screen_rect.height / 1080)
@@ -278,11 +280,8 @@ class Game:
         self.team_selected = 1
         self.unit_selected = None
         self.team_pos = {}  # for saving preview map unit pos
-        self.camp_pos = {}  # for saving preview map camp pos
-        self.play_map_data = {"info": {"weather": [[0, "09:00:00", 0, 0]]}, "unit": {"pos": {}}}
-        self.source_data = None
-        self.map_info = None
-        self.map_unit_data = None
+        self.play_map_data = {"info": {"weather": [[0, "09:00:00", 0, 0]]}, "unit": {"pos": {}}, "camp_pos": {}}
+        self.play_source_data = {"unit": [], "event_log": {}}
 
         self.dt = 0
         self.text_delay = 0
@@ -322,8 +321,6 @@ class Game:
         self.all_units = pygame.sprite.Group()  # group to keep all unit object for cleaning
 
         self.preview_unit = pygame.sprite.Group()  # group for unit list in unit select screen
-
-        self.sprite_indicator = pygame.sprite.Group()
 
         self.shoot_lines = pygame.sprite.Group()
         self.button_ui = pygame.sprite.Group()  # ui button group in battle
@@ -460,7 +457,7 @@ class Game:
             pygame.mixer = None
         if pygame.mixer:
             pygame.mixer.set_num_channels(1000)
-            pygame.mixer.music.set_volume(self.master_volume)
+            pygame.mixer.music.set_volume(self.play_music_volume)
             self.SONG_END = pygame.USEREVENT + 1
             self.music_list = glob.glob(self.module_dir + "/sound/music/menu.ogg")
             pygame.mixer.music.load(self.music_list[0])
@@ -489,29 +486,29 @@ class Game:
         # Battle map select menu button
 
         self.preset_map_list_box = ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
-                                          items=CampaignListAdapter(self.preset_map_data, self),
+                                          items=CampaignListAdapter(self.preset_map_data, self,
+                                                                    replace_on_mouse_over=preset_map_list_on_mouse_over),
                                           parent=self.screen, item_size=20)
 
         self.custom_battle_map_list_box = ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
-                                                 items=ListAdapter(self.battle_map_list, self,
+                                                 items=ListAdapter(self.battle_map_list,
                                                                    replace_on_select=custom_map_list_on_select),
                                                  parent=self.screen, item_size=20)
 
         self.custom_preset_army_list_box = ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
-                                                  items=ListAdapter(self.battle_map_list, self),
+                                                  items=ListAdapter(["None"]),
                                                   parent=self.screen, item_size=20)
 
         self.custom_battle_faction_list_box = ListUI(pivot=(-0.03, -0.1), origin=(-1, -1), size=(.3, .4),
                                                      items=ListAdapter(["None"] + self.faction_data.faction_name_list,
-                                                                       self,
                                                                        replace_on_select=custom_faction_list_on_select),
                                                      parent=self.screen, item_size=10)
 
         self.unit_list_box = ListUI(pivot=(-0.03, -0.1), origin=(-1, -1), size=(.3, .4),
-                                    items=ListAdapter(self.battle_map_list, self), parent=self.screen, item_size=10)
+                                    items=ListAdapter(["None"]), parent=self.screen, item_size=10)
 
         self.weather_list_box = ListUI(pivot=(0, -0.1), origin=(-1, -1), size=(.3, .4),
-                                       items=ListAdapter(self.battle_map_data.weather_list, self,
+                                       items=ListAdapter(self.battle_map_data.weather_list,
                                                          replace_on_select=custom_weather_list_on_select),
                                        parent=self.screen, item_size=10, layer=20)
 
@@ -840,6 +837,7 @@ class Game:
                 elif event.type == QUIT:
                     esc_press = True
 
+            self.remove_ui_updater(self.single_text_popup)
             self.main_ui_updater.update()
 
             # Reset screen
@@ -858,10 +856,10 @@ class Game:
                         pos = self.input_popup[1].split("/")[1]
                         pos = pos.replace("(", "").replace(")", "").split(", ")
                         pos = [float(item) for item in pos]
-                        self.camp_pos[int(self.input_popup[1][-1])].insert(0, [pos, int(self.input_box.text)])
+                        self.play_map_data["camp_pos"][int(self.input_popup[1][-1])].insert(0, [pos, int(self.input_box.text)])
                         self.camp_icon.insert(0, TempUnitIcon(int(self.input_popup[1][-1]), self.input_box.text, 0))
                         self.unit_selector.setup_unit_icon(self.unit_icon, self.camp_icon)
-                        self.map_preview.change_mode(1, camp_pos_list=self.camp_pos)
+                        self.map_preview.change_mode(1, camp_pos_list=self.play_map_data["camp_pos"])
 
                     elif "replace key" in self.input_popup[1]:
                         old_key = self.player1_key_bind[self.config["USER"]["control player 1"]][self.input_popup[1][1]]

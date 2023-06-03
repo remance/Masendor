@@ -1,3 +1,6 @@
+from engine.game.menu_custom_unit_setup import unit_change_team_unit
+
+
 def menu_custom_map_select(self, esc_press):
     if self.weather_list_box in self.main_ui_updater:
         if not self.weather_list_box.mouse_over and self.cursor.is_select_just_up:  # click other stuffs
@@ -22,11 +25,8 @@ def menu_custom_map_select(self, esc_press):
         self.back_mainmenu()
 
     elif self.select_button.event:  # select this map and team list, go to unit setup screen
-        if len([coa for coa in self.team_coa if coa.name is not None and coa.name != "None"]) > 1:
+        if len([coa for coa in self.team_coa if coa.name is not None and coa.name != "None"]) > 1:  # enough team to play
             self.menu_state = "custom_unit_setup"
-            self.unit_select_row = 0
-
-            self.play_map_data["unit"] = {"pos": {}}
 
             self.add_ui_updater(self.custom_preset_army_list_box, self.unit_list_box)
 
@@ -39,30 +39,8 @@ def menu_custom_map_select(self, esc_press):
                                    self.weather_custom_select, self.wind_custom_select,
                                    self.custom_battle_faction_list_box)
 
-            for coa in self.team_coa:
-                if coa.coa_images and coa.team not in self.play_map_data["unit"]:
-                    self.play_map_data["unit"][coa.team] = []
-                    self.play_map_data["unit"]["pos"][coa.team] = {}
-                elif coa.team in self.play_map_data["unit"]:  # non existence team
-                    self.play_map_data["unit"].pop(coa.team)
-                    self.play_map_data["unit"]["pos"].pop(coa.team)
+            unit_change_team_unit(self, new_faction=True)
 
-            # self.add_ui_updater(self.unit_list_box, self.unit_list_box.scroll)
-            # for coa in self.team_coa:
-            #     if coa.selected:  # get unit for selected team
-            #         unit_list = []
-            #         for faction in coa.coa_images:
-            #             if faction == 0:  # all faction
-            #                 for this_faction in self.faction_data.faction_unit_list:
-            #                     unit_list += list(self.faction_data.faction_unit_list[this_faction].keys())
-            #             else:
-            #                 unit_list += list(self.faction_data.faction_unit_list[faction].keys())
-            #
-            #             unit_list = sorted((set(unit_list)), key=unit_list.index)
-            #
-            #         # setup_list(self.screen_scale, uimenu.NameList, self.current_map_row, unit_list,
-            #         #            self.map_namegroup, self.unit_list_box, self.main_ui_updater)
-            #         break
         else:
             self.input_popup = ("confirm_input", "warning")
             self.input_ui.change_instruction("Require at least 2 teams")
@@ -102,8 +80,8 @@ def menu_custom_map_select(self, esc_press):
                     self.input_ui.change_instruction("Camp Size Value:")
                     self.add_ui_updater(self.input_ui_popup)
                 else:
-                    self.camp_pos[icon.who.team][index][0] = map_pos
-                self.map_preview.change_mode(1, camp_pos_list=self.camp_pos)
+                    self.play_map_data["camp_pos"][icon.who.team][index][0] = map_pos
+                self.map_preview.change_mode(1, camp_pos_list=self.play_map_data["camp_pos"])
                 break
 
     elif self.unit_selector.mouse_over:
@@ -138,11 +116,11 @@ def menu_custom_map_select(self, esc_press):
                         icon.selection()
                     elif self.cursor.is_alt_select_just_up:  # right click remove icon
                         if icon.who.name != "+":
-                            self.camp_pos[icon.who.team].pop(index)
+                            self.play_map_data["camp_pos"][icon.who.team].pop(index)
                             icon.kill()
                             self.camp_icon.pop(index)
                             self.unit_selector.setup_unit_icon(self.unit_icon, self.camp_icon)
-                    self.map_preview.change_mode(1, camp_pos_list=self.camp_pos)
+                    self.map_preview.change_mode(1, camp_pos_list=self.play_map_data["camp_pos"])
                     break
 
 
@@ -156,8 +134,8 @@ def change_team_coa(self):
             for icon in self.camp_icon:
                 icon.kill()
             self.camp_icon = []
-            if this_team.team in self.camp_pos:
-                for camp in self.camp_pos[this_team.team]:
+            if this_team.team in self.play_map_data["camp_pos"]:
+                for camp in self.play_map_data["camp_pos"][this_team.team]:
                     self.camp_icon.append(TempUnitIcon(this_team.team, camp[1], 0))
                 self.camp_icon.append(TempUnitIcon(this_team.team, "+", 0))
             self.unit_selector.setup_unit_icon(self.unit_icon, self.camp_icon)
@@ -169,83 +147,95 @@ def change_team_coa(self):
 
 
 def custom_map_list_on_select(self, item_index, item_text):
-    _self = self._self
     self.last_index = item_index
-    _self.current_map_select = item_index
-    _self.map_selected = _self.battle_map_folder[_self.current_map_select]
-    _self.create_preview_map()
+    game = self.game
+    game.current_map_select = item_index
+    game.map_selected = game.battle_map_folder[game.current_map_select]
+    game.create_preview_map()
 
 
 def custom_faction_list_on_select(self, item_index, item_text):
+    """
+    Method for faction list where player can select faction into the current selected team
+    :param self: Listui object
+    :param item_index: Index of selected item in list
+    :param item_text: Text of selected item
+    """
     from engine.uibattle.uibattle import TempUnitIcon
-    _self = self._self
-    _self.last_index = item_index
-    for coa in _self.team_coa:
+    self.last_index = item_index
+    game = self.game
+    for coa in game.team_coa:  # check for selected team
         if coa.selected:
-            if item_text != "None":
-                faction_index = _self.faction_data.faction_name_list.index(item_text)
-                if _self.cursor.is_select_just_up:
-                    if "Team Faction " + str(coa.team) in _self.play_map_data["info"]:
-                        if faction_index not in _self.play_map_data["info"]["Team Faction " + str(coa.team)]:
-                            _self.play_map_data["info"]["Team Faction " + str(coa.team)].append(
+            if item_text != "None":  # Select faction
+                faction_index = game.faction_data.faction_name_list.index(item_text)
+                if game.cursor.is_select_just_up:
+                    if "Team Faction " + str(coa.team) in game.play_map_data["info"]:
+                        if faction_index not in game.play_map_data["info"]["Team Faction " + str(coa.team)]:
+                            game.play_map_data["info"]["Team Faction " + str(coa.team)].append(
                                 faction_index)
                     else:
-                        _self.play_map_data["info"]["Team Faction " + str(coa.team)] = [faction_index]
+                        game.play_map_data["info"]["Team Faction " + str(coa.team)] = [faction_index]
                     coa.change_coa(
-                        {int(faction): _self.faction_data.coa_list[int(faction)] for faction in
-                         _self.play_map_data["info"]["Team Faction " + str(coa.team)]},
-                        _self.faction_data.faction_list[_self.play_map_data["info"][
+                        {int(faction): game.faction_data.coa_list[int(faction)] for faction in
+                         game.play_map_data["info"]["Team Faction " + str(coa.team)]},
+                        game.faction_data.faction_list[game.play_map_data["info"][
                             "Team Faction " + str(coa.team)][0]]["Name"])
-                elif _self.cursor.is_alt_select_just_up:
-                    if "Team Faction " + str(coa.team) in _self.play_map_data["info"]:
-                        if faction_index in _self.play_map_data["info"]["Team Faction " + str(coa.team)]:
-                            _self.play_map_data["info"]["Team Faction " + str(coa.team)].remove(
+                elif game.cursor.is_alt_select_just_up:
+                    if "Team Faction " + str(coa.team) in game.play_map_data["info"]:
+                        if faction_index in game.play_map_data["info"]["Team Faction " + str(coa.team)]:
+                            game.play_map_data["info"]["Team Faction " + str(coa.team)].remove(
                                 faction_index)
-                        if _self.play_map_data["info"]["Team Faction " + str(coa.team)]:  # still not empty
+                        if game.play_map_data["info"]["Team Faction " + str(coa.team)]:  # still not empty
                             coa.change_coa(
-                                {int(faction): _self.faction_data.coa_list[int(faction)] for faction in
-                                 _self.play_map_data["info"]["Team Faction " + str(coa.team)]},
-                                _self.faction_data.faction_list[_self.play_map_data["info"][
+                                {int(faction): game.faction_data.coa_list[int(faction)] for faction in
+                                 game.play_map_data["info"]["Team Faction " + str(coa.team)]},
+                                game.faction_data.faction_list[game.play_map_data["info"][
                                     "Team Faction " + str(coa.team)][0]]["Name"])
                         else:  # list empty remove data
-                            _self.play_map_data["info"].pop("Team Faction " + str(coa.team))
+                            game.play_map_data["info"].pop("Team Faction " + str(coa.team))
                             coa.change_coa({0: None}, "None")
-            else:
-                if _self.cursor.is_select_just_up and "Team Faction " + str(coa.team) in _self.play_map_data["info"]:
-                    _self.play_map_data["info"].pop("Team Faction " + str(coa.team))
+            else:  # select None faction, remove all in team
+                if game.cursor.is_select_just_up and "Team Faction " + str(coa.team) in game.play_map_data["info"]:
+                    game.play_map_data["info"].pop("Team Faction " + str(coa.team))
                 coa.change_coa({0: None}, "None")
 
-            if "Team Faction " + str(coa.team) in _self.play_map_data["info"]:  # camp, team exist
-                if coa.team not in _self.camp_pos:  # new team, camp not exist
-                    _self.camp_pos[coa.team] = []
-                    for icon in _self.camp_icon:
+            if "Team Faction " + str(coa.team) in game.play_map_data["info"]:  # team now exist
+                game.play_map_data["unit"][coa.team] = []
+                game.play_map_data["unit"]["pos"][coa.team] = {}
+
+                if coa.team not in game.play_map_data["camp_pos"]:  # new team, camp not exist
+                    game.play_map_data["camp_pos"][coa.team] = []
+                    for icon in game.camp_icon:
                         icon.kill()
-                    _self.camp_icon = []
-                else:
-                    for camp in _self.camp_pos[coa.team]:
-                        _self.camp_icon.append(TempUnitIcon(coa.team, camp[1], 0))
-                if not _self.camp_icon or _self.camp_icon[-1].name != "+":
-                    _self.camp_icon.append(TempUnitIcon(coa.team, "+", 0))
+                    game.camp_icon = []
+
+                if not game.camp_icon or game.camp_icon[-1].name != "+":
+                    game.camp_icon.append(TempUnitIcon(coa.team, "+", 0))
 
             else:  # team no longer exist
-                if coa.team in _self.camp_pos:
-                    _self.camp_pos.pop(coa.team)
-                    for icon in _self.camp_icon:
-                        icon.kill()
-                    _self.camp_icon = []
-            _self.unit_selector.setup_unit_icon(_self.unit_icon, _self.camp_icon)
+                if coa.team in game.play_map_data["unit"]:
+                    game.play_map_data["unit"].pop(coa.team)
+                    game.play_map_data["unit"]["pos"].pop(coa.team)
+
+                    if coa.team in game.play_map_data["camp_pos"]:
+                        game.play_map_data["camp_pos"].pop(coa.team)
+                        for icon in game.camp_icon:
+                            icon.kill()
+                        game.camp_icon = []
+
+            game.unit_selector.setup_unit_icon(game.unit_icon, game.camp_icon)
             break
 
 
 def custom_weather_list_on_select(self, item_index, item_text):
-    _self = self._self
-    _self.last_index = item_index
-    _self.weather_custom_select.rename("Weather: " + item_text)
+    game = self.game
+    self.last_index = item_index
+    game.weather_custom_select.rename("Weather: " + item_text)
     battle_time = "09:00:00"
-    if _self.night_battle_tick_box.tick:  # check for night battle
+    if game.night_battle_tick_box.tick:  # check for night battle
         battle_time = "21:00:00"
-    _self.play_map_data["info"]["weather"] = \
-        [[int(_self.battle_map_data.weather_list.index(item_text) / 3), battle_time,
-          _self.play_map_data["info"]["weather"][0][2],
+    game.play_map_data["info"]["weather"] = \
+        [[int(game.battle_map_data.weather_list.index(item_text) / 3), battle_time,
+          game.play_map_data["info"]["weather"][0][2],
           ("Light", "Normal", "Strong").index(item_text.split(" ")[0])]]
-    _self.remove_ui_updater(_self.weather_list_box)
+    game.remove_ui_updater(game.weather_list_box)

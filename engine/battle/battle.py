@@ -145,7 +145,6 @@ class Battle:
         self.battle_height_map = game.battle_height_map
         self.battle_map = game.battle_map
 
-        self.sprite_indicator = game.sprite_indicator
         self.shoot_lines = game.shoot_lines
 
         self.button_ui = game.button_ui
@@ -386,7 +385,7 @@ class Battle:
         self.play_map_type = self.game.play_map_type
         self.play_map_data = self.game.play_map_data
         self.play_source_data = self.game.play_source_data
-        self.camp_pos = self.game.camp_pos
+        self.camp_pos = self.play_map_data["camp_pos"]
 
         # Load weather schedule
         self.weather_event = [item.copy() for item in self.play_source_data["weather"]].copy()

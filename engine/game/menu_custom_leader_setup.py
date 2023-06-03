@@ -9,7 +9,6 @@ leader_change_team_unit = menu_custom_unit_setup.leader_change_team_unit
 
 
 def menu_custom_leader_setup(self, esc_press):
-    self.main_ui_updater.remove(self.single_text_popup)
     if self.unit_selector.mouse_over:
         if mouse_scroll_up:
             if self.unit_selector.current_row > 0:
@@ -75,7 +74,7 @@ def menu_custom_leader_setup(self, esc_press):
                                 char.who.index in self.play_map_data["unit"]["pos"][char.who.team]:
                             # highlight unit in preview map
                             self.map_preview.change_mode(1, team_pos_list=self.play_map_data["unit"]["pos"],
-                                                         camp_pos_list=self.camp_pos,
+                                                         camp_pos_list=self.play_map_data["camp_pos"],
                                                          selected=
                                                          self.play_map_data["unit"]["pos"][char.who.team][
                                                              char.who.index])
@@ -150,7 +149,6 @@ def menu_custom_leader_setup(self, esc_press):
                 break
 
     if self.map_back_button.event or esc_press:
-        self.main_ui_updater.remove(self.single_text_popup)
         self.menu_state = "custom_unit_setup"
         self.map_back_button.event = False
         self.current_map_row = 0
@@ -249,7 +247,7 @@ def change_to_char_select_menu(self):
         preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True)
         self.unit_model_room.add_preview_model(model=preview_sprite_pool[icon.who.troop_id]["sprite"],
                                                coa=icon.who.coa)
-        self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos,
+        self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.play_map_data["camp_pos"],
                                      selected=icon.who.base_pos)
         break
 

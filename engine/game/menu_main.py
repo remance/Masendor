@@ -16,7 +16,7 @@ def menu_main(self, esc_press):
         self.change_battle_source()
 
         # reset preview mini map
-        self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.camp_pos)
+        self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.play_map_data["camp_pos"])
 
         self.add_ui_updater(*self.unit_select_button, self.preset_map_list_box,
                             self.unit_selector, self.unit_selector.scroll, self.unit_model_room, self.map_title)
@@ -25,8 +25,8 @@ def menu_main(self, esc_press):
         self.menu_state = "custom_map"
         self.play_map_type = "custom"
         self.last_select = self.menu_state
-        self.camp_pos = {}
-        self.play_map_data = {"info": {"weather": [[0, "09:00:00", 0, 0]]}, "unit": {"pos": {}}}
+        self.play_map_data = {"info": {"weather": [[0, "09:00:00", 0, 0]]}, "unit": {"pos": {}}, "camp_pos": {}}
+        self.play_source_data = {"unit": [], "event_log": {}}
         self.unit_selected = None  # reset unit selected
         self.unit_model_room.add_preview_model()  # reset model room
         self.current_map_select = 0

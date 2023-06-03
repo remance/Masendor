@@ -2,7 +2,7 @@ from pygame.mixer import music
 
 
 def change_sound_volume(self):
-    self.master_volume = float(self.config["USER"]["effect_volume"])
+    self.master_volume = float(self.config["USER"]["master_volume"])
 
     self.music_volume = float(self.config["USER"]["music_volume"])
     self.play_music_volume = self.master_volume * self.music_volume / 10000
