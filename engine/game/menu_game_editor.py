@@ -1,5 +1,6 @@
 def menu_game_editor(self, esc_press):
-    if self.editor_back_button.event or esc_press:
+    if self.editor_back_button.event_press or esc_press:
+        self.remove_ui_updater(self.editor_button)
         self.back_mainmenu()
 
     elif self.unit_edit_button.event:

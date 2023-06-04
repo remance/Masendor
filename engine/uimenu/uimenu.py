@@ -995,14 +995,21 @@ class CampaignListAdapter(ListAdapterHideExpand):
         map_data = self.game.preset_map_data
         actual_level_list = []
 
+        self.campaign_name_index = {}
+        self.map_name_index = {}
+        self.map_source_name_index = {}
+
         for campaign_file_name in map_data:  # add campaign
             campaign_name = localisation.grab_text(key=("preset_map", "info", campaign_file_name, "Name"))
             actual_level_list.append((0,campaign_name))
+            self.campaign_name_index[campaign_name] = campaign_file_name
             for map_file_name in map_data[campaign_file_name]:  # add map
                 map_name = localisation.grab_text(key=("preset_map", campaign_file_name, "info", map_file_name, "Name"))
                 actual_level_list.append((1,"> " + map_name))
+                self.map_name_index[map_name] = map_file_name
                 for source_file_name in map_data[campaign_file_name][map_file_name]["source"]:  # add source
                     source_name = localisation.grab_text(key=("preset_map", campaign_file_name, map_file_name, "source", int(source_file_name), "Source"))
+                    self.map_source_name_index[source_name] = source_file_name
                     current_index = len(actual_level_list)
                     self.map_source_index[(map_file_name,source_file_name)] = current_index
                     actual_level_list.append((2,">> " + source_name))
@@ -1037,17 +1044,37 @@ class CampaignListAdapter(ListAdapterHideExpand):
         :param item_index: Index of selected item in list
         :param item_text: Text of selected item
         """
-        # self.last_index = item_index
+        item_name = item_text.replace(">", "")
+        item_name = item_name.replace("|", "")
+        item_id = (item_text, item_index)
+        if item_name[0] == " ":  # remove space from subsection name
+            item_name = item_name[1:]
+        if ">>" in item_text or "||" in item_text:  # source item
+            actual_index = self.get_visible_index_actual_index()[item_index]
 
-        # if ">>" in item_text or "||" in item_text:
-        #     popup_text = self.game.localisation.grab_text(("preset_map", ))
-        # elif ">" in item_text or "|" in item_text:
-        #     popup_text = self.game.localisation.grab_text(("preset_map", ))
-        # else:  # campaign item
-        #     popup_text = self.game.localisation.grab_text(("preset_map", ))
-        print(item_text)
-        # _self.single_text_popup.popup(_self.cursor.rect, popup_text, width_text_wrapper=500 * self.game.screen_scale[0])
-        # _self.add_ui_updater(_self.single_text_popup)
+            _map, source = {v: k for k, v in self.map_source_index.items()}[actual_index]
+            popup_text = [value for key, value in
+                          self.game.localisation.grab_text(("preset_map",
+                                                            self.game.battle_campaign[_map],
+                                                            _map, "source",
+                                                            source)).items() if
+                          "Description" in key]
+        elif ">" in item_text or "|" in item_text:  # map item
+            popup_text = [value for key, value in
+                          self.game.localisation.grab_text(("preset_map",
+                                                            self.game.battle_campaign[self.map_name_index[item_name]],
+                                                            "info", self.map_name_index[item_name])).items() if
+                          "Description" in key]
+
+        else:  # campaign item
+            popup_text = [value for key, value in
+                          self.game.localisation.grab_text(("preset_map", "info",
+                                                            self.campaign_name_index[item_name])).items() if
+                          "Description" in key]
+
+        self.game.single_text_popup.popup(self.game.cursor.rect, popup_text, shown_id=item_id,
+                                          width_text_wrapper=1000 * self.game.screen_scale[0])
+        self.game.add_ui_updater(self.game.single_text_popup)
 
 
 class TickBox(UIMenu):
@@ -1278,11 +1305,13 @@ class TextPopup(UIMenu):
         self.font_size = int(24 * self.screen_scale[1])
         self.font = Font(self.ui_font["main_button"], self.font_size)
         self.pos = (0, 0)
+        self.last_shown_id = None
         self.text_input = ""
 
-    def popup(self, cursor_rect, text_input, width_text_wrapper=0):
+    def popup(self, cursor_rect, text_input, shown_id=None, width_text_wrapper=0):
         """Pop out text box with input text list in multiple line, one item equal to one line"""
-        if self.text_input != text_input:
+        if self.text_input != text_input or self.last_shown_id != shown_id:
+            self.last_shown_id = shown_id
             self.text_input = text_input
             if type(text_input) == str:
                 self.text_input = [text_input]
@@ -1321,7 +1350,7 @@ class TextPopup(UIMenu):
                 text_rect = surface.get_rect(topleft=(4, height))
                 image.blit(surface, text_rect)
                 self.image.blit(surface, text_rect)  # blit text
-                height += self.font_size + int(self.font_size / 10)
+                height += surface.get_height()
 
         self.rect = self.image.get_rect(bottomleft=cursor_rect.bottomright)
 

@@ -59,10 +59,11 @@ def menu_preset_map_select(self, esc_press):
 
     elif self.unit_model_room.mouse_over:
         if self.unit_selected is not None:
+            leader_id = [item for item in self.play_map_data[self.map_source_selected]['unit'] if
+                                               item["ID"] == self.unit_selected][0]["Leader ID"]
             self.single_text_popup.popup(self.cursor.rect,
-                                         (self.leader_data.leader_lore[
-                                              [item for item in self.play_map_data[self.map_source_selected]['unit'] if
-                                               item["ID"] == self.unit_selected][0]["Leader ID"]]["Description"],),
+                                         (self.leader_data.leader_lore[leader_id]["Description"],),
+                                         shown_id=("model", leader_id, self.unit_selected),
                                          width_text_wrapper=500)
             self.add_ui_updater(self.single_text_popup)
 
@@ -91,8 +92,10 @@ def menu_preset_map_select(self, esc_press):
         else:
             for index, icon in enumerate(self.unit_icon):
                 if icon.mouse_over:
-                    popup_text = leader_popup_text(self, icon)
-                    self.single_text_popup.popup(self.cursor.rect, popup_text)
+                    shown_id = ("icon", icon.who.name)
+                    if self.single_text_popup.last_shown_id != shown_id:
+                        popup_text = leader_popup_text(self, icon)
+                        self.single_text_popup.popup(self.cursor.rect, popup_text, shown_id=shown_id)
                     self.add_ui_updater(self.single_text_popup)
                     if icon.event_press:
                         for other_icon in self.unit_icon:
