@@ -19,7 +19,8 @@ def menu_main(self, esc_press):
         self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.play_map_data["camp_pos"])
 
         self.add_ui_updater(*self.unit_select_button, self.preset_map_list_box,
-                            self.unit_selector, self.unit_selector.scroll, self.unit_model_room, self.map_title)
+                            self.unit_selector, self.unit_selector.scroll, self.unit_model_room, self.map_preview,
+                            self.map_title, self.team_coa_box)
 
     elif self.custom_map_button.event:  # custom map list menu
         self.menu_state = "custom_map"
@@ -48,7 +49,8 @@ def menu_main(self, esc_press):
                             self.custom_battle_faction_list_box,
                             self.custom_map_option_box, self.unit_selector,
                             self.unit_selector.scroll, self.weather_custom_select, self.wind_custom_select,
-                            self.night_battle_tick_box, self.unit_model_room, self.map_title)
+                            self.night_battle_tick_box, self.unit_model_room, self.map_title, self.map_preview,
+                            self.team_coa_box)
 
     elif self.game_edit_button.event:  # custom unit/sub-unit editor menu
         self.menu_state = "game_creator"

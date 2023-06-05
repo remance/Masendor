@@ -662,6 +662,7 @@ class ValueBox(UIMenu):
 
 class TeamCoa(UIMenu):
     def __init__(self, not_selected_pos, selected_pos, coa_images, team, team_colour, name):
+        self._layer = 12
         UIMenu.__init__(self, has_containers=True)
 
         self.selected = False
@@ -1047,33 +1048,34 @@ class CampaignListAdapter(ListAdapterHideExpand):
         item_name = item_text.replace(">", "")
         item_name = item_name.replace("|", "")
         item_id = (item_text, item_index)
-        if item_name[0] == " ":  # remove space from subsection name
-            item_name = item_name[1:]
-        if ">>" in item_text or "||" in item_text:  # source item
-            actual_index = self.get_visible_index_actual_index()[item_index]
+        if item_id != self.game.single_text_popup.last_shown_id:
+            if item_name[0] == " ":  # remove space from subsection name
+                item_name = item_name[1:]
+            if ">>" in item_text or "||" in item_text:  # source item
+                actual_index = self.get_visible_index_actual_index()[item_index]
 
-            _map, source = {v: k for k, v in self.map_source_index.items()}[actual_index]
-            popup_text = [value for key, value in
-                          self.game.localisation.grab_text(("preset_map",
-                                                            self.game.battle_campaign[_map],
-                                                            _map, "source",
-                                                            source)).items() if
-                          "Description" in key]
-        elif ">" in item_text or "|" in item_text:  # map item
-            popup_text = [value for key, value in
-                          self.game.localisation.grab_text(("preset_map",
-                                                            self.game.battle_campaign[self.map_name_index[item_name]],
-                                                            "info", self.map_name_index[item_name])).items() if
-                          "Description" in key]
+                _map, source = {v: k for k, v in self.map_source_index.items()}[actual_index]
+                popup_text = [value for key, value in
+                              self.game.localisation.grab_text(("preset_map",
+                                                                self.game.battle_campaign[_map],
+                                                                _map, "source",
+                                                                source)).items()]
+            elif ">" in item_text or "|" in item_text:  # map item
+                popup_text = [value for key, value in
+                              self.game.localisation.grab_text(("preset_map",
+                                                                self.game.battle_campaign[self.map_name_index[item_name]],
+                                                                "info", self.map_name_index[item_name])).items()]
 
-        else:  # campaign item
-            popup_text = [value for key, value in
-                          self.game.localisation.grab_text(("preset_map", "info",
-                                                            self.campaign_name_index[item_name])).items() if
-                          "Description" in key]
+            else:  # campaign item
+                popup_text = [value for key, value in
+                              self.game.localisation.grab_text(("preset_map", "info",
+                                                                self.campaign_name_index[item_name])).items()]
 
-        self.game.single_text_popup.popup(self.game.cursor.rect, popup_text, shown_id=item_id,
-                                          width_text_wrapper=1000 * self.game.screen_scale[0])
+            self.game.single_text_popup.popup(self.game.cursor.rect, popup_text, shown_id=item_id,
+                                              width_text_wrapper=1000 * self.game.screen_scale[0])
+        else:  # already showing this leader no need to create text again
+            self.game.single_text_popup.popup(self.game.cursor.rect, None, shown_id=item_id,
+                                              width_text_wrapper=1000 * self.game.screen_scale[0])
         self.game.add_ui_updater(self.game.single_text_popup)
 
 
@@ -1105,9 +1107,9 @@ class TickBox(UIMenu):
             self.image = self.not_tick_image
 
 
-class MapOptionBox(UIMenu):
-    def __init__(self, pos, image):
-        self._layer = 13
+class BackgroundBox(UIMenu):
+    def __init__(self, pos, image, layer=10):
+        self._layer = layer
         UIMenu.__init__(self, player_interact=False)
         self.image = image.copy()
 
@@ -1310,31 +1312,38 @@ class TextPopup(UIMenu):
 
     def popup(self, cursor_rect, text_input, shown_id=None, width_text_wrapper=0):
         """Pop out text box with input text list in multiple line, one item equal to one line"""
-        if self.text_input != text_input or self.last_shown_id != shown_id:
-            self.last_shown_id = shown_id
+        self.last_shown_id = shown_id
+        if text_input is not None and (self.text_input != text_input or self.last_shown_id != shown_id):
             self.text_input = text_input
             if type(text_input) == str:
                 self.text_input = [text_input]
-
             text_surface = []
             if width_text_wrapper:
                 max_height = 0
-                max_width = 0
+                max_width = width_text_wrapper
                 for text in self.text_input:
-                    text_image = Surface(
-                        (width_text_wrapper, (len(text) * (self.font_size ** 2 / 1.3) / width_text_wrapper)))
-                    text_image.fill((255, 255, 255))
-                    make_long_text(text_image, text, (self.font_size, self.font_size), self.font)
-                    text_surface.append(text_image)
-                    max_width = text_image.get_width()
-                    max_height += text_image.get_height() + self.font_size + int(self.font_size / 5)
+                    image_height = (len(text) * (self.font_size ** 2 / 1.3) / width_text_wrapper)
+                    if image_height < self.font_size:  # only one line
+                        print(text)
+                        text_image = Surface((width_text_wrapper, self.font_size))
+                        text_image.fill((255, 255, 255))
+                        surface = self.font.render(text, True, (0, 0, 0))
+                        text_image.blit(surface, (self.font_size, 0))
+                        text_surface.append(text_image)  # text input font surface
+                        max_height += self.font_size * 2
+                    else:
+                        text_image = Surface((width_text_wrapper, image_height))
+                        text_image.fill((255, 255, 255))
+                        make_long_text(text_image, text, (self.font_size, self.font_size), self.font)
+                        text_surface.append(text_image)
+                        max_height += text_image.get_height() + self.font_size + int(self.font_size / 5)
             else:
                 max_width = 0
                 max_height = 0
                 for text in self.text_input:
                     surface = self.font.render(text, True, (0, 0, 0))
                     text_surface.append(surface)  # text input font surface
-                    text_rect = surface.get_rect(topleft=(1, 1))  # text input position at (1,1) on white box image
+                    text_rect = surface.get_rect(topleft=(self.font_size, self.font_size))  # text input position at (1,1) on white box image
                     if text_rect.width > max_width:
                         max_width = text_rect.width
                     max_height += self.font_size + int(self.font_size / 5)
@@ -1537,7 +1546,6 @@ class ListUI(UIMenu, Containable):
         # detect if in list or over scroll box
         self.in_scroll_box = False
         if self.rect.collidepoint(mouse_pos):
-
             in_list = True
             self.mouse_over = True
             if scroll_bar_rect := self.get_scroll_bar_rect():

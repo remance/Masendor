@@ -1,4 +1,5 @@
 from engine.game.menu_custom_unit_setup import unit_change_team_unit
+from engine.uibattle.uibattle import TempUnitIcon
 
 
 def menu_custom_map_select(self, esc_press):
@@ -16,7 +17,7 @@ def menu_custom_map_select(self, esc_press):
                                self.custom_battle_faction_list_box, self.custom_map_option_box, self.unit_selector,
                                self.unit_selector.scroll, self.weather_custom_select, self.wind_custom_select,
                                self.custom_map_option_box, self.night_battle_tick_box, self.map_preview,
-                               self.unit_model_room, self.weather_list_box, self.map_title)
+                               self.unit_model_room, self.weather_list_box, self.map_title, self.team_coa_box)
 
         for stuff in self.team_coa:
             stuff.kill()
@@ -46,9 +47,27 @@ def menu_custom_map_select(self, esc_press):
             self.input_ui.change_instruction("Require at least 2 teams")
             self.add_ui_updater(self.inform_ui_popup)
 
-    change_team_coa(self)
+    elif self.team_coa_box.mouse_over:
+        for this_team in self.team_coa:  # User select any team by clicking on coat of arm
+            if this_team.event_press:
+                self.team_selected = this_team.team
+                this_team.change_select(True)
 
-    if self.custom_map_option_box.mouse_over:
+                for icon in self.camp_icon:
+                    icon.kill()
+                self.camp_icon = []
+                if this_team.team in self.play_map_data["camp_pos"]:
+                    for camp in self.play_map_data["camp_pos"][this_team.team]:
+                        self.camp_icon.append(TempUnitIcon(this_team.team, camp[1], 0))
+                    self.camp_icon.append(TempUnitIcon(this_team.team, "+", 0))
+                self.unit_selector.setup_unit_icon(self.unit_icon, self.camp_icon)
+
+                for this_team2 in self.team_coa:
+                    if self.team_selected != this_team2.team and this_team2.selected:
+                        this_team2.change_select(False)
+                break
+
+    elif self.custom_map_option_box.mouse_over:
         if self.night_battle_tick_box.event_press:
             if self.night_battle_tick_box.tick is False:
                 self.night_battle_tick_box.change_tick(True)
@@ -122,28 +141,6 @@ def menu_custom_map_select(self, esc_press):
                             self.unit_selector.setup_unit_icon(self.unit_icon, self.camp_icon)
                     self.map_preview.change_mode(1, camp_pos_list=self.play_map_data["camp_pos"])
                     break
-
-
-def change_team_coa(self):
-    from engine.uibattle.uibattle import TempUnitIcon
-    for this_team in self.team_coa:  # User select any team by clicking on coat of arm
-        if this_team.event_press:
-            self.team_selected = this_team.team
-            this_team.change_select(True)
-
-            for icon in self.camp_icon:
-                icon.kill()
-            self.camp_icon = []
-            if this_team.team in self.play_map_data["camp_pos"]:
-                for camp in self.play_map_data["camp_pos"][this_team.team]:
-                    self.camp_icon.append(TempUnitIcon(this_team.team, camp[1], 0))
-                self.camp_icon.append(TempUnitIcon(this_team.team, "+", 0))
-            self.unit_selector.setup_unit_icon(self.unit_icon, self.camp_icon)
-
-            for this_team2 in self.team_coa:
-                if self.team_selected != this_team2.team and this_team2.selected:
-                    this_team2.change_select(False)
-            break
 
 
 def custom_map_list_on_select(self, item_index, item_text):

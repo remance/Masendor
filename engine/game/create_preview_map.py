@@ -45,7 +45,6 @@ def create_preview_map(self):
                                                      random.randint(1, 4))
         map_images = {"base": terrain, "feature": feature, "height": height}
     self.map_preview.change_map(map_images["base"], map_images["feature"], map_images["height"])
-    self.add_ui_updater(self.map_preview)
 
     # Create map description
     # map_info = self.read_selected_map_lore()

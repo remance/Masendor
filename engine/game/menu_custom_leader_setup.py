@@ -10,7 +10,7 @@ leader_change_team_unit = menu_custom_unit_setup.leader_change_team_unit
 
 def menu_custom_leader_setup(self, esc_press):
     if self.unit_selector.mouse_over:
-        if mouse_scroll_up:
+        if self.cursor.scroll_up:
             if self.unit_selector.current_row > 0:
                 self.unit_selector.current_row -= 1
                 self.unit_selector.scroll.change_image(new_row=self.unit_selector.current_row,
@@ -23,7 +23,7 @@ def menu_custom_leader_setup(self, esc_press):
                         self.unit_selector.setup_unit_icon(self.unit_icon, preview_char)
                         break
 
-        elif mouse_scroll_down:
+        elif self.cursor.scroll_down:
             if self.unit_selector.current_row < self.unit_selector.row_size:
                 self.unit_selector.current_row += 1
                 self.unit_selector.scroll.change_image(new_row=self.unit_selector.current_row,
@@ -51,45 +51,46 @@ def menu_custom_leader_setup(self, esc_press):
                         break
 
         else:
-            for char in self.unit_icon:  # select unit
-                if char.rect.collidepoint(self.mouse_pos):
-                    if char.who.name != "+":  # add popup showing leader and troop in unit
+            for unit in self.unit_icon:  # select unit
+                if unit.mouse_over:
+                    if unit.who.name != "+":  # add popup showing leader and troop in unit
                         popup_text = [self.leader_data.leader_list[
-                                          self.play_map_data["unit"][char.who.team][char.who.index]["Leader ID"]][
+                                          self.play_map_data["unit"][unit.who.team][unit.who.index]["Leader ID"]][
                                           "Name"]]
-                        for troop in self.play_map_data["unit"][char.who.team][char.who.index]["Troop"]:
+                        for troop in self.play_map_data["unit"][unit.who.team][unit.who.index]["Troop"]:
                             popup_text += [self.troop_data.troop_list[troop]["Name"] + ": " +
-                                           str(self.play_map_data["unit"][char.who.team][char.who.index]["Troop"][
+                                           str(self.play_map_data["unit"][unit.who.team][unit.who.index]["Troop"][
                                                    troop][0]) + " + " +
-                                           str(self.play_map_data["unit"][char.who.team][char.who.index]["Troop"][
+                                           str(self.play_map_data["unit"][unit.who.team][unit.who.index]["Troop"][
                                                    troop][1])]
                         self.single_text_popup.popup(self.cursor.rect, popup_text)
                         self.main_ui_updater.add(self.single_text_popup)
-                    if mouse_left_up:
+                    if unit.event_press:
                         for other_icon in self.unit_icon:
                             if other_icon.selected:  # unselected all others first
                                 other_icon.selection()
-                        char.selection()
-                        if char.who.team in self.play_map_data["unit"]["pos"] and \
-                                char.who.index in self.play_map_data["unit"]["pos"][char.who.team]:
+                        unit.selection()
+                        self.unit_selected = unit.who.map_id
+                        if unit.who.team in self.play_map_data["unit"]["pos"] and \
+                                unit.who.index in self.play_map_data["unit"]["pos"][unit.who.team]:
                             # highlight unit in preview map
                             self.map_preview.change_mode(1, team_pos_list=self.play_map_data["unit"]["pos"],
                                                          camp_pos_list=self.play_map_data["camp_pos"],
                                                          selected=
-                                                         self.play_map_data["unit"]["pos"][char.who.team][
-                                                             char.who.index])
-                        self.org_chart.add_chart(self.play_map_data["unit"][char.who.team], self.preview_unit,
-                                                 selected=char.who.index)
-                    elif mouse_right_up:
+                                                         self.play_map_data["unit"]["pos"][unit.who.team][
+                                                             unit.who.index])
+                        self.org_chart.add_chart(self.play_map_data["unit"][unit.who.team], self.preview_unit,
+                                                 selected=unit.who.index)
+                    elif self.cursor.is_alt_select_just_up:
                         for other_icon in self.unit_icon:
                             if other_icon.right_selected:  # unselected all others first
                                 other_icon.selection(how="right")
-                        char.selection(how="right")
+                        unit.selection(how="right")
                     break
 
-    elif self.org_chart.rect.collidepoint(self.mouse_pos):
-        mouse_pos = pygame.Vector2((self.mouse_pos[0] - self.org_chart.rect.topleft[0]),
-                                   (self.mouse_pos[1] - self.org_chart.rect.topleft[1]))
+    elif self.org_chart.mouse_over:
+        mouse_pos = pygame.Vector2((self.cursor.pos[0] - self.org_chart.rect.topleft[0]),
+                                   (self.cursor.pos[1] - self.org_chart.rect.topleft[1]))
         for rect in self.org_chart.node_rect:  # check for mouse on node in org chart
             if self.org_chart.node_rect[rect].collidepoint(mouse_pos):
                 not_in_list = True
@@ -107,7 +108,7 @@ def menu_custom_leader_setup(self, esc_press):
                         self.single_text_popup.popup(self.cursor.rect, popup_text)
                         self.main_ui_updater.add(self.single_text_popup)
 
-                        if mouse_right_up:
+                        if self.cursor.is_alt_select_just_up:
                             for subunit2 in self.unit_icon:
                                 if subunit2.right_selected and subunit2 is not subunit:
                                     not_in_list = False
@@ -123,7 +124,7 @@ def menu_custom_leader_setup(self, esc_press):
                                     break
                         break
 
-                if mouse_right_up and not_in_list:  # remove unit's leader in org chart
+                if self.cursor.is_alt_select_just_up and not_in_list:  # remove unit's leader in org chart
                     self.play_map_data["unit"][subunit.team][rect]["Temp Leader"] = ""
                     for subunit3_index, subunit3 in enumerate(self.unit_icon):
                         if subunit3.selected:
@@ -134,9 +135,9 @@ def menu_custom_leader_setup(self, esc_press):
                             break
                     break
 
-    elif mouse_left_up:
+    elif self.team_coa_box.mouse_over:
         for this_team in self.team_coa:  # User select any team by clicking on coat of arm
-            if this_team.rect.collidepoint(self.mouse_pos):
+            if this_team.event_press:
                 self.team_selected = this_team.team
                 this_team.change_select(True)
 
@@ -148,18 +149,17 @@ def menu_custom_leader_setup(self, esc_press):
                 self.org_chart.add_chart([], self.preview_unit)
                 break
 
-    if self.map_back_button.event or esc_press:
+    elif self.map_back_button.event_press or esc_press:
         self.menu_state = "custom_unit_setup"
-        self.map_back_button.event = False
         self.current_map_row = 0
-        self.main_ui_updater.remove(self.org_chart)
+        self.remove_ui_updater(self.org_chart, self.start_button)
 
         for subunit in self.preview_unit:  # reset leader
             self.play_map_data["unit"][subunit.team][subunit.index]["Temp Leader"] = ""
         leader_change_team_unit(self)
         self.org_chart.add_chart([], self.preview_unit)  # reset chart
 
-        self.main_ui_updater.add(self.unit_list_box, self.unit_list_box.scroll)
+        self.add_ui_updater(self.unit_list_box, self.select_button)
         for coa in self.team_coa:
             if coa.selected:  # get unit for selected team
                 unit_list = []
@@ -178,21 +178,26 @@ def menu_custom_leader_setup(self, esc_press):
 
         unit_change_team_unit(self)
 
-    elif self.select_button.event:  # go to character select screen
+    elif self.unit_model_room.mouse_over:
+        if self.unit_selected is not None:
+            self.single_text_popup.popup(self.cursor.rect,
+                                         (self.leader_data.leader_lore[
+                                              [item for item in self.play_map_data[self.map_source_selected]['unit'] if
+                                               item["ID"] == self.unit_selected][0]["Leader ID"]]["Description"],),
+                                         width_text_wrapper=500)
+            self.add_ui_updater(self.single_text_popup)
+
+    elif self.start_button.event_press:  # start battle
         self.team_pos = {team: [pos for pos in self.play_map_data["unit"]["pos"][team].values()] for
                          team in self.play_map_data["unit"]["pos"]}
 
         subunit_index = 1
-        for team in self.play_map_data["unit"]:
-            if team != "pos":
-                for index, subunit in enumerate(self.play_map_data["unit"][team]):
-                    subunit["ID"] = subunit_index
-                    subunit["Angle"] = 0
-                    subunit["Start Health"] = 100
-                    subunit["Start Stamina"] = 100
-                    subunit["Team"] = team
-                    subunit["POS"] = self.play_map_data["unit"]["pos"][team][index]
-                    subunit_index += 1
+        for index, subunit in enumerate(self.play_source_data["unit"]):
+            subunit["ID"] = subunit_index
+            subunit["Angle"] = 0
+            subunit["Start Health"] = 100
+            subunit["Start Stamina"] = 100
+            subunit_index += 1
 
         for team in self.play_map_data["unit"]:
             if team != "pos":
@@ -218,39 +223,4 @@ def menu_custom_leader_setup(self, esc_press):
                         new_value["Troop"][troop] = str(troop_value[0]) + "/" + str(troop_value[1])
                     self.play_map_data["battle"].append(new_value)
 
-        change_to_char_select_menu(self)
-
-
-def change_to_char_select_menu(self):
-    self.menu_state = "custom_unit_select"
-    self.select_button.event = False
-    self.unit_select_row = 0
-
-    self.main_ui_updater.remove(*self.map_select_button, self.night_battle_tick_box, self.custom_map_option_box)
-    self.menu_button.remove(*self.map_select_button)
-
-    for group in (self.source_namegroup,):  # remove no longer related sprites in group
-        for stuff in group:
-            stuff.kill()
-            del stuff
-
-    self.main_ui_updater.remove(self.team_coa)
-
-    self.setup_battle_unit(self.preview_unit, preview=self.team_selected)
-
-    self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
-
-    for index, icon in enumerate(self.unit_icon):  # select first unit
-        self.unit_selected = icon.who.map_id
-        icon.selection()
-        who_todo = {key: value for key, value in self.leader_data.leader_list.items() if key == icon.who.troop_id}
-        preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True)
-        self.unit_model_room.add_preview_model(model=preview_sprite_pool[icon.who.troop_id]["sprite"],
-                                               coa=icon.who.coa)
-        self.map_preview.change_mode(1, team_pos_list=self.team_pos, camp_pos_list=self.play_map_data["camp_pos"],
-                                     selected=icon.who.base_pos)
-        break
-
-    self.main_ui_updater.add(self.unit_selector, self.unit_selector.scroll,
-                             self.unit_model_room, *self.unit_select_button)
-    self.menu_button.add(*self.unit_select_button)
+        self.start_battle(self.unit_selected)

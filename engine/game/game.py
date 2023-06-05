@@ -12,7 +12,7 @@ from engine.weather.weather import MatterSprite, SpecialWeatherEffect
 from engine.uibattle.uibattle import MiniMap, UnitIcon, SkillCardIcon, SpriteIndicator, AimTarget, BattleCursor, \
     HeroUI, UnitSelector, UIScroll, Profiler, TempUnitIcon
 from engine.uimenu.uimenu import MapPreview, OptionMenuText, SliderMenu, TeamCoa, MenuCursor, BoxUI, BrownMenuButton, \
-    ListUI, ListAdapter, ListAdapterHideExpand, CampaignListAdapter, LeaderModel, MenuButton, MapOptionBox, OrgChart, \
+    ListUI, ListAdapter, ListAdapterHideExpand, CampaignListAdapter, LeaderModel, MenuButton, BackgroundBox, OrgChart, \
     TickBox, NameList, TextBox, TextPopup, MapTitle
 from engine.battle.battle import Battle
 from engine.unit.unit import Unit, Troop, Leader, rotation_dict, rotation_list
@@ -123,9 +123,6 @@ class Game:
 
     from engine.game import loading_screen
     loading_screen = loading_screen.loading_screen
-
-    from engine.game import menu_custom_unit_select
-    menu_custom_unit_select = menu_custom_unit_select.menu_custom_unit_select
 
     from engine.game import menu_game_editor
     menu_game_editor = menu_game_editor.menu_game_editor
@@ -519,6 +516,10 @@ class Game:
 
         self.unit_selector = UnitSelector(self.map_preview.rect.topright,
                                           battle_select_image["unit_select"], icon_scale=0.4)
+
+        self.team_coa_box = BackgroundBox(self.map_preview.rect.bottomright,
+                                          battle_select_image["team_coa_box"])
+
         UIScroll(self.unit_selector, self.unit_selector.rect.topright)  # scroll bar for unit pick
 
         self.unit_model_room = LeaderModel(self.unit_selector.rect.bottomright,
@@ -538,12 +539,11 @@ class Game:
         self.team_select_button = (self.select_button, self.map_back_button)
         self.unit_select_button = (self.start_button, self.map_back_button)
 
-        # ui box for battle option during preset map preparation screen
-        self.custom_map_option_box = MapOptionBox(self.unit_model_room.rect.bottomright,
-                                                  battle_select_image["small_box"])
+        self.custom_map_option_box = BackgroundBox(self.unit_model_room.rect.bottomright,
+                                                   battle_select_image["small_box"])  # ui box for battle option
 
         self.org_chart = OrgChart(load_image(self.module_dir, self.screen_scale, "org.png", ("ui", "mapselect_ui")),
-                                  (self.screen_rect.center[0] * 1.3, self.screen_rect.height / 12))
+                                  self.unit_selector.rect.bottomleft)
 
         self.camp_icon = []
 
@@ -932,9 +932,6 @@ class Game:
 
                 elif self.menu_state == "custom_map":
                     self.menu_custom_map_select(esc_press)
-
-                elif self.menu_state == "custom_unit_select":
-                    self.menu_custom_unit_select(esc_press)
 
                 elif self.menu_state == "custom_unit_setup":
                     self.menu_custom_unit_setup(esc_press)

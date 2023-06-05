@@ -21,6 +21,6 @@ def create_team_coa(self, data):
             faction_name = "None"
         TeamCoa((pos[0], pos[1]), selected_pos, faction_coa_list, team + 1, self.team_colour[team + 1],
                 faction_name)
-        pos[1] += 70 * self.screen_scale[1]
+        pos[1] += 65 * self.screen_scale[1]
         if team and (team + 1) % 4 == 0:
-            pos = [pos[0] + 100, self.screen_rect.height / 1.6]
+            pos = [pos[0] + (155 * self.screen_scale[0]), self.screen_rect.height / 1.6]

@@ -2,40 +2,34 @@ from engine.uibattle.uibattle import TempUnitIcon
 
 
 def menu_preset_map_select(self, esc_press):
-    for this_team in self.team_coa:  # User select any team by clicking on coat of arm
-        if this_team.event_press:
-            self.team_selected = this_team.team
-            this_team.change_select(True)
+    if self.team_coa_box.mouse_over:
+        for this_team in self.team_coa:  # User select any team by clicking on coat of arm
+            if this_team.event_press:
+                self.team_selected = this_team.team
+                this_team.change_select(True)
 
-            # Reset team selected on team user not currently selected
-            for this_team2 in self.team_coa:
-                if self.team_selected != this_team2.team and this_team2.selected:
-                    this_team2.change_select(False)
+                # Reset team selected on team user not currently selected
+                for this_team2 in self.team_coa:
+                    if self.team_selected != this_team2.team and this_team2.selected:
+                        this_team2.change_select(False)
 
-            for icon in self.preview_unit:
-                icon.kill()
-            self.preview_unit.empty()
+                for icon in self.preview_unit:
+                    icon.kill()
+                self.preview_unit.empty()
 
-            self.preview_unit.add(TempUnitIcon(this_team.team, "None", None))
-            self.setup_battle_unit(self.preview_unit, preview=self.team_selected)
+                self.preview_unit.add(TempUnitIcon(this_team.team, "None", None))
+                self.setup_battle_unit(self.preview_unit, preview=self.team_selected)
 
-            self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
+                self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
 
-            return
+                return
 
-    # for index, name in enumerate(self.source_namegroup):  # user select source
-    #     if name.event_press:  # click on source name
-    #         self.map_source_selected = index
-    #         self.team_selected = 1
-    #         self.change_battle_source()
-    #         return
-
-    if self.map_back_button.event_press or esc_press:
+    elif self.map_back_button.event_press or esc_press:
         self.menu_state = self.last_select
         self.remove_ui_updater(self.start_button, self.map_back_button, self.preset_map_list_box,
                                self.map_preview, self.team_coa,
                                self.unit_selector, self.unit_selector.scroll,
-                               self.unit_model_room, self.map_title)
+                               self.unit_model_room, self.map_title, self.team_coa_box)
 
         # Reset selected team
         for team in self.team_coa:
