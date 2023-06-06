@@ -15,6 +15,10 @@ from engine.battlemap.battlemap import BattleMap
 from engine.utility import keyboard_mouse_press_check, text_render, make_long_text
 
 
+def draw_text(text, font, color):
+    # TODO I will implement ellipsis here /coppermouse
+    return font.render(text, True, color)
+
 def make_image_by_frame(frame: Surface, final_size):
     """
         Makes a bigger frame based image out of a frame surface.
@@ -1506,7 +1510,7 @@ class ListUI(UIMenu, Containable):
                     blit_text = " " + blit_text
 
             self.image.blit(
-                font.render(blit_text, True, text_color),
+                draw_text(blit_text, font, text_color),
                 (20, item_height // 2 + 6 - 9 + i * item_height))
 
         # draw scroll bar
