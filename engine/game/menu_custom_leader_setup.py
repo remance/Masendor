@@ -63,8 +63,8 @@ def menu_custom_leader_setup(self, esc_press):
                                                    troop][0]) + " + " +
                                            str(self.play_map_data["unit"][unit.who.team][unit.who.index]["Troop"][
                                                    troop][1])]
-                        self.single_text_popup.popup(self.cursor.rect, popup_text)
-                        self.main_ui_updater.add(self.single_text_popup)
+                        self.text_popup.popup(self.cursor.rect, popup_text)
+                        self.main_ui_updater.add(self.text_popup)
                     if unit.event_press:
                         for other_icon in self.unit_icon:
                             if other_icon.selected:  # unselected all others first
@@ -105,8 +105,8 @@ def menu_custom_leader_setup(self, esc_press):
                                                    troop][0]) + " + " +
                                            str(self.play_map_data["unit"][subunit.team][subunit.index]["Troop"][
                                                    troop][1])]
-                        self.single_text_popup.popup(self.cursor.rect, popup_text)
-                        self.main_ui_updater.add(self.single_text_popup)
+                        self.text_popup.popup(self.cursor.rect, popup_text)
+                        self.main_ui_updater.add(self.text_popup)
 
                         if self.cursor.is_alt_select_just_up:
                             for subunit2 in self.unit_icon:
@@ -137,6 +137,22 @@ def menu_custom_leader_setup(self, esc_press):
 
     elif self.team_coa_box.mouse_over:
         for this_team in self.team_coa:  # User select any team by clicking on coat of arm
+            if this_team.mouse_over:
+                shown_id = ("team", this_team.coa_images)
+                if self.text_popup.last_shown_id != shown_id:
+                    text = [self.faction_data.faction_name_list[faction] for faction in this_team.coa_images]
+                    unit_data = [0, 0, 0]
+                    for unit in self.play_source_data["unit"]:
+                        if unit["Team"] == this_team.team:
+                            unit_data[0] += 1
+                            for troop_id, troop in unit["Troop"].items():
+                                unit_data[1] += int(troop.split("/")[0])
+                                unit_data[2] += int(troop.split("/")[1])
+                    text.append("Leader: " + str(unit_data[0]) + " Active Troop: " + str(unit_data[1]) + " Reserve Troop: "+ str(unit_data[2]))
+                    self.text_popup.popup(self.cursor.rect, text, shown_id=shown_id)
+                else:
+                    self.text_popup.popup(self.cursor.rect, None, shown_id=shown_id)
+                self.add_ui_updater(self.text_popup)
             if this_team.event_press:
                 self.team_selected = this_team.team
                 this_team.change_select(True)
@@ -154,8 +170,6 @@ def menu_custom_leader_setup(self, esc_press):
         self.current_map_row = 0
         self.remove_ui_updater(self.org_chart, self.start_button)
 
-        for subunit in self.preview_unit:  # reset leader
-            self.play_map_data["unit"][subunit.team][subunit.index]["Temp Leader"] = ""
         leader_change_team_unit(self)
         self.org_chart.add_chart([], self.preview_unit)  # reset chart
 
@@ -180,12 +194,12 @@ def menu_custom_leader_setup(self, esc_press):
 
     elif self.unit_model_room.mouse_over:
         if self.unit_selected is not None:
-            self.single_text_popup.popup(self.cursor.rect,
-                                         (self.leader_data.leader_lore[
+            self.text_popup.popup(self.cursor.rect,
+                                  (self.leader_data.leader_lore[
                                               [item for item in self.play_map_data[self.map_source_selected]['unit'] if
                                                item["ID"] == self.unit_selected][0]["Leader ID"]]["Description"],),
-                                         width_text_wrapper=500)
-            self.add_ui_updater(self.single_text_popup)
+                                  width_text_wrapper=500)
+            self.add_ui_updater(self.text_popup)
 
     elif self.start_button.event_press:  # start battle
         self.team_pos = {team: [pos for pos in self.play_map_data["unit"]["pos"][team].values()] for

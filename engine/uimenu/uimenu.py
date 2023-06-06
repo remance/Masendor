@@ -1048,7 +1048,7 @@ class CampaignListAdapter(ListAdapterHideExpand):
         item_name = item_text.replace(">", "")
         item_name = item_name.replace("|", "")
         item_id = (item_text, item_index)
-        if item_id != self.game.single_text_popup.last_shown_id:
+        if item_id != self.game.text_popup.last_shown_id:
             if item_name[0] == " ":  # remove space from subsection name
                 item_name = item_name[1:]
             if ">>" in item_text or "||" in item_text:  # source item
@@ -1071,12 +1071,12 @@ class CampaignListAdapter(ListAdapterHideExpand):
                               self.game.localisation.grab_text(("preset_map", "info",
                                                                 self.campaign_name_index[item_name])).items()]
 
-            self.game.single_text_popup.popup(self.game.cursor.rect, popup_text, shown_id=item_id,
-                                              width_text_wrapper=1000 * self.game.screen_scale[0])
+            self.game.text_popup.popup(self.game.cursor.rect, popup_text, shown_id=item_id,
+                                       width_text_wrapper=1000 * self.game.screen_scale[0])
         else:  # already showing this leader no need to create text again
-            self.game.single_text_popup.popup(self.game.cursor.rect, None, shown_id=item_id,
-                                              width_text_wrapper=1000 * self.game.screen_scale[0])
-        self.game.add_ui_updater(self.game.single_text_popup)
+            self.game.text_popup.popup(self.game.cursor.rect, None, shown_id=item_id,
+                                       width_text_wrapper=1000 * self.game.screen_scale[0])
+        self.game.add_ui_updater(self.game.text_popup)
 
 
 class TickBox(UIMenu):

@@ -149,7 +149,7 @@ class Battle:
 
         self.button_ui = game.button_ui
 
-        self.single_text_popup = game.single_text_popup
+        self.single_text_popup = game.text_popup
 
         self.skill_icon = game.skill_icon
         self.effect_icon = game.effect_icon
@@ -452,11 +452,10 @@ class Battle:
 
         yield set_start_load("map images")
         images = load_images(self.module_dir,
-                             subfolder=("map", self.play_map_type, self.game.battle_campaign[self.map_selected],
-                                        self.map_selected))
-        if not images and self.play_map_type == "custom":  # custom map battle but use preset map
-            images = load_images(self.module_dir,
-                                 subfolder=("map", "preset", self.map_selected))
+                             subfolder=("map", "preset", self.game.battle_campaign[self.map_selected],
+                                        self.map_selected))  # look for preset map first
+        if not images:  # check custom map battle map
+            images = load_images(self.module_dir, subfolder=("map", "custom", self.map_selected))
         self.battle_base_map.draw_image(images["base"])
         self.battle_feature_map.draw_image(images["feature"])
         self.battle_height_map.draw_image(images["height"])
@@ -514,7 +513,7 @@ class Battle:
     def run_game(self):
         # Create Starting Values
         self.game_state = "battle"  # battle mode
-        self.current_weather.__init__(self.time_ui, 4, 0, 0, self.weather_data)  # start weather with sunny first
+        self.current_weather.__init__(self.time_ui, 0, 0, 0, self.weather_data)  # start weather with random first
         self.input_popup = None  # no popup asking for user text input state
         self.drama_text.queue = []  # reset drama text popup queue
 

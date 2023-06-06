@@ -309,10 +309,10 @@ class TroopData(GameData):
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
-            int_column = ("Grade", "Race", "Cost", "Upkeep", "Troop")  # value int only
+            int_column = ("Grade", "Race", "Cost", "Upkeep", "Troop", "Faction")  # value int only
             list_column = ("Trait", "Skill",)  # value in list only
             tuple_column = ("Armour", "Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon",
-                            "Secondary Sub Weapon", "Mount", "Role", "Faction")  # value in tuple only
+                            "Secondary Sub Weapon", "Mount", "Role")  # value in tuple only
             percent_column = ("Ammunition Modifier",)
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
@@ -451,10 +451,10 @@ class LeaderData(GameData):
             header = rd[0]
             int_column = ("Race", "Strength", "Dexterity", "Agility", "Constitution", "Intelligence",
                           "Wisdom", "Charisma", "Melee Speciality", "Range Speciality", "Cavalry Speciality",
-                          "Social Class")  # value int only
+                          "Social Class", "Faction")  # value int only
             list_column = ("Skill", "Trait", "Formation")
             tuple_column = ("Primary Main Weapon", "Primary Sub Weapon", "Secondary Main Weapon",
-                            "Secondary Sub Weapon", "Armour", "Mount", "Faction")
+                            "Secondary Sub Weapon", "Armour", "Mount")
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
@@ -532,7 +532,6 @@ class FactionData(GameData):
         self.faction_name_list = [value["Name"] for value in self.faction_list.values()]
 
         self.faction_lore = self.localisation.create_lore_data("faction")
-
         self.faction_unit_list = {}
         part_folder = Path(os.path.join(self.module_dir, "faction", "unit"))
         subdirectories = [os.sep.join(os.path.normpath(x).split(os.sep)[-1:]) for x in

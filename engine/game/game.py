@@ -272,12 +272,12 @@ class Game:
         self.joystick_name = {}
 
         self.map_type = ""
-        self.map_source = 0  # current selected map source
         self.team_selected = 1
         self.unit_selected = None
+        self.map_source_selected = 0  # current selected map source
         self.team_pos = {}  # for saving preview map unit pos
         self.play_map_data = {"info": {"weather": [[0, "09:00:00", 0, 0]]}, "unit": {"pos": {}}, "camp_pos": {}}
-        self.play_source_data = {"unit": [], "event_log": {}}
+        self.play_source_data = {"unit": [], "event_log": {}, "weather": [[0, "09:00:00", 0, 0]]}
 
         self.dt = 0
         self.text_delay = 0
@@ -539,6 +539,9 @@ class Game:
         self.team_select_button = (self.select_button, self.map_back_button)
         self.unit_select_button = (self.start_button, self.map_back_button)
 
+        self.team_stat_box = BackgroundBox(self.unit_model_room.rect.bottomright,
+                                           battle_select_image["small_box"])  # ui box to display team troop number
+
         self.custom_map_option_box = BackgroundBox(self.unit_model_room.rect.bottomright,
                                                    battle_select_image["small_box"])  # ui box for battle option
 
@@ -645,7 +648,7 @@ class Game:
                                                                                                     self.screen_scale)
 
         # Text popup
-        self.single_text_popup = TextPopup()  # popup box that show name when mouse over
+        self.text_popup = TextPopup()  # popup box that show text when mouse over something
 
         # Encyclopedia interface
         Lorebook.concept_stat = csv_read(self.module_dir, "concept_stat.csv", ("lore",), header_key=True)
@@ -835,7 +838,7 @@ class Game:
                 elif event.type == QUIT:
                     esc_press = True
 
-            self.remove_ui_updater(self.single_text_popup)
+            self.remove_ui_updater(self.text_popup)
             self.main_ui_updater.update()
 
             # Reset screen
@@ -893,7 +896,7 @@ class Game:
                                                          self.input_popup[1][2]], None)
 
                     elif "wind" in self.input_popup[1] and self.input_box.text.isdigit():
-                        self.play_map_data["info"]["weather"][0][2] = int(self.input_box.text)
+                        self.play_source_data["weather"][0][2] = int(self.input_box.text)
                         self.wind_custom_select.rename("Wind Direction: " + self.input_box.text)
 
                     elif self.input_popup[1] == "quit":

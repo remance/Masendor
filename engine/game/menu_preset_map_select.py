@@ -4,6 +4,22 @@ from engine.uibattle.uibattle import TempUnitIcon
 def menu_preset_map_select(self, esc_press):
     if self.team_coa_box.mouse_over:
         for this_team in self.team_coa:  # User select any team by clicking on coat of arm
+            if this_team.mouse_over:
+                shown_id = ("team", this_team.coa_images)
+                if self.text_popup.last_shown_id != shown_id:
+                    text = [self.faction_data.faction_name_list[faction] for faction in this_team.coa_images]
+                    unit_data = [0, 0, 0]
+                    for unit in self.play_source_data["unit"]:
+                        if unit["Team"] == this_team.team:
+                            unit_data[0] += 1
+                            for troop_id, troop in unit["Troop"].items():
+                                unit_data[1] += int(troop[0])
+                                unit_data[2] += int(troop[1])
+                    text.append("Leader: " + str(unit_data[0]) + " Active Troop: " + str(unit_data[1]) + " Reserve Troop: "+ str(unit_data[2]))
+                    self.text_popup.popup(self.cursor.rect, text, shown_id=shown_id)
+                else:
+                    self.text_popup.popup(self.cursor.rect, None, shown_id=shown_id)
+                self.add_ui_updater(self.text_popup)
             if this_team.event_press:
                 self.team_selected = this_team.team
                 this_team.change_select(True)
@@ -55,11 +71,11 @@ def menu_preset_map_select(self, esc_press):
         if self.unit_selected is not None:
             leader_id = [item for item in self.play_map_data[self.map_source_selected]['unit'] if
                                                item["ID"] == self.unit_selected][0]["Leader ID"]
-            self.single_text_popup.popup(self.cursor.rect,
-                                         (self.leader_data.leader_lore[leader_id]["Description"],),
-                                         shown_id=("model", leader_id, self.unit_selected),
-                                         width_text_wrapper=500)
-            self.add_ui_updater(self.single_text_popup)
+            self.text_popup.popup(self.cursor.rect,
+                                  (self.leader_data.leader_lore[leader_id]["Description"],),
+                                  shown_id=("model", leader_id, self.unit_selected),
+                                  width_text_wrapper=500)
+            self.add_ui_updater(self.text_popup)
 
     elif self.unit_selector.mouse_over:
         if self.cursor.scroll_up:
@@ -87,10 +103,12 @@ def menu_preset_map_select(self, esc_press):
             for index, icon in enumerate(self.unit_icon):
                 if icon.mouse_over:
                     shown_id = ("icon", icon.who.name)
-                    if self.single_text_popup.last_shown_id != shown_id:
+                    if self.text_popup.last_shown_id != shown_id:
                         popup_text = leader_popup_text(self, icon)
-                        self.single_text_popup.popup(self.cursor.rect, popup_text, shown_id=shown_id)
-                    self.add_ui_updater(self.single_text_popup)
+                        self.text_popup.popup(self.cursor.rect, popup_text, shown_id=shown_id)
+                    else:
+                        self.text_popup.popup(self.cursor.rect, None, shown_id=shown_id)
+                    self.add_ui_updater(self.text_popup)
                     if icon.event_press:
                         for other_icon in self.unit_icon:
                             if other_icon.selected:  # unselected all others first

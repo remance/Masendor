@@ -49,6 +49,20 @@ def menu_custom_map_select(self, esc_press):
 
     elif self.team_coa_box.mouse_over:
         for this_team in self.team_coa:  # User select any team by clicking on coat of arm
+            if this_team.mouse_over:
+                shown_id = ("team", this_team.coa_images)
+                if self.text_popup.last_shown_id != shown_id:
+                    if 0 in this_team.coa_images:
+                        if not this_team.coa_images[0]:
+                            text = "None"
+                        else:
+                            text = "All Factions"
+                    else:
+                        text = [self.faction_data.faction_name_list[faction] for faction in this_team.coa_images]
+                    self.text_popup.popup(self.cursor.rect, text, shown_id=shown_id)
+                else:
+                    self.text_popup.popup(self.cursor.rect, None, shown_id=shown_id)
+                self.add_ui_updater(self.text_popup)
             if this_team.event_press:
                 self.team_selected = this_team.team
                 this_team.change_select(True)
@@ -76,7 +90,7 @@ def menu_custom_map_select(self, esc_press):
             battle_time = "09:00:00"
             if self.night_battle_tick_box.tick:  # check for night battle
                 battle_time = "21:00:00"
-            self.play_map_data["info"]["weather"][0][1] = battle_time
+            self.play_source_data["weather"][0][1] = battle_time
 
         elif self.weather_custom_select.event_press:
             self.weather_list_box.change_origin_with_pos(self.cursor.pos)
@@ -231,8 +245,8 @@ def custom_weather_list_on_select(self, item_index, item_text):
     battle_time = "09:00:00"
     if game.night_battle_tick_box.tick:  # check for night battle
         battle_time = "21:00:00"
-    game.play_map_data["info"]["weather"] = \
+    game.play_source_data["weather"] = \
         [[int(game.battle_map_data.weather_list.index(item_text) / 3), battle_time,
-          game.play_map_data["info"]["weather"][0][2],
+          game.play_source_data["weather"][0][2],
           ("Light", "Normal", "Strong").index(item_text.split(" ")[0])]]
     game.remove_ui_updater(game.weather_list_box)

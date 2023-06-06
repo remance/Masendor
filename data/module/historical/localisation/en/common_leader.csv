@@ -1,6 +1,6 @@
 "ID","Name","Description","para1","para2","para3","para4","para5","para6","para7","para8","para9","para10","para11","para12","para13","para14","para15"
-"CSAX-1","Huscarl Captain","A captain of the fame Saxon Huscarl warriors who are one of the fiercest infantries in Europe. Undeniably loyal to the king he swears an oath to, this Huscarl captain will fight to the death along with his troop.",,,,,,,,,,,,,,,
-"CSAX-2","Thane","Saxon thane (or thegn) is the landowner, which is considered to be a minor noble title in Saxon England. Thanes are responsible for governing their local land and raising the militia (fyrd) to respond to the call of war by their king. After the Norman invasion, William the Conqueror replace Saxon political structure with Norman's one and integrate the thane class to Norman knight class.",,,,,,,,,,,,,,,
+"CSAX-1","Saxon Huscarl Captain","A captain of the fame Saxon Huscarl warriors who are one of the fiercest infantries in Europe. Undeniably loyal to the king he swears an oath to, this Huscarl captain will fight to the death along with his troop.",,,,,,,,,,,,,,,
+"CSAX-2","Saxon Thane","Saxon thane (or thegn) is the landowner, which is considered to be a minor noble title in Saxon England. Thanes are responsible for governing their local land and raising the militia (fyrd) to respond to the call of war by their king. After the Norman invasion, William the Conqueror replace Saxon political structure with Norman's one and integrate the thane class to Norman knight class.",,,,,,,,,,,,,,,
 "CNOR-1","High Medieval Norman Noble",,,,,,,,,,,,,,,,
 "CBRT-1","High Medieval Breton Noble",,,,,,,,,,,,,,,,
 "CFR-1","High Medieval Frankish Noble",,,,,,,,,,,,,,,,
@@ -17,3 +17,4 @@
 "COTTO-2","Ottaman Pasha",,,,,,,,,,,,,,,,
 "COTTO-3","Silahdar Agha",,,,,,,,,,,,,,,,
 "COTTO-4","Janissary Agha",,,,,,,,,,,,,,,,
+"COTTO-5","Agha Champion",,,,,,,,,,,,,,,,

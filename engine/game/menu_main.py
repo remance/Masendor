@@ -27,7 +27,7 @@ def menu_main(self, esc_press):
         self.play_map_type = "custom"
         self.last_select = self.menu_state
         self.play_map_data = {"info": {"weather": [[0, "09:00:00", 0, 0]]}, "unit": {"pos": {}}, "camp_pos": {}}
-        self.play_source_data = {"unit": [], "event_log": {}}
+        self.play_source_data = {"unit": [], "event_log": {}, "weather": [[0, "09:00:00", 0, 0]]}
         self.unit_selected = None  # reset unit selected
         self.unit_model_room.add_preview_model()  # reset model room
         self.current_map_select = 0

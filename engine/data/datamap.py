@@ -227,6 +227,12 @@ class BattleMapData(GameData):
                     for n, i in enumerate(data):
                         data = stat_convert(data, n, i, list_column=list_column, int_column=int_column,
                                             float_column=float_column, dict_column=dict_column)
+                        for item in data:
+                            if type(item) is dict:  # change troop number string to list
+                                for key, value in item.items():
+                                    if type(value) is str:
+                                        item[key] = [int(value2) for value2 in value.split("/")]
+
                     rd[data_index + 1] = {header[index]: stuff for index, stuff in enumerate(data)}
                 troop_data = rd[1:]
             unit_file.close()
