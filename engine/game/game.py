@@ -500,7 +500,7 @@ class Game:
                                                25 * self.screen_scale[1]),
                                               "Selected: Leader List", box_colour=(240, 230, 175))
 
-        self.self.custom_unit_list_select_box = ListUI(pivot=(-0.9, -0.8), origin=(-1, -1), size=(.2, .75),
+        self.custom_unit_list_select_box = ListUI(pivot=(-0.9, -0.8), origin=(-1, -1), size=(.2, .75),
                                                        items=ListAdapter(["Selected: Leader List",
                                                                           "Selected: Preset Unit List",
                                                                           "Selected: Preset Army List"]),
