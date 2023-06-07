@@ -14,10 +14,28 @@ from engine.battlemap.battlemap import BattleMap
 
 from engine.utility import keyboard_mouse_press_check, text_render, make_long_text
 
-
+@lru_cache(maxsize=2**8)
 def draw_text(text, font, color):
-    # TODO I will implement ellipsis here /coppermouse
-    return font.render(text, True, color)
+    # NOTE: this can be very slow. Imagine you have a very long text it has to step down each
+    #       character till it find the a character length that works.
+    #       if this method's performance becomes a big issue try make a better estimate on the length
+    #       and start from there and move up or down in length.
+    #
+    #       we have cache in place so hopefully it will be enough to save performance.
+
+    # TODO: add ellipsis_length to argument
+
+    ellipsis_length = 220
+
+    if ellipsis_length is not None:
+        for i in range(len(text)):
+            text_surface = font.render(text[:len(text)-i]+('...' if i > 0 else ''), True, color)
+            if text_surface.get_size()[0] > ellipsis_length: continue
+            return text_surface
+        raise Exception()
+    else:
+        return font.render(text, True, color)
+
 
 def make_image_by_frame(frame: Surface, final_size):
     """
