@@ -29,7 +29,7 @@ def menu_custom_map_select(self, esc_press):
         if len([coa for coa in self.team_coa if coa.name is not None and coa.name != "None"]) > 1:  # enough team to play
             self.menu_state = "custom_unit_setup"
 
-            self.add_ui_updater(self.custom_preset_army_list_box, self.unit_list_box)
+            self.add_ui_updater(self.custom_unit_list_box, self.troop_list_box, self.custom_unit_list_select)
 
             for icon in self.unit_icon:
                 icon.kill()

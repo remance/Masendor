@@ -9,7 +9,7 @@ def menu_custom_unit_setup(self, esc_press):
 
     if self.map_back_button.event_press or esc_press:
         self.menu_state = "custom_map"
-        self.remove_ui_updater(self.unit_list_box, self.custom_preset_army_list_box, self.unit_icon)
+        self.remove_ui_updater(self.troop_list_box, self.custom_unit_list_box, self.unit_icon, self.custom_unit_list_select)
 
         self.map_preview.change_mode(1, camp_pos_list=self.play_map_data["camp_pos"])  # revert map preview back to without unit dot
 
@@ -48,7 +48,7 @@ def menu_custom_unit_setup(self, esc_press):
         else:
             self.menu_state = "custom_leader_setup"
 
-            self.remove_ui_updater(self.unit_list_box, self.unit_icon, self.select_button)
+            self.remove_ui_updater(self.troop_list_box, self.unit_icon, self.select_button, self.custom_unit_list_select)
 
             for stuff in self.map_namegroup:  # remove name item
                 stuff.kill()
@@ -181,15 +181,13 @@ def menu_custom_unit_setup(self, esc_press):
                                 self.play_map_data["unit"]["pos"][icon.who.team].pop(icon.who.index)
                             self.play_source_data["unit"].pop(icon.who.map_id)
 
-                            for subunit in self.preview_unit:  # reset leader of team with leader removed
-                                if subunit.who.team == icon.who.team:
-                                    self.play_source_data["unit"][subunit.map_id]["Temp Leader"] = ""
-
                             for icon2 in self.unit_icon:
                                 if icon2.who.index and icon2.who.index > icon.who.index:
                                     if icon2.who.index in self.play_map_data["unit"]["pos"][icon.who.team]:
                                         self.play_map_data["unit"]["pos"][icon.who.team][icon2.who.index - 1] = \
                                             self.play_map_data["unit"]["pos"][icon.who.team].pop(icon2.who.index)
+                                        if icon2.who.team == icon.who.team:
+                                            self.play_source_data["unit"][icon2.who.map_id]["Temp Leader"] = ""
                                     icon2.who.index -= 1
 
                             self.map_preview.change_mode(1, team_pos_list=self.play_map_data["unit"]["pos"],
@@ -290,16 +288,16 @@ def unit_change_team_unit(self, new_faction=False, old_selected=None, add_plus=T
                 unit_list = create_unit_list(self, this_team)
 
             if new_faction:
-                self.remove_ui_updater(self.unit_list_box)
-                self.unit_list_box.__init__(self.unit_list_box.origin, self.unit_list_box.pivot,
-                                            self.unit_list_box.relative_size_inside_container,
-                                            ListAdapter(unit_list,
+                self.remove_ui_updater(self.troop_list_box)
+                self.troop_list_box.__init__(self.troop_list_box.origin, self.troop_list_box.pivot,
+                                             self.troop_list_box.relative_size_inside_container,
+                                             ListAdapter(unit_list,
                                                         replace_on_select=custom_unit_list_on_select,
                                                         replace_on_mouse_over=custom_unit_list_on_mouse_over),
-                                            self.unit_list_box.parent,
-                                            self.unit_list_box.item_size,
-                                            layer=self.unit_list_box._layer)
-                self.add_ui_updater(self.unit_list_box)
+                                             self.troop_list_box.parent,
+                                             self.troop_list_box.item_size,
+                                             layer=self.troop_list_box._layer)
+                self.add_ui_updater(self.troop_list_box)
 
             self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
 

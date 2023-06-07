@@ -20,7 +20,7 @@ def menu_main(self, esc_press):
 
         self.add_ui_updater(*self.unit_select_button, self.preset_map_list_box,
                             self.unit_selector, self.unit_selector.scroll, self.unit_model_room, self.map_preview,
-                            self.map_title, self.team_coa_box)
+                            self.map_title, self.team_coa_box, self.hide_background)
 
     elif self.custom_map_button.event:  # custom map list menu
         self.menu_state = "custom_map"
@@ -50,7 +50,7 @@ def menu_main(self, esc_press):
                             self.custom_map_option_box, self.unit_selector,
                             self.unit_selector.scroll, self.weather_custom_select, self.wind_custom_select,
                             self.night_battle_tick_box, self.unit_model_room, self.map_title, self.map_preview,
-                            self.team_coa_box)
+                            self.team_coa_box, self.hide_background)
 
     elif self.game_edit_button.event:  # custom unit/sub-unit editor menu
         self.menu_state = "game_creator"
@@ -71,7 +71,7 @@ def menu_main(self, esc_press):
         self.remove_ui_updater(*self.start_menu_ui_only)
 
         self.add_ui_updater(self.option_menu_button, self.option_menu_sliders.values(), self.value_boxes.values(),
-                            self.option_text_list, self.profile_box)
+                            self.option_text_list, self.profile_box, self.hide_background)
         # self.background = self.background_image["option"]
 
     elif self.quit_button.event or esc_press:  # open quit game confirmation input

@@ -815,6 +815,43 @@ class MapTitle(UIMenu):
         self.rect = self.image.get_rect(midtop=self.pos)
 
 
+class NameTextBox(UIMenu):
+    def __init__(self, box_size, pos, name, text_size=26, layer=15, box_colour=(255, 255, 255), center_text=False):
+        self._layer = layer
+        UIMenu.__init__(self)
+        self.font = Font(self.ui_font["main_button"], int(text_size * self.screen_scale[1]))
+        self.name = str(name)
+
+        self.image = Surface(box_size)
+        self.image.fill((0, 0, 0))  # black corner
+
+        # White body square
+        white_body = Surface((self.image.get_width() - 2, self.image.get_height() - 2))
+        white_body.fill(box_colour)
+        small_rect = white_body.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
+        self.image.blit(white_body, small_rect)
+
+        self.image_base = self.image.copy()
+
+        # Name text
+        text_surface = self.font.render(self.name, True, (0, 0, 0))
+        if center_text:
+            text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, self.image.get_height() / 2))
+        else:  # text start at the left
+            text_rect = text_surface.get_rect(midleft=(int(3 * self.screen_scale[0]), self.image.get_height() / 2))
+        self.image.blit(text_surface, text_rect)
+
+        self.pos = pos
+        self.rect = self.image.get_rect(center=self.pos)
+
+    def rename(self, new_name):
+        self.name = new_name
+        self.image = self.image_base.copy()
+        text_surface = self.font.render(self.name, True, (0, 0, 0))
+        text_rect = text_surface.get_rect(midleft=(int(3 * self.screen_scale[0]), self.image.get_height() / 2))
+        self.image.blit(text_surface, text_rect)
+
+
 class ListBox(UIMenu):
     def __init__(self, pos, image, layer=14):
         self._layer = layer
@@ -828,7 +865,6 @@ class ListBox(UIMenu):
         self.max_row_show = int(
             self.image.get_height() / (
                         image_height + (6 * self.screen_scale[1])))  # max number of map on list can be shown
-
 
 class NameList(UIMenu):
     def __init__(self, box, pos, name, text_size=26, layer=15):
@@ -1115,7 +1151,7 @@ class BackgroundBox(UIMenu):
 
         self.font = Font(self.ui_font["main_button"], int(20 * self.screen_scale[1]))
 
-        text_surface = self.font.render("Night Battle", True, (0, 0, 0))
+        text_surface = self.font.render("Start Battle At Night", True, (0, 0, 0))
         text_rect = text_surface.get_rect(midleft=(self.image.get_width() / 3.5, self.image.get_height() / 5))
         self.image.blit(text_surface, text_rect)
 
@@ -1279,7 +1315,7 @@ class OrgChart(UIMenu):
                                          vert_gap=-self.image.get_height() * 0.5 / len(edge_list), y_pos=100,
                                          x_pos=self.image.get_width() / 2)
                 image_size = (self.image.get_width() / (len(pos) * 1.5), self.image.get_height() / (len(pos) * 1.5))
-            except (nx.exception.NetworkXError, ZeroDivisionError) as b:  # has only one leader
+            except (nx.exception.NetworkXError, ZeroDivisionError):  # has only one leader
                 pos = {selected: (self.image.get_width() / 2, self.image.get_width() / 2)}
                 image_size = (self.image.get_width() / 2, self.image.get_height() / 2)
 
@@ -1390,12 +1426,12 @@ class BoxUI(UIMenu, Containable, Container):
         self.pos = (0, 0)
         self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
         self.image = Surface(self.rect[2:], SRCALPHA)
-        self.image.fill("#302d2ce0")
+        # self.image.fill("#302d2ce0")
 
     def update(self):
         self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
         self.image = Surface(self.rect[2:], SRCALPHA)
-        self.image.fill("#bbbbaabb")
+        # self.image.fill("#bbbbaabb")
 
     def get_relative_size_inside_container(self):
         return (0.3, 0.5)  # TODO: base this on variable

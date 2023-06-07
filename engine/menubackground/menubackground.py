@@ -3,8 +3,18 @@ from pygame.transform import rotate
 from engine.uimenu.uimenu import UIMenu
 
 
+class StaticImage(UIMenu):
+    def __init__(self, pos, image):
+        self._layer = -1
+        UIMenu.__init__(self, player_interact=False)
+        self.image = image
+        self.pos = pos
+        self.rect = self.image.get_rect(center=self.pos)
+
+
 class MenuRotate(UIMenu):
     def __init__(self, pos, image, rotate_speed):
+        self._layer = -2
         UIMenu.__init__(self, player_interact=False, has_containers=True)
         self.image = image
         self.image_base = self.image.copy()
@@ -23,6 +33,7 @@ class MenuRotate(UIMenu):
 
 class MenuActor(UIMenu):
     def __init__(self, pos, images):
+        self._layer = -3
         UIMenu.__init__(self, has_containers=True)
         self.current_animation = images
         self.pos = pos

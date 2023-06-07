@@ -13,7 +13,7 @@ from engine.uibattle.uibattle import MiniMap, UnitIcon, SkillCardIcon, SpriteInd
     HeroUI, UnitSelector, UIScroll, Profiler, TempUnitIcon
 from engine.uimenu.uimenu import MapPreview, OptionMenuText, SliderMenu, TeamCoa, MenuCursor, BoxUI, BrownMenuButton, \
     ListUI, ListAdapter, ListAdapterHideExpand, CampaignListAdapter, LeaderModel, MenuButton, BackgroundBox, OrgChart, \
-    TickBox, NameList, TextBox, TextPopup, MapTitle
+    TickBox, TextBox, TextPopup, MapTitle, NameTextBox
 from engine.battle.battle import Battle
 from engine.unit.unit import Unit, Troop, Leader, rotation_dict, rotation_list
 from engine.effect.effect import Effect
@@ -22,7 +22,7 @@ from engine.data.datamap import BattleMapData
 from engine.data.datalocalisation import Localisation
 from engine.lorebook.lorebook import Lorebook, SubsectionName, lorebook_process
 from engine.battle.setup_battle_unit import setup_battle_unit
-from engine.menubackground.menubackground import MenuActor, MenuRotate
+from engine.menubackground.menubackground import MenuActor, MenuRotate, StaticImage
 from engine.updater.updater import ReversedLayeredUpdates
 
 from engine.game.menu_custom_map_select import custom_map_list_on_select, custom_faction_list_on_select, \
@@ -490,17 +490,29 @@ class Game:
                                                                    replace_on_select=custom_map_list_on_select),
                                                  parent=self.screen, item_size=20)
 
-        self.custom_preset_army_list_box = ListUI(pivot=(-0.9, -0.9), origin=(-1, -1), size=(.2, .8),
-                                                  items=ListAdapter(["None"]),
-                                                  parent=self.screen, item_size=20)
+        self.custom_unit_list_box = ListUI(pivot=(-0.9, -0.8), origin=(-1, -1), size=(.2, .75),
+                                           items=ListAdapter(["None"]),
+                                           parent=self.screen, item_size=18)
+
+        self.custom_unit_list_select = NameTextBox((self.custom_unit_list_box.image.get_width(), 60 * self.screen_scale[1]),
+                                              (self.custom_unit_list_box.rect.midtop[0],
+                                               self.custom_unit_list_box.rect.midtop[1] -
+                                               25 * self.screen_scale[1]),
+                                              "Selected: Leader List", box_colour=(240, 230, 175))
+
+        self.self.custom_unit_list_select_box = ListUI(pivot=(-0.9, -0.8), origin=(-1, -1), size=(.2, .75),
+                                                       items=ListAdapter(["Selected: Leader List",
+                                                                          "Selected: Preset Unit List",
+                                                                          "Selected: Preset Army List"]),
+                                                       parent=self.screen, item_size=18)
 
         self.custom_battle_faction_list_box = ListUI(pivot=(-0.03, -0.1), origin=(-1, -1), size=(.3, .4),
                                                      items=ListAdapter(["None"] + self.faction_data.faction_name_list,
                                                                        replace_on_select=custom_faction_list_on_select),
                                                      parent=self.screen, item_size=10)
 
-        self.unit_list_box = ListUI(pivot=(-0.03, -0.1), origin=(-1, -1), size=(.3, .4),
-                                    items=ListAdapter(["None"]), parent=self.screen, item_size=10)
+        self.troop_list_box = ListUI(pivot=(-0.03, -0.1), origin=(-1, -1), size=(.3, .4),
+                                     items=ListAdapter(["None"]), parent=self.screen, item_size=10)
 
         self.weather_list_box = ListUI(pivot=(0, -0.1), origin=(-1, -1), size=(.3, .4),
                                        items=ListAdapter(self.battle_map_data.weather_list,
@@ -554,16 +566,18 @@ class Game:
                                               self.custom_map_option_box.rect.topleft[1] * 1.05),
                                              battle_select_image["untick"], battle_select_image["tick"],
                                              "night")
-        self.weather_custom_select = NameList(self.custom_map_option_box,
-                                              (self.custom_map_option_box.rect.midleft[0],
-                                               self.custom_map_option_box.rect.midleft[1] +
-                                               self.custom_map_option_box.image.get_height() / 4),
-                                              "Weather: Light Random")
-        self.wind_custom_select = NameList(self.custom_map_option_box,
-                                           (self.custom_map_option_box.rect.midleft[0],
-                                            self.custom_map_option_box.rect.midleft[1] +
-                                            self.custom_map_option_box.image.get_height() / 10),
-                                           "Wind Direction: 0")
+        self.weather_custom_select = NameTextBox((self.custom_map_option_box.image.get_width() -
+                                                  (10 * self.screen_scale[0]), 30 * self.screen_scale[1]),
+                                                 (self.custom_map_option_box.rect.center[0],
+                                                  self.custom_map_option_box.rect.center[1] +
+                                                  self.custom_map_option_box.image.get_height() / 3.5),
+                                                 "Weather: Light Random")
+        self.wind_custom_select = NameTextBox((self.custom_map_option_box.image.get_width() -
+                                               (10 * self.screen_scale[0]), 30 * self.screen_scale[1]),
+                                              (self.custom_map_option_box.rect.center[0],
+                                               self.custom_map_option_box.rect.center[1] +
+                                               self.custom_map_option_box.image.get_height() / 10),
+                                              "Wind Direction: 0")
 
         self.current_map_row = 0
         self.current_map_select = 0
@@ -685,6 +699,7 @@ class Game:
         self.background_image = load_images(self.module_dir, screen_scale=self.screen_scale,
                                             subfolder=("ui", "mainmenu_ui", "background"))
         self.atlas = MenuRotate((self.screen_width / 2, self.screen_height / 2), self.background_image["atlas"], 5)
+        self.hide_background = StaticImage((self.screen_width / 2, self.screen_height / 2), self.background_image["hide"])
         self.menu_actor_data = csv_read(self.module_dir, "menu_actor.csv", ("ui",), header_key=True)
         self.menu_actors = []
         for stuff in self.menu_actor_data.values():
