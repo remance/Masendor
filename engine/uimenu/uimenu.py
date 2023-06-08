@@ -15,17 +15,13 @@ from engine.battlemap.battlemap import BattleMap
 from engine.utility import keyboard_mouse_press_check, text_render, make_long_text
 
 @lru_cache(maxsize=2**8)
-def draw_text(text, font, color):
+def draw_text(text, font, color, ellipsis_length = None):
     # NOTE: this can be very slow. Imagine you have a very long text it has to step down each
     #       character till it find the a character length that works.
     #       if this method's performance becomes a big issue try make a better estimate on the length
     #       and start from there and move up or down in length.
     #
     #       we have cache in place so hopefully it will be enough to save performance.
-
-    # TODO: add ellipsis_length to argument
-
-    ellipsis_length = 220
 
     if ellipsis_length is not None:
         for i in range(len(text)):
@@ -1564,7 +1560,7 @@ class ListUI(UIMenu, Containable):
                     blit_text = " " + blit_text
 
             self.image.blit(
-                draw_text(blit_text, font, text_color),
+                draw_text(blit_text, font, text_color, ellipsis_length=size[0]-55),
                 (20, item_height // 2 + 6 - 9 + i * item_height))
 
         # draw scroll bar
