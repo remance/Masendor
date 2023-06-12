@@ -1,0 +1,27 @@
+{% extends "base.j2" %}
+
+
+{% block content %}
+
+<style>
+td{padding:8px}
+</style>
+
+<h2>Regions</h2>
+<table style="width:100%">
+    <tr>
+        <th>Name</th>
+        <th class="r" style="width:200px">Number of factions</th>
+        <th class="r" style="width:200px">Number of leaders</th>
+        <th class="r" style="width:200px">Number of troop types</th>
+    </tr>
+    {% for region in regions %}
+    <tr>
+        <td>{{region["name"]}}</td>
+        <td class="r"><a href="/factions?region={{region["id"]}}">{{region["no-factions"]}} factions</a></td>
+        <td class="r"><a href="/leaders?region={{region["id"]}}">{{region["no-leaders"]}} leaders</a></td>
+        <td class="r"><a href="/troops?region={{region["id"]}}">{{region["no-troop-types"]}} troop types</a></td>
+    </tr>
+    {% endfor %}
+{% endblock %}
+

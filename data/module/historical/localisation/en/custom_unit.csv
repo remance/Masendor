@@ -1,0 +1,107 @@
+"ID","Name"
+"NOR=1","William’s Conrois"
+"NOR=2","Raoul’s Conrois"
+"NOR=3","Turstin’s Conrois"
+"NOR=4","Eustace II’s Conrois"
+"NOR=5","Hugh G’s Norman Conrois"
+"NOR=6","Odo’s Norman Conrois"
+"NOR=7","Robert M.’s Norman Conrois"
+"NOR=8","Hugh M’s Norman Infantries"
+"NOR=9","William d’E.’s Norman Infantries"
+"NOR=10","Engenulf’s Norman Infantries"
+"NOR=11","Richard’s Norman Infantries"
+"NOR=12","Wadard’s Norman Axemen"
+"NOR=13","Vital’s Norman Spearmen"
+"NOR=14","Robert B.’s Norman Archers"
+"NOR=15","Walter’s Norman Archers"
+"NOR=16","Gilbert’s Frankish Cavalries"
+"NOR=17","William M.’s Frankish Infantries"
+"NOR=18","Geoffrey II’s Frankish Infantries"
+"NOR=19","Geoffrey’s Frankish Infantries"
+"NOR=20","Hugh’s Frankish Infantries"
+"NOR=21","William F.’s Frankish Infantries"
+"NOR=22","Aimery IV’s Breton Infantries"
+"NOR=23","William W.’s Breton Archers"
+"NOR=24","Humphrey I’s Breton Crossbowmen"
+"NOR=25","Taillefer’s Band"
+"NOR=26","Norman Noble’s Spearmen"
+"NOR=27","Norman Noble’s Swordsmen"
+"NOR=28","Norman Noble’s Archers"
+"NOR=29","Norman Noble’s Crossbowmen"
+,
+,
+,
+,
+"SAX=1","Harold’s Huscarls"
+"SAX=2","Gyrth’s Huscarls"
+"SAX=3","Leofwine’s Huscarls"
+"SAX=4","Godric’s Saxon Archers"
+"SAX=5","Thurkill’s Saxon Spearmen"
+"SAX=6","Edric’s Saxon Slingers"
+"SAX=7","Son of Helloc’s Saxon Skirmishers"
+"SAX=8","Breme’s Saxon Infantries"
+"SAX=9","Aelfwig’s Brethrens"
+"SAX=10","Aelfric’s Saxon Spearmen"
+"SAX=11","Huscarl Captain’s Saxon Fryds"
+"SAX=12","Huscarl Captain’s Unit"
+"SAX=13","Huscarl Captain’s Saxon Spearmen"
+"SAX=14","Thane’s Saxon Skirmishers"
+"SAX=15","Thane’s Saxon Slingers"
+"SAX=16","Thane’s Saxon Archers"
+"SAX=17","Thane’s Saxon Axemen"
+"SAX=18","Thane’s Saxon Spearmen"
+,
+,
+,
+,
+,
+"NK=1","Thutmose III’s Royal Chariots"
+"NK=2","Imy-rA mSa’s Egyptian Elites"
+"NK=3","Imy-rA mSa’s Egyptian Spearmen"
+"NK=4","Imy-rA mSa’s Egyptian Swordsmen"
+"NK=5","Imy-rA mSa’s Egyptian Archers"
+"NK=6","Imy-rA mSa’s Chariots"
+"NK=7","Ur’s African Spearmen"
+"NK=8","Ur’s Promachoi Mercenaries"
+"NK=9","Ur’s Pitati Mercenaries"
+"NK=10","Ur’s Egyptian Infantries"
+"NK=11","Ur’s Egyptian Archers"
+,
+,
+,
+,
+,
+,
+"CNA=1","King of Kadesh’s War Chariots"
+"CNA=2","Prince of Megiddo’s War Chariots"
+"CNA=3","Akil Narkabti’s War Chariots"
+"CNA=4","Muru-u’s Canaanite Swordsmen"
+"CNA=5","Canaanite Noble’s Canaanite Infantries"
+"CNA=6","Canaanite Noble’s Canaanite Warriors"
+"CNA=7","Canaanite Noble’s Canaanite Archers"
+"CNA=8","Canaanite Noble’s Canaanite Slingers"
+"CNA=9","Canaanite Noble’s Canaanite Swordsmen"
+"CNA=10","Canaanite Noble’s War Chariots"
+,
+,
+,
+,
+,
+,
+"BRT=1","Alan’s Breton Cavalries"
+"BRT=2","Aimery IV’s Breton Infantries"
+"BRT=3","William W.’s Breton Archers"
+"BRT=4","Humphrey I’s Breton Crossbowmen"
+"BRT=5","Breton Noble’s Spearmen"
+"BRT=6","Breton Noble’s Swordsmen"
+"BRT=7","Breton Noble’s Archers"
+"BRT=8","Breton Noble’s Crossbowmen"
+,
+,
+,
+,
+"FR=1","Frankish Noble’s Spearmen"
+"FR=2","Frankish Noble’s Swordsmen"
+"FR=3","Frankish Noble’s Archers"
+"FR=4","Frankish Noble’s Crossbowmen"
+"FR=5",

@@ -1,0 +1,15 @@
+{% extends "base.j2" %}
+
+
+{% block content %}
+<h2>Troop Classes</h2>
+<table>
+    <tr><th>Name</th><th>Strengths</th><th>Weaknesses</th></tr>
+    {% for troop_class in troop_classes %}
+    <tr>
+        <td>{{troop_class["name"]}}</td>
+        <td>{{troop_class["strengths"]}}</td>
+        <td>{{troop_class["weaknesses"]}}</td>
+    </tr>
+    {% endfor %}
+{% endblock %}

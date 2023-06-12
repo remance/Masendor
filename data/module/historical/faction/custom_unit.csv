@@ -1,0 +1,107 @@
+"ID","Name","Leader ID","Troop","Faction"
+"NOR=1","William’s Conrois","NOR-1","NOR+6:10/100",1
+"NOR=2","Raoul’s Conrois","NOR-11","NOR+6:5/50",1
+"NOR=3","Turstin’s Conrois","NOR-16","NOR+6:5/50",1
+"NOR=4","Eustace II’s Conrois","NOR-4","NOR+6:5/50",1
+"NOR=5","Hugh G’s Norman Conrois","NOR-13","NOR+6:5/50",1
+"NOR=6","Odo’s Norman Conrois","NOR-15","NOR+6:6/80",1
+"NOR=7","Robert M.’s Norman Conrois","NOR-18","NOR+6:6/80",1
+"NOR=8","Hugh M’s Norman Infantries","NOR-10","NOR+1:2/20,NOR+3:5/50",1
+"NOR=9","William d’E.’s Norman Infantries","NOR-5","NOR+1:2/20,NOR+2:5/50",1
+"NOR=10","Engenulf’s Norman Infantries","NOR-23","NOR+1:2/20,NOR+3:5/50",1
+"NOR=11","Richard’s Norman Infantries","NOR-24","NOR+1:2/20,NOR+2:5/50",1
+"NOR=12","Wadard’s Norman Axemen","NOR-19","NOR+2:5/100",1
+"NOR=13","Vital’s Norman Spearmen","NOR-20","NOR+3:5/100",1
+"NOR=14","Robert B.’s Norman Archers","NOR-6","NOR+5:5/50,NOR+4:5/50",1
+"NOR=15","Walter’s Norman Archers","NOR-9","NOR+5:5/50,NOR+4:5/50",1
+"NOR=16","Gilbert’s Frankish Cavalries","NOR-21","NOR+1NOR+2:5/50",1
+"NOR=17","William M.’s Frankish Infantries","NOR-14","NOR+7:2/50,NOR+1NOR+1:5/100",1
+"NOR=18","Geoffrey II’s Frankish Infantries","NOR-7","NOR+7:2/50,NOR+10:5/100",1
+"NOR=19","Geoffrey’s Frankish Infantries","NOR-17","NOR+1NOR+2:2/10,NOR+9:5/50,NOR+8:5/50",1
+"NOR=20","Hugh’s Frankish Infantries","NOR-10","NOR+1NOR+2:2/10,NOR+9:5/50,NOR+8:5/50",1
+"NOR=21","William F.’s Frankish Infantries","NOR-3","NOR+1NOR+2:2/10,NOR+9:5/50,NOR+8:5/50",1
+"NOR=22","Aimery IV’s Breton Infantries","NOR-8","NOR+1:5/50,NOR+1NOR+4:5/100",1
+"NOR=23","William W.’s Breton Archers","NOR-13","NOR+1NOR+3:5/50,NOR+1NOR+6:5/100",1
+"NOR=24","Humphrey I’s Breton Crossbowmen","NOR-22","NOR+1NOR+3:5/50,NOR+1NOR+7:5/100",1
+"NOR=25","Taillefer’s Band","NOR-25","NOR+3:5/20",1
+"NOR=26","Norman Noble’s Spearmen","CNOR-1","NOR+3:10/50",1
+"NOR=27","Norman Noble’s Swordsmen","CNOR-1","NOR+1:10/50",1
+"NOR=28","Norman Noble’s Archers","CNOR-1","NOR+4:10/50",1
+"NOR=29","Norman Noble’s Crossbowmen","CNOR-1","NOR+5:10/50",1
+,,,,
+,,,,
+,,,,
+,,,,
+"SAX=1","Harold’s Huscarls","SAX-1","SAX+9:5/10,SAX+8:10/50,SAX+10:2/5",2
+"SAX=2","Gyrth’s Huscarls","SAX-2","SAX+9:5/5,SAX+8:5/50,SAX+10:1/1",2
+"SAX=3","Leofwine’s Huscarls","SAX-3","SAX+9:5/5,SAX+8:5/50,SAX+10:1/1",2
+"SAX=4","Godric’s Saxon Archers","SAX-4","SAX+1:10/100,SAX+4:10/50",2
+"SAX=5","Thurkill’s Saxon Spearmen","SAX-5","SAX+1:10/100,SAX+3:10/50",2
+"SAX=6","Edric’s Saxon Slingers","SAX-6","SAX+1:10/100,SAX+5:10/50",2
+"SAX=7","Breme’s Saxon Infantries","SAX-7","SAX+1:10/100,SAX+2:10/50",2
+"SAX=8","Aelfwig’s Brethrens","SAX-8","CHR+1:2/10",2
+"SAX=9","Aelfric’s Saxon Spearmen","SAX-9","SAX+1:5/50,SAX+3:10/100",2
+"SAX=10","Son of Helloc’s Saxon Skirmishers","SAX-10","SAX+1:10/100,SAX+6:10/50",2
+"SAX=11","Huscarl Captain’s Saxon Fryds","CSAX-1","SAX+8:5/20,SAX+1:10/50",2
+"SAX=12","Huscarl Captain’s Unit","CSAX-1","SAX+8:10/50",2
+"SAX=13","Huscarl Captain’s Saxon Spearmen","CSAX-1","SAX+8:5/20,SAX+3:10/50",2
+"SAX=14","Thane’s Saxon Skirmishers","CSAX-2","SAX+1:15/100,SAX+6:5/50",2
+"SAX=15","Thane’s Saxon Slingers","CSAX-2","SAX+1:15/100,SAX+5:5/50",2
+"SAX=16","Thane’s Saxon Archers","CSAX-2","SAX+1:15/100,SAX+4:5/50",2
+"SAX=17","Thane’s Saxon Axemen","CSAX-2","SAX+1:15/100,SAX+2:5/50",2
+"SAX=18","Thane’s Saxon Spearmen","CSAX-2","SAX+1:15/100,SAX+3:5/50",2
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+"NK=1","Thutmose III’s Royal Chariots","NK-1","NK+5:2/50,NK+8:3/50",3
+"NK=2","Imy-rA mSa’s Egyptian Elites","CNK-1","NK+10:2/10,NK+11:5/50",3
+"NK=3","Imy-rA mSa’s Egyptian Spearmen","CNK-1","NK+3:5/100,NK+11:2/20",3
+"NK=4","Imy-rA mSa’s Egyptian Swordsmen","CNK-1","NK+4:5/100,NK+11:2/20",3
+"NK=5","Imy-rA mSa’s Egyptian Archers","CNK-1","NK+2:5/100,NK+1:5/100",3
+"NK=6","Imy-rA mSa’s Chariots","CNK-1","NK+5:5/50",3
+"NK=7","Ur’s African Spearmen","CNK-2","NK+6:10/100,NK+4:2/10",3
+"NK=8","Ur’s Promachoi Mercenaries","CNK-2","NK+9:5/50,NK+4:2/10",3
+"NK=9","Ur’s Pitati Mercenaries","CNK-2","NK+7:5/100",3
+"NK=10","Ur’s Egyptian Infantries","CNK-2","NK+3:5/80,NK+4:5/80",3
+"NK=11","Ur’s Egyptian Archers","CNK-2","NK+2:5/80,NK+1:5/80",3
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+"CNA=1","King of Kadesh’s War Chariots","CNA-1","CNA+7:4/70,CNA+8:3/10,CNA+9:2/5",4
+"CNA=2","Prince of Megiddo’s War Chariots","CNA-2","CNA+7:7/80,CNA+8:1/10,CNA+9:1/2",4
+"CNA=3","Akil Narkabti’s War Chariots","CCNA-2","CNA+7:2/50,CNA+8:2/50",4
+"CNA=4","Muru-u’s Canaanite Swordsmen","CCNA-1","CNA+4:10/100",4
+"CNA=5","Canaanite Noble’s Canaanite Infantries","CCNA-3","CNA+3:5/50,CNA+4:5/100",4
+"CNA=6","Canaanite Noble’s Canaanite Warriors","CCNA-3","CNA+6:15/150",4
+"CNA=7","Canaanite Noble’s Canaanite Archers","CCNA-3","CNA+1:10/100",4
+"CNA=8","Canaanite Noble’s Canaanite Slingers","CCNA-3","CNA+2:10/100",4
+"CNA=9","Canaanite Noble’s Canaanite Swordsmen","CCNA-3","CNA+4:10/80",4
+"CNA=10","Canaanite Noble’s War Chariots","CCNA-3","CNA+5:5/50",4
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+"BRT=1","Alan’s Breton Cavalries","NOR-2","BRT+6:2/20, NOR+1NOR+8:3/30",12
+"BRT=2","Aimery IV’s Breton Infantries","NOR-8","NOR+1:5/50,NOR+1NOR+4:5/100",12
+"BRT=3","William W.’s Breton Archers","NOR-13","NOR+1NOR+3:5/50,NOR+1NOR+6:5/100",12
+"BRT=4","Humphrey I’s Breton Crossbowmen","NOR-22","NOR+1NOR+3:5/50,NOR+1NOR+7:5/100",12
+"BRT=5","Breton Noble’s Spearmen","CNOR-2","NOR+1NOR+5:10/50",12
+"BRT=6","Breton Noble’s Swordsmen","CNOR-2","NOR+1NOR+3:10/50",12
+"BRT=7","Breton Noble’s Archers","CNOR-2","NOR+10:10/50",12
+"BRT=8","Breton Noble’s Crossbowmen","CNOR-2","NOR+1NOR+7:10/50",12
+,,,,
+,,,,
+,,,,
+,,,,
+"FR=1","Frankish Noble’s Spearmen","CNOR-3","NOR+9:10/50",13
+"FR=2","Frankish Noble’s Swordsmen","CNOR-3","NOR+7:10/50",13
+"FR=3","Frankish Noble’s Archers","CNOR-3","NOR+1NOR+6:10/50",13
+"FR=4","Frankish Noble’s Crossbowmen","CNOR-3","NOR+1NOR+1:10/50",13
+"FR=5",,,,
