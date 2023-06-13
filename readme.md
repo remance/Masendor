@@ -33,6 +33,8 @@ Some non-specific suggestions and examples of helps, including but not limited t
 
 Note: All the new and current untested development are done on "dev" branch. The main branch is for a somewhat stable version of the game.
 
+The repository history was cleanup from update 0.7.1.9 for the preserved history see: https://github.com/remance/Masendor-backup
+
 ---------------
 
 # Index
