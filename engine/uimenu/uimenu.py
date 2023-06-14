@@ -1535,54 +1535,94 @@ class ListUI(UIMenu, Containable):
     def get_relative_size_inside_container(self):
         return self.relative_size_inside_container
 
-    def get_refreshed_image(self):
-        assert type(self.scroll_box_index) == int, type(self.scroll_box_index)
-        item_height = self.get_item_height()
-        size = self.rect[2:]
-        self.image = make_image_by_frame(self.frame, size)
-        item_height = self.get_item_height()
 
+
+    def get_refreshed_image(self):
+
+
+        if not hasattr(self, 'font1'):
+            self.font1 = Font(self.ui_font["main_button"], 20)
+        if not hasattr(self, 'font2'):
+            self.font2 = Font(self.ui_font["main_button"], 14)
+        if not hasattr(self, 'font3'):
+            self.font3 = Font(self.ui_font["main_button"], 18)
+
+        self.image = ListUI.inner_get_refreshed_image(
+            self.scroll_box_index,
+            self.get_item_height(),
+            tuple(self.rect),
+            self.item_size,
+            self.items,
+            self.selected_index,
+            self.items.get_highlighted_index(),
+            self.font1,
+            self.font2,
+            self.font3,
+            self.frame,
+            tuple(self.get_scroll_bar_rect()) if self.get_scroll_bar_rect() else None,
+            tuple(self.get_scroll_box_rect()) if self.get_scroll_box_rect() else None,
+            self.scroll_box,
+            self.in_scroll_box,
+            self.hold_scroll_box,
+            self.has_scroll
+        )
+        return self.image
+
+    @lru_cache(maxsize=2**4) # size has to be big enough to fit all active list ui on screen but not big enough to take to much memory
+    def inner_get_refreshed_image(scroll_box_index, item_height, rect, item_size, items, selected_index, highlighted_index, font1, font2, font3, frame, scroll_bar_rect, scroll_box_rect, scroll_box, in_scroll_box, hold_scroll_box, has_scroll):
+
+        #print(
+        #    scroll_box_index, item_height, rect, item_size, items, selected_index, highlighted_index, font1, font2, font3, frame, scroll_bar_rect, scroll_box_rect, scroll_box, in_scroll_box, hold_scroll_box, has_scroll )
+
+        rect = pygame.Rect(*rect)
+        scroll_bar_rect = pygame.Rect(*scroll_bar_rect) if scroll_bar_rect else None
+        scroll_box_rect = pygame.Rect(*scroll_box_rect) if scroll_box_rect else None
+        
+
+        assert type(scroll_box_index) == int, type(scroll_box_index)
+        size = rect[2:]
+
+        image = make_image_by_frame(frame, size)
         # draw items
-        item_size = self.item_size
-        if len(self.items) < item_size:  # For listui with item less than provided size
-            item_size = len(self.items)
+        if len(items) < item_size:  # For listui with item less than provided size
+            item_size = len(items)
         for i in range(item_size):
-            item_index = i + self.scroll_box_index
-            text_color = (47 if item_index == self.selected_index else 0,) * 3
-            if item_index == self.selected_index or item_index == self.items.get_highlighted_index():
+            item_index = i + scroll_box_index
+            text_color = (47 if item_index == selected_index else 0,) * 3
+            if item_index == selected_index or item_index == highlighted_index:
 
                 background_color = "#cbc2a9"
-                if item_index == self.items.get_highlighted_index():
+                if item_index == highlighted_index:
                     background_color = "#776622"
                     text_color = "#eeeeee"
-                draw.rect(self.image, background_color, (6, 6 + i * item_height, size[0] - 13 * self.has_scroll - 12, item_height))
+                draw.rect(image, background_color, (6, 6 + i * item_height, size[0] - 13 * has_scroll - 12, item_height))
 
-            font = Font(self.ui_font["main_button"], 20)
-            blit_text = self.items[item_index]
-            if self.items[item_index] is not None:  # assuming list ui has only 3 levels
-                if ">>" in self.items[item_index] or "||" in self.items[item_index]:
-                    font = Font(self.ui_font["main_button"], 14)
+            blit_text = items[item_index]
+            font = font1
+            if items[item_index] is not None:  # assuming list ui has only 3 levels
+                if ">>" in items[item_index] or "||" in items[item_index]:
+                    font = font2
                     blit_text = "  " + blit_text
-                elif ">" in self.items[item_index] or "|" in self.items[item_index]:
-                    font = Font(self.ui_font["main_button"], 18)
+                elif ">" in items[item_index] or "|" in items[item_index]:
+                    font = font3
                     blit_text = " " + blit_text
 
-            self.image.blit(
+            image.blit(
                 draw_text(blit_text, font, text_color, ellipsis_length=size[0]-55),
                 (20, item_height // 2 + 6 - 9 + i * item_height))
 
         # draw scroll bar
-        if scroll_bar_rect := self.get_scroll_bar_rect():
-            draw.rect(self.image, "#d2cab4", scroll_bar_rect)
+        if scroll_bar_rect := scroll_bar_rect:
+            draw.rect(image, "#d2cab4", scroll_bar_rect)
 
         # draw scroll box
-        if scroll_box_rect := self.get_scroll_box_rect():
-            self.image.blit(self.scroll_box, scroll_box_rect)
-            if self.in_scroll_box or self.hold_scroll_box is not None:
-                draw.rect(self.image, (100, 0, 0) if self.hold_scroll_box is not None else (50,) * 3,
+        if scroll_box_rect := scroll_box_rect:
+            image.blit(scroll_box, scroll_box_rect)
+            if in_scroll_box or hold_scroll_box is not None:
+                draw.rect(image, (100, 0, 0) if hold_scroll_box is not None else (50,) * 3,
                           scroll_box_rect, 1)
 
-        return self.image
+        return image
 
     def get_scroll_bar_rect(self):
         if not self.has_scroll: return None
