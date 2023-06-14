@@ -54,17 +54,9 @@ def make_lorebook(self):
                                         [button_images["weather"]], layer=13),
                     "close": MenuImageButton((encyclopedia.rect.topleft[0] + (encyclopedia.image.get_width() / 1.04),
                                               encyclopedia.rect.topleft[1] - (button_images["close"].get_height() / 2)),
-                                             [button_images["close"]], layer=13),
-                    "previous": MenuImageButton(
-                        (encyclopedia.rect.bottomleft[0] + (button_images["previous"].get_width()),
-                         encyclopedia.rect.bottomleft[1] - button_images["previous"].get_height()),
-                        [button_images["previous"]], layer=24),  # previous page button
-                    "next": MenuImageButton((encyclopedia.rect.bottomright[0] - (button_images["next"].get_width()),
-                                             encyclopedia.rect.bottomright[1] - button_images["next"].get_height()),
-                                            [button_images["next"]], layer=24)}  # next page button
+                                             [button_images["close"]], layer=13)}  # next page button
 
-    page_button = (lore_buttons["previous"], lore_buttons["next"])
     UIScroll(lore_name_list, lore_name_list.rect.topright)  # add subsection list scroll
     UIScroll(filter_tag_list, filter_tag_list.rect.topright)  # add filter list scroll
 
-    return encyclopedia, lore_name_list, filter_tag_list, lore_buttons, page_button
+    return encyclopedia, lore_name_list, filter_tag_list, lore_buttons

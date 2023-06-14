@@ -63,8 +63,7 @@ def menu_main(self, esc_press):
         self.menu_state = "encyclopedia"
         self.add_ui_updater(self.encyclopedia_stuff)  # add sprite related to encyclopedia
         self.encyclopedia.change_section(0, self.lore_name_list, self.subsection_name, self.tag_filter_name,
-                                         self.lore_name_list.scroll, self.filter_tag_list, self.filter_tag_list.scroll,
-                                         self.page_button, self.main_ui_updater)
+                                         self.lore_name_list.scroll, self.filter_tag_list, self.filter_tag_list.scroll)
 
     elif self.option_button.event:  # change main menu to option menu
         self.menu_state = "option"
@@ -72,7 +71,6 @@ def menu_main(self, esc_press):
 
         self.add_ui_updater(self.option_menu_button, self.option_menu_sliders.values(), self.value_boxes.values(),
                             self.option_text_list, self.profile_box, self.hide_background)
-        # self.background = self.background_image["option"]
 
     elif self.quit_button.event or esc_press:  # open quit game confirmation input
         self.activate_input_popup(("confirm_input", "quit"), "Quit Game?", self.confirm_ui_popup)

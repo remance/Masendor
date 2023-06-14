@@ -355,17 +355,17 @@ class ChargeDamageEffect(Effect):
             self.timer -= 1
             self.already_hit = []  # sprite can deal dmg to same unit only once every 1 second
 
-        for unit in self.attacker.near_enemy:  # collide check
-            this_unit = unit[0]
-            hit_angle = self.set_rotate(this_unit.base_pos)
-            if this_unit.hitbox.rect.colliderect(self.rect):  # TODO change this later to check for hitbox size
-                if abs(hit_angle - self.attacker.angle) <= 45 and this_unit.alive and \
-                        this_unit.game_id not in self.already_hit:
-                    # Charge damage only hit those at front of charger
-                    self.hit_register(this_unit)
-                    self.already_hit.append(this_unit.game_id)
-            else:
-                break
+        # for unit in self.attacker.near_enemy:  # collide check
+        #     this_unit = unit[0]
+        #     hit_angle = self.set_rotate(this_unit.base_pos)
+        #     if this_unit.hitbox.rect.colliderect(self.rect):  # TODO change this later to check for hitbox size
+        #         if abs(hit_angle - self.attacker.angle) <= 45 and this_unit.alive and \
+        #                 this_unit.game_id not in self.already_hit:
+        #             # Charge damage only hit those at front of charger
+        #             self.hit_register(this_unit)
+        #             self.already_hit.append(this_unit.game_id)
+        #     else:
+        #         break
 
 
 class EffectDamageEffect(DamageEffect):

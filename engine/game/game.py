@@ -10,7 +10,7 @@ from pygame.locals import *
 from engine.battlemap.battlemap import BaseMap, FeatureMap, HeightMap, FinalMap
 from engine.weather.weather import MatterSprite, SpecialWeatherEffect
 from engine.uibattle.uibattle import MiniMap, UnitIcon, SkillCardIcon, SpriteIndicator, AimTarget, BattleCursor, \
-    HeroUI, UnitSelector, UIScroll, Profiler, TempUnitIcon
+    HeroUI, UnitSelector, UIScroll, Profiler, TempUnitIcon, FPScount
 from engine.uimenu.uimenu import MapPreview, OptionMenuText, SliderMenu, TeamCoa, MenuCursor, BoxUI, BrownMenuButton, \
     ListUI, ListAdapter, ListAdapterHideExpand, CampaignListAdapter, LeaderModel, MenuButton, BackgroundBox, OrgChart, \
     TickBox, TextBox, TextPopup, MapTitle, NameTextBox
@@ -75,8 +75,8 @@ class Game:
     language = None
     localisation = None
     cursor = None
-    main_ui_updater = None
-    main_ui_drawer = None
+    ui_updater = None
+    ui_drawer = None
 
     screen_rect = None
     screen_scale = (1, 1)
@@ -176,6 +176,7 @@ class Game:
 
         try:
             self.config = config
+            self.show_fps = int(self.config["USER"]["fps"])
             self.screen_width = int(self.config["USER"]["screen_width"])
             self.screen_height = int(self.config["USER"]["screen_height"])
             self.full_screen = int(self.config["USER"]["full_screen"])
@@ -196,6 +197,7 @@ class Game:
         except (KeyError, TypeError, NameError):  # config error will make the game recreate config with default
             config = self.create_config()
             self.config = config
+            self.show_fps = int(self.config["USER"]["fps"])
             self.screen_width = int(self.config["USER"]["screen_width"])
             self.screen_height = int(self.config["USER"]["screen_height"])
             self.full_screen = int(self.config["USER"]["full_screen"])
@@ -271,8 +273,8 @@ class Game:
 
         # Initialise groups
 
-        Game.main_ui_updater = ReversedLayeredUpdates()  # main drawer for ui in main menu
-        Game.main_ui_drawer = pygame.sprite.LayeredUpdates()
+        Game.ui_updater = ReversedLayeredUpdates()  # main drawer for ui in main menu
+        Game.ui_drawer = pygame.sprite.LayeredUpdates()
 
         # game start menu group
         self.menu_icon = pygame.sprite.Group()  # mostly for option icon like volume or screen resolution
@@ -315,23 +317,23 @@ class Game:
         # Assign containers
         OptionMenuText.containers = self.menu_icon
         SliderMenu.containers = self.menu_slider, self.slider_menu
-        TeamCoa.containers = self.team_coa, self.main_ui_updater, self.main_ui_drawer
+        TeamCoa.containers = self.team_coa, self.ui_updater, self.ui_drawer
 
-        MenuRotate.containers = self.main_ui_updater, self.main_ui_drawer
-        MenuActor.containers = self.main_ui_updater, self.main_ui_drawer
+        MenuRotate.containers = self.ui_updater, self.ui_drawer
+        MenuActor.containers = self.ui_updater, self.ui_drawer
 
-        SubsectionName.containers = self.main_ui_updater, self.main_ui_drawer, self.battle_ui_updater, self.battle_ui_drawer
+        SubsectionName.containers = self.ui_updater, self.ui_drawer, self.battle_ui_updater, self.battle_ui_drawer
 
         # battle containers
         SkillCardIcon.containers = self.skill_icon, self.battle_ui_updater, self.battle_ui_drawer
-        UnitIcon.containers = self.unit_icon, self.main_ui_updater, self.main_ui_drawer
+        UnitIcon.containers = self.unit_icon, self.ui_updater, self.ui_drawer
         SpriteIndicator.containers = self.effect_updater, self.battle_camera
         AimTarget.containers = self.shoot_lines, self.battle_camera
         BattleCursor.containers = self.battle_ui_updater, self.battle_ui_drawer
 
         Effect.containers = self.effect_updater, self.battle_camera
 
-        MenuCursor.containers = self.main_ui_updater, self.main_ui_drawer
+        MenuCursor.containers = self.ui_updater, self.ui_drawer
 
         MatterSprite.containers = self.weather_matter, self.battle_ui_updater, self.battle_ui_drawer
         SpecialWeatherEffect.containers = self.weather_effect, self.battle_ui_updater, self.battle_ui_drawer
@@ -442,6 +444,10 @@ class Game:
             pygame.mixer.music.play(-1)
 
         # Main menu interface
+
+        self.fps_count = FPScount(self)  # FPS number counter
+        if self.show_fps:
+            self.add_ui_updater(self.fps_count)
 
         image_list = load_base_button(self.module_dir, self.screen_scale)
 
@@ -602,15 +608,18 @@ class Game:
         self.volume_texts = option_menu_dict["volume_texts"]
         self.fullscreen_box = option_menu_dict["fullscreen_box"]
         self.fullscreen_text = option_menu_dict["fullscreen_text"]
+        self.fps_box = option_menu_dict["fps_box"]
+        self.fps_text = option_menu_dict["fps_text"]
         self.keybind_text = option_menu_dict["keybind_text"]
         self.keybind_icon = option_menu_dict["keybind_icon"]
         self.control_switch = option_menu_dict["control_switch"]
 
         self.option_text_list = tuple(
-            [self.resolution_text, self.fullscreen_text] + [value for value in
+            [self.resolution_text, self.fullscreen_text, self.fps_text] + [value for value in
                                                             self.volume_texts.values()])
         self.option_menu_button = (
-            self.back_button, self.default_button, self.keybind_button, self.resolution_drop, self.fullscreen_box)
+            self.back_button, self.default_button, self.keybind_button, self.resolution_drop,
+            self.fullscreen_box, self.fps_box)
 
         # Profile box
         profile_box_image = load_image(self.module_dir, self.screen_scale, "profile_box.png", ("ui", "mainmenu_ui"))
@@ -634,7 +643,7 @@ class Game:
         editor_dict = make_editor_ui(self.module_dir, self.screen_scale, self.screen_rect,
                                      load_image(self.module_dir, self.screen_scale, "name_list.png",
                                                 ("ui", "mapselect_ui")),
-                                     load_base_button(self.module_dir, self.screen_scale), self.main_ui_updater)
+                                     load_base_button(self.module_dir, self.screen_scale), self.ui_updater)
         self.unit_preset_list_box = editor_dict["unit_listbox"]
         self.editor_troop_list_box = editor_dict["troop_listbox"]
         self.unit_delete_button = editor_dict["unit_delete_button"]
@@ -660,8 +669,7 @@ class Game:
         Lorebook.leader_data = self.leader_data
         Lorebook.battle_map_data = self.battle_map_data
 
-        self.encyclopedia, self.lore_name_list, self.filter_tag_list, self.lore_buttons, self.page_button = make_lorebook(
-            self)
+        self.encyclopedia, self.lore_name_list, self.filter_tag_list, self.lore_buttons = make_lorebook(self)
 
         self.encyclopedia_stuff = (self.encyclopedia, self.lore_name_list, self.filter_tag_list,
                                    self.lore_name_list.scroll, self.filter_tag_list.scroll, self.lore_buttons.values())
@@ -747,12 +755,12 @@ class Game:
         pygame.display.set_caption(version_name)  # set the self name on program border/tab
 
     def add_ui_updater(self, *args):
-        self.main_ui_updater.add(*args)
-        self.main_ui_drawer.add(*args)
+        self.ui_updater.add(*args)
+        self.ui_drawer.add(*args)
 
     def remove_ui_updater(self, *args):
-        self.main_ui_updater.remove(*args)
-        self.main_ui_drawer.remove(*args)
+        self.ui_updater.remove(*args)
+        self.ui_drawer.remove(*args)
 
     def setup_profiler(self):
         self.profiler = Profiler()
@@ -839,7 +847,7 @@ class Game:
                     esc_press = True
 
             self.remove_ui_updater(self.text_popup)
-            self.main_ui_updater.update()
+            self.ui_updater.update()
 
             # Reset screen
             self.screen.fill((220, 220, 180))
@@ -927,13 +935,13 @@ class Game:
                         sys.exit()
 
                     if done:
-                        self.change_pause_update(False, self.main_ui_updater)
+                        self.change_pause_update(False, self.ui_updater)
                         self.input_box.text_start("")
                         self.input_popup = None
                         self.remove_ui_updater(self.all_input_ui_popup)
 
                 elif self.input_cancel_button.event_press or self.input_close_button.event_press or esc_press:
-                    self.change_pause_update(False, self.main_ui_updater)
+                    self.change_pause_update(False, self.ui_updater)
                     self.input_box.text_start("")
                     self.input_popup = None
                     self.remove_ui_updater(self.all_input_ui_popup)
@@ -978,6 +986,6 @@ class Game:
                     if esc_press or command == "exit":
                         self.menu_state = "main_menu"  # change menu back to default 0
 
-            self.main_ui_drawer.draw(self.screen)
+            self.ui_drawer.draw(self.screen)
             pygame.display.update()
             self.clock.tick(60)

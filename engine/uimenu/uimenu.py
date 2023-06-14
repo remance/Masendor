@@ -125,7 +125,7 @@ class UIMenu(Sprite):
         self.screen_size = Game.screen_size
         self.localisation = Game.localisation
         self.cursor = Game.cursor
-        self.updater = Game.main_ui_updater
+        self.updater = Game.ui_updater
         self.player_interact = player_interact
         if has_containers:
             Sprite.__init__(self, self.containers)
@@ -1330,33 +1330,37 @@ class OrgChart(UIMenu):
             graph_input = nx.Graph()
 
             edge_list = [(unit["Temp Leader"], index) for index, unit in enumerate(unit_data) if
-                         type(unit["Temp Leader"]) is int]
-            print(edge_list)
+                         type(unit["Temp Leader"]) is int and unit["Team"] == unit_data[selected]["Team"]]
             try:
                 graph_input.add_edges_from(edge_list)
                 pos = self.hierarchy_pos(graph_input, root=selected, width=self.image.get_width(),
-                                         vert_gap=-self.image.get_height() * 0.5 / len(edge_list), y_pos=100,
+                                         vert_gap=-self.image.get_height() * 0.5 / len(edge_list), y_pos=50,
                                          x_pos=self.image.get_width() / 2)
                 image_size = (self.image.get_width() / (len(pos) * 1.5), self.image.get_height() / (len(pos) * 1.5))
             except (nx.exception.NetworkXError, ZeroDivisionError):  # has only one leader
                 pos = {selected: (self.image.get_width() / 2, self.image.get_width() / 2)}
                 image_size = (self.image.get_width() / 2, self.image.get_height() / 2)
 
-            for unit in pos:
-                for unit_index, icon in enumerate(preview_unit):
-                    if unit_index == unit:
+            portrait_list = {}
+            for unit in pos:  # draw line first
+                for icon in preview_unit:
+                    if icon.map_id == unit:
                         image = smoothscale(icon.portrait, image_size)
+                        portrait_list[unit] = image
                         self.node_rect[unit] = image.get_rect(center=pos[unit])
-                        self.image.blit(image, self.node_rect[unit])
+                        if type(unit_data[unit]["Temp Leader"]) is int:
+                            line_width = int(self.image.get_width() / 100)
+                            if line_width < 1:
+                                line_width = 1
+                            draw.line(self.image, (0, 0, 0), self.node_rect[unit_data[unit]["Temp Leader"]].midbottom,
+                                      self.node_rect[unit].midtop, width=line_width)
                         break
 
-            for unit in pos:
-                if type(unit_data[unit]["Temp Leader"]) is int:
-                    line_width = int(self.image.get_width() / 100)
-                    if line_width < 1:
-                        line_width = 1
-                    draw.line(self.image, (0, 0, 0), self.node_rect[unit_data[unit]["Temp Leader"]].midbottom,
-                              self.node_rect[unit].midtop, width=line_width)
+            for unit in pos:  # draw portrait
+                for icon in preview_unit:
+                    if icon.map_id == unit:
+                        self.image.blit(portrait_list[unit], self.node_rect[unit])
+                        break
 
 
 class TextPopup(UIMenu):

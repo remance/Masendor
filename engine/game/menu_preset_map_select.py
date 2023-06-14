@@ -72,7 +72,7 @@ def menu_preset_map_select(self, esc_press):
             leader_id = [item for item in self.play_map_data[self.map_source_selected]['unit'] if
                                                item["ID"] == self.unit_selected][0]["Leader ID"]
             self.text_popup.popup(self.cursor.rect,
-                                  (self.leader_data.leader_lore[leader_id]["Description"],),
+                                  (self.leader_data.leader_lore[leader_id]["Description"]),
                                   shown_id=("model", leader_id, self.unit_selected),
                                   width_text_wrapper=500)
             self.add_ui_updater(self.text_popup)

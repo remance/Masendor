@@ -59,7 +59,7 @@ def menu_option(self, esc_press):
                                  int(self.config["DEFAULT"]["screen_height"])))
 
     elif self.resolution_drop.event_press:  # click on resolution bar
-        if self.resolution_bar in self.main_ui_updater:  # remove the bar list if click again
+        if self.resolution_bar in self.ui_updater:  # remove the bar list if click again
             self.remove_ui_updater(self.resolution_bar)
         else:  # add bar list
             self.add_ui_updater(self.resolution_bar)
@@ -74,6 +74,20 @@ def menu_option(self, esc_press):
         edit_config("USER", "full_screen", self.full_screen, "configuration.ini",
                     self.config)
         change_resolution(self, (self.screen_width, "", self.screen_height))
+
+    elif self.fps_box.event_press:
+        if self.fps_box.tick is False:
+            self.fps_box.change_tick(True)
+            self.show_fps = 1
+            self.battle.add_ui_updater(self.battle.fps_count)
+            self.add_ui_updater(self.fps_count)
+        else:
+            self.fps_box.change_tick(False)
+            self.show_fps = 0
+            self.battle.remove_ui_updater(self.battle.fps_count)
+            self.remove_ui_updater(self.fps_count)
+        edit_config("USER", "fps", self.show_fps, "configuration.ini",
+                    self.config)
 
     elif self.profile_box.event_press:
         self.activate_input_popup(("text_input", "profile_name"), "Profile Name:", self.input_ui_popup)

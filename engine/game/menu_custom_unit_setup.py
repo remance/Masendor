@@ -7,7 +7,7 @@ from engine.unit.unit import make_no_face_portrait
 
 
 def menu_custom_unit_setup(self, esc_press):
-    if self.custom_unit_list_select_box in self.main_ui_updater:
+    if self.custom_unit_list_select_box in self.ui_updater:
         if not self.custom_unit_list_select_box.mouse_over and self.cursor.is_select_just_up:  # click other stuffs
             self.remove_ui_updater(self.custom_unit_list_select_box)
 
@@ -419,11 +419,22 @@ def custom_unit_list_on_select(self, item_index, item_text):
                                                          team_pos_list=game.play_map_data["unit"]["pos"],
                                                          camp_pos_list=game.play_map_data["camp_pos"],
                                                          selected=old_selected)
-                            break
 
                         else:  # change current selected unit's leader
+                            has_unit_selected = True
+                            unit_change_team_unit(game, old_selected=this_unit.who.index)
                             game.play_source_data["unit"][this_unit.who.map_id]["Leader ID"] = \
                                 game.remember_custom_list["leader"]["leader_list"][item_index]
+
+                            if this_unit.who.map_id is not None:
+                                who_todo = {key: value for key, value in self.game.leader_data.leader_list.items() if
+                                            key == this_unit.who.troop_id}
+                                preview_sprite_pool, _ = self.game.create_troop_sprite_pool(who_todo, preview=True)
+                                self.game.unit_model_room.add_preview_model(
+                                    model=preview_sprite_pool[this_unit.who.troop_id]["sprite"],
+                                    coa=this_unit.who.coa)
+
+                        break
 
                 if not has_unit_selected:  # no unit selected, consider as adding new unit
                     add_unit_data(game, selected_coa, item_index, only_leader=True)
@@ -438,7 +449,7 @@ def custom_unit_list_on_select(self, item_index, item_text):
                             add_unit_data(game, selected_coa, item_index)
                             old_selected = None
                         else:  # change existed
-                            unit_data = make_unit_data(game, selected_coa, item_text)
+                            unit_data = make_unit_data(game, selected_coa, item_index)
                             unit_data["ID"] = this_unit.who.map_id
                             game.play_source_data["unit"][this_unit.who.map_id] = unit_data
                             old_selected = this_unit.who.index
@@ -500,8 +511,8 @@ def custom_set_list_on_select(self, item_index, item_text):
     create_unit_custom_list(game)
 
 
-def make_unit_data(game, coa, item_text):
-    unit_data = create_unit_list(game, coa, unit_selected=item_text).copy()
+def make_unit_data(game, coa, item_index):
+    unit_data = create_unit_list(game, coa, unit_selected=game.remember_custom_list["unit"]["unit_list"][item_index]).copy()
     unit_data["Team"] = coa.team
     unit_data["Temp Leader"] = ""
     return unit_data

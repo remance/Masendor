@@ -3,7 +3,7 @@ from engine.uibattle.uibattle import TempUnitIcon
 
 
 def menu_custom_map_select(self, esc_press):
-    if self.weather_list_box in self.main_ui_updater:
+    if self.weather_list_box in self.ui_updater:
         if not self.weather_list_box.mouse_over and self.cursor.is_select_just_up:  # click other stuffs
             self.remove_ui_updater(self.weather_list_box)
 

@@ -34,9 +34,17 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
 
     fullscreen_box = TickBox((screen_rect.width / 2, screen_rect.height / 6.5),
                              battle_select_image["untick"], battle_select_image["tick"], "fullscreen")
+    fps_box = TickBox((screen_rect.width / 2, screen_rect.height / 10),
+                      battle_select_image["untick"], battle_select_image["tick"], "fps")
 
     if int(config["full_screen"]) == 1:
         fullscreen_box.change_tick(True)
+    if int(config["fps"]) == 1:
+        fps_box.change_tick(True)
+
+    fps_text = OptionMenuText(
+        (fps_box.pos[0] - (fps_box.pos[0] / 4.5), fps_box.pos[1]),
+        localisation.grab_text(key=("ui", "option_fps",)), font_size)
 
     fullscreen_text = OptionMenuText(
         (fullscreen_box.pos[0] - (fullscreen_box.pos[0] / 4.5), fullscreen_box.pos[1]),
@@ -175,5 +183,6 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
             "resolution_drop": resolution_drop,
             "resolution_bar": resolution_bar, "resolution_text": resolution_text, "volume_sliders": volume_slider,
             "value_boxes": value_box, "volume_texts": volume_texts, "fullscreen_box": fullscreen_box,
-            "fullscreen_text": fullscreen_text, "keybind_text": keybind_text, "keybind_icon": keybind_icon,
+            "fullscreen_text": fullscreen_text, "fps_box": fps_box,
+            "fps_text": fps_text, "keybind_text": keybind_text, "keybind_icon": keybind_icon,
             "control_switch": control_switch}

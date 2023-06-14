@@ -182,26 +182,14 @@ class Lorebook(UIMenu):
                              (self.battle_map_data.feature_mod, self.battle_map_data.feature_mod_lore),
                              (self.battle_map_data.weather_data, self.battle_map_data.weather_lore))
 
-    def change_page(self, page, page_button, main_ui, portrait=None):
+    def change_page(self, page):
         """Change page of the current subsection, either next or previous page"""
         self.page = page
         self.image = self.base_image.copy()  # reset encyclopedia image
         self.page_design()  # draw new pages
 
-        # Add or remove next/previous page button
-        if self.page >= self.max_page:  # remove next page button when reach last page
-            main_ui.remove(page_button[1])
-        else:
-            main_ui.add(page_button[1])
-
-        if self.page != 0:  # add previous page button when not at first page
-            main_ui.add(page_button[0])
-        else:
-            main_ui.remove(page_button[0])
-        # ^ End page button
-
     def change_section(self, section, subsection_list_box, subsection_name_group, tag_filter_group,
-                       subsection_list_scroll, filter_list_box, filter_list_scroll, page_button, main_ui):
+                       subsection_list_scroll, filter_list_box, filter_list_scroll):
         """Change to new section either by open encyclopedia or click section button"""
         self.portrait = None
         self.section = section  # get new section
@@ -231,7 +219,7 @@ class Lorebook(UIMenu):
         self.row_size = len(self.subsection_list)  # get size of subsection list
         self.filter_size = len(self.tag_list[self.section])
 
-        self.change_subsection(self.subsection, page_button, main_ui)
+        self.change_subsection(self.subsection)
         self.setup_subsection_list(subsection_list_box, subsection_name_group, "subsection")
 
         subsection_list_scroll.change_image(row_size=self.row_size)
@@ -241,22 +229,16 @@ class Lorebook(UIMenu):
         filter_list_scroll.change_image(row_size=self.filter_size)
         filter_list_scroll.change_image(new_row=self.current_filter_row)
 
-    def change_subsection(self, subsection, page_button, main_ui):
+    def change_subsection(self, subsection):
         self.subsection = subsection
         if type(subsection) == str and self.subsection in self.index_data:  # use new subsection index instead of old one
             self.subsection = self.index_data[self.subsection]
         self.page = 0  # reset page to the first one
         self.image = self.base_image.copy()
         self.portrait = None  # reset portrait, possible for subsection to not have portrait
-        main_ui.remove(page_button[0])
-        main_ui.remove(page_button[1])
         self.max_page = 0  # some subsection may not have lore data in file (maxpage would be just 0)
 
         # Number of maximum page of lore for that subsection (4 para per page) and not count first one (name + description)
-        if len(self.lore_data[self.subsection]) > 2:
-            self.max_page = int((len(self.lore_data[subsection]) - 2) / 4)
-            main_ui.add(page_button[1])
-
         if self.section == self.leader_section:  # leader section exclusive for now (will merge with other section when add portrait for others)
             try:
                 self.portrait = self.leader_data.images[
@@ -723,42 +705,31 @@ def lorebook_process(self, esc_press):
     command = None
     close = False
     for button_index, button in self.lore_buttons.items():
-        if button in self.main_ui_updater and button.event_press:  # click button
+        if button in self.ui_updater and button.event_press:  # click button
             if type(button_index) is int:  # section button
                 self.encyclopedia.change_section(button_index, self.lore_name_list, self.subsection_name,
                                                  self.tag_filter_name, self.lore_name_list.scroll,
-                                                 self.filter_tag_list, self.filter_tag_list.scroll,
-                                                 self.page_button,
-                                                 self.main_ui_updater)  # change to section of that button
+                                                 self.filter_tag_list, self.filter_tag_list.scroll)  # change to section of that button
 
             elif button_index == "close" or esc_press:  # Close button
                 close = True
-
-            elif button_index == "previous":  # Previous page button
-                self.encyclopedia.change_page(self.encyclopedia.page - 1, self.page_button,
-                                              self.main_ui_updater)  # go back 1 page
-
-            elif button_index == "next":  # Next page button
-                self.encyclopedia.change_page(self.encyclopedia.page + 1, self.page_button,
-                                              self.main_ui_updater)  # go forward 1 page
 
             break  # found clicked button, break loop
 
     if self.lore_name_list.scroll.event_press:  # click on subsection list scroll
         self.encyclopedia.current_subsection_row = self.lore_name_list.scroll.player_input(
-            self.mouse_pos)  # update the scroll and get new current subsection
+            self.cursor.pos)  # update the scroll and get new current subsection
         self.encyclopedia.setup_subsection_list(self.lore_name_list,
                                                 self.subsection_name, "subsection")  # update subsection name list
     elif self.filter_tag_list.scroll.event_press:  # click on filter list scroll
         self.encyclopedia.current_filter_row = self.filter_tag_list.scroll.player_input(
-            self.mouse_pos)  # update the scroll and get new current subsection
+            self.cursor.pos)  # update the scroll and get new current subsection
         self.encyclopedia.setup_subsection_list(self.filter_tag_list,
                                                 self.tag_filter_name, "tag")  # update subsection name list
     else:
         for name in self.subsection_name:
             if name.event_press:  # click on subsection name
-                self.encyclopedia.change_subsection(name.subsection, self.page_button,
-                                                    self.main_ui_updater)  # change subsection
+                self.encyclopedia.change_subsection(name.subsection)  # change subsection
                 break  # found clicked subsection, break loop
         for name in self.tag_filter_name:
             if name.event_press:  # click on subsection name

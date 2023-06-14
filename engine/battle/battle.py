@@ -11,11 +11,37 @@ from engine.unit.unit import Unit
 from engine.effect.effect import Effect
 from engine.uibattle.uibattle import BattleCursor, FPScount, SkillCardIcon, AimTarget, BattleDone, ButtonUI, EventLog, \
     UIScroll, MiniMap
+from engine.lorebook.lorebook import lorebook_process
 from engine.drama.drama import TextDrama
 from engine.ai import ai
 from engine.battle.setup.make_battle_ui import make_battle_ui
 from engine.battle.setup.make_esc_menu import make_esc_menu
 from engine.utility import load_images, number_to_minus_or_plus, clean_group_object, convert_str_time
+
+from engine.game.activate_input_popup import activate_input_popup
+from engine.game.change_pause_update import change_pause_update
+
+from engine.battle.add_skill_icon import add_skill_icon
+from engine.battle.add_sound_effect_queue import add_sound_effect_queue
+from engine.battle.cal_shake_value import cal_shake_value
+from engine.battle.camera_fix import camera_fix
+from engine.battle.camera_process import camera_process
+from engine.battle.change_battle_state import change_battle_state
+from engine.battle.countdown_skill_icon import countdown_skill_icon
+from engine.battle.mouse_scrolling_process import mouse_scrolling_process
+from engine.battle.play_sound_effect import play_sound_effect
+from engine.battle.player_aim import player_aim
+from engine.battle.player_cancel_input import player_cancel_input
+from engine.battle.player_input_process import player_input_process
+from engine.battle.player_skill_perform import player_skill_perform
+from engine.battle.setup_battle_unit import setup_battle_unit
+from engine.battle.shake_camera import shake_camera
+from engine.battle.spawn_weather_matter import spawn_weather_matter
+from engine.battle.time_update import time_update
+from engine.battle.effect_icon_mouse_over import effect_icon_mouse_over
+from engine.battle.escmenu_process import escmenu_process
+from engine.battle.kill_effect_icon import kill_effect_icon
+from engine.battle.wheel_ui_process import wheel_ui_process
 
 script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
 
@@ -36,77 +62,41 @@ def set_done_load():
 
 
 class Battle:
-    from engine.battle.add_skill_icon import add_skill_icon
+    activate_input_popup = activate_input_popup
     add_skill_icon = add_skill_icon
-
-    from engine.battle.add_sound_effect_queue import add_sound_effect_queue
     add_sound_effect_queue = add_sound_effect_queue
-
-    from engine.battle.cal_shake_value import cal_shake_value
     cal_shake_value = cal_shake_value
-
-    from engine.battle.camera_fix import camera_fix
     camera_fix = camera_fix
-
-    from engine.battle.camera_process import camera_process
     camera_process = camera_process
-
-    from engine.battle.change_battle_state import change_battle_state
     change_battle_state = change_battle_state
-
-    from engine.battle.countdown_skill_icon import countdown_skill_icon
+    change_pause_update = change_pause_update
     countdown_skill_icon = countdown_skill_icon
-
-    from engine.battle.mouse_scrolling_process import mouse_scrolling_process
     mouse_scrolling_process = mouse_scrolling_process
-
-    from engine.battle.play_sound_effect import play_sound_effect
     play_sound_effect = play_sound_effect
-
-    from engine.battle.player_aim import player_aim
     player_aim = player_aim
-
-    from engine.battle.player_cancel_input import player_cancel_input
     player_cancel_input = player_cancel_input
-
-    from engine.battle.player_input_process import player_input_process
     player_input_process = player_input_process
-
-    from engine.battle.player_skill_perform import player_skill_perform
     player_skill_perform = player_skill_perform
-
-    from engine.battle.setup_battle_unit import setup_battle_unit
     setup_battle_unit = setup_battle_unit
-
-    from engine.battle.shake_camera import shake_camera
     shake_camera = shake_camera
-
-    from engine.battle.spawn_weather_matter import spawn_weather_matter
     spawn_weather_matter = spawn_weather_matter
-
-    from engine.battle.time_update import time_update
     time_update = time_update
-
-    from engine.battle.effect_icon_mouse_over import effect_icon_mouse_over
     effect_icon_mouse_over = effect_icon_mouse_over
-
-    from engine.battle.escmenu_process import escmenu_process
     escmenu_process = escmenu_process
-
-    from engine.battle.kill_effect_icon import kill_effect_icon
     kill_effect_icon = kill_effect_icon
-
-    from engine.battle.wheel_ui_process import wheel_ui_process
     wheel_ui_process = wheel_ui_process
+    lorebook_process = lorebook_process
 
     battle = None
-    battle_ui_updater = None
-    battle_ui_drawer = None
+    ui_updater = None
+    ui_drawer = None
     start_camera_mode = "Follow"
 
     def __init__(self, game):
         self.game = game
         Battle.battle = self
+
+        self.clock = pygame.time.Clock()  # Game clock to keep track of realtime pass
 
         self.player_unit = None  # player unit
         self.config = game.config
@@ -129,8 +119,8 @@ class Battle:
         self.module_dir = game.module_dir
         self.screen_scale = game.screen_scale
         self.battle_camera = game.battle_camera
-        Battle.battle_ui_updater = game.battle_ui_updater
-        Battle.battle_ui_drawer = game.battle_ui_drawer
+        Battle.ui_updater = game.battle_ui_updater
+        Battle.ui_drawer = game.battle_ui_drawer
 
         self.unit_updater = game.unit_updater
         self.all_units = game.all_units
@@ -150,7 +140,6 @@ class Battle:
         self.button_ui = game.button_ui
 
         self.single_text_popup = game.text_popup
-        self.activate_input_popup = game.activate_input_popup
 
         self.skill_icon = game.skill_icon
         self.effect_icon = game.effect_icon
@@ -170,6 +159,15 @@ class Battle:
         self.role_images = game.role_images
         self.trait_images = game.trait_images
         self.skill_images = game.skill_images
+
+        self.encyclopedia = game.encyclopedia
+        self.lore_name_list = game.lore_name_list
+        self.filter_tag_list = game.filter_tag_list
+        self.lore_buttons = game.lore_buttons
+        self.subsection_name = game.subsection_name
+        self.tag_filter_name = game.tag_filter_name
+
+        self.encyclopedia_stuff = game.encyclopedia_stuff
 
         self.sound_effect_pool = game.sound_effect_pool
         self.sound_effect_queue = {}
@@ -285,8 +283,9 @@ class Battle:
         cursor_images = load_images(self.module_dir, subfolder=("ui", "cursor_battle"))  # no need to scale cursor
         self.player1_battle_cursor = BattleCursor(cursor_images, self.player1_key_control)
 
-        self.fps_count = FPScount()  # FPS number counter
-        self.add_ui_updater(self.fps_count)
+        self.fps_count = FPScount(self)  # FPS number counter
+        if self.game.show_fps:
+            self.add_ui_updater(self.fps_count)
 
         battle_ui_image = load_images(self.module_dir, screen_scale=self.screen_scale, subfolder=("ui", "battle_ui"))
 
@@ -360,8 +359,6 @@ class Battle:
                                           1])  # calculate top left corner of camera position
 
         self.camera = Camera(self.shown_camera_pos, self.screen_rect)
-
-        self.clock = pygame.time.Clock()  # Game clock to keep track of realtime pass
 
         self.background = pygame.Surface(self.screen_rect.size)  # Create background image
         self.background.fill((255, 255, 255))  # fill background image with black colour
@@ -589,10 +586,9 @@ class Battle:
             if frame % 30 == 0 and hasattr(self.game, "profiler"):
                 self.game.profiler.refresh()
 
-            self.fps_count.fps_show(self.clock)
             event_key_press = None
-            mouse_scroll_down = False
-            mouse_scroll_up = False
+            self.cursor.scroll_down = False
+            self.cursor.scroll_up = False
             key_state = pygame.key.get_pressed()
             esc_press = False
 
@@ -715,9 +711,9 @@ class Battle:
 
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 4:  # Mouse scroll up
-                        mouse_scroll_up = True
+                        self.cursor.scroll_up = True
                     elif event.button == 5:  # Mouse scroll down
-                        mouse_scroll_down = True
+                        self.cursor.scroll_down = True
 
                     press_button = self.mouse_bind_name[event.button]
                     if self.player1_key_control == "keyboard" and press_button in self.player1_key_bind_name:
@@ -751,7 +747,7 @@ class Battle:
                 if self.player_unit_input_delay < 0:
                     self.player_unit_input_delay = 0
 
-            self.battle_ui_updater.update()  # update ui before more specific update
+            self.ui_updater.update()  # update ui before more specific update
 
             if not self.input_popup:
                 if esc_press:  # open/close menu
@@ -764,8 +760,8 @@ class Battle:
 
                 if self.game_state == "battle":  # game in battle state
                     if not self.player_input_state:  # register user input during gameplay
-                        if mouse_scroll_up or mouse_scroll_down:  # Mouse scroll
-                            self.mouse_scrolling_process(mouse_scroll_up, mouse_scroll_down)
+                        if self.cursor.scroll_up or self.cursor.scroll_down:  # Mouse scroll
+                            self.mouse_scrolling_process()
 
                         # keyboard input
                         self.camera_process()
@@ -903,7 +899,7 @@ class Battle:
                     self.time_update()
 
                 elif self.game_state == "end":
-                    if self.battle_done_box not in self.battle_ui_updater:
+                    if self.battle_done_box not in self.ui_updater:
                         if not self.active_unit_list:  # draw
                             self.battle_done_box.pop("Draw")
                         else:
@@ -979,20 +975,20 @@ class Battle:
 
             # self.screen.fill((0, 0, 0))
             self.screen.blit(self.camera.image, (0, 0))  # draw the battle camera and everything that appear in it
-            self.battle_ui_drawer.draw(self.screen)  # draw the UI
+            self.ui_drawer.draw(self.screen)  # draw the UI
             pygame.display.update()  # update self display, draw everything
             self.clock.tick(60)  # clock update even if self pause
 
     def add_ui_updater(self, *args):
-        self.battle_ui_updater.add(*args)
-        self.battle_ui_drawer.add(*args)
+        self.ui_updater.add(*args)
+        self.ui_drawer.add(*args)
 
     def remove_ui_updater(self, *args):
-        self.battle_ui_updater.remove(*args)
-        self.battle_ui_drawer.remove(*args)
+        self.ui_updater.remove(*args)
+        self.ui_drawer.remove(*args)
 
     def exit_battle(self):
-        self.battle_ui_updater.clear(self.screen, self.background)  # clear all sprite
+        self.ui_updater.clear(self.screen, self.background)  # clear all sprite
         self.battle_camera.clear(self.screen, self.background)  # clear all sprite
 
         self.remove_ui_updater(self.battle_scale_ui)

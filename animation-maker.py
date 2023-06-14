@@ -72,7 +72,7 @@ Game.screen_scale = screen_scale
 Game.language = language
 Game.ui_font = csv_read(module_dir, "ui_font.csv", ("ui",), header_key=True)
 Game.font_dir = os.path.join(data_dir, "font")
-Game.main_ui_updater = ui
+Game.ui_updater = ui
 
 localisation = Localisation()
 Game.localisation = localisation

@@ -26,7 +26,7 @@ class UIBattle(UIMenu):
         """
         from engine.battle.battle import Battle
         UIMenu.__init__(self, player_interact=player_interact, has_containers=has_containers)
-        self.updater = Battle.battle_ui_updater  # change updater to use battle ui updater instead of main menu one
+        self.updater = Battle.ui_updater  # change updater to use battle ui updater instead of main menu one
         self.battle = Battle.battle
 
 
@@ -489,21 +489,22 @@ class SkillCardIcon(UIBattle, Sprite):
 
 
 class FPScount(UIBattle):
-    def __init__(self):
+    def __init__(self, parent):
         self._layer = 12
         UIBattle.__init__(self, player_interact=False)
         self.image = Surface((50, 50), SRCALPHA)
         self.base_image = self.image.copy()
         self.font = Font(self.ui_font["main_button"], 18)
-        fps_text = self.font.render("60", True, Color("red"))
+        self.clock = parent.clock
+        fps_text = self.font.render("60", True, (255, 120, 120))
         self.text_rect = fps_text.get_rect(center=(10, 10))
         self.rect = self.image.get_rect(topleft=(0, 0))
 
-    def fps_show(self, clock):
+    def update(self):
         """Update current fps"""
         self.image = self.base_image.copy()
-        fps = str(int(clock.get_fps()))
-        fps_text = self.font.render(fps, True, Color("red"))
+        fps = str(int(self.clock.get_fps()))
+        fps_text = self.font.render(fps, True, (255, 120, 120))
         text_rect = fps_text.get_rect(center=(10, 10))
         self.image.blit(fps_text, text_rect)
 
