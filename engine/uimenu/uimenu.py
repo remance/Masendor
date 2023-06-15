@@ -1479,6 +1479,8 @@ class BoxUI(UIMenu, Containable, Container):
 
 class ListUI(UIMenu, Containable):
 
+    frame = None
+
     def __init__(self, origin, pivot, size, items, parent, item_size, layer=0):
 
         from engine.game.game import Game
@@ -1489,9 +1491,12 @@ class ListUI(UIMenu, Containable):
         self.pivot = pivot
         self.origin = origin
         self.parent = parent
-        frame_file = "new_button.png"  # "list_frame.png" # using the button frame to test if it looks good
-        self.frame = load_image(game.module_dir, (1, 1), frame_file, ("ui", "mainmenu_ui"))
-        self.scroll_box_frame = load_image(game.module_dir, (1, 1), "scroll_box_frame.png", ("ui", "mainmenu_ui"))
+
+        # if the frame images are the same for every list we can store them in class variables 
+        if ListUI.frame is None:
+            frame_file = "new_button.png"  # "list_frame.png" # using the button frame to test if it looks good
+            ListUI.frame = load_image(game.module_dir, (1, 1), frame_file, ("ui", "mainmenu_ui"))
+            ListUI.scroll_box_frame = load_image(game.module_dir, (1, 1), "scroll_box_frame.png", ("ui", "mainmenu_ui"))
 
         self.item_size = item_size
 
@@ -1541,14 +1546,6 @@ class ListUI(UIMenu, Containable):
 
     def get_refreshed_image(self):
 
-
-        if not hasattr(self, 'font1'):
-            self.font1 = Font(self.ui_font["main_button"], 20)
-        if not hasattr(self, 'font2'):
-            self.font2 = Font(self.ui_font["main_button"], 14)
-        if not hasattr(self, 'font3'):
-            self.font3 = Font(self.ui_font["main_button"], 18)
-
         self.image = ListUI.inner_get_refreshed_image(
             self.scroll_box_index,
             self.get_item_height(),
@@ -1557,34 +1554,49 @@ class ListUI(UIMenu, Containable):
             self.items,
             self.selected_index,
             self.items.get_highlighted_index(),
-            self.font1,
-            self.font2,
-            self.font3,
-            self.frame,
             tuple(self.get_scroll_bar_rect()) if self.get_scroll_bar_rect() else None,
             tuple(self.get_scroll_box_rect()) if self.get_scroll_box_rect() else None,
-            self.scroll_box,
             self.in_scroll_box,
             self.hold_scroll_box,
-            self.has_scroll
+            self.has_scroll,
+            self.scroll_box_height,
         )
         return self.image
 
     @lru_cache(maxsize=2**4) # size has to be big enough to fit all active list ui on screen but not big enough to take to much memory
-    def inner_get_refreshed_image(scroll_box_index, item_height, rect, item_size, items, selected_index, highlighted_index, font1, font2, font3, frame, scroll_bar_rect, scroll_box_rect, scroll_box, in_scroll_box, hold_scroll_box, has_scroll):
+    def inner_get_refreshed_image(scroll_box_index, item_height, rect, item_size, items, selected_index, highlighted_index, scroll_bar_rect, scroll_box_rect, in_scroll_box, hold_scroll_box, has_scroll, scroll_box_height):
+        from engine.game.game import Game
 
-        #print(
-        #    scroll_box_index, item_height, rect, item_size, items, selected_index, highlighted_index, font1, font2, font3, frame, scroll_bar_rect, scroll_box_rect, scroll_box, in_scroll_box, hold_scroll_box, has_scroll )
+        ui_font = Game.ui_font
+
+        if not type(scroll_box_index) == int: raise TypeError()
+        if not type(item_height) == int: raise TypeError()
+        if not type(rect) == tuple: raise TypeError()
+        if not type(item_size) == int: raise TypeError()
+        if not type(items) in ( CampaignListAdapter, ListAdapter ): raise TypeError(items)
+        if not type(selected_index) in ( type(None), int ): raise TypeError(type(selected_index))
+        if not type(highlighted_index) in ( int, type(None) ): raise TypeError(highlighted_index)
+        if not type(scroll_bar_rect) in ( type(None), tuple ): raise TypeError(scroll_bar_rect)
+        if not type(scroll_box_rect) in ( type(None), tuple ): raise TypeError()
+        if not type(in_scroll_box) == bool : raise TypeError()
+        if not type(hold_scroll_box) == type(None): raise TypeError(hold_scroll_box)
+        if not type(has_scroll) == bool: raise TypeError()
+        if not type(scroll_box_height) == int: raise TypeError()
+
+        scroll_box = make_image_by_frame(ListUI.scroll_box_frame, (14, scroll_box_height))
 
         rect = pygame.Rect(*rect)
         scroll_bar_rect = pygame.Rect(*scroll_bar_rect) if scroll_bar_rect else None
         scroll_box_rect = pygame.Rect(*scroll_box_rect) if scroll_box_rect else None
         
+        font1 = Font(ui_font["main_button"], 20)
+        font2 = Font(ui_font["main_button"], 14)
+        font3 = Font(ui_font["main_button"], 18)
 
         assert type(scroll_box_index) == int, type(scroll_box_index)
         size = rect[2:]
 
-        image = make_image_by_frame(frame, size)
+        image = make_image_by_frame(ListUI.frame, size)
         # draw items
         if len(items) < item_size:  # For listui with item less than provided size
             item_size = len(items)
