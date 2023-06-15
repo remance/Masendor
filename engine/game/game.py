@@ -935,13 +935,13 @@ class Game:
                         sys.exit()
 
                     if done:
-                        self.change_pause_update(False, self.ui_updater)
+                        self.change_pause_update(False)
                         self.input_box.text_start("")
                         self.input_popup = None
                         self.remove_ui_updater(self.all_input_ui_popup)
 
                 elif self.input_cancel_button.event_press or self.input_close_button.event_press or esc_press:
-                    self.change_pause_update(False, self.ui_updater)
+                    self.change_pause_update(False)
                     self.input_box.text_start("")
                     self.input_popup = None
                     self.remove_ui_updater(self.all_input_ui_popup)

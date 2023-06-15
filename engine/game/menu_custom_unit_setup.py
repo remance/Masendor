@@ -59,8 +59,7 @@ def menu_custom_unit_setup(self, esc_press):
                 del stuff
 
             self.add_ui_updater(self.org_chart, self.start_button)
-
-            leader_change_team_unit(self)
+            leader_change_team_unit(self, add_none=True)
 
     elif self.custom_unit_list_select.event_press:
         self.custom_unit_list_select_box.change_origin_with_pos((self.screen_width, self.screen_height / 1.2))
@@ -220,12 +219,14 @@ def menu_custom_unit_setup(self, esc_press):
                     break
 
 
-def leader_change_team_unit(self):
+def leader_change_team_unit(self, add_none=False):
     for this_team in self.team_coa:
         if this_team.selected:
             for icon in self.preview_unit:
                 icon.kill()
             self.preview_unit.empty()
+            if add_none:
+                self.preview_unit.add(TempUnitIcon(this_team.team, "None", "None", None))
 
             for unit_index, unit in enumerate(self.play_source_data["unit"]):
                 if this_team.team == unit["Team"]:

@@ -426,8 +426,7 @@ class SkillCardIcon(UIBattle, Sprite):
 
     def __init__(self, image, pos, key):
         self._layer = 11
-        UIBattle.__init__(self)
-        Sprite.__init__(self, self.containers)
+        UIBattle.__init__(self, has_containers=True)
         self.pos = pos  # pos of the skill on ui
         self.font = Font(self.ui_font["main_button"], int(24 * self.screen_scale[1]))
 
@@ -814,8 +813,7 @@ class UnitIcon(UIBattle, Sprite):
 
     def __init__(self, pos, unit, size):
         self._layer = 11
-        UIBattle.__init__(self)
-        Sprite.__init__(self, self.containers)
+        UIBattle.__init__(self, has_containers=True)
         self.who = unit  # link unit object so when click can correctly select or go to position
         self.pos = pos  # pos on unit selector ui
         self.place_pos = pos  # pos when drag by mouse
@@ -894,15 +892,21 @@ class TempUnitIcon(UIBattle):
         self.coa = coa
         self.portrait = Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]), SRCALPHA)
         self.name = name
-        if type(image) in (int, float, str):  # text instead of picture
+        if type(image) in (int, float, str):  # just text instead of picture
             font = Font(self.ui_font["main_button"],
                         int(120 / (len(image) / 3) * self.screen_scale[1]))
             image_surface = font.render(str(image), True, (0, 0, 0))
             image_rect = image_surface.get_rect(center=(self.portrait.get_width() / 2, self.portrait.get_height() / 2))
             self.portrait.blit(image_surface, image_rect)
         else:
+            font = Font(self.ui_font["main_button"],
+                        int(40 / (len(str(self.map_id)) / 3) * self.screen_scale[1]))
             image_rect = image.get_rect(center=(self.portrait.get_width() / 2, self.portrait.get_height() / 2))
             self.portrait.blit(image, image_rect)
+            image_surface = text_render(str(self.map_id), font)  # add icon map id so it is easier to distinguish unit
+            image_rect = image_surface.get_rect(center=(self.portrait.get_width() / 2,
+                                                        self.portrait.get_height() / 2.5))
+            self.portrait.blit(image_surface, image_rect)
         self.is_leader = True
 
 

@@ -1342,13 +1342,15 @@ class OrgChart(UIMenu):
                 image_size = (self.image.get_width() / 2, self.image.get_height() / 2)
 
             portrait_list = {}
+            print(self.node_rect)
             for unit in pos:  # draw line first
                 for icon in preview_unit:
                     if icon.map_id == unit:
                         image = smoothscale(icon.portrait, image_size)
                         portrait_list[unit] = image
                         self.node_rect[unit] = image.get_rect(center=pos[unit])
-                        if type(unit_data[unit]["Temp Leader"]) is int:
+                        if type(unit_data[unit]["Temp Leader"]) is int and \
+                                unit_data[unit]["Temp Leader"] in self.node_rect:
                             line_width = int(self.image.get_width() / 100)
                             if line_width < 1:
                                 line_width = 1
