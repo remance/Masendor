@@ -1661,9 +1661,11 @@ class ListUI(UIMenu, Containable):
 
         # detect if in list or over scroll box
         self.in_scroll_box = False
-        if not self.pause and self.rect.collidepoint(mouse_pos):
-            in_list = True
-            self.mouse_over = True
+        if not self.pause:
+            in_list = False
+            if self.rect.collidepoint(mouse_pos):
+                in_list = True
+                self.mouse_over = True
             if scroll_bar_rect := self.get_scroll_bar_rect():
                 if scroll_bar_rect.collidepoint(relative_mouse_pos):
                     if self.get_scroll_box_rect().collidepoint(relative_mouse_pos):
