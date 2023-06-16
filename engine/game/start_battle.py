@@ -7,10 +7,9 @@ def start_battle(self, player_unit=None):
     self.error_log.write("\n Map: " + str(self.map_selected) + ", Source: " +
                          str(self.map_source_selected) + ", Character: " + str(player_unit) + "\n")
 
-    selected_player_unit = player_unit
     music.unload()
     music.set_endevent(self.SONG_END)
-    self.battle.prepare_new_game(selected_player_unit)
+    self.battle.prepare_new_game(player_unit)
     self.battle.run_game()
     music.unload()
     music.set_endevent(self.SONG_END)

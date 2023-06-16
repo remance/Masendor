@@ -1330,7 +1330,8 @@ class OrgChart(UIMenu):
             graph_input = nx.Graph()
 
             edge_list = [(unit["Temp Leader"], index) for index, unit in enumerate(unit_data) if
-                         type(unit["Temp Leader"]) is int and unit["Team"] == unit_data[selected]["Team"]]
+                         type(unit["Temp Leader"]) is int and unit["Team"] == unit_data[selected]["Team"] and
+                         unit_data[selected]["Temp Leader"] != unit["Temp Leader"]]
             try:
                 graph_input.add_edges_from(edge_list)
                 pos = self.hierarchy_pos(graph_input, root=selected, width=self.image.get_width(),
@@ -1342,10 +1343,9 @@ class OrgChart(UIMenu):
                 image_size = (self.image.get_width() / 2, self.image.get_height() / 2)
 
             portrait_list = {}
-            print(self.node_rect)
             for unit in pos:  # draw line first
                 for icon in preview_unit:
-                    if icon.map_id == unit:
+                    if icon.index == unit:
                         image = smoothscale(icon.portrait, image_size)
                         portrait_list[unit] = image
                         self.node_rect[unit] = image.get_rect(center=pos[unit])
@@ -1360,7 +1360,7 @@ class OrgChart(UIMenu):
 
             for unit in pos:  # draw portrait
                 for icon in preview_unit:
-                    if icon.map_id == unit:
+                    if icon.index == unit:
                         self.image.blit(portrait_list[unit], self.node_rect[unit])
                         break
 

@@ -68,8 +68,11 @@ def menu_custom_leader_setup(self, esc_press):
                                                          selected=
                                                          self.play_map_data["unit"]["pos"][unit.who.team][
                                                              unit.who.index])
+                        else:
+                            self.map_preview.change_mode(1, team_pos_list=self.play_map_data["unit"]["pos"],
+                                                         camp_pos_list=self.play_map_data["camp_pos"])
                         self.org_chart.add_chart(self.play_source_data["unit"], self.preview_unit,
-                                                 selected=unit.who.map_id)
+                                                 selected=unit.who.index)
                     elif self.cursor.is_alt_select_just_up:
                         for other_icon in self.unit_icon:
                             if other_icon.right_selected:  # unselected all others first
@@ -84,7 +87,7 @@ def menu_custom_leader_setup(self, esc_press):
             if self.org_chart.node_rect[rect].collidepoint(mouse_pos):
                 not_in_list = True
                 for unit in self.preview_unit:  # check for unit in icon
-                    if unit.map_id == rect:  # found unit for data
+                    if unit.index == rect:  # found unit for data
                         popup_text = [unit.name]
                         for troop in self.play_source_data["unit"][unit.index]["Troop"]:
                             popup_text += [self.troop_data.troop_list[troop]["Name"] + ": " +
@@ -99,25 +102,27 @@ def menu_custom_leader_setup(self, esc_press):
                             for unit2 in self.unit_icon:
                                 if unit2.right_selected and unit2 is not unit:
                                     not_in_list = False
-                                    self.play_source_data["unit"][unit2.who.map_id][
+                                    self.play_source_data["unit"][unit2.who.index][
                                         "Temp Leader"] = unit.index
                                     for unit3_index, unit3 in enumerate(self.unit_icon):
                                         if unit3.selected:
-                                            unit_change_team_unit(self, add_plus=False, old_selected=unit3.who.map_id)
+                                            unit_change_team_unit(self, add_plus=False, old_selected=unit3.who.index,
+                                                                  add_none=True)
                                             self.org_chart.add_chart(self.play_source_data["unit"],
                                                                      self.preview_unit,
-                                                                     selected=unit3.who.map_id)
+                                                                     selected=unit3.who.index)
                                             break
                                     break
 
                             if not_in_list:  # remove unit's leader in org chart
-                                self.play_source_data["unit"][unit.map_id]["Temp Leader"] = ""
+                                self.play_source_data["unit"][unit.index]["Temp Leader"] = ""
                                 for unit3_index, unit3 in enumerate(self.unit_icon):
                                     if unit3.selected:
-                                        unit_change_team_unit(self, add_plus=False, old_selected=unit3.who.map_id)
+                                        unit_change_team_unit(self, add_plus=False, old_selected=unit3.who.index,
+                                                              add_none=True)
                                         self.org_chart.add_chart(self.play_source_data["unit"],
                                                                  self.preview_unit,
-                                                                 selected=unit3.who.map_id)
+                                                                 selected=unit3.who.index)
                                         break
                         break
 
@@ -187,7 +192,7 @@ def menu_custom_leader_setup(self, esc_press):
             temp_leader = unit["Temp Leader"]
             unit["Leader"] = 0
             if temp_leader != "":
-                unit["Leader"] = self.play_map_data["unit"][unit["Team"]][temp_leader]["ID"]
+                unit["Leader"] = self.play_source_data["unit"][temp_leader]["ID"]
             unit_index += 1
 
         for icon in self.preview_unit:
@@ -204,5 +209,4 @@ def menu_custom_leader_setup(self, esc_press):
                         troop_value = new_value["Troop"][troop]
                         new_value["Troop"][troop] = str(troop_value[0]) + "/" + str(troop_value[1])
                     self.play_map_data["battle"].append(new_value)
-
         self.start_battle(self.unit_selected)

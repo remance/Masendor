@@ -111,7 +111,7 @@ def menu_custom_unit_setup(self, esc_press):
                         int((self.cursor.pos[1] - self.map_preview.rect.y) * self.map_preview.map_scale_height))
                     if icon.who.name != "+":  # choose pos of selected unit
                         self.play_map_data["unit"]["pos"][icon.who.team][icon.who.index] = map_pos
-                        self.play_source_data["unit"][icon.who.map_id]["POS"] = map_pos
+                        self.play_source_data["unit"][icon.who.index]["POS"] = map_pos
                         self.map_preview.change_mode(1, team_pos_list=self.play_map_data["unit"]["pos"],
                                                      camp_pos_list=self.play_map_data["camp_pos"],
                                                      selected=self.play_map_data["unit"]["pos"][icon.who.team][
@@ -170,6 +170,10 @@ def menu_custom_unit_setup(self, esc_press):
                                                          camp_pos_list=self.play_map_data["camp_pos"],
                                                          selected=self.play_map_data["unit"]["pos"][icon.who.team][
                                                              icon.who.index])
+                        else:  # click on unit with no placed position yet, remove highlight
+                            self.unit_model_room.add_preview_model()
+                            self.map_preview.change_mode(1, team_pos_list=self.play_map_data["unit"]["pos"],
+                                                         camp_pos_list=self.play_map_data["camp_pos"],)
                         if icon.who.map_id is not None:
                             who_todo = {key: value for key, value in self.leader_data.leader_list.items() if
                                         key == icon.who.troop_id}
@@ -177,24 +181,20 @@ def menu_custom_unit_setup(self, esc_press):
                             self.unit_model_room.add_preview_model(
                                 model=preview_sprite_pool[icon.who.troop_id]["sprite"],
                                 coa=icon.who.coa)
-                        else:
-                            self.unit_model_room.add_preview_model()
-                            self.map_preview.change_mode(1, team_pos_list=self.team_pos,
-                                                         camp_pos_list=self.play_map_data["camp_pos"])
 
                     elif self.cursor.is_alt_select_just_up:  # remove unit
                         if icon.who.name != "+":
                             if icon.who.index in self.play_map_data["unit"]["pos"][icon.who.team]:
                                 self.play_map_data["unit"]["pos"][icon.who.team].pop(icon.who.index)
-                            self.play_source_data["unit"].pop(icon.who.map_id)
+                            self.play_source_data["unit"].pop(icon.who.index)
 
                             for icon2 in self.unit_icon:
-                                if icon2.who.index and icon2.who.index > icon.who.index:
+                                if icon2.who.team == icon.who.team:  # reset leader of unit in team with unit removed
+                                    self.play_source_data["unit"][icon2.who.index]["Temp Leader"] = ""
+                                if icon2.who.index and icon2.who.index > icon.who.index:  # change icons after deleted one
                                     if icon2.who.index in self.play_map_data["unit"]["pos"][icon.who.team]:
                                         self.play_map_data["unit"]["pos"][icon.who.team][icon2.who.index - 1] = \
                                             self.play_map_data["unit"]["pos"][icon.who.team].pop(icon2.who.index)
-                                        if icon2.who.team == icon.who.team:
-                                            self.play_source_data["unit"][icon2.who.map_id]["Temp Leader"] = ""
                                     icon2.who.index -= 1
 
                             self.map_preview.change_mode(1, team_pos_list=self.play_map_data["unit"]["pos"],
@@ -203,7 +203,7 @@ def menu_custom_unit_setup(self, esc_press):
                             for map_id, subunit in enumerate(self.play_source_data["unit"]):
                                 if subunit["Team"] == self.team_selected:
                                     subunit["Temp Leader"] = ""  # reset leader structure when unit got removed
-                                    subunit["ID"] = map_id  # reset map id
+                                    subunit["ID"] = map_id + 1  # reset map id, skip 0
 
                             if not icon.selected:  # find new selected
                                 for icon2 in self.unit_icon:
@@ -242,17 +242,19 @@ def leader_change_team_unit(self, add_none=False):
                     add_unit.troop_id = unit["Leader ID"]
                     self.preview_unit.add(add_unit)
             self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
-
             break
 
 
-def unit_change_team_unit(self, new_faction=False, old_selected=None, add_plus=True):
-    """Player select another team"""
+def unit_change_team_unit(self, new_faction=False, old_selected=None, add_plus=True, add_none=False):
+    """For when player select another team or reset unit preview icon"""
     for this_team in self.team_coa:
         if this_team.selected:
             for icon in self.preview_unit:
                 icon.kill()
             self.preview_unit.empty()
+
+            if add_none:
+                self.preview_unit.add(TempUnitIcon(this_team.team, "None", "None", None))
 
             self.remember_custom_list = {"unit": {"unit_local": [], "unit_list": []},
                                          "leader": {"leader_local": [], "leader_list": []},
@@ -267,38 +269,12 @@ def unit_change_team_unit(self, new_faction=False, old_selected=None, add_plus=T
                         else:
                             image = make_no_face_portrait(leader_name, self.leader_data)
 
-                        if unit_index in self.play_map_data["unit"]["pos"][this_team.team] and add_plus:
-                            # unit placed on map, put in black-green colour in portrait
-                            if type(image) is str:
-                                add_subunit = TempUnitIcon(this_team.team, leader_name,
-                                                           image, unit_index, map_id=unit["ID"],
-                                                           coa=self.faction_data.coa_list[self.leader_data.leader_list[
-                                                               unit["Leader ID"]]["Faction"]])
-                                self.preview_unit.add(add_subunit)
-                                new_image = pygame.Surface(self.leader_data.images["0"].get_size(), pygame.SRCALPHA)
-                                pygame.draw.circle(new_image, (20, 150, 60),
-                                                   (new_image.get_width() / 2, new_image.get_height() / 2),
-                                                   new_image.get_width() / 2, width=int(10 * self.screen_scale[1]))
-                                add_subunit.portrait.blit(new_image, new_image.get_rect(topleft=(0, 0)))
-                            else:
-                                new_image = pygame.Surface(image.get_size())
-                                new_image.blit(image, image.get_rect(topleft=(0, 0)))
-                                pygame.draw.circle(new_image, (20, 150, 60),
-                                                   (new_image.get_width() / 2, new_image.get_height() / 2),
-                                                   new_image.get_width() / 2, width=int(10 * self.screen_scale[1]))
-                                add_subunit = TempUnitIcon(this_team.team, self.localisation.grab_text(("leader", unit["Leader ID"], "Name")),
-                                                           image, unit_index, map_id=unit["ID"],
-                                                           coa=self.faction_data.coa_list[self.leader_data.leader_list[
-                                                               unit["Leader ID"]]["Faction"]])
-                                self.preview_unit.add(add_subunit)
-                            add_subunit.troop_id = unit["Leader ID"]
-                        else:
-                            add_subunit = TempUnitIcon(this_team.team, self.localisation.grab_text(("leader", unit["Leader ID"], "Name")),
-                                                       image, unit_index, map_id=unit["ID"],
-                                                       coa=self.faction_data.coa_list[self.leader_data.leader_list[
-                                                           unit["Leader ID"]]["Faction"]])
-                            self.preview_unit.add(add_subunit)
-                            add_subunit.troop_id = unit["Leader ID"]
+                        add_subunit = TempUnitIcon(this_team.team, self.localisation.grab_text(("leader", unit["Leader ID"], "Name")),
+                                                   image, unit_index, map_id=unit["ID"],
+                                                   coa=self.faction_data.coa_list[self.leader_data.leader_list[
+                                                       unit["Leader ID"]]["Faction"]])
+                        self.preview_unit.add(add_subunit)
+                        add_subunit.troop_id = unit["Leader ID"]
 
                 if add_plus:
                     self.preview_unit.add(TempUnitIcon(this_team.team, "+", "+", None))
@@ -327,6 +303,11 @@ def unit_change_team_unit(self, new_faction=False, old_selected=None, add_plus=T
 
             break
 
+    if new_faction:
+        self.unit_selected = None  # no selected unit after change team
+        self.unit_model_room.add_preview_model()
+        self.map_preview.change_mode(1, team_pos_list=self.play_map_data["unit"]["pos"],
+                                     camp_pos_list=self.play_map_data["camp_pos"])
 
 def create_unit_list(self, coa, unit_selected=None):
     unit_data = None
@@ -341,7 +322,7 @@ def create_unit_list(self, coa, unit_selected=None):
         else:
             for leader_id, leader in self.leader_data.leader_list.items():
                 if leader["Faction"] in coa.coa_images:
-                    self.remember_custom_list["leader"]["leader_list"].append(self.localisation.grab_text(leader_id))
+                    self.remember_custom_list["leader"]["leader_list"].append(leader_id)
             for troop in self.troop_data.troop_list:
                 if self.troop_data.troop_list[troop]["Faction"] in coa.coa_images:
                     self.remember_custom_list["troop"]["troop_list"].append(troop)
@@ -423,9 +404,9 @@ def custom_unit_list_on_select(self, item_index, item_text):
 
                         else:  # change current selected unit's leader
                             has_unit_selected = True
-                            unit_change_team_unit(game, old_selected=this_unit.who.index)
-                            game.play_source_data["unit"][this_unit.who.map_id]["Leader ID"] = \
+                            game.play_source_data["unit"][this_unit.who.index]["Leader ID"] = \
                                 game.remember_custom_list["leader"]["leader_list"][item_index]
+                            unit_change_team_unit(game, old_selected=this_unit.who.index)
 
                             if this_unit.who.map_id is not None:
                                 who_todo = {key: value for key, value in self.game.leader_data.leader_list.items() if
@@ -452,7 +433,7 @@ def custom_unit_list_on_select(self, item_index, item_text):
                         else:  # change existed
                             unit_data = make_unit_data(game, selected_coa, item_index)
                             unit_data["ID"] = this_unit.who.map_id
-                            game.play_source_data["unit"][this_unit.who.map_id] = unit_data
+                            game.play_source_data["unit"][this_unit.who.index] = unit_data
                             old_selected = this_unit.who.index
 
                             if this_unit.who.map_id is not None:
@@ -531,7 +512,7 @@ def add_unit_data(game, coa, item_index, only_leader=False):
         unit_data = create_unit_list(game, coa, unit_selected=game.remember_custom_list["unit"]["unit_list"][item_index])
     game.play_map_data["unit"][coa.team].append(unit_data)
     game.play_source_data["unit"].append(unit_data)
-    unit_data["ID"] = len(game.play_source_data["unit"]) - 1
+    unit_data["ID"] = len(game.play_source_data["unit"])
     unit_data["Team"] = coa.team
     unit_data["Temp Leader"] = ""
 
