@@ -1574,10 +1574,6 @@ class ListUI(UIMenu, Containable):
     def inner_get_refreshed_image(scroll_box_index, item_height, rect, items, selected_index, highlighted_index, scroll_bar_rect, scroll_box_rect, in_scroll_box, hold_scroll_box, has_scroll, scroll_box_height):
         from engine.game.game import Game
 
-        print(
-            scroll_box_index, item_height, rect, items, selected_index, highlighted_index, scroll_bar_rect, scroll_box_rect, in_scroll_box, hold_scroll_box, has_scroll, scroll_box_height
-        )
-
         ui_font = Game.ui_font
 
         if not type(scroll_box_index) == int: raise TypeError()
@@ -1589,7 +1585,7 @@ class ListUI(UIMenu, Containable):
         if not type(scroll_bar_rect) in ( type(None), tuple ): raise TypeError(scroll_bar_rect)
         if not type(scroll_box_rect) in ( type(None), tuple ): raise TypeError()
         if not type(in_scroll_box) == bool : raise TypeError()
-        if not type(hold_scroll_box) == type(None): raise TypeError(hold_scroll_box)
+        if not type(hold_scroll_box) in ( type(None), int ): raise TypeError(hold_scroll_box)
         if not type(has_scroll) == bool: raise TypeError()
         if not type(scroll_box_height) == int: raise TypeError()
 
@@ -1612,6 +1608,8 @@ class ListUI(UIMenu, Containable):
         # draw items
         if len(items) < item_size:  # For listui with item less than provided size
             item_size = len(items)
+
+
         for i in range(item_size):
             item_index = i + scroll_box_index
             text_color = (47 if item_index == selected_index else 0,) * 3
@@ -1623,7 +1621,13 @@ class ListUI(UIMenu, Containable):
                     text_color = "#eeeeee"
                 draw.rect(image, background_color, (6, 6 + i * item_height, size[0] - 13 * has_scroll - 12, item_height))
 
+
+            if item_index < 0: continue
+            if item_index >= len(items): continue
             blit_text = items[item_index]
+
+            # TODO: big optimize is not to render text that is not visible below
+
             font = font1
             if items[item_index] is not None:  # assuming list ui has only 3 levels
                 if ">>" in items[item_index] or "||" in items[item_index]:
@@ -1668,45 +1672,13 @@ class ListUI(UIMenu, Containable):
             self.mouse_over = True
  
 
-        self.selected_index = None
-        in_list = True
-        if self.mouse_over:
-            # item handler
-            #if in_list and not self.hold_scroll_box:
-            if 1:
-                item_height = self.get_item_height()
-                relative_index = ((relative_mouse_pos[1] - 6) // item_height)
-                if relative_index >= 0 and relative_index < self.item_size:
-                    self.selected_index = relative_index + self.scroll_box_index
-
-
-            if in_list and self.selected_index is not None and not self.cursor.mouse_over_something:
-                self.cursor.mouse_over_something = True
-                #self.items.on_mouse_over(self.selected_index, self.items[self.selected_index])
-                if self.cursor.is_select_just_up or self.cursor.is_alt_select_just_up:
-                    print(3)
-                    self.items.on_select(self.selected_index, self.items[self.selected_index])
-                    self.cursor.is_select_just_up = False
-                    self.cursor.is_alt_select_just_up = False
-
-
-
-
-
-        self.image = self.get_refreshed_image()
-        return
-
         if self.last_length_check != len(self.items):
             self.last_length_check = len(self.items)
             self.calc_scroll_bar()
 
-        mouse_pos = self.cursor.pos
-        relative_mouse_pos = [mouse_pos[i] - self.rect[i] for i in range(2)]
-
-        # size = tuple(map(int, self.rect[2:]))
         self.selected_index = None
 
-        # detect if in list or over scroll box
+
         self.in_scroll_box = False
         if not self.pause:
             in_list = False
@@ -1719,30 +1691,28 @@ class ListUI(UIMenu, Containable):
                         self.in_scroll_box = True
                     in_list = False
 
-            # Check for scrolling button
-            noiovl = self.get_number_of_items_outside_visible_list()
-            if self.cursor.scroll_down and noiovl:
-                self.scroll_box_index += 1
-                if self.scroll_box_index > noiovl:
-                    self.scroll_box_index = noiovl
-            elif self.cursor.scroll_up and noiovl:
-                self.scroll_box_index -= 1
-                if self.scroll_box_index < 0:
-                    self.scroll_box_index = 0
 
-            if self.has_scroll and self.get_scroll_bar_rect().collidepoint(relative_mouse_pos):
-                if self.get_scroll_box_rect().collidepoint(relative_mouse_pos):
-                    self.in_scroll_box = True
-            else:
-                in_list = True
 
-            # scroll box drag handler
+        if self.mouse_over:
+            # item handler
+            if in_list and not self.hold_scroll_box:
+                item_height = self.get_item_height()
+                relative_index = ((relative_mouse_pos[1] - 6) // item_height)
+                if relative_index >= 0 and relative_index < self.item_size:
+                    self.selected_index = relative_index + self.scroll_box_index
+
+
+
+
             if not self.cursor.is_select_down:
                 self.hold_scroll_box = None
             if self.in_scroll_box and self.cursor.is_select_just_down:
                 self.hold_scroll_box = relative_mouse_pos[1]
                 self.scroll_box_index_at_hold = self.scroll_box_index
 
+
+        if 1:
+            # scroll box drag handler
             if self.hold_scroll_box:
                 self.scroll_box_index = self.scroll_box_index_at_hold + int(
                     (relative_mouse_pos[1] - self.hold_scroll_box + self.scroll_step_height / 2) / self.scroll_step_height)
@@ -1751,6 +1721,7 @@ class ListUI(UIMenu, Containable):
                     self.scroll_box_index = noiovl
                 elif self.scroll_box_index < 0:
                     self.scroll_box_index = 0
+
 
             # item handler
             if in_list and not self.hold_scroll_box:
@@ -1762,7 +1733,8 @@ class ListUI(UIMenu, Containable):
             if self.selected_index is not None:
                 if self.selected_index >= len(self.items): self.selected_index = None
 
-            if in_list and self.selected_index is not None and not self.cursor.mouse_over_something:
+            if in_list and self.selected_index is not None: #and not self.cursor.mouse_over_something:
+
                 self.cursor.mouse_over_something = True
                 self.items.on_mouse_over(self.selected_index, self.items[self.selected_index])
                 if self.cursor.is_select_just_up or self.cursor.is_alt_select_just_up:
@@ -1770,7 +1742,10 @@ class ListUI(UIMenu, Containable):
                     self.cursor.is_select_just_up = False
                     self.cursor.is_alt_select_just_up = False
 
-            # refresh image
+
+
+
+        self.image = self.get_refreshed_image()
 
 
     def get_relative_position_inside_container(self):
