@@ -13,9 +13,13 @@ def create_config(self):
     screen_width = int(screen.width)
     screen_height = int(screen.height)
     config["VERSION"] = {"ver": self.game_version}
+    default_module = "historical"
+    if default_module not in self.module_list:
+        default_module = tuple(self.module_list.keys())[0]
     config["DEFAULT"] = {"screen_width": screen_width, "screen_height": screen_height, "full_screen": 0,
                          "fps": 0, "player_Name": "Noname", "master_volume": 100.0, "music_volume": 100.0,
-                         "voice_volume": 100.0, "effect_volume": 50.0, "max_fps": 60, "module": 0,
+                         "voice_volume": 100.0, "effect_volume": 50.0, "max_fps": 60, "module": default_module,
+                         "art_style": "default",
                          "language": "en", "control player 1": "keyboard", "control player 2": "joystick",
                          "keybind player 1": {"keyboard": {"Main Weapon Attack": "left click",
                                                            "Sub Weapon Attack": "right click",

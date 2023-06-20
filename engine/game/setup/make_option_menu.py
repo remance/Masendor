@@ -20,9 +20,11 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
     :return: dict of objects
     """
     # Create option menu button and icon
-    from engine.game import game
-    localisation = game.Game.localisation
-    resolution_list = game.Game.resolution_list
+    from engine.game.game import Game
+    localisation = Game.localisation
+    resolution_list = Game.resolution_list
+    art_style = Game.art_style
+    art_style_list = Game.art_style_list
     font_size = int(32 * screen_scale[1])
 
     back_button = MenuButton(image_list, (screen_rect.width / 3, screen_rect.height / 1.2),
@@ -90,6 +92,16 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
     resolution_text = OptionMenuText((resolution_drop.pos[0] - (resolution_drop.pos[0] / 4.5),
                                       resolution_drop.pos[1]),
                                      localisation.grab_text(key=("ui", "option_display_resolution",)),
+                                     font_size)
+
+    art_style_drop = MenuButton(image_list, (screen_rect.width / 2, screen_rect.height / 1.6),
+                                key_name=art_style,
+                                font_size=int(30 * screen_scale[1]))
+    art_style_bar = make_bar_list(main_dir, screen_scale, art_style_list, art_style_drop)
+
+    art_style_text = OptionMenuText((art_style_drop.pos[0] - (art_style_drop.pos[0] / 4.5),
+                                      art_style_drop.pos[1]),
+                                     localisation.grab_text(key=("ui", "option_art_style",)),
                                      font_size)
 
     keybind_text = {"Main Weapon Attack": OptionMenuText((screen_rect.width / 4, screen_rect.height / 5),
@@ -181,7 +193,9 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
 
     return {"back_button": back_button, "keybind_button": keybind_button, "default_button": default_button,
             "resolution_drop": resolution_drop,
-            "resolution_bar": resolution_bar, "resolution_text": resolution_text, "volume_sliders": volume_slider,
+            "resolution_bar": resolution_bar, "resolution_text": resolution_text,
+            "art_style_drop": art_style_drop,
+            "art_style_bar": art_style_bar, "art_style_text": art_style_text, "volume_sliders": volume_slider,
             "value_boxes": value_box, "volume_texts": volume_texts, "fullscreen_box": fullscreen_box,
             "fullscreen_text": fullscreen_text, "fps_box": fps_box,
             "fps_text": fps_text, "keybind_text": keybind_text, "keybind_icon": keybind_icon,

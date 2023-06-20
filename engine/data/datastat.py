@@ -17,6 +17,7 @@ class GameData:
         self.main_dir = Game.main_dir
         self.data_dir = Game.data_dir
         self.module_dir = Game.module_dir
+        self.art_style_dir = Game.art_style_dir
         self.font_dir = Game.font_dir
         self.localisation = Game.localisation
         self.screen_scale = Game.screen_scale

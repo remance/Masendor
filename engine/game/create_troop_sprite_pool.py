@@ -6,8 +6,9 @@ from engine.utility import md5_dir, crop_sprite
 
 import pygame
 
-from engine.game.create_troop_sprite import default_sprite_size
 from engine.data.datacacher import load_pickle_with_surfaces, save_pickle_with_surfaces
+
+default_sprite_size = (200, 200)
 
 
 def create_troop_sprite_pool(self, who_todo, preview=False, specific_preview=None, max_preview_size=200):

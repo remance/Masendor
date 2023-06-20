@@ -5,6 +5,7 @@ import os.path
 import sys
 
 import pygame
+from pathlib import Path
 from pygame.locals import *
 
 from engine.battlemap.battlemap import BaseMap, FeatureMap, HeightMap, FinalMap
@@ -71,12 +72,16 @@ class Game:
     data_dir = None
     font_dir = None
     module_dir = None
+    art_style_dir = None
     ui_font = None
     language = None
     localisation = None
     cursor = None
     ui_updater = None
     ui_drawer = None
+    module = None
+    art_style = None
+    art_style_list = None
 
     screen_rect = None
     screen_scale = (1, 1)
@@ -167,6 +172,13 @@ class Game:
         self.error_log = error_log
         self.error_log.write("Game Version: " + self.game_version)
 
+        part_folder = Path(os.path.join(self.data_dir, "module"))
+        self.module_list = {os.path.split(
+            os.sep.join(os.path.normpath(x).split(os.sep)))[-1]: x for x
+            in part_folder.iterdir() if x.is_dir()}  # get module list
+        if "tutorial" in self.module_list:
+            self.module_list.pop("tutorial")  # get tutorial module from list
+
         # Read config file
         config = configparser.ConfigParser()  # initiate config reader
         try:
@@ -191,7 +203,8 @@ class Game:
             self.language = str(self.config["USER"]["language"])
             self.player1_key_bind = ast.literal_eval(self.config["USER"]["keybind player 1"])
             self.player1_key_control = self.config["USER"]["control player 1"]
-            self.module = int(self.config["USER"]["module"])
+            Game.module = self.config["USER"]["module"]
+            Game.art_style = self.config["USER"]["art_style"]
             if self.game_version != self.config["VERSION"]["ver"]:  # remake config as game version change
                 raise KeyError  # cause KeyError to reset config file
         except (KeyError, TypeError, NameError):  # config error will make the game recreate config with default
@@ -212,18 +225,29 @@ class Game:
             self.language = str(self.config["USER"]["language"])
             self.player1_key_bind = ast.literal_eval(self.config["USER"]["keybind player 1"])
             self.player1_key_control = self.config["USER"]["control player 1"]
-            self.module = int(self.config["USER"]["module"])
+            Game.module = self.config["USER"]["module"]
+            Game.art_style = self.config["USER"]["art_style"]
 
+        print(self.art_style)
         Game.language = self.language
 
-        self.module_list = csv_read(self.data_dir, "module_list.csv", ("module",))  # get module list
-        self.module_folder = str(self.module_list[self.module][0]).strip("/").lower()
-        self.error_log.write("Use module: " + self.module_folder)  # error log selected module
+        self.module_folder = self.module_list[self.module]
+        self.error_log.write("Use module: " + self.module)  # error log selected module
 
         Game.module_dir = os.path.join(self.data_dir, "module", self.module_folder)
+        Game.art_style_dir = os.path.join(self.module_dir, "animation", self.art_style)
         Game.ui_font = csv_read(self.module_dir, "ui_font.csv", ("ui",), header_key=True)
         for item in Game.ui_font:  # add ttf file extension for font data reading.
             Game.ui_font[item] = os.path.join(self.font_dir, Game.ui_font[item]["Font"] + ".ttf")
+
+        part_folder = Path(os.path.join(self.module_dir, "animation"))
+        Game.art_style_list = {os.path.split(
+            os.sep.join(os.path.normpath(x).split(os.sep)))[-1]: x for x
+            in part_folder.iterdir() if x.is_dir()}  # get art style list
+        config.read_file(open(os.path.join(self.art_style_dir, "stat.ini")))  # read config file
+
+        self.design_sprite_size = (int(config["DEFAULT"]["design_sprite_width"]),
+                                   int(config["DEFAULT"]["design_sprite_height"]))
 
         # Set the display mode
         Game.screen_rect = pygame.Rect(0, 0, self.screen_width, self.screen_height)
@@ -379,8 +403,7 @@ class Game:
 
         Effect.effect_list = self.troop_data.effect_list
 
-        self.troop_animation = TroopAnimationData(self.data_dir, self.module_dir,
-                                                  [str(self.troop_data.race_list[key]["Name"]) for key in
+        self.troop_animation = TroopAnimationData([str(self.troop_data.race_list[key]["Name"]) for key in
                                                    self.troop_data.race_list], self.team_colour)
         self.unit_animation_data = self.troop_animation.unit_animation_data  # animation data pool
         self.body_sprite_pool = self.troop_animation.body_sprite_pool  # body sprite pool
@@ -603,6 +626,9 @@ class Game:
         self.resolution_drop = option_menu_dict["resolution_drop"]
         self.resolution_bar = option_menu_dict["resolution_bar"]
         self.resolution_text = option_menu_dict["resolution_text"]
+        self.art_style_drop = option_menu_dict["art_style_drop"]
+        self.art_style_bar = option_menu_dict["art_style_bar"]
+        self.art_style_text = option_menu_dict["art_style_text"]
         self.option_menu_sliders = option_menu_dict["volume_sliders"]
         self.value_boxes = option_menu_dict["value_boxes"]
         self.volume_texts = option_menu_dict["volume_texts"]
@@ -615,10 +641,10 @@ class Game:
         self.control_switch = option_menu_dict["control_switch"]
 
         self.option_text_list = tuple(
-            [self.resolution_text, self.fullscreen_text, self.fps_text] + [value for value in
-                                                            self.volume_texts.values()])
+            [self.resolution_text, self.art_style_text, self.fullscreen_text, self.fps_text] +
+            [value for value in self.volume_texts.values()])
         self.option_menu_button = (
-            self.back_button, self.default_button, self.keybind_button, self.resolution_drop,
+            self.back_button, self.default_button, self.keybind_button, self.resolution_drop, self.art_style_drop,
             self.fullscreen_box, self.fps_box)
 
         # Profile box

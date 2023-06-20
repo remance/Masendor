@@ -5,8 +5,6 @@ from PIL import Image, ImageFilter, ImageEnhance
 
 from engine.utility import rotation_xy, apply_sprite_colour
 
-default_sprite_size = (200, 200)
-
 
 def create_troop_sprite(self, animation_name, troop_size, animation_part_list, troop_sprite_list,
                         animation_property, weapon, armour, idle_animation, both_main_sub_weapon):
@@ -16,11 +14,11 @@ def create_troop_sprite(self, animation_name, troop_size, animation_part_list, t
     dmg_sprite = None
     troop_size = int(troop_size)
 
-    surface = pygame.Surface((default_sprite_size[0] * troop_size, default_sprite_size[1] * troop_size),
+    surface = pygame.Surface((self.design_sprite_size[0] * troop_size, self.design_sprite_size[1] * troop_size),
                              pygame.SRCALPHA)  # default size will scale down later
 
     except_list = ("face", "eye", "mouth", "size", "property")
-    pose_layer_list = {k: v[-2] for k, v in animation_part_list.items() if v != [0] and v != "" and v != [""] and
+    pose_layer_list = {k: v[-2] for k, v in animation_part_list.items() if v and v != "" and v != [""] and
                        any(ext in k for ext in except_list) is False}  # layer list
 
     if "_Skill_" in animation_name:  # change layer of weapon for skill animation to match whether it is behind hand or not
@@ -220,7 +218,7 @@ def grab_face_part(pool, race, part, part_check, part_default=None):
     surface = None
     try:
         if part_check != "":
-            if part_check == 1:  # any part
+            if not part_check:  # any part
                 if part_default is not None:
                     default = part_default
                     if type(part_default) != str:

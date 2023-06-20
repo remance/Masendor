@@ -617,7 +617,7 @@ def number_to_minus_or_plus(number):
 
 
 def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tuple_column=(), int_column=(),
-                 float_column=(), dict_column=()):
+                 float_column=(), dict_column=(), str_column=()):
     """
     Convert string value to another type
     :param row: row that contains value
@@ -630,6 +630,7 @@ def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tu
     :param int_column: list of value header that should be in int number type
     :param float_column: list of value header that should be in float number type
     :param dict_column: list of value header that should be in dict type
+    :param dict_column: list of value header that should be in str type
     :return: converted row
     """
     if n in percent_column:
@@ -700,6 +701,8 @@ def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tu
             row[n] = result_i
         else:
             row[n] = {}
+    elif n in str_column:
+        row[n] = str(i)
 
     else:
         if i == "":
