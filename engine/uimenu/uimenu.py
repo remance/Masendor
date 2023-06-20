@@ -1566,12 +1566,11 @@ class ListUI(UIMenu, Containable):
             self.in_scroll_box,
             self.hold_scroll_box,
             self.has_scroll,
-            self.scroll_box_height,
         )
         return self.image
 
     @lru_cache(maxsize=2**4) # size has to be big enough to fit all active list ui on screen but not big enough to take to much memory
-    def inner_get_refreshed_image(scroll_box_index, item_height, rect, items, selected_index, highlighted_index, scroll_bar_rect, scroll_box_rect, in_scroll_box, hold_scroll_box, has_scroll, scroll_box_height):
+    def inner_get_refreshed_image(scroll_box_index, item_height, rect, items, selected_index, highlighted_index, scroll_bar_rect, scroll_box_rect, in_scroll_box, hold_scroll_box, has_scroll):
         from engine.game.game import Game
 
         ui_font = Game.ui_font
@@ -1587,15 +1586,15 @@ class ListUI(UIMenu, Containable):
         if not type(in_scroll_box) == bool : raise TypeError()
         if not type(hold_scroll_box) in ( type(None), int ): raise TypeError(hold_scroll_box)
         if not type(has_scroll) == bool: raise TypeError()
-        if not type(scroll_box_height) == int: raise TypeError()
 
         item_size = len(items)
 
-        scroll_box = make_image_by_frame(ListUI.scroll_box_frame, (14, scroll_box_height))
 
         rect = pygame.Rect(*rect)
         scroll_bar_rect = pygame.Rect(*scroll_bar_rect) if scroll_bar_rect else None
         scroll_box_rect = pygame.Rect(*scroll_box_rect) if scroll_box_rect else None
+        if scroll_box_rect:
+            scroll_box = make_image_by_frame(ListUI.scroll_box_frame, scroll_box_rect[2:])
         
         font1 = Font(ui_font["main_button"], 20)
         font2 = Font(ui_font["main_button"], 14)
@@ -1664,86 +1663,64 @@ class ListUI(UIMenu, Containable):
 
     def update(self):
 
+        if self.pause: return
+
         mouse_pos = self.cursor.pos
         relative_mouse_pos = [mouse_pos[i] - self.rect[i] for i in range(2)]
-        self.mouse_over = False
 
+        # detect what cursor is over
+        in_list = False
+        self.mouse_over = False
+        self.in_scroll_box = False
         if self.rect.collidepoint(mouse_pos):
             self.mouse_over = True
- 
-
-        if self.last_length_check != len(self.items):
-            self.last_length_check = len(self.items)
-            self.calc_scroll_bar()
-
-        self.selected_index = None
-
-
-        self.in_scroll_box = False
-        if not self.pause:
-            in_list = False
             if self.rect.collidepoint(mouse_pos):
                 in_list = True
-                self.mouse_over = True
             if scroll_bar_rect := self.get_scroll_bar_rect():
                 if scroll_bar_rect.collidepoint(relative_mouse_pos):
                     if self.get_scroll_box_rect().collidepoint(relative_mouse_pos):
                         self.in_scroll_box = True
                     in_list = False
 
+        # if the number of items changed a recalculation of the scroll bar is needed
+        if self.last_length_check != len(self.items):
+            self.last_length_check = len(self.items)
+            self.calc_scroll_bar()
 
-
-        if self.mouse_over:
-            # item handler
-            if in_list and not self.hold_scroll_box:
-                item_height = self.get_item_height()
-                relative_index = ((relative_mouse_pos[1] - 6) // item_height)
-                if relative_index >= 0 and relative_index < self.item_size:
-                    self.selected_index = relative_index + self.scroll_box_index
-
-
-
-
-            if not self.cursor.is_select_down:
-                self.hold_scroll_box = None
-            if self.in_scroll_box and self.cursor.is_select_just_down:
-                self.hold_scroll_box = relative_mouse_pos[1]
-                self.scroll_box_index_at_hold = self.scroll_box_index
-
-
-        if 1:
-            # scroll box drag handler
-            if self.hold_scroll_box:
-                self.scroll_box_index = self.scroll_box_index_at_hold + int(
-                    (relative_mouse_pos[1] - self.hold_scroll_box + self.scroll_step_height / 2) / self.scroll_step_height)
-                noiovl = self.get_number_of_items_outside_visible_list()
-                if self.scroll_box_index > noiovl:
-                    self.scroll_box_index = noiovl
-                elif self.scroll_box_index < 0:
-                    self.scroll_box_index = 0
-
-
-            # item handler
-            if in_list and not self.hold_scroll_box:
-                item_height = self.get_item_height()
-                relative_index = ((relative_mouse_pos[1] - 6) // item_height)
-                if relative_index >= 0 and relative_index < self.item_size:
-                    self.selected_index = relative_index + self.scroll_box_index
-
-            if self.selected_index is not None:
+        # detect what index is being hovered
+        self.selected_index = None
+        if in_list and not self.hold_scroll_box:
+            item_height = self.get_item_height()
+            relative_index = ((relative_mouse_pos[1] - 6) // item_height)
+            if relative_index >= 0 and relative_index < self.item_size:
+                self.selected_index = relative_index + self.scroll_box_index
                 if self.selected_index >= len(self.items): self.selected_index = None
 
-            if in_list and self.selected_index is not None: #and not self.cursor.mouse_over_something:
+        # handle select and mouse over logic
+        if self.selected_index is not None:
+            self.cursor.mouse_over_something = True
+            self.items.on_mouse_over(self.selected_index, self.items[self.selected_index])
+            if self.cursor.is_select_just_up or self.cursor.is_alt_select_just_up:
+                self.items.on_select(self.selected_index, self.items[self.selected_index])
+                self.cursor.is_select_just_up = False
+                self.cursor.is_alt_select_just_up = False
 
-                self.cursor.mouse_over_something = True
-                self.items.on_mouse_over(self.selected_index, self.items[self.selected_index])
-                if self.cursor.is_select_just_up or self.cursor.is_alt_select_just_up:
-                    self.items.on_select(self.selected_index, self.items[self.selected_index])
-                    self.cursor.is_select_just_up = False
-                    self.cursor.is_alt_select_just_up = False
+        # handle hold and release of the scroll box
+        if not self.cursor.is_select_down:
+            self.hold_scroll_box = None
+        if self.in_scroll_box and self.cursor.is_select_just_down:
+            self.hold_scroll_box = relative_mouse_pos[1]
+            self.scroll_box_index_at_hold = self.scroll_box_index
 
-
-
+        # handle dragging of the scroll box
+        if self.hold_scroll_box:
+            self.scroll_box_index = self.scroll_box_index_at_hold + int(
+                (relative_mouse_pos[1] - self.hold_scroll_box + self.scroll_step_height / 2) / self.scroll_step_height)
+            noiovl = self.get_number_of_items_outside_visible_list()
+            if self.scroll_box_index > noiovl:
+                self.scroll_box_index = noiovl
+            elif self.scroll_box_index < 0:
+                self.scroll_box_index = 0
 
         self.image = self.get_refreshed_image()
 
