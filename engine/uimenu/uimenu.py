@@ -1525,18 +1525,34 @@ class ListUI(UIMenu, Containable):
 
     def calc_scroll_bar(self):
         item_size = self.item_size
-        self.scroll_bar_height = self.rect[3] - 12
+        self.scroll_bar_height = self.get_scroll_bar_height_by_rect(self.rect)
         self.scroll_box_height = int(self.scroll_bar_height * (item_size / len(self.items)))
         divider = self.get_number_of_items_outside_visible_list()
 
         if divider is not None:
-            self.has_scroll = True
             self.scroll_step_height = (self.scroll_bar_height - self.scroll_box_height) / divider
-        else:
-            self.has_scroll = False
 
-        self.scroll_box = make_image_by_frame(self.scroll_box_frame, (14, self.scroll_box_height))
         self.scroll_box_index = 0
+
+    @staticmethod
+    def get_has_scroll(items, item_size):
+        r = len(items) - item_size
+        return False if r<=0 else True
+ 
+    @staticmethod
+    def get_scroll_step_height(scroll_bar_height, scroll_box_height, number_of_items_outside_visible_list):
+        divider = number_of_items_outside_visible_list
+        if divider is not None:
+            return (scroll_bar_height - scroll_box_height) / divider
+        return None
+
+    @staticmethod
+    def get_scroll_box_size(scroll_bar_height, item_size, len_items):
+        return ( 14, int(scroll_bar_height * (item_size / len_items)) )
+
+    @staticmethod
+    def get_scroll_bar_height_by_rect(rect):
+        return rect[3] - 12
 
     def get_number_of_items_outside_visible_list(self):
         r = len(self.items) - self.item_size
@@ -1544,51 +1560,60 @@ class ListUI(UIMenu, Containable):
             return None
         return r
 
-    def get_item_height(self):
-        return self.scroll_bar_height // self.item_size
+    @staticmethod
+    def get_scroll_bar_rect(has_scroll, rect, scroll_bar_height):
+        if not has_scroll: return None
+        return Rect(rect[2] - 18, 6, 14, scroll_bar_height)
+
+    @staticmethod
+    def get_scroll_box_rect(has_scroll, rect, scroll_box_index, scroll_step_height, scroll_box_size):
+        if not has_scroll: return None
+ 
+    @staticmethod
+    def get_item_height( scroll_bar_height, item_size ):
+        return scroll_bar_height // item_size
 
     def get_relative_size_inside_container(self):
         return self.relative_size_inside_container
-
-
 
     def get_refreshed_image(self):
 
         self.image = ListUI.inner_get_refreshed_image(
             self.scroll_box_index,
-            self.get_item_height(),
             tuple(self.rect),
             self.items.to_tuple(),
             self.selected_index,
             self.items.get_highlighted_index(),
-            tuple(self.get_scroll_bar_rect()) if self.get_scroll_bar_rect() else None,
-            tuple(self.get_scroll_box_rect()) if self.get_scroll_box_rect() else None,
             self.in_scroll_box,
             self.hold_scroll_box,
-            self.has_scroll,
+            self.get_number_of_items_outside_visible_list(),
+            self.item_size,
         )
         return self.image
 
     @lru_cache(maxsize=2**4) # size has to be big enough to fit all active list ui on screen but not big enough to take to much memory
-    def inner_get_refreshed_image(scroll_box_index, item_height, rect, items, selected_index, highlighted_index, scroll_bar_rect, scroll_box_rect, in_scroll_box, hold_scroll_box, has_scroll):
+    def inner_get_refreshed_image(scroll_box_index, rect, items, selected_index, highlighted_index, in_scroll_box, hold_scroll_box, number_of_items_outside_visible_list, item_size):
         from engine.game.game import Game
 
         ui_font = Game.ui_font
 
         if not type(scroll_box_index) == int: raise TypeError()
-        if not type(item_height) == int: raise TypeError()
         if not type(rect) == tuple: raise TypeError()
         if not type(items) == tuple: raise TypeError(items)
         if not type(selected_index) in ( type(None), int ): raise TypeError(type(selected_index))
         if not type(highlighted_index) in ( int, type(None) ): raise TypeError(highlighted_index)
-        if not type(scroll_bar_rect) in ( type(None), tuple ): raise TypeError(scroll_bar_rect)
-        if not type(scroll_box_rect) in ( type(None), tuple ): raise TypeError()
         if not type(in_scroll_box) == bool : raise TypeError()
         if not type(hold_scroll_box) in ( type(None), int ): raise TypeError(hold_scroll_box)
-        if not type(has_scroll) == bool: raise TypeError()
 
-        item_size = len(items)
+        has_scroll = ListUI.get_has_scroll(items, item_size)
 
+        scroll_bar_height = ListUI.get_scroll_bar_height_by_rect( rect )
+        scroll_box_size = ListUI.get_scroll_box_size(scroll_bar_height, item_size, len(items))
+        scroll_box_height = scroll_box_size[1]
+        scroll_step_height = ListUI.get_scroll_step_height(scroll_bar_height, scroll_box_height, number_of_items_outside_visible_list)
+        scroll_bar_rect = ListUI.get_scroll_bar_rect( has_scroll, rect, scroll_bar_height )
+        scroll_box_rect = ListUI.get_scroll_box_rect( has_scroll, rect, scroll_box_index, scroll_step_height, scroll_box_size )
+        item_height = ListUI.get_item_height(scroll_bar_height, item_size)
 
         rect = pygame.Rect(*rect)
         scroll_bar_rect = pygame.Rect(*scroll_bar_rect) if scroll_bar_rect else None
@@ -1653,13 +1678,7 @@ class ListUI(UIMenu, Containable):
 
         return image
 
-    def get_scroll_bar_rect(self):
-        if not self.has_scroll: return None
-        return Rect(self.rect[2] - 18, 6, 14, self.scroll_bar_height)
-
-    def get_scroll_box_rect(self):
-        if not self.has_scroll: return None
-        return Rect(self.rect[2] - 18, self.scroll_box_index * self.scroll_step_height + 6, *self.scroll_box.get_size())
+       return Rect(rect[2] - 18, scroll_box_index * scroll_step_height + 6, *scroll_box_size)
 
     def update(self):
 
@@ -1667,6 +1686,9 @@ class ListUI(UIMenu, Containable):
 
         mouse_pos = self.cursor.pos
         relative_mouse_pos = [mouse_pos[i] - self.rect[i] for i in range(2)]
+
+        has_scroll = self.get_has_scroll(self.items, self.item_size)
+        scroll_box_size = self.get_scroll_box_size( self.scroll_bar_height, self.item_size, len(self.items) )
 
         # detect what cursor is over
         in_list = False
@@ -1676,9 +1698,9 @@ class ListUI(UIMenu, Containable):
             self.mouse_over = True
             if self.rect.collidepoint(mouse_pos):
                 in_list = True
-            if scroll_bar_rect := self.get_scroll_bar_rect():
+            if scroll_bar_rect := self.get_scroll_bar_rect( has_scroll, self.rect, self.scroll_bar_height ):
                 if scroll_bar_rect.collidepoint(relative_mouse_pos):
-                    if self.get_scroll_box_rect().collidepoint(relative_mouse_pos):
+                    if self.get_scroll_box_rect( has_scroll, self.rect, self.scroll_box_index, self.scroll_step_height, scroll_box_size ).collidepoint(relative_mouse_pos):
                         self.in_scroll_box = True
                     in_list = False
 
@@ -1690,7 +1712,7 @@ class ListUI(UIMenu, Containable):
         # detect what index is being hovered
         self.selected_index = None
         if in_list and not self.hold_scroll_box:
-            item_height = self.get_item_height()
+            item_height = self.get_item_height(self.scroll_bar_height, self.item_size)
             relative_index = ((relative_mouse_pos[1] - 6) // item_height)
             if relative_index >= 0 and relative_index < self.item_size:
                 self.selected_index = relative_index + self.scroll_box_index
