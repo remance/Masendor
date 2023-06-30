@@ -22,7 +22,7 @@ def create_troop_sprite_pool(self, who_todo, preview=False, specific_preview=Non
 
     sprite_pool_hash = ""
     if not preview:
-        sprite_pool_hash = md5_dir(os.path.join(self.module_dir, "sprite", "unit"))
+        sprite_pool_hash = md5_dir(os.path.join(self.module_dir, "animation", self.art_style, "sprite", "unit"))
 
     pool = inner_create_troop_sprite_pool(self, who_todo, sprite_pool_hash, preview=preview,
                                           specific_preview=specific_preview, max_preview_size=max_preview_size)
@@ -462,12 +462,12 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                                 if same_both_weapon_set:
                                     next_level[weapon_key[1]][final_name] = {}
                             else:  # animation with this name exist, check if data match
-                                string_args = str((sprite_data, hand_weapon_list[weapon_set_index][weapon_index],
+                                string_args = str((sprite_data, self.art_style, hand_weapon_list[weapon_set_index][weapon_index],
                                                    weapon_list[hand_weapon_list[weapon_set_index][weapon_index]],
                                                    self.unit_animation_data[race_type][animation], idle_animation,
                                                    sprite_pool_hash))
                                 if same_both_weapon_set:
-                                    string_args = str((sprite_data, self.unit_animation_data[race_type][animation],
+                                    string_args = str((sprite_data, self.art_style, self.unit_animation_data[race_type][animation],
                                                        sprite_pool_hash))
                                 md5_string = hashlib.md5(string_args.encode()).hexdigest()
                                 if current_in_pool[final_name]["data"] == md5_string:  # data matched
@@ -573,13 +573,15 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                                         "center_offset": (-center_offset[0], center_offset[1])}
 
                             if same_both_weapon_set:
-                                string_args = str((sprite_data, self.unit_animation_data[race_type][animation],
+                                string_args = str((sprite_data, self.art_style,
+                                                   self.unit_animation_data[race_type][animation],
                                                    sprite_pool_hash))
                                 md5_string = hashlib.md5(string_args.encode()).hexdigest()
                                 current_in_pool[final_name]["data"] = md5_string
                                 next_level[weapon_key[1]][final_name]["data"] = string_args
                             else:
-                                string_args = str((sprite_data, hand_weapon_list[weapon_set_index][weapon_index],
+                                string_args = str((sprite_data, self.art_style,
+                                                   hand_weapon_list[weapon_set_index][weapon_index],
                                                    weapon_list[hand_weapon_list[weapon_set_index][weapon_index]],
                                                    self.unit_animation_data[race_type][animation], idle_animation,
                                                    sprite_pool_hash))

@@ -330,7 +330,6 @@ class Battle:
         self.event_log = EventLog(battle_ui_image["event_log"], (0, self.screen_rect.height))
         UIScroll(self.event_log, self.event_log.rect.topright)  # event log scroll
         Unit.event_log = self.event_log  # Assign event_log to unit class to broadcast event to the log
-        self.add_ui_updater(self.event_log.scroll)
 
         # Battle ESC menu
         esc_menu_dict = make_esc_menu(self.module_dir, self.screen_scale, self.master_volume)

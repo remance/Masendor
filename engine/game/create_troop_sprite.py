@@ -101,8 +101,8 @@ def create_troop_sprite(self, animation_name, troop_size, animation_part_list, t
                     part_name = weapon[1][1]  # sub weapon
                 center = pygame.Vector2(image_part.get_width() / 2, image_part.get_height() / 2)
                 use_center = True
-                if (p + "main_" in layer and p + "fix_main_weapon" not in check_prop) or \
-                        (p + "sub_" in layer and p + "fix_sub_weapon" not in check_prop):
+                if (p + "main_" in layer and p + "fixed_weapon1" not in check_prop) or \
+                        (p + "sub_" in layer and p + "fixed_weapon2" not in check_prop):
                     use_center = False
                     if p + "main_weapon" in layer:  # main weapon
                         if "Sheath" not in part[0]:  # change main weapon pos to right hand, if part is not Sheath

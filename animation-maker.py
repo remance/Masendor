@@ -102,8 +102,10 @@ for p in range(1, max_person + 1):
 anim_column_header += ["effect_1", "effect_2", "effect_3", "effect_4", "dmg_effect_1", "dmg_effect_2", "dmg_effect_3",
                        "dmg_effect_4",
                        "size", "frame_property", "animation_property"]  # For csv saving and accessing
-frame_property_list = ["hold", "p1_fix_main_weapon", "p1_fix_sub_weapon", "p2_fix_main_weapon", "p2_fix_sub_weapon",
-                       "p3_fix_main_weapon", "p3_fix_sub_weapon", "p4_fix_main_weapon", "p4_fix_sub_weapon",
+frame_property_list = ["hold", "p1_weapon1_l_hand", "p2_weapon1_l_hand",
+                       "p3_weapon1_l_hand", "p4_weapon1_l_hand",
+                       "p1_fixed_weapon1", "p1_fixed_weapon2", "p2_fixed_weapon1", "p2_fixed_weapon2",
+                       "p3_fixed_weapon1", "p3_fixed_weapon2", "p4_fixed_weapon1", "p4_fixed_weapon2",
                        "p1_no_helmet", "p2_no_helmet", "p3_no_helmet", "p4_no_helmet", "play_time_mod_", "effect_blur_",
                        "effect_contrast_", "effect_brightness_",
                        "effect_fade_", "effect_grey", "effect_colour_"]  # starting property list
@@ -1209,19 +1211,38 @@ class Model:
                                 new_part_name = part_name[2:]  # remove part side
                             self.sprite_image[stuff] = body_sprite_pool[bodypart_list[stuff][0]][new_part_name][
                                 bodypart_list[stuff][1]].copy()
-                        if any(ext in stuff for ext in p_list) and self.armour[stuff[0:2] + "_armour"] != "None":
-                            armour = self.armour[stuff[0:2] + "_armour"].split("/")
+                        try:
+                            try:
+                                if any(ext in stuff for ext in p_list) and self.armour[stuff[0:2] + "_armour"] != "None":
+                                    armour = self.armour[stuff[0:2] + "_armour"].split("/")
 
-                            gear_image = armour_sprite_pool[bodypart_list[stuff][0]][armour[0]][armour[1]][
-                                part_name][bodypart_list[stuff][1]].copy()
-                            gear_surface = pygame.Surface(gear_image.get_size(), pygame.SRCALPHA)
-                            rect = self.sprite_image[stuff].get_rect(
-                                center=(gear_surface.get_width() / 2, gear_surface.get_height() / 2))
-                            gear_surface.blit(self.sprite_image[stuff], rect)
-                            rect = gear_image.get_rect(center=(gear_surface.get_width() / 2,
-                                                               gear_surface.get_height() / 2))
-                            gear_surface.blit(gear_image, rect)
-                            self.sprite_image[stuff] = gear_surface
+                                    gear_image = armour_sprite_pool[bodypart_list[stuff][0]][armour[0]][armour[1]][
+                                        part_name][bodypart_list[stuff][1]].copy()
+
+                                    gear_surface = pygame.Surface(gear_image.get_size(), pygame.SRCALPHA)
+                                    rect = self.sprite_image[stuff].get_rect(
+                                        center=(gear_surface.get_width() / 2, gear_surface.get_height() / 2))
+                                    gear_surface.blit(self.sprite_image[stuff], rect)
+                                    rect = gear_image.get_rect(center=(gear_surface.get_width() / 2,
+                                                                       gear_surface.get_height() / 2))
+                                    gear_surface.blit(gear_image, rect)
+                                    self.sprite_image[stuff] = gear_surface
+                            except KeyError:  # try to use common part instead if specific not found
+                                armour = self.armour[stuff[0:2] + "_armour"].split("/")
+
+                                gear_image = armour_sprite_pool[bodypart_list[stuff][0]][armour[0]]["Common"][
+                                    part_name][bodypart_list[stuff][1]].copy()
+
+                                gear_surface = pygame.Surface(gear_image.get_size(), pygame.SRCALPHA)
+                                rect = self.sprite_image[stuff].get_rect(
+                                    center=(gear_surface.get_width() / 2, gear_surface.get_height() / 2))
+                                gear_surface.blit(self.sprite_image[stuff], rect)
+                                rect = gear_image.get_rect(center=(gear_surface.get_width() / 2,
+                                                                   gear_surface.get_height() / 2))
+                                gear_surface.blit(gear_image, rect)
+                                self.sprite_image[stuff] = gear_surface
+                        except Exception:
+                            pass
                     except (KeyError, UnboundLocalError):  # no part name known for current race, skip getting image
                         pass
         # if skin != "white":

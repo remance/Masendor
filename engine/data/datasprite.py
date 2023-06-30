@@ -42,7 +42,8 @@ class TroopAnimationData(GameData):
                 rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
                 part_name_header = rd[0]
                 list_column = ["head", "neck", "body", "r_arm_up", "r_arm_low", "r_hand", "l_arm_up",
-                               "l_arm_low", "l_hand", "r_leg_up", "r_leg_down", "r_foot", "l_leg_up", "l_leg_down", "l_foot", "main_weapon", "sub_weapon",
+                               "l_arm_low", "l_hand", "r_leg_up", "r_leg_low", "r_foot", "l_leg_up", "l_leg_low",
+                               "l_foot", "main_weapon", "sub_weapon",
                                "special_1", "special_2", "special_3", "special_4", "special_5"]
                 for p in range(1, 5):  # up to p4
                     p_name = "p" + str(p) + "_"
