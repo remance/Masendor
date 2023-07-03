@@ -1030,7 +1030,7 @@ class ListAdapterHideExpand(ListAdapter):
 
         actual_index = self.get_visible_index_actual_index()[item]
         if self.actual_list_open_index[actual_index]:
-            return r[item].replace(">", "|")
+            return r[item]
         else:
             return r[item]
 
@@ -1077,14 +1077,14 @@ class CampaignListAdapter(ListAdapterHideExpand):
             self.campaign_name_index[campaign_name] = campaign_file_name
             for map_file_name in map_data[campaign_file_name]:  # add map
                 map_name = localisation.grab_text(key=("preset_map", campaign_file_name, "info", map_file_name, "Name"))
-                actual_level_list.append((1, "> " + map_name))
+                actual_level_list.append((1, map_name))
                 self.map_name_index[map_name] = map_file_name
                 for source_file_name in map_data[campaign_file_name][map_file_name]["source"]:  # add source
                     source_name = localisation.grab_text(key=("preset_map", campaign_file_name, map_file_name, "source", int(source_file_name), "Source"))
                     self.map_source_name_index[source_name] = source_file_name
                     current_index = len(actual_level_list)
                     self.map_source_index[(map_file_name, source_file_name)] = current_index
-                    actual_level_list.append((2, ">> " + source_name))
+                    actual_level_list.append((2, source_name))
 
         ListAdapterHideExpand.__init__(self, actual_level_list)
 
@@ -1117,13 +1117,14 @@ class CampaignListAdapter(ListAdapterHideExpand):
         :param item_index: Index of selected item in list
         :param item_text: Text of selected item
         """
-        item_name = item_text.replace(">", "")
-        item_name = item_name.replace("|", "")
         item_id = (item_text, item_index)
         if item_id != self.game.text_popup.last_shown_id:
+
+            _type = None # <-- TODO: calculate this somehow
+            item_name = item_text
             if item_name[0] == " ":  # remove space from subsection name
                 item_name = item_name[1:]
-            if ">>" in item_text or "||" in item_text:  # source item
+            if _type == 'source item':
                 actual_index = self.get_visible_index_actual_index()[item_index]
 
                 _map, source = {v: k for k, v in self.map_source_index.items()}[actual_index]
@@ -1132,16 +1133,18 @@ class CampaignListAdapter(ListAdapterHideExpand):
                                                                 self.game.battle_campaign[_map],
                                                                 _map, "source",
                                                                 source)).items()]
-            elif ">" in item_text or "|" in item_text:  # map item
+            elif _type == 'map item':
                 popup_text = [value for key, value in
                               self.game.localisation.grab_text(("preset_map",
                                                                 self.game.battle_campaign[self.map_name_index[item_name]],
                                                                 "info", self.map_name_index[item_name])).items()]
 
-            else:  # campaign item
+            elif _type == 'campaign item':
                 popup_text = [value for key, value in
                               self.game.localisation.grab_text(("preset_map", "info",
                                                                 self.campaign_name_index[item_name])).items()]
+            else:
+                return
 
             self.game.text_popup.popup(self.game.cursor.rect, popup_text, shown_id=item_id,
                                        width_text_wrapper=1000 * self.game.screen_scale[0])
@@ -1684,13 +1687,6 @@ class ListUI(UIMenu, Containable):
             # TODO: big optimize is not to render text that is not visible below
 
             font = font1
-            if items[item_index] is not None:  # assuming list ui has only 3 levels
-                if ">>" in items[item_index] or "||" in items[item_index]:
-                    font = font2
-                    blit_text = "  " + blit_text
-                elif ">" in items[item_index] or "|" in items[item_index]:
-                    font = font3
-                    blit_text = " " + blit_text
 
             image.blit(
                 draw_text(blit_text, font, text_color, ellipsis_length=size[0]-55),
