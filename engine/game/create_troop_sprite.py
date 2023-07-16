@@ -1,29 +1,25 @@
 import math
 
 import pygame
-from PIL import Image, ImageFilter, ImageEnhance
+from PIL import Image, ImageFilter, ImageEnhance, ImageOps
 
 from engine.utility import rotation_xy, apply_sprite_colour
-
-default_sprite_size = (200, 200)
 
 
 def create_troop_sprite(self, animation_name, troop_size, animation_part_list, troop_sprite_list,
                         animation_property, weapon, armour, idle_animation, both_main_sub_weapon):
-    frame_property = animation_part_list["frame_property"].copy()
-    animation_property = animation_property.copy()
-    check_prop = frame_property + animation_property
+    final_property = set(animation_part_list["frame_property"] + animation_property)
     dmg_sprite = None
-    troop_size = int(troop_size)
 
-    surface = pygame.Surface((default_sprite_size[0] * troop_size, default_sprite_size[1] * troop_size),
+    surface = pygame.Surface((self.design_sprite_size[0] * troop_size, self.design_sprite_size[1] * troop_size),
                              pygame.SRCALPHA)  # default size will scale down later
 
     except_list = ("face", "eye", "mouth", "size", "property")
-    pose_layer_list = {k: v[-2] for k, v in animation_part_list.items() if v != [0] and v != "" and v != [""] and
+    pose_layer_list = {k: v[-2] for k, v in animation_part_list.items() if v and v != "" and v != [""] and
                        any(ext in k for ext in except_list) is False}  # layer list
 
-    if "_Skill_" in animation_name:  # change layer of weapon for skill animation to match whether it is behind hand or not
+    if "_Skill_" in animation_name:
+        # change layer of weapon for skill animation to match whether it is behind hand or not
         for key, layer in pose_layer_list.items():
             if "weapon" in key:
                 part = animation_part_list[key]
@@ -103,12 +99,15 @@ def create_troop_sprite(self, animation_name, troop_size, animation_part_list, t
                     part_name = weapon[1][1]  # sub weapon
                 center = pygame.Vector2(image_part.get_width() / 2, image_part.get_height() / 2)
                 use_center = True
-                if (p + "main_" in layer and p + "fix_main_weapon" not in check_prop) or \
-                        (p + "sub_" in layer and p + "fix_sub_weapon" not in check_prop):
+                if (p + "main_" in layer and p + "fixed_weapon1_pos" not in final_property) or \
+                        (p + "sub_" in layer and p + "fixed_weapon_pos2" not in final_property):
                     use_center = False
                     if p + "main_weapon" in layer:  # main weapon
                         if "Sheath" not in part[0]:  # change main weapon pos to right hand, if part is not Sheath
-                            target = (animation_part_list[p + "r_hand"][2], animation_part_list[p + "r_hand"][3])
+                            if p + "weapon1_l_hand" in final_property:
+                                target = (animation_part_list[p + "l_hand"][2], animation_part_list[p + "l_hand"][3])
+                            else:
+                                target = (animation_part_list[p + "r_hand"][2], animation_part_list[p + "r_hand"][3])
                             use_center = False  # use weapon joint
                         else:
                             target = (animation_part_list[p + "body"][2],
@@ -126,10 +125,9 @@ def create_troop_sprite(self, animation_name, troop_size, animation_part_list, t
                             target = (animation_part_list[p + "body"][2],
                                       animation_part_list[p + "body"][3])  # put on back
                             use_center = True
-
                     new_target = target
 
-            part_rotated = image_part.copy()
+            part_rotated = image_part
             if scale != 1:
                 part_rotated = pygame.transform.smoothscale(part_rotated, (part_rotated.get_width() * scale,
                                                                            part_rotated.get_height() * scale))
@@ -168,19 +166,14 @@ def create_troop_sprite(self, animation_name, troop_size, animation_part_list, t
             rect = part_rotated.get_rect(center=new_target)
             surface.blit(part_rotated, rect)
 
-    for prop in check_prop:
+    for prop in tuple(final_property):  # apply property effect to sprite image if any
         if "effect" in prop:
-            if "grey" in prop:  # not work with just convert L for some reason
-                width, height = surface.get_size()
-                for x in range(width):
-                    for y in range(height):
-                        red, green, blue, alpha = surface.get_at((x, y))
-                        average = (red + green + blue) // 3
-                        gs_color = (average, average, average, alpha)
-                        surface.set_at((x, y), gs_color)
-            data = pygame.image.tostring(surface, "RGBA")  # convert image to string data for filtering effect
+            data = pygame.image.tobytes(surface, "RGBA")  # convert image to string data for filtering effect
             surface = Image.frombytes("RGBA", surface.get_size(), data)  # use PIL to get image data
             alpha = surface.split()[-1]  # save alpha
+            if "grey" in prop:  # not work with just convert L for some reason
+                surface = surface.convert("L")
+                surface = ImageOps.colorize(surface, black="black", white="white").convert("RGB")
             if "blur" in prop:
                 surface = surface.filter(
                     ImageFilter.GaussianBlur(
@@ -194,25 +187,21 @@ def create_troop_sprite(self, animation_name, troop_size, animation_part_list, t
             if "fade" in prop:
                 empty = pygame.Surface((surface.get_width(), surface.get_height()), pygame.SRCALPHA)
                 empty.fill((255, 255, 255, 255))
-                empty = pygame.image.tostring(empty, "RGBA")  # convert image to string data for filtering effect
+                empty = pygame.image.tobytes(empty, "RGBA")  # convert image to string data for filtering effect
                 empty = Image.frombytes("RGBA", surface.get_size(), empty)  # use PIL to get image data
                 surface = Image.blend(surface, empty, alpha=float(prop[prop.rfind("_") + 1:]) / 10)
             surface.putalpha(alpha)  # put back alpha
             surface = surface.tobytes()
-            surface = pygame.image.fromstring(surface, surface.get_size(),
-                                              "RGBA")  # convert image back to a pygame surface
+            surface = pygame.image.frombytes(surface, surface.get_size(),
+                                             "RGBA")  # convert image back to a pygame surface
             if "colour" in prop:
                 colour = prop[prop.rfind("_") + 1:]
                 colour = [int(this_colour) for this_colour in colour.split(".")]
                 surface = apply_sprite_colour(surface, colour)
 
-            if prop in frame_property:
-                frame_property.remove(prop)
-            if prop in animation_property:
-                animation_property.remove(prop)
+            final_property.remove(prop)  # remove sprite effect property from list so only animation related ones remain
 
-    return {"sprite": surface, "animation_property": tuple(animation_property), "frame_property": tuple(frame_property),
-            "dmg_sprite": dmg_sprite}
+    return {"sprite": surface, "property": tuple(final_property), "dmg_sprite": dmg_sprite}
 
 
 def grab_face_part(pool, race, part, part_check, part_default=None):
@@ -220,7 +209,7 @@ def grab_face_part(pool, race, part, part_check, part_default=None):
     surface = None
     try:
         if part_check != "":
-            if part_check == 1:  # any part
+            if not part_check:  # any part
                 if part_default is not None:
                     default = part_default
                     if type(part_default) != str:

@@ -1,146 +1,146 @@
-"ID","Name","Grade","Race","Trait","Skill","Cost","Upkeep","Melee Attack Scale","Defence Scale","Ranged Attack Scale","Ammunition Modifier","Charge Skill","Morale","Discipline","Mental","Primary Main Weapon","Primary Sub Weapon","Secondary Main Weapon","Secondary Sub Weapon","Armour","Mount","Sprite ID","Faction","Role","Troop Class","Tag"
-"NOR+1","Norman Swordsman",1,1,,,0,0,50,50,0,0,19,100,50,100,"2,3","41,3",,,"5,3",,"Norman Heavy",1,1,"Medium Infantry","Melee Infantry"
-"NOR+2","Norman Axeman",1,1,,,0,0,60,40,0,0,19,100,50,100,"13,3","41,3",,,"5,3",,"Norman Heavy",1,1,"Medium Infantry","Melee Infantry"
-"NOR+3","Norman Spearman",1,1,,,0,0,45,55,0,0,19,100,50,100,"6,3","41,3",,,"5,3",,"Norman Heavy",1,2,"Medium Infantry","Melee Infantry"
-"NOR+4","Norman Archer",1,1,,,0,0,15,25,60,0,17,100,50,100,"25,3",,"5,3",,"21,3",,"Norman Light",1,3,"Range Infantry","Range Infantry"
-"NOR+5","Norman Crossbowman",1,1,,,0,0,15,25,60,0,17,100,50,100,"27,3",,"5,3",,"21,3",,"Norman Light",1,3,"Range Infantry","Range Infantry"
-"NOR+6","Norman Conroi",2,1,11,35,0,0,37,35,28,0,19,100,60,120,"51,4","39,3","22,3",,"5,4","2,2,14","Norman Heavy",1,"1,4","Heavy Cavalry","Melee Cavalry"
-"FR+1","French Swordsman",1,1,,,0,0,50,50,0,0,19,100,50,100,"2,3","41,3",,,"5,3",,"Norman Heavy",13,1,"Medium Infantry","Melee Infantry"
-"FR+2","French Axeman",1,1,,,0,0,55,45,0,0,19,100,50,100,"13,3","41,3",,,"5,3",,"Norman Heavy",13,1,"Medium Infantry","Melee Infantry"
-"FR+3","French Spearman",1,1,,,0,0,40,60,0,0,19,100,50,100,"6,3","41,3",,,"5,3",,"Norman Heavy",13,2,"Medium Infantry","Melee Infantry"
-"FR+4","French Archer",1,1,,,0,0,20,25,55,0,17,100,50,100,"25,3",,"5,3",,"21,3",,"Norman Light",13,3,"Range Infantry","Range Infantry"
-"FR+5","French Crossbowman",1,1,,,0,0,20,25,55,0,17,100,50,100,"27,3",,"5,3",,"21,3",,"Norman Light",13,3,"Range Infantry","Range Infantry"
-"FR+6","French Knight",2,1,,,0,0,40,40,20,0,19,100,60,120,"51,4","39,3",,,"5,4","2,2,14","Norman Heavy",13,"1,4","Heavy Cavalry","Melee Cavalry"
-"FR+7","French Gendarme",2,1,,,0,0,,,,,,,,,,,,,,"2,2,1","Medieval Knight",13,,"Heavy Cavalry",
-"BRT+1","Breton Swordsman",1,1,,,0,0,45,55,0,0,19,100,45,100,"2,3","41,3",,,"5,3",,"Norman Heavy",12,1,"Medium Infantry","Melee Infantry"
-"BRT+2","Breton Axeman",1,1,,,0,0,55,45,0,0,19,100,45,100,"13,3","41,3",,,"5,3",,"Norman Heavy",12,1,"Medium Infantry","Melee Infantry"
-"BRT+3","Breton Spearman",1,1,,,0,0,40,60,0,0,19,100,45,100,"6,3","41,3",,,"5,3",,"Norman Heavy",12,2,"Medium Infantry","Melee Infantry"
-"BRT+4","Breton Archer",1,1,,,0,0,10,25,65,0,17,100,50,100,"25,3",,"5,3",,"21,3",,"Norman Light",12,3,"Range Infantry","Range Infantry"
-"BRT+5","Breton Crossbowman",1,1,,,0,0,10,25,65,0,17,100,50,100,"27,3",,"5,3",,"21,3",,"Norman Light",12,3,"Range Infantry","Range Infantry"
-"BRT+6","Breton Knight",2,1,11,35,0,0,50,10,50,0.1,19,100,55,120,"51,4","39,3","22,3",,"5,4","2,2,14","Norman Heavy",12,"1,3,4","Heavy Cavalry","Melee Cavalry"
-"BRT+7","Red Monk",9,1,"6,25",69,0,0,70,30,0,0,11,135,45,130,"51,4","43,4","2,4",,"5,4","2,2,14","Templar",12,"1,3,4","Heavy Cavalry","Melee Cavalry"
-"SAX+1","Saxon Fyrd",1,1,,,0,0,40,50,10,0,19,100,50,100,"6,3",,,,"21,3",,"Saxon Light",2,2,"Light Infantry","Melee Infantry"
-"SAX+2","Saxon Axeman",1,1,,,0,0,60,40,0,0,19,100,50,100,"13,3","41,3",,,"5,3",,"Saxon Heavy",2,1,"Medium Infantry","Melee Infantry"
-"SAX+3","Saxon Spearman",1,1,,,0,0,45,55,0,0,19,100,50,100,"6,3","41,3",,,"5,3",,"Saxon Heavy",2,2,"Medium Infantry","Melee Infantry"
-"SAX+4","Saxon Archer",1,1,,,0,0,20,25,50,0,17,100,50,100,"25,3",,"5,3",,"21,3",,"Saxon Light",2,3,"Range Infantry","Range Infantry"
-"SAX+5","Saxon Slinger",1,1,,,0,0,20,25,50,0,17,100,50,100,"20,3",,"5,3",,"21,3",,"Saxon Light",2,3,"Range Infantry","Range Infantry"
-"SAX+6","Saxon Skirmisher",1,1,,47,0,0,35,30,30,0,19,100,50,100,"22,3",,"5,3","23,3","21,3",,"Saxon Light",2,3,"Range Infantry","Range Infantry"
-"SAX+7","Saxon Mounted Huscarl",2,1,,,0,0,55,45,0,0,19,100,50,100,"2,4","41,4",,,"5,4","2,2,14","Saxon Heavy",2,"1,4","Heavy Cavalry","Melee Cavalry"
-"SAX+8","Saxon Huscarl",2,1,34,,0,0,45,55,0,0,19,100,70,150,"14,4","41,4",,,"5,4",,"Saxon Heavy",2,"1,2,4","Heavy Infantry","Melee Infantry"
-"SAX+9","Veteran Saxon Huscarl",3,1,34,4,0,0,45,55,0,0,19,100,80,170,"14,4","41,4",,,"5,4",,"Saxon Veteran",2,"1,2,4","Heavy Infantry","Melee Infantry"
-"SAX+10","Saxon Huscarl Bodyguard",4,1,34,43,0,0,40,60,0,0,19,100,90,190,"14,5","41,5",,,"5,5",,"Saxon Veteran",2,"1,2,4","Heavy Infantry","Melee Infantry"
-"CHR+1","Christian Warrior Monk",8,1,,69,0,0,35,15,20,0,19,100,50,100,"8,3",,,,"5,3",,"Christian Monk",2,5,"Light Infantry","Melee Infantry"
-"NK+1","New Kingdom Archer",1,1,,,0,0,17,23,60,0,17,100,40,100,"32,3",,"5,3",,"15,2",,"Old Egyptian Range",3,3,"Range Infantry","Range Infantry"
-"NK+2","Egyptian Slinger",1,1,,,0,0,17,23,60,0,17,100,50,100,"20,3",,"5,3",,"15,2",,"Old Egyptian Range",3,3,"Range Infantry","Range Infantry"
-"NK+3","New Kingdom Spearman",1,1,,,0,0,50,50,0,0,19,100,50,100,"6,3","47,2",,,"30,3",,"Old Egyptian Melee",3,2,"Light Infantry","Melee Infantry"
-"NK+4","New Kingdom Swordsman",2,1,,,0,0,55,45,0,0,19,100,60,100,"2,3","47,2",,,"30,3",,"Old Egyptian Melee",3,1,"Light Infantry","Melee Infantry"
-"NK+5","Egyptian War Chariot",2,1,11,,0,0,20,35,45,0.3,19,100,60,100,"32,3","22,3","6,3","47,3","6,2","100,3,13","Old Egyptian Chariot",3,"1,4","Chariot","Chariot"
-"NK+6","African Spearman",10,1,,,0,0,60,40,0,0,19,100,30,100,"6,2","47,2",,,"15,2",,"Tribal African Light",3,2,"Light Infantry","Melee Infantry"
-"NK+7","Egyptian Pitati",10,1,,36,0,0,25,15,60,0.2,19,100,30,100,"32,3",,"13,3",,"15,2",,"Old Egyptian Mercenary Archer",3,3,"Light Infantry","Melee Infantry"
-"NK+8","Royal War Chariot",11,1,11,35,0,0,25,35,40,0.5,19,100,80,120,"32,5","22,3","2,4","47,3","6,3","100,5,13","Old Egyptian Noble",3,"1,3,4","Chariot","Chariot"
-"NK+9","Mycenaean Promachoi",11,1,24,37,0,0,60,40,0,0,19,120,70,130,"6,3","41,2",,,"30,4",,"Old Greek Heavy",3,"1,2,4","Medium Infantry","Melee Infantry"
-"NK+10","Kenyt-­Nesu",4,1,,,0,0,55,45,0,0,19,140,80,140,"2,4","47,3",,,"30,4",,"Old Egyptian Melee",3,1,"Medium Infantry","Melee Infantry"
-"NK+11","Nakhtu-aa",3,1,,,0,0,40,60,0,0,19,125,60,120,"2,3","47,3","22,3",,"30,4",,"Old Egyptian Melee",3,1,"Medium Infantry","Melee Infantry"
-"NK+12","Sea People Pharaoh Guard",,,,,,,,,,,,,,,,,,,,,,,,,
-"CNA+1","Canaanite Archer",1,1,,,0,0,10,10,80,0,17,100,30,100,"25,3",,"5,3",,"15,1",,"Canaan Light",4,3,"Range Infantry","Range Infantry"
-"CNA+2","Canaanite Slinger",1,1,,,0,0,10,10,80,0,17,100,40,100,"20,3",,"5,3",,"15,1",,"Canaan Light",4,3,"Range Infantry","Range Infantry"
-"CNA+3","Canaanite Spearman",1,1,,,0,0,40,60,0,0,19,100,40,100,"6,3","47,1",,,"15,3",,"Canaan Light",4,2,"Light Infantry","Melee Infantry"
-"CNA+4","Canaanite Swordsman",1,1,,,0,0,60,40,0,0,19,100,40,100,"2,3",,,,"15,3",,"Canaan Light",4,1,"Light Infantry","Melee Infantry"
-"CNA+5","Canaanite War Chariot",2,1,11,34,0,0,40,20,40,0.1,19,100,60,100,"22,3",,"6,3",,"15,3","98,2,13","Canaan Light",4,"1,3,4","Chariot","Chariot"
-"CNA+6","Canaanite Tribal Warrior",1,1,,,0,0,60,40,0,0,19,100,30,100,"6,3",,,,"15,3",,"Canaan Light",4,1,"Light Infantry","Melee Infantry"
-"CNA+7","Canaanite Maryannu Warrior",11,1,"11,26",34,0,0,35,35,30,0.2,19,110,70,120,"22,4","47,4","6,4",,"6,2","98,3,13","Canaan Noble",4,"1,2,4","Chariot","Chariot"
-"CNA+8","Na’arun",4,1,"11,26",34,0,0,35,35,30,0.2,19,110,70,120,"22,4","47,3","6,4",,"6,2","98,4,13","Canaan Noble",4,"1,2,4","Chariot","Chariot"
-"CNA+9","Maryannu King Bodyguard",4,1,"11,26","33,34",0,0,25,45,30,0.3,19,120,80,130,"22,4","47,4","6,4",,"6,3","98,5,13","Canaan Noble",4,"1,2,4","Chariot","Chariot"
-"HRE+1","Landsknecht Pikeman",10,1,,,,,60,40,0,0,19,125,55,130,"16,3",,"4,3",,"12,2",,"Landsknecht",9,2,"Medium Infantry","Melee Infantry"
-"HRE+2","Landsknecht Doppelsöldner",10,1,6,,,,50,50,0,0,19,125,55,130,"3,3",,"5,3",,"12,2",,"Landsknecht",9,1,"Heavy Infantry","Melee Infantry"
-"HRE+3","Landsknecht Halberdier",10,1,,,,,55,45,0,0,19,125,55,130,"15,3",,"5,3",,"12,2",,"Landsknecht",9,2,"Heavy Infantry","Melee Infantry"
-"HRE+4","Landsknecht Arquebusier",10,1,,,,,25,25,50,0.2,19,125,55,130,"34,3",,"5,3",,"12,2",,"Landsknecht",9,3,"Range Infantry","Range Infantry"
-"HRE+5","Landsknecht Crossbowman",10,1,,,,,20,20,60,0.2,19,125,55,130,"28,3",,"5,3",,"12,2",,"Landsknecht",9,3,"Range Infantry","Range Infantry"
-"HUN+1","Hungarian Knight",2,1,,,,,65,35,0,0,19,110,55,125,"51,3","47,3","2,3",,"8,3","2,2,7","Hungarian Renaissance Knight",6,"1,4","Heavy Cavalry","Melee Infantry"
-"HUN+2","Hungarian Heavy Spearman",2,1,,,,,40,60,0,0,19,100,50,100,"6,3","44,3",,,"12,2",,"Hungarian Renaissance Infantry",6,2,"Heavy Infantry","Melee Infantry"
-"HUN+3","Hungarian Arquebusier",2,1,,,,,20,30,50,0,19,100,50,100,"34,3",,"5,3",,"5,3",,"Hungarian Renaissance Infantry",6,3,"Range Infantry","Range Infantry"
-"HUN+4","Hungarian Banderium",3,1,,,,,65,35,0,0,19,130,60,130,"51,4","47,3","2,4",,"8,4","2,2,7","Hungarian Renaissance Knight",6,"1,4","Heavy Cavalry","Melee Cavalry"
-"HUN+5","Hungarian Royal Guard",4,1,,,,,50,50,0,0,19,140,65,130,"51,4","47,3","2,4",,"8,4","2,3,7","Hungarian Renaissance Knight",6,"1,4","Heavy Cavalry","Melee Cavalry"
-"HUN+6","Hungarian Pikeman",1,1,,,,,55,45,0,0,19,100,50,100,"16,3",,"4,3",,"12,2",,"Hungarian Renaissance Infantry",6,2,"Medium Infantry","Melee Infantry"
-"HUN+7","Hungarian Hussar",1,1,,,,,60,40,0,0,19,100,50,100,"51,3","47,3","2,3",,"10,3","2,2,14","Hungarian Hussar",6,"1,4","Light Cavalry","Melee Cavalry"
-"HUN+8","Hungarian Crossbowman",1,1,,,,,20,25,55,0,19,100,50,100,"28,3",,,,"5,3",,"Hungarian Renaissance Light",6,3,"Range Infantry","Range Infantry"
-"HUN+9","Hungarian Pavise Crossbowman",1,1,,,,,25,30,45,0,19,100,50,100,"28,3","44,3",,,"5,3",,"Hungarian Renaissance Light",6,3,"Range Infantry","Range Infantry"
-"HUN+10","Hungarian Militia",1,1,,,,,50,50,0,0,19,100,40,100,,,,,,,,6,,"Light Infantry","Melee Infantry"
-"HUN+11","Hungarian Foot Royal Guard",4,1,,,,,45,55,0,0,,,65,,,,,,,,,6,,"Heavy Infantry","Melee Infantry"
-"HUN+12","Black Army Knight",2,1,,,,,65,35,0,0,19,135,75,120,"51,3","47,3","2,4",,"8,3","2,3,7","Hungarian Black Knight",6,"1,4","Heavy Cavalry","Melee Cavalry"
-"HUN+13","Black Army Crossbowman",2,1,,,,,,,,,,,,,,,,,,,,,,,
-"HUN+14","Black Army Clipeati",2,1,,,,,,,,,,,,,,,,,,,,,,,
-"HUN+15","Black Army Armati",2,1,,,,,,,,,,,,,,,,,,,,,,,
-"HUN+16","Black Army Handgunner",2,1,,,,,,,,,,,,,,,,,,,,,,,
-"HUN+17","Black Army Arquebusier",2,1,,,,,,,,,,,,,,,,,,,,,,,
-"HUN+18","Black Army Armigeri",2,1,,,,,,,,,,,,,,,,,,,,,,,
-"HUN+19","Szekely cavalry",,1,,,,,,,,,,,,,,,,,,,,,,,
-"HUN+20","Cuman Light Horse",,1,,,,,,,,,,,,,,,,,,,,,,,
-"HUN+21","Cuman Horse Archer",,1,,,,,,,,,,,,,,,,,,,,,,,
-"HUN+22","Hungarian Tabor",,1,,,,,,,,,,,,,,,,,,,,,,,
-"POL+1","Polish Knight",2,1,,,,,70,30,0,0,19,120,60,125,"51,4",,,,"8,3","2,2,7","Polish Renaissance Knight",,"1,4","Heavy Cavalry",
-"POL+2","Polish Heavy Spearman",1,1,,,,,45,55,0,0,19,100,50,100,"6,3",,,,"12,2",,"Polish Renaissance Infantry",,2,"Heavy Infantry",
-"POL+3","Polish Pikeman",1,1,,,,,40,60,0,0,19,100,50,100,"16,3",,,,"12,2",,"Polish Renaissance Infantry",,2,"Medium Infantry",
-"POL+4","Polish Crossbowman",1,1,,,,,20,25,55,0,19,100,50,100,"28,3",,"5,3",,"5,3",,"Polish Renaissance Infantry",,3,"Range Infantry",
-"POL+5","Polish Arquebusier",1,1,,,,,,,,0,19,100,50,100,"34,3",,"5,3",,"5,3",,"Polish Renaissance Infantry",,3,"Range Infantry",
-"POL+6","Polish Royal Guard",4,1,,,,,,,,,,,,,,,,,,,,,,,
-"POL+7","Polish Hussar",2,1,,,,,,,,,,,,,,,,,,,,,,,
-"POL+8","Polish Militia",1,1,,,,,,,,,,,,,,,,,,,,,,,
-"PAP+1","Pontifical Swiss Guard",4,1,,,,,,,,,,,,,"15,4",,,,,,"Swiss Guard",,2,,
-"EG+1","European Organ Gun",2,1,,,,,10,10,80,0,17,100,50,100,,,,,,,,,,"Artillery",
-"EG+2","European Early Light Cannon",2,1,,,,,2,10,88,0,17,100,50,100,"M14,3",,,,,"81,0,1","Medieval Early Cannon",,6,"Artillery",
-"OTTO+1","Janissary Archer",2,1,,,,,15,15,70,0.2,19,125,75,140,"32,3",,"13,3",,"15,3",,"Janissary Bow",5,3,"Range Infantry",
-"OTTO+2","Janissary Arquebusier",2,1,,,,,20,20,60,0.2,19,125,75,140,"34,3",,"13,3",,"15,3",,"Janissary Gun",5,3,"Range Infantry",
-"OTTO+3","Janissary Halberdier",2,1,,,,,60,40,0,0,19,125,75,140,"15,3",,"2,3",,"15,3",,"Janissary Light",5,2,"Medium Infantry",
-"OTTO+4","Janissary Swordsman",2,1,,,,,55,45,0,0,19,125,75,140,"2,3","41,3",,,"15,3",,"Janissary Light",5,1,"Medium Infantry",
-"OTTO+5","Janissary Musketeer",2,1,,,,,10,20,70,0.2,19,125,75,140,"33,3",,"13,3",,"15,3",,"Janissary Gun",5,3,"Range Infantry",
-"OTTO+6","Zirhli Nefer",4,1,34,,,,55,45,0,0,19,150,85,140,"15,3",,"2,3","41,3","5,4",,"Janissary Heavy",5,1,"Heavy Infantry",
-"OTTO+7","Sipahi Horse Archer",2,1,,,,,20,30,50,0,19,145,75,160,"32,3",,"2,3","41,4","15,4","2,2,15","Sipahi Light",5,"1,3,4","Range Cavalry",
-"OTTO+8","Sipahi Heavy Cavalry",2,1,,,,,60,40,0,0,19,145,75,160,"51,4","41,4","13,4","8,4","5,4","2,2,15","Sipahi Heavy",5,"1,3,4","Medium Cavalry",
-"OTTO+9","Akindji Cavalry",1,1,,,,,30,10,60,0.2,19,110,55,100,"32,3",,"2,3",,"15,3","2,2,15","Azap",5,"1,3","Light Cavalry",
-"OTTO+11","Kapikulu Cavalry",3,1,,,,,60,40,0,0,19,150,90,150,"51,4","41,4","13,4","8,4","5,5","2,3,7","Kapikulu",5,"1,3,4","Heavy Cavalry",
-"OTTO+12","Kapikulu Infantry",3,1,,,,,50,50,0,0,19,150,90,150,,,,,"5,5",,"Kapikulu",5,"1,2","Heavy Infantry",
-"OTTO+13","Kapikulu Artillery",3,1,,,,,5,15,80,0.25,17,150,90,150,"M14,5",,,,"15,4",,"Kapikulu",5,6,"Artillery",
-"OTTO+14","Silahdar Cavalry",4,1,,,,,50,50,0,0,19,180,100,170,,,,,"5,5","2,3,7","Silahdar Cavalry",5,"1,3,4","Heavy Cavalry",
-"OTTO+15","Silahdar Infantry",4,1,,,,,55,45,0,0,19,180,100,170,,,,,"5,5",,"Silahdar Infantry",5,"1,2","Heavy Infantry",
-"OTTO+16","Topçu Ocağı",2,1,,,,,5,20,75,0,17,100,65,100,"M14,3",,,,"15,3","81,8,20","Ottoman Cannon",5,6,"Artillery",
-"OTTO+17","Azap Conscript",1,1,,,,,60,40,0,0,19,100,50,100,,,,,"15,3",,"Azap",5,1,"Light Infantry",
-"OTTO+18","Azap Skirmisher",1,1,,,,,30,30,40,0,19,100,50,100,,,,,"15,3",,"Azap",5,3,"Light Infantry",
-"EMER+1","Renaissance Crossbow Mercenary",10,1,,,,,15,25,60,0,19,130,40,130,"27,3",,"13,3",,"2,3",,"Renaissance Mercenary",15,3,"Light Infantry",
-"EMER+2","Renaissance Light Mercenary",10,1,,,,,55,45,0,0,19,130,40,130,"13,3","41,3",,,"2,3",,"Renaissance Mercenary",15,1,"Light Infantry",
-"EMER+3","Renaissance Heavy Mercenary",10,1,,,,,50,50,0,0,19,130,45,130,"14,3",,,,"12,2",,"Renaissance Mercenary",15,1,"Heavy Infantry",
-"EMER+4","Renaissance Arquebus Mercenary",10,1,,,,,20,30,50,0,19,130,40,130,,,,,"2,3",,"Renaissance Mercenary",15,3,"Light Infantry",
-"CRT+1","Croat",2,1,,,,,,,,,,,,,,,,,,,,,,,
-"CRT+2","Croatian Arquebusier",1,1,,,,,,,,,,,,,,,,,"21,3",,,,,,
-"CRT+3","Croatian Militia",1,1,,,,,,,,,,,,,,,,,,,,,,,
-"CRT+4","Haramije",,1,,,,,,,,,,,,,,,,,,,,,,,
-"CRT+5","Uskok",,1,,,,,,,,,,,,,,,,,,,,,,,
-"BHM+1","Czech War Wagon",2,1,,,,,30,30,40,0,19,130,50,120,,,,,,,"Czech Renaissance Infantry",11,,"Chariot",
-"BHM+2","Czech Cannon Wagon",2,1,,,,,10,20,70,0,19,130,50,120,,,,,,,"Czech Renaissance Infantry",11,,"Artillery",
-"BHM+3","Czech Pikeman",1,1,,,,,40,60,0,0,19,100,50,100,"16,3",,,,"12,2",,"Czech Renaissance Infantry",11,2,"Medium Infantry",
-"BHM+4","Czech Heavy Spearman",2,1,,,,,45,55,0,0,19,100,50,100,"6,3","44,3",,,"12,2",,"Czech Renaissance Infantry",11,2,"Heavy Infantry",
-"BHM+5","Czech Arquebusier",2,1,,,,,20,30,50,0,19,100,50,100,"34,3",,"5,3",,"5,3",,"Czech Renaissance Infantry",11,3,"Range Infantry",
-"BHM+6","Czech Pavise Crossbowman",2,1,,,,,20,30,50,0,19,100,50,100,"34,3",,"5,3",,"5,3",,"Czech Renaissance Infantry",11,3,"Range Infantry",
-"BHM+7","Czech Heavy Infantry",2,1,,,,,50,50,0,0,19,100,50,100,"15,3","44,3",,,"12,2",,"Czech Renaissance Infantry",11,2,"Heavy Infantry",
-"BHM+8","Czech Billman",1,1,,,,,60,40,0,0,19,100,50,100,,,,,,,"Czech Renaissance Infantry",11,,"Light Infantry",
-"BHM+9","Czech Spearman",1,1,,,,,50,50,0,0,19,100,50,100,,,,,,,"Czech Renaissance Infantry",11,,"Light Infantry",
-"BHM+10","Czech Crossbowman",1,1,,,,,10,20,70,0,19,100,50,100,,,,,,,"Czech Renaissance Infantry",11,,"Range Infantry",
-"BHM+11","Czech Knight",2,1,,,,,,,,,,,,,,,,,,,"Czech Renaissance Knight",11,,,
-"BHM+12","Czech Militia",1,1,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,,
-"TEST+1","Hamster Boy",4,1,,,,,2,3,8,0.5,19,150,150,150,"71,4",,,,"20,3",,"Hamster",,1,"Light Infantry",
-,,,,,,,,,,,,,,,,,,,,,,,,,,
-"NW+1","Norwegian Huscarl",2,1,,,0,0,55,45,0,,,,,,,,,,,,,,,,
-"NW+2","Norwegian Huscarl Bodyguard",4,1,,,0,0,50,50,0,,,,,,,,,,,,,,,,
-"NW+3","Norwegian Berserker",2,1,,,,,,,,,,,,,,,,,,,,,,,
-"NW+4","Norwegian Archer",1,1,,,,,,,,,,,,,,,,,,,,,,,
-"NW+5","Norwegian Skirmisher",1,1,,,,,,,,,,,,,,,,,,,,,,,
-"NW+6","Jomsviking Mercenary",10,1,,,,,,,,,,,,,,,,,,,,,,,
-"NW+7","Norwegian Leidang",1,1,,,,,,,,,,,,,,,,,,,,,,,
-"NW+8","Norwegian Mounted Huscarl",2,1,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,,
-"SP+1","Sea People Raider",2,1,,,,,,,,,,,,,,,,,,,,,,,
-"SP+2","Sea People Skirmisher",2,1,,,,,,,,,,,,,,,,,,,,,,,
-"SP+3","Sea People Heavy Infantry",2,1,,,,,,,,,,,,,,,,,,,,,,,
-"SP+4","Sea People Archer",2,1,,,,,,,,,,,,,,,,,,,,,,,
+"ID","Name","Grade","Race","Trait","Skill","Cost","Upkeep","Melee Attack Scale","Defence Scale","Ranged Attack Scale","Ammunition Modifier","Charge Skill","Morale","Discipline","Primary Main Weapon","Primary Sub Weapon","Secondary Main Weapon","Secondary Sub Weapon","Armour","Mount","Sprite ID","Faction","Role","Troop Class","Tag"
+"NOR+1","Norman Swordsman",1,1,,,0,0,50,50,0,0,19,100,50,"2,3","41,3",,,"5,3",,"Norman Heavy",1,1,"Medium Infantry","Melee Infantry"
+"NOR+2","Norman Axeman",1,1,,,0,0,60,40,0,0,19,100,50,"13,3","41,3",,,"5,3",,"Norman Heavy",1,1,"Medium Infantry","Melee Infantry"
+"NOR+3","Norman Spearman",1,1,,,0,0,45,55,0,0,19,100,50,"6,3","41,3",,,"5,3",,"Norman Heavy",1,2,"Medium Infantry","Melee Infantry"
+"NOR+4","Norman Archer",1,1,,,0,0,15,25,60,0,17,100,50,"25,3",,"5,3",,"21,3",,"Norman Light",1,3,"Range Infantry","Range Infantry"
+"NOR+5","Norman Crossbowman",1,1,,,0,0,15,25,60,0,17,100,50,"27,3",,"5,3",,"21,3",,"Norman Light",1,3,"Range Infantry","Range Infantry"
+"NOR+6","Norman Conroi",2,1,11,35,0,0,37,35,28,0,19,100,60,"51,4","39,3","22,3",,"5,4","2,2,14","Norman Heavy",1,"1,4","Heavy Cavalry","Melee Cavalry"
+"FR+1","French Swordsman",1,1,,,0,0,50,50,0,0,19,100,50,"2,3","41,3",,,"5,3",,"High Medieval European Heavy",13,1,"Medium Infantry","Melee Infantry"
+"FR+2","French Axeman",1,1,,,0,0,55,45,0,0,19,100,50,"13,3","41,3",,,"5,3",,"High Medieval European Heavy",13,1,"Medium Infantry","Melee Infantry"
+"FR+3","French Spearman",1,1,,,0,0,40,60,0,0,19,100,50,"6,3","41,3",,,"5,3",,"High Medieval European Heavy",13,2,"Medium Infantry","Melee Infantry"
+"FR+4","French Archer",1,1,,,0,0,20,25,55,0,17,100,50,"25,3",,"5,3",,"21,3",,"Norman Light",13,3,"Range Infantry","Range Infantry"
+"FR+5","French Crossbowman",1,1,,,0,0,20,25,55,0,17,100,50,"27,3",,"5,3",,"21,3",,"Norman Light",13,3,"Range Infantry","Range Infantry"
+"FR+6","French Knight",2,1,,,0,0,40,40,20,0,19,100,60,"51,4","39,3",,,"5,4","2,2,14","High Medieval European Heavy",13,"1,4","Heavy Cavalry","Melee Cavalry"
+"FR+7","French Gendarme",2,1,,,0,0,,,,,,,,,,,,,"2,2,1","Medieval Knight",13,,"Heavy Cavalry",
+"BRT+1","Breton Swordsman",1,1,,,0,0,45,55,0,0,19,100,45,"2,3","41,3",,,"5,3",,"High Medieval European Heavy",12,1,"Medium Infantry","Melee Infantry"
+"BRT+2","Breton Axeman",1,1,,,0,0,55,45,0,0,19,100,45,"13,3","41,3",,,"5,3",,"High Medieval European Heavy",12,1,"Medium Infantry","Melee Infantry"
+"BRT+3","Breton Spearman",1,1,,,0,0,40,60,0,0,19,100,45,"6,3","41,3",,,"5,3",,"High Medieval European Heavy",12,2,"Medium Infantry","Melee Infantry"
+"BRT+4","Breton Archer",1,1,,,0,0,10,25,65,0,17,100,50,"25,3",,"5,3",,"21,3",,"Norman Light",12,3,"Range Infantry","Range Infantry"
+"BRT+5","Breton Crossbowman",1,1,,,0,0,10,25,65,0,17,100,50,"27,3",,"5,3",,"21,3",,"Norman Light",12,3,"Range Infantry","Range Infantry"
+"BRT+6","Breton Knight",2,1,11,35,0,0,50,10,50,0.1,19,100,55,"51,4","39,3","22,3",,"5,4","2,2,14","High Medieval European Heavy",12,"1,3,4","Heavy Cavalry","Melee Cavalry"
+"BRT+7","Red Monk",9,1,"6,25",69,0,0,70,30,0,0,11,135,45,"51,4","43,4","2,4",,"5,4","2,2,14","Templar",12,"1,3,4","Heavy Cavalry","Melee Cavalry"
+"SAX+1","Saxon Fyrd",1,1,,,0,0,40,50,10,0,19,100,50,"6,3",,,,"21,3",,"Saxon Light",2,2,"Light Infantry","Melee Infantry"
+"SAX+2","Saxon Axeman",1,1,,,0,0,60,40,0,0,19,100,50,"13,3","41,3",,,"5,3",,"Saxon Heavy",2,1,"Medium Infantry","Melee Infantry"
+"SAX+3","Saxon Spearman",1,1,,,0,0,45,55,0,0,19,100,50,"6,3","41,3",,,"5,3",,"Saxon Heavy",2,2,"Medium Infantry","Melee Infantry"
+"SAX+4","Saxon Archer",1,1,,,0,0,20,25,50,0,17,100,50,"25,3",,"5,3",,"21,3",,"Saxon Light",2,3,"Range Infantry","Range Infantry"
+"SAX+5","Saxon Slinger",1,1,,,0,0,20,25,50,0,17,100,50,"20,3",,"5,3",,"21,3",,"Saxon Light",2,3,"Range Infantry","Range Infantry"
+"SAX+6","Saxon Skirmisher",1,1,,47,0,0,35,30,30,0,19,100,50,"22,3",,"5,3","23,3","21,3",,"Saxon Light",2,3,"Range Infantry","Range Infantry"
+"SAX+7","Saxon Mounted Huscarl",2,1,,,0,0,55,45,0,0,19,100,50,"2,4","43,4",,,"5,4","2,2,14","Saxon Heavy",2,"1,4","Heavy Cavalry","Melee Cavalry"
+"SAX+8","Saxon Huscarl",2,1,34,,0,0,45,55,0,0,19,100,70,"14,4","41,4",,,"5,4",,"Saxon Heavy",2,"1,2,4","Heavy Infantry","Melee Infantry"
+"SAX+9","Veteran Saxon Huscarl",3,1,34,4,0,0,45,55,0,0,19,100,80,"14,4","41,4",,,"5,4",,"Saxon Veteran",2,"1,2,4","Heavy Infantry","Melee Infantry"
+"SAX+10","Saxon Huscarl Bodyguard",4,1,34,43,0,0,40,60,0,0,19,100,90,"14,5","41,5",,,"5,5",,"Saxon Veteran",2,"1,2,4","Heavy Infantry","Melee Infantry"
+"CHR+1","Christian Warrior Monk",8,1,,69,0,0,35,15,20,0,19,100,50,"8,3",,,,"5,3",,"Christian Monk",2,5,"Light Infantry","Melee Infantry"
+"NK+1","New Kingdom Archer",1,1,,,0,0,17,23,60,0,17,100,40,"32,3",,"5,3",,"15,2",,"Old Egyptian Range",3,3,"Range Infantry","Range Infantry"
+"NK+2","Egyptian Slinger",1,1,,,0,0,17,23,60,0,17,100,50,"20,3",,"5,3",,"15,2",,"Old Egyptian Range",3,3,"Range Infantry","Range Infantry"
+"NK+3","New Kingdom Spearman",1,1,,,0,0,50,50,0,0,19,100,50,"6,3","47,2",,,"30,3",,"Old Egyptian Melee",3,2,"Light Infantry","Melee Infantry"
+"NK+4","New Kingdom Swordsman",2,1,,,0,0,55,45,0,0,19,100,60,"2,3","47,2",,,"30,3",,"Old Egyptian Melee",3,1,"Light Infantry","Melee Infantry"
+"NK+5","Egyptian War Chariot",2,1,11,,0,0,20,35,45,0.3,19,100,60,"32,3","22,3","6,3","47,3","6,2","100,3,13","Old Egyptian Chariot",3,"1,4","Chariot","Chariot"
+"NK+6","African Spearman",10,1,,,0,0,60,40,0,0,19,100,30,"6,2","47,2",,,"15,2",,"Tribal African Light",3,2,"Light Infantry","Melee Infantry"
+"NK+7","Egyptian Pitati",10,1,,36,0,0,25,15,60,0.2,19,100,30,"32,3",,"13,3",,"15,2",,"Old Egyptian Mercenary Archer",3,3,"Light Infantry","Melee Infantry"
+"NK+8","Royal War Chariot",11,1,11,35,0,0,25,35,40,0.5,19,100,80,"32,5","22,3","2,4","47,3","6,3","100,5,13","Old Egyptian Noble",3,"1,3,4","Chariot","Chariot"
+"NK+9","Mycenaean Promachoi",11,1,24,37,0,0,60,40,0,0,19,120,70,"6,3","41,2",,,"30,4",,"Old Greek Heavy",3,"1,2,4","Medium Infantry","Melee Infantry"
+"NK+10","Kenyt-­Nesu",4,1,,,0,0,55,45,0,0,19,140,80,"2,4","47,3",,,"30,4",,"Old Egyptian Melee",3,1,"Medium Infantry","Melee Infantry"
+"NK+11","Nakhtu-aa",3,1,,,0,0,40,60,0,0,19,125,60,"2,3","47,3","22,3",,"30,4",,"Old Egyptian Melee",3,1,"Medium Infantry","Melee Infantry"
+"NK+12","Sea People Pharaoh Guard",,,,,,,,,,,,,,,,,,,,,,,,
+"CNA+1","Canaanite Archer",1,1,,,0,0,10,10,80,0,17,100,30,"25,3",,"5,3",,"15,1",,"Canaan Light",4,3,"Range Infantry","Range Infantry"
+"CNA+2","Canaanite Slinger",1,1,,,0,0,10,10,80,0,17,100,40,"20,3",,"5,3",,"15,1",,"Canaan Light",4,3,"Range Infantry","Range Infantry"
+"CNA+3","Canaanite Spearman",1,1,,,0,0,40,60,0,0,19,100,40,"6,3","47,1",,,"15,3",,"Canaan Light",4,2,"Light Infantry","Melee Infantry"
+"CNA+4","Canaanite Swordsman",1,1,,,0,0,60,40,0,0,19,100,40,"2,3",,,,"15,3",,"Canaan Light",4,1,"Light Infantry","Melee Infantry"
+"CNA+5","Canaanite War Chariot",2,1,11,34,0,0,40,20,40,0.1,19,100,60,"22,3",,"6,3",,"15,3","98,2,13","Canaan Light",4,"1,3,4","Chariot","Chariot"
+"CNA+6","Canaanite Tribal Warrior",1,1,,,0,0,60,40,0,0,19,100,30,"6,3",,,,"15,3",,"Canaan Light",4,1,"Light Infantry","Melee Infantry"
+"CNA+7","Canaanite Maryannu Warrior",11,1,"11,26",34,0,0,35,35,30,0.2,19,110,70,"22,4","47,4","6,4",,"6,2","98,3,13","Canaan Noble",4,"1,2,4","Chariot","Chariot"
+"CNA+8","Na’arun",4,1,"11,26",34,0,0,35,35,30,0.2,19,110,70,"22,4","47,3","6,4",,"6,2","98,4,13","Canaan Noble",4,"1,2,4","Chariot","Chariot"
+"CNA+9","Maryannu King Bodyguard",4,1,"11,26","33,34",0,0,25,45,30,0.3,19,120,80,"22,4","47,4","6,4",,"6,3","98,5,13","Canaan Noble",4,"1,2,4","Chariot","Chariot"
+"HRE+1","Landsknecht Pikeman",10,1,,,,,60,40,0,0,19,125,55,"16,3",,"4,3",,"12,2",,"Landsknecht",9,2,"Medium Infantry","Melee Infantry"
+"HRE+2","Landsknecht Doppelsöldner",10,1,6,,,,50,50,0,0,19,125,55,"3,3",,"5,3",,"12,2",,"Landsknecht",9,1,"Heavy Infantry","Melee Infantry"
+"HRE+3","Landsknecht Halberdier",10,1,,,,,55,45,0,0,19,125,55,"15,3",,"5,3",,"12,2",,"Landsknecht",9,2,"Heavy Infantry","Melee Infantry"
+"HRE+4","Landsknecht Arquebusier",10,1,,,,,25,25,50,0.2,19,125,55,"34,3",,"5,3",,"12,2",,"Landsknecht",9,3,"Range Infantry","Range Infantry"
+"HRE+5","Landsknecht Crossbowman",10,1,,,,,20,20,60,0.2,19,125,55,"28,3",,"5,3",,"12,2",,"Landsknecht",9,3,"Range Infantry","Range Infantry"
+"HUN+1","Hungarian Knight",2,1,,,,,65,35,0,0,19,110,55,"51,3","47,3","2,3",,"8,3","2,2,7","Hungarian Renaissance Knight",6,"1,4","Heavy Cavalry","Melee Infantry"
+"HUN+2","Hungarian Heavy Spearman",2,1,,,,,40,60,0,0,19,100,50,"6,3","44,3",,,"12,2",,"Hungarian Renaissance Infantry",6,2,"Heavy Infantry","Melee Infantry"
+"HUN+3","Hungarian Arquebusier",2,1,,,,,20,30,50,0,19,100,50,"34,3",,"5,3",,"5,3",,"Hungarian Renaissance Infantry",6,3,"Range Infantry","Range Infantry"
+"HUN+4","Hungarian Banderium",3,1,,,,,65,35,0,0,19,130,60,"51,4","47,3","2,4",,"8,4","2,2,7","Hungarian Renaissance Knight",6,"1,4","Heavy Cavalry","Melee Cavalry"
+"HUN+5","Hungarian Royal Guard",4,1,,,,,50,50,0,0,19,140,65,"51,4","47,3","2,4",,"8,4","2,3,7","Hungarian Renaissance Knight",6,"1,4","Heavy Cavalry","Melee Cavalry"
+"HUN+6","Hungarian Pikeman",1,1,,,,,55,45,0,0,19,100,50,"16,3",,"4,3",,"12,2",,"Hungarian Renaissance Infantry",6,2,"Medium Infantry","Melee Infantry"
+"HUN+7","Hungarian Hussar",1,1,,,,,60,40,0,0,19,100,50,"51,3","47,3","2,3",,"10,3","2,2,14","Hungarian Hussar",6,"1,4","Light Cavalry","Melee Cavalry"
+"HUN+8","Hungarian Crossbowman",1,1,,,,,20,25,55,0,19,100,50,"28,3",,,,"5,3",,"Hungarian Renaissance Light",6,3,"Range Infantry","Range Infantry"
+"HUN+9","Hungarian Pavise Crossbowman",1,1,,,,,25,30,45,0,19,100,50,"28,3","44,3",,,"5,3",,"Hungarian Renaissance Light",6,3,"Range Infantry","Range Infantry"
+"HUN+10","Hungarian Militia",1,1,,,,,50,50,0,0,19,100,40,,,,,,,,6,,"Light Infantry","Melee Infantry"
+"HUN+11","Hungarian Foot Royal Guard",4,1,,,,,45,55,0,0,,,65,,,,,,,,6,,"Heavy Infantry","Melee Infantry"
+"HUN+12","Black Army Knight",2,1,,,,,65,35,0,0,19,135,75,"51,3","47,3","2,4",,"8,3","2,3,7","Hungarian Black Knight",6,"1,4","Heavy Cavalry","Melee Cavalry"
+"HUN+13","Black Army Crossbowman",2,1,,,,,,,,,,,,,,,,,,,,,,
+"HUN+14","Black Army Clipeati",2,1,,,,,,,,,,,,,,,,,,,,,,
+"HUN+15","Black Army Armati",2,1,,,,,,,,,,,,,,,,,,,,,,
+"HUN+16","Black Army Handgunner",2,1,,,,,,,,,,,,,,,,,,,,,,
+"HUN+17","Black Army Arquebusier",2,1,,,,,,,,,,,,,,,,,,,,,,
+"HUN+18","Black Army Armigeri",2,1,,,,,,,,,,,,,,,,,,,,,,
+"HUN+19","Szekely cavalry",,1,,,,,,,,,,,,,,,,,,,,,,
+"HUN+20","Cuman Light Horse",,1,,,,,,,,,,,,,,,,,,,,,,
+"HUN+21","Cuman Horse Archer",,1,,,,,,,,,,,,,,,,,,,,,,
+"HUN+22","Hungarian Tabor",,1,,,,,,,,,,,,,,,,,,,,,,
+"POL+1","Polish Knight",2,1,,,,,70,30,0,0,19,120,60,"51,4",,,,"8,3","2,2,7","Polish Renaissance Knight",,"1,4","Heavy Cavalry",
+"POL+2","Polish Heavy Spearman",1,1,,,,,45,55,0,0,19,100,50,"6,3",,,,"12,2",,"Polish Renaissance Infantry",,2,"Heavy Infantry",
+"POL+3","Polish Pikeman",1,1,,,,,40,60,0,0,19,100,50,"16,3",,,,"12,2",,"Polish Renaissance Infantry",,2,"Medium Infantry",
+"POL+4","Polish Crossbowman",1,1,,,,,20,25,55,0,19,100,50,"28,3",,"5,3",,"5,3",,"Polish Renaissance Infantry",,3,"Range Infantry",
+"POL+5","Polish Arquebusier",1,1,,,,,,,,0,19,100,50,"34,3",,"5,3",,"5,3",,"Polish Renaissance Infantry",,3,"Range Infantry",
+"POL+6","Polish Royal Guard",4,1,,,,,,,,,,,,,,,,,,,,,,
+"POL+7","Polish Hussar",2,1,,,,,,,,,,,,,,,,,,,,,,
+"POL+8","Polish Militia",1,1,,,,,,,,,,,,,,,,,,,,,,
+"PAP+1","Pontifical Swiss Guard",4,1,,,,,,,,,,,,"15,4",,,,,,"Swiss Guard",,2,,
+"EG+1","European Organ Gun",2,1,,,,,10,10,80,0,17,100,50,,,,,,,,,,"Artillery",
+"EG+2","European Early Light Cannon",2,1,,,,,2,10,88,0,17,100,50,"M14,3",,,,,"81,0,1","Medieval Early Cannon",,6,"Artillery",
+"OTTO+1","Janissary Archer",2,1,,,,,15,15,70,0.2,19,125,75,"32,3",,"13,3",,"15,3",,"Janissary Bow",5,3,"Range Infantry",
+"OTTO+2","Janissary Arquebusier",2,1,,,,,20,20,60,0.2,19,125,75,"34,3",,"13,3",,"15,3",,"Janissary Gun",5,3,"Range Infantry",
+"OTTO+3","Janissary Halberdier",2,1,,,,,60,40,0,0,19,125,75,"15,3",,"2,3",,"15,3",,"Janissary Light",5,2,"Medium Infantry",
+"OTTO+4","Janissary Swordsman",2,1,,,,,55,45,0,0,19,125,75,"2,3","41,3",,,"15,3",,"Janissary Light",5,1,"Medium Infantry",
+"OTTO+5","Janissary Musketeer",2,1,,,,,10,20,70,0.2,19,125,75,"33,3",,"13,3",,"15,3",,"Janissary Gun",5,3,"Range Infantry",
+"OTTO+6","Zirhli Nefer",4,1,34,,,,55,45,0,0,19,150,85,"15,3",,"2,3","41,3","5,4",,"Janissary Heavy",5,1,"Heavy Infantry",
+"OTTO+7","Sipahi Horse Archer",2,1,,,,,20,30,50,0,19,145,75,"32,3",,"2,3","41,4","15,4","2,2,15","Sipahi Light",5,"1,3,4","Range Cavalry",
+"OTTO+8","Sipahi Heavy Cavalry",2,1,,,,,60,40,0,0,19,145,75,"51,4","41,4","13,4","8,4","5,4","2,2,15","Sipahi Heavy",5,"1,3,4","Medium Cavalry",
+"OTTO+9","Akindji Cavalry",1,1,,,,,30,10,60,0.2,19,110,55,"32,3",,"2,3",,"15,3","2,2,15","Azap",5,"1,3","Light Cavalry",
+"OTTO+11","Kapikulu Cavalry",3,1,,,,,60,40,0,0,19,150,90,"51,4","41,4","13,4","8,4","5,5","2,3,7","Kapikulu",5,"1,3,4","Heavy Cavalry",
+"OTTO+12","Kapikulu Infantry",3,1,,,,,50,50,0,0,19,150,90,,,,,"5,5",,"Kapikulu",5,"1,2","Heavy Infantry",
+"OTTO+13","Kapikulu Artillery",3,1,,,,,5,15,80,0.25,17,150,90,"M14,5",,,,"15,4",,"Kapikulu",5,6,"Artillery",
+"OTTO+14","Silahdar Cavalry",4,1,,,,,50,50,0,0,19,180,100,,,,,"5,5","2,3,7","Silahdar Cavalry",5,"1,3,4","Heavy Cavalry",
+"OTTO+15","Silahdar Infantry",4,1,,,,,55,45,0,0,19,180,100,,,,,"5,5",,"Silahdar Infantry",5,"1,2","Heavy Infantry",
+"OTTO+16","Topçu Ocağı",2,1,,,,,5,20,75,0,17,100,65,"M14,3",,,,"15,3","81,8,20","Ottoman Cannon",5,6,"Artillery",
+"OTTO+17","Azap Conscript",1,1,,,,,60,40,0,0,19,100,50,,,,,"15,3",,"Azap",5,1,"Light Infantry",
+"OTTO+18","Azap Skirmisher",1,1,,,,,30,30,40,0,19,100,50,,,,,"15,3",,"Azap",5,3,"Light Infantry",
+"EMER+1","Renaissance Crossbow Mercenary",10,1,,,,,15,25,60,0,19,130,40,"27,3",,"13,3",,"2,3",,"Renaissance Mercenary",15,3,"Light Infantry",
+"EMER+2","Renaissance Light Mercenary",10,1,,,,,55,45,0,0,19,130,40,"13,3","41,3",,,"2,3",,"Renaissance Mercenary",15,1,"Light Infantry",
+"EMER+3","Renaissance Heavy Mercenary",10,1,,,,,50,50,0,0,19,130,45,"14,3",,,,"12,2",,"Renaissance Mercenary",15,1,"Heavy Infantry",
+"EMER+4","Renaissance Arquebus Mercenary",10,1,,,,,20,30,50,0,19,130,40,,,,,"2,3",,"Renaissance Mercenary",15,3,"Light Infantry",
+"CRT+1","Croat",2,1,,,,,,,,,,,,,,,,,,,,,,
+"CRT+2","Croatian Arquebusier",1,1,,,,,,,,,,,,,,,,"21,3",,,,,,
+"CRT+3","Croatian Militia",1,1,,,,,,,,,,,,,,,,,,,,,,
+"CRT+4","Haramije",,1,,,,,,,,,,,,,,,,,,,,,,
+"CRT+5","Uskok",,1,,,,,,,,,,,,,,,,,,,,,,
+"BHM+1","Czech War Wagon",2,1,,,,,30,30,40,0,19,130,50,,,,,,,"Czech Renaissance Infantry",11,,"Chariot",
+"BHM+2","Czech Cannon Wagon",2,1,,,,,10,20,70,0,19,130,50,,,,,,,"Czech Renaissance Infantry",11,,"Artillery",
+"BHM+3","Czech Pikeman",1,1,,,,,40,60,0,0,19,100,50,"16,3",,,,"12,2",,"Czech Renaissance Infantry",11,2,"Medium Infantry",
+"BHM+4","Czech Heavy Spearman",2,1,,,,,45,55,0,0,19,100,50,"6,3","44,3",,,"12,2",,"Czech Renaissance Infantry",11,2,"Heavy Infantry",
+"BHM+5","Czech Arquebusier",2,1,,,,,20,30,50,0,19,100,50,"34,3",,"5,3",,"5,3",,"Czech Renaissance Infantry",11,3,"Range Infantry",
+"BHM+6","Czech Pavise Crossbowman",2,1,,,,,20,30,50,0,19,100,50,"34,3",,"5,3",,"5,3",,"Czech Renaissance Infantry",11,3,"Range Infantry",
+"BHM+7","Czech Heavy Infantry",2,1,,,,,50,50,0,0,19,100,50,"15,3","44,3",,,"12,2",,"Czech Renaissance Infantry",11,2,"Heavy Infantry",
+"BHM+8","Czech Billman",1,1,,,,,60,40,0,0,19,100,50,,,,,,,"Czech Renaissance Infantry",11,,"Light Infantry",
+"BHM+9","Czech Spearman",1,1,,,,,50,50,0,0,19,100,50,,,,,,,"Czech Renaissance Infantry",11,,"Light Infantry",
+"BHM+10","Czech Crossbowman",1,1,,,,,10,20,70,0,19,100,50,,,,,,,"Czech Renaissance Infantry",11,,"Range Infantry",
+"BHM+11","Czech Knight",2,1,,,,,,,,,,,,,,,,,,"Czech Renaissance Knight",11,,,
+"BHM+12","Czech Militia",1,1,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,
+"TEST+1","Hamster Boy",4,1,,,,,2,3,8,0.5,19,150,150,"71,4",,,,"20,3",,"Hamster",,1,"Light Infantry",
+,,,,,,,,,,,,,,,,,,,,,,,,,
+"NW+1","Norwegian Huscarl",2,1,,,0,0,55,45,0,,,,,,,,,,,,,,,
+"NW+2","Norwegian Huscarl Bodyguard",4,1,,,0,0,50,50,0,,,,,,,,,,,,,,,
+"NW+3","Norwegian Berserker",2,1,,,,,,,,,,,,,,,,,,,,,,
+"NW+4","Norwegian Archer",1,1,,,,,,,,,,,,,,,,,,,,,,
+"NW+5","Norwegian Skirmisher",1,1,,,,,,,,,,,,,,,,,,,,,,
+"NW+6","Jomsviking Mercenary",10,1,,,,,,,,,,,,,,,,,,,,,,
+"NW+7","Norwegian Leidang",1,1,,,,,,,,,,,,,,,,,,,,,,
+"NW+8","Norwegian Mounted Huscarl",2,1,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,
+"SP+1","Sea People Raider",2,1,,,,,,,,,,,,,,,,,,,,,,
+"SP+2","Sea People Skirmisher",2,1,,,,,,,,,,,,,,,,,,,,,,
+"SP+3","Sea People Heavy Infantry",2,1,,,,,,,,,,,,,,,,,,,,,,
+"SP+4","Sea People Archer",2,1,,,,,,,,,,,,,,,,,,,,,,

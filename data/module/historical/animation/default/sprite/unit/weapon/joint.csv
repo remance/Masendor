@@ -1,0 +1,54 @@
+"Name","side"
+"Unarmed","center"
+"Sword","21,26"
+"Greatsword","30,40"
+"Shortsword","6,5"
+"Dagger","20,26"
+"Spear","21,60"
+"Club","18,28"
+"Mace","22,20"
+"Great Mace",
+"Flail",
+"Hammer","13,7"
+"War Hammer","16,11"
+"Handaxe","70,35"
+"Greataxe","58,60"
+"Halberd","16,12"
+"Pike","21,60"
+"Glaive",
+"Whip",
+"Quarterstaff","4,12"
+"Sling","25,105"
+"Blowgun",
+"Javelin","20,80"
+"Throwing Axe","60,28"
+"Longbow","32,36"
+"Shortbow","105,77"
+"Greatbow","32,73"
+"Light Crossbow","90,35"
+"Heavy Crossbow",
+"Repeater Crossbow",
+"Arbalest",
+"Stone","center"
+"Composite Bow","28,34"
+"Matchlock Musket","2,17"
+"Arquebus","2,17"
+"Blunderbuss","2,17"
+"Flintlock Musket","2,17"
+"Flintlock Pistol","2,13"
+"Matchlock Pistol","2,13"
+"Kite Shield","51,134"
+"Buckler","center"
+"Round Shield","center"
+"Tower Shield","center"
+"Heater Shield","59,78"
+"Pavise Shield","16,35"
+"Spiked Shield","center"
+"Bouche Shield","15,22"
+"Oval Shield","center"
+"Parry Dagger",
+"Parry Club",
+"Barrier Shield","center"
+"Lance","21,60"
+"Handgun","7,12"
+"Banner","21,60"

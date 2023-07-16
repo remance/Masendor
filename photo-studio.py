@@ -6,6 +6,8 @@ import configparser
 import pygame
 import screeninfo
 
+from pathlib import Path
+
 from engine.battlemap import battlemap
 from engine.game.game import Game
 from engine.data.datalocalisation import Localisation
@@ -14,6 +16,7 @@ from engine.camera import camera
 from engine.effect import effect
 from engine.data import datasprite, datamap
 from engine.uibattle import uibattle
+
 
 from engine.utility import csv_read, load_images, stat_convert
 from engine.battle.spawn_weather_matter import spawn_weather_matter
@@ -92,7 +95,7 @@ class Studio(Game):
     spawn_weather_matter = spawn_weather_matter
     create_troop_sprite_pool = create_troop_sprite_pool
 
-    def __init__(self, photo_size, map_name, battle_data_name, module, day_time, weather_event):
+    def __init__(self, photo_size, map_name, battle_data_name, module, art_style, day_time, weather_event):
         pygame.init()  # Initialize pygame
         self.screen_rect = pygame.Rect(0, 0, photo_size[0], photo_size[1])
         camera.Camera.screen_rect = self.screen_rect
@@ -100,11 +103,17 @@ class Studio(Game):
         self.best_depth = pygame.display.mode_ok(self.screen_rect.size, 0, 32)
         self.screen = pygame.display.set_mode(self.screen_rect.size, 0 | pygame.RESIZABLE, self.best_depth)
 
-        self.module_list = csv_read(data_dir, "module_list.csv", ("module",))  # get module list
-        self.module_folder = str(self.module_list[module][0]).strip("/")
-
         self.main_dir = main_dir
         self.data_dir = data_dir
+
+        part_folder = Path(os.path.join(self.data_dir, "module"))
+        self.module_list = {os.path.split(
+            os.sep.join(os.path.normpath(x).split(os.sep)))[-1]: x for x
+            in part_folder.iterdir() if x.is_dir()}  # get module list
+        if "tutorial" in self.module_list:
+            self.module_list.pop("tutorial")  # get tutorial module from list
+        self.module_folder = self.module_list[module]
+
         self.module_dir = os.path.join(data_dir, "module", self.module_folder)
 
         Game.main_dir = main_dir
@@ -114,19 +123,29 @@ class Studio(Game):
         Game.language = "en"
         self.localisation = Localisation()
         Game.localisation = self.localisation
+        Game.art_style_dir = os.path.join(self.module_dir, "animation", art_style)
         Game.font_dir = os.path.join(data_dir, "font")
         Game.ui_font = csv_read(self.module_dir, "ui_font.csv", ("ui",), header_key=True)
         for item in Game.ui_font:  # add ttf file extension for font data reading.
             Game.ui_font[item] = os.path.join(Game.font_dir, Game.ui_font[item]["Font"] + ".ttf")
 
+        part_folder = Path(os.path.join(self.module_dir, "animation"))
+        Game.art_style_list = {os.path.split(
+            os.sep.join(os.path.normpath(x).split(os.sep)))[-1]: x for x
+            in part_folder.iterdir() if x.is_dir()}  # get art style list
+        config.read_file(open(os.path.join(self.art_style_dir, "stat.ini")))  # read config file
+
+        self.design_sprite_size = (int(config["DEFAULT"]["design_sprite_width"]),
+                                   int(config["DEFAULT"]["design_sprite_height"]))
+
         self.troop_data, self.leader_data, self.faction_data = make_faction_troop_leader_data(self.module_dir,
                                                                                               self.screen_scale)
         self.battle_map_data = datamap.BattleMapData()
 
-        self.battle_base_map = battlemap.BaseMap(data_dir)  # create base terrain map
-        self.battle_feature_map = battlemap.FeatureMap(data_dir)  # create terrain feature map
+        self.battle_base_map = battlemap.BaseMap()  # create base terrain map
+        self.battle_feature_map = battlemap.FeatureMap()  # create terrain feature map
         self.battle_height_map = battlemap.HeightMap()  # create height map
-        self.battle_map = battlemap.FinalMap(data_dir, self.screen_scale, self.battle_height_map)
+        self.battle_map = battlemap.FinalMap(self.battle_height_map)
 
         self.battle_base_map.terrain_list = self.battle_map_data.terrain_list
         self.battle_base_map.terrain_colour = self.battle_map_data.terrain_colour
@@ -137,10 +156,6 @@ class Studio(Game):
         self.preset_map_data = self.battle_map_data.preset_map_data
 
         self.battle_map.battle_map_colour = self.battle_map_data.battle_map_colour
-        self.battle_map.texture_images = self.battle_map_data.map_texture
-        self.battle_map.load_texture_list = self.battle_map_data.texture_folder
-        self.battle_map.empty_texture = self.battle_map_data.empty_image
-        self.battle_map.camp_texture = self.battle_map_data.camp_image
 
         self.map_move_array = []
         self.map_def_array = []
@@ -199,11 +214,10 @@ class Studio(Game):
                                                weather_event[2], self.battle_map_data.weather_data)
 
         self.battle_map.change_map_stuff("effect", self.battle_map_data.weather_effect_images[self.current_weather.name][self.current_weather.level],
-                                         self.battle_map_data.day_effect_images[day_time])
+                                         self.battle_map.day_effect_images[day_time])
         self.weather_spawn_timer = 0
 
-        self.troop_animation = datasprite.TroopAnimationData(data_dir, self.module_dir,
-                                                             [str(self.troop_data.race_list[key]["Name"]) for key in
+        self.troop_animation = datasprite.TroopAnimationData([str(self.troop_data.race_list[key]["Name"]) for key in
                                                               self.troop_data.race_list], self.team_colour)
         self.unit_animation_data = self.troop_animation.unit_animation_data  # animation data pool
         self.body_sprite_pool = self.troop_animation.body_sprite_pool  # body sprite pool
@@ -221,7 +235,7 @@ class Studio(Game):
         effect.Effect.effect_animation_pool = self.effect_animation_pool
 
         self.battle_data = {}
-        with open(os.path.join(main_dir, "photo-studio", self.module_folder, battle_data_name + ".csv"), encoding="utf-8",
+        with open(os.path.join(main_dir, "photo-studio", module, battle_data_name + ".csv"), encoding="utf-8",
                   mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
@@ -360,11 +374,12 @@ screen_width = int(config["DEFAULT"]["screen_width"])
 screen_height = int(config["DEFAULT"]["screen_height"])
 photo_map = config["DEFAULT"]["map"]
 battle_data = config["DEFAULT"]["battle_data"]
-module = int(config["DEFAULT"]["module"])
+module = config["DEFAULT"]["module"]
+art_style = config["DEFAULT"]["art_style"]
 day_time = config["DEFAULT"]["day_time"]
 weather_type = int(config["DEFAULT"]["weather_type"])
 wind_direction = int(config["DEFAULT"]["wind_direction"])
 weather_strength = int(config["DEFAULT"]["weather_strength"])
 
-Studio((screen_width, screen_height), photo_map, battle_data, module, day_time,
+Studio((screen_width, screen_height), photo_map, battle_data, module, art_style, day_time,
        (weather_type, wind_direction, weather_strength))  # change screen width and height for custom screen size

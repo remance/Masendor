@@ -43,12 +43,12 @@ def die(self, how):
                     if this_unit.is_leader:  # leader follower
                         self.leader.alive_leader_follower.append(this_unit)
                         self.leader.find_formation_size(leader=True)
-                        self.leader.group_add_change = True
+                        self.leader.army_add_change = True
                     else:  # troop follower
                         this_unit.add_leader_buff()
                         self.leader.alive_troop_follower.append(this_unit)
                         self.leader.find_formation_size(troop=True)
-                        self.leader.troop_add_change = True  # new leader require formation change
+                        self.leader.group_add_change = True  # new leader require formation change
 
                 else:  # no higher leader to move, assign None
                     this_unit.leader = None

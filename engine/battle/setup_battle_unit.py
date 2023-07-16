@@ -37,7 +37,8 @@ def setup_battle_unit(self, team_unit_list, preview=None):
                 team_unit_list.add(PreviewUnit(data["Leader ID"], self.last_troop_game_id, data["ID"],
                                                data["Team"], data["POS"], data["Angle"], data["Start Health"],
                                                data["Start Stamina"], None,
-                                               self.faction_data.coa_list[self.leader_data.leader_list[data["Leader ID"]]["Faction"]]))
+                                               self.faction_data.coa_list[
+                                                   self.leader_data.leader_list[data["Leader ID"]]["Faction"]]))
             else:
                 leader = None
                 if data["Leader"] != 0 and leader_unit[data["Leader"]].team == data["Team"]:

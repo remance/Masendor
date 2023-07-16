@@ -1,3 +1,3 @@
-"ID","Name","Grade","Race","Trait","Skill","Cost","Upkeep","Melee Attack Scale","Defence Scale","Ranged Attack Scale","Ammunition Modifier","Charge Skill","Morale","Discipline","Mental","Primary Main Weapon","Primary Sub Weapon","Secondary Main Weapon","Secondary Sub Weapon","Armour","Mount","Sprite ID","Faction","Role","Troop Class","Tag"
-"NW+1.1","Norwegian Huscarl (NA)",2,1,,,0,0,55,45,0,,,,,,,,,,,,,,,,
-"NW+2.1","Norwegian Huscarl Bodyguard (NA)",4,1,,,0,0,50,50,0,,,,,,,,,,,,,,,,
+"ID","Name","Grade","Race","Trait","Skill","Cost","Upkeep","Melee Attack Scale","Defence Scale","Ranged Attack Scale","Ammunition Modifier","Charge Skill","Morale","Discipline","Primary Main Weapon","Primary Sub Weapon","Secondary Main Weapon","Secondary Sub Weapon","Armour","Mount","Sprite ID","Faction","Role","Troop Class","Tag"
+"NW+1.1","Norwegian Huscarl (NA)",2,1,,,0,0,55,45,0,,,,,,,,,,,,,,,
+"NW+2.1","Norwegian Huscarl Bodyguard (NA)",4,1,,,0,0,50,50,0,,,,,,,,,,,,,,,

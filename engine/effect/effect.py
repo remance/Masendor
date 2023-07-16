@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
 from math import cos, sin, radians
 from random import choice, uniform
+
 from pygame import sprite, mixer, Vector2
 
-from engine.utility import clean_object, set_rotate
 from engine.effect import adjust_sprite, cal_dmg, cal_charge_hit, cal_effect_hit, cal_melee_hit, cal_range_hit, \
     find_random_direction, hit_register, play_animation
+from engine.utility import clean_object, set_rotate
 
 
 class Effect(sprite.Sprite):
@@ -68,13 +69,12 @@ class Effect(sprite.Sprite):
         if effect_type:  # effect can have no sprite like charge
             if "Base Main" in sprite_name:  # range weapon that use weapon sprite as effect
                 weapon = int(sprite_name[-1])
-                sprite_name = sprite_name[:-1]
                 if self.attacker.weapon_version[self.attacker.equipped_weapon][weapon] in \
                         self.bullet_weapon_sprite_pool[effect_type]:
                     self.image = self.bullet_weapon_sprite_pool[effect_type][
-                        self.attacker.weapon_version[self.attacker.equipped_weapon][weapon]][sprite_name]
+                        self.attacker.weapon_version[self.attacker.equipped_weapon][weapon]]["Bullet"]
                 else:
-                    self.image = self.bullet_weapon_sprite_pool[effect_type]["common"][sprite_name]
+                    self.image = self.bullet_weapon_sprite_pool[effect_type]["common"]["Bullet"]
 
             else:
                 effect_name = "".join(sprite_name.split("_"))[-1]
@@ -149,7 +149,7 @@ class DamageEffect(ABC, Effect, sprite.Sprite):
         self.stamina_dmg_bonus = 0
         self.sprite_direction = ""
         self.attacker_sprite_direction = self.attacker.sprite_direction
-        self.already_hit = []  # list of unit already got hit by sprite for sprite with no duration
+        self.already_hit = {}  # dict of unit already got hit with time by sprite for sprite with no duration
 
         self.dmg = dmg
         self.deal_dmg = False
@@ -212,14 +212,12 @@ class MeleeDamageEffect(DamageEffect):
         if self.current_animation:  # play animation if any
             done, just_start = self.play_animation(0.05, dt, False)
 
-        for unit in self.attacker.near_enemy:  # collide check
-            this_unit = unit[0]
-            if this_unit.alive and this_unit.game_id not in self.already_hit and \
-                    this_unit.hitbox.rect.colliderect(self.rect):
-                self.hit_register(this_unit)
-                self.already_hit.append(this_unit.game_id)
-            if self.penetrate <= 0:
-                break  # use break for melee to last until animation done
+        hit_list = sprite.spritecollide(self, self.attacker.enemy_list, False)
+        if hit_list:
+            for unit in hit_list:  # collide check
+                self.hit_register(unit.attacker)
+                if self.penetrate <= 0:
+                    break  # use break for melee to last until animation done
 
         if done:
             self.reach_target()
@@ -237,6 +235,7 @@ class RangeDamageEffect(DamageEffect):
         else:  # use weapon image itself as bullet image
             effect_type = stat["Name"]
             sprite_name = "Base Main" + str(weapon)
+        sound_name = effect_type
 
         DamageEffect.__init__(self, attacker, weapon, dmg, penetrate, impact, stat, attack_type, Vector2(base_pos),
                               base_target, effect_type, sprite_name, angle, accuracy=accuracy, arc_shot=arc_shot,
@@ -245,43 +244,38 @@ class RangeDamageEffect(DamageEffect):
                               random_move=random_move, reach_effect=reach_effect, make_sound=False)
         self.repeat_animation = True
 
-        if sprite_name in self.sound_effect_pool:
+        self.speed = stat["Travel Speed"]  # bullet travel speed
+        if sound_name in self.sound_effect_pool:
             self.travel_sound_distance = stat["Bullet Sound Distance"]
             self.travel_shake_power = stat["Bullet Shake Power"]
-            self.sound_effect_name = choice(self.sound_effect_pool[sprite_name])
+            self.sound_effect_name = choice(self.sound_effect_pool[sound_name])
             self.sound_duration = mixer.Sound(self.sound_effect_name).get_length() * 1000 / self.speed
-            self.sound_timer = self.sound_duration / 1.5  # wait a bit before start playing
+            self.sound_timer = self.sound_duration
             self.travel_sound_distance_check = self.travel_sound_distance * 2
-
-        self.speed = stat["Travel Speed"]  # bullet travel speed
 
     def update(self, unit_list, dt):
         if self.sound_effect_name and self.sound_timer < self.sound_duration:
             self.sound_timer += dt
 
         if self.duration > 0:
-            self.timer += dt
             self.duration -= dt
-            if self.timer > 1:  # reset timer and list of unit already hit for attack with duration
-                self.timer -= 1
-                self.already_hit = []  # sprite can deal dmg to same unit only once every 1 second
 
         if self.current_animation:  # play animation if any
             self.play_animation(0.05, dt, False)
 
-        for unit in self.attacker.near_enemy:  # collide check
-            this_unit = unit[0]
-            if this_unit.alive and this_unit.game_id not in self.already_hit and this_unit.hitbox.rect.colliderect(
-                    self.rect):
-                if self.arc_shot:
-                    if self.distance_progress >= 100:  # arc shot only hit when reach target
-                        self.hit_register(this_unit)
-                        if self.penetrate <= 0:
-                            self.reach_target()
-                            return
-                else:
+        for key in tuple(self.already_hit.keys()):
+            self.already_hit[key] -= dt
+            if self.already_hit[key] <= 0:
+                self.already_hit.pop(key)
+
+        hit_list = sprite.spritecollide(self, self.attacker.enemy_list, False)
+        if hit_list and ((self.arc_shot and self.distance_progress >= 100) or not self.arc_shot):
+            for unit in hit_list:  # collide check
+                this_unit = unit.attacker
+                if this_unit.alive and this_unit not in self.already_hit:
                     self.hit_register(this_unit)
-                    self.already_hit.append(this_unit.game_id)
+                    if not self.arc_shot:
+                        self.already_hit[this_unit] = 1
                     if self.penetrate <= 0:
                         self.reach_target()
                         return
@@ -339,33 +333,42 @@ class RangeDamageEffect(DamageEffect):
 
 
 class ChargeDamageEffect(Effect):
-    def __init__(self, attacker, image):
+    def __init__(self, attacker):
         """Charge damage sprite, also served as hitbox for unit"""
         Effect.__init__(self, attacker, attacker.base_pos, None, None, None, layer=1, make_sound=False)
         self.aoe = 0
-        self.image = image
+        self.image = self.attacker.hitbox_image
+        self.image_charge = False
         self.attack_type = "charge"
+        self.already_hit = {}
         self.base_pos = self.attacker.base_pos  # always move along with attacker
-        self.already_hit = []
         self.rect = self.image.get_rect(center=self.base_pos)
 
     def update(self, unit_list, dt):
-        self.timer += dt
-        if self.timer > 1:  # reset timer and list of unit already hit
-            self.timer -= 1
-            self.already_hit = []  # sprite can deal dmg to same unit only once every 1 second
+        self.angle = self.attacker.angle
+        for key in tuple(self.already_hit.keys()):
+            self.already_hit[key] -= dt
+            if self.already_hit[key] <= 0:
+                self.already_hit.pop(key)
 
-        for unit in self.attacker.near_enemy:  # collide check
-            this_unit = unit[0]
-            hit_angle = self.set_rotate(this_unit.base_pos)
-            if this_unit.hitbox.rect.colliderect(self.rect):  # TODO change this later to check for hitbox size
-                if abs(hit_angle - self.attacker.angle) <= 45 and this_unit.alive and \
-                        this_unit.game_id not in self.already_hit:
-                    # Charge damage only hit those at front of charger
-                    self.hit_register(this_unit)
-                    self.already_hit.append(this_unit.game_id)
-            else:
-                break
+        if self.attacker.momentum == 1:
+            if not self.image_charge:
+                self.image_charge = True
+                self.image = self.attacker.hitbox_image_charge
+            hit_list = sprite.spritecollide(self, self.attacker.enemy_list, False)
+            if hit_list:
+                for unit in hit_list:  # collide check
+                    this_unit = unit.attacker
+                    hit_angle = self.set_rotate(this_unit.base_pos)
+                    if this_unit.alive and abs(hit_angle - self.angle) <= 45 and \
+                            this_unit not in self.already_hit:
+                        # Charge damage only hit those at front of charger
+                        self.hit_register(this_unit)
+                        self.already_hit[this_unit] = 1
+        else:  # no longer charging check hitbox image change back to normal
+            if self.image_charge:
+                self.image_charge = False
+                self.image = self.attacker.hitbox_image
 
 
 class EffectDamageEffect(DamageEffect):
@@ -385,7 +388,7 @@ class EffectDamageEffect(DamageEffect):
             self.travel_shake_power = stat["Shake Power"]
             self.sound_effect_name = choice(self.sound_effect_pool[weapon])
             self.sound_duration = mixer.Sound(self.sound_effect_name).get_length()
-            self.sound_timer = self.sound_duration / 1.5  # wait a bit before start playing
+            self.sound_timer = self.sound_duration
             self.travel_sound_distance_check = self.travel_sound_distance * 2
             if self.sound_duration > 2:
                 self.sound_timer = self.sound_duration / 0.5
@@ -400,6 +403,11 @@ class EffectDamageEffect(DamageEffect):
             self.sound_timer += dt
 
         self.timer += dt
+        for key in tuple(self.already_hit.keys()):
+            self.already_hit[key] -= dt
+            if self.already_hit[key] <= 0:
+                self.already_hit.pop(key)
+
         if self.timer > 1:  # reset timer
             if self.wind_disperse:
                 self.speed = self.battle.current_weather.wind_strength
@@ -410,15 +418,16 @@ class EffectDamageEffect(DamageEffect):
                 self.duration -= self.speed
             if self.duration > 0:  # only clear for sprite with duration or charge
                 self.duration -= self.timer
-                self.already_hit = []  # sprite can deal dmg to same unit only once every 1 second
             self.timer -= 1
 
         if self.current_animation:  # play animation if any
             done, just_start = self.play_animation(0.05, dt, False)
 
+        if not self.aoe:
+            hit_list = sprite.spritecollide(self, unit_list, False)
         for this_unit in unit_list:
-            if this_unit.game_id not in self.already_hit and \
-                    ((self.aoe == 0 and this_unit.hitbox.rect.colliderect(self.rect)) or
+            if this_unit not in self.already_hit and \
+                    ((not self.aoe and this_unit.hitbox in hit_list) or
                      (self.aoe and this_unit.base_pos.distance_to(self.base_pos) <= self.aoe)):
                 this_unit.apply_effect(self.weapon, self.stat, this_unit.status_effect, this_unit.status_duration)
                 if self.stat["Status"]:
@@ -427,7 +436,7 @@ class EffectDamageEffect(DamageEffect):
                                                this_unit.status_effect, this_unit.status_duration)
                 if self.dmg:
                     self.hit_register(this_unit)
-                self.already_hit.append(this_unit.game_id)
+                self.already_hit[this_unit] = 1
 
         if self.full_distance:  # damage sprite that can move
             move = self.base_target - self.base_pos

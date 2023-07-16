@@ -1,8 +1,8 @@
 import csv
 import datetime
+import hashlib
 import os
 import re
-import hashlib
 from ast import literal_eval
 from inspect import stack
 from math import cos, sin, atan2, degrees, radians
@@ -10,12 +10,10 @@ from pathlib import Path
 
 import pygame
 import pygame.freetype
-
+from PIL import Image, ImageOps
 from pygame import Vector2, Color, Surface
 from pygame.mixer import Sound
 from pygame.transform import smoothscale
-
-from PIL import Image, ImageOps
 
 accept_image_types = ("png", "jpg", "jpeg", "svg", "gif", "bmp")
 direction_angle = {"r_side": radians(90), "l_side": radians(270), "back": radians(180),
@@ -74,13 +72,14 @@ def keyboard_mouse_press_check(button_type, button, is_button_just_down, is_butt
     return is_button_just_down, is_button_down, is_button_just_up
 
 
-def load_image(directory, screen_scale, file, subfolder=""):
+def load_image(directory, screen_scale, file, subfolder="", no_alpha=False):
     """
     loads an image and prepares it for game
     :param directory: Directory folder path
     :param screen_scale: Resolution scale of game
     :param file: File name
     :param subfolder: List of sub1_folder path
+    :param no_alpha: Indicate if surface require alpha or not
     :return: Pygame Surface
     """
     new_subfolder = subfolder
@@ -89,14 +88,18 @@ def load_image(directory, screen_scale, file, subfolder=""):
         for folder in subfolder:
             new_subfolder = os.path.join(new_subfolder, folder)
     this_file = os.path.join(directory, new_subfolder, file)
-    surface = pygame.image.load(this_file).convert_alpha()
-    surface = smoothscale(surface, (surface.get_width() * screen_scale[0],
-                                    surface.get_height() * screen_scale[1]))
+    if not no_alpha:
+        surface = pygame.image.load(this_file).convert_alpha()
+    else:
+        surface = pygame.image.load(this_file).convert()
+    if screen_scale[0] != 1 and screen_scale[1] != 1:  # scale to screen scale
+        surface = smoothscale(surface, (surface.get_width() * screen_scale[0],
+                                        surface.get_height() * screen_scale[1]))
     return surface
 
 
 def load_images(directory, screen_scale=(1, 1), subfolder=(), load_order=False, return_order=False,
-                key_file_name_readable=False):
+                key_file_name_readable=False, no_alpha=False):
     """
     loads all images(only png files) in folder
     :param directory: Directory folder path
@@ -105,6 +108,7 @@ def load_images(directory, screen_scale=(1, 1), subfolder=(), load_order=False, 
     :param load_order: Using loadorder list file to create ordered list
     :param return_order: Return the order
     :param key_file_name_readable: Convert key name from file name into data readable
+    :param no_alpha: Indicate if all loaded surfaces require alpha or not
     :return: Dict of loaded and scaled images as Pygame Surface
     """
     images = {}
@@ -130,7 +134,7 @@ def load_images(directory, screen_scale=(1, 1), subfolder=(), load_order=False, 
                 file_name = "".join(file_name)
             if key_file_name_readable:
                 file_name = filename_convert_readable(file_name)
-            images[file_name] = load_image(directory, screen_scale, file, subfolder=dir_path)
+            images[file_name] = load_image(directory, screen_scale, file, subfolder=dir_path, no_alpha=no_alpha)
 
         if return_order is False:
             return images
@@ -284,7 +288,7 @@ def make_long_text(surface, text, pos, font, color=Color("black")):
     for this_text in text:
         words = [word.split(" ") for word in str(this_text).splitlines()]  # 2D array where each row is a list of words
         space = font.size(" ")[0]  # the width of a space
-        max_width, max_height = surface.get_size()
+        max_width = surface.get_width()
         for line in words:
             for word in line:
                 word_surface = font.render(word, True, color)
@@ -425,13 +429,7 @@ def set_rotate(self, base_target, convert=True):
 
 def convert_degree_to_360(angle):
     """Convert math.degrees to 360 degree with 0 at the top"""
-    if angle > 0:
-        angle += 90
-    elif -180 <= angle < -90:
-        angle = 360 + angle
-    else:
-        angle = 90 + angle
-    return angle
+    return 360 - (angle % 360)
 
 
 def travel_to_map_border(pos, angle, map_size):
@@ -617,7 +615,7 @@ def number_to_minus_or_plus(number):
 
 
 def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tuple_column=(), int_column=(),
-                 float_column=(), dict_column=()):
+                 float_column=(), dict_column=(), str_column=()):
     """
     Convert string value to another type
     :param row: row that contains value
@@ -630,6 +628,7 @@ def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tu
     :param int_column: list of value header that should be in int number type
     :param float_column: list of value header that should be in float number type
     :param dict_column: list of value header that should be in dict type
+    :param dict_column: list of value header that should be in str type
     :return: converted row
     """
     if n in percent_column:
@@ -700,6 +699,8 @@ def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tu
             row[n] = result_i
         else:
             row[n] = {}
+    elif n in str_column:
+        row[n] = str(i)
 
     else:
         if i == "":

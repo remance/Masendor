@@ -7,8 +7,7 @@
 # (note that that user uses tostring, I think tobytes is better)
 
 import pickle
-import threading
-from time import sleep
+
 import pygame
 
 

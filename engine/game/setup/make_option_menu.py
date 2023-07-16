@@ -1,29 +1,27 @@
-from engine.uimenu.uimenu import MenuButton, TickBox, OptionMenuText, SliderMenu, ValueBox, ControllerIcon, KeybindIcon
+from engine.uimenu.uimenu import MenuButton, TickBox, OptionMenuText, TextBox, SliderMenu, ValueBox, \
+    ControllerIcon, KeybindIcon
 from engine.utility import load_image, load_images, make_bar_list
 
 
-def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_height, image_list,
-                     config, keybind, battle_select_image):
+def make_option_menu(profile_name, image_list, config, keybind, battle_select_image):
     """
     This method create UI in option menu and keybinding menu
-
-    :param main_dir: main directory
-    :param screen_scale:
-    :param screen_rect:
-    :param screen_width: width of game screen
-    :param screen_height: height of game screen
-    :param image_list:
-    :param updater:
-    :param config: config
-    :param keybind:
-    :param battle_select_image:
-    :return: dict of objects
     """
     # Create option menu button and icon
-    from engine.game import game
-    localisation = game.Game.localisation
-    resolution_list = game.Game.resolution_list
+    from engine.game.game import Game
+    module_dir = Game.module_dir
+    localisation = Game.localisation
+    resolution_list = Game.resolution_list
+    art_style = Game.art_style
+    screen_scale = Game.screen_scale
+    screen_rect = Game.screen_rect
+    art_style_list = Game.art_style_list
     font_size = int(32 * screen_scale[1])
+
+    # Profile box
+    profile_box_image = load_image(module_dir, screen_scale, "profile_box.png", ("ui", "mainmenu_ui"))
+    profile_box = TextBox(profile_box_image, (screen_rect.width, 0),
+                          profile_name)  # profile name box at top right of screen at option screen
 
     back_button = MenuButton(image_list, (screen_rect.width / 3, screen_rect.height / 1.2),
                              key_name="back_button")
@@ -34,16 +32,24 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
 
     fullscreen_box = TickBox((screen_rect.width / 2, screen_rect.height / 6.5),
                              battle_select_image["untick"], battle_select_image["tick"], "fullscreen")
+    fps_box = TickBox((screen_rect.width / 2, screen_rect.height / 10),
+                      battle_select_image["untick"], battle_select_image["tick"], "fps")
 
     if int(config["full_screen"]) == 1:
         fullscreen_box.change_tick(True)
+    if int(config["fps"]) == 1:
+        fps_box.change_tick(True)
+
+    fps_text = OptionMenuText(
+        (fps_box.pos[0] - (fps_box.pos[0] / 4.5), fps_box.pos[1]),
+        localisation.grab_text(key=("ui", "option_fps",)), font_size)
 
     fullscreen_text = OptionMenuText(
         (fullscreen_box.pos[0] - (fullscreen_box.pos[0] / 4.5), fullscreen_box.pos[1]),
         localisation.grab_text(key=("ui", "option_full_screen",)), font_size)
 
     # Volume change scroll bar
-    option_menu_images = load_images(main_dir, screen_scale=screen_scale, subfolder=("ui", "option_ui", "slider"))
+    option_menu_images = load_images(module_dir, screen_scale=screen_scale, subfolder=("ui", "option_ui", "slider"))
     scroller_images = (option_menu_images["scroller_box"], option_menu_images["scroller"])
     scroll_button_images = (option_menu_images["scroll_button_normal"], option_menu_images["scroll_button_click"])
     volume_slider = {"master": SliderMenu(scroller_images, scroll_button_images,
@@ -69,20 +75,30 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
                                         font_size) for key in volume_slider}
 
     # Resolution changing bar that fold out the list when clicked
-    image = load_image(main_dir, screen_scale, "drop_normal.jpg", ("ui", "mainmenu_ui"))
+    image = load_image(module_dir, screen_scale, "drop_normal.jpg", ("ui", "mainmenu_ui"))
     image2 = image
-    image3 = load_image(main_dir, screen_scale, "drop_click.jpg", ("ui", "mainmenu_ui"))
+    image3 = load_image(module_dir, screen_scale, "drop_click.jpg", ("ui", "mainmenu_ui"))
     image_list = [image, image2, image3]
     resolution_drop = MenuButton(image_list, (screen_rect.width / 2, screen_rect.height / 1.8),
-                                 key_name=str(screen_width) + " x " + str(screen_height),
+                                 key_name=str(screen_rect.width) + " x " + str(screen_rect.height),
                                  font_size=int(30 * screen_scale[1]))
 
-    resolution_bar = make_bar_list(main_dir, screen_scale, resolution_list, resolution_drop)
+    resolution_bar = make_bar_list(module_dir, screen_scale, resolution_list, resolution_drop)
 
     resolution_text = OptionMenuText((resolution_drop.pos[0] - (resolution_drop.pos[0] / 4.5),
                                       resolution_drop.pos[1]),
                                      localisation.grab_text(key=("ui", "option_display_resolution",)),
                                      font_size)
+
+    art_style_drop = MenuButton(image_list, (screen_rect.width / 2, screen_rect.height / 1.6),
+                                key_name=art_style,
+                                font_size=int(30 * screen_scale[1]))
+    art_style_bar = make_bar_list(module_dir, screen_scale, art_style_list, art_style_drop)
+
+    art_style_text = OptionMenuText((art_style_drop.pos[0] - (art_style_drop.pos[0] / 4.5),
+                                     art_style_drop.pos[1]),
+                                    localisation.grab_text(key=("ui", "option_art_style",)),
+                                    font_size)
 
     keybind_text = {"Main Weapon Attack": OptionMenuText((screen_rect.width / 4, screen_rect.height / 5),
                                                          localisation.grab_text(
@@ -126,7 +142,7 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
     control_type = "keyboard"  # make default keyboard for now, get changed later when player enter keybind menu
     keybind = keybind[control_type]
 
-    control_images = load_images(main_dir, screen_scale=screen_scale, subfolder=("ui", "option_ui"))
+    control_images = load_images(module_dir, screen_scale=screen_scale, subfolder=("ui", "option_ui"))
     control_switch = ControllerIcon((screen_rect.width / 2, screen_rect.height * 0.1),
                                     control_images, control_type)
 
@@ -171,9 +187,12 @@ def make_option_menu(main_dir, screen_scale, screen_rect, screen_width, screen_h
                                              font_size, control_type,
                                              keybind["Auto Move"])}
 
-    return {"back_button": back_button, "keybind_button": keybind_button, "default_button": default_button,
-            "resolution_drop": resolution_drop,
-            "resolution_bar": resolution_bar, "resolution_text": resolution_text, "volume_sliders": volume_slider,
+    return {"profile_box": profile_box, "back_button": back_button, "keybind_button": keybind_button,
+            "default_button": default_button, "resolution_drop": resolution_drop,
+            "resolution_bar": resolution_bar, "resolution_text": resolution_text,
+            "art_style_drop": art_style_drop,
+            "art_style_bar": art_style_bar, "art_style_text": art_style_text, "volume_sliders": volume_slider,
             "value_boxes": value_box, "volume_texts": volume_texts, "fullscreen_box": fullscreen_box,
-            "fullscreen_text": fullscreen_text, "keybind_text": keybind_text, "keybind_icon": keybind_icon,
+            "fullscreen_text": fullscreen_text, "fps_box": fps_box,
+            "fps_text": fps_text, "keybind_text": keybind_text, "keybind_icon": keybind_icon,
             "control_switch": control_switch}

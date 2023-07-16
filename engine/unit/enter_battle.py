@@ -3,12 +3,21 @@ def enter_battle(self, animation_pool, status_animation_pool):
     if self.team in self.battle.camp_pos:
         self.camp_pos = [item[0] for item in self.battle.camp_pos[self.team]]
         self.camp_radius = [item[1] for item in self.battle.camp_pos[self.team]]
+        self.camp_enemy_check = self.battle.camp_enemy_check[self.team]
+
+    self.enemy_camp_pos = {team: [item[0] for item in value] for team, value in self.battle.camp_pos.items() if
+                           team != self.team}
+    self.enemy_camp_radius = {team: [item[1] for item in value] for team, value in self.battle.camp_pos.items() if
+                              team != self.team}
 
     self.terrain, self.feature = self.get_feature(self.base_pos,
                                                   self.base_map)  # Get new terrain and feature at each unit position
     self.height = self.get_height(self.base_pos)  # Current terrain height
 
-    self.status_animation_pool = status_animation_pool[self.troop_size / 10]
+    body_size = int(self.body_size / 10)
+    if body_size < 1:
+        body_size = 1
+    self.status_animation_pool = status_animation_pool[body_size]
 
     layer = round(self.base_pos[0] + (self.base_pos[1] * 10), 0)  # change layer
     if layer < 0:
@@ -38,11 +47,13 @@ def enter_battle(self, animation_pool, status_animation_pool):
     self.battle.all_team_unit[self.team].add(self)
     for team in self.battle.all_team_enemy:
         if team != self.team:
-            self.battle.all_team_enemy[team].add(self)
+            self.battle.all_team_enemy[team].add(self.hitbox)
     self.battle.team_troop_number[self.team] += 1
     self.battle.start_troop_number[self.team] += 1
 
     self.status_update()
+
+    self.hitbox.rect.center = self.pos  # reset hitbox pos
 
     # Grab only animation sprite that the unit can use
     self.animation_pool = animation_pool[self.sprite_id][self.race_name][self.mount_race_name][self.armour_id][

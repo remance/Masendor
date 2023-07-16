@@ -40,14 +40,17 @@ def change_battle_source(self):
     # Reset character selection UI
     self.unit_select_row = 0
 
-    for icon in self.preview_unit:
+    self.unit_selected = None  # reset unit selected
+    self.unit_model_room.add_preview_model()
+
+    for icon in self.preview_units:
         icon.kill()
-    self.preview_unit.empty()
+    self.preview_units.empty()
 
-    self.preview_unit.add(TempUnitIcon(self.team_selected, "None", "None", None))
-    self.setup_battle_unit(self.preview_unit, preview=self.team_selected)
+    self.preview_units.add(TempUnitIcon(self.team_selected, "None", "None", None))
+    self.setup_battle_unit(self.preview_units, preview=self.team_selected)
 
-    self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
+    self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_units)
 
     team_coa = []
     for key2 in self.play_map_data["source"][self.map_source_selected]:
@@ -57,8 +60,9 @@ def change_battle_source(self):
                     self.play_map_data["source"][self.map_source_selected][key2]]
             elif type(self.play_map_data["source"][self.map_source_selected][key2]) == str:
                 self.play_map_data["source"][self.map_source_selected][key2] = [int(item) for item in
-                                                                                self.play_map_data["source"][self.map_source_selected][
-                                                                           key2].split(",")]
+                                                                                self.play_map_data["source"][
+                                                                                    self.map_source_selected][
+                                                                                    key2].split(",")]
             team_coa.append(self.play_map_data["source"][self.map_source_selected][key2])
     self.create_team_coa(team_coa)
 

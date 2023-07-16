@@ -2,6 +2,8 @@ from math import cos, sin, radians
 
 from pygame import Vector2
 
+from engine.uibattle.uibattle import AimTarget
+
 
 def player_aim(self):
     """
@@ -11,7 +13,7 @@ def player_aim(self):
     shoot_ready = [0, 0]
     has_ammo = [0, 0]
     shoot_ready_list = [[], []]
-    self.add_ui_updater(self.text_popup)
+    self.realtime_ui_updater.add(self.text_popup)
     base_target_pos = self.command_cursor_pos
     target_pos = self.base_cursor_pos
 
@@ -43,24 +45,31 @@ def player_aim(self):
                         if this_unit.ammo_now[this_unit.equipped_weapon][weapon] > 0 and \
                                 this_unit.shoot_range[weapon] >= this_unit.base_pos.distance_to(
                             base_target_pos) and \
-                                ((this_unit.move_speed and this_unit.shoot_while_moving and
-                                  not this_unit.check_special_effect("Stationary", weapon=weapon)) or
-                                 not this_unit.move_speed):
+                                ((not this_unit.move_speed or
+                                  (this_unit.move_speed and this_unit.shoot_while_moving and
+                                   not this_unit.check_special_effect("Stationary", weapon=weapon)
+                                   and "charge" not in this_unit.current_action))
+                                ):
                             shoot_ready_list[weapon].append(this_unit)
                             shoot_ready[weapon] += 1
                             can_shoot[weapon] = True
 
         if True in can_shoot:
-            if this_unit.shoot_line not in self.battle_camera:  # add back shoot line
+            if this_unit.shoot_line:
+                if this_unit.shoot_line not in self.battle_camera:  # add back shoot line
+                    self.battle_camera.add(this_unit.shoot_line)
+                this_unit.shoot_line.update(base_target_pos, target_pos, can_shoot)
+            else:
+                AimTarget(this_unit)
                 self.battle_camera.add(this_unit.shoot_line)
-            this_unit.shoot_line.update(base_target_pos, target_pos, can_shoot)
+                this_unit.shoot_line.update(base_target_pos, target_pos, can_shoot)
         else:  # no weapon in current equipped weapon set
             if this_unit.shoot_line in self.battle_camera:  # remove shoot line
                 self.battle_camera.remove(this_unit.shoot_line)
 
         shoot_text = str(shoot_ready[0]) + "/" + str(has_ammo[0]) + ", " + str(shoot_ready[1]) + "/" + str(has_ammo[1])
 
-    self.text_popup.popup(self.player1_battle_cursor.rect, shoot_text)
+    self.text_popup.popup(self.player1_battle_cursor.rect, shoot_text, custom_screen_size=self.battle_camera_size)
 
     if self.player1_key_press["Order Menu"] or not self.player_unit.alive:
         # Cancel manual aim with order menu input or player die
@@ -72,7 +81,7 @@ def player_aim(self):
             weapon = 1
         if shoot_ready[weapon] > 0:
             for this_unit in shoot_ready_list[weapon]:
-                if "movable" in this_unit.current_action and "charge" not in this_unit.current_action:
+                if this_unit.move_speed:
                     # shoot while moving
                     this_unit.show_frame = 0  # just restart frame
                     if "walk" in this_unit.current_action:
@@ -86,4 +95,4 @@ def player_aim(self):
 
     else:
         self.camera_process()
-        self.player_unit.player_input(self.command_cursor_pos)
+        # self.player_unit.player_input(self.command_cursor_pos)

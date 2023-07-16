@@ -15,4 +15,5 @@ def rotate_logic(self, *args):
         self.sprite_direction = rotation_dict[sprite_angle]  # find closest in list of rotation for sprite direction
         self.current_animation_direction = self.current_animation[self.sprite_direction]
         self.image = self.current_animation_direction[self.show_frame]["sprite"]
+
     self.make_front_pos()

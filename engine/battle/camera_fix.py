@@ -15,6 +15,6 @@ def camera_fix(self):
     self.camera_pos = Vector2(self.true_camera_pos * self.screen_scale[0],
                               self.true_camera_pos * self.screen_scale[1]) * 5
 
-    self.camera_topleft_corner = (self.camera_pos[0] - self.center_screen[0],
-                                  self.camera_pos[1] - self.center_screen[
+    self.camera_topleft_corner = (self.camera_pos[0] - self.battle_camera_center[0],
+                                  self.camera_pos[1] - self.battle_camera_center[
                                       1])  # calculate top left corner of camera position

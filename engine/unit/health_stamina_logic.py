@@ -16,5 +16,5 @@ def health_stamina_logic(self, dt):
             self.stamina += (self.stamina_regen * dt)  # regen
             if self.stamina < 0:
                 self.stamina = 0
-        else:  # stamina cannot exceed the max stamina
-            self.stamina = self.max_stamina
+            elif self.stamina > self.max_stamina:  # stamina cannot exceed the max stamina
+                self.stamina = self.max_stamina

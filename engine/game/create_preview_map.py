@@ -9,9 +9,12 @@ def create_preview_map(self):
     map_name = self.battle_map_folder[self.current_map_select]
 
     if self.menu_state == "preset_map":
-        self.map_title.change_name(self.localisation.grab_text(key=("preset_map", "info", self.campaign_selected, "Name")) +
-                                   " / " + self.localisation.grab_text(key=("preset_map", self.campaign_selected, "info", self.map_selected, "Name")) + " / " +
-                                   self.localisation.grab_text(key=("preset_map", self.campaign_selected, self.map_selected, "source", self.map_source_selected, "Source")))
+        self.map_title.change_name(
+            self.localisation.grab_text(key=("preset_map", "info", self.campaign_selected, "Name")) +
+            " / " + self.localisation.grab_text(
+                key=("preset_map", self.campaign_selected, "info", self.map_selected, "Name")) + " / " +
+            self.localisation.grab_text(key=(
+            "preset_map", self.campaign_selected, self.map_selected, "source", self.map_source_selected, "Source")))
 
     else:
         if map_name in self.preset_map_folder:
@@ -29,7 +32,7 @@ def create_preview_map(self):
             else:  # random map grab name from ui
                 self.map_title.change_name(
                     self.localisation.grab_text(key=("ui", "custom_map")) +
-                    " / " + self.localisation.grab_text( self.localisation.grab_text(key=("ui", "random"))))
+                    " / " + self.localisation.grab_text(self.localisation.grab_text(key=("ui", "random"))))
 
     if map_name != "Random":
         if map_name in self.preset_map_folder:

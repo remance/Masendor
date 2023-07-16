@@ -10,12 +10,12 @@ def change_formation(self, which, formation=None):
     :param formation: Name of new formation, None mean use current one
     """
     consider_flank = [False, False]
-    if which == "troop":
+    if which == "group":
         if formation:
-            self.troop_formation = formation
+            self.group_formation = formation
         for leader in self.alive_leader_follower:  # leader follower change to match formation if can
             if formation in leader.formation_list:
-                leader.change_formation("troop", formation=formation)
+                leader.change_formation("group", formation=formation)
         if self.alive_troop_follower:
             for this_unit in self.alive_troop_follower:
                 if this_unit.unit_type < 2 and not consider_flank[0]:
@@ -29,17 +29,17 @@ def change_formation(self, which, formation=None):
             if False not in consider_flank:
                 self.formation_consider_flank = True
 
-            new_formation = self.all_formation_list[self.troop_formation].copy()
-            self.troop_formation_preset = convert_formation_preset(self.troop_follower_size, new_formation)
+            new_formation = self.all_formation_list[self.group_formation].copy()
+            self.group_formation_preset = convert_formation_preset(self.troop_follower_size, new_formation)
 
-    elif which == "group":
+    elif which == "army":
         if formation:
-            self.group_formation = formation
+            self.army_formation = formation
         if self.alive_leader_follower:
             for leader in self.alive_leader_follower:
-                if "cav" not in leader.troop_group_type and not consider_flank[0]:
+                if "cav" not in leader.group_type and not consider_flank[0]:
                     consider_flank[0] = True
-                elif "cav" in leader.troop_group_type and not consider_flank[0]:
+                elif "cav" in leader.group_type and not consider_flank[0]:
                     consider_flank[1] = True
                 if False not in consider_flank:
                     break
@@ -48,8 +48,8 @@ def change_formation(self, which, formation=None):
             if False not in consider_flank:
                 self.group_formation_consider_flank = True
 
-            new_formation = self.all_formation_list[self.group_formation].copy()
-            self.group_formation_preset = convert_formation_preset(self.leader_follower_size, new_formation)
+            new_formation = self.all_formation_list[self.army_formation].copy()
+            self.army_formation_preset = convert_formation_preset(self.leader_follower_size, new_formation)
 
     self.setup_formation(which)
 

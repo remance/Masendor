@@ -3,7 +3,7 @@ from engine.uibattle.uibattle import TempUnitIcon
 
 
 def menu_custom_map_select(self, esc_press):
-    if self.weather_list_box in self.main_ui_updater:
+    if self.weather_list_box in self.ui_updater:
         if not self.weather_list_box.mouse_over and self.cursor.is_select_just_up:  # click other stuffs
             self.remove_ui_updater(self.weather_list_box)
 
@@ -26,7 +26,8 @@ def menu_custom_map_select(self, esc_press):
         self.back_mainmenu()
 
     elif self.select_button.event:  # select this map and team list, go to unit setup screen
-        if len([coa for coa in self.team_coa if coa.name is not None and coa.name != "None"]) > 1:  # enough team to play
+        if len([coa for coa in self.team_coa if
+                coa.name is not None and coa.name != "None"]) > 1:  # enough team to play
             self.menu_state = "custom_unit_setup"
 
             self.add_ui_updater(self.custom_unit_list_box, self.troop_list_box, self.custom_unit_list_select)

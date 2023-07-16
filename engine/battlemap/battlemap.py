@@ -39,7 +39,7 @@ class BaseMap(BattleMap):
         self.max_map_array = (0, 0)
 
     def draw_image(self, image):
-        self.map_array = tuple([[tuple(col) for col in row] for row in pygame.surfarray.array3d(image).tolist()])
+        self.map_array = tuple([tuple([tuple(col) for col in row]) for row in pygame.surfarray.array3d(image).tolist()])
         self.max_map_array = (len(self.map_array) - 1, len(self.map_array[0]) - 1)
 
     def get_terrain(self, pos, debug=False):
@@ -64,7 +64,7 @@ class FeatureMap(BattleMap):
         self.max_map_array = (0, 0)
 
     def draw_image(self, image):
-        self.map_array = tuple([[tuple(col) for col in row] for row in pygame.surfarray.array3d(image).tolist()])
+        self.map_array = tuple([tuple([tuple(col) for col in row]) for row in pygame.surfarray.array3d(image).tolist()])
         self.max_map_array = (len(self.map_array) - 1, len(self.map_array[0]) - 1)
 
     def get_feature(self, pos, base_map, debug=False):
@@ -105,7 +105,8 @@ class HeightMap(BattleMap):
     def draw_image(self, image):
         self.image = image
         self.map_array = tuple(
-            [[col for col in row] for row in pygame.surfarray.pixels_green(self.get_grey_scaled_surface()).tolist()])
+            [tuple([col for col in row]) for row in
+             pygame.surfarray.pixels_green(self.get_grey_scaled_surface()).tolist()])
         self.max_map_array = (len(self.map_array) - 1, len(self.map_array[0]) - 1)
         self.topology_image = topology_map_creation(self.image, self.poster_level)
 
@@ -220,33 +221,44 @@ class FinalMap(BattleMap):
                 self.image.fill(new_colour, rect)
 
                 map_feature_mod = feature_map.feature_mod[feature]
-                speed_mod = int(map_feature_mod["Infantry Speed Modifier"] * 100)
-                def_mod = int(map_feature_mod["Infantry Melee Modifier"] * 100)
+                speed_mod = int(map_feature_mod["Infantry Speed Bonus"] * 100)
+                def_mod = int(map_feature_mod["Infantry Melee Bonus"] * 100)
                 speed_array.append(speed_mod)
                 def_array.append(def_mod)
-            self.map_move_array.append(speed_array)
-            self.map_def_array.append(def_array)
+            self.map_move_array.append(tuple(speed_array))
+            self.map_def_array.append(tuple(def_array))
 
+        self.map_move_array = tuple(self.map_move_array)
+        self.map_def_array = tuple(self.map_def_array)
         self.image.blit(self.height_map.get_battle_map_overlay(), (0, 0), special_flags=pygame.BLEND_RGB_ADD)
 
     def draw_image(self, base_map, feature_map, place_name, camp_pos, debug=False):
         self.image = pygame.Surface((len(base_map.map_array[0]), len(base_map.map_array)))
-        self.rect = self.image.get_rect(topleft=(0, 0))
 
         self.recolour_map_and_build_move_and_def_arrays(feature_map, base_map, debug=debug)
 
         # Blur map to make it look older
-        data = pygame.image.tostring(self.image, "RGB")  # convert image to string data for filtering effect
-        img = Image.frombytes("RGB", (self.image.get_width(), self.image.get_height()),
-                              data)  # use PIL to get image data
-        img = img.filter(ImageFilter.GaussianBlur(radius=2))  # blur Image (or apply other filter in future)
-        img = img.tobytes()
-        img = pygame.image.fromstring(img, (self.image.get_width(), self.image.get_height()),
-                                      "RGB")  # convert image back to a pygame surface
-        self.image = pygame.Surface(
-            (self.image.get_width(),
-             self.image.get_height()))  # using the above surface cause a lot of fps drop so make a new one and blit the above here
-        self.image.blit(img, (0, 0))
+        self.image = pygame.transform.gaussian_blur(self.image, radius=4)  # pygame.ce only, a bit faster
+        # data = pygame.image.tostring(self.image, "RGB")  # convert image to string data for filtering effect
+        # img = Image.frombytes("RGB", (self.image.get_width(), self.image.get_height()),
+        #                       data)  # use PIL to get image data
+        # img = img.filter(ImageFilter.GaussianBlur(radius=2))  # blur Image (or apply other filter in future)
+        # img = img.tobytes()
+        # img = pygame.image.fromstring(img, (self.image.get_width(), self.image.get_height()),
+        #                               "RGB")  # convert image back to a pygame surface
+        # self.image = pygame.Surface(
+        #     (self.image.get_width(),
+        #      self.image.get_height()))  # using the above surface cause a lot of fps drop so make a new one and blit the above here
+        # self.image.blit(img, (0, 0))
+
+        for team, pos_list in camp_pos.items():  # draw camp for mini map first
+            for pos in pos_list:
+                camp_texture = apply_sprite_colour(self.camp_texture.copy(), self.team_colour[team])
+                self.image.blit(camp_texture, camp_texture.get_rect(center=pos[0]))
+                pygame.draw.circle(self.image, self.team_colour[team], pos[0], pos[1], 10)
+
+        mini_map_size = (190 * self.screen_scale[0], 190 * self.screen_scale[1])  # default minimap size
+        self.mini_map_image = pygame.transform.smoothscale(self.image, (int(mini_map_size[0]), int(mini_map_size[1])))
 
         for row_pos in range(0, len(base_map.map_array)):
             for col_pos in range(0, len(base_map.map_array[0])):
@@ -257,21 +269,16 @@ class FinalMap(BattleMap):
                         self.load_texture_list.index(self.battle_map_colour[this_feature][0])]
 
                     choose = randint(0, len(feature) - 1)
-                    if randint(0, 100) < feature_map.feature_mod[this_feature]["Texture Density"]:
-                        this_texture = self.empty_texture  # empty texture
-                    else:
+                    if randint(0, 100) >= feature_map.feature_mod[this_feature]["Texture Density"]:
                         this_texture = feature[choose]
-                    rect = this_texture.get_rect(center=random_pos)
-                    self.image.blit(this_texture, rect)
+                        rect = this_texture.get_rect(center=random_pos)
+                        self.image.blit(this_texture, rect)
 
-        for team, pos_list in camp_pos.items():
+        for team, pos_list in camp_pos.items():  # redraw camp again so map texture not blocking its view
             for pos in pos_list:
                 camp_texture = apply_sprite_colour(self.camp_texture.copy(), self.team_colour[team])
                 self.image.blit(camp_texture, camp_texture.get_rect(center=pos[0]))
                 pygame.draw.circle(self.image, self.team_colour[team], pos[0], pos[1], 10)
-
-        size = (200 * self.screen_scale[0], 200 * self.screen_scale[1])  # default minimap size is 200 x 200
-        self.mini_map_image = pygame.transform.smoothscale(self.image, (int(size[0]), int(size[1])))
 
         if place_name:
             self.image.blit(place_name, (0, 0))
@@ -279,6 +286,7 @@ class FinalMap(BattleMap):
         self.image = pygame.transform.smoothscale(self.image, (self.image.get_width() * self.screen_scale[0] * 5,
                                                                self.image.get_height() * self.screen_scale[1] * 5))
 
+        self.rect = self.image.get_rect(topleft=(0, 0))
         self.true_image = self.image.copy()
 
     def change_map_stuff(self, which, *args):
@@ -320,6 +328,8 @@ class FinalMap(BattleMap):
         self.image = None
         self.base_image = None
         self.true_image = None
+        self.map_move_array = []
+        self.map_def_array = []
 
 
 def topology_map_creation(image, poster_level):

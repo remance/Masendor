@@ -20,6 +20,7 @@ def pick_animation(self):
             animation_name = equip_set[weapon] + "_Charge"
         else:
             animation_name = self.current_action["name"]
+
     else:  # idle animation
         animation_name = "Idle"
 
@@ -43,7 +44,5 @@ def pick_animation(self):
     self.rect = self.image.get_rect(center=self.offset_pos)
 
     self.animation_play_time = self.default_animation_play_time  # get new play speed
-    if "play_time_mod" in self.current_animation[self.show_frame]["frame_property"]:
-        self.animation_play_time *= self.current_animation[self.show_frame]["frame_property"]["play_time_mod"]
-    elif "play_time_mod" in self.current_animation[self.show_frame]["animation_property"]:
-        self.animation_play_time *= self.current_animation[self.show_frame]["animation_property"]["play_time_mod"]
+    if "play_time_mod" in self.current_animation[self.show_frame]["property"]:
+        self.animation_play_time *= self.current_animation[self.show_frame]["property"]["play_time_mod"]

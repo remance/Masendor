@@ -42,7 +42,7 @@ def cal_dmg(self, target, hit, defence, weapon, hit_side=None):
                 if self.attacker.charge_def > 0:  # add charge def as additional dmg modifier
                     troop_dmg += troop_dmg * self.attacker.charge_def / 100
 
-        troop_dmg *= hit_score
+    troop_dmg *= hit_score
 
     if hit_score < 0.2:  # reduce impact for low hit score
         impact /= 2
@@ -67,15 +67,14 @@ def cal_dmg(self, target, hit, defence, weapon, hit_side=None):
 
 
 def cal_hit_score(self, hit, defence):
-    hit_chance = hit - defence
-    if hit_chance < 0:
-        hit_chance = 0
-    elif hit_chance > 80:  # Critical hit
-        hit_chance *= self.attacker.crit_effect  # modify with crit effect further
-        if hit_chance > 200:
-            hit_chance = 200
+    """Calculate hit score that affect percentage of damage dealt"""
+    hit_score = hit - defence
+    if hit_score > 100:  # critical hit
+        if hit_score > 150:  # cap at 150, only way to increase further is via crit_effect
+            hit_score = 150
+        hit_score += self.attacker.crit_effect
 
-    hit_score = round(hit_chance / 100, 1)
+    hit_score = round(hit_score / 100, 1)
     if hit_score <= 0:  # scrape instead of no damage
         hit_score = 0.1
     return hit_score
@@ -94,6 +93,10 @@ def cal_dmg_penetrate(self, target, reduce_penetrate=True):
             element_effect[key] = value / 10
         if reduce_penetrate:
             self.penetrate -= target.element_resistance[key]
+    if reduce_penetrate:
+        self.penetrate -= target.troop_mass
+    troop_dmg *= self.attacker.weapon_dmg_modifier
+
     return troop_dmg, element_effect
 
 
@@ -103,7 +106,7 @@ def cal_charge_dmg(self, target, hit_side):
         dmg = {key: value[0] for key, value in self.attacker.weapon_dmg[weapon].items() if value[0]}
         impact = self.attacker.weapon_impact[self.attacker.equipped_weapon][weapon]
         penetrate = self.attacker.weapon_penetrate[self.attacker.equipped_weapon][weapon]
-    else:  # charge without using weapon (by running)
+    else:  # charge without using weapon (by running at full momentum)
         weapon = None
         dmg = self.attacker.body_weapon_damage
         impact = self.attacker.body_weapon_impact
@@ -119,36 +122,46 @@ def cal_charge_dmg(self, target, hit_side):
         else:
             troop_dmg += value
             element_effect[key] = value / 10
+    troop_dmg *= self.attacker.weapon_dmg_modifier
 
-    charge_power = (self.attacker.charge + self.attacker.speed) * self.attacker.momentum
-    if charge_power:
-        if not self.attacker.check_special_effect("Ignore Charge Defence",
-                                                  weapon=weapon):
-            side_cal = combat_side_cal[hit_side]
-            if target.check_special_effect("All Side Full Defence"):  # defence all side
+    charge_power = self.attacker.charge + self.attacker.move_speed
+    if not self.attacker.check_special_effect("Ignore Charge Defence", weapon=weapon):
+        side_cal = combat_side_cal[hit_side]
+        if target.momentum == 1:  # defender also charging use, their charge stat instead of defence for difference
+            if side_cal == 1:  # only check for frontal collide
+                charge_power_diff = charge_power - (target.charge + target.move_speed)
+            else:
+                charge_power_diff = charge_power
+        else:  # defender not charging, use charge defence
+            if target.check_special_effect("All Side Full Defence"):  # max defence for all side
                 side_cal = 1
             target_charge_def = target.charge_def * side_cal
+            if target.move_speed:  # movement reduce charge def
+                target_charge_def /= 3
+
             charge_power_diff = charge_power - target_charge_def
-            if charge_power_diff > 0:
-                troop_dmg += troop_dmg * charge_power_diff / 100
-                impact *= charge_power_diff / 100
-            else:  # enemy charge def is higher
-                troop_dmg = 0
-                impact = 0
-                self.attacker.interrupt_animation = True
-                self.attacker.command_action = self.attacker.damaged_command_action
-                self.attacker.momentum = 0
-                self.attacker.forced_target = Vector2(
-                    self.attacker.base_pos[0] - (5 * sin(radians(self.attacker.angle))),
-                    self.attacker.base_pos[1] - (5 * cos(radians(self.attacker.angle))))
 
-                self.attacker.battle.add_sound_effect_queue(self.attacker.sound_effect_pool["Damaged"][0],
-                                                            self.attacker.base_pos,
-                                                            self.attacker.dmg_sound_distance,
-                                                            self.attacker.dmg_sound_shake,
-                                                            volume_mod=self.attacker.hit_volume_mod)
+        if charge_power_diff > 0:
+            troop_dmg += troop_dmg * charge_power_diff / 100
+            impact *= charge_power_diff / 100
+        else:  # enemy charge def is higher
+            troop_dmg = 0
+            impact = 0
+            self.attacker.interrupt_animation = True
+            self.attacker.command_action = self.attacker.damaged_command_action
+            self.attacker.momentum = 0
+            self.attacker.forced_target = Vector2(
+                self.attacker.base_pos[0] + (5 * sin(radians(self.attacker.angle))),
+                self.attacker.base_pos[1] + (5 * cos(radians(self.attacker.angle))))
 
-        else:  # ignore charge defence if have trait
-            troop_dmg += troop_dmg * self.charge_power / 100
+            self.attacker.battle.add_sound_effect_queue(self.attacker.sound_effect_pool["Damaged"][0],
+                                                        self.attacker.base_pos,
+                                                        self.attacker.dmg_sound_distance,
+                                                        self.attacker.dmg_sound_shake,
+                                                        volume_mod=self.attacker.hit_volume_mod)
+
+    else:  # ignore charge defence if have trait
+        troop_dmg += charge_power
+    # print(charge_power, charge_power_diff, side_cal, troop_dmg, self.attacker.name, target.name)
 
     return troop_dmg, element_effect, impact

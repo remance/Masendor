@@ -6,7 +6,7 @@
 
 # Educational and historical battle simulation made with [Pygame](https://github.com/pygame/pygame).
 
-There is no main name for the game but rather the name will be based on a major update.
+There is no main name for the game yet but rather the name will be based on a major update.
 
 For any suggestions or bugs, feel free to report them in the [**Issues**](https://github.com/remance/Masendor/issues)
 page.
@@ -106,7 +106,7 @@ huge size battle)
 
 ![alt text](https://github.com/remance/preview/blob/main/preview.png?raw=true)
 
-Reworking game code structure and menu interface.
+Add new game art style and system that allow player to select available styles.
 
 ---------------
 
@@ -186,9 +186,7 @@ Photo studio to make battle screen to your liking. Simply add subunit and effect
 
 # Credit
 
-## Programming
-
-### coppermouse (https://github.com/coppermouse)
+[//]: # (## Programming)
 
 ## Tool
 
@@ -222,6 +220,7 @@ Photo studio to make battle screen to your liking. Simply add subunit and effect
 - Warhorn "Battle horn 1" by kirmm (https://pixabay.com/sound-effects/battle-horn-1-6931/)
 - Bow drawing "SHOOTING_ARROW_SINGLE_ARCHERY_FOLEY_02" by JoeDinesSound (https://freesound.org/people/JoeDinesSound/)
 - Bow drawing "Regular Arrow Shot distant target" by brendan89 (https://freesound.org/people/brendan89/)
+- Javelin, throwing axe, stone sound effect by freeSFX (https://freesfx.co.uk/)
 - Crossbow shot "bow02" by Erdie (https://freesound.org/people/Erdie/)
 - Crossbow shot "Crossbow Firing and Hitting Target" by Ali_6868 (https://freesound.org/people/Ali_6868/)
 - Heavy damaged "Blam" by Loghome72 (https://freesound.org/people/Loghome72/)
@@ -237,6 +236,7 @@ Photo studio to make battle screen to your liking. Simply add subunit and effect
 
 ## Help with game coding and bugs fixed:
 
+-  coppermouse (https://github.com/coppermouse)
 - shawarmaje
 - legotrainkid
 - Hamster_Lord

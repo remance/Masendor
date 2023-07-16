@@ -8,9 +8,9 @@ def menu_keybind(self, esc_press):
         self.back_button.event = False
 
         self.menu_state = "option"
-        self.remove_ui_updater(*self.keybind_text.values(), self.keybind_icon.values(), self.control_switch)
-        self.add_ui_updater(*self.option_menu_button, *self.option_menu_sliders.values(), *self.value_boxes.values())
-        self.add_ui_updater(*self.option_text_list)
+        self.remove_ui_updater(self.keybind_text.values(), self.keybind_icon.values(), self.control_switch)
+        self.add_ui_updater(self.option_menu_button, self.option_menu_sliders.values(), self.value_boxes.values())
+        self.add_ui_updater(self.option_text_list)
 
     elif self.default_button.event:  # revert all keybind to original
         self.default_button.event = False

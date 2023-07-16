@@ -3,8 +3,8 @@ from random import choice, uniform, randint
 
 from pygame import Vector2
 
-from engine.utility import convert_degree_to_360
 from engine.effect.effect import MeleeDamageEffect, RangeDamageEffect, EffectDamageEffect
+from engine.utility import convert_degree_to_360
 
 
 def attack(self, attack_type):
@@ -24,8 +24,6 @@ def attack(self, attack_type):
 
         if attack_type == "range":
             max_range = self.shoot_range[weapon]
-            if max_range <= 0:  # TODO Fix this bug
-                raise Exception((self.name, weapon, self.shoot_range, self.current_action, self.equipped_weapon))
 
             accuracy = self.accuracy
             sight_penalty = 1
@@ -52,8 +50,9 @@ def attack(self, attack_type):
 
             base_angle = self.set_rotate(base_target)
             # Wind affect accuracy, higher different in direction cause more accuracy loss
-            angel_dif = (abs(convert_degree_to_360(base_angle) -
-                             self.battle.current_weather.wind_direction) / 100) * self.battle.current_weather.wind_strength
+            angel_dif = ((180 - abs(abs(convert_degree_to_360(base_angle) -
+                                        self.battle.current_weather.wind_direction) - 180)) / 100) * \
+                        self.battle.current_weather.wind_strength
 
             angel_dif += angel_dif * attack_range / 100
             accuracy -= round(angel_dif)
@@ -108,10 +107,12 @@ def attack(self, attack_type):
                                   accuracy=accuracy, arc_shot=arc_shot,
                                   reach_effect=equipped_weapon_data[
                                       "After Reach Effect"])
+
             try:
                 self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
-            except KeyError:
-                raise Exception(self.name, weapon, self.equipped_weapon, self.current_action, self.ammo_now)
+            except:
+                print(self.equipped_weapon, weapon, self.current_action, self.ammo_now)
+                crash
 
             if self.ammo_now[self.equipped_weapon][weapon] == 0 and \
                     self.magazine_count[self.equipped_weapon][weapon] == 0:

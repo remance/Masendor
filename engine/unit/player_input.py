@@ -1,5 +1,4 @@
 from math import cos, sin, radians
-from random import choice, uniform, randint
 
 from pygame import Vector2
 
@@ -15,11 +14,11 @@ def player_input(self, cursor_pos):
             if self.battle.player_unit_input_delay == 0 and not self.current_action:  # for input that need to have time delay to work properly
                 if self.battle.player1_key_press[
                     "Swap Weapon Set 1"] and self.equipped_weapon != 0:  # Swap to primary weapon
-                    self.swap_weapon(0)
+                    self.command_action = self.swap_weapon_command_action[0]
                     self.battle.player_unit_input_delay = 1
                 elif self.battle.player1_key_press[
                     "Swap Weapon Set 2"] and self.equipped_weapon != 1:  # Swap to secondary weapon
-                    self.swap_weapon(1)
+                    self.command_action = self.swap_weapon_command_action[1]
                     self.battle.player_unit_input_delay = 1
                 elif self.battle.player1_key_press["Skill 1"]:  # Use input skill 1
                     self.command_action = self.skill_command_action_0
@@ -62,11 +61,10 @@ def player_input(self, cursor_pos):
                     if self.auto_move and new_pos == self.base_pos:  # auto move only if no move input
                         new_pos = Vector2(self.base_pos[0] - (speed * sin(radians(new_angle))),
                                           self.base_pos[1] - (speed * cos(radians(new_angle))))
-                    if not self.current_action:
+                    if not self.command_action:
                         self.command_action = self.walk_command_action
                         if run_input:
                             self.command_action = self.run_command_action
-                        self.move_speed = speed
                     elif "movable" in self.current_action and "weapon" not in self.current_action:
                         # Already walking or running but not attacking, replace current action with new one
                         if run_input:
@@ -77,7 +75,6 @@ def player_input(self, cursor_pos):
                             if "run" in self.current_action:
                                 self.interrupt_animation = True
                             self.current_action = self.walk_command_action
-                        self.move_speed = speed
                     elif "hold" in self.current_action:  # cancel hold animation by moving
                         self.interrupt_animation = True
 
@@ -135,7 +132,7 @@ def player_input(self, cursor_pos):
                         elif "range attack" in self.current_action:
                             self.current_action = self.range_attack_command_action[action_num]
 
-                    elif "charge" in self.current_action:
+                    elif "charge" in self.current_action:  # release charging to attack
                         self.interrupt_animation = True
                         self.command_action = self.melee_attack_command_action[action_num]
                         self.attack_pos = cursor_pos
@@ -162,14 +159,14 @@ def player_input(self, cursor_pos):
                                 elif "run" in self.current_action:
                                     self.command_action = self.range_run_command_action[action_num]
                                 self.attack_pos = cursor_pos
-                                self.move_speed = speed
                             else:  # already move shooting, update pos
                                 self.attack_pos = cursor_pos
                     elif run_input:  # melee weapon charge
-                        if "charge" not in self.current_action:  # start charge animation
-                            self.interrupt_animation = True
-                            self.command_action = self.charge_command_action[action_num]
-                            self.move_speed = self.run_speed
+                        # if "charge" not in self.current_action and "movable" in self.current_action:
+                        #     # start charge animation
+                        #     self.interrupt_animation = True
+                        self.command_action = self.charge_command_action[action_num]
+                        # self.move_speed = self.run_speed
 
                     elif self.current_action and "Action " + str_action_num in self.current_action["name"]:
                         # No new attack command if already doing it
@@ -177,7 +174,6 @@ def player_input(self, cursor_pos):
                             if "melee attack" in self.current_action:
                                 self.current_action = self.melee_hold_command_action[action_num]
                             elif "range attack" in self.current_action:
-                                print('test2')
                                 self.current_action = self.range_hold_command_action[action_num]
                         else:  # holding, update new attack pos
                             self.attack_pos = cursor_pos

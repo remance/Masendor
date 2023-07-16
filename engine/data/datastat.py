@@ -17,6 +17,7 @@ class GameData:
         self.main_dir = Game.main_dir
         self.data_dir = Game.data_dir
         self.module_dir = Game.module_dir
+        self.art_style_dir = Game.art_style_dir
         self.font_dir = Game.font_dir
         self.localisation = Game.localisation
         self.screen_scale = Game.screen_scale
@@ -55,18 +56,16 @@ class TroopData(GameData):
             int_column = ("ID", "Max Stack", "Temperature Change", "Physical Resistance Bonus",
                           "Fire Resistance Bonus", "Water Resistance Bonus",
                           "Air Resistance Bonus", "Earth Resistance Bonus", "Magic Resistance Bonus",
-                          "Heat Resistance Bonus", "Cold Resistance Bonus", "Poison Resistance Bonus")  # value int only
+                          "Heat Resistance Bonus", "Cold Resistance Bonus", "Poison Resistance Bonus",
+                          "Melee Attack Bonus", "Melee Defence Bonus", "Ranged Defence Bonus", "Speed Bonus",
+                          "Accuracy Bonus", "Range Bonus", "Reload Bonus", "Charge Bonus", "Charge Defence Bonus",
+                          "Melee Speed Bonus")  # value int only
             tuple_column = ("Special Effect", "Status Conflict")  # value in tuple only
-            mod_column = ("Melee Attack Modifier", "Melee Defence Modifier", "Ranged Defence Modifier",
-                          "Speed Modifier", "Accuracy Modifier", "Melee Speed Modifier", "Reload Modifier",
-                          "Charge Modifier")  # need to be calculated to percentage
             int_column = [index for index, item in enumerate(header) if item in int_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
-            mod_column = [index for index, item in enumerate(header) if item in mod_column]
             for index, row in enumerate(rd[1:]):
                 for n, i in enumerate(row):
-                    row = stat_convert(row, n, i, mod_column=mod_column, tuple_column=tuple_column,
-                                       int_column=int_column)
+                    row = stat_convert(row, n, i, tuple_column=tuple_column, int_column=int_column)
                 self.status_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
@@ -123,13 +122,13 @@ class TroopData(GameData):
                   encoding="utf-8", mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
-            int_column = ("ID", "Troop Type", "Area of Effect", "Cost", "Charge Skill")  # value int only
+            int_column = ("ID", "Troop Type", "Area of Effect", "Cost", "Charge Skill", "Melee Attack Bonus",
+                          "Melee Defence Bonus", "Ranged Defence Bonus", "Speed Bonus", "Accuracy Bonus",
+                          "Range Bonus", "Reload Bonus", "Charge Bonus", "Charge Defence Bonus",
+                          "Melee Speed Bonus", "Critical Bonus")  # value int only
             list_column = ("Action",)
             tuple_column = ("Status", "Enemy Status", "Effect Sprite", "AI Use Condition")  # value in tuple only
-            mod_column = (
-            "Melee Attack Modifier", "Melee Defence Modifier", "Ranged Defence Modifier", "Speed Modifier",
-            "Accuracy Modifier", "Range Modifier", "Melee Speed Modifier", "Reload Modifier", "Charge Modifier",
-            "Critical Modifier", "Damage Modifier", "Weapon Impact Modifier")
+            mod_column = ("Damage Modifier", "Weapon Impact Modifier")
             int_column = [index for index, item in enumerate(header) if item in int_column]
             list_column = [index for index, item in enumerate(header) if item in list_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
@@ -155,19 +154,18 @@ class TroopData(GameData):
                           "Hidden Bonus", "Physical Resistance Bonus",
                           "Fire Resistance Bonus", "Water Resistance Bonus", "Air Resistance Bonus",
                           "Earth Resistance Bonus", "Poison Resistance Bonus", "Magic Resistance Bonus",
-                          "Heat Resistance Bonus", "Cold Resistance Bonus")  # value int only
+                          "Heat Resistance Bonus", "Cold Resistance Bonus", "Melee Attack Bonus",
+                          "Melee Defence Bonus", "Ranged Defence Bonus", "Speed Bonus", "Accuracy Bonus",
+                          "Range Bonus", "Reload Bonus", "Charge Bonus", "Charge Defence Bonus",
+                          "Melee Speed Bonus")  # value int only
             tuple_column = ("Status", "Special Effect", "Enemy Status")  # value in tuple only
             percent_column = ("Buff Modifier",)
-            mod_column = ("Melee Attack Modifier", "Melee Defence Modifier", "Ranged Defence Modifier",
-                          "Speed Modifier", "Accuracy Modifier", "Range Modifier", "Melee Speed Modifier",
-                          "Reload Modifier", "Charge Modifier", "Siege Modifier", "Supply Modifier", "Upkeep Modifier")
             int_column = [index for index, item in enumerate(header) if item in int_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
             percent_column = [index for index, item in enumerate(header) if item in percent_column]
-            mod_column = [index for index, item in enumerate(header) if item in mod_column]
             for index, row in enumerate(rd[1:]):
                 for n, i in enumerate(row):
-                    row = stat_convert(row, n, i, percent_column=percent_column, mod_column=mod_column,
+                    row = stat_convert(row, n, i, percent_column=percent_column,
                                        tuple_column=tuple_column, int_column=int_column)
                 self.trait_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
@@ -381,14 +379,10 @@ class TroopData(GameData):
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
             tuple_column = ("Status Conflict", "Status", "Special Effect", "Properties")  # value in tuple only
-            mod_column = ("Melee Attack Modifier", "Melee Defence Modifier", "Ranged Defence Modifier",
-                          "Speed Modifier", "Accuracy Modifier", "Melee Speed Modifier", "Reload Modifier",
-                          "Charge Modifier")  # need to be calculated to percentage
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
-            mod_column = [index for index, item in enumerate(header) if item in mod_column]
             for index, row in enumerate(rd[1:]):
                 for n, i in enumerate(row):
-                    row = stat_convert(row, n, i, mod_column=mod_column, tuple_column=tuple_column)
+                    row = stat_convert(row, n, i, tuple_column=tuple_column)
                 self.effect_list[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
         edit_file.close()
 
@@ -410,13 +404,13 @@ class LeaderData(GameData):
                                    skill_list + ".csv"), encoding="utf-8", mode="r") as edit_file:
                 rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
                 header = rd[0]
-                int_column = ("Troop Type", "Range", "Area of Effect", "Cost", "Charge Skill")  # value int only
+                int_column = ("Troop Type", "Range", "Area of Effect", "Cost", "Charge Skill", "Melee Attack Bonus",
+                              "Melee Defence Bonus", "Ranged Defence Bonus", "Speed Bonus", "Accuracy Bonus",
+                              "Range Bonus", "Reload Bonus", "Charge Bonus", "Charge Defence Bonus",
+                              "Melee Speed Bonus", "Critical Bonus")  # value int only
                 list_column = ("Action",)
                 tuple_column = ("Replace", "Status", "Enemy Status", "Effect Sprite", "AI Use Condition")
-                mod_column = (
-                "Melee Attack Modifier", "Melee Defence Modifier", "Ranged Defence Modifier", "Speed Modifier",
-                "Accuracy Modifier", "Range Modifier", "Melee Speed Modifier", "Reload Modifier", "Charge Modifier",
-                "Critical Modifier", "Damage Modifier", "Weapon Impact Modifier")
+                mod_column = ("Damage Modifier", "Weapon Impact Modifier")
                 int_column = [index for index, item in enumerate(header) if item in int_column]
                 list_column = [index for index, item in enumerate(header) if item in list_column]
                 tuple_column = [index for index, item in enumerate(header) if item in tuple_column]

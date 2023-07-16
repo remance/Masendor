@@ -6,15 +6,15 @@ from engine.uimenu.uimenu import UIMenu
 class TextDrama(UIMenu):
     images = []
 
-    def __init__(self):
+    def __init__(self, battle_camera_size):
         self._layer = 17
         UIMenu.__init__(self)
         self.body = self.images["body"]
         self.left_corner = self.images["start"]
         self.right_corner = self.images["end"]
-        self.pos = (
-            self.screen_rect.width / 2, self.screen_rect.height / 4)  # the center pos of the drama popup on screen
-        self.font = pygame.font.Font(self.ui_font["main_button"], int(70 * self.screen_scale[1]))
+        # drama appear at around center top pos of battle camera
+        self.pos = (battle_camera_size[0] / 2, battle_camera_size[1] / 5)
+        self.font = pygame.font.Font(self.ui_font["main_button"], int(60 * self.screen_scale[1]))
         self.queue = []  # text list to popup
         self.blit_text = False
         self.current_length = 0

@@ -1,13 +1,11 @@
 import ast
 import csv
 import os
-
 from pathlib import Path
 
-from engine.weather.weather import Weather
-from engine.utility import stat_convert, load_images, csv_read, sort_list_dir_with_str, filename_convert_readable as fcv
-
 from engine.data.datastat import GameData
+from engine.utility import stat_convert, load_images, csv_read, sort_list_dir_with_str, filename_convert_readable as fcv
+from engine.weather.weather import Weather
 
 
 class BattleMapData(GameData):
@@ -60,17 +58,15 @@ class BattleMapData(GameData):
                   mode="r") as edit_file:
             rd = tuple(csv.reader(edit_file, quoting=csv.QUOTE_ALL))
             header = rd[0]
-            mod_column = ("Infantry Speed Modifier", "Infantry Melee Modifier",
-                          "Cavalry Speed Modifier", "Cavalry Melee Modifier")
-            int_column = ("ID", "Range Defence Bonus", "Hide Bonus", "Discipline Bonus",
+            int_column = ("ID", "Infantry Speed Bonus", "Infantry Melee Bonus", "Cavalry Speed Bonus",
+                          "Cavalry Melee Bonus", "Range Defence Bonus", "Hide Bonus", "Discipline Bonus",
                           "Day Temperature", "Night Temperature", "Dust")  # value int only
             tuple_column = ("Status",)
-            mod_column = [index for index, item in enumerate(header) if item in mod_column]
             int_column = [index for index, item in enumerate(header) if item in int_column]
             tuple_column = [index for index, item in enumerate(header) if item in tuple_column]
             for row in rd[1:]:  # skip convert header row
                 for n, i in enumerate(row):
-                    row = stat_convert(row, n, i, mod_column=mod_column, tuple_column=tuple_column,
+                    row = stat_convert(row, n, i, tuple_column=tuple_column,
                                        int_column=int_column)
                 BattleMapData.feature_mod[row[0]] = {header[index + 1]: stuff for index, stuff in enumerate(row[1:])}
 
@@ -167,7 +163,8 @@ class BattleMapData(GameData):
             campaign_file_name = os.sep.join(os.path.normpath(file_campaign).split(os.sep)[-1:])
             sub2_directories = [x for x in read_folder.iterdir() if x.is_dir()]
             sub2_directories = sort_list_dir_with_str(sub2_directories,
-                                                      tuple(self.localisation.text["en"]["preset_map"][campaign_file_name]["info"].keys()))
+                                                      tuple(self.localisation.text["en"]["preset_map"][
+                                                                campaign_file_name]["info"].keys()))
 
             self.preset_map_data[campaign_file_name] = {}
             for file_map in sub2_directories:
@@ -177,7 +174,8 @@ class BattleMapData(GameData):
                                                             "info", map_file_name, "Name"))
                 preset_map_list.append(map_name)
                 self.battle_campaign[map_file_name] = campaign_file_name
-                self.preset_map_data[campaign_file_name][map_file_name] = {"source": csv_read(file_map, "source.csv", header_key=True)}
+                self.preset_map_data[campaign_file_name][map_file_name] = {
+                    "source": csv_read(file_map, "source.csv", header_key=True)}
 
                 read_folder = Path(os.path.join(self.module_dir, "map", "preset", file_campaign, file_map))
                 sub3_directories = [x for x in read_folder.iterdir() if x.is_dir()]

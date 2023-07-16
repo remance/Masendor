@@ -1,5 +1,5 @@
 def add_skill_icon(self):
-    for icon_index, icon in enumerate(self.skill_icon):  # reset skill icon
+    for icon_index, icon in enumerate(self.skill_icons):  # reset skill icon
         icon.game_id = None
         for index, skill in enumerate(self.player_unit.input_skill):
             if index == icon_index:

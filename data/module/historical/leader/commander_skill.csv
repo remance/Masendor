@@ -1,6 +1,6 @@
-"ID","Name","Replace","Range","Area Of Effect","Receiver","Duration","Cooldown","Discipline Requirement","Stamina Cost","Melee Attack Modifier","Melee Defence Modifier","Ranged Defence Modifier","Speed Modifier","Accuracy Modifier","Range Modifier","Melee Speed Modifier","Reload Modifier","Charge Modifier","Authority Bonus","Charge Defence Bonus","HP Regeneration Bonus","Stamina Regeneration Bonus","Morale Bonus","Discipline Bonus","Critical Modifier","Damage Modifier","Fire Damage Extra","Poison Damage Extra","Sight Bonus","Hidden Bonus","Stamina Damage Bonus","Morale Damage Bonus","Weapon Impact Modifier","Status","Enemy Status","Effect Sprite","Sound Effect","Sound Distance","Status Sprite","AI Use Condition","AI Use Restriction","Action Type","Tag"
-"C1","Establish Control","L75",0,120,0,60,180,30,,,,,,,,,,,50,,,,-20,70,,,,,,,,,,,,,,,"Buff","unit_melee",,"Skill","Buff"
-"C2","Battle Choir","L2",0,200,0,30,60,10,,0.2,,,,,,,,0.2,,,,,10,,,,,,,-20,,4,,,,,,,"Buff","unit_melee",,"Skill","Buff"
+"ID","Name","Replace","Range","Area Of Effect","Receiver","Duration","Cooldown","Discipline Requirement","Stamina Cost","Melee Attack Bonus","Melee Defence Bonus","Ranged Defence Bonus","Speed Bonus","Accuracy Bonus","Range Bonus","Reload Bonus","Charge Bonus","Charge Defence Bonus","Melee Speed Bonus","Authority Bonus","HP Regeneration Bonus","Stamina Regeneration Bonus","Morale Bonus","Discipline Bonus","Critical Bonus","Damage Modifier","Fire Damage Extra","Poison Damage Extra","Sight Bonus","Hidden Bonus","Stamina Damage Bonus","Morale Damage Bonus","Weapon Impact Modifier","Status","Enemy Status","Effect Sprite","Sound Effect","Sound Distance","Status Sprite","AI Use Condition","AI Use Restriction","Action Type","Tag"
+"C1","Establish Control","L75",0,120,0,60,180,30,,,,,,,,,,,,50,,,-20,70,,,,,,,,,,,,,,,"Buff","unit_melee",,"Skill","Buff"
+"C2","Battle Choir","L2",0,200,0,30,60,10,,20,,,,,,,20,,,,,,10,,,,,,,-20,,4,,,,,,,"Buff","unit_melee",,"Skill","Buff"
 "C3","Rally Signal","L3",0,400,0,60,100,20,,,,,,,,,,,,,,,50,,,,,,,-30,,,,,,"Sound Burst Medium (team),Burst_1","Warhorn Big",350,"Buff","unit_melee",,"Skill","Buff"
 "C4",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
 "C5",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
@@ -23,8 +23,8 @@
 "C22",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
 "C23",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
 "C24",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
-"C25","Direct Command","L1",0,150,0,120,300,25,,0.1,0.1,0.1,0.1,0.1,,0.1,0.1,0.1,-30,15,,,10,5,,,,,-40,-30,,,,,,,,,"Buff",,,"Skill","Buff"
-"C26","Great Maneuver","L21",0,200,0,,,32,,,,,0.35,,,,,,5,,,,,5,,,,,,,,,,,,,,,"Buff",,,"Skill","Buff"
+"C25","Direct Command","L1",0,150,0,120,300,25,,10,10,10,10,10,,10,10,15,1,-30,,,10,5,,,,,-40,-30,,,,,,,,,"Buff",,,"Skill","Buff"
+"C26","Great Maneuver","L21",0,200,0,,,32,,,,,40,,,,,,,5,,,,5,,,,,,,,,,,,,,,"Buff",,,"Skill","Buff"
 "C27",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
 "C28",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
 "C29",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
@@ -32,11 +32,11 @@
 "C31",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
 "C32",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
 "C33",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
-"C34","Commander's Duty",,0,5,0,,,,,0.1,0.35,0.25,0.2,0.4,,0.2,0.4,0.15,30,20,,,20,35,,,,,,,,,,,,,,,"Buff",,,"Skill","Buff"
+"C34","Commander's Duty",,0,5,0,,,,,10,30,25,20,40,,40,15,20,2,30,,,20,35,,,,,,,,,,,,,,,"Buff",,,"Skill","Buff"
 "C35",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
 "C36","Command To Obey",,,,0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Buff",,,"Skill","Buff"
 "C37",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
 "C38","Bestow Duty",,,,0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Buff",,,"Skill","Buff"
 "C39",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
-"C40","Warhorn Signal",,0,500,0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Buff",,,"Skill","Buff"
+"C40","Warhorn Signal",,0,500,0,80,120,20,10,,,,,,,,,,,20,,,20,,,,,,,-40,,,,,,,,,"Buff",,,"Skill","Buff"
 "C41","Absolute Command",,0,1,0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Buff",,,"Skill","Buff"

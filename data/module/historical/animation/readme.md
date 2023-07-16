@@ -1,6 +1,8 @@
 Animation
 
-This folder contains list of animation for each direction.
+This folder contains folder of each animation style.
+
+Inside animation style folder contains list of animation and sprites.
 
 The animation file need to be in this structure:
 Animation name, each p1 and p2 parts, effect, special, frame and animation properties

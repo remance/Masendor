@@ -21,7 +21,7 @@ def cal_loss(self, final_dmg, impact, final_morale_dmg, element_effect, hit_angl
     if impact_check > self.max_health50:  # knockdown
         self.interrupt_animation = True
         self.command_action = self.knockdown_command_action
-        self.move_speed = impact_check
+        self.forced_move_speed = impact_check
         self.momentum = 0
         self.forced_target = Vector2(self.base_pos[0] - (impact_check / 2 * sin(radians(hit_angle))),
                                      self.base_pos[1] - (impact_check / 2 * cos(radians(hit_angle))))
@@ -33,7 +33,6 @@ def cal_loss(self, final_dmg, impact, final_morale_dmg, element_effect, hit_angl
     elif impact_check > self.max_health20:  # heavy damaged
         self.interrupt_animation = True
         self.command_action = self.heavy_damaged_command_action
-        self.move_speed = self.walk_speed
         self.momentum = 0
         self.forced_target = Vector2(self.base_pos[0] - (impact_check * sin(radians(hit_angle))),
                                      self.base_pos[1] - (impact_check * cos(radians(hit_angle))))
@@ -45,7 +44,6 @@ def cal_loss(self, final_dmg, impact, final_morale_dmg, element_effect, hit_angl
     elif impact_check > self.max_health10:  # damaged
         self.interrupt_animation = True
         self.command_action = self.damaged_command_action
-        self.move_speed = self.walk_speed
         self.momentum = 0
         self.forced_target = Vector2(self.base_pos[0] - (impact_check * sin(radians(hit_angle))),
                                      self.base_pos[1] - (impact_check * cos(radians(hit_angle))))
@@ -56,15 +54,21 @@ def cal_loss(self, final_dmg, impact, final_morale_dmg, element_effect, hit_angl
                                            volume_mod=self.hit_volume_mod)
 
     elif not self.player_control:  # AI unit take damage but not high enough to play animation
-        if self.available_damaged_skill and not self.current_action and not self.command_action:  # use damaged skill
+        if self.available_damaged_skill and not self.command_action:  # use damaged skill
             self.skill_command_input(0, self.available_damaged_skill, pos_target=self.base_pos)
+
+    if self.current_effect != "Hurt":
+        self.current_effect = "Hurt"
+        self.max_effect_frame = self.status_animation_pool[self.current_effect]["frame_number"]
+        if self.effectbox not in self.battle.battle_camera:
+            self.battle.battle_camera.add(self.effectbox)
 
     self.health -= final_dmg
     health_check = 0.1
     if self.max_health != infinity:
         health_check = 1 - (self.health / self.max_health)
-    self.base_morale -= final_morale_dmg * self.mental * health_check
-    self.stamina -= self.stamina_dmg_bonus
+    self.base_morale -= final_morale_dmg * health_check
+    # self.stamina -= self.stamina_dmg_bonus
 
     for key, value in element_effect.items():
         self.element_status_check[key] += round(final_dmg * value * (100 - self.element_resistance[key] / 100))

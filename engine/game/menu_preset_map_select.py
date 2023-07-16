@@ -15,7 +15,8 @@ def menu_preset_map_select(self, esc_press):
                             for troop_id, troop in unit["Troop"].items():
                                 unit_data[1] += int(troop[0])
                                 unit_data[2] += int(troop[1])
-                    text.append("Leader: " + str(unit_data[0]) + " Active Troop: " + str(unit_data[1]) + " Reserve Troop: "+ str(unit_data[2]))
+                    text.append("Leader: " + str(unit_data[0]) + " Active Troop: " + str(
+                        unit_data[1]) + " Reserve Troop: " + str(unit_data[2]))
                     self.text_popup.popup(self.cursor.rect, text, shown_id=shown_id)
                 else:
                     self.text_popup.popup(self.cursor.rect, None, shown_id=shown_id)
@@ -29,14 +30,14 @@ def menu_preset_map_select(self, esc_press):
                     if self.team_selected != this_team2.team and this_team2.selected:
                         this_team2.change_select(False)
 
-                for icon in self.preview_unit:
+                for icon in self.preview_units:
                     icon.kill()
-                self.preview_unit.empty()
+                self.preview_units.empty()
 
-                self.preview_unit.add(TempUnitIcon(this_team.team, "None", "None", None))
-                self.setup_battle_unit(self.preview_unit, preview=self.team_selected)
+                self.preview_units.add(TempUnitIcon(this_team.team, "None", "None", None))
+                self.setup_battle_unit(self.preview_units, preview=self.team_selected)
 
-                self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
+                self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_units)
 
                 return
 
@@ -55,24 +56,24 @@ def menu_preset_map_select(self, esc_press):
         self.map_source_selected = 0
         self.map_preview.change_mode(0)  # revert map preview back to without unit dot
 
-        for group in (self.team_coa, self.preview_unit, self.unit_icon):  # remove group item no longer used
+        for group in (self.team_coa, self.preview_units, self.unit_icon):  # remove group item no longer used
             for stuff in group:
                 stuff.kill()
                 del stuff
 
-        self.preview_unit.empty()
+        self.preview_units.empty()
 
         self.back_mainmenu()
 
     elif self.start_button.event_press:  # Start Battle
-        self.start_battle(self.unit_selected)
+        self.start_battle(self.play_map_data["source"][self.map_source_selected], player_unit=self.unit_selected)
 
     elif self.unit_model_room.mouse_over:
         if self.unit_selected is not None:
             leader_id = [item for item in self.play_map_data[self.map_source_selected]['unit'] if
-                                               item["ID"] == self.unit_selected][0]["Leader ID"]
+                         item["ID"] == self.unit_selected][0]["Leader ID"]
             self.text_popup.popup(self.cursor.rect,
-                                  (self.leader_data.leader_lore[leader_id]["Description"],),
+                                  (self.leader_data.leader_lore[leader_id]["Description"]),
                                   shown_id=("model", leader_id, self.unit_selected),
                                   width_text_wrapper=500)
             self.add_ui_updater(self.text_popup)
@@ -83,21 +84,21 @@ def menu_preset_map_select(self, esc_press):
                 self.unit_selector.current_row -= 1
                 self.unit_selector.scroll.change_image(new_row=self.unit_selector.current_row,
                                                        row_size=self.unit_selector.row_size)
-                self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
+                self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_units)
 
         elif self.cursor.scroll_down:
             if self.unit_selector.current_row < self.unit_selector.row_size:
                 self.unit_selector.current_row += 1
                 self.unit_selector.scroll.change_image(new_row=self.unit_selector.current_row,
                                                        row_size=self.unit_selector.row_size)
-                self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
+                self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_units)
 
         elif self.unit_selector.scroll.event:
             new_row = self.unit_selector.scroll.player_input(self.cursor.pos)
             if self.unit_selector.current_row != new_row:
                 self.unit_selector.current_row = new_row
                 self.unit_selector.scroll.change_image(new_row=new_row, row_size=self.unit_selector.row_size)
-                self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_unit)
+                self.unit_selector.setup_unit_icon(self.unit_icon, self.preview_units)
 
         else:
             for index, icon in enumerate(self.unit_icon):

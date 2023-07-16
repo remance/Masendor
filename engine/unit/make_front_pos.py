@@ -2,8 +2,6 @@ from math import cos, sin
 
 from pygame import Vector2
 
-from engine.utility import rotation_xy
-
 
 def make_front_pos(self):
     """create new pos for front side of sprite"""

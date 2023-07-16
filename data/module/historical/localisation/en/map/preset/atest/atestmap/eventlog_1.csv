@@ -1,21 +1,12 @@
 "ID","Text"
-"t0","This is a test map."
-"t1","5 Minutes pass."
-"t2",1
-"t3",2
-"t4",3
-"t5",4
-"t6",5
-"t7",6
-"t8",7
-"t9",8
-"t10",9
-"t11",10
-"t12",11
-"t13",12
-"t14",13
-"t15",14
+"t0","Welcome to the development demo! "
+"t1","This demo battle is for showcasing the battle gameplay of the game."
+"t2","It is not related to any historical battles in particular, but it borrows leaders and units from Norman and Saxon during the High Medieval era."
+"t3","This demo has only a quite simple AI function and many graphic assets are placeholder."
+"t4","The first release version will feature 3 campaigns involving Norman, Ancient Egypt, and Ottoman Empire."
+"t5","Please feel free to provide any feedback or idea for improvement on the game."
+"t6","Looking forward to hearing from you."
 "ld0","Bad dead."
 "ld1","Good dead."
-"wt1",
-"wt2",
+"wt1","Norman Win!"
+"wt2","Saxon Win!"

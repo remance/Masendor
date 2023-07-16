@@ -1,9 +1,10 @@
 def check_skill_usage(self):
     # Check which skill can be used, cooldown, discipline, stamina are checked. charge skill is excepted from this check
     if self.not_broken:
-        if self.momentum == 1 and "charge" in self.current_action:  # use charge skill when momentum reach 1
+        if self.momentum == 1 and "charge" in self.current_action and self.charge_skill not in self.skill_duration:
+            # use charge skill when momentum reach 1 if not already active
             self.use_skill(self.charge_skill)
-        elif self.command_action:
+        if self.command_action:
             target_pos = None
             if "skill" in self.command_action:  # use by AI
                 skill = self.command_action["skill"]
@@ -45,7 +46,7 @@ def check_skill_usage(self):
                     self.command_action["pos"] = target_pos
 
                 self.available_skill.remove(skill)
-                if len(action) > 1:
+                if len(action) > 1:  # action has other properties
                     self.command_action |= {this_prop: True for this_prop in action[1:]}
             else:
                 self.command_action = {}

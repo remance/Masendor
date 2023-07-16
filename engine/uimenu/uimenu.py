@@ -1,21 +1,20 @@
-import networkx as nx
-
-import pyperclip
 import types
 from functools import lru_cache
 
+import networkx as nx
 import pygame
+import pyperclip
 from pygame import Surface, SRCALPHA, Rect, Color, Vector2, draw, mouse
-from pygame.sprite import Sprite
 from pygame.font import Font
+from pygame.sprite import Sprite
 from pygame.transform import smoothscale, scale
 
 from engine.battlemap.battlemap import BattleMap
-
 from engine.utility import keyboard_mouse_press_check, text_render, make_long_text
 
-@lru_cache(maxsize=2**8)
-def draw_text(text, font, color, ellipsis_length = None):
+
+@lru_cache(maxsize=2 ** 8)
+def draw_text(text, font, color, ellipsis_length=None):
     # NOTE: this can be very slow. Imagine you have a very long text it has to step down each
     #       character till it find the a character length that works.
     #       if this method's performance becomes a big issue try make a better estimate on the length
@@ -25,8 +24,9 @@ def draw_text(text, font, color, ellipsis_length = None):
 
     if ellipsis_length is not None:
         for i in range(len(text)):
-            text_surface = font.render(text[:len(text)-i]+('...' if i > 0 else ''), True, color)
-            if text_surface.get_size()[0] > ellipsis_length: continue
+            text_surface = font.render(text[:len(text) - i] + ('...' if i > 0 else ''), True, color)
+            if text_surface.get_size()[0] > ellipsis_length:
+                continue
             return text_surface
         raise Exception()
     else:
@@ -112,7 +112,10 @@ class UIMenu(Sprite):
 
     def __init__(self, player_interact=True, has_containers=False):
         """
-        Parent class for all menu user interface
+        Parent class for all menu user interface objects
+
+        :param player_interact: Player can interact (click) with UI in some way
+        :param has_containers: Object has group containers to assign
         """
         from engine.game.game import Game
         self.game = Game.game
@@ -125,7 +128,7 @@ class UIMenu(Sprite):
         self.screen_size = Game.screen_size
         self.localisation = Game.localisation
         self.cursor = Game.cursor
-        self.updater = Game.main_ui_updater
+        self.updater = Game.ui_updater
         self.player_interact = player_interact
         if has_containers:
             Sprite.__init__(self, self.containers)
@@ -226,10 +229,9 @@ class SliderMenu(UIMenu):
         """
         Update slider value and position
         :param value_box: UI box that show number value
-        :param forced_value: forced
-        :return:
+        :param forced_value: forced number value
         """
-        if not forced_value:
+        if forced_value is False:
             self.mouse_value = self.cursor.pos[0]
             if self.mouse_value > self.max_value:
                 self.mouse_value = self.max_value
@@ -237,7 +239,7 @@ class SliderMenu(UIMenu):
                 self.mouse_value = self.min_value
             self.value = (self.mouse_value - self.min_value) / 2
         else:  # for revert, cancel or esc in the option menu
-            self.value = self.cursor.pos
+            self.value = forced_value
         self.mouse_value = (self.slider_size * self.value / 100) + self.difference
         self.image = self.base_image.copy()
         button_rect = self.button_image_list[1].get_rect(center=(self.mouse_value, self.image.get_height() / 2))
@@ -452,6 +454,16 @@ class MenuButton(UIMenu):
             self.button_click_image.blit(text_surface, text_rect)
         self.rect = self.button_normal_image.get_rect(center=self.pos)
         self.event = False
+
+
+class URLIconLink(UIMenu):
+    def __init__(self, image, pos, url, layer=1):
+        self._layer = layer
+        UIMenu.__init__(self)
+        self.pos = pos
+        self.image = image
+        self.url = url
+        self.rect = self.image.get_rect(topright=self.pos)
 
 
 class Container:
@@ -887,7 +899,8 @@ class ListBox(UIMenu):
         image_height = int(26 * self.screen_scale[1])
         self.max_row_show = int(
             self.image.get_height() / (
-                        image_height + (6 * self.screen_scale[1])))  # max number of map on list can be shown
+                    image_height + (6 * self.screen_scale[1])))  # max number of map on list can be shown
+
 
 class NameList(UIMenu):
     def __init__(self, box, pos, name, text_size=26, layer=15):
@@ -958,6 +971,11 @@ class ListAdapter:
     def __len__(self):
         return len(self.list)
 
+    def to_tuple(self):
+        l = len(self)
+        x = [self[c] for c in range(l)]
+        return tuple(x)
+
     def __getitem__(self, item):
         return self.list[item]
 
@@ -971,15 +989,15 @@ class ListAdapter:
         return self.last_index
 
 
-class ListAdapterHideExpand:
+class ListAdapterHideExpand(ListAdapter):
 
     # actual list refer to the origin full list
     # visual list refer to the list after some if any of the elements been hidden
 
     def __init__(self, _list, _self=None, replace_on_select=None, replace_on_mouse_over=None):
-        self.actual_list = actual_list = [ c[1] for c in _list ]
+        self.actual_list = actual_list = [c[1] for c in _list]
         self.actual_list_open_index = [False for element in actual_list]
-        self.actual_list_level = [ element[0] for element in _list ]
+        self.actual_list_level = [element[0] for element in _list]
 
         if replace_on_select:
             self.on_select = types.MethodType(replace_on_select, self)
@@ -998,7 +1016,7 @@ class ListAdapterHideExpand:
 
         # scan up in the list till you hit a top level element and check if it is open
         # and if it is, this element should be open
-        for i in range(1, len(self.actual_list)): 
+        for i in range(1, len(self.actual_list)):
             u = index - i
             if self.get_actual_index_level(u) == level - 1:
                 break
@@ -1014,9 +1032,11 @@ class ListAdapterHideExpand:
     def __getitem__(self, item):
         r = list()
         for index, element in enumerate(self.actual_list):
-            if self.is_actual_index_hidden(index): continue
+            if self.is_actual_index_hidden(index):
+                continue
             r.append(element)
-        if item >= len(r): return None
+        if item >= len(r):
+            return None
 
         actual_index = self.get_visible_index_actual_index()[item]
         if self.actual_list_open_index[actual_index]:
@@ -1028,20 +1048,22 @@ class ListAdapterHideExpand:
         r = dict()
         visible_index = -1
         for actual_index in range(len(self.actual_list)):
-            if self.is_actual_index_hidden(actual_index): continue
+            if self.is_actual_index_hidden(actual_index):
+                continue
             visible_index += 1
             r[visible_index] = actual_index
         return r
 
     def get_actual_index_visible_index(self):
-        return { v:k for k,v in self.get_visible_index_actual_index().items() }
+        return {v: k for k, v in self.get_visible_index_actual_index().items()}
 
     def get_highlighted_index(self):
         return -1
 
     def on_select(self, item_index, item_text):
         actual_index = self.get_visible_index_actual_index().get(item_index)
-        if actual_index is None: return
+        if actual_index is None:
+            return
         self.actual_list_open_index[actual_index] = not self.actual_list_open_index[actual_index]
 
 
@@ -1050,7 +1072,7 @@ class CampaignListAdapter(ListAdapterHideExpand):
     def __init__(self):
         from engine.game.game import Game
         self.game = Game.game
-        self.map_source_index = dict() # stores the map-sources 's list index. ex { ('atestmap', 1): 3, ('varaville1', 0): 6 }
+        self.map_source_index = dict()  # stores the map-sources 's list index. ex { ('atestmap', 1): 3, ('varaville1', 0): 6 }
         localisation = Game.localisation
         map_data = self.game.preset_map_data
         actual_level_list = []
@@ -1061,32 +1083,35 @@ class CampaignListAdapter(ListAdapterHideExpand):
 
         for campaign_file_name in map_data:  # add campaign
             campaign_name = localisation.grab_text(key=("preset_map", "info", campaign_file_name, "Name"))
-            actual_level_list.append((0,campaign_name))
+            actual_level_list.append((0, campaign_name))
             self.campaign_name_index[campaign_name] = campaign_file_name
             for map_file_name in map_data[campaign_file_name]:  # add map
                 map_name = localisation.grab_text(key=("preset_map", campaign_file_name, "info", map_file_name, "Name"))
-                actual_level_list.append((1,"> " + map_name))
+                actual_level_list.append((1, "> " + map_name))
                 self.map_name_index[map_name] = map_file_name
                 for source_file_name in map_data[campaign_file_name][map_file_name]["source"]:  # add source
-                    source_name = localisation.grab_text(key=("preset_map", campaign_file_name, map_file_name, "source", int(source_file_name), "Source"))
+                    source_name = localisation.grab_text(key=(
+                    "preset_map", campaign_file_name, map_file_name, "source", int(source_file_name), "Source"))
                     self.map_source_name_index[source_name] = source_file_name
                     current_index = len(actual_level_list)
-                    self.map_source_index[(map_file_name,source_file_name)] = current_index
-                    actual_level_list.append((2,">> " + source_name))
+                    self.map_source_index[(map_file_name, source_file_name)] = current_index
+                    actual_level_list.append((2, ">> " + source_name))
 
         ListAdapterHideExpand.__init__(self, actual_level_list)
 
     def get_highlighted_index(self):
-        if not hasattr(self.game, 'map_selected'): return None
-        return self.get_actual_index_visible_index().get(self.map_source_index[(self.game.map_selected, self.game.map_source_selected)])
+        if not hasattr(self.game, 'map_selected'):
+            return None
+        return self.get_actual_index_visible_index().get(
+            self.map_source_index[(self.game.map_selected, self.game.map_source_selected)])
 
     def on_select(self, item_index, item_text):
 
         actual_index = self.get_visible_index_actual_index()[item_index]
 
         # if click on a source then load it
-        if self.get_actual_index_level(actual_index) == 2: # 2 = source
-            _map, source = { v:k for k,v in self.map_source_index.items() }[actual_index]
+        if self.get_actual_index_level(actual_index) == 2:  # 2 = source
+            _map, source = {v: k for k, v in self.map_source_index.items()}[actual_index]
             self.game.current_map_select = self.game.preset_map_folder.index(_map)
             self.game.map_selected = _map
             self.game.campaign_selected = self.game.battle_campaign[_map]
@@ -1122,7 +1147,8 @@ class CampaignListAdapter(ListAdapterHideExpand):
             elif ">" in item_text or "|" in item_text:  # map item
                 popup_text = [value for key, value in
                               self.game.localisation.grab_text(("preset_map",
-                                                                self.game.battle_campaign[self.map_name_index[item_name]],
+                                                                self.game.battle_campaign[
+                                                                    self.map_name_index[item_name]],
                                                                 "info", self.map_name_index[item_name])).items()]
 
             else:  # campaign item
@@ -1330,38 +1356,44 @@ class OrgChart(UIMenu):
             graph_input = nx.Graph()
 
             edge_list = [(unit["Temp Leader"], index) for index, unit in enumerate(unit_data) if
-                         type(unit["Temp Leader"]) is int]
-            print(edge_list)
+                         type(unit["Temp Leader"]) is int and unit["Team"] == unit_data[selected]["Team"] and
+                         unit_data[selected]["Temp Leader"] != unit["Temp Leader"]]
             try:
                 graph_input.add_edges_from(edge_list)
                 pos = self.hierarchy_pos(graph_input, root=selected, width=self.image.get_width(),
-                                         vert_gap=-self.image.get_height() * 0.5 / len(edge_list), y_pos=100,
+                                         vert_gap=-self.image.get_height() * 0.5 / len(edge_list), y_pos=50,
                                          x_pos=self.image.get_width() / 2)
                 image_size = (self.image.get_width() / (len(pos) * 1.5), self.image.get_height() / (len(pos) * 1.5))
             except (nx.exception.NetworkXError, ZeroDivisionError):  # has only one leader
                 pos = {selected: (self.image.get_width() / 2, self.image.get_width() / 2)}
                 image_size = (self.image.get_width() / 2, self.image.get_height() / 2)
 
-            for unit in pos:
-                for unit_index, icon in enumerate(preview_unit):
-                    if unit_index == unit:
+            portrait_list = {}
+            for unit in pos:  # draw line first
+                for icon in preview_unit:
+                    if icon.index == unit:
                         image = smoothscale(icon.portrait, image_size)
+                        portrait_list[unit] = image
                         self.node_rect[unit] = image.get_rect(center=pos[unit])
-                        self.image.blit(image, self.node_rect[unit])
+                        if type(unit_data[unit]["Temp Leader"]) is int and \
+                                unit_data[unit]["Temp Leader"] in self.node_rect:
+                            line_width = int(self.image.get_width() / 100)
+                            if line_width < 1:
+                                line_width = 1
+                            draw.line(self.image, (0, 0, 0), self.node_rect[unit_data[unit]["Temp Leader"]].midbottom,
+                                      self.node_rect[unit].midtop, width=line_width)
                         break
 
-            for unit in pos:
-                if type(unit_data[unit]["Temp Leader"]) is int:
-                    line_width = int(self.image.get_width() / 100)
-                    if line_width < 1:
-                        line_width = 1
-                    draw.line(self.image, (0, 0, 0), self.node_rect[unit_data[unit]["Temp Leader"]].midbottom,
-                              self.node_rect[unit].midtop, width=line_width)
+            for unit in pos:  # draw portrait
+                for icon in preview_unit:
+                    if icon.index == unit:
+                        self.image.blit(portrait_list[unit], self.node_rect[unit])
+                        break
 
 
 class TextPopup(UIMenu):
     def __init__(self):
-        self._layer = 15
+        self._layer = 30
         UIMenu.__init__(self, player_interact=False)
         self.font_size = int(24 * self.screen_scale[1])
         self.font = Font(self.ui_font["main_button"], self.font_size)
@@ -1369,9 +1401,10 @@ class TextPopup(UIMenu):
         self.last_shown_id = None
         self.text_input = ""
 
-    def popup(self, cursor_rect, text_input, shown_id=None, width_text_wrapper=0):
+    def popup(self, cursor_rect, text_input, shown_id=None, width_text_wrapper=0, custom_screen_size=None):
         """Pop out text box with input text list in multiple line, one item equal to one line"""
         self.last_shown_id = shown_id
+
         if text_input is not None and (self.text_input != text_input or self.last_shown_id != shown_id):
             self.text_input = text_input
             if type(text_input) == str:
@@ -1381,8 +1414,8 @@ class TextPopup(UIMenu):
                 max_height = 0
                 max_width = width_text_wrapper
                 for text in self.text_input:
-                    image_height = (len(text) * (self.font_size ** 2 / 1.2) / width_text_wrapper)
-                    if image_height < self.font_size:  # only one line
+                    image_height = int((len(text) * self.font_size) / (width_text_wrapper * 1.2))
+                    if not image_height:  # only one line
                         text_image = Surface((width_text_wrapper, self.font_size))
                         text_image.fill((255, 255, 255))
                         surface = self.font.render(text, True, (0, 0, 0))
@@ -1390,6 +1423,22 @@ class TextPopup(UIMenu):
                         text_surface.append(text_image)  # text input font surface
                         max_height += self.font_size * 2
                     else:
+                        # Find new image height, using code from make_long_text
+                        x, y = (self.font_size, self.font_size)
+                        words = [word.split(" ") for word in
+                                 str(text).splitlines()]  # 2D array where each row is a list of words
+                        space = self.font.size(" ")[0]  # the width of a space
+                        for line in words:
+                            for word in line:
+                                word_surface = self.font.render(word, True, (0, 0, 0))
+                                word_width, word_height = word_surface.get_size()
+                                if x + word_width >= max_width:
+                                    x = self.font_size  # reset x
+                                    y += word_height  # start on new row.
+                                x += word_width + space
+                            x = self.font_size  # reset x
+                            y += word_height  # start on new row
+                        image_height = y
                         text_image = Surface((width_text_wrapper, image_height))
                         text_image.fill((255, 255, 255))
                         make_long_text(text_image, text, (self.font_size, self.font_size), self.font)
@@ -1401,7 +1450,8 @@ class TextPopup(UIMenu):
                 for text in self.text_input:
                     surface = self.font.render(text, True, (0, 0, 0))
                     text_surface.append(surface)  # text input font surface
-                    text_rect = surface.get_rect(topleft=(self.font_size, self.font_size))  # text input position at (1,1) on white box image
+                    text_rect = surface.get_rect(
+                        topleft=(self.font_size, self.font_size))  # text input position at (1,1) on white box image
                     if text_rect.width > max_width:
                         max_width = text_rect.width
                     max_height += self.font_size + int(self.font_size / 5)
@@ -1421,14 +1471,17 @@ class TextPopup(UIMenu):
 
         self.rect = self.image.get_rect(bottomleft=cursor_rect.bottomright)
 
+        screen_size = self.screen_size
+        if custom_screen_size:
+            screen_size = custom_screen_size
         exceed_right = False
-        if cursor_rect.bottomright[0] + self.image.get_width() > self.screen_size[0]:  # exceed right screen
+        if cursor_rect.bottomright[0] + self.image.get_width() > screen_size[0]:  # exceed right screen
             self.rect = self.image.get_rect(topright=cursor_rect.bottomleft)
             exceed_right = True
         elif cursor_rect.bottomleft[0] - self.image.get_width() < 0:  # exceed left side screen
             self.rect = self.image.get_rect(topleft=cursor_rect.bottomright)
 
-        if cursor_rect.bottomright[1] + self.image.get_height() > self.screen_size[1]:  # exceed bottom screen
+        if cursor_rect.bottomright[1] + self.image.get_height() > screen_size[1]:  # exceed bottom screen
             self.rect = self.image.get_rect(bottomleft=cursor_rect.topright)
             if exceed_right:
                 self.rect = self.image.get_rect(bottomright=cursor_rect.topleft)
@@ -1472,200 +1525,305 @@ class BoxUI(UIMenu, Containable, Container):
 
 
 class ListUI(UIMenu, Containable):
+    _frame = None
+    _scroll_box_frame = None
 
     def __init__(self, origin, pivot, size, items, parent, item_size, layer=0):
+        # rename arguments
+        adapter = items
 
-        from engine.game.game import Game
-        from engine.utility import load_image
-        game = Game.game
+        if not isinstance(adapter, ListAdapter):
+            raise TypeError(items)
+        if not type(item_size) == int:
+            raise TypeError()
+
         self._layer = layer
         UIMenu.__init__(self)
+
+        # set position and size related attributes
         self.pivot = pivot
         self.origin = origin
         self.parent = parent
-        frame_file = "new_button.png"  # "list_frame.png" # using the button frame to test if it looks good
-        self.frame = load_image(game.module_dir, (1, 1), frame_file, ("ui", "mainmenu_ui"))
-        self.scroll_box_frame = load_image(game.module_dir, (1, 1), "scroll_box_frame.png", ("ui", "mainmenu_ui"))
-
-        self.item_size = item_size
-
         self.relative_size_inside_container = size
 
-        self.items = items
+        # set adapter and capacity attributes
+        self.adapter = adapter
+        self.items = adapter  # keep old name for compatibility
+        self.visible_list_capacity = item_size
 
-        self.in_scroll_box = False
-        self.hold_scroll_box = None
-        self.selected_index = None
+        self.in_scroll_box = False  # True if mouse over scroll box
+        self.hold_scroll_box = None  # during holding the scroll box this is an integer representing the mouse y position when it was grabbed.
+        self.hover_index = None  # on what row index is being hover by mouse
+        self.scroll_down_index = 0  # number of rows that has been scrolled down
+        self.scroll_down_index_at_grab = None  # how many rows were scrolled down on the last grab of the scroll box
 
         self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
 
-        self.last_length_check = len(self.items)
+        self.last_length_check = len(self.adapter)
 
-        self.calc_scroll_bar()
         self.image = self.get_refreshed_image()
 
-    def calc_scroll_bar(self):
-        item_size = self.item_size
-        self.scroll_bar_height = self.rect[3] - 12
-        self.scroll_box_height = int(self.scroll_bar_height * (item_size / len(self.items)))
-        divider = self.get_number_of_items_outside_visible_list()
+    @classmethod
+    def get_frame(cls):
+        from engine.game.game import Game
+        from engine.utility import load_image
+        game = Game.game
+        if cls._frame is None:
+            frame_file = "new_button.png"  # "list_frame.png" # using the button frame to test if it looks good
+            cls._frame = load_image(game.module_dir, (1, 1), frame_file, ("ui", "mainmenu_ui"))
+        return cls._frame
 
+    @classmethod
+    def get_scroll_box_frame(cls):
+        from engine.game.game import Game
+        from engine.utility import load_image
+        game = Game.game
+        if cls._scroll_box_frame is None:
+            cls._scroll_box_frame = load_image(game.module_dir, (1, 1), "scroll_box_frame.png", ("ui", "mainmenu_ui"))
+        return cls._scroll_box_frame
+
+    @staticmethod
+    def get_scroll_box_height(scroll_bar_height, items, item_size):
+        return int(scroll_bar_height * (item_size / len(items)))
+
+    @staticmethod
+    def get_has_scroll(items, item_size):
+        r = len(items) - item_size
+        return False if r <= 0 else True
+
+    @staticmethod
+    def get_scroll_step_height(scroll_bar_height, scroll_box_height, number_of_items_outside_visible_list):
+        divider = number_of_items_outside_visible_list
         if divider is not None:
-            self.has_scroll = True
-            self.scroll_step_height = (self.scroll_bar_height - self.scroll_box_height) / divider
-        else:
-            self.has_scroll = False
+            return (scroll_bar_height - scroll_box_height) / divider
+        return None
 
-        self.scroll_box = make_image_by_frame(self.scroll_box_frame, (14, self.scroll_box_height))
-        self.scroll_box_index = 0
+    @staticmethod
+    def get_scroll_box_size(scroll_bar_height, item_size, len_items):
+        return (14, int(scroll_bar_height * (item_size / len_items)))
 
-    def get_number_of_items_outside_visible_list(self):
-        r = len(self.items) - self.item_size
+    @staticmethod
+    def get_scroll_bar_height_by_rect(rect):
+        return rect[3] - 12
+
+    @staticmethod
+    def get_number_of_items_outside_visible_list(items, item_size):
+        r = len(items) - item_size
         if r <= 0:
             return None
         return r
 
-    def get_item_height(self):
-        return self.scroll_bar_height // self.item_size
+    @staticmethod
+    def get_scroll_bar_rect(has_scroll, rect, scroll_bar_height):
+        if not has_scroll:
+            return None
+        return Rect(rect[2] - 18, 6, 14, scroll_bar_height)
+
+    @staticmethod
+    def get_scroll_box_rect(has_scroll, rect, scroll_box_index, scroll_step_height, scroll_box_size):
+        if not has_scroll:
+            return None
+        return Rect(rect[2] - 18, scroll_box_index * scroll_step_height + 6, *scroll_box_size)
+
+    @staticmethod
+    def get_item_height(scroll_bar_height, item_size):
+        return scroll_bar_height // item_size
 
     def get_relative_size_inside_container(self):
         return self.relative_size_inside_container
 
     def get_refreshed_image(self):
-        assert type(self.scroll_box_index) == int, type(self.scroll_box_index)
-        item_height = self.get_item_height()
-        size = self.rect[2:]
-        self.image = make_image_by_frame(self.frame, size)
-        item_height = self.get_item_height()
 
+        self.image = ListUI.inner_get_refreshed_image(
+            self.scroll_down_index,
+            tuple(self.rect),
+            self.adapter.to_tuple(),
+            self.hover_index,
+            self.adapter.get_highlighted_index(),
+            self.in_scroll_box,
+            self.hold_scroll_box,
+            self.visible_list_capacity,
+        )
+        return self.image
+
+    @classmethod
+    @lru_cache(
+        maxsize=2 ** 4)  # size has to be big enough to fit all active list ui on screen but not big enough to take to much memory
+    def inner_get_refreshed_image(cls, scroll_box_index, rect, items, selected_index, highlighted_index, in_scroll_box,
+                                  hold_scroll_box, item_size):
+        from engine.game.game import Game
+
+        ui_font = Game.ui_font
+
+        if not type(scroll_box_index) == int:
+            raise TypeError()
+        if not type(rect) == tuple:
+            raise TypeError()
+        if not type(items) == tuple:
+            raise TypeError(items)
+        if not type(selected_index) in (type(None), int):
+            raise TypeError(type(selected_index))
+        if not type(highlighted_index) in (int, type(None)):
+            raise TypeError(highlighted_index)
+        if not type(in_scroll_box) == bool:
+            raise TypeError()
+        if not type(hold_scroll_box) in (type(None), int):
+            raise TypeError(hold_scroll_box)
+
+        has_scroll = cls.get_has_scroll(items, item_size)
+
+        scroll_bar_height = cls.get_scroll_bar_height_by_rect(rect)
+        scroll_box_size = cls.get_scroll_box_size(scroll_bar_height, item_size, len(items))
+        scroll_box_height = scroll_box_size[1]
+        number_of_items_outside_visible_list = cls.get_number_of_items_outside_visible_list(items, item_size)
+        scroll_step_height = cls.get_scroll_step_height(scroll_bar_height, scroll_box_height,
+                                                        number_of_items_outside_visible_list)
+        scroll_bar_rect = cls.get_scroll_bar_rect(has_scroll, rect, scroll_bar_height)
+        scroll_box_rect = cls.get_scroll_box_rect(has_scroll, rect, scroll_box_index, scroll_step_height,
+                                                  scroll_box_size)
+        item_height = cls.get_item_height(scroll_bar_height, item_size)
+
+        rect = pygame.Rect(*rect)
+        scroll_bar_rect = pygame.Rect(*scroll_bar_rect) if scroll_bar_rect else None
+        scroll_box_rect = pygame.Rect(*scroll_box_rect) if scroll_box_rect else None
+        if scroll_box_rect:
+            scroll_box = make_image_by_frame(cls.get_scroll_box_frame(), scroll_box_rect[2:])
+
+        font1 = Font(ui_font["main_button"], 20)
+        font2 = Font(ui_font["main_button"], 14)
+        font3 = Font(ui_font["main_button"], 18)
+
+        assert type(scroll_box_index) == int, type(scroll_box_index)
+        size = rect[2:]
+
+        image = make_image_by_frame(cls.get_frame(), size)
         # draw items
-        item_size = self.item_size
-        if len(self.items) < item_size:  # For listui with item less than provided size
-            item_size = len(self.items)
+        if len(items) < item_size:  # For listui with item less than provided size
+            item_size = len(items)
+
         for i in range(item_size):
-            item_index = i + self.scroll_box_index
-            text_color = (47 if item_index == self.selected_index else 0,) * 3
-            if item_index == self.selected_index or item_index == self.items.get_highlighted_index():
+            item_index = i + scroll_box_index
+            text_color = (47 if item_index == selected_index else 0,) * 3
+            if item_index == selected_index or item_index == highlighted_index:
 
                 background_color = "#cbc2a9"
-                if item_index == self.items.get_highlighted_index():
+                if item_index == highlighted_index:
                     background_color = "#776622"
                     text_color = "#eeeeee"
-                draw.rect(self.image, background_color, (6, 6 + i * item_height, size[0] - 13 * self.has_scroll - 12, item_height))
+                draw.rect(image, background_color,
+                          (6, 6 + i * item_height, size[0] - 13 * has_scroll - 12, item_height))
 
-            font = Font(self.ui_font["main_button"], 20)
-            blit_text = self.items[item_index]
-            if self.items[item_index] is not None:  # assuming list ui has only 3 levels
-                if ">>" in self.items[item_index] or "||" in self.items[item_index]:
-                    font = Font(self.ui_font["main_button"], 14)
+            if item_index < 0:
+                continue
+            if item_index >= len(items):
+                continue
+            blit_text = items[item_index]
+
+            # TODO: big optimize is not to render text that is not visible below
+
+            font = font1
+            if items[item_index] is not None:  # assuming list ui has only 3 levels
+                if ">>" in items[item_index] or "||" in items[item_index]:
+                    font = font2
                     blit_text = "  " + blit_text
-                elif ">" in self.items[item_index] or "|" in self.items[item_index]:
-                    font = Font(self.ui_font["main_button"], 18)
+                elif ">" in items[item_index] or "|" in items[item_index]:
+                    font = font3
                     blit_text = " " + blit_text
 
-            self.image.blit(
-                draw_text(blit_text, font, text_color, ellipsis_length=size[0]-55),
+            image.blit(
+                draw_text(blit_text, font, text_color, ellipsis_length=size[0] - 55),
                 (20, item_height // 2 + 6 - 9 + i * item_height))
 
         # draw scroll bar
-        if scroll_bar_rect := self.get_scroll_bar_rect():
-            draw.rect(self.image, "#d2cab4", scroll_bar_rect)
+        if scroll_bar_rect := scroll_bar_rect:
+            draw.rect(image, "#d2cab4", scroll_bar_rect)
 
         # draw scroll box
-        if scroll_box_rect := self.get_scroll_box_rect():
-            self.image.blit(self.scroll_box, scroll_box_rect)
-            if self.in_scroll_box or self.hold_scroll_box is not None:
-                draw.rect(self.image, (100, 0, 0) if self.hold_scroll_box is not None else (50,) * 3,
+        if scroll_box_rect := scroll_box_rect:
+            image.blit(scroll_box, scroll_box_rect)
+            if in_scroll_box or hold_scroll_box is not None:
+                draw.rect(image, (100, 0, 0) if hold_scroll_box is not None else (50,) * 3,
                           scroll_box_rect, 1)
 
-        return self.image
-
-    def get_scroll_bar_rect(self):
-        if not self.has_scroll: return None
-        return Rect(self.rect[2] - 18, 6, 14, self.scroll_bar_height)
-
-    def get_scroll_box_rect(self):
-        if not self.has_scroll: return None
-        return Rect(self.rect[2] - 18, self.scroll_box_index * self.scroll_step_height + 6, *self.scroll_box.get_size())
+        return image
 
     def update(self):
+        if self.pause:
+            return
 
-        if self.last_length_check != len(self.items):
-            self.last_length_check = len(self.items)
-            self.calc_scroll_bar()
-
+        cls = ListUI
         mouse_pos = self.cursor.pos
         relative_mouse_pos = [mouse_pos[i] - self.rect[i] for i in range(2)]
 
-        # size = tuple(map(int, self.rect[2:]))
-        self.mouse_over = False
-        self.selected_index = None
+        scroll_bar_height = self.get_scroll_bar_height_by_rect(self.rect)
+        self.scroll_box_height = self.get_scroll_box_height(scroll_bar_height, self.items, self.visible_list_capacity)
 
-        # detect if in list or over scroll box
+        scroll_bar_height = self.get_scroll_bar_height_by_rect(self.rect)
+        has_scroll = self.get_has_scroll(self.items, self.visible_list_capacity)
+        scroll_box_size = self.get_scroll_box_size(scroll_bar_height, self.visible_list_capacity, len(self.items))
+        number_of_items_outside_visible_list = cls.get_number_of_items_outside_visible_list(self.items,
+                                                                                            self.visible_list_capacity)
+
+        scroll_step_height = cls.get_scroll_step_height(scroll_bar_height, self.scroll_box_height,
+                                                        number_of_items_outside_visible_list)
+
+        # detect what cursor is over
+        in_list = False
+        self.mouse_over = False
         self.in_scroll_box = False
-        if not self.pause and self.rect.collidepoint(mouse_pos):
-            in_list = True
+        if self.rect.collidepoint(mouse_pos):
             self.mouse_over = True
-            if scroll_bar_rect := self.get_scroll_bar_rect():
+            if self.rect.collidepoint(mouse_pos):
+                in_list = True
+            if scroll_bar_rect := self.get_scroll_bar_rect(has_scroll, self.rect, scroll_bar_height):
                 if scroll_bar_rect.collidepoint(relative_mouse_pos):
-                    if self.get_scroll_box_rect().collidepoint(relative_mouse_pos):
+                    if self.get_scroll_box_rect(has_scroll, self.rect, self.scroll_down_index, scroll_step_height,
+                                                scroll_box_size).collidepoint(relative_mouse_pos):
                         self.in_scroll_box = True
                     in_list = False
 
-            # Check for scrolling button
-            noiovl = self.get_number_of_items_outside_visible_list()
-            if self.cursor.scroll_down and noiovl:
-                self.scroll_box_index += 1
-                if self.scroll_box_index > noiovl:
-                    self.scroll_box_index = noiovl
-            elif self.cursor.scroll_up and noiovl:
-                self.scroll_box_index -= 1
-                if self.scroll_box_index < 0:
-                    self.scroll_box_index = 0
+        # if the number of items changed a recalculation of the scroll bar is needed
+        if self.last_length_check != len(self.items):
+            self.last_length_check = len(self.items)
+            self.scroll_down_index = 0
 
-            if self.has_scroll and self.get_scroll_bar_rect().collidepoint(relative_mouse_pos):
-                if self.get_scroll_box_rect().collidepoint(relative_mouse_pos):
-                    self.in_scroll_box = True
-            else:
-                in_list = True
+        # detect what index is being hovered
+        self.hover_index = None
+        if in_list and not self.hold_scroll_box:
+            item_height = self.get_item_height(scroll_bar_height, self.visible_list_capacity)
+            relative_index = ((relative_mouse_pos[1] - 6) // item_height)
+            if relative_index >= 0 and relative_index < self.visible_list_capacity:
+                self.hover_index = relative_index + self.scroll_down_index
+                if self.hover_index >= len(self.items):
+                    self.hover_index = None
 
-            # scroll box drag handler
-            if not self.cursor.is_select_down:
-                self.hold_scroll_box = None
-            if self.in_scroll_box and self.cursor.is_select_just_down:
-                self.hold_scroll_box = relative_mouse_pos[1]
-                self.scroll_box_index_at_hold = self.scroll_box_index
+        # handle select and mouse over logic
+        if self.hover_index is not None:
+            self.cursor.mouse_over_something = True
+            self.items.on_mouse_over(self.hover_index, self.items[self.hover_index])
+            if self.cursor.is_select_just_up or self.cursor.is_alt_select_just_up:
+                self.items.on_select(self.hover_index, self.items[self.hover_index])
+                self.cursor.is_select_just_up = False
+                self.cursor.is_alt_select_just_up = False
 
-            if self.hold_scroll_box:
-                self.scroll_box_index = self.scroll_box_index_at_hold + int(
-                    (relative_mouse_pos[1] - self.hold_scroll_box + self.scroll_step_height / 2) / self.scroll_step_height)
-                noiovl = self.get_number_of_items_outside_visible_list()
-                if self.scroll_box_index > noiovl:
-                    self.scroll_box_index = noiovl
-                elif self.scroll_box_index < 0:
-                    self.scroll_box_index = 0
+        # handle hold and release of the scroll box
+        if not self.cursor.is_select_down:
+            self.hold_scroll_box = None
+        if self.in_scroll_box and self.cursor.is_select_just_down:
+            self.hold_scroll_box = relative_mouse_pos[1]
+            self.scroll_down_index_at_grab = self.scroll_down_index
 
-            # item handler
-            if in_list and not self.hold_scroll_box:
-                item_height = self.get_item_height()
-                relative_index = ((relative_mouse_pos[1] - 6) // item_height)
-                if relative_index >= 0 and relative_index < self.item_size:
-                    self.selected_index = relative_index + self.scroll_box_index
+        # handle dragging of the scroll box
+        if self.hold_scroll_box:
+            self.scroll_down_index = self.scroll_down_index_at_grab + int(
+                (relative_mouse_pos[1] - self.hold_scroll_box + scroll_step_height / 2) / scroll_step_height)
+            noiovl = self.get_number_of_items_outside_visible_list(self.items, self.visible_list_capacity)
+            if self.scroll_down_index > noiovl:
+                self.scroll_down_index = noiovl
+            elif self.scroll_down_index < 0:
+                self.scroll_down_index = 0
 
-            if self.selected_index is not None:
-                if self.selected_index >= len(self.items): self.selected_index = None
-
-            if in_list and self.selected_index is not None and not self.cursor.mouse_over_something:
-                self.cursor.mouse_over_something = True
-                self.items.on_mouse_over(self.selected_index, self.items[self.selected_index])
-                if self.cursor.is_select_just_up or self.cursor.is_alt_select_just_up:
-                    self.items.on_select(self.selected_index, self.items[self.selected_index])
-                    self.cursor.is_select_just_up = False
-                    self.cursor.is_alt_select_just_up = False
-
-            # refresh image
-
-            self.image = self.get_refreshed_image()
+        self.image = self.get_refreshed_image()
 
     def get_relative_position_inside_container(self):
         return {

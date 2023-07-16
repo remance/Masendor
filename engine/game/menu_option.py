@@ -9,15 +9,22 @@ def menu_option(self, esc_press):
         if bar.event_press:
             self.resolution_drop.change_state(bar.text)  # change button value based on new selected value
             resolution_change = bar.text.split()
-            change_resolution(self, resolution_change)
+            change_resolution(self, resolution_change=resolution_change)
             self.remove_ui_updater(self.resolution_bar)
             bar_press = True
+    for bar in self.art_style_bar:  # loop to find which resolution bar is selected, this happens outside of clicking check below
+        if bar.event_press:
+            self.art_style_drop.change_state(bar.text)  # change button value based on new selected value
+            edit_config("USER", "art_style", bar.text, "configuration.ini", self.config)
+            change_resolution(self)  # restart game to change art style
+            self.remove_ui_updater(self.art_style_bar)
+            bar_press = True
     if not bar_press and self.cursor.is_select_just_up:
-        self.remove_ui_updater(self.resolution_bar)
+        self.remove_ui_updater(self.resolution_bar, self.art_style_bar)
 
     if self.back_button.event_press or esc_press:  # back to start_set menu
-        self.remove_ui_updater(*self.option_menu_button, *self.option_text_list, *self.option_menu_sliders.values(),
-                               *self.value_boxes.values(), self.resolution_bar, self.profile_box)
+        self.remove_ui_updater(self.option_menu_button, self.option_text_list, self.option_menu_sliders.values(),
+                               self.value_boxes.values(), self.resolution_bar, self.art_style_bar, self.profile_box)
         self.back_mainmenu()
 
     elif self.keybind_button.event_press:
@@ -59,10 +66,16 @@ def menu_option(self, esc_press):
                                  int(self.config["DEFAULT"]["screen_height"])))
 
     elif self.resolution_drop.event_press:  # click on resolution bar
-        if self.resolution_bar in self.main_ui_updater:  # remove the bar list if click again
+        if self.resolution_bar in self.ui_updater:  # remove the bar list if click again
             self.remove_ui_updater(self.resolution_bar)
         else:  # add bar list
             self.add_ui_updater(self.resolution_bar)
+
+    elif self.art_style_drop.event_press:  # click on resolution bar
+        if self.art_style_bar in self.ui_updater:  # remove the bar list if click again
+            self.remove_ui_updater(self.art_style_bar)
+        else:  # add bar list
+            self.add_ui_updater(self.art_style_bar)
 
     elif self.fullscreen_box.event_press:
         if self.fullscreen_box.tick is False:
@@ -74,6 +87,20 @@ def menu_option(self, esc_press):
         edit_config("USER", "full_screen", self.full_screen, "configuration.ini",
                     self.config)
         change_resolution(self, (self.screen_width, "", self.screen_height))
+
+    elif self.fps_box.event_press:
+        if self.fps_box.tick is False:
+            self.fps_box.change_tick(True)
+            self.show_fps = 1
+            self.battle.add_ui_updater(self.battle.fps_count)
+            self.add_ui_updater(self.fps_count)
+        else:
+            self.fps_box.change_tick(False)
+            self.show_fps = 0
+            self.battle.remove_ui_updater(self.battle.fps_count)
+            self.remove_ui_updater(self.fps_count)
+        edit_config("USER", "fps", self.show_fps, "configuration.ini",
+                    self.config)
 
     elif self.profile_box.event_press:
         self.activate_input_popup(("text_input", "profile_name"), "Profile Name:", self.input_ui_popup)
@@ -87,15 +114,16 @@ def menu_option(self, esc_press):
             self.change_sound_volume()
 
 
-def change_resolution(self, resolution_change):
+def change_resolution(self, resolution_change=None):
     from engine import game
-    self.screen_width = resolution_change[0]
-    self.screen_height = resolution_change[2]
+    if resolution_change:
+        self.screen_width = resolution_change[0]
+        self.screen_height = resolution_change[2]
 
-    edit_config("USER", "screen_width", self.screen_width, "configuration.ini",
-                self.config)
-    edit_config("USER", "screen_height", self.screen_height, "configuration.ini",
-                self.config)
+        edit_config("USER", "screen_width", self.screen_width, "configuration.ini",
+                    self.config)
+        edit_config("USER", "screen_height", self.screen_height, "configuration.ini",
+                    self.config)
 
     pygame.time.wait(1000)
     if pygame.mixer:

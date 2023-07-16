@@ -1,3 +1,5 @@
 "ID","Source","Description"
-0,"Test","Test source and map."
-1,"Huge Battle","Test source and map."
+0,"Small Battle","Battle with 100 units (50 vs 50)."
+1,"Medium Battle","Battle with 300 units (150 vs 150). Should be somewhat stable for most systems."
+2,"Large Battle","Battle with 500 units (250 vs 250). Performance likely to drop during melee combat."
+3,"Huge Battle","Battle with 1,000 units (500 vs 500). Likely to be very slow in performance (Expect around 20 FPS at best during the start of the battle)."

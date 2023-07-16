@@ -3,15 +3,15 @@ def add_mount_stat(self):
     mount_race_stat = self.troop_data.race_list[self.mount["Race"]]
     mount_size = mount_race_stat["Size"]
     # self.race_name += "&" + self.troop_data.race_list[race_id]["Name"]
-    if mount_size > self.troop_size:  # replace size if mount is larger
-        self.troop_size = mount_size
+    if mount_size > self.body_size:  # replace size if mount is larger
+        self.body_size = mount_size
 
     if self.mount["Tag"] == "Combat Equipment":  # Not exactly mount but weapon like artillery
-        self.original_charge_def = 10
+        self.original_charge_def /= 10  # charge defence reduced by tenth for cavalry
         self.unit_type = 1  # count as range infantry for command buff
         self.feature_mod = "Infantry"  # Use cavalry type for terrain bonus
     else:
-        self.original_charge_def = 25  # charge defence only 25 for cav
+        self.original_charge_def /= 2  # charge defence reduced by half for cavalry
         self.original_speed = (mount_race_stat["Agility"] / 5) + (
                 self.mount["Speed Bonus"] + self.mount_grade["Speed Bonus"])  # use mount base speed instead
         self.unit_type = 2  # count as cav for command buff

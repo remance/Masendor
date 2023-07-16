@@ -26,8 +26,12 @@ class UIBattle(UIMenu):
         """
         from engine.battle.battle import Battle
         UIMenu.__init__(self, player_interact=player_interact, has_containers=has_containers)
-        self.updater = Battle.battle_ui_updater  # change updater to use battle ui updater instead of main menu one
+        self.updater = Battle.ui_updater  # change updater to use battle ui updater instead of main menu one
         self.battle = Battle.battle
+        self.screen = Battle.screen
+        self.battle_camera_size = Battle.battle_camera_size
+        self.battle_camera_min = Battle.battle_camera_min
+        self.battle_camera_max = Battle.battle_camera_max
 
 
 class BattleCursor(UIBattle):
@@ -37,17 +41,22 @@ class BattleCursor(UIBattle):
         UIBattle.__init__(self, has_containers=True)
         self.images = images
         self.image = images["normal"]
-        self.pos = Vector2((self.screen_size[0] / 2, self.screen_size[1] / 2))
+        self.pos = Vector2(self.screen_size[0] / 2, self.screen_size[1] / 29)
         self.rect = self.image.get_rect(topleft=self.pos)
         self.player_input = player_input
 
     def change_input(self, player_input):
         self.player_input = player_input
 
+    def change_image(self, image_name):
+        """Change cursor image to whatever input name"""
+        self.image = self.images[image_name]
+        self.rect = self.image.get_rect(topleft=self.pos)
+
     def update(self):
         """Update cursor position based on joystick or mouse input"""
         if self.player_input == "keyboard":  # keyboard and mouse control
-            self.pos = mouse.get_pos()
+            self.pos = Vector2(mouse.get_pos())
         else:  # joystick control
             for joystick in self.battle.joysticks.values():
                 for i in range(joystick.get_numaxes()):
@@ -56,21 +65,22 @@ class BattleCursor(UIBattle):
                         if i == 2:
                             if axis_name == "+":
                                 self.pos[0] += 5
-                                if self.pos[0] > self.screen_size[0]:
-                                    self.pos[0] = self.screen_size[0]
                             else:
                                 self.pos[0] -= 5
-                                if self.pos[0] < 0:
-                                    self.pos[0] = 0
                         if i == 3:
                             if axis_name == "+":
                                 self.pos[1] += 5
-                                if self.pos[1] > self.screen_size[1]:
-                                    self.pos[1] = self.screen_size[1]
                             else:
                                 self.pos[1] -= 5
-                                if self.pos[1] < 0:
-                                    self.pos[1] = 0
+
+        if self.pos[0] > self.battle_camera_max[0]:
+            self.pos[0] = self.battle_camera_max[0]
+        elif self.pos[0] < 0:
+            self.pos[0] = 0
+        if self.pos[1] > self.battle_camera_max[1]:
+            self.pos[1] = self.battle_camera_max[1]
+        if self.pos[1] < 0:
+            self.pos[1] = 0
 
         self.rect.topleft = self.pos
 
@@ -89,47 +99,70 @@ class ButtonUI(UIBattle):
         self.rect = self.image.get_rect(center=self.pos)
 
 
-class HeroUI(UIBattle):
+class HealthStaminaBar(UIBattle):
+    def __init__(self, image, pos):
+        self._layer = 10
+        UIBattle.__init__(self, player_interact=False, has_containers=True)
+        self.image = image
+        self.base_image = image.copy()
+        self.rect = self.image.get_rect(center=pos)
+
+        self.bar_size = self.image.get_size()
+
+
+class HealthBar(HealthStaminaBar):
+    def __init__(self, image, pos):
+        HealthStaminaBar.__init__(self, image, pos)
+        self.last_health = 0
+
+    def value_input(self, who):
+        if self.last_health != who.health:
+            self.last_health = who.health
+            self.image = self.base_image.copy()
+            health_percent = 1 - (who.health / who.max_health)
+            health_bar = Surface((self.bar_size[0], self.bar_size[1] * health_percent))
+            health_bar.fill((0, 0, 0))
+            self.image.blit(health_bar, (0, 0))
+
+
+class StaminaBar(HealthStaminaBar):
+    def __init__(self, image, pos):
+        HealthStaminaBar.__init__(self, image, pos)
+        self.last_stamina = 0
+
+    def value_input(self, who):
+        if self.last_stamina != who.stamina:
+            self.last_stamina = who.stamina
+            self.image = self.base_image.copy()
+            stamina_percent = 1 - (who.stamina / who.max_stamina)
+            stamina_bar = Surface((self.bar_size[0], self.bar_size[1] * stamina_percent))
+            stamina_bar.fill((0, 0, 0))
+            self.image.blit(stamina_bar, (0, 0))
+
+
+class WeaponUI(UIBattle):
     weapon_sprite_pool = None
 
-    def __init__(self, weapon_box_images, status_box_image, text_size=24):
+    def __init__(self, weapon_box_images, pos):
         self._layer = 10
-        UIBattle.__init__(self)
-        self.font = Font(self.ui_font["text_paragraph"], int(text_size * self.screen_scale[1]))
-
-        self.image = Surface((400 * self.screen_scale[0], 200 * self.screen_scale[1]))
-        self.image.fill((255, 255, 255))
-        self.base_image = self.image.copy()
-
-        self.health_bar_size = (10 * self.screen_scale[0], self.image.get_height())
-        self.health_bar = Surface(self.health_bar_size, SRCALPHA)
-        self.health_bar.fill((0, 0, 0))
-        self.health_bar_original = self.health_bar.copy()
-        self.health_bar_rect = self.health_bar.get_rect(topright=(self.image.get_width() - self.health_bar_size[0], 0))
-        self.health_bar.fill((200, 0, 0))
-
-        self.health_bar_height = self.health_bar.get_height()
-
-        self.stamina_bar = Surface(self.health_bar_size, SRCALPHA)
-        self.stamina_bar.fill((0, 0, 0))
-        self.stamina_bar_original = self.stamina_bar.copy()
-        self.stamina_bar_rect = self.stamina_bar.get_rect(topright=(self.image.get_width(), 0))
-        self.stamina_bar.fill((0, 200, 0))
-
+        UIBattle.__init__(self, player_interact=False, has_containers=True)
+        self.font = Font(self.ui_font["text_paragraph"], int(24 * self.screen_scale[1]))
+        self.image = Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]),
+                             SRCALPHA)
         self.weapon_box_images = weapon_box_images
-        self.weapon_image = Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]),
-                                    SRCALPHA)
+        self.image = Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]),
+                             SRCALPHA)
 
         self.prim_main_weapon_box_rect = self.weapon_box_images[0].get_rect(topleft=(0, 0))
-        self.weapon_image.blit(self.weapon_box_images[0], self.prim_main_weapon_box_rect)
+        self.image.blit(self.weapon_box_images[0], self.prim_main_weapon_box_rect)
         self.prim_sub_weapon_box_rect = self.weapon_box_images[0].get_rect(
             topleft=(self.weapon_box_images[0].get_width(), 0))
-        self.weapon_image.blit(flip(self.weapon_box_images[0], True, False),
-                               self.prim_sub_weapon_box_rect)
+        self.image.blit(flip(self.weapon_box_images[0], True, False),
+                        self.prim_sub_weapon_box_rect)
 
         self.sec_main_weapon_box_rect = self.weapon_box_images[1].get_rect(
             topleft=(self.weapon_box_images[0].get_width() * 2, 0))
-        self.weapon_image.blit(self.weapon_box_images[1], self.sec_main_weapon_box_rect)
+        self.image.blit(self.weapon_box_images[1], self.sec_main_weapon_box_rect)
         self.sec_sub_weapon_box_rect = self.weapon_box_images[1].get_rect(
             topleft=(self.weapon_box_images[0].get_width() * 2,
                      self.weapon_box_images[1].get_height()))
@@ -141,37 +174,120 @@ class HeroUI(UIBattle):
         self.ammo_count_rect = ((self.prim_main_weapon_box_rect.midbottom, self.prim_sub_weapon_box_rect.midbottom),
                                 (self.sec_main_weapon_box_rect.midbottom, self.sec_sub_weapon_box_rect.midbottom))
 
-        self.weapon_image.blit(flip(self.weapon_box_images[1], True, False),
-                               self.sec_sub_weapon_box_rect)
+        self.image.blit(flip(self.weapon_box_images[1], True, False), self.sec_sub_weapon_box_rect)
 
-        self.weapon_image_set_pos = ((self.prim_main_weapon_box_rect.center, self.prim_sub_weapon_box_rect.center),
-                                     (self.sec_main_weapon_box_rect.center, self.sec_sub_weapon_box_rect.center))
+        self.image_set_pos = ((self.prim_main_weapon_box_rect.center, self.prim_sub_weapon_box_rect.center),
+                              (self.sec_main_weapon_box_rect.center, self.sec_sub_weapon_box_rect.center))
 
-        self.weapon_base_image = self.weapon_image.copy()  # after adding weapon image
-        self.weapon_base_image2 = self.weapon_image.copy()  # after other effect like ammo count, cooldown, holding
-        self.weapon_image_rect = self.weapon_image.get_rect(
-            topright=(self.image.get_width() - (self.health_bar_size[0] * 2), 0))
-
-        self.leader_image_rect = self.weapon_image.get_rect(topleft=(0, 0))
+        self.base_image = self.image.copy()  # before adding weapon image
+        self.base_image2 = self.image.copy()  # before other effect like ammo count, cooldown, holding
+        self.image_rect = self.image.get_rect(
+            topright=(self.image.get_width() - 80, 0))
 
         self.ammo_text_box = self.font.render("999", True, (0, 0, 0))  # make text box for ammo
         self.ammo_text_box.fill((255, 255, 255))
         self.ammo_text_box_base = self.ammo_text_box.copy()
 
-        self.leader_count_text_box_base = self.font.render("L:999", True, (0, 0, 0))
-        self.leader_count_text_box_base.fill((255, 255, 255))
-        self.leader_count_text_rect = self.leader_count_text_box_base.get_rect(
-            midleft=(0, self.image.get_height() - (self.leader_count_text_box_base.get_height() * 1.5)))
+        self.weapon_image_set_pos = ((self.prim_main_weapon_box_rect.center, self.prim_sub_weapon_box_rect.center),
+                                     (self.sec_main_weapon_box_rect.center, self.sec_sub_weapon_box_rect.center))
 
-        self.troop_count_text_box_base = self.font.render("T:999/999 + 999", True, (0, 0, 0))
-        self.troop_count_text_box_base.fill((255, 255, 255))
-        self.troop_count_text_rect = self.leader_count_text_box_base.get_rect(
-            midleft=(0, self.image.get_height() - (self.troop_count_text_box_base.get_height() / 2)))
+        self.equipped_weapon = None
+        self.magazine_count = None
+        self.weapon_cooldown = None
+        self.weapon_holding = [False, False]
+        self.rect = self.image.get_rect(center=pos)
 
-        self.status_effect_image = status_box_image
-        self.status_effect_image_rect = self.status_effect_image.get_rect(
-            bottomright=(self.health_bar_rect.bottomleft[0],
-                         self.health_bar_rect.bottomleft[1]))
+    def value_input(self, who):
+        weapon_filter_change = False
+        if (who.hold_timer > 1 or who.momentum) and "weapon" in who.current_action and True not in self.weapon_holding:
+            self.weapon_holding[who.current_action["weapon"]] = True
+            weapon_filter_change = True
+        elif (who.hold_timer == 0 and not who.momentum) and True in self.weapon_holding:
+            self.weapon_holding = [False, False]
+            weapon_filter_change = True
+        elif self.weapon_cooldown != who.weapon_cooldown:
+            weapon_filter_change = True
+            self.weapon_cooldown = who.weapon_cooldown.copy()
+
+        if self.equipped_weapon != who.equipped_weapon:
+            self.equipped_weapon = who.equipped_weapon
+            self.image = self.base_image.copy()
+            self.weapon_name_set = list(who.weapon_name)
+            self.weapon_name_set.insert(0, self.weapon_name_set.pop(
+                self.weapon_name_set.index(self.weapon_name_set[self.equipped_weapon])))
+            self.weapon_set_index = list(range(0, len(who.weapon_name)))
+            self.weapon_set_index.insert(0,
+                                         self.weapon_set_index.pop(self.weapon_set_index.index(self.equipped_weapon)))
+            for index, this_weapon_set in enumerate(self.weapon_name_set):
+                if index > len(self.weapon_name_set) - 1:
+                    index = len(self.weapon_name_set) - 1
+                true_weapon_set_index = self.weapon_set_index[index]
+                for index2, this_weapon in enumerate(this_weapon_set):
+                    if who.weapon_version[true_weapon_set_index][index2] in self.weapon_sprite_pool[this_weapon]:
+                        weapon_image = self.weapon_sprite_pool[this_weapon][who.weapon_version[
+                            true_weapon_set_index][index2]]["Icon"].copy()
+                    else:
+                        weapon_image = self.weapon_sprite_pool[this_weapon]["Common"]["Icon"].copy()
+
+                    if index > 0:  # unequipped weapon
+                        weapon_image = scale(weapon_image,
+                                             (self.image.get_width() / 5,
+                                              self.image.get_height() / 5))
+                    self.image.blit(weapon_image,
+                                    weapon_image.get_rect(center=self.weapon_image_set_pos[index][index2]))
+            self.base_image2 = self.image.copy()
+
+        if self.equipped_weapon != who.equipped_weapon or weapon_filter_change:  # add weapon filter and ammo
+            if weapon_filter_change:
+                self.image = self.base_image2.copy()
+            for index, this_weapon_set in enumerate(self.weapon_name_set):
+                if index == 0:  # add cooldown in any
+                    for index2, this_weapon in enumerate(this_weapon_set):
+                        cooldown = who.weapon_cooldown[index2]
+                        speed = who.weapon_speed[index2]
+                        if 0 < cooldown < speed:
+                            cooldown_image = Surface((self.weapon_box_images[0].get_width(),
+                                                      self.weapon_box_images[0].get_height() *
+                                                      (1 - (cooldown / speed))), SRCALPHA)
+                            cooldown_image.fill((255, 50, 50, 200))
+                            self.image.blit(cooldown_image, self.weapon_cooldown_rect[index2])
+                        elif self.weapon_holding[index2]:  # holding weapon animation
+                            hold_image = Surface((self.weapon_box_images[0].get_width(),
+                                                  self.weapon_box_images[0].get_height()), SRCALPHA)
+                            hold_image.fill((100, 200, 100, 200))
+                            self.image.blit(hold_image, self.weapon_cooldown_rect[index2])
+
+        if who.magazine_count != self.magazine_count:
+            for index, this_weapon_set in enumerate(self.weapon_name_set):
+                if index > len(self.weapon_name_set) - 1:
+                    index = len(self.weapon_name_set) - 1
+                true_weapon_set_index = self.weapon_set_index[index]
+                for index2, this_weapon in enumerate(this_weapon_set):
+                    if who.magazine_size[true_weapon_set_index][index2]:  # range weapon
+                        if true_weapon_set_index not in who.magazine_count or \
+                                (true_weapon_set_index in who.magazine_count and
+                                 index2 not in who.magazine_count[true_weapon_set_index]):  # no ammo
+                            ammo_count = 0
+                            text_colour = (200, 100, 100)
+                        else:
+                            ammo_count = who.magazine_count[true_weapon_set_index][index2]
+                            text_colour = (0, 0, 0)
+                        ammo_text_surface = self.font.render(str(ammo_count), True, text_colour)  # ammo number
+                        self.ammo_text_box = self.ammo_text_box_base.copy()
+                        self.ammo_text_box.blit(ammo_text_surface,
+                                                ammo_text_surface.get_rect(center=(self.ammo_text_box.get_width() / 2,
+                                                                                   self.ammo_text_box.get_height() / 2)))
+                        self.image.blit(self.ammo_text_box,
+                                        self.ammo_text_box.get_rect(midtop=self.ammo_count_rect[index][index2]))
+
+            self.magazine_count = {key: value.copy() for key, value in who.magazine_count.items()}
+
+
+class StatusUI(UIBattle):
+    def __init__(self, status_box_image, pos):
+        self._layer = 10
+        UIBattle.__init__(self, player_interact=False, has_containers=True)
+        self.image = status_box_image
 
         bar_bad = Surface((18 * self.screen_scale[0], 13 * self.screen_scale[1]))
         bar_bad.fill((100, 0, 0))
@@ -198,22 +314,7 @@ class HeroUI(UIBattle):
             self.status_bar_image[0].get_rect(midbottom=(179 * self.screen_scale[0], 16 * self.screen_scale[1])),
             self.status_bar_image[0].get_rect(midbottom=(203 * self.screen_scale[0], 16 * self.screen_scale[1])))
 
-        self.base_image.blit(self.status_effect_image, self.status_effect_image_rect)
-
-        self.equipped_weapon = None
         self.status = None
-        self.magazine_count = None
-        self.weapon_cooldown = None
-        self.weapon_holding = [False, False]
-        self.troop_follower_size = None
-        self.leader_follower_size = None
-
-        self.base_image.blit(self.health_bar, self.health_bar_rect)
-        self.base_image.blit(self.stamina_bar, self.stamina_bar_rect)
-
-        self.last_health = 0
-        self.last_stamina = 0
-
         self.melee_attack_mod = 3
         self.melee_def_mod = 3
         self.range_attack_mod = 3
@@ -224,42 +325,73 @@ class HeroUI(UIBattle):
         self.hidden_mod = 3
         self.temperature_mod = 3
 
-        self.pos = (0, 0)
-        self.rect = self.image.get_rect(topleft=self.pos)
-
-    def add_leader_image(self, leader_image):
-        self.base_image.blit(smoothscale(leader_image,
-                                         (150 * self.screen_scale[0], 150 * self.screen_scale[1])),
-                             self.leader_image_rect)
-        self.image = self.base_image.copy()
+        self.rect = self.image.get_rect(topleft=pos)
 
     def value_input(self, who):
-        if self.last_health != who.health:
-            self.last_health = who.health
-            self.health_bar = self.health_bar_original.copy()
-            health_percent = who.health / who.max_health
-            health_bar = Surface((self.health_bar_size[0], self.health_bar_size[1] * health_percent))
-            health_bar.fill((200, 0, 0))
-            health_bar_rect = health_bar.get_rect(bottomleft=(0, self.health_bar_height))
-            self.health_bar.blit(health_bar, health_bar_rect)
+        if who.melee_attack_mod != self.melee_attack_mod:
+            self.melee_attack_mod = who.melee_attack_mod
+            self.image.blit(self.status_bar_image[self.melee_attack_mod], self.status_bar_rect[0])
 
-            self.base_image.blit(self.health_bar, self.health_bar_rect)
-            self.image.blit(self.health_bar, self.health_bar_rect)
+        if who.melee_def_mod != self.melee_def_mod:
+            self.melee_def_mod = who.melee_def_mod
+            self.image.blit(self.status_bar_image[self.melee_def_mod], self.status_bar_rect[1])
 
-        if self.last_stamina != who.stamina:
-            self.last_stamina = who.stamina
-            self.stamina_bar = self.stamina_bar_original.copy()
-            stamina_percent = who.stamina / who.max_stamina
-            if stamina_percent < 0:
-                stamina_percent = 0
-            stamina_bar = Surface((self.health_bar_size[0], self.health_bar_size[1] * stamina_percent))
-            stamina_bar.fill((0, 200, 0))
-            stamina_bar_rect = stamina_bar.get_rect(bottomleft=(0, self.health_bar_height))
-            self.stamina_bar.blit(stamina_bar, stamina_bar_rect)
+        if who.range_attack_mod != self.range_attack_mod:
+            self.range_attack_mod = who.range_attack_mod
+            self.image.blit(self.status_bar_image[self.range_attack_mod], self.status_bar_rect[2])
 
-            self.base_image.blit(self.stamina_bar, self.stamina_bar_rect)
-            self.image.blit(self.stamina_bar, self.stamina_bar_rect)
+        if who.range_def_mod != self.range_def_mod:
+            self.range_def_mod = who.range_def_mod
+            self.image.blit(self.status_bar_image[self.range_def_mod], self.status_bar_rect[3])
 
+        if who.speed_mod != self.speed_mod:
+            self.speed_mod = who.speed_mod
+            self.image.blit(self.status_bar_image[self.speed_mod], self.status_bar_rect[4])
+
+        if who.morale_mod != self.morale_mod:
+            self.morale_mod = who.morale_mod
+            self.image.blit(self.status_bar_image[self.morale_mod], self.status_bar_rect[5])
+
+        if who.discipline_mod != self.discipline_mod:
+            self.discipline_mod = who.discipline_mod
+            self.image.blit(self.status_bar_image[self.discipline_mod], self.status_bar_rect[6])
+
+        # if who.hidden_mod != self.hidden_mod:
+        #     self.hidden_mod = who.hidden_mod
+        #     self.image.blit(self.status_bar_image[self.hidden_mod], self.status_bar_rect[7])
+
+        if who.temperature_mod != self.temperature_mod:
+            self.temperature_mod = who.temperature_mod
+            self.image.blit(self.status_bar_image[self.temperature_mod], self.status_bar_rect[7])
+
+
+class FollowerUI(UIBattle):
+    def __init__(self, pos):
+        self._layer = 10
+        UIBattle.__init__(self, player_interact=False, has_containers=True)
+        self.font = Font(self.ui_font["text_paragraph"], int(24 * self.screen_scale[1]))
+
+        self.image = Surface((150 * self.screen_scale[0], 70 * self.screen_scale[1]))
+        self.image.fill((255, 255, 255))
+        self.base_image = self.image.copy()
+
+        self.leader_count_text_box_base = self.font.render("L:999", True, (0, 0, 0))
+        self.leader_count_text_box_base.fill((255, 255, 255))
+        self.leader_count_text_rect = self.leader_count_text_box_base.get_rect(
+            midleft=(0, (self.leader_count_text_box_base.get_height())))
+
+        self.troop_count_text_box_base = self.font.render("T:999/999 + 999", True, (0, 0, 0))
+        self.troop_count_text_box_base.fill((255, 255, 255))
+        self.troop_count_text_rect = self.leader_count_text_box_base.get_rect(
+            midleft=(0, (self.troop_count_text_box_base.get_height() * 2)))
+
+        self.troop_follower_size = None
+        self.leader_follower_size = None
+
+        self.pos = pos
+        self.rect = self.image.get_rect(topleft=self.pos)
+
+    def value_input(self, who):
         if self.leader_follower_size != len(who.alive_leader_follower):
             self.leader_follower_size = len(who.alive_leader_follower)
             leader_count_text_box = self.leader_count_text_box_base.copy()
@@ -282,152 +414,14 @@ class HeroUI(UIBattle):
                                                                          troop_count_text_box.get_height() / 2)))
             self.image.blit(troop_count_text_box, self.troop_count_text_rect)
 
-        weapon_filter_change = False
-        if (who.hold_timer > 1 or who.momentum) and "weapon" in who.current_action and True not in self.weapon_holding:
-            self.weapon_holding[who.current_action["weapon"]] = True
-            weapon_filter_change = True
-        elif (who.hold_timer == 0 and not who.momentum) and True in self.weapon_holding:
-            self.weapon_holding = [False, False]
-            weapon_filter_change = True
-        elif self.weapon_cooldown != who.weapon_cooldown:
-            weapon_filter_change = True
-            self.weapon_cooldown = who.weapon_cooldown.copy()
 
-        if self.equipped_weapon != who.equipped_weapon:
-            self.equipped_weapon = who.equipped_weapon
-            self.weapon_image = self.weapon_base_image.copy()
-            self.weapon_name_set = list(who.weapon_name)
-            self.weapon_name_set.insert(0, self.weapon_name_set.pop(
-                self.weapon_name_set.index(self.weapon_name_set[self.equipped_weapon])))
-            self.weapon_set_index = list(range(0, len(who.weapon_name)))
-            self.weapon_set_index.insert(0,
-                                         self.weapon_set_index.pop(self.weapon_set_index.index(self.equipped_weapon)))
-            for index, this_weapon_set in enumerate(self.weapon_name_set):
-                if index > len(self.weapon_name_set) - 1:
-                    index = len(self.weapon_name_set) - 1
-                true_weapon_set_index = self.weapon_set_index[index]
-                for index2, this_weapon in enumerate(this_weapon_set):
-                    if who.weapon_version[true_weapon_set_index][index2] in self.weapon_sprite_pool[this_weapon]:
-                        weapon_image = self.weapon_sprite_pool[this_weapon][who.weapon_version[
-                            true_weapon_set_index][index2]]["Icon"].copy()
-                    else:
-                        weapon_image = self.weapon_sprite_pool[this_weapon]["Common"]["Icon"].copy()
-
-                    if index > 0:  # unequipped weapon
-                        weapon_image = scale(weapon_image,
-                                             (self.weapon_image.get_width() / 5,
-                                              self.weapon_image.get_height() / 5))
-                    self.weapon_image.blit(weapon_image,
-                                           weapon_image.get_rect(center=self.weapon_image_set_pos[index][index2]))
-            self.weapon_base_image2 = self.weapon_image.copy()
-
-        if self.equipped_weapon != who.equipped_weapon or weapon_filter_change:  # add weapon filter and ammo
-            if weapon_filter_change:
-                self.weapon_image = self.weapon_base_image2.copy()
-            for index, this_weapon_set in enumerate(self.weapon_name_set):
-                if index == 0:  # add cooldown in any
-                    for index2, this_weapon in enumerate(this_weapon_set):
-                        cooldown = who.weapon_cooldown[index2]
-                        speed = who.weapon_speed[index2]
-                        if 0 < cooldown < speed:
-                            cooldown_image = Surface((self.weapon_box_images[0].get_width(),
-                                                      self.weapon_box_images[0].get_height() *
-                                                      (1 - (cooldown / speed))), SRCALPHA)
-                            cooldown_image.fill((255, 50, 50, 200))
-                            self.weapon_image.blit(cooldown_image, self.weapon_cooldown_rect[index2])
-                        elif self.weapon_holding[index2]:  # holding weapon animation
-                            hold_image = Surface((self.weapon_box_images[0].get_width(),
-                                                  self.weapon_box_images[0].get_height()), SRCALPHA)
-                            hold_image.fill((100, 200, 100, 200))
-                            self.weapon_image.blit(hold_image, self.weapon_cooldown_rect[index2])
-
-        if who.magazine_count != self.magazine_count:
-            for index, this_weapon_set in enumerate(self.weapon_name_set):
-                if index > len(self.weapon_name_set) - 1:
-                    index = len(self.weapon_name_set) - 1
-                true_weapon_set_index = self.weapon_set_index[index]
-                for index2, this_weapon in enumerate(this_weapon_set):
-                    if who.magazine_size[true_weapon_set_index][index2]:  # range weapon
-                        if true_weapon_set_index not in who.magazine_count or \
-                                (true_weapon_set_index in who.magazine_count and
-                                 index2 not in who.magazine_count[true_weapon_set_index]):  # no ammo
-                            ammo_count = 0
-                            text_colour = (200, 100, 100)
-                        else:
-                            ammo_count = who.magazine_count[true_weapon_set_index][index2]
-                            text_colour = (0, 0, 0)
-                        ammo_text_surface = self.font.render(str(ammo_count), True, text_colour)  # ammo number
-                        self.ammo_text_box = self.ammo_text_box_base.copy()
-                        self.ammo_text_box.blit(ammo_text_surface,
-                                                ammo_text_surface.get_rect(center=(self.ammo_text_box.get_width() / 2,
-                                                                                   self.ammo_text_box.get_height() / 2)))
-                        self.weapon_image.blit(self.ammo_text_box,
-                                               self.ammo_text_box.get_rect(midtop=self.ammo_count_rect[index][index2]))
-
-            self.magazine_count = {key: value.copy() for key, value in who.magazine_count.items()}
-
-        if self.equipped_weapon != who.equipped_weapon or who.magazine_count != self.magazine_count or weapon_filter_change:
-            self.image.blit(self.weapon_image, self.weapon_image_rect)
-
-        status_change = False
-        if who.melee_attack_mod != self.melee_attack_mod:
-            self.melee_attack_mod = who.melee_attack_mod
-            self.status_effect_image.blit(self.status_bar_image[self.melee_attack_mod], self.status_bar_rect[0])
-            status_change = True
-
-        if who.melee_def_mod != self.melee_def_mod:
-            self.melee_def_mod = who.melee_def_mod
-            self.status_effect_image.blit(self.status_bar_image[self.melee_def_mod], self.status_bar_rect[1])
-            status_change = True
-
-        if who.range_attack_mod != self.range_attack_mod:
-            self.range_attack_mod = who.range_attack_mod
-            self.status_effect_image.blit(self.status_bar_image[self.range_attack_mod], self.status_bar_rect[2])
-            status_change = True
-
-        if who.range_def_mod != self.range_def_mod:
-            self.range_def_mod = who.range_def_mod
-            self.status_effect_image.blit(self.status_bar_image[self.range_def_mod], self.status_bar_rect[3])
-            status_change = True
-
-        if who.speed_mod != self.speed_mod:
-            self.speed_mod = who.speed_mod
-            self.status_effect_image.blit(self.status_bar_image[self.speed_mod], self.status_bar_rect[4])
-            status_change = True
-
-        if who.morale_mod != self.morale_mod:
-            self.morale_mod = who.morale_mod
-            self.status_effect_image.blit(self.status_bar_image[self.morale_mod], self.status_bar_rect[5])
-            status_change = True
-
-        if who.discipline_mod != self.discipline_mod:
-            self.discipline_mod = who.discipline_mod
-            self.status_effect_image.blit(self.status_bar_image[self.discipline_mod], self.status_bar_rect[6])
-            status_change = True
-
-        if who.hidden_mod != self.hidden_mod:
-            self.hidden_mod = who.hidden_mod
-            self.status_effect_image.blit(self.status_bar_image[self.hidden_mod], self.status_bar_rect[7])
-            status_change = True
-
-        if who.temperature_mod != self.temperature_mod:
-            self.temperature_mod = who.temperature_mod
-            self.status_effect_image.blit(self.status_bar_image[self.temperature_mod], self.status_bar_rect[8])
-            status_change = True
-
-        if status_change:
-            self.base_image.blit(self.status_effect_image, self.status_effect_image_rect)
-            self.image.blit(self.status_effect_image, self.status_effect_image_rect)
-
-
-class SkillCardIcon(UIBattle, Sprite):
+class SkillIcon(UIBattle, Sprite):
     cooldown = None
     active_skill = None
 
     def __init__(self, image, pos, key):
         self._layer = 11
-        UIBattle.__init__(self)
-        Sprite.__init__(self, self.containers)
+        UIBattle.__init__(self, has_containers=True)
         self.pos = pos  # pos of the skill on ui
         self.font = Font(self.ui_font["main_button"], int(24 * self.screen_scale[1]))
 
@@ -488,22 +482,24 @@ class SkillCardIcon(UIBattle, Sprite):
                 self.image.blit(text_surface, text_rect)
 
 
-class FPScount(UIBattle):
-    def __init__(self):
+class FPSCount(UIBattle):
+    def __init__(self, parent):
         self._layer = 12
         UIBattle.__init__(self, player_interact=False)
-        self.image = Surface((50, 50), SRCALPHA)
+        self.image = Surface((20, 20))
+        self.image.fill((220, 220, 180))
         self.base_image = self.image.copy()
         self.font = Font(self.ui_font["main_button"], 18)
-        fps_text = self.font.render("60", True, Color("red"))
+        self.clock = parent.clock
+        fps_text = self.font.render("60", True, (255, 60, 60))
         self.text_rect = fps_text.get_rect(center=(10, 10))
         self.rect = self.image.get_rect(topleft=(0, 0))
 
-    def fps_show(self, clock):
+    def update(self):
         """Update current fps"""
         self.image = self.base_image.copy()
-        fps = str(int(clock.get_fps()))
-        fps_text = self.font.render(fps, True, Color("red"))
+        fps = str(int(self.clock.get_fps()))
+        fps_text = self.font.render(fps, True, (255, 60, 60))
         text_rect = fps_text.get_rect(center=(10, 10))
         self.image.blit(fps_text, text_rect)
 
@@ -526,7 +522,7 @@ class MiniMap(UIBattle):
             leader_dot = Surface(
                 (10 * self.screen_scale[0], 10 * self.screen_scale[1]))  # dot for team2 leader
             leader_dot.fill((0, 0, 0))  # black corner
-            team_part = Surface((8 * self.screen_scale[0], 8 * self.screen_scale[1]))  # size 6x6
+            team_part = Surface((8 * self.screen_scale[0], 8 * self.screen_scale[1]))
             team_part.fill(self.colour[team])  # colour rect
             rect = leader_dot.get_rect(
                 center=(leader_dot.get_width() / 2, leader_dot.get_height() / 2))
@@ -546,7 +542,7 @@ class MiniMap(UIBattle):
         self.map_scale_height = len(base_map.map_array) / size[1]
         self.base_image = self.image.copy()
         self.camera_border = [camera.image.get_width(), camera.image.get_height()]
-        self.rect = self.image.get_rect(bottomright=self.pos)
+        self.rect = self.image.get_rect(midbottom=self.pos)
 
     def update(self):
         """update troop and leader dot on map"""
@@ -567,11 +563,12 @@ class MiniMap(UIBattle):
                     rect = self.troop_dot_images[subunit.team].get_rect(center=scaled_pos)
                     self.image.blit(self.troop_dot_images[subunit.team], rect)
 
+            # Draw camera border
             draw.rect(self.image, (0, 0, 0),
-                      ((self.battle.camera_topleft_corner[0] / self.screen_scale[0] / (self.map_scale_width)) / 5,
-                       (self.battle.camera_topleft_corner[1] / self.screen_scale[1] / (self.map_scale_height)) / 5,
+                      ((self.battle.camera_topleft_corner[0] / self.screen_scale[0] / self.map_scale_width) / 5,
+                       (self.battle.camera_topleft_corner[1] / self.screen_scale[1] / self.map_scale_height) / 5,
                        (self.camera_border[0] / self.screen_scale[0] / 5) / self.map_scale_width,
-                       (self.camera_border[1] / self.screen_scale[1] / 5) / self.map_scale_height), 2)
+                       (self.camera_border[1] / self.screen_scale[1] / 5) / self.map_scale_height), 1)
 
 
 class EventLog(UIBattle):
@@ -579,20 +576,21 @@ class EventLog(UIBattle):
     def __init__(self, image, pos):
         self._layer = 10
         UIBattle.__init__(self)
-        self.font = Font(self.ui_font["main_button"], int(image.get_height() / 15))
+        self.font = Font(self.ui_font["main_button"], int(image.get_height() / 5))
         self.pos = pos
         self.image = image
-        self.max_row_show = int(image.get_height() / self.font.get_height())
+        self.max_row_show = int(image.get_height() / (self.font.get_height() + (5 * self.screen_scale[1])))
+
+        self.max_col_show = int(image.get_width() / self.font.get_height())
         self.base_image = self.image.copy()
-        self.rect = self.image.get_rect(bottomleft=self.pos)
+        self.rect = self.image.get_rect(midbottom=self.pos)
         self.len_check = 0
         self.current_start_row = 0
-        self.battle_log = []  # 0 troop
-        self.current_start_row = 0
+        self.battle_log = []
         self.scroll = None  # Link from battle after creation of the object
 
     def make_new_log(self):
-        self.battle_log = []  # 0 troop
+        self.battle_log = []
         self.current_start_row = 0
         self.len_check = 0  # total number of row in the current mode
 
@@ -629,14 +627,14 @@ class EventLog(UIBattle):
 
     def recreate_image(self):
         self.image = self.base_image.copy()
-        row = 10
+        row = 10 * self.screen_scale[1]
         for index, text in enumerate(self.battle_log[self.current_start_row:]):
             if index == self.max_row_show:
                 break
             text_surface = self.font.render(text[1], True, (0, 0, 0))
             text_rect = text_surface.get_rect(topleft=(40, row))
             self.image.blit(text_surface, text_rect)
-            row += 20  # Whitespace between text row
+            row += 20 * self.screen_scale[1]  # Whitespace between text row
 
     def log_text_process(self, who, text_output):
         """Cut up whole log into separate sentence based on space"""
@@ -813,8 +811,7 @@ class UnitIcon(UIBattle, Sprite):
 
     def __init__(self, pos, unit, size):
         self._layer = 11
-        UIBattle.__init__(self)
-        Sprite.__init__(self, self.containers)
+        UIBattle.__init__(self, has_containers=True)
         self.who = unit  # link unit object so when click can correctly select or go to position
         self.pos = pos  # pos on unit selector ui
         self.place_pos = pos  # pos when drag by mouse
@@ -888,20 +885,26 @@ class TempUnitIcon(UIBattle):
     def __init__(self, team, name, image, index, map_id=None, coa=None):
         UIBattle.__init__(self)
         self.team = team
-        self.index = index
-        self.map_id = map_id
+        self.index = index  # index start from 0
+        self.map_id = map_id  # map id start from 1
         self.coa = coa
         self.portrait = Surface((200 * self.screen_scale[0], 200 * self.screen_scale[1]), SRCALPHA)
         self.name = name
-        if type(image) in (int, float, str):  # text instead of picture
+        if type(image) in (int, float, str):  # just text instead of picture
             font = Font(self.ui_font["main_button"],
-                        int(120 / (len(image) / 3) * self.screen_scale[1]))
+                        int(80 / (len(image) / 3) * self.screen_scale[1]))
             image_surface = font.render(str(image), True, (0, 0, 0))
             image_rect = image_surface.get_rect(center=(self.portrait.get_width() / 2, self.portrait.get_height() / 2))
             self.portrait.blit(image_surface, image_rect)
         else:
+            font = Font(self.ui_font["main_button"],
+                        int(40 / (len(str(self.map_id)) / 3) * self.screen_scale[1]))
             image_rect = image.get_rect(center=(self.portrait.get_width() / 2, self.portrait.get_height() / 2))
             self.portrait.blit(image, image_rect)
+            image_surface = text_render(str(self.map_id), font)  # add icon map id so it is easier to distinguish unit
+            image_rect = image_surface.get_rect(center=(self.portrait.get_width() / 2,
+                                                        self.portrait.get_height() / 2.5))
+            self.portrait.blit(image_surface, image_rect)
         self.is_leader = True
 
 
@@ -952,12 +955,12 @@ class TimeUI(UIBattle):
         self.pos = (0, 0)
         self.image = image.copy()
         self.base_image = self.image.copy()
-        self.rect = self.image.get_rect(topleft=self.pos)
+        self.rect = self.image.get_rect(midtop=self.pos)
 
     def change_pos(self, pos, time_number, speed_number=None, time_button=None):
         """change position of the ui and related buttons"""
         self.pos = pos
-        self.rect = self.image.get_rect(topleft=pos)
+        self.rect = self.image.get_rect(midtop=self.pos)
         time_number.change_pos(self.rect.topleft)
         if speed_number:
             speed_number.change_pos((self.rect.center[0] + int(self.rect.center[0] / 10), self.rect.center[1]))
@@ -1051,8 +1054,8 @@ class WheelUI(UIBattle):
     def selection(self, mouse_pos):
         closest_rect_distance = None
         closest_rect_index = None
-        new_mouse_pos = Vector2(mouse_pos[0] / self.screen_size[0] * self.image.get_width(),
-                                mouse_pos[1] / self.screen_size[1] * self.image.get_height())
+        new_mouse_pos = Vector2(mouse_pos[0] / self.battle_camera_size[0] * self.image.get_width(),
+                                mouse_pos[1] / self.battle_camera_size[1] * self.image.get_height())
         for index, rect in enumerate(self.wheel_rect):
             distance = Vector2(rect.center).distance_to(new_mouse_pos)
             if closest_rect_distance is None or distance < closest_rect_distance:
@@ -1098,22 +1101,17 @@ class WheelUI(UIBattle):
 
 
 class EscBox(UIBattle):
-    images = {}
-
-    def __init__(self):
+    def __init__(self, image):
         self._layer = 24
         UIBattle.__init__(self, player_interact=False)
         self.pos = (self.screen_size[0] / 2, self.screen_size[1] / 2)
         self.mode = "menu"  # Current menu mode
-        self.image = self.images[self.mode]
+        self.image = image
         self.rect = self.image.get_rect(center=self.pos)
 
     def change_mode(self, mode):
         """Change between 0 menu, 1 option, 2 encyclopedia mode"""
         self.mode = mode
-        if self.mode != "encyclopedia":
-            self.image = self.images[mode]
-            self.rect = self.image.get_rect(center=self.pos)
 
 
 class EscButton(UIBattle):
@@ -1137,43 +1135,44 @@ class EscButton(UIBattle):
 
 
 class BattleDone(UIBattle):
-    def __init__(self, pos, box_image, result_image):
+    def __init__(self, pos, image):
         self._layer = 18
         UIBattle.__init__(self, player_interact=False)
-        self.box_image = box_image
-        self.result_image = result_image
+        self.image = image
+        self.base_image = image.copy()
         self.font = Font(self.ui_font["name_font"], int(self.screen_scale[1] * 60))
         self.header_font = Font(self.ui_font["text_paragraph_bold"], int(self.screen_scale[1] * 36))
         self.text_font = Font(self.ui_font["text_paragraph"], int(self.screen_scale[1] * 24))
         self.pos = pos
-        self.image = self.box_image.copy()
         self.rect = self.image.get_rect(center=self.pos)
         self.winner = None
         self.result_showing = False
 
-        self.result_text_x = {"Faction": 10 * self.screen_scale[0], "Total": 500 * self.screen_scale[0],
-                              "Alive": 650 * self.screen_scale[0],
-                              "Flee": 800 * self.screen_scale[0],
-                              "Death": 950 * self.screen_scale[0]}
+        self.result_text_x = {"Faction": 100 * self.screen_scale[0], "Total": 600 * self.screen_scale[0],
+                              "Alive": 750 * self.screen_scale[0],
+                              "Flee": 900 * self.screen_scale[0],
+                              "Death": 1050 * self.screen_scale[0]}
 
     def pop(self, winner, coa=None):
         self.winner = str(winner)
-        self.image = self.box_image.copy()
+        self.image = self.base_image.copy()
         text_surface = self.font.render(self.winner, True, (0, 0, 0))
-        text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, int(self.screen_scale[1] * 36) + 3))
+        text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, int(self.screen_scale[1] * 100)))
         self.image.blit(text_surface, text_rect)
-        if self.winner != "Draw":
+        if self.winner != "Draw":  # add faction name and coa that win
             text_surface = self.font.render("Victory", True, (0, 0, 0))
-            text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, int(self.screen_scale[1] * 60) * 2))
+            text_rect = text_surface.get_rect(center=(self.image.get_width() / 2, int(self.screen_scale[1] * 200)))
             self.image.blit(text_surface, text_rect)
             new_coa = smoothscale(coa, (200 * self.screen_scale[0], 200 * self.screen_scale[1]))
             coa_rect = new_coa.get_rect(midtop=text_rect.midbottom)
             self.image.blit(new_coa, coa_rect)
         self.result_showing = False
 
+        self.rect = self.image.get_rect(center=self.pos)
+
     def show_result(self, team_coa, stat):
         self.result_showing = True
-        self.image = self.result_image.copy()
+        self.image = self.base_image.copy()
 
         for key, value in self.result_text_x.items():
             text_surface = self.header_font.render(key, True, (0, 0, 0))
@@ -1187,20 +1186,23 @@ class BattleDone(UIBattle):
         y = 150 * self.screen_scale[1]
         for team, coa in enumerate(team_coa):
             new_coa = smoothscale(coa, (50 * self.screen_scale[0], 50 * self.screen_scale[1]))
-            coa_rect = new_coa.get_rect(midleft=(10 * self.screen_scale[0], y))
+            coa_rect = new_coa.get_rect(midleft=(50 * self.screen_scale[0], y))
             self.image.blit(new_coa, coa_rect)
             for key, value in self.result_text_x.items():
                 try:
-                    text_surface = self.header_font.render(str(stat[key][team + 1]), True, (0, 0, 0))
+                    if key == "Faction":
+                        text_surface = self.header_font.render("Team" + str(team + 1), True, (0, 0, 0))
+                    else:
+                        text_surface = self.header_font.render(str(stat[key][team + 1]), True, (0, 0, 0))
                 except IndexError:  # no number in list, e.g., no wounded troops
                     text_surface = self.header_font.render(str(0), True, (0, 0, 0))
                 if key == "Faction":
-                    text_rect = text_surface.get_rect(midleft=(65 * self.screen_scale[0], y))
+                    text_rect = text_surface.get_rect(midleft=(140 * self.screen_scale[0], y))
                 else:
                     text_rect = text_surface.get_rect(midright=(value, y))
                 self.image.blit(text_surface, text_rect)
 
-            y += 150 * self.screen_scale[1]
+            y += 80 * self.screen_scale[1]
 
         self.rect = self.image.get_rect(center=self.pos)
 

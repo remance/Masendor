@@ -1,3 +1,4 @@
-"ID","Type","ID","POS","Angle","Animation","Other Data"
-0,"unit","EMER+2","0.7,0.95",0,"Human_Menu_SitMusic/0","no-crop"
-1,"unit","HRE+1","0.65,0.95",-90,"Human_Menu_SitMusic/0","no-crop"
+"ID","Type","ID","POS","Angle","Animation","Other Data","Size"
+0,"unit","EMER+2","0.9,0.9",0,"Human_Menu_SitMusic/0","no-crop",300
+1,"unit","HRE+1","0.8,0.9",-90,"Human_Menu_SitMusic/0","no-crop",300
+2,"unit","CHR+1","0.15,0.9",-90,"Human_Menu_SitArtist/0","no-crop",400

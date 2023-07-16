@@ -1,10 +1,9 @@
 from random import randint
 
-from pygame import sprite, Surface, font, transform, Vector2, SRCALPHA
-
-from engine.utility import set_rotate
+from pygame import Surface, font, transform, Vector2, SRCALPHA
 
 from engine.uibattle.uibattle import UIBattle
+from engine.utility import set_rotate
 
 
 class Weather(UIBattle):
@@ -94,7 +93,7 @@ class MatterSprite(UIBattle):
     set_rotate = set_rotate
 
     def __init__(self, start_pos, target, speed, image, screen_rect_size):
-        self._layer = 9
+        self._layer = 8
         UIBattle.__init__(self, has_containers=True)
         self.speed = speed
         self.base_pos = Vector2(start_pos)  # should be at the end corner of screen
@@ -130,7 +129,7 @@ class MatterSprite(UIBattle):
 
 
 class SpecialWeatherEffect(UIBattle):
-    """Special effect from weather beyond sprite such as thunder, fog etc."""
+    """Super effect that affect whole screen"""
 
     def __init__(self, pos, target, speed, image, end_time):
         self._layer = 8
@@ -143,13 +142,5 @@ class SpecialWeatherEffect(UIBattle):
         self.end_time = end_time
 
     def update(self):
-        """TODO later"""
+        """TODO later when weather has extreme effect """
         pass
-
-
-class SuperEffect(sprite.Sprite):
-    """Super effect that affect whole screen"""
-
-    def __init__(self, pos, image):
-        self._layer = 12
-        sprite.Sprite.__init__(self)

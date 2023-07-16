@@ -3,15 +3,13 @@ from random import randint
 
 def add_original_trait(self):
     """Add troop preset, race, mount, grade, and armour trait to original stat"""
-
-    melee_attack_modifier = 1
-    melee_def_modifier = 1
-    range_def_modifier = 1
-    accuracy_modifier = 1
-    reload_modifier = 1
-    speed_modifier = 1
-    charge_modifier = 1
-
+    melee_attack_bonus = 0
+    melee_def_bonus = 0
+    range_def_bonus = 0
+    accuracy_bonus = 0
+    reload_bonus = 0
+    speed_bonus = 0
+    charge_bonus = 0
     discipline_bonus = 0
     charge_def_bonus = 0
     sight_bonus = 0
@@ -21,13 +19,13 @@ def add_original_trait(self):
     stamina_regen_bonus = 0
 
     for trait in self.trait["Original"].values():
-        melee_attack_modifier += trait["Melee Attack Modifier"]
-        melee_def_modifier += trait["Melee Defence Modifier"]
-        range_def_modifier += trait["Ranged Defence Modifier"]
-        speed_modifier += trait["Speed Modifier"]
-        accuracy_modifier += trait["Accuracy Modifier"]
-        reload_modifier += trait["Reload Modifier"]
-        charge_modifier += trait["Charge Modifier"]
+        melee_attack_bonus += trait["Melee Attack Bonus"]
+        melee_def_bonus += trait["Melee Defence Bonus"]
+        range_def_bonus += trait["Ranged Defence Bonus"]
+        speed_bonus += trait["Speed Bonus"]
+        accuracy_bonus += trait["Accuracy Bonus"]
+        reload_bonus += trait["Reload Bonus"]
+        charge_bonus += trait["Charge Bonus"]
         charge_def_bonus += trait["Charge Defence Bonus"]
         sight_bonus += trait["Sight Bonus"]
         hidden_bonus += trait["Hidden Bonus"]
@@ -59,15 +57,15 @@ def add_original_trait(self):
     self.original_charge *= (randint(random_stat[0], random_stat[1]) / 100)
     self.original_charge_def *= (randint(random_stat[0], random_stat[1]) / 100)
 
-    self.original_melee_attack *= melee_attack_modifier
-    self.original_melee_def *= melee_def_modifier
-    self.original_range_def *= range_def_modifier
-    self.original_melee_dodge *= melee_def_modifier
-    self.original_range_dodge *= range_def_modifier
-    self.original_speed *= speed_modifier
-    self.original_accuracy *= accuracy_modifier
-    self.original_reload *= reload_modifier
-    self.original_charge *= charge_modifier
+    self.original_melee_attack += melee_attack_bonus
+    self.original_melee_def += melee_def_bonus
+    self.original_range_def += range_def_bonus
+    self.original_melee_dodge += melee_def_bonus
+    self.original_range_dodge += range_def_bonus
+    self.original_speed += speed_bonus
+    self.original_accuracy += accuracy_bonus
+    self.original_reload += reload_bonus
+    self.original_charge += charge_bonus
     self.original_charge_def += charge_def_bonus
     self.original_hp_regen += hp_regen_bonus
     self.original_stamina_regen += stamina_regen_bonus

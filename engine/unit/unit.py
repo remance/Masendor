@@ -1,14 +1,13 @@
 from math import radians
 from random import random, getrandbits
 
-from pygame import sprite, font, draw, Color, Vector2, Surface, SRCALPHA
-
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
+from pygame import sprite, font, draw, Color, Vector2, Surface, SRCALPHA
 
-from engine.utility import set_rotate
 from engine.uibattle.uibattle import SkillAimTarget
+from engine.utility import set_rotate
 
 rotation_list = (90, -90)
 rotation_name = ("l_side", "r_side")
@@ -34,12 +33,14 @@ uninterruptible = action can not be interrupt unless top_interrupt_animation is 
 move loop = action involve repeating movement that can be cancel when movement change like walk to run
 charge = indicate charging action
 less mass = unit has mass is divided during animation based on value provide
-walk, run, flee, indicate movement type for easy checking
+walk, run, flee, indicate movement type for easy checking, walk and run also use for move_speed
 weapon = weapon index of action for easy checking
+no combat ai = prevent leader and troop AI from running combat attack AI method
 freeze until cancel = not restart animation or start next one until current one is canceled or interrupted
 pos = specific target pos
 require input = animation action require input first and will keep holding first frame until this condition is removed 
                 or interrupt
+swap weapon set = finish animation will make unit swap weapon set based on provided value
 """
 
 skill_command_action_0 = {"name": "Skill 0"}
@@ -47,10 +48,10 @@ skill_command_action_1 = {"name": "Skill 1"}
 skill_command_action_2 = {"name": "Skill 2"}
 skill_command_action_3 = {"name": "Skill 3"}
 
-walk_command_action = {"name": "WalkMove", "movable": True, "repeat": True, "walk": True}
-run_command_action = {"name": "RunMove", "movable": True, "repeat": True,
+walk_command_action = {"name": "WalkMove", "movable": True, "walk": True}
+run_command_action = {"name": "RunMove", "movable": True,
                       "use momentum": True, "run": True}
-flee_command_action = {"name": "FleeMove", "movable": True, "repeat": True, "flee": True}
+flee_command_action = {"name": "FleeMove", "movable": True, "run": True, "flee": True}
 
 melee_attack_command_action = ({"name": "Action 0", "melee attack": True, "weapon": 0},
                                {"name": "Action 1", "melee attack": True, "weapon": 1})
@@ -68,18 +69,20 @@ range_walk_command_action = ({"name": "Action 0", "range attack": True, "walk": 
 range_run_command_action = ({"name": "Action 0", "range attack": True, "run": True, "movable": True, "weapon": 0},
                             {"name": "Action 1", "range attack": True, "run": True, "movable": True, "weapon": 1})
 
-charge_command_action = ({"name": "Charge 0", "movable": True, "repeat": True,
+charge_command_action = ({"name": "Charge 0", "movable": True, "run": True,
                           "use momentum": True, "charge": True, "weapon": 0},
-                         {"name": "Charge 1", "movable": True, "repeat": True,
+                         {"name": "Charge 1", "movable": True, "run": True,
                           "use momentum": True, "charge": True, "weapon": 1})
 
 heavy_damaged_command_action = {"name": "HeavyDamaged", "uncontrollable": True, "movable": True,
-                                "forced move": True, "less mass": 1.5, "damaged": True}
+                                "forced move": True, "less mass": 1.5, "damaged": "heavy", "run": True}
 damaged_command_action = {"name": "SmallDamaged", "uncontrollable": True, "movable": True,
-                          "forced move": True, "less mass": 1.2, "damaged": True}
+                          "forced move": True, "less mass": 1.2, "damaged": "small", "run": True}
 knockdown_command_action = {"name": "Knockdown", "uncontrollable": True, "movable": True, "forced move": True,
-                            "freeze until cancel": True, "less mass": 2,
-                            "next action": {"name": "Standup", "uncontrollable": True, "damaged": True}}
+                            "freeze until cancel": True, "less mass": 2, "forced speed": True,
+                            "next action": {"name": "Standup", "uncontrollable": True, "damaged": "knock"}}
+swap_weapon_command_action = {0: {"name": "SwapGear", "no combat ai": True, "swap weapon set": 0},
+                              1: {"name": "SwapGear", "no combat ai": True, "swap weapon set": 1}}
 
 die_command_action = {"name": "DieDown", "uninterruptible": True, "uncontrollable": True}
 
@@ -214,7 +217,7 @@ class Unit(sprite.Sprite):
     rotate_logic = rotate_logic
 
     from engine.unit.setup_formation import setup_formation
-    swap_weapon = setup_formation
+    setup_formation = setup_formation
 
     from engine.unit.skill_command_input import skill_command_input
     skill_command_input = skill_command_input
@@ -258,6 +261,7 @@ class Unit(sprite.Sprite):
     knockdown_command_action = knockdown_command_action
 
     die_command_action = die_command_action
+    swap_weapon_command_action = swap_weapon_command_action
 
     all_formation_list = {}
     hitbox_image_list = {}
@@ -302,12 +306,11 @@ class Unit(sprite.Sprite):
         self.not_broken = True
         self.move = False  # currently moving
         self.attack_unit = None  # target for attacking
-        self.melee_target = None  # current target of melee combat
         self.player_control = False  # unit controlled by player
         self.toggle_run = False  # player unit toggle running
         self.auto_move = False  # player unit toggle auto moving
-        self.troop_add_change = False  # subordinate die in last update, reset formation, this is to avoid high workload when multiple die at once
-        self.group_add_change = False
+        self.group_add_change = False  # subordinate die in last update, reset formation, this is to avoid high workload when multiple die at once
+        self.army_add_change = False
         self.retreat_start = False
         self.taking_damage_angle = None
         self.leader_temp_retreat = False
@@ -335,12 +338,6 @@ class Unit(sprite.Sprite):
         self.current_action = {}  # action being performed
         self.command_action = {}  # next action to be performed
 
-        self.near_ally = []
-        self.near_enemy = []
-        # self.near_visible_enemy = []
-        self.nearest_enemy = []
-        self.nearest_ally = []
-
         self.game_id = game_id  # ID of this unit
         self.map_id = map_id
         self.team = team
@@ -348,10 +345,22 @@ class Unit(sprite.Sprite):
         self.start_stamina = start_stamina
         self.coa = coa
 
+        self.enemy_list = self.battle.all_team_enemy[self.team]
+        self.near_ally = []
+        self.near_enemy = []
+        # self.near_visible_enemy = []
+        self.nearest_enemy = []
+        self.nearest_ally = []
+
         self.camp_pos = None
         self.camp_radius = None
+        self.camp_enemy_check = None
         self.current_camp_pos = None
         self.current_camp_radius = None
+        self.current_camp = None
+
+        self.enemy_camp_pos = None
+        self.enemy_camp_radius = None
 
         self.troop_reserve_list = {}
         self.troop_dead_list = {}  # for checking how many to replenish from reserve
@@ -366,6 +375,7 @@ class Unit(sprite.Sprite):
 
         self.feature_mod = "Infantry"  # the terrain feature that will be used on this unit
         self.move_speed = 0  # speed of current movement
+        self.forced_move_speed = 0  # speed of forced movement like knock back, safe to not need reset
 
         self.weapon_cooldown = {0: 0, 1: 0}  # unit can attack with weapon only when cooldown reach attack speed
         self.flank_bonus = 1  # combat bonus when flanking
@@ -426,6 +436,7 @@ class Unit(sprite.Sprite):
         self.take_melee_dmg = 0
         self.take_range_dmg = 0
         self.take_aoe_dmg = 0
+        self.ai_charge_timer = 0
 
         self.at_camp = False
         self.reserve_ready_timer = 0
@@ -451,7 +462,7 @@ class Unit(sprite.Sprite):
         self.front_pos = (0, 0)  # pos of this unit for finding height of map at the front
         self.front_height = 0
 
-        self.move_path = (self.base_pos,)
+        self.move_path = ()
 
         # Set up special effect variable, first main item is for effect from troop/trait, second main item is for weapon
         # first sub item is permanent effect from trait, second sub item from temporary status or skill
@@ -481,8 +492,6 @@ class Unit(sprite.Sprite):
             self.original_morale = stat["Morale"] + grade_stat["Morale Bonus"]  # morale with grade bonus
             self.original_discipline = stat["Discipline"] + grade_stat[
                 "Discipline Bonus"]  # discipline with grade bonus
-            self.original_mental = stat["Mental"] + grade_stat[
-                "Mental Bonus"]  # mental resistance from morale melee_dmg and mental status effect
             self.troop_class = stat["Troop Class"]
 
         else:  # leader unit
@@ -500,8 +509,6 @@ class Unit(sprite.Sprite):
             self.original_morale = 100 + grade_stat["Morale Bonus"]  # morale with grade bonus
             self.original_discipline = 100 + grade_stat[
                 "Discipline Bonus"]  # discipline with grade bonus
-            self.original_mental = 50 + grade_stat[
-                "Mental Bonus"]  # mental resistance from morale melee_dmg and mental status effect
 
             self.special_effect["Shoot While Moving"][0][0] = True  # allow shoot while moving for hero
 
@@ -515,22 +522,22 @@ class Unit(sprite.Sprite):
             self.social = self.leader_data.leader_class[stat["Social Class"]]
 
             self.formation_list = ["Cluster"] + stat["Formation"]
-            self.troop_formation_preset = []
-            self.troop_formation = "Cluster"
-            self.troop_formation_phase = "Melee Phase"
-            self.troop_formation_style = "Cavalry Flank"
-            self.troop_formation_density = "Tight"
-            self.troop_formation_position = "Behind"
-            self.troop_follow_order = "Stay Formation"
-            self.troop_group_type = "melee inf"  # type of unit indicate troop composition, melee inf, range inf, melee cav, range cav", "artillery"
-
-            self.group_formation = "Cluster"
             self.group_formation_preset = []
-            self.group_formation_phase = self.troop_formation_phase
-            self.group_formation_style = self.troop_formation_style
-            self.group_formation_density = self.troop_formation_density
-            self.group_formation_position = self.troop_formation_position
-            self.group_follow_order = self.troop_follow_order
+            self.group_formation = "Cluster"
+            self.group_formation_phase = "Melee Phase"
+            self.group_formation_style = "Cavalry Flank"
+            self.group_formation_density = "Tight"
+            self.group_formation_position = "Around"
+            self.group_follow_order = "Follow"
+            self.group_type = "melee inf"  # type of group indicate troop composition, melee inf, range inf, melee cav, range cav", "artillery"
+
+            self.army_formation = "Cluster"
+            self.army_formation_preset = []
+            self.army_formation_phase = self.group_formation_phase
+            self.army_formation_style = self.group_formation_style
+            self.army_formation_density = self.group_formation_density
+            self.army_formation_position = "Around"
+            self.army_follow_order = self.group_follow_order
 
             self.formation_consider_flank = False  # has both infantry and cavalry, consider flank placment style
             self.troop_distance_list = {}
@@ -539,7 +546,10 @@ class Unit(sprite.Sprite):
             self.group_distance_list = {}
             self.group_pos_list = {}
 
-            if self.troop_id.lower() in self.leader_data.images:  # Put leader image into leader slot
+            self.group_too_far = False
+            self.army_too_far = False
+
+            if self.troop_id in self.leader_data.images:  # Put leader image into leader slot
                 self.portrait = self.leader_data.images[self.troop_id].copy()
             else:  # Use Unknown leader image if there is no specific portrait in data
                 self.portrait = make_no_face_portrait(self.name, self.leader_data)
@@ -612,14 +622,14 @@ class Unit(sprite.Sprite):
                                                            ((training_scale[0] + training_scale[1]) / 2))
 
         self.original_melee_dodge = ((self.dexterity * 0.1) + (self.agility * 0.3) + (self.wisdom * 0.1)) + \
-                                    (grade_stat["Training Score"] / 5 * training_scale[1])
+                                    (grade_stat["Training Score"] / 2 * training_scale[1])
 
         self.original_range_def = ((self.dexterity * 0.4) + (self.agility * 0.2) + (self.constitution * 0.3) +
                                    (self.wisdom * 0.1)) + (grade_stat["Training Score"] *
                                                            ((training_scale[1] + training_scale[2]) / 2))
 
         self.original_range_dodge = ((self.dexterity * 0.2) + (self.agility * 0.2) + (self.wisdom * 0.1)) + \
-                                    (grade_stat["Training Score"] / 10 * training_scale[1])
+                                    (grade_stat["Training Score"] / 3 * training_scale[1])
 
         self.original_accuracy = ((self.strength * 0.1) + (self.dexterity * 0.6) + (self.wisdom * 0.3)) + \
                                  (grade_stat["Training Score"] / 2 * training_scale[2])
@@ -631,17 +641,15 @@ class Unit(sprite.Sprite):
                                 (self.wisdom * 0.1)) + (grade_stat["Training Score"] * training_scale[2])
 
         self.original_charge = ((self.strength * 0.3) + (self.agility * 0.3) + (self.dexterity * 0.3) +
-                                (self.wisdom * 0.2)) + (grade_stat["Training Score"] * training_scale[0])
+                                (self.wisdom * 0.2))
 
         self.original_charge_def = ((self.dexterity * 0.4) + (self.agility * 0.2) + (self.constitution * 0.3) +
-                                    (self.wisdom * 0.1)) + (grade_stat["Training Score"] *
-                                                            (training_scale[0] + training_scale[1]))
-
-        self.original_speed = self.agility / 5  # get replaced with mount agi and speed bonus
+                                    (self.wisdom * 0.1))
+        self.original_speed = self.agility / 5  # will get replaced with mount agi and speed bonus if exist
 
         self.shot_per_shoot = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
 
-        self.original_crit_effect = 1  # critical extra modifier
+        self.original_crit_effect = 0  # critical extra modifier
 
         self.trait = {"Original": stat["Trait"] + race_stat["Trait"] +
                                   self.troop_data.grade_list[self.grade]["Trait"],
@@ -668,7 +676,7 @@ class Unit(sprite.Sprite):
         if "" in self.original_skill:
             self.original_skill.remove("")
 
-        self.health = int(((self.strength * 0.2) + (self.constitution * 0.8)) *
+        self.health = int((self.constitution * 2) *
                           (1 + grade_stat["Health Modifier"]) * (self.start_hp / 100))  # Health of troop
         self.stamina = int(((self.strength * 0.2) + (self.constitution * 0.8)) *
                            (1 + grade_stat["Stamina Modifier"]) *
@@ -723,11 +731,12 @@ class Unit(sprite.Sprite):
                              self.troop_data.weapon_list[self.secondary_sub_weapon[0]]["Name"]))
 
         self.animation_race_name = self.race_name
-        self.troop_size = race_stat["Size"]
+        self.body_size = race_stat["Size"]
 
         self.mount_gear = stat["Mount"]
         self.mount_race_name = "None"
         self.mount_armour_id = 0
+
         if self.mount_gear:
             self.mount = self.troop_data.mount_list[self.mount_gear[0]]  # stat of mount this unit use
             self.mount_race_name = self.troop_data.race_list[self.mount["Race"]]["Name"]
@@ -752,10 +761,10 @@ class Unit(sprite.Sprite):
         self.body_weapon_damage = {key: value for key, value in self.body_weapon_damage.items() if
                                    value}  # remove 0 damage element
         # add troop size as pure bonus for impact and penetrate
-        self.body_weapon_impact = self.troop_data.weapon_list[1]["Impact"] + self.troop_size
-        self.body_weapon_penetrate = self.troop_data.weapon_list[1]["Armour Penetration"] + self.troop_size
+        self.body_weapon_impact = self.troop_data.weapon_list[1]["Impact"] + self.body_size
+        self.body_weapon_penetrate = self.troop_data.weapon_list[1]["Armour Penetration"] + self.body_size
 
-        self.troop_mass = self.troop_size
+        self.troop_mass = self.body_size
 
         self.command_buff = 1
         self.leader_social_buff = 0
@@ -796,7 +805,7 @@ class Unit(sprite.Sprite):
         self.original_speed = (self.original_speed * ((100 - self.weight) / 100)) + grade_stat[
             "Speed Bonus"]  # finalise base speed with weight and grade bonus
 
-        self.acceleration = self.original_speed  # determine how long it takes to reach full speed when run
+        self.acceleration = self.original_speed * 2  # determine how long it takes to reach full speed when run
 
         # Stat after applying trait and gear
         self.base_melee_attack = self.original_melee_attack
@@ -833,7 +842,6 @@ class Unit(sprite.Sprite):
         self.base_hp_regen = self.original_hp_regen
         self.base_stamina_regen = self.original_stamina_regen
         self.base_morale_regen = self.original_morale_regen
-        self.base_mental = self.original_mental
         self.base_heat_resistance = self.original_heat_resistance
         self.base_cold_resistance = self.original_cold_resistance
         self.base_crit_effect = self.original_crit_effect
@@ -868,7 +876,6 @@ class Unit(sprite.Sprite):
         self.morale_regen = self.base_morale_regen
         self.heat_resistance = self.base_heat_resistance
         self.cold_resistance = self.base_cold_resistance
-        self.mental = self.base_mental
         self.crit_effect = self.base_crit_effect
 
         self.weapon_dmg = {key: {key2: value2.copy() for key2, value2 in value.items()} for
@@ -878,6 +885,7 @@ class Unit(sprite.Sprite):
         self.melee_range = self.original_melee_range[self.equipped_weapon]
         self.melee_def_range = self.original_melee_def_range[self.equipped_weapon]
         self.max_melee_range = self.melee_range[0]
+        self.max_shoot_range = self.shoot_range[0]
         self.charge_melee_range = self.max_melee_range * 10
         self.melee_charge_range = {0: 0, 1: 0}
 
@@ -891,13 +899,6 @@ class Unit(sprite.Sprite):
 
         self.run_speed = 1
         self.walk_speed = 1
-
-        if self.mental < 0:  # cannot be negative
-            self.mental = 0
-        elif self.mental > 200:  # cannot exceed 200
-            self.mental = 200
-
-        self.mental = (200 - self.mental) / 100  # convert to percentage
 
         # Variable for player status UI
         self.melee_attack_mod = 0
@@ -926,7 +927,7 @@ class Unit(sprite.Sprite):
 
         self.image = Surface((0, 0))  # create dummy unit sprite image for now
 
-        self.melee_distance_zone = self.troop_size * 5
+        self.melee_distance_zone = (self.body_size + self.max_melee_attack_range) * 3
         self.stay_distance_zone = self.melee_distance_zone + 10
 
         # Variables related to sound
@@ -948,22 +949,24 @@ class Unit(sprite.Sprite):
         self.double_terrain_penalty = self.check_special_effect("Double Terrain Penalty")
 
         # Create hitbox sprite
-        self.hitbox_front_distance = self.troop_size
-        hitbox_size = (self.troop_size * 10 * self.screen_scale[0], self.troop_size * 10 * self.screen_scale[1])
+        self.hitbox_front_distance = self.body_size
+        hitbox_size = (self.body_size * 10 * self.screen_scale[0], self.body_size * 10 * self.screen_scale[1])
         if self.team not in self.hitbox_image_list:
             self.hitbox_image_list[self.team] = {"troop": {}, "leader": {}}
         if self.is_leader:  # leader unit
             if hitbox_size not in self.hitbox_image_list[self.team]["leader"]:
                 outer_colour = (220, 120, 20)
-                self.create_hitbox_sprite(hitbox_size, outer_colour)
+                self.create_hitbox_sprite(hitbox_size, outer_colour, "leader")
             else:
-                self.hitbox_image = self.hitbox_image_list[self.team]["leader"][hitbox_size]
+                self.hitbox_image = self.hitbox_image_list[self.team]["leader"][hitbox_size][0]
+                self.hitbox_image_charge = self.hitbox_image_list[self.team]["leader"][hitbox_size][1]
         else:  # troop unit
             if hitbox_size not in self.hitbox_image_list[self.team]["troop"]:
                 outer_colour = (100, 100, 100)
-                self.create_hitbox_sprite(hitbox_size, outer_colour)
+                self.create_hitbox_sprite(hitbox_size, outer_colour, "troop")
             else:
-                self.hitbox_image = self.hitbox_image_list[self.team]["troop"][hitbox_size]
+                self.hitbox_image = self.hitbox_image_list[self.team]["troop"][hitbox_size][0]
+                self.hitbox_image_charge = self.hitbox_image_list[self.team]["troop"][hitbox_size][1]
 
         self.rect = self.image.get_rect(center=self.offset_pos)  # for blit into screen
 
@@ -972,15 +975,15 @@ class Unit(sprite.Sprite):
             if dt:  # only run these when game not pause
                 self.timer += dt
 
-                if self.troop_add_change:
-                    self.troop_add_change = False
-                    if self.alive_troop_follower:
-                        self.change_formation("troop")
-
                 if self.group_add_change:
                     self.group_add_change = False
-                    if self.alive_leader_follower:
+                    if self.alive_troop_follower:
                         self.change_formation("group")
+
+                if self.army_add_change:
+                    self.army_add_change = False
+                    if self.alive_leader_follower:
+                        self.change_formation("army")
 
                 self.check_weapon_cooldown(dt)
 
@@ -991,16 +994,16 @@ class Unit(sprite.Sprite):
 
                 if self.reserve_ready_timer:
                     self.reserve_ready_timer += dt
-                    if self.at_camp:
+                    if self.at_camp and not self.camp_enemy_check[self.current_camp]:
                         if self.reserve_ready_timer > 1:  # take 1 second to respawn each troop in camp
                             self.spawn_troop()
                     elif self.reserve_ready_timer > 10:  # troop respawn take 10 seconds when not at camp
                         self.spawn_troop()
 
-                if self.at_camp:  # regen health in camp
+                if self.at_camp and not self.camp_enemy_check[self.current_camp]:  # regen health in camp
                     if not self.take_melee_dmg and not self.take_aoe_dmg and not self.take_range_dmg:
                         if self.health < self.max_health:
-                            self.health += dt * 5
+                            self.health += dt * 10
                             if self.health > self.max_health:
                                 self.health = self.max_health
 
@@ -1024,6 +1027,7 @@ class Unit(sprite.Sprite):
                         self.battle.troop_ai_logic_queue.append(self)
 
                     # Check if staying at camp
+                    self.current_camp = None
                     self.current_camp_pos = None
                     self.current_camp_radius = None
                     self.at_camp = False
@@ -1035,35 +1039,47 @@ class Unit(sprite.Sprite):
 
                         for index, camp_pos in enumerate(self.camp_pos):  # check if at camp
                             if self.base_pos.distance_to(camp_pos) <= self.camp_radius[index]:
+                                self.current_camp = index
                                 self.current_camp_pos = camp_pos
                                 self.current_camp_radius = self.camp_radius[index]
                                 self.at_camp = True
                                 break
+
+                    if self.is_leader:  # leader unit can disable enemy camp if they are within camp radius
+                        for team, value in self.enemy_camp_pos.items():
+                            for index, camp_pos in enumerate(value):
+                                if not self.battle.camp_enemy_check[team][index] and \
+                                        self.base_pos.distance_to(camp_pos) <= self.enemy_camp_radius[team][index]:
+                                    self.battle.camp_enemy_check[team][index] = True
 
                     self.timer -= 0.5
 
                 self.taking_damage_angle = None
 
                 if self.not_broken:
-                    if not self.player_control and "uncontrollable" not in self.current_action and "uncontrollable" not in self.command_action:
-                        self.ai_combat()
-                        if self.at_camp and self.health < self.max_health:  # in camp
-                            # AI wait until heal to max health before moving somewhere else
-                            if self.at_camp and self.command_target.distance_to(
-                                    self.base_pos) < self.current_camp_radius:
-                                self.ai_move()
-                        else:
-                            self.ai_move()
+                    if not self.player_control and "uncontrollable" not in self.current_action and \
+                            "uncontrollable" not in self.command_action and self.nearest_enemy:
+                        # not run combat AI if in uncontrollable state, currently charging,
+                        # action that prevent combat AI or no near enemy
+                        if "charge" not in self.current_action and "no combat ai" not in self.current_action:
+                            self.ai_combat()
+                        if not self.interrupt_animation:  # combat AI not cause any interruption, run move ai
+                            if self.at_camp and self.health < self.max_health:  # in camp
+                                # AI wait until heal to max health before moving somewhere else
+                                if self.at_camp and self.follow_target.distance_to(
+                                        self.base_pos) < self.current_camp_radius:  # can still move around camp
+                                    self.ai_move(dt)
+                            else:
+                                self.ai_move(dt)
 
                 else:
                     self.ai_retreat()
                     if self.leader_temp_retreat:
-                        if self.reserve_ready_timer:  # stop retreat when reach camp
+                        if self.at_camp:  # stop retreat when reach camp
                             self.leader_temp_retreat = False
                             self.command_target = self.base_pos
                             self.not_broken = True
-
-                self.check_skill_usage()
+                            self.interrupt_animation = True
 
                 if self.angle != self.new_angle:  # Rotate Function
                     self.rotate_logic(dt)
@@ -1093,12 +1109,14 @@ class Unit(sprite.Sprite):
                 hold_check = False
                 if "require input" in self.current_action or \
                         ("hold" in self.current_action and
-                         "hold" in self.current_animation[self.show_frame]["frame_property"] and
+                         "hold" in self.current_animation[self.show_frame]["property"] and
                          "hold" in self.action_list[self.current_action["weapon"]]["Properties"]):
                     hold_check = True
                     self.hold_timer += dt
                 elif self.hold_timer > 0:  # no longer holding, reset timer
                     self.hold_timer = 0
+
+                self.check_skill_usage()
 
                 done, frame_start = self.play_animation(dt, hold_check)
 
@@ -1120,6 +1138,8 @@ class Unit(sprite.Sprite):
                     if done:
                         if "range attack" in self.current_action:  # shoot bullet only when animation finish
                             self.attack("range")
+                        if "swap weapon set" in self.current_action:  # swap weapon only when animation done
+                            self.swap_weapon(self.current_action["swap weapon set"])
 
                     if "next action" in self.current_action:  # play next action first instead of command
                         self.current_action = self.current_action["next action"]
@@ -1132,19 +1152,20 @@ class Unit(sprite.Sprite):
                         self.current_action = self.command_action  # continue next action when animation finish
                         self.command_action = {}
 
-                    if self.interrupt_animation:
-                        self.interrupt_animation = False
-                        self.release_timer = 0  # reset any release timer
+                    self.interrupt_animation = False
+                    self.release_timer = 0  # reset any release timer
 
                     self.top_interrupt_animation = False
 
                     self.show_frame = 0
                     self.frame_timer = 0
+                    self.move_speed = 0
                     self.pick_animation()
 
                     self.animation_play_time = self.default_animation_play_time
 
                     if self.player_control and "require input" in self.current_action and "skill" in self.current_action:
+                        # manual aim skill that require player input
                         if not self.shoot_line:
                             self.battle.previous_player_input_state = self.battle.player_input_state
                             self.battle.player_input_state = "skill aim"
@@ -1189,16 +1210,28 @@ class Unit(sprite.Sprite):
                     self.battle.battle_camera.remove(self)
                     self.battle.unit_updater.remove(self)
 
-    def create_hitbox_sprite(self, hitbox_size, outer_colour):
+    def create_hitbox_sprite(self, hitbox_size, outer_colour, unit_type):
         self.hitbox_image = Surface(hitbox_size, SRCALPHA)
         draw.circle(self.hitbox_image, (self.team_colour[self.team][0], self.team_colour[self.team][1],
                                         self.team_colour[self.team][2]),
                     (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
                     self.hitbox_image.get_width() / 2)
+        draw.circle(self.hitbox_image, (255, 255, 255),
+                    (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
+                    self.hitbox_image.get_width() / 2.2)
+
+        self.hitbox_image_charge = self.hitbox_image.copy()
+        draw.circle(self.hitbox_image_charge, (255, 0, 0),
+                    (self.hitbox_image_charge.get_width() / 2, self.hitbox_image_charge.get_height() / 2),
+                    self.hitbox_image_charge.get_width() / 2.2)
 
         draw.circle(self.hitbox_image, outer_colour,
                     (self.hitbox_image.get_width() / 2, self.hitbox_image.get_height() / 2),
                     self.hitbox_image.get_width() / 2.4)
+        draw.circle(self.hitbox_image_charge, outer_colour,
+                    (self.hitbox_image_charge.get_width() / 2, self.hitbox_image_charge.get_height() / 2),
+                    self.hitbox_image_charge.get_width() / 2.4)
+        self.hitbox_image_list[self.team][unit_type][hitbox_size] = (self.hitbox_image, self.hitbox_image_charge)
 
 
 class PreviewUnit(Unit):
