@@ -76,6 +76,22 @@ def wheel_ui_process(self, choice):
                     self.player_input_state = "focus aim"
                     for this_unit in self.player_unit.alive_troop_follower:
                         AimTarget(this_unit)
+            elif choice in self.unit_behaviour_wheel["Charge"]:
+                self.realtime_ui_updater.remove(self.wheel_ui)
+                self.previous_player_input_state = self.player_input_state
+                self.player_input_state = None
+                self.camera_mode = "Free"
+                self.true_camera_pos = Vector2(self.player_unit.base_pos)
+                for shoot_line in self.shoot_lines:
+                    shoot_line.delete()  # reset shoot guide lines
+                # self.player1_battle_cursor.change_image("aim")
+                if choice == "Line Charge":
+                    self.player_input_state = "line charge"
+                elif choice == "Focus Charge":
+                    self.player_input_state = "focus charge"
+                elif choice == "Cancel Charge":
+                    for this_unit in self.player_unit.alive_troop_follower:
+                        this_unit.charge_target = None
 
 
 def renew_wheel(self, choice):

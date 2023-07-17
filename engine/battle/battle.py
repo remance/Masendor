@@ -19,6 +19,7 @@ from engine.battle.kill_effect_icon import kill_effect_icon
 from engine.battle.play_sound_effect import play_sound_effect
 from engine.battle.player_aim import player_aim
 from engine.battle.player_cancel_input import player_cancel_input
+from engine.battle.player_charge import player_charge
 from engine.battle.player_input_process import player_input_process
 from engine.battle.player_skill_perform import player_skill_perform
 from engine.battle.setup.make_battle_ui import make_battle_ui
@@ -72,6 +73,7 @@ class Battle:
     play_sound_effect = play_sound_effect
     player_aim = player_aim
     player_cancel_input = player_cancel_input
+    player_charge = player_charge
     player_input_process = player_input_process
     player_skill_perform = player_skill_perform
     setup_battle_unit = setup_battle_unit
@@ -185,7 +187,8 @@ class Battle:
         self.pathfinding_thread = ai.PathfindingAI(self)
 
         self.unit_behaviour_wheel = \
-            {"Main": {"Army": "Army", "Group": "Group", "Range Attack": "Range Attack", "Setting": "Setting"},
+            {"Main": {"Army": "Army", "Group": "Group", "Range Attack": "Range Attack", "Charge": "Charge",
+                      "Setting": "Setting"},
              "Group": {"Group Style": "Group Style",
                        "Group Phase": "Group Phase",
                        "Group Formation": "Group Formation",
@@ -201,6 +204,9 @@ class Battle:
              "Range Attack": {"Focus Aim": "Focus Aim",
                               "Line Aim": "Line Aim",
                               "Leader Aim": "Leader Aim"},
+             "Charge": {"Focus Charge": "Focus Charge",
+                        "Line Charge": "Line Charge",
+                        "Cancel Charge": "Cancel Charge"},
              "Army Phase": {"Army Skirmish Phase": "Skirmish Phase", "Army Melee Phase": "Melee Phase",
                             "Army Bombard Phase": "Bombard Phase"},
              "Army Style": {"Army Infantry Flank": "Infantry Flank", "Army Cavalry Flank": "Cavalry Flank"},
@@ -219,7 +225,7 @@ class Battle:
                                 "Around": "Around"},
              "Group Order": {"Stay Formation": "Stay Formation", "Follow": "Follow", "Free": "Free",
                              "Stay Here": "Stay Here"},
-             "Setting": {"Height Map": "Height Map", "UI Hide": "UI Hide", "UI Show": "UI Show"}}
+             "Setting": {"Height Map": "Height Map"}}
 
         self.weather_screen_adjust = self.screen_rect.width / self.screen_rect.height  # for weather sprite spawn position
         self.right_corner = self.screen_rect.width - (5 * self.screen_scale[0])
@@ -315,6 +321,10 @@ class Battle:
         self.weapon_ui = battle_ui_dict["weapon_ui"]
         self.status_ui = battle_ui_dict["status_ui"]
         self.follower_ui = battle_ui_dict["follower_ui"]
+
+        self.wheel_ui.wheel_icons = load_images(self.module_dir, screen_scale=self.screen_scale,
+                                                subfolder=("ui", "battle_ui", "wheel"), key_file_name_readable=True)
+        self.wheel_ui.wheel_icons |= self.troop_data.default_formation_icons
 
         self.current_weather = Weather(self.time_ui, 4, 0, 0, None)
         Weather.wind_compass_images = {"wind_compass": battle_ui_image["wind_compass"],
@@ -698,13 +708,13 @@ class Battle:
                     #             follower2.health = 0
 
                     if event.key == K_F1:
-                        self.drama_text.queue.append("Hello and welcome to showcase video")
-                    # elif event.key == K_F2:
-                    #     self.drama_text.queue.append("Keybinding and Joystick controller")
-                    # elif event.key == K_F3:
-                    #     self.drama_text.queue.append("See video description for more detail")
-                    # elif event.key == K_F4:
-                    #     self.drama_text.queue.append("He juggled his sword and sing the Song of Roland")
+                        self.drama_text.queue.append("Hello and welcome to showcase video for update 0.7.2")
+                    elif event.key == K_F2:
+                        self.drama_text.queue.append("New user interface for menu and battle")
+                    elif event.key == K_F3:
+                        self.drama_text.queue.append("New Medieval art style as shown in previous videos")
+                    elif event.key == K_F4:
+                        self.drama_text.queue.append("Few more updates until demo release")
                     # elif event.key == K_F5:
                     #     self.drama_text.queue.append("Rushed to the English line, he fought valiantly alone")
                     # elif event.key == K_F6:
@@ -794,6 +804,8 @@ class Battle:
                             self.player_aim()
                         else:  # skill that require player to input target
                             self.player_skill_perform()
+                    elif "charge" in self.player_input_state:
+                        self.player_charge()
 
                 # Drama text function
                 if not self.drama_timer and self.drama_text.queue:  # Start timer and draw if there is event queue

@@ -6,7 +6,7 @@ opposite_index = (1, 0)
 def ai_combat(self):
     self.attack_unit = None
     melee_distance_check = self.melee_distance_zone
-    if self.manual_shoot and not self.take_melee_dmg:  # during manual aim, reduce melee zone distance
+    if self.manual_control and not self.take_melee_dmg:  # during manual aim, reduce melee zone distance
         melee_distance_check = 5
     if self.nearest_enemy[0].alive:
         if self.nearest_enemy[1] < melee_distance_check:  # enemy in unit's melee zone
@@ -99,7 +99,7 @@ def ai_combat(self):
                                 return
 
         elif self.ammo_now and not self.in_melee_combat_timer:
-            if "weapon" not in self.current_action and "weapon" not in self.command_action and not self.manual_shoot:
+            if "weapon" not in self.current_action and "weapon" not in self.command_action and not self.manual_control:
                 # no nearby enemy melee threat and has range weapon to shoot
                 self.attack_unit = None
                 if self.equipped_weapon not in self.ammo_now:

@@ -25,8 +25,12 @@ def ai_move(self, dt):
                     follow = stay_formation_distance
                 else:
                     follow = follow_distance
-
-        move_target = self.follow_target
+        if self.charge_target:
+            move_target = self.charge_target
+            if move_target.distance_to(self.base_pos) < 1:
+                self.charge_target = None
+        else:
+            move_target = self.follow_target
     else:  # movement for army leader
         if self.move_path:
             move_target = self.move_path[0]
@@ -37,11 +41,12 @@ def ai_move(self, dt):
 
     move_distance = self.follow_target.distance_to(self.base_pos)
     if follow_order != "Free":  # move to assigned location
-        if "charge" in self.leader.current_action:  # leader charging, charge with leader do not auto move to enemy on its own
+        if "charge" in self.leader.current_action or self.charge_target:
+            # leader charging, charge with leader or has player charge target do not auto move to enemy on its own
             if not self.attack_unit or "charge" in self.current_action:
                 # keep charging if not stop yet or no enemy in melee distance
-                self.ai_charge_timer = 3
-                self.in_melee_combat_timer = 3  # consider as in melee to prevent swap back to range weapon
+                if not self.charge_target:
+                    self.ai_charge_timer = 3
                 if self.equipped_weapon != self.charge_weapon_set:  # swap to best charge weapon set for charge
                     self.command_action = self.swap_weapon_command_action[self.charge_weapon_set]
                 else:  # already equipped charge weapon set
@@ -55,19 +60,29 @@ def ai_move(self, dt):
                                 # melee group leader charge to nearby enemy
                                 charge_target = self.nearest_enemy[0].base_pos
                         else:  # charge for troop
-                            charge_target = Vector2(self.base_pos[0] -
-                                                    (self.run_speed * 2 * sin(radians(self.leader.angle))),
-                                                    self.base_pos[1] -
-                                                    (self.run_speed * 2 * cos(radians(self.leader.angle))))
-                        if charge_target and charge_target.distance_to(self.base_pos) > 0:
+                            if self.charge_target:
+                                charge_target = self.charge_target
+                            else:
+                                charge_target = Vector2(self.base_pos[0] -
+                                                        (self.run_speed * 2 * sin(radians(self.leader.angle))),
+                                                        self.base_pos[1] -
+                                                        (self.run_speed * 2 * cos(radians(self.leader.angle))))
+                        if charge_target and charge_target.distance_to(self.base_pos):
                             self.command_target = charge_target
-                            attack_index = self.leader.current_action["weapon"]  # use same weapon side as leader
-                            if not self.melee_range[attack_index]:  # weapon not melee one
-                                if attack_index == 0:
-                                    attack_index = 1
-                                else:
-                                    attack_index = 0
-                            self.command_action = self.charge_command_action[attack_index]
+                            if self.charge_target:
+                                if "charge" in self.current_action or "charge" in self.command_action:
+                                    if "charge" in self.current_action:
+                                        self.command_action = self.charge_command_action[self.current_action["weapon"]]
+                                else:  # manual charge interrupt by anything, reset target
+                                    self.charge_target = None
+                            else:
+                                attack_index = self.leader.current_action["weapon"]  # use same weapon side as leader
+                                if not self.melee_range[attack_index]:  # weapon not melee one
+                                    if attack_index == 0:
+                                        attack_index = 1
+                                    else:
+                                        attack_index = 0
+                                self.command_action = self.charge_command_action[attack_index]
 
         elif "charge" in self.current_action and self.ai_charge_timer:  # follower charging but leader no longer doing it
             # keep charging until timer run out
@@ -95,7 +110,7 @@ def ai_move(self, dt):
                 else:  # no skill to use or can use, now move
                     self.command_action = self.run_command_action
 
-        elif self.attack_unit and self.max_melee_range and not self.max_shoot_range and not self.manual_shoot:
+        elif self.attack_unit and self.max_melee_range and not self.max_shoot_range and not self.manual_control:
             # move to enemy nearby when follow_target not too far, only for melee
             move_distance = self.attack_unit.base_pos.distance_to(self.base_pos) - self.max_melee_range
             if move_distance < follow or self.impetuous:

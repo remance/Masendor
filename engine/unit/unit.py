@@ -431,7 +431,8 @@ class Unit(sprite.Sprite):
         self.max_melee_attack_range = 0
         self.melee_distance_zone = 1
         self.default_sprite_size = 1
-        self.manual_shoot = False
+        self.manual_control = False
+        self.charge_target = None
         self.shoot_line = None
         self.take_melee_dmg = 0
         self.take_range_dmg = 0

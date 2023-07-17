@@ -154,11 +154,9 @@ def status_update(self):
 
     # Map feature modifier to stat
     map_feature_mod = self.feature_map.feature_mod[self.feature]
-
     if map_feature_mod[self.feature_mod + " Speed Bonus"]:  # speed/charge
         speed_bonus += map_feature_mod[
             self.feature_mod + " Speed Bonus"]  # get the speed mod appropriate to unit type
-
         if self.double_terrain_penalty and map_feature_mod[self.feature_mod + " Speed Bonus"] < 0:
             speed_bonus += map_feature_mod[
                 self.feature_mod + " Speed Bonus"]  # double negative effect
@@ -227,9 +225,8 @@ def status_update(self):
     self.range_def = (self.base_range_def * discipline_cal) + range_def_bonus
     self.accuracy = (self.base_accuracy * discipline_cal) + accuracy_bonus
     self.charge_def = (self.base_charge_def * discipline_cal) + charge_def_bonus
-    self.speed = self.base_speed * discipline_cal
+    self.speed = (self.base_speed * discipline_cal) + speed_bonus
     self.charge = (self.base_charge * discipline_cal) + charge_bonus
-
     self.shoot_range = {key: shoot_range + shoot_range_bonus for key, shoot_range in
                         self.original_shoot_range[self.equipped_weapon].items()}
     self.max_shoot_range = max(self.shoot_range.values())

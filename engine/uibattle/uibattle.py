@@ -1007,6 +1007,8 @@ class BattleScaleUI(UIBattle):
 
 
 class WheelUI(UIBattle):
+    wheel_icons = {}
+
     def __init__(self, image, selected_image, pos, text_size=20):
         """Wheel choice ui with text or image inside the choice.
         Works similar to Fallout companion wheel and similar system"""
@@ -1087,10 +1089,10 @@ class WheelUI(UIBattle):
         self.choice_list = tuple(blit_list.keys())
         for index, item in enumerate(blit_list):
             if item:  # Wheel choice with icon or text inside
-                if type(item) == str:  # text
-                    surface = self.font.render(item, True, (0, 0, 0))
+                if item in self.wheel_icons:  # text
+                    surface = self.wheel_icons[item]
                 else:
-                    surface = item
+                    surface = self.font.render(item, True, (0, 0, 0))
                 rect = surface.get_rect(center=(self.wheel_image_with_stuff[index].get_width() / 2,
                                                 self.wheel_image_with_stuff[index].get_height() / 2))
                 self.wheel_image_with_stuff[index].blit(surface, rect)

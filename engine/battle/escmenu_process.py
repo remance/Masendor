@@ -56,59 +56,51 @@ def escmenu_process(self, esc_press: bool):
                     mouse_pos_inside_weapon_ui = (self.cursor.pos[0] - self.weapon_ui.rect.topleft[0],
                                                   self.cursor.pos[1] - self.weapon_ui.rect.topleft[1])
                     if self.weapon_ui.prim_main_weapon_box_rect.collidepoint(mouse_pos_inside_weapon_ui):
+                        weapon = self.player_unit.primary_main_weapon[0]
+                        if self.player_unit.equipped_weapon == 1:
+                            weapon = self.player_unit.secondary_main_weapon[0]
                         if self.cursor.is_alt_select_just_up:
-                            popout_encyclopedia(self, self.encyclopedia.equipment_section,
-                                                self.player_unit.primary_main_weapon[0])
+                            popout_encyclopedia(self, self.encyclopedia.equipment_section, weapon)
                         else:
                             self.text_popup.popup(self.cursor.rect,
-                                                  (self.localisation.grab_text(
-                                                      ("weapon", self.player_unit.primary_main_weapon[0]))[
-                                                       "Name"],
-                                                   self.localisation.grab_text(
-                                                       ("weapon", self.player_unit.primary_main_weapon[0]))[
-                                                       "Description"]),
+                                                  (self.localisation.grab_text(("weapon", weapon))["Name"],
+                                                   self.localisation.grab_text(("weapon", weapon))["Description"]),
                                                   width_text_wrapper=500 * self.screen_scale[0])
                             self.add_ui_updater(self.text_popup)
                     elif self.weapon_ui.prim_sub_weapon_box_rect.collidepoint(mouse_pos_inside_weapon_ui):
+                        weapon = self.player_unit.primary_sub_weapon[0]
+                        if self.player_unit.equipped_weapon == 1:
+                            weapon = self.player_unit.secondary_sub_weapon[0]
                         if self.cursor.is_alt_select_just_up:
-                            popout_encyclopedia(self, self.encyclopedia.equipment_section,
-                                                self.player_unit.primary_sub_weapon[0])
+                            popout_encyclopedia(self, self.encyclopedia.equipment_section, weapon)
                         else:
                             self.text_popup.popup(self.cursor.rect,
-                                                  (self.localisation.grab_text(
-                                                      ("weapon", self.player_unit.primary_sub_weapon[0]))[
-                                                       "Name"],
-                                                   self.localisation.grab_text(
-                                                       ("weapon", self.player_unit.primary_sub_weapon[0]))[
-                                                       "Description"]),
+                                                  (self.localisation.grab_text(("weapon", weapon))["Name"],
+                                                   self.localisation.grab_text(("weapon", weapon))["Description"]),
                                                   width_text_wrapper=500 * self.screen_scale[0])
                             self.add_ui_updater(self.text_popup)
                     elif self.weapon_ui.sec_main_weapon_box_rect.collidepoint(mouse_pos_inside_weapon_ui):
+                        weapon = self.player_unit.secondary_main_weapon[0]
+                        if self.player_unit.equipped_weapon == 1:
+                            weapon = self.player_unit.primary_main_weapon[0]
                         if self.cursor.is_alt_select_just_up:
-                            popout_encyclopedia(self, self.encyclopedia.equipment_section,
-                                                self.player_unit.secondary_main_weapon[0])
+                            popout_encyclopedia(self, self.encyclopedia.equipment_section, weapon)
                         else:
                             self.text_popup.popup(self.cursor.rect,
-                                                  (self.localisation.grab_text(
-                                                      ("weapon", self.player_unit.secondary_main_weapon[0]))[
-                                                       "Name"],
-                                                   self.localisation.grab_text(
-                                                       ("weapon", self.player_unit.secondary_main_weapon[0]))[
-                                                       "Description"]),
+                                                  (self.localisation.grab_text(("weapon", weapon))["Name"],
+                                                   self.localisation.grab_text(("weapon", weapon))["Description"]),
                                                   width_text_wrapper=500 * self.screen_scale[0])
                             self.add_ui_updater(self.text_popup)
                     elif self.weapon_ui.sec_sub_weapon_box_rect.collidepoint(mouse_pos_inside_weapon_ui):
+                        weapon = self.player_unit.secondary_sub_weapon[0]
+                        if self.player_unit.equipped_weapon == 1:
+                            weapon = self.player_unit.primary_sub_weapon[0]
                         if self.cursor.is_alt_select_just_up:
-                            popout_encyclopedia(self, self.encyclopedia.equipment_section,
-                                                self.player_unit.secondary_sub_weapon[0])
+                            popout_encyclopedia(self, self.encyclopedia.equipment_section, weapon)
                         else:
                             self.text_popup.popup(self.cursor.rect,
-                                                  (self.localisation.grab_text(
-                                                      ("weapon", self.player_unit.secondary_sub_weapon[0]))[
-                                                       "Name"],
-                                                   self.localisation.grab_text(
-                                                       ("weapon", self.player_unit.secondary_sub_weapon[0]))[
-                                                       "Description"]),
+                                                  (self.localisation.grab_text(("weapon", weapon))["Name"],
+                                                   self.localisation.grab_text(("weapon", weapon))["Description"]),
                                                   width_text_wrapper=500 * self.screen_scale[0])
                             self.add_ui_updater(self.text_popup)
 

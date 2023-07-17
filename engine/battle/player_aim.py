@@ -25,7 +25,7 @@ def player_aim(self):
 
     for this_unit in who_shoot:
         can_shoot = [False, False]
-        this_unit.manual_shoot = True
+        this_unit.manual_control = True
         if this_unit.in_melee_combat_timer == 0 and "uncontrollable" not in this_unit.current_action and \
                 "uncontrollable" not in this_unit.command_action and "weapon" not in this_unit.current_action and \
                 "weapon" not in this_unit.command_action:
