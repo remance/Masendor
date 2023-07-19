@@ -7,7 +7,7 @@ spec_root = os.path.abspath(SPECPATH)
 
 tmp_ret = collect_all('PIL')
 datas = tmp_ret[0]; tmp_ret[1]; tmp_ret[2]
-datas += [('data', 'data'), ('gamescript', 'gamescript'), ('animation maker', 'animation maker'), ('photo studio', 'photo studio')]
+datas += [('data', 'data'), ('engine', 'engine'), ('animation-maker', 'animation-maker'), ('photo-studio', 'photo-studio')]
 
 block_cipher = None
 
@@ -26,7 +26,7 @@ a = Analysis(['main.py'],
     noarchive=False)
 
 
-b = Analysis(['animation maker.py'],
+b = Analysis(['animation-maker.py'],
     pathex=[spec_root],
     binaries=[],
     datas=datas,
@@ -40,7 +40,7 @@ b = Analysis(['animation maker.py'],
     cipher=block_cipher,
     noarchive=False)
 
-c = Analysis(['photo studio.py'],
+c = Analysis(['photo-studio.py'],
 pathex=[spec_root],
 binaries=[],
 datas=datas,
