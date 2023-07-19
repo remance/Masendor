@@ -5,6 +5,10 @@ from engine.uibattle.uibattle import SpriteIndicator
 
 
 def spawn_troop(self):
+    """
+    Spawn new troops from camp
+    :param self: Unit object
+    """
     from engine.unit.unit import Troop
 
     for troop_id, number in self.troop_dead_list.items():

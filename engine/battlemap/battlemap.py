@@ -57,9 +57,10 @@ class BaseMap(BattleMap):
 
 
 class FeatureMap(BattleMap):
-    def __init__(self):
+    def __init__(self, base_map):
         BattleMap.__init__(self)
 
+        self.base_map = base_map
         self.map_array = ()
         self.max_map_array = (0, 0)
 
@@ -67,7 +68,7 @@ class FeatureMap(BattleMap):
         self.map_array = tuple([tuple([tuple(col) for col in row]) for row in pygame.surfarray.array3d(image).tolist()])
         self.max_map_array = (len(self.map_array) - 1, len(self.map_array[0]) - 1)
 
-    def get_feature(self, pos, base_map, debug=False):
+    def get_feature(self, pos, debug=False):
         """get the terrain feature at that exact position"""
         new_pos = pygame.Vector2(pos)  # create new pos to avoid replacing input one
         if new_pos[0] < 0:
@@ -80,7 +81,7 @@ class FeatureMap(BattleMap):
         elif new_pos[1] > self.max_map_array[1]:
             new_pos[1] = self.max_map_array[1]
 
-        terrain_index = base_map.get_terrain(new_pos, debug=debug)
+        terrain_index = self.base_map.get_terrain(new_pos, debug=debug)
         if debug and self.map_array[int(new_pos[0])][int(new_pos[1])] not in self.feature_colour:
             print(new_pos, self.map_array[int(new_pos[0])][int(new_pos[1])])
         feature_index = (terrain_index * len(self.feature_colour)) + \
@@ -213,7 +214,7 @@ class FinalMap(BattleMap):
             speed_array = []
             def_array = []
             for col_pos in range(0, self.image.get_height()):
-                terrain, feature = feature_map.get_feature((row_pos, col_pos), base_map, debug=debug)
+                terrain, feature = feature_map.get_feature((row_pos, col_pos), debug=debug)
                 new_colour = self.battle_map_colour[feature][1]
                 height = self.height_map.get_height((row_pos, col_pos)) / 50
                 new_colour = pygame.Color(new_colour).correct_gamma(height)
@@ -264,7 +265,7 @@ class FinalMap(BattleMap):
             for col_pos in range(0, len(base_map.map_array[0])):
                 if row_pos % 20 == 0 and col_pos % 20 == 0:
                     random_pos = (row_pos + randint(0, 19), col_pos + randint(0, 19))
-                    terrain, this_feature = feature_map.get_feature(random_pos, base_map)
+                    terrain, this_feature = feature_map.get_feature(random_pos)
                     feature = self.map_texture[
                         self.load_texture_list.index(self.battle_map_colour[this_feature][0])]
 

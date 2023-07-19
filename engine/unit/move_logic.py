@@ -6,6 +6,7 @@ infinity = float("inf")
 
 
 def move_logic(self, dt):
+    """Calculate and move unit position according to speed"""
     if "movable" in self.current_action:  # animation allow movement
         if "forced move" not in self.current_action:
             self.base_target = self.command_target  # always attempt to catch up to command target
@@ -18,6 +19,8 @@ def move_logic(self, dt):
             self.move_speed = self.run_speed
         elif "forced speed" in self.current_action:
             self.move_speed = self.forced_move_speed
+        else:  # use the slowest speed
+            self.move_speed = 1
 
         if self.base_pos != self.base_target:
             move = self.base_target - self.base_pos
@@ -27,8 +30,7 @@ def move_logic(self, dt):
             move *= self.move_speed * height_diff * dt
             new_pos = self.base_pos + move
 
-            if (self.retreat_start or (0 < new_pos[0] < self.map_corner[0] and
-                                       0 < new_pos[1] < self.map_corner[1])):
+            if self.retreat_start or (0 < new_pos[0] < self.map_corner[0] and 0 < new_pos[1] < self.map_corner[1]):
                 # cannot go pass map unless in retreat state
                 if move.length() <= require_move_length:  # move normally according to move speed
                     self.base_pos += move
@@ -47,11 +49,8 @@ def move_logic(self, dt):
                 self.hitbox.rect.center = self.pos
                 self.effectbox.rect.center = self.offset_pos
 
-                self.move = True
-
                 self.height = self.get_height(self.base_pos)  # Current terrain height
-                self.terrain, self.feature = self.get_feature(self.base_pos,
-                                                              self.base_map)  # get new terrain and feature
+                self.terrain, self.feature = self.get_feature(self.base_pos)  # get new terrain and feature
 
                 self.make_front_pos()
 

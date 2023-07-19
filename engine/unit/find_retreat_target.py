@@ -18,10 +18,9 @@ def find_retreat_target(self):
         retreat_score[index] += (
                 self.base_pos.distance_to(base_target) / map_distance_score)  # keep distance score as decimal
         retreat_target.append(base_target)
-        for this_subunit in self.battle.active_unit_list:
-            if this_subunit.team != self.team:
-                clip = this_subunit.rect.clipline(base_target, self.base_pos)
-                if clip:
-                    retreat_score[index] += 1
+        for this_subunit in self.enemy_list:
+            clip = this_subunit.rect.clipline(base_target, self.pos)
+            if clip:
+                retreat_score[index] += 1
 
     self.command_target = retreat_target[retreat_score.index(min(retreat_score))]  # pick lowest score direction

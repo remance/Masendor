@@ -440,7 +440,7 @@ class Battle:
         #             self.music_event = []
         #     except:  # any reading error will play random custom music instead
         #         self.music_schedule = [self.weather_playing]
-        #         self.music_event = []  # TODO change later when has custom playlist
+        #         self.music_event = []  # TODO: change later when has custom playlist
         # yield set_done_load()
 
         yield set_start_load(self, "map events")

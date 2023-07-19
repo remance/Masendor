@@ -315,15 +315,15 @@ class StatusUI(UIBattle):
             self.status_bar_image[0].get_rect(midbottom=(203 * self.screen_scale[0], 16 * self.screen_scale[1])))
 
         self.status = None
-        self.melee_attack_mod = 3
-        self.melee_def_mod = 3
-        self.range_attack_mod = 3
-        self.range_def_mod = 3
-        self.speed_mod = 3
-        self.morale_mod = 3
-        self.discipline_mod = 3
-        self.hidden_mod = 3
-        self.temperature_mod = 3
+        self.melee_attack_mod = None
+        self.melee_def_mod = None
+        self.range_attack_mod = None
+        self.range_def_mod = None
+        self.speed_mod = None
+        self.morale_mod = None
+        self.discipline_mod = None
+        self.hidden_mod = None
+        self.temperature_mod = None
 
         self.rect = self.image.get_rect(topleft=pos)
 
@@ -371,17 +371,18 @@ class FollowerUI(UIBattle):
         UIBattle.__init__(self, player_interact=False, has_containers=True)
         self.font = Font(self.ui_font["text_paragraph"], int(24 * self.screen_scale[1]))
 
+        self.box_colour = (199, 188, 109)
         self.image = Surface((150 * self.screen_scale[0], 70 * self.screen_scale[1]))
-        self.image.fill((255, 255, 255))
+        self.image.fill(self.box_colour)
         self.base_image = self.image.copy()
 
         self.leader_count_text_box_base = self.font.render("L:999", True, (0, 0, 0))
-        self.leader_count_text_box_base.fill((255, 255, 255))
+        self.leader_count_text_box_base.fill(self.box_colour)
         self.leader_count_text_rect = self.leader_count_text_box_base.get_rect(
             midleft=(0, (self.leader_count_text_box_base.get_height())))
 
         self.troop_count_text_box_base = self.font.render("T:999/999 + 999", True, (0, 0, 0))
-        self.troop_count_text_box_base.fill((255, 255, 255))
+        self.troop_count_text_box_base.fill(self.box_colour)
         self.troop_count_text_rect = self.leader_count_text_box_base.get_rect(
             midleft=(0, (self.troop_count_text_box_base.get_height() * 2)))
 

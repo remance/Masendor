@@ -48,3 +48,5 @@ def change_battle_state(self):
         self.portrait_rect = portrait.get_rect(center=(portrait.get_width() / 1.6,
                                                        portrait.get_height() * 0.95))
         self.background.blit(portrait, self.portrait_rect)  # add portrait to screen
+        self.weapon_ui.equipped_weapon = None  # reset weapon ui
+        self.weapon_ui.image = self.weapon_ui.base_image.copy()

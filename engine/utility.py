@@ -411,7 +411,7 @@ def set_rotate(self, base_target, convert=True):
     :return: new angle
     """
     my_radians = atan2(base_target[1] - self.base_pos[1], base_target[0] - self.base_pos[0])
-    new_angle = degrees(my_radians)
+    new_angle = int(degrees(my_radians))
     if convert:
         # """upper left and upper right"""
         if -180 <= new_angle < 0:
@@ -424,7 +424,7 @@ def set_rotate(self, base_target, convert=True):
         # """lower left +"""
         elif 90 < new_angle <= 180:
             new_angle = 270 - new_angle
-    return round(new_angle)
+    return new_angle
 
 
 def convert_degree_to_360(angle):

@@ -92,7 +92,7 @@ def status_update(self):
                     if key + " Damage Extra" in cal_effect:
                         extra_dmg = cal_effect[key + " Damage Extra"]
                         if extra_dmg:
-                            value[0] += int(extra_dmg / 2)
+                            value[0] += extra_dmg
                             value[1] += extra_dmg
 
             self.weapon_dmg_modifier += cal_effect["Damage Modifier"]
@@ -243,12 +243,12 @@ def status_update(self):
         if self.weapon_speed[key] < 0:
             self.weapon_speed[key] = 0
 
-    troop_mass = self.troop_mass
+    self.body_mass = self.base_body_mass
     if "less mass" in self.current_action:  # knockdown reduce mass
-        troop_mass = int(self.troop_mass / self.current_action["less mass"])
+        self.body_mass = int(self.base_body_mass / self.current_action["less mass"])
 
-    self.charge += troop_mass
-    self.charge_def += troop_mass
+    self.charge += self.body_mass
+    self.charge_def += self.body_mass
 
     if self.hold_timer and "weapon" in self.current_action:  # holding weapon
         self.melee_dodge /= 2  # reduce dodge during any holding
@@ -287,6 +287,11 @@ def status_update(self):
 
     self.run_speed = self.speed / 2
     self.walk_speed = self.speed / 3
+
+    if self.run_speed < 2:
+        self.run_speed = 2
+    if self.walk_speed < 1:
+        self.walk_speed = 1
 
     # Cooldown, active and effect timer function
     for key in tuple(self.skill_cooldown.keys()):  # loop is faster than comprehension here

@@ -10,20 +10,21 @@ def enter_battle(self, animation_pool, status_animation_pool):
     self.enemy_camp_radius = {team: [item[1] for item in value] for team, value in self.battle.camp_pos.items() if
                               team != self.team}
 
-    self.terrain, self.feature = self.get_feature(self.base_pos,
-                                                  self.base_map)  # Get new terrain and feature at each unit position
+    self.terrain, self.feature = self.get_feature(self.base_pos)  # Get new terrain and feature at each unit position
     self.height = self.get_height(self.base_pos)  # Current terrain height
 
     body_size = int(self.body_size / 10)
     if body_size < 1:
         body_size = 1
     self.status_animation_pool = status_animation_pool[body_size]
-
-    layer = round(self.base_pos[0] + (self.base_pos[1] * 10), 0)  # change layer
-    if layer < 0:
-        layer = 1
-    if self._layer != layer:
-        self.battle.battle_camera.change_layer(self, layer)
+    if self.is_leader:
+        self.battle.battle_camera.change_layer(self, 999998)
+    else:
+        layer = round(self.base_pos[0] + (self.base_pos[1] * 10), 0)  # change layer
+        if layer < 0:
+            layer = 1
+        if self._layer != layer:
+            self.battle.battle_camera.change_layer(self, layer)
 
     self.swap_weapon(self.equipped_weapon)
     self.make_front_pos()

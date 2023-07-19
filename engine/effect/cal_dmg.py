@@ -35,7 +35,7 @@ def cal_dmg(self, target, hit, defence, weapon, hit_side=None):
     else:  # Melee dmg
         impact = self.knock_power
         troop_dmg, element_effect = cal_dmg_penetrate(self, target, reduce_penetrate=False)
-        self.penetrate -= target.troop_mass  # melee use troop mass to reduce penetrate
+        self.penetrate -= target.base_body_mass  # melee use troop mass to reduce penetrate
 
         if target.momentum:  # also include its own charge defence in dmg if enemy also charging
             if not self.attacker.check_special_effect("Ignore Charge Defence", weapon=weapon):
@@ -94,7 +94,7 @@ def cal_dmg_penetrate(self, target, reduce_penetrate=True):
         if reduce_penetrate:
             self.penetrate -= target.element_resistance[key]
     if reduce_penetrate:
-        self.penetrate -= target.troop_mass
+        self.penetrate -= target.base_body_mass
     troop_dmg *= self.attacker.weapon_dmg_modifier
 
     return troop_dmg, element_effect
@@ -144,6 +144,9 @@ def cal_charge_dmg(self, target, hit_side):
         if charge_power_diff > 0:
             troop_dmg += troop_dmg * charge_power_diff / 100
             impact *= charge_power_diff / 100
+            mass_diff = target.body_mass - self.attacker.body_mass
+            if mass_diff > 0:
+                self.attacker.momentum -= mass_diff / 100
         else:  # enemy charge def is higher
             troop_dmg = 0
             impact = 0

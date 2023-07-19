@@ -13,6 +13,7 @@ def attack(self, attack_type):
         base_target = self.attack_unit.base_pos
     elif self.attack_pos:
         base_target = self.attack_pos
+        self.attack_pos = None  # only one time pos attack
 
     if base_target:
         if "weapon" in self.current_action:
@@ -33,7 +34,7 @@ def attack(self, attack_type):
                 # release in timing bonus time, get accuracy boost
                 accuracy *= 1.5
 
-            if self.move:
+            if self.move_speed:
                 accuracy -= 10  # accuracy penalty for shoot while moving
 
             attack_range = self.base_pos.distance_to(base_target)
@@ -67,7 +68,7 @@ def attack(self, attack_type):
                 how_long = attack_range / self.speed  # shooting distance divide damage sprite speed to find travel time
 
                 # Predicatively find position the enemy will be at based on movement speed and sprite travel time
-                if self.attack_unit.move and how_long > 0.5:  # target walking
+                if self.attack_unit.move_speed and how_long > 0.5:  # target walking
                     target_move = self.attack_unit.base_target - self.attack_unit.base_pos  # target movement distance
                     if target_move.length() > 1:  # recal target base on enemy move target
                         target_move.normalize_ip()
@@ -82,14 +83,16 @@ def attack(self, attack_type):
                 accuracy = 0
 
             for _ in range(self.shot_per_shoot[self.equipped_weapon][weapon]):  # Shoot ammo
-                # Calculate accuracy and final base_target where damage sprite will land
-                # The further accuracy from 0 the further damage sprite will land from base_target
-                if accuracy < 100:
-                    accuracy = randint(int(accuracy), 100)  # random hit chance using accuracy as minimum value
+                # Calculate inaccuracy and final base_target where damage sprite will land
+                # The further inaccuracy from 0 the further damage sprite will land from base_target
+                inaccuracy = 100 - accuracy
+                if inaccuracy < 0:
+                    inaccuracy = 0
+                else:
+                    inaccuracy = randint(0, int(inaccuracy))  # random hit chance
                 # target deviation as to percentage from base_target
-                base_target = Vector2(base_target[0] * (100 + choice((accuracy / 100, -accuracy / 100))) / 100,
-                                      base_target[1] * (100 + choice((accuracy / 100, -accuracy / 100))) / 100)
-
+                base_target = Vector2(base_target[0] * (100 + choice((inaccuracy / 50, -inaccuracy / 50))) / 100,
+                                      base_target[1] * (100 + choice((inaccuracy / 50, -inaccuracy / 50))) / 100)
                 dmg = {key: uniform(value[0], value[1]) for key, value in self.weapon_dmg[weapon].items()}
                 if self.release_timer > 1 and weapon in self.equipped_power_weapon:
                     # apply power hold buff
@@ -108,11 +111,7 @@ def attack(self, attack_type):
                                   reach_effect=equipped_weapon_data[
                                       "After Reach Effect"])
 
-            try:
-                self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
-            except:
-                print(self.equipped_weapon, weapon, self.current_action, self.ammo_now)
-                crash
+            self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
 
             if self.ammo_now[self.equipped_weapon][weapon] == 0 and \
                     self.magazine_count[self.equipped_weapon][weapon] == 0:

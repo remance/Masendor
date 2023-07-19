@@ -39,7 +39,7 @@ def ai_move(self, dt):
         follow_order = "Free"
         follow = 1
 
-    move_distance = self.follow_target.distance_to(self.base_pos)
+    move_distance = move_target.distance_to(self.base_pos)
     if follow_order != "Free":  # move to assigned location
         if "charge" in self.leader.current_action or self.charge_target:
             # leader charging, charge with leader or has player charge target do not auto move to enemy on its own
@@ -94,14 +94,16 @@ def ai_move(self, dt):
                                               self.base_pos[1] - (self.run_speed * 2 * cos(radians(self.angle))))
                 self.command_action = self.charge_command_action[self.current_action["weapon"]]
 
-        elif move_distance > follow:  # too far from follow target pos, start moving toward it
+        elif not self.command_action and move_distance > follow:
+            # too far from follow target pos, start moving toward it
             self.command_target = move_target
             if 0 < move_distance < 20:  # walk if not too far
                 self.command_action = self.walk_command_action
             else:  # run if too far
-                self.leader.group_too_far = True
-                if self.is_leader:
-                    self.leader.army_too_far = True
+                if move_distance > 50:
+                    self.leader.group_too_far = True
+                    if self.is_leader:
+                        self.leader.army_too_far = True
                 if move_distance > 100 and self.available_move_far_skill and not self.command_action:
                     # use move far skill first if leader
                     self.skill_command_input(0, self.available_move_far_skill, pos_target=self.base_pos)
@@ -110,12 +112,13 @@ def ai_move(self, dt):
                 else:  # no skill to use or can use, now move
                     self.command_action = self.run_command_action
 
-        elif self.attack_unit and self.max_melee_range and not self.max_shoot_range and not self.manual_control:
+        elif self.attack_unit and self.max_melee_range and not self.manual_control:
             # move to enemy nearby when follow_target not too far, only for melee
-            move_distance = self.attack_unit.base_pos.distance_to(self.base_pos) - self.max_melee_range
+            move_melee_range = self.max_melee_range - 1  # using max_melee_range only seem to make unit stand too far
+            move_distance = self.attack_unit.base_pos.distance_to(self.base_pos) - move_melee_range
             if move_distance < follow or self.impetuous:
                 # enemy not too far from move_target
-                if move_distance > self.max_melee_range:  # move closer to enemy in range
+                if move_distance > move_melee_range:  # move closer to enemy in range
                     # move to front of near target
                     if move_distance > 100 and self.is_leader and self.available_move_far_skill and not self.command_action:  # use move far skill first if leader
                         self.skill_command_input(0, self.available_move_far_skill, pos_target=self.base_pos)
@@ -131,21 +134,25 @@ def ai_move(self, dt):
 
     else:  # free order or unit is army leader, move to attack nearby enemy
         if self.nearest_enemy:
-            if self.is_leader and "range" in self.group_type:
-                # group leader of ranged troops go to position from ai_leader
-                move_distance = self.base_pos.distance_to(move_target)
+            if self.is_leader and ("range" in self.group_type or not self.group_too_far):
+                # group/army leader of ranged troops go to position from ai_leader
                 if move_distance > 150:  # distance too far or group/army too far behind, walk first
-                    if not self.group_too_far:
-                        self.command_action = self.walk_command_action
-                        self.command_target = move_target
+                    self.command_action = self.walk_command_action
+                    self.command_target = move_target
                 elif move_distance:  # short distance to move, run
                     self.command_action = self.run_command_action
                     self.command_target = move_target
 
+            elif self.is_leader and self.group_too_far and move_distance > self.charge_melee_range and \
+                    self.group_follow_order in ("Stay Formation", "Follow") and not self.attack_unit:
+                # troop followers too far, stand to wait a bit for them to catch up
+                self.command_action = self.walk_command_action
+                self.command_target = move_target
+
             elif not self.attack_unit:  # no enemy to hit yet
-                if self.shoot_range[0] or self.shoot_range[1]:  # has range weapon, move to maximum shoot range position
+                if self.max_shoot_range:  # has range weapon, move to maximum shoot range position
                     move_distance = self.nearest_enemy[0].base_pos.distance_to(self.front_pos)
-                    max_shoot = max(self.shoot_range[0], self.shoot_range[1])
+                    max_shoot = self.max_shoot_range
                     if self.leader and self in self.leader.troop_distance_list:  # possible that unit not in list yet from recent change of leader
                         # use distance of formation to make unit not cluster at same distance
                         max_shoot -= self.leader.troop_distance_list[self][1]
@@ -162,8 +169,9 @@ def ai_move(self, dt):
                                                           self.base_pos[1] - (move_distance * cos(radians(angle))))
 
                 else:  # no range weapon, move to melee attack nearest enemy
-                    move_distance = self.nearest_enemy[0].base_pos.distance_to(self.base_pos) - self.max_melee_range
-                    if move_distance > self.max_melee_range > 0:  # too far move closer
+                    move_melee_range = self.max_melee_range - 1  # using max_melee_range only seem to make unit stand too far
+                    move_distance = self.nearest_enemy[0].base_pos.distance_to(self.base_pos) - move_melee_range
+                    if move_distance > move_melee_range:  # too far move closer
                         if move_distance > 100 and self.is_leader and self.available_move_far_skill and not self.command_action:
                             # use move far skill first if leader
                             self.skill_command_input(0, self.available_move_far_skill, pos_target=self.base_pos)
@@ -184,6 +192,7 @@ def ai_move(self, dt):
                             base_angle = self.set_rotate(self.nearest_enemy[0].base_pos)
                             self.command_target = Vector2(self.base_pos[0] - (move_distance * sin(radians(base_angle))),
                                                           self.base_pos[1] - (move_distance * cos(radians(base_angle))))
+
             else:  # has nearby enemy to hit in melee combat
                 move_distance = self.attack_unit.base_pos.distance_to(self.base_pos) - self.max_melee_range
                 if move_distance > self.max_melee_range:  # too far move closer to hit enemy

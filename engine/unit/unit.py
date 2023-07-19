@@ -49,6 +49,7 @@ skill_command_action_2 = {"name": "Skill 2"}
 skill_command_action_3 = {"name": "Skill 3"}
 
 walk_command_action = {"name": "WalkMove", "movable": True, "walk": True}
+walk_wait_command_action = {"name": "WalkMove", "movable": True}
 run_command_action = {"name": "RunMove", "movable": True,
                       "use momentum": True, "run": True}
 flee_command_action = {"name": "FleeMove", "movable": True, "run": True, "flee": True}
@@ -242,6 +243,7 @@ class Unit(sprite.Sprite):
     skill_command_action_3 = skill_command_action_3
 
     walk_command_action = walk_command_action
+    walk_wait_command_action = walk_wait_command_action
     run_command_action = run_command_action
     flee_command_action = flee_command_action
 
@@ -304,7 +306,6 @@ class Unit(sprite.Sprite):
         self.get_height = self.height_map.get_height
 
         self.not_broken = True
-        self.move = False  # currently moving
         self.attack_unit = None  # target for attacking
         self.player_control = False  # unit controlled by player
         self.toggle_run = False  # player unit toggle running
@@ -346,6 +347,7 @@ class Unit(sprite.Sprite):
         self.coa = coa
 
         self.enemy_list = self.battle.all_team_enemy[self.team]
+        self.ally_list = self.battle.all_team_unit[self.team]
         self.near_ally = []
         self.near_enemy = []
         # self.near_visible_enemy = []
@@ -375,7 +377,6 @@ class Unit(sprite.Sprite):
 
         self.feature_mod = "Infantry"  # the terrain feature that will be used on this unit
         self.move_speed = 0  # speed of current movement
-        self.forced_move_speed = 0  # speed of forced movement like knock back, safe to not need reset
 
         self.weapon_cooldown = {0: 0, 1: 0}  # unit can attack with weapon only when cooldown reach attack speed
         self.flank_bonus = 1  # combat bonus when flanking
@@ -646,7 +647,7 @@ class Unit(sprite.Sprite):
 
         self.original_charge_def = ((self.dexterity * 0.4) + (self.agility * 0.2) + (self.constitution * 0.3) +
                                     (self.wisdom * 0.1))
-        self.original_speed = self.agility / 5  # will get replaced with mount agi and speed bonus if exist
+        self.original_speed = self.agility / 3  # will get replaced with mount agi and speed bonus if exist
 
         self.shot_per_shoot = {0: {0: 0, 1: 0}, 1: {0: 0, 1: 0}}
 
@@ -765,12 +766,13 @@ class Unit(sprite.Sprite):
         self.body_weapon_impact = self.troop_data.weapon_list[1]["Impact"] + self.body_size
         self.body_weapon_penetrate = self.troop_data.weapon_list[1]["Armour Penetration"] + self.body_size
 
-        self.troop_mass = self.body_size
+        self.base_body_mass = self.body_size
+        self.body_mass = self.base_body_mass
 
         self.command_buff = 1
         self.leader_social_buff = 0
         self.authority = 0
-        self.original_hidden = 500 / self.troop_mass  # hidden based on size, use size after add mount
+        self.original_hidden = 500 / self.base_body_mass  # hidden based on size, use size after add mount
 
         self.trait["Original"] = tuple(
             set([trait for trait in self.trait["Original"] if trait != 0]))  # remove empty and duplicate traits
@@ -932,15 +934,15 @@ class Unit(sprite.Sprite):
         self.stay_distance_zone = self.melee_distance_zone + 10
 
         # Variables related to sound
-        self.knock_down_sound_distance = self.knock_down_sound_distance * self.troop_mass
-        self.knock_down_sound_shake = self.knock_down_sound_shake * self.troop_mass
-        self.heavy_dmg_sound_distance = self.heavy_dmg_sound_distance * self.troop_mass
-        self.dmg_sound_distance = self.dmg_sound_distance * self.troop_mass
+        self.knock_down_sound_distance = self.knock_down_sound_distance * self.base_body_mass
+        self.knock_down_sound_shake = self.knock_down_sound_shake * self.base_body_mass
+        self.heavy_dmg_sound_distance = self.heavy_dmg_sound_distance * self.base_body_mass
+        self.dmg_sound_distance = self.dmg_sound_distance * self.base_body_mass
 
         if self.player_control:
             self.hit_volume_mod = 1
         else:
-            self.hit_volume_mod = (self.troop_mass - 10) / 100
+            self.hit_volume_mod = (self.base_body_mass - 10) / 100
 
         # Assign special effects that do not change during battle as variable to reduce workload
         self.shoot_while_moving = self.check_special_effect("Shoot While Moving")
@@ -986,12 +988,23 @@ class Unit(sprite.Sprite):
                     if self.alive_leader_follower:
                         self.change_formation("army")
 
-                self.check_weapon_cooldown(dt)
-
                 if self.in_melee_combat_timer > 0:
                     self.in_melee_combat_timer -= dt
                     if self.in_melee_combat_timer < 0:
                         self.in_melee_combat_timer = 0
+
+                if self.take_melee_dmg > 0:
+                    self.take_melee_dmg -= dt
+                    if self.take_melee_dmg < 0:
+                        self.take_melee_dmg = 0
+                if self.take_range_dmg > 0:
+                    self.take_range_dmg -= dt
+                    if self.take_range_dmg < 0:
+                        self.take_range_dmg = 0
+                if self.take_aoe_dmg > 0:
+                    self.take_aoe_dmg -= dt
+                    if self.take_aoe_dmg < 0:
+                        self.take_aoe_dmg = 0
 
                 if self.reserve_ready_timer:
                     self.reserve_ready_timer += dt
@@ -1007,19 +1020,6 @@ class Unit(sprite.Sprite):
                             self.health += dt * 10
                             if self.health > self.max_health:
                                 self.health = self.max_health
-
-                if self.take_melee_dmg > 0:
-                    self.take_melee_dmg -= dt
-                    if self.take_melee_dmg < 0:
-                        self.take_melee_dmg = 0
-                if self.take_range_dmg > 0:
-                    self.take_range_dmg -= dt
-                    if self.take_range_dmg < 0:
-                        self.take_range_dmg = 0
-                if self.take_aoe_dmg > 0:
-                    self.take_aoe_dmg -= dt
-                    if self.take_aoe_dmg < 0:
-                        self.take_aoe_dmg = 0
 
                 if self.timer > 0.5:  # Update status and skill use around every 1 second
                     self.status_update()
@@ -1058,6 +1058,8 @@ class Unit(sprite.Sprite):
                 self.taking_damage_angle = None
 
                 if self.not_broken:
+                    self.check_weapon_cooldown(dt)  # only reload weapon when not broken
+
                     if not self.player_control and "uncontrollable" not in self.current_action and \
                             "uncontrollable" not in self.command_action and self.nearest_enemy:
                         # not run combat AI if in uncontrollable state, currently charging,
@@ -1096,8 +1098,6 @@ class Unit(sprite.Sprite):
                 self.morale_logic(dt)
 
                 self.health_stamina_logic(dt)
-
-                self.move = False  # reset move check
 
                 # Animation and sprite system
 

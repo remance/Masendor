@@ -1,12 +1,13 @@
+from operator import itemgetter
+
 from engine.utility import rotation_xy
 
 
 def ai_unit(self):
     self.near_enemy = sorted(
-        {key.attacker: key.attacker.base_pos.distance_to(self.base_pos) for key in self.enemy_list}.items(),
-        key=lambda item: item[1])  # sort the closest enemy
-    self.near_ally = sorted({key: key.base_pos.distance_to(self.base_pos) for key in
-                             self.battle.all_team_unit[self.team]}.items(),
+        {key.attacker: key.base_pos.distance_to(self.base_pos) for key in self.enemy_list}.items(),
+        key=lambda item: item[1])  # sort the closest enemy, saved as hitbox in that list so need to get attacker
+    self.near_ally = sorted({key: key.base_pos.distance_to(self.base_pos) for key in self.ally_list}.items(),
                             key=lambda item: item[1])  # sort the closest friend
 
     # self.near_visible_enemy = {key: value for key, value in self.near_enemy if self.sight > key.hidden + value}
@@ -17,14 +18,14 @@ def ai_unit(self):
     self.nearest_enemy = self.near_enemy[0]
     self.nearest_ally = self.near_ally[0]
 
-    if not self.player_control:
+    if not self.is_leader:
         layer = int(self.base_pos[0] + (self.base_pos[1] * 10))
-        if layer < 2:
+        if layer < 2:  # layer 1 is for hitbox
             layer = 2
         if self._layer != layer:
             self.battle.battle_camera.change_layer(self, layer)
 
-    if self.is_leader:
+    else:
         self.group_too_far = False
         self.army_too_far = False
         if self.move_speed:  # find new follow point based on formation for subordinate

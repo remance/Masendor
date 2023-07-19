@@ -29,7 +29,7 @@ def make_battle_ui(battle_ui_image):
     weapon_ui = WeaponUI((battle_ui_image["weapon_box_primary"], battle_ui_image["weapon_box_secondary"]),
                          (90 * screen_scale[0], 500 * screen_scale[1]))
 
-    follower_ui = FollowerUI((0, 700 * screen_scale[1]))
+    follower_ui = FollowerUI((20 * screen_scale[0], 700 * screen_scale[1]))
     status_ui = StatusUI(battle_ui_image["status_box"], (0, 800 * screen_scale[1]))
 
     return {"time_ui": time_ui, "time_number": time_number, "battle_scale_ui": battle_scale_ui,

@@ -18,19 +18,22 @@ def ai_combat(self):
             self.near_enemy.pop(0)
         if self.near_enemy:
             self.nearest_enemy = self.near_enemy[0]
-            if self.nearest_enemy[1] < melee_distance_check:
+            if self.nearest_enemy[1] < melee_distance_check or (self.leader and self.leader.in_melee_combat_timer):
                 self.attack_unit = self.nearest_enemy[0]
                 self.in_melee_combat_timer = 2  # consider to be in melee for 2 seconds before reset
+        else:
+            print(self.name)
 
     if "hold" in self.current_action:  # already perform an attack with holding
         weapon = self.current_action["weapon"]
         target_distance = self.nearest_enemy[0].base_pos.distance_to(self.front_pos)
-        if ((weapon in self.equipped_block_weapon and self.take_melee_dmg) or \
-            weapon in self.equipped_charge_block_weapon) and \
-                target_distance <= self.melee_range[weapon] or \
-                (target_distance > self.melee_def_range[weapon] and self.hold_timer > 3):
+        if self.hold_timer > 5 or \
+                (((weapon in self.equipped_block_weapon and self.take_melee_dmg) or
+                  weapon in self.equipped_charge_block_weapon) and target_distance <= self.melee_range[weapon] or
+                 (target_distance > self.melee_def_range[weapon] and self.hold_timer > 3)):
             # block take melee dmg or in charge block
             # with enemy in range to hit or block too long when no enemy near, release to attack back
+            # AI will not hold longer than 5 seconds no matter what
             self.current_action = self.melee_attack_command_action[weapon]
             self.release_timer = self.hold_timer
             return
@@ -50,10 +53,12 @@ def ai_combat(self):
                         self.release_timer = self.hold_timer
                 return
     else:  # not already holding attack
-        if self.in_melee_combat_timer > 0 and self.attack_unit:  # enemy in unit's melee zone
+        if self.in_melee_combat_timer and self.attack_unit:  # enemy in unit's melee zone
             if not self.current_action:  # only rotate to enemy when no current action
                 self.new_angle = self.set_rotate(self.attack_unit.base_pos)
-            if "weapon" not in self.current_action and "weapon" not in self.command_action:  # not about to do attack animation
+            if "weapon" not in self.current_action and "weapon" not in self.command_action and \
+                    "skill" not in self.command_action:
+                # not about to do attack action already
                 if self.equipped_weapon != self.melee_weapon_set:  # swap to melee weapon when enemy near
                     self.command_action = self.swap_weapon_command_action[self.melee_weapon_set]
                 else:
@@ -66,10 +71,9 @@ def ai_combat(self):
                     else:  # no skill to use, check for melee attack
                         for weapon in self.weapon_cooldown:
                             if self.weapon_cooldown[weapon] >= self.weapon_speed[weapon]:
-                                if self.attack_unit.base_pos.distance_to(self.front_pos) <= self.melee_range[
-                                    weapon]:
-                                    if weapon in self.equipped_block_weapon and self.weapon_cooldown[
-                                        opposite_index[weapon]] > 1:  # consider blocking first
+                                if self.attack_unit.base_pos.distance_to(self.front_pos) <= self.melee_range[weapon]:
+                                    if weapon in self.equipped_block_weapon and \
+                                            self.weapon_cooldown[opposite_index[weapon]] > 1:  # consider blocking first
                                         self.command_action = self.melee_hold_command_action[weapon]
                                     elif (weapon in self.equipped_power_weapon or self.equipped_timing_start_weapon[
                                         weapon]) and not not getrandbits(1):
@@ -80,14 +84,13 @@ def ai_combat(self):
 
                                     # leader troop and unit melee condition skill check
                                     if self.group_leader and not self.group_leader.player_control and \
-                                            not self.group_leader.command_action and \
-                                            not self.group_leader.current_action:
+                                            not self.group_leader.command_action:
                                         if self.group_leader.available_unit_melee_skill:
                                             self.group_leader.skill_command_input(0,
                                                                                   self.group_leader.available_unit_melee_skill,
                                                                                   pos_target=self.base_pos)
                                     elif self.leader and not self.leader.player_control and \
-                                            not self.leader.command_action and not self.leader.current_action:
+                                            not self.leader.command_action:
                                         if self.leader.available_troop_melee_skill:
                                             self.leader.skill_command_input(0,
                                                                             self.leader.available_troop_melee_skill,

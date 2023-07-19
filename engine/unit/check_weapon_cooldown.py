@@ -1,7 +1,7 @@
 def check_weapon_cooldown(self, dt):
     for weapon in self.weapon_cooldown:
         if self.equipped_weapon in self.ammo_now and weapon in self.ammo_now[self.equipped_weapon]:
-            if self.ammo_now[self.equipped_weapon][weapon] == 0:
+            if not self.ammo_now[self.equipped_weapon][weapon]:  # no ammo, reload weapon
                 if self.weapon_cooldown[weapon] < self.weapon_speed[weapon]:  # only increase cooldown when reloading
                     self.weapon_cooldown[weapon] += dt
                 else:  # finish reload, add ammo

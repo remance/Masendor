@@ -447,7 +447,7 @@ class Game:
 
         # Battle map object
         self.battle_base_map = BaseMap()  # create base terrain map
-        self.battle_feature_map = FeatureMap()  # create terrain feature map
+        self.battle_feature_map = FeatureMap(self.battle_base_map)  # create terrain feature map
         self.battle_height_map = HeightMap()  # create height map
         self.battle_map = FinalMap(self.battle_height_map)
         self.battle_camera.add(self.battle_map)

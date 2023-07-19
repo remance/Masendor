@@ -18,7 +18,7 @@ def wheel_ui_process(self, choice):
             if choice in self.unit_behaviour_wheel["Group"]:
                 if choice == "Group Formation":  # get formation from leader
                     self.unit_behaviour_wheel[choice] = {value: value for value in
-                                                         self.player_unit.formation_list}  # TODO change when has icon
+                                                         self.player_unit.formation_list}
                     renew_wheel(self, choice)
             elif choice in self.unit_behaviour_wheel["Army"]:
                 if choice == "Army Formation":  # get formation from leader
