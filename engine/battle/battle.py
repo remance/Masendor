@@ -899,8 +899,9 @@ class Battle:
 
                     self.ten_second_reset_timer += self.dt
                     if self.ten_second_reset_timer > 10:
-                        self.camp_enemy_check = {team: {index: False for index, _ in enumerate(value)} for
-                                                 team, value in self.camp_enemy_check.items()}
+                        for team, value in self.camp_enemy_check.items():
+                            for key in value:
+                                value[key] = False
                         self.ten_second_reset_timer -= 10
 
                     # Battle related updater

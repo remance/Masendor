@@ -43,7 +43,7 @@ def ai_move(self, dt):
     if follow_order != "Free":  # move to assigned location
         if "charge" in self.leader.current_action or self.charge_target:
             # leader charging, charge with leader or has player charge target do not auto move to enemy on its own
-            if not self.attack_unit or "charge" in self.current_action:
+            if not self.melee_target or "charge" in self.current_action:
                 # keep charging if not stop yet or no enemy in melee distance
                 if not self.charge_target:
                     self.ai_charge_timer = 3
@@ -112,10 +112,10 @@ def ai_move(self, dt):
                 else:  # no skill to use or can use, now move
                     self.command_action = self.run_command_action
 
-        elif self.attack_unit and self.max_melee_range and not self.manual_control:
+        elif self.melee_target and self.max_melee_range and not self.manual_control:
             # move to enemy nearby when follow_target not too far, only for melee
             move_melee_range = self.max_melee_range - 1  # using max_melee_range only seem to make unit stand too far
-            move_distance = self.attack_unit.base_pos.distance_to(self.base_pos) - move_melee_range
+            move_distance = self.melee_target.base_pos.distance_to(self.base_pos) - move_melee_range
             if move_distance < follow or self.impetuous:
                 # enemy not too far from move_target
                 if move_distance > move_melee_range:  # move closer to enemy in range
@@ -128,7 +128,7 @@ def ai_move(self, dt):
                         self.command_action = self.run_command_action
 
                         # move enough to be in melee attack range
-                        base_angle = self.set_rotate(self.attack_unit.base_pos)
+                        base_angle = self.set_rotate(self.melee_target.base_pos)
                         self.command_target = Vector2(self.base_pos[0] - (move_distance * sin(radians(base_angle))),
                                                       self.base_pos[1] - (move_distance * cos(radians(base_angle))))
 
@@ -144,12 +144,12 @@ def ai_move(self, dt):
                     self.command_target = move_target
 
             elif self.is_leader and self.group_too_far and move_distance > self.charge_melee_range and \
-                    self.group_follow_order in ("Stay Formation", "Follow") and not self.attack_unit:
+                    self.group_follow_order in ("Stay Formation", "Follow") and not self.melee_target:
                 # troop followers too far, stand to wait a bit for them to catch up
                 self.command_action = self.walk_command_action
                 self.command_target = move_target
 
-            elif not self.attack_unit:  # no enemy to hit yet
+            elif not self.melee_target:  # no enemy to hit yet
                 if self.max_shoot_range:  # has range weapon, move to maximum shoot range position
                     move_distance = self.nearest_enemy[0].base_pos.distance_to(self.front_pos)
                     max_shoot = self.max_shoot_range
@@ -194,7 +194,7 @@ def ai_move(self, dt):
                                                           self.base_pos[1] - (move_distance * cos(radians(base_angle))))
 
             else:  # has nearby enemy to hit in melee combat
-                move_distance = self.attack_unit.base_pos.distance_to(self.base_pos) - self.max_melee_range
+                move_distance = self.melee_target.base_pos.distance_to(self.base_pos) - self.max_melee_range
                 if move_distance > self.max_melee_range:  # too far move closer to hit enemy
                     if move_distance > 10:
                         if not self.command_action:
@@ -202,7 +202,7 @@ def ai_move(self, dt):
                     else:
                         if not self.command_action:  # walk if not that far
                             self.command_action = self.walk_command_action
-                    base_angle = self.set_rotate(self.attack_unit.base_pos)
+                    base_angle = self.set_rotate(self.melee_target.base_pos)
                     self.command_target = Vector2(self.base_pos[0] - (move_distance * sin(radians(base_angle))),
                                                   self.base_pos[1] - (move_distance * cos(radians(base_angle))))
 

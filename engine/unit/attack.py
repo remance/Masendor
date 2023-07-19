@@ -9,19 +9,19 @@ from engine.utility import convert_degree_to_360
 
 def attack(self, attack_type):
     base_target = None
-    if self.attack_unit:
-        base_target = self.attack_unit.base_pos
-    elif self.attack_pos:
+    if self.attack_pos:
         base_target = self.attack_pos
         self.attack_pos = None  # only one time pos attack
+    elif self.nearest_enemy:
+        base_target = self.nearest_enemy[0].base_pos
 
     if base_target:
         if "weapon" in self.current_action:
             weapon = self.current_action["weapon"]
-            equipped_weapon_data = self.equipped_weapon_data[weapon]
+            attack_weapon_data = self.equipped_weapon_data[weapon]
         else:
             weapon = None
-            equipped_weapon_data = None
+            attack_weapon_data = None
 
         if attack_type == "range":
             max_range = self.shoot_range[weapon]
@@ -38,6 +38,7 @@ def attack(self, attack_type):
                 accuracy -= 10  # accuracy penalty for shoot while moving
 
             attack_range = self.base_pos.distance_to(base_target)
+
             if self.check_special_effect("No Range Penalty"):
                 pass
             elif self.check_special_effect("Long Range Accurate"):
@@ -64,17 +65,16 @@ def attack(self, attack_type):
                 base_target = Vector2(self.base_pos[0] - (max_range * sin(radians(base_angle))),
                                       self.base_pos[1] - (max_range * cos(radians(base_angle))))
 
-            if self.attack_unit:
-                how_long = attack_range / self.speed  # shooting distance divide damage sprite speed to find travel time
-
-                # Predicatively find position the enemy will be at based on movement speed and sprite travel time
-                if self.attack_unit.move_speed and how_long > 0.5:  # target walking
-                    target_move = self.attack_unit.base_target - self.attack_unit.base_pos  # target movement distance
-                    if target_move.length() > 1:  # recal target base on enemy move target
-                        target_move.normalize_ip()
-                        base_target = base_target + ((target_move * (self.attack_unit.move_speed * how_long)) / 11)
-                        if not self.check_special_effect("Agile Aim"):
-                            accuracy -= 15
+            # if self.melee_target:  # check if unit moving, then find new target based on their speed and direction
+            #     how_long = attack_range / attack_weapon_data["Travel Speed"]  # shooting distance divide bullet speed to find travel time
+            #     # Predicatively find position the enemy will be at based on movement speed and sprite travel time
+            #     if self.melee_target.move_speed and how_long > 0.5:  # target walking
+            #         target_move = self.melee_target.base_target - self.melee_target.base_pos  # target movement distance
+            #         if target_move.length() > 1:  # recalculate target base on enemy move target
+            #             target_move.normalize_ip()
+            #             base_target = base_target + ((target_move * (self.melee_target.move_speed * how_long)) / 11)
+            #             if not self.check_special_effect("Agile Aim"):
+            #                 accuracy -= 15
 
             if self.check_special_effect("Cone Shot"):
                 accuracy /= 1.25
@@ -106,9 +106,9 @@ def attack(self, attack_type):
                                     self.base_pos[1] - (self.hitbox_front_distance * cos(radians_angle)))
 
                 RangeDamageEffect(self, base_angle, weapon, dmg, self.weapon_penetrate[self.equipped_weapon][weapon],
-                                  impact, equipped_weapon_data, attack_type, start_pos, base_target,
+                                  impact, attack_weapon_data, attack_type, start_pos, base_target,
                                   accuracy=accuracy, arc_shot=arc_shot,
-                                  reach_effect=equipped_weapon_data[
+                                  reach_effect=attack_weapon_data[
                                       "After Reach Effect"])
 
             self.ammo_now[self.equipped_weapon][weapon] -= 1  # use 1 ammo per shot
@@ -130,11 +130,11 @@ def attack(self, attack_type):
                         self.skill_effect.pop(skill)
                         self.active_action_skill["range"].remove(skill)
 
-            if equipped_weapon_data["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
+            if attack_weapon_data["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
                 self.battle.add_sound_effect_queue(
-                    choice(self.sound_effect_pool[equipped_weapon_data["Sound Effect"]]),
-                    self.base_pos, equipped_weapon_data["Sound Distance"],
-                    equipped_weapon_data["Shake Power"])
+                    choice(self.sound_effect_pool[attack_weapon_data["Sound Effect"]]),
+                    self.base_pos, attack_weapon_data["Sound Distance"],
+                    attack_weapon_data["Shake Power"])
 
         else:  # melee attack
             accuracy = self.melee_attack
@@ -160,7 +160,7 @@ def attack(self, attack_type):
             impact = self.weapon_impact[self.equipped_weapon][weapon] * self.weapon_impact_effect
 
             MeleeDamageEffect(self, base_angle, weapon, dmg, self.weapon_penetrate[self.equipped_weapon][weapon],
-                              impact, equipped_weapon_data, attack_type, base_target,
+                              impact, attack_weapon_data, attack_type, base_target,
                               base_target, accuracy=accuracy)
 
             if self.active_action_skill["melee"]:  # check if any skill melee action active
@@ -173,17 +173,17 @@ def attack(self, attack_type):
 
             self.weapon_cooldown[weapon] = 0  # melee weapon use cooldown for attack
 
-            if equipped_weapon_data["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
-                self.battle.add_sound_effect_queue(choice(self.sound_effect_pool[equipped_weapon_data["Sound Effect"]]),
-                                                   self.base_pos, equipped_weapon_data["Sound Distance"],
-                                                   equipped_weapon_data["Shake Power"])
+            if attack_weapon_data["Sound Effect"] in self.sound_effect_pool:  # add attack sound to playlist
+                self.battle.add_sound_effect_queue(choice(self.sound_effect_pool[attack_weapon_data["Sound Effect"]]),
+                                                   self.base_pos, attack_weapon_data["Sound Distance"],
+                                                   attack_weapon_data["Shake Power"])
 
         self.release_timer = 0  # reset release timer after attack
 
-        if equipped_weapon_data:
+        if attack_weapon_data:
             self.stamina -= self.weapon_weight[self.equipped_weapon][weapon]
-            if equipped_weapon_data["After Attack Effect"]:
-                effect_stat = self.effect_list[equipped_weapon_data["After Attack Effect"]]
+            if attack_weapon_data["After Attack Effect"]:
+                effect_stat = self.effect_list[attack_weapon_data["After Attack Effect"]]
                 dmg = {key: effect_stat[key + " Damage"] for key in self.original_element_resistance if
                        key + " Damage" in effect_stat}
                 if sum(dmg.values()) <= 0:
@@ -195,6 +195,6 @@ def attack(self, attack_type):
                 base_target = Vector2(self.base_pos[0] - (self.attack_effect_spawn_distance * sin(radians(self.angle))),
                                       self.base_pos[1] - (self.attack_effect_spawn_distance * cos(radians(self.angle))))
 
-                EffectDamageEffect(self, equipped_weapon_data["After Attack Effect"], dmg,
+                EffectDamageEffect(self, attack_weapon_data["After Attack Effect"], dmg,
                                    effect_stat["Armour Penetration"], effect_stat["Impact"], effect_stat, "effect",
                                    base_target, base_target, base_angle, reach_effect=effect_stat["After Reach Effect"])

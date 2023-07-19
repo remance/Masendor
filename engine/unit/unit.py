@@ -306,7 +306,7 @@ class Unit(sprite.Sprite):
         self.get_height = self.height_map.get_height
 
         self.not_broken = True
-        self.attack_unit = None  # target for attacking
+        self.melee_target = None  # target for melee attacking
         self.player_control = False  # unit controlled by player
         self.toggle_run = False  # player unit toggle running
         self.auto_move = False  # player unit toggle auto moving

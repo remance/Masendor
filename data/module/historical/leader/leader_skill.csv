@@ -12,30 +12,30 @@
 "L11","Terrifying Presence",0,30,0,120,250,10,2,,,,,,,,,,,,,,,,,,,,-100,,10,,,,"BuffSelf",,,,"Buff","troop_melee","Skill","Buff"
 "L12","Majestic Presence",0,30,0,60,250,30,2,,,,,,,,,,,,,,15,,,,,,-100,,,,,,"BuffSelf",,,,"Buff","troop_melee","Skill","Buff"
 "L13","Godly Presence",0,100,0,60,250,0,2,,,,,,,,,,,,,,40,,,,,,-200,,,,1,,"BuffSelf",,,,"Buff","troop_melee","Skill","Buff"
-"L14","Forced March",0,100,0,10,30,57,0,-40,-30,-30,100,-40,,,-15,-40,,,-1,-20,,,,,,,-50,,,,,,"BuffAlly",,,,"Buff","move_far","Skill","Buff"
-"L15","Death March",0,100,0,10,30,40,0,-50,-40,-40,200,-50,,,-30,-60,,-10,-1,-40,,,,,,,-70,,,,,,"BuffAlly",,,,"Buff","move_far","Skill","Buff"
+"L14","Forced March",0,100,0,10,30,57,0,-40,-30,-30,50,-40,,,-15,-40,,,-1,-20,,,,,,,-50,,,,,,"BuffAlly",,,,"Buff","move_far","Skill","Buff"
+"L15","Death March",0,100,0,10,30,40,0,-50,-40,-40,100,-50,,,-30,-60,,-10,-1,-40,,,,,,,-70,,,,,,"BuffAlly",,,,"Buff","move_far","Skill","Buff"
 "L16","Suppress Fear",30,50,0,60,100,0,5,,,,,,,,,,,,,,,,,,,,,,,,1,,"BuffAlly",,,,"Buff","troop_melee","Skill","Buff"
-"L17","Steady Advance",0,150,0,100,150,45,0,,,,20,,,,,,,,,,,,,,,,,,,,,,"BuffAlly",,,,"Buff","move","Skill","Buff"
-"L18","Determination",0,10,0,60,120,26,1,,10,,10,,,,,5,,,,10,10,,,,,,,,,,,,"BuffSelf",,,,"Buff","melee","Skill","Buff"
-"L19","Encourage",30,50,0,60,120,24,10,5,5,5,5,5,5,5,5,,1,,,15,,,,,,,,,,,,,"BuffAlly",,,,"Buff","enemy_near","Skill","Buff"
+"L17","Steady Advance",0,150,0,100,150,45,0,,,,10,,,,,,,,,,,,,,,,,,,,,,"BuffAlly",,,,"Buff","move","Skill","Buff"
+"L18","Determination",0,10,0,60,120,26,1,,10,,2,,,,,5,,,,10,10,,,,,,,,,,,,"BuffSelf",,,,"Buff","melee","Skill","Buff"
+"L19","Encourage",30,50,0,60,120,24,10,5,5,5,2,5,5,5,5,,1,,,15,,,,,,,,,,,,,"BuffAlly",,,,"Buff","enemy_near","Skill","Buff"
 "L20","Ensnare",45,50,1,15,80,38,5,,,,-70,-10,,,-40,,,,,,,,,,,,,,,,,,"DebuffEnemy",,,,"Debuff","enemy_near","Skill","Debuff"
 "L21","Make Haste",0,100,0,80,150,31,5,,,,30,,,,,,,,,,,,,,,,,,,,,,"BuffAlly",,,,"Buff","move_far","Skill","Buff"
 "L22","Demoralise",100,50,1,45,120,34,5,,,,,,,,,,,,,-60,,,,,,,,,,,,,"DebuffEnemy",,,,"Debuff","enemy_near","Skill","Debuff"
 "L23","Defiance",0,1,0,,,15,0,14,30,35,,,,,,50,,,,,,,,,,,,,,,,,"BuffSelf",,,,"Buff","melee","Skill","Buff"
 "L24","Show Of Force",0,60,0,,,67,0,,,,,,,,,30,,,,,,,,,,,,,1,,,,,,,,"Buff","troop_melee","Skill","Buff"
-"L25","Tactical Withdrawal",0,50,0,10,30,58,5,-40,25,25,50,,,,,10,,,,0,10,,,,,,0,,,,,,"BuffAlly",,,,"Buff","retreat","Skill","Buff"
+"L25","Tactical Withdrawal",0,50,0,10,30,58,5,-40,25,25,30,,,,,10,,,,0,10,,,,,,0,,,,,,"BuffAlly",,,,"Buff","retreat","Skill","Buff"
 "L26","Defence Focus",0,40,0,30,60,33,5,-30,40,40,-30,-30,-30,-30,-30,50,,,,,,,,,,,,,,,,,"BuffAlly",,,,"Buff","troop_melee","Skill","Buff"
-"L27","Movement Focus",0,40,0,30,60,30,5,-30,-30,-30,80,-30,,,20,,,,,,,,,,,,,,,,,,"BuffAlly",,,,"Buff","move_far","Skill","Buff"
-"L28","Offence Focus",0,20,0,30,60,44,5,40,-30,-30,15,,,,40,-50,3,,,,,,,,,,,,,,,,"BuffAlly",,,,"Buff","troop_melee","Skill","Buff"
+"L27","Movement Focus",0,40,0,30,60,30,5,-30,-30,-30,40,-30,,,20,,,,,,,,,,,,,,,,,,"BuffAlly",,,,"Buff","move_far","Skill","Buff"
+"L28","Offence Focus",0,20,0,30,60,44,5,40,-30,-30,5,,,,40,-50,3,,,,,,,,,,,,,,,,"BuffAlly",,,,"Buff","troop_melee","Skill","Buff"
 "L29","Range Focus",0,20,0,30,60,44,5,-50,-50,-50,-20,40,40,40,-50,-50,,,,,,,,,,,,,,,,,"BuffAlly",,,,"Buff","troop_range","Skill","Buff"
 "L30","Ambush Focus",0,20,0,30,60,66,5,,,,-80,,,,,70,,,,,,20,,,,-30,,,,,,,"BuffAlly",,,,"Buff","idle","Skill","Buff"
 "L31","Breakout",,,0,,,32,10,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAlly",,,,,"troop_melee","Skill",
-"L32","Swift Retreat",0,30,0,15,45,70,10,-65,,,70,,,,-100,,,,,,,,,,,,,,,,,,"BuffAlly",,,,"Buff","retreat","Skill","Buff"
-"L33","Hit And Run",0,50,0,,,61,10,-25,-30,,40,15,,20,50,,,,,,,,,,,,-40,,,,,,"BuffAlly",,,,"Buff","troop_range","Skill","Buff"
+"L32","Swift Retreat",0,30,0,15,45,70,10,-65,,,50,,,,-100,,,,,,,,,,,,,,,,,,"BuffAlly",,,,"Buff","retreat","Skill","Buff"
+"L33","Hit And Run",0,50,0,,,61,10,-25,-30,,25,15,,20,50,,,,,,,,,,,,-40,,,,,,"BuffAlly",,,,"Buff","troop_range","Skill","Buff"
 "L34","Faith In Command",,60,0,,,40,5,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAlly",,,,"Buff","troop_melee","Skill","Buff"
 "L35",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
 "L36","Final Glory",,1,0,60,3000,30,20,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAlly",,,,"Buff","melee","Skill","Buff"
-"L37","Provoke",50,40,1,,,23,10,25,-35,-35,10,-25,,-25,40,-20,,,,20,-20,,,,,,,,,,,,"DebuffEnemy",,,,"Debuff","enemy_near","Skill","Debuff"
+"L37","Provoke",50,40,1,,,23,10,25,-35,-35,5,-25,,-25,40,-20,,,,20,-20,,,,,,,,,,,,"DebuffEnemy",,,,"Debuff","enemy_near","Skill","Debuff"
 "L38","Intimidate",30,40,1,60,,16,10,,,,,,,,,,,,,,,,,,,,,,,,,,"DebuffEnemy",,,,"Debuff","enemy_near","Skill","Debuff"
 "L39","Sabotage",90,20,1,30,,67,5,-30,-30,-20,-20,-30,-30,-20,-30,-10,-2,,,-15,-15,,,,,,,,,,,,"DebuffEnemy",,,,"Debuff","enemy_near","Skill","Debuff"
 "L40","Great Taunt",100,80,1,60,,33,10,50,-60,-60,30,-80,,-40,60,-50,,,,30,-40,,,,,,,,,,,,"DebuffEnemy",,,,"Debuff","enemy_near","Skill","Debuff"
@@ -46,12 +46,12 @@
 "L45","Smoke Trap",60,45,1,,600,58,15,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Perform","enemy_near","Spell",
 "L46","On The Defensive",0,4,0,20,60,34,5,,30,20,,,,,,50,,,,,,,,,,,,,,,,,"BuffAlly",,,,"Buff","enemy_near","Skill","Buff"
 "L47","Diversion",50,4,0,30,120,41,5,,-10,-10,-10,-20,,-20,,-30,,,,,-15,,,,,,,,,,,,"DebuffEnemy",,,,"Debuff","enemy_near","Skill","Debuff"
-"L48","Emperor's Decree",0,5,0,300,700,50,10,30,30,30,30,30,,30,30,25,3,,,50,40,,,,,,,,,,,,"BuffAll",,,,"Buff","troop_melee","Skill","Buff"
-"L49","King's Command",0,5,0,300,700,50,10,20,20,20,20,20,,20,20,15,2,,,40,30,,,,,,,,,,,,"BuffAll",,,,"Buff","troop_melee","Skill","Buff"
-"L50","Lord's Order",0,5,0,300,700,50,10,10,10,10,10,10,,10,10,5,1,,,30,20,,,,,,,,,,,,"BuffAll",,,,"Buff","troop_melee","Skill","Buff"
-"L51","Honourable Chivalry",0,5,0,300,700,50,10,5,5,5,5,,,,10,10,,,,20,15,,,,,,,,,,,,"BuffAlly",,,,"Buff","troop_melee","Skill","Buff"
-"L52","Heroic Valour",0,5,0,300,700,50,10,25,25,25,15,15,,15,50,15,1,,,50,20,,,,,,,,,,,,"BuffAll",,,,"Buff","troop_melee","Skill","Buff"
-"L53","Marathon Sprint",0,1,0,1000,3000,70,2,-50,-50,-50,100,-50,-50,-50,-50,,,,1,25,10,,,,,,,,,,,,"BuffSelf",,,,"Buff","move_far","Skill","Buff"
+"L48","Emperor's Decree",0,5,0,300,700,50,10,30,30,30,10,30,,30,30,25,3,,,50,40,,,,,,,,,,,,"BuffAll",,,,"Buff","troop_melee","Skill","Buff"
+"L49","King's Command",0,5,0,300,700,50,10,20,20,20,5,20,,20,20,15,2,,,40,30,,,,,,,,,,,,"BuffAll",,,,"Buff","troop_melee","Skill","Buff"
+"L50","Lord's Order",0,5,0,300,700,50,10,10,10,10,3,10,,10,10,5,1,,,30,20,,,,,,,,,,,,"BuffAll",,,,"Buff","troop_melee","Skill","Buff"
+"L51","Honourable Chivalry",0,5,0,300,700,50,10,5,5,5,2,,,,10,10,,,,20,15,,,,,,,,,,,,"BuffAlly",,,,"Buff","troop_melee","Skill","Buff"
+"L52","Heroic Valour",0,5,0,300,700,50,10,25,25,25,10,15,,15,50,15,1,,,50,20,,,,,,,,,,,,"BuffAll",,,,"Buff","troop_melee","Skill","Buff"
+"L53","Marathon Sprint",0,1,0,1000,3000,70,2,-50,-50,-50,60,-50,-50,-50,-50,,,,1,25,10,,,,,,,,,,,,"BuffSelf",,,,"Buff","move_far","Skill","Buff"
 "L54",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
 "L55",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
 "L56",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
@@ -59,17 +59,17 @@
 "L58",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
 "L59",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
 "L60",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
-"L61","Conqueror's Destiny",0,300,0,100,350,46,10,50,25,20,20,20,,20,40,,1,,,50,50,,,,,,,,,,,,"BuffAll",,,,"Buff","unit_melee","Skill","Buff"
+"L61","Conqueror's Destiny",0,300,0,100,350,46,10,50,25,20,10,20,,20,40,,1,,,50,50,,,,,,,,,,,,"BuffAll",,,,"Buff","unit_melee","Skill","Buff"
 "L62","Wondrous Recovery",0,40,0,,,35,0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Buff","troop_melee","Skill","Buff"
-"L63","Chieftain's Guidance",0,5,0,30,260,31,10,20,,,10,,,,30,,,,,30,,,,,,,,,,,,,"BuffAll",,,,"Buff","troop_melee","Skill","Buff"
-"L64","Land Supremacy",0,5,0,70,410,75,7,50,50,50,50,50,,50,50,60,3,,,100,20,,,,,,,,,,,,"BuffAll",,,,"Buff","unit_melee","Skill","Buff"
-"L65","Commence The Hunt",0,300,0,120,400,52,20,15,-30,-30,40,100,50,100,40,-50,,,,50,-35,50,,,,100,100,,,,,,"BuffAll",,,,"Buff","enemy_near","Skill","Buff"
-"L66","God Of War",0,200,0,60,500,65,10,80,60,50,50,80,,50,100,50,5,,5,50,50,,,,,,,,,,,,"BuffAll",,,,"Buff","unit_melee","Skill","Buff"
+"L63","Chieftain's Guidance",0,5,0,30,260,31,10,20,,,5,,,,30,,,,,30,,,,,,,,,,,,,"BuffAll",,,,"Buff","troop_melee","Skill","Buff"
+"L64","Land Supremacy",0,5,0,70,410,75,7,50,50,50,20,50,,50,50,60,3,,,100,20,,,,,,,,,,,,"BuffAll",,,,"Buff","unit_melee","Skill","Buff"
+"L65","Commence The Hunt",0,300,0,120,400,52,20,15,-30,-30,15,100,50,100,40,-50,,,,50,-35,50,,,,100,100,,,,,,"BuffAll",,,,"Buff","enemy_near","Skill","Buff"
+"L66","God Of War",0,200,0,60,500,65,10,80,60,50,10,80,,50,100,50,5,,5,50,50,,,,,,,,,,,,"BuffAll",,,,"Buff","unit_melee","Skill","Buff"
 "L67","Liberty Or Death",0,250,0,60,400,50,5,25,40,15,15,40,,60,20,45,2,,,60,10,,,,,,,,,,,,"BuffAll",,,,"Buff","enemy_near","Skill","Buff"
 "L68","Masterful Ambush",0,80,0,,,72,5,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAlly",,,,"Buff","idle","Skill","Buff"
 "L69","Mastermind Perpetration",100,150,1,,,77,5,,,,,,,,,,,,,,,,,,,,,,,,,,"DebuffAll",,,,"Debuff","enemy_near","Skill","Debuff"
 "L70",,,,,,,,,,,,,,,,,,,,,,,,,,,-10,,,,,,,,,,,,,"Skill",
-"L71","Blessing Of Heart",150,4,0,,,38,10,25,25,25,25,25,,25,25,10,1,,,35,20,,,,,,,,,,,,"BuffAll",,,,"Buff","troop_melee","Skill","Buff"
+"L71","Blessing Of Heart",150,4,0,,,38,10,25,25,25,5,25,,25,25,10,1,,,35,20,,,,,,,,,,,,"BuffAll",,,,"Buff","troop_melee","Skill","Buff"
 "L72","Cooperation Support",60,4,0,,,60,3,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAlly",,,,"Buff","troop_melee","Skill","Buff"
 "L73",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
 "L74","Ingenious Manipulation",100,150,1,,,65,5,,,,,,,,,,,,,,,,,,,,,,,,,,"DebuffAll",,,,"Debuff","enemy_near","Skill","Debuff"
@@ -82,7 +82,7 @@
 "L81","Triumphant Of The Worthy",0,5,0,,,76,10,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Buff",,"Skill","Buff"
 "L82","Omen Of Victory",0,5,0,,,47,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Buff",,"Skill","Buff"
 "L83","God Speed",0,5,0,,,60,10,,,,,,,,,,,,,,,,,,,,,,,,,,"BuffAll",,,,"Buff",,"Skill","Buff"
-"L84","March Of The Four Wind",60,4,0,30,600,60,15,,15,15,200,,,,100,120,,,,60,40,,,,,,,,,,,,,,,,"Buff","move_far","Skill","Buff"
+"L84","March Of The Four Wind",60,4,0,30,600,60,15,,15,15,100,,,,100,120,,,,60,40,,,,,,,,,,,,,,,,"Buff","move_far","Skill","Buff"
 "L85","Bribery Betrayal",,,1,,,33,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Debuff","enemy_near","Skill","Debuff"
 "L86","Blazing Heart",,,0,,,26,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Buff",,"Skill","Buff"
 "L87","Precise Execution",,5,0,,,61,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
@@ -106,7 +106,7 @@
 "L105","Song Of Peace",,100,2,,,43,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Buff",,"Skill","Buff"
 "L106",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
 "L107",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
-"L108","Escalation Of Conflict",1,5,,300,900,50,,50,-50,-50,50,50,,50,100,-100,5,,,25,-25,,,,,,-100,,,,,,,,,,"Buff",,"Skill","Buff"
+"L108","Escalation Of Conflict",1,5,,300,900,50,,50,-50,-50,25,50,,50,100,-100,5,,,25,-25,,,,,,-100,,,,,,,,,,"Buff",,"Skill","Buff"
 "L109","Inevitable End",,,,,,41,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
 "L110","Command Collapse",,,,,,64,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Debuff",,"Skill","Debuff"
 "L111","Web Of Deception",,,,,,86,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Debuff",,"Skill","Debuff"

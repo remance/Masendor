@@ -23,8 +23,8 @@ def cal_loss(self, final_dmg, impact, final_morale_dmg, element_effect, hit_angl
         self.command_action = self.knockdown_command_action
         self.forced_move_speed = impact_check
         self.momentum = 0
-        self.forced_target = Vector2(self.base_pos[0] - (impact_check / 2 * sin(radians(hit_angle))),
-                                     self.base_pos[1] - (impact_check / 2 * cos(radians(hit_angle))))
+        self.forced_target = Vector2(self.base_pos[0] - (impact_check / 3 * sin(radians(hit_angle))),
+                                     self.base_pos[1] - (impact_check / 3 * cos(radians(hit_angle))))
         self.battle.add_sound_effect_queue(self.sound_effect_pool["Knock Down"][0], self.base_pos,
                                            self.knock_down_sound_distance,
                                            self.knock_down_sound_shake,

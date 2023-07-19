@@ -9,7 +9,6 @@ def ai_unit(self):
         key=lambda item: item[1])  # sort the closest enemy, saved as hitbox in that list so need to get attacker
     self.near_ally = sorted({key: key.base_pos.distance_to(self.base_pos) for key in self.ally_list}.items(),
                             key=lambda item: item[1])  # sort the closest friend
-
     # self.near_visible_enemy = {key: value for key, value in self.near_enemy if self.sight > key.hidden + value}
     #
     # self.nearest_enemy = None
