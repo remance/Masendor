@@ -15,8 +15,7 @@ def create_troop_sprite_pool(self, who_todo, preview=False, specific_preview=Non
     cache_folder_path = os.path.join(self.main_dir, "cache")
     if not os.path.isdir(cache_folder_path):
         os.mkdir(cache_folder_path)
-
-    cache_folder_path = os.path.join(self.main_dir, "cache", self.module_folder)
+    cache_folder_path = os.path.join(self.main_dir, "cache", self.module)
     if not os.path.isdir(cache_folder_path):
         os.mkdir(cache_folder_path)
 
