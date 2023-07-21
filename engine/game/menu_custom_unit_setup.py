@@ -182,18 +182,19 @@ def menu_custom_unit_setup(self, esc_press):
 
                     elif self.cursor.is_alt_select_just_up:  # remove unit
                         if icon.who.name != "+":
-                            if icon.who.index in self.play_map_data["unit"]["pos"][icon.who.team]:
-                                self.play_map_data["unit"]["pos"][icon.who.team].pop(icon.who.index)
-                            self.play_source_data["unit"].pop(icon.who.index)
-
                             for icon2 in self.unit_icon:
-                                if icon2.who.team == icon.who.team:  # reset leader of unit in team with unit removed
+                                if icon2.who.team == icon.who.team and icon2.who.name != "+":
+                                    # reset leader of unit in team with unit removed
                                     self.play_source_data["unit"][icon2.who.index]["Temp Leader"] = ""
                                 if icon2.who.index and icon2.who.index > icon.who.index:  # change icons after deleted one
                                     if icon2.who.index in self.play_map_data["unit"]["pos"][icon.who.team]:
                                         self.play_map_data["unit"]["pos"][icon.who.team][icon2.who.index - 1] = \
                                             self.play_map_data["unit"]["pos"][icon.who.team].pop(icon2.who.index)
                                     icon2.who.index -= 1
+
+                            if icon.who.index in self.play_map_data["unit"]["pos"][icon.who.team]:
+                                self.play_map_data["unit"]["pos"][icon.who.team].pop(icon.who.index)
+                            self.play_source_data["unit"].pop(icon.who.index)
 
                             self.map_preview.change_mode(1, team_pos_list=self.play_map_data["unit"]["pos"],
                                                          camp_pos_list=self.play_map_data["camp_pos"])
@@ -289,7 +290,7 @@ def unit_change_team_unit(self, new_faction=False, old_selected=None, add_plus=T
                                                          replace_on_select=custom_troop_list_on_select,
                                                          replace_on_mouse_over=custom_troop_list_on_mouse_over),
                                              self.troop_list_box.parent,
-                                             self.troop_list_box.item_size,
+                                             self.troop_list_box.visible_list_capacity,
                                              layer=self.troop_list_box._layer)
                 self.add_ui_updater(self.troop_list_box)
 
@@ -536,7 +537,7 @@ def create_unit_custom_list(game):
                                                        replace_on_select=custom_unit_list_on_select,
                                                        replace_on_mouse_over=custom_unit_list_on_mouse_over),
                                            game.custom_unit_list_box.parent,
-                                           game.custom_unit_list_box.item_size,
+                                           game.custom_unit_list_box.visible_list_capacity,
                                            layer=game.custom_unit_list_box._layer)
     elif "Preset Unit List" in game.custom_unit_list_select.name:
         game.custom_unit_list_box.__init__(game.custom_unit_list_box.origin, game.custom_unit_list_box.pivot,
@@ -545,7 +546,7 @@ def create_unit_custom_list(game):
                                                        replace_on_select=custom_unit_list_on_select,
                                                        replace_on_mouse_over=custom_unit_list_on_mouse_over),
                                            game.custom_unit_list_box.parent,
-                                           game.custom_unit_list_box.item_size,
+                                           game.custom_unit_list_box.visible_list_capacity,
                                            layer=game.custom_unit_list_box._layer)
     elif "Preset Army List" in game.custom_unit_list_select.name:
         game.custom_unit_list_box.__init__(game.custom_unit_list_box.origin, game.custom_unit_list_box.pivot,
@@ -554,6 +555,6 @@ def create_unit_custom_list(game):
                                                        replace_on_select=custom_unit_list_on_select,
                                                        replace_on_mouse_over=custom_unit_list_on_mouse_over),
                                            game.custom_unit_list_box.parent,
-                                           game.custom_unit_list_box.item_size,
+                                           game.custom_unit_list_box.visible_list_capacity,
                                            layer=game.custom_unit_list_box._layer)
     game.add_ui_updater(game.custom_unit_list_box)

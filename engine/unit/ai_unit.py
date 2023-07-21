@@ -5,7 +5,7 @@ from engine.utility import rotation_xy
 
 def ai_unit(self):
     self.near_enemy = sorted(
-        {key.attacker: key.base_pos.distance_to(self.base_pos) for key in self.enemy_list}.items(),
+        {key.attacker: key.attacker.base_pos.distance_to(self.base_pos) for key in self.enemy_list}.items(),
         key=lambda item: item[1])  # sort the closest enemy, saved as hitbox in that list so need to get attacker
     self.near_ally = sorted({key: key.base_pos.distance_to(self.base_pos) for key in self.ally_list}.items(),
                             key=lambda item: item[1])  # sort the closest friend
@@ -25,6 +25,7 @@ def ai_unit(self):
             self.battle.battle_camera.change_layer(self, layer)
 
     else:
+        self.ai_issued_charge = False
         self.group_too_far = False
         self.army_too_far = False
         if self.move_speed:  # find new follow point based on formation for subordinate

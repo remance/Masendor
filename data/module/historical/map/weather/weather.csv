@@ -1,4 +1,4 @@
-"ID","Name","Melee Attack Bonus","Melee Defense Bonus","Range Defense Bonus","Speed Bonus","Accuracy Bonus","Range Bonus","Reload Bonus","Charge Bonus","Charge Defense Bonus","HP Regeneration Bonus","Stamina Regeneration Bonus","Morale Bonus","Discipline Bonus","Sight Bonus","Hide Bonus","Temperature","Element","Status","Spawn Rate","Travel Speed","Wind Strength","Spell","Tag"
+"ID","Name","Melee Attack Bonus","Melee Defence Bonus","Range Defence Bonus","Speed Bonus","Accuracy Bonus","Range Bonus","Reload Bonus","Charge Bonus","Charge Defence Bonus","HP Regeneration Bonus","Stamina Regeneration Bonus","Morale Bonus","Discipline Bonus","Sight Bonus","Hide Bonus","Temperature","Element","Status","Spawn Rate","Travel Speed","Wind Strength","Spell","Tag"
 0,"Random",,,,,,,,,,,,,,,,,,,,,,,
 1,"Rain",0,0,0,-1,0,-5,-2,-5,0,0,0,-5,0,-10,5,-15,"Water",,0.03,300,3,,"Rain"
 2,"Snow",0,0,0,0,0,0,0,0,0,0,0,-5,0,0,5,-30,,,0.3,60,2,,"Snow"

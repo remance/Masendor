@@ -146,10 +146,10 @@ def attack(self, attack_type):
 
             base_angle = self.set_rotate(base_target)
 
-            if self.front_pos.distance_to(base_target) > self.melee_range[
-                weapon]:  # target exceed weapon range, use max
-                base_target = Vector2(self.front_pos[0] - (self.melee_range[weapon] * sin(radians(base_angle))),
-                                      self.front_pos[1] - (self.melee_range[weapon] * cos(radians(base_angle))))
+            if self.base_pos.distance_to(base_target) > self.melee_range[weapon]:
+                # target exceed weapon range, use max
+                base_target = Vector2(self.base_pos[0] - (self.melee_range[weapon] * sin(radians(base_angle))),
+                                      self.base_pos[1] - (self.melee_range[weapon] * cos(radians(base_angle))))
 
             dmg = {key: uniform(value[0], value[1]) for key, value in self.weapon_dmg[weapon].items()}
             if self.release_timer > 1 and weapon in self.equipped_power_weapon:

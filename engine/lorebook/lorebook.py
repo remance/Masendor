@@ -337,30 +337,31 @@ class Lorebook(UIMenu):
 
         # concept, history, faction section is simply for processed and does not need specific column read
         if self.section in (self.concept_section, self.history_section, self.faction_section):
-            for key, value in stat.items():
-                # blit text
-                if "IMAGE:" not in value:
-                    text_surface = pygame.Surface(
-                        (int(480 * self.screen_scale[1]), int(300 * self.screen_scale[0])), pygame.SRCALPHA)
-                    text_rect = description_surface.get_rect(topleft=(col, row))
-                    make_long_text(text_surface, (self.localisation.grab_text(("ui", key)) + ": " + str(value)),
-                                   (int(8 * self.screen_scale[1]), int(8 * self.screen_scale[0])), self.font)
-
-                # blit image instead of text
-                else:
-                    if "FULLIMAGE:" in value:  # full image to whole two pages
-                        filename = value[10:].split("\\")[-1]
-                        text_surface = load_image(self.main_dir, self.screen_scale, filename,
-                                                  value[10:].replace(filename, ""))
-                        text_surface = pygame.transform.scale(text_surface,
-                                                              (self.image.get_width(), self.image.get_height()))
-                        text_rect = description_surface.get_rect(topleft=(0, 0))
-                    else:
-                        filename = value[6:].split("\\")[-1]
-                        text_surface = load_image(self.main_dir, self.screen_scale, filename,
-                                                  value[6:].replace(filename, ""))
-                        text_rect = description_surface.get_rect(topleft=(col, row))
-                self.image.blit(text_surface, text_rect)
+            pass
+            # for key, value in stat.items():
+            #     # blit text
+            #     if "IMAGE:" not in value:
+            #         text_surface = pygame.Surface(
+            #             (int(480 * self.screen_scale[1]), int(300 * self.screen_scale[0])), pygame.SRCALPHA)
+            #         text_rect = description_surface.get_rect(topleft=(col, row))
+            #         make_long_text(text_surface, (self.localisation.grab_text(("ui", key)) + ": " + str(value)),
+            #                        (int(8 * self.screen_scale[1]), int(8 * self.screen_scale[0])), self.font)
+            #
+            #     # blit image instead of text
+            #     else:
+            #         if "FULLIMAGE:" in value:  # full image to whole two pages
+            #             filename = value[10:].split("\\")[-1]
+            #             text_surface = load_image(self.main_dir, self.screen_scale, filename,
+            #                                       value[10:].replace(filename, ""))
+            #             text_surface = pygame.transform.scale(text_surface,
+            #                                                   (self.image.get_width(), self.image.get_height()))
+            #             text_rect = description_surface.get_rect(topleft=(0, 0))
+            #         else:
+            #             filename = value[6:].split("\\")[-1]
+            #             text_surface = load_image(self.main_dir, self.screen_scale, filename,
+            #                                       value[6:].replace(filename, ""))
+            #             text_rect = description_surface.get_rect(topleft=(col, row))
+            #     self.image.blit(text_surface, text_rect)
 
         # more complex section
         elif self.section in (

@@ -59,7 +59,7 @@ from engine.utility import load_image, load_images, csv_read, edit_config, load_
     number_to_minus_or_plus
 from engine.weather.weather import MatterSprite, SpecialWeatherEffect
 
-version_name = "Future Visionary"  # Game version name that will appear as game name
+version_name = "Victores et Victos"  # Game name that will appear as game name
 
 
 class Game:
@@ -918,17 +918,23 @@ class Game:
                     elif "custom_active_troop_number" in self.input_popup[1] and self.input_box.text.isdigit():
                         for this_unit in self.unit_icon:
                             if this_unit.selected:
-                                self.play_source_data["unit"][this_unit.who.map_id]["Troop"][self.input_popup[2]] = \
-                                    [self.input_box.text, 0]
+                                input_text = int(self.input_box.text)
+                                if input_text:
+                                    self.play_source_data["unit"][this_unit.who.index]["Troop"][self.input_popup[2]] = \
+                                        [input_text, 0]
+                                    self.activate_input_popup(("text_input", "custom_reserve_troop_number",
+                                                               self.input_popup[2]), "Reserve troop number:",
+                                                              self.input_ui_popup)
+                                    done = False
+                                else:
+                                    if self.input_popup[2] in self.play_source_data["unit"][this_unit.who.index]["Troop"]:
+                                        self.play_source_data["unit"][this_unit.who.index]["Troop"].pop(self.input_popup[2])
                                 break
-                        self.activate_input_popup(("text_input", "custom_reserve_troop_number",
-                                                   self.input_popup[2]), "Reserve troop number:", self.input_ui_popup)
-                        done = False
 
                     elif "custom_reserve_troop_number" in self.input_popup[1] and self.input_box.text.isdigit():
                         for this_unit in self.unit_icon:
                             if this_unit.selected:
-                                self.play_source_data["unit"][this_unit.who.map_id]["Troop"][self.input_popup[2]][1] = \
+                                self.play_source_data["unit"][this_unit.who.index]["Troop"][self.input_popup[2]][1] = \
                                     self.input_box.text
                                 break
 

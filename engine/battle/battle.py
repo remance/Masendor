@@ -1,10 +1,13 @@
 import os
 import sys
 import time
+import glob
 
 import pygame
 from pygame import Vector2, display
 from pygame.locals import *
+
+from random import randint
 
 from engine.ai import ai
 from engine.battle.add_skill_icon import add_skill_icon
@@ -415,33 +418,36 @@ class Battle:
         self.weather_playing = self.weather_event[0][1]  # used as the reference for map starting time
 
         # Random music played from list
-        # yield set_start_load(self, "music")
-        # if pygame.mixer:
-        #     self.SONG_END = pygame.USEREVENT + 1
-        #     self.music_list = glob.glob(os.path.join(self.main_dir, "data", "sound", "music", "*.ogg"))
-        #     try:
-        #         self.music_event = csv_read(self.main_dir, "music_event.csv",
-        #                                     ("data", "module", self.module_folder, "map", play_map_type,
-        #                                      self.map_selected), output_type="list")
-        #         self.music_event = self.music_event[1:]
-        #         if self.music_event:
-        #             utility.convert_str_time(self.music_event)
-        #             self.music_schedule = list(dict.fromkeys([item[1] for item in self.music_event]))
-        #             new_list = []
-        #             for time in self.music_schedule:
-        #                 new_event_list = []
-        #                 for event in self.music_event:
-        #                     if time == event[1]:
-        #                         new_event_list.append(event[0])
-        #                 new_list.append(new_event_list)
-        #             self.music_event = new_list
-        #         else:
-        #             self.music_schedule = [self.weather_playing]
-        #             self.music_event = []
-        #     except:  # any reading error will play random custom music instead
-        #         self.music_schedule = [self.weather_playing]
-        #         self.music_event = []  # TODO: change later when has custom playlist
-        # yield set_done_load()
+        yield set_start_load(self, "music")
+        if pygame.mixer:
+            self.SONG_END = pygame.USEREVENT + 1
+            self.music_list = glob.glob(os.path.join(self.module_dir, "sound", "music", "battle", "*.ogg"))
+            self.picked_music = randint(0, len(self.music_list) - 1)
+            pygame.mixer.music.load(self.music_list[self.picked_music])
+            pygame.mixer.music.play(fade_ms=100)
+            # try:
+            #     self.music_event = csv_read(self.main_dir, "music_event.csv",
+            #                                 ("data", "module", self.module_folder, "map", play_map_type,
+            #                                  self.map_selected), output_type="list")
+            #     self.music_event = self.music_event[1:]
+            #     if self.music_event:
+            #         utility.convert_str_time(self.music_event)
+            #         self.music_schedule = list(dict.fromkeys([item[1] for item in self.music_event]))
+            #         new_list = []
+            #         for time in self.music_schedule:
+            #             new_event_list = []
+            #             for event in self.music_event:
+            #                 if time == event[1]:
+            #                     new_event_list.append(event[0])
+            #             new_list.append(new_event_list)
+            #         self.music_event = new_list
+            #     else:
+            #         self.music_schedule = [self.weather_playing]
+            #         self.music_event = []
+            # except:  # any reading error will play random custom music instead
+            #     self.music_schedule = [self.weather_playing]
+            #     self.music_event = []  # TODO: change later when has custom playlist
+        yield set_done_load()
 
         yield set_start_load(self, "map events")
         map_event = {}
@@ -666,11 +672,11 @@ class Battle:
                     self.input_ui.change_instruction("Quit Game?")
                     self.add_ui_updater(self.confirm_ui_popup, self.cursor)
 
-                # elif event.type == self.SONG_END:  # change music track
-                #     pygame.mixer.music.unload()
-                #     self.picked_music = randint(0, len(self.playing_music) - 1)
-                #     pygame.mixer.music.load(self.music_list[self.playing_music[self.picked_music]])
-                #     pygame.mixer.music.play(fade_ms=100)
+                elif event.type == self.SONG_END:  # change music track
+                    pygame.mixer.music.unload()
+                    self.picked_music = randint(0, len(self.music_list) - 1)
+                    pygame.mixer.music.load(self.music_list[self.picked_music])
+                    pygame.mixer.music.play(fade_ms=100)
 
                 elif event.type == pygame.JOYBUTTONUP:
                     joystick = event.instance_id
@@ -819,16 +825,16 @@ class Battle:
                         self.drama_timer = 0
                         self.realtime_ui_updater.remove(self.drama_text)
 
-                    # Music System
-                    # if self.music_schedule and self.time_number.time_number >= self.music_schedule[0] and \
-                    #         self.music_event:
-                    #     pygame.mixer.music.unload()
-                    #     self.playing_music = self.music_event[0].copy()
-                    #     self.picked_music = randint(0, len(self.playing_music) - 1)
-                    #     pygame.mixer.music.load(self.music_list[self.playing_music[self.picked_music]])
-                    #     pygame.mixer.music.play(fade_ms=100)
-                    #     self.music_schedule = self.music_schedule[1:]
-                    #     self.music_event = self.music_event[1:]
+                # Music System
+                # if self.music_schedule and self.time_number.time_number >= self.music_schedule[0] and \
+                #         self.music_event:
+                #     pygame.mixer.music.unload()
+                #     self.playing_music = self.music_event[0].copy()
+                #     self.picked_music = randint(0, len(self.playing_music) - 1)
+                #     pygame.mixer.music.load(self.music_list[self.playing_music[self.picked_music]])
+                #     pygame.mixer.music.play(fade_ms=100)
+                #     self.music_schedule = self.music_schedule[1:]
+                #     self.music_event = self.music_event[1:]
 
                 # Run troop ai logic no more than limit number of unit per update to prevent stutter
                 if self.troop_ai_logic_queue:

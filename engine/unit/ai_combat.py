@@ -5,6 +5,7 @@ opposite_index = (1, 0)
 
 def ai_combat(self):
     self.melee_target = None
+    self.nearest_enemy = self.near_enemy[0]
     melee_distance_check = self.melee_distance_zone
     if self.manual_control and not self.take_melee_dmg:  # during manual aim, reduce melee zone distance
         melee_distance_check = 5
@@ -25,7 +26,7 @@ def ai_combat(self):
 
     if "hold" in self.current_action:  # already perform an attack with holding
         weapon = self.current_action["weapon"]
-        target_distance = self.nearest_enemy[0].base_pos.distance_to(self.front_pos)
+        target_distance = self.nearest_enemy[0].base_pos.distance_to(self.base_pos)
         if self.hold_timer > 5 or \
                 (((weapon in self.equipped_block_weapon and self.take_melee_dmg) or
                   weapon in self.equipped_charge_block_weapon) and target_distance <= self.melee_range[weapon] or
@@ -46,7 +47,7 @@ def ai_combat(self):
                     self.release_timer = self.hold_timer
                 else:
                     if not self.melee_target or \
-                            self.melee_target.base_pos.distance_to(self.front_pos) <= self.melee_range[weapon]:
+                            self.melee_target.base_pos.distance_to(self.base_pos) <= self.melee_range[weapon]:
                         # enemy in range to hit or no enemy, release hold
                         self.current_action = self.melee_attack_command_action[weapon]
                         self.release_timer = self.hold_timer
@@ -55,8 +56,7 @@ def ai_combat(self):
         if self.in_melee_combat_timer and self.melee_target:  # enemy in unit's melee zone
             if not self.current_action:  # only rotate to enemy when no current action
                 self.new_angle = self.set_rotate(self.melee_target.base_pos)
-            if "weapon" not in self.current_action and "weapon" not in self.command_action and \
-                    "skill" not in self.command_action:
+            if "weapon" not in self.current_action and "weapon" not in self.command_action:
                 # not about to do attack action already
                 if self.equipped_weapon != self.melee_weapon_set:  # swap to melee weapon when enemy near
                     self.command_action = self.swap_weapon_command_action[self.melee_weapon_set]
@@ -70,17 +70,7 @@ def ai_combat(self):
                     else:  # no skill to use, check for melee attack
                         for weapon in self.weapon_cooldown:
                             if self.weapon_cooldown[weapon] >= self.weapon_speed[weapon]:
-                                if self.melee_target.base_pos.distance_to(self.front_pos) <= self.melee_range[weapon]:
-                                    if weapon in self.equipped_block_weapon and \
-                                            self.weapon_cooldown[opposite_index[weapon]] > 1:  # consider blocking first
-                                        self.command_action = self.melee_hold_command_action[weapon]
-                                    elif (weapon in self.equipped_power_weapon or self.equipped_timing_start_weapon[
-                                        weapon]) and not not getrandbits(1):
-                                        # random chance to hold
-                                        self.command_action = self.melee_hold_command_action[weapon]
-                                    else:  # perform normal attack
-                                        self.command_action = self.melee_attack_command_action[weapon]
-
+                                if self.melee_target.base_pos.distance_to(self.base_pos) <= self.melee_range[weapon]:
                                     # leader troop and unit melee condition skill check
                                     if self.group_leader and not self.group_leader.player_control and \
                                             not self.group_leader.command_action:
@@ -94,6 +84,16 @@ def ai_combat(self):
                                             self.leader.skill_command_input(0,
                                                                             self.leader.available_troop_melee_skill,
                                                                             pos_target=self.base_pos)
+
+                                    elif weapon in self.equipped_block_weapon and \
+                                            self.weapon_cooldown[opposite_index[weapon]] > 1:  # consider blocking first
+                                        self.command_action = self.melee_hold_command_action[weapon]
+                                    elif (weapon in self.equipped_power_weapon or self.equipped_timing_start_weapon[
+                                        weapon]) and not not getrandbits(1):
+                                        # random chance to hold
+                                        self.command_action = self.melee_hold_command_action[weapon]
+                                    else:  # perform normal attack
+                                        self.command_action = self.melee_attack_command_action[weapon]
 
                                 else:  # still too far consider using charge_block weapon
                                     if weapon in self.equipped_charge_block_weapon:  # consider blocking first

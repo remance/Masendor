@@ -4,9 +4,9 @@
 
 ![alt text](https://github.com/remance/preview/blob/main/preview.gif?raw=true)
 
-# Educational and historical battle simulation made with [Pygame](https://github.com/pygame/pygame).
+# Victores et Victos
 
-There is no main name for the game yet but rather the name will be based on a major update.
+## Educational and historical battle simulation made with [Pygame](https://github.com/pygame/pygame).
 
 For any suggestions or bugs, feel free to report them in the [**Issues**](https://github.com/remance/Masendor/issues)
 page.
@@ -135,7 +135,7 @@ Every preset historical map will have more than 1 source of information that dic
 Troops in each army can be led by multiple leaders with chain of command and every
 historical battle will have all the named people that participated in the battle.
 
-[//]: # (![alt text]&#40;https://github.com/remance/preview/blob/main/leader.gif?raw=true&#41;)
+![alt text](https://github.com/remance/preview/blob/main/leader.gif?raw=true)
 
 [//]: # ()
 [//]: # (## Custom Unit Creator)
@@ -227,6 +227,9 @@ Photo studio to make battle screen to your liking. Simply add subunit and effect
 - Knockback "punch" by Ekokubza123 (https://freesound.org/people/Ekokubza123/)
 - Damaged "punch3" by Merrick079 (https://freesound.org/people/Merrick079/)
 - Test menu music"The Britons" by kmacleod (https://pixabay.com/users/kmacleod-3979860/)
+- Battle music "Medieval: Battle" by RandomMind (https://www.chosic.com/free-music/all/?keyword=RandomMind&artist)
+- Battle music 2 "War Drums Sound Effect - Realistic Performance - Royalty Free" by Free Audio Zone (https://www.youtube.com/watch?v=d2omr4EpjVc)
+
 
 ## Translation
 

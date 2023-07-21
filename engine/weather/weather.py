@@ -28,14 +28,14 @@ class Weather(UIBattle):
             cal_level = self.level + 1
 
             self.melee_atk_buff = stat["Melee Attack Bonus"] * cal_level
-            self.melee_def_buff = stat["Melee Defense Bonus"] * cal_level
-            self.range_def_buff = stat["Range Defense Bonus"] * cal_level
+            self.melee_def_buff = stat["Melee Defence Bonus"] * cal_level
+            self.range_def_buff = stat["Range Defence Bonus"] * cal_level
             self.speed_buff = stat["Speed Bonus"] * cal_level
             self.accuracy_buff = stat["Accuracy Bonus"] * cal_level
             self.range_buff = stat["Range Bonus"] * cal_level
             self.reload_buff = stat["Reload Bonus"] * cal_level
             self.charge_buff = stat["Charge Bonus"] * cal_level
-            self.charge_def_buff = stat["Charge Defense Bonus"] * cal_level
+            self.charge_def_buff = stat["Charge Defence Bonus"] * cal_level
             self.hp_regen_buff = stat["HP Regeneration Bonus"] * cal_level
             self.stamina_regen_buff = stat["Stamina Regeneration Bonus"] * cal_level
             self.morale_buff = stat["Morale Bonus"] * cal_level

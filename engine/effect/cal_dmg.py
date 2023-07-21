@@ -27,7 +27,7 @@ def cal_dmg(self, target, hit, defence, weapon, hit_side=None):
 
     if self.attack_type == "range":  # Range or other type of damage
         impact = self.knock_power
-        troop_dmg, element_effect = cal_dmg_penetrate(self, target)
+        troop_dmg, element_effect = cal_dmg_penetrate(self, target, reduce_penetrate=False)
 
     elif self.attack_type == "charge":
         troop_dmg, element_effect, impact = cal_charge_dmg(self, target, hit_side)

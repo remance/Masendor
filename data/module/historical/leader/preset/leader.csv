@@ -26,30 +26,30 @@
 "NOR-24",,,,,,,,,,,,,,,,,,,,,,,,,,
 "NOR-25","Richard of Évreux",1,52,56,55,58,62,67,64,5,5,6,4,"2,4",,,,"5,4","2,3,14",21,"L19",,"Line","Norman Leader",1,"Leader"
 "NOR-26","Baldwin FitzGilbert",1,46,49,48,60,68,70,67,4,5,4,4,"2,4",,,,"5,4","2,3,14",21,"L17",,"Line","Norman Leader",1,"Leader"
-"NOR-27","Errand of Harcourt",1,64,70,71,64,60,63,61,4,7,4,4,,,,,,"2,4,14",,,,,,,
-"NOR-28","Robert of Harcourt",1,80,68,73,70,58,60,65,6,5,5,4,,,,,,,,,,,,,
-"NOR-29","Gilbert II Crispin",1,58,63,63,66,60,58,65,6,5,5,4,"2,4",,,,"5,4","2,3,14",21,,,"Line","Norman Leader",1,"Leader"
-"NOR-30","William Crispin",1,59,60,60,68,62,60,66,5,6,6,4,"2,4",,,,"5,4","2,3,14",21,,,"Line","Norman Leader",1,"Leader"
-"NOR-31","Henry of Ferrers",1,50,55,48,65,75,78,74,3,5,6,4,,,,,,,,,,,,1,
+"NOR-27","Errand of Harcourt",1,64,70,71,64,60,63,61,4,7,4,4,"2,4",,,,"5,4","2,3,14",21,"L29",,"Line","Norman Leader",1,"Leader"
+"NOR-28","Robert of Harcourt",1,80,68,73,70,58,60,65,6,5,5,4,"2,4",,,,"5,4","2,3,14",21,"L19",,"Line","Norman Leader",1,"Leader"
+"NOR-29","Gilbert II Crispin",1,58,63,63,66,60,58,65,6,5,5,4,"2,4",,,,"5,4","2,3,14",21,"L26",,"Line","Norman Leader",1,"Leader"
+"NOR-30","William Crispin",1,59,60,60,68,62,60,66,5,6,6,4,"2,4",,,,"5,4","2,3,14",21,"L28",,"Line","Norman Leader",1,"Leader"
+"NOR-31","Henry of Ferrers",1,50,55,48,65,75,78,74,3,5,6,4,"2,4",,,,"5,4","2,3,14",21,"L18",,"Line","Norman Leader",1,"Leader"
 "NOR-32","Roger of Beaumont",1,63,64,52,71,86,90,86,6,7,8,4,,,,,,,,,,,"Norman Leader Brown Beard",1,
 "NOR-33",,,,,,,,,,,,,,,,,,,,,,,,,,
 "NOR-34","Guy of la Val II",1,,,,,,,,,,,,,,,,,,,,,,,1,
 "NOR-35","Hamon of la Val",1,,,,,,,,,,,,,,,,,,,,,,,1,
 "NOR-36","Guy of la Val III",1,,,,,,,,,,,,,,,,,,,,,,,1,
-"NOR-37","Rogier of Montgomeri",1,54,53,57,58,80,91,88,7,7,7,4,,,,,,,,,,,,1,
-"NOR-38","Roger Bigod",1,64,67,46,51,57,53,68,4,4,6,4,,,,,,,,,,,,1,
-"NOR-39","Richard of Courcy",1,58,61,68,70,63,71,60,4,3,6,4,,,,,,,,,,,,1,
+"NOR-37","Rogier of Montgomeri",1,54,53,57,58,80,91,88,7,7,7,4,"2,4",,,,"5,4","2,3,14",19,"L3",,"Line,Box","Norman Leader",1,"Leader"
+"NOR-38","Roger Bigod",1,64,67,46,51,57,53,68,4,4,6,4,"2,4",,,,"5,4","2,3,14",21,"L19",,"Line","Norman Leader",1,"Warrior"
+"NOR-39","Richard of Courcy",1,58,61,68,70,63,71,60,4,3,6,4,"2,4",,,,"5,4","2,3,14",21,"L23",,"Line","Norman Leader",1,"Leader"
 "NOR-40","William of Aubigny",1,,,,,,,,,,,,,,,,,,,,,,,1,
 "NOR-41","William of Vieuxpont",1,,,,,,,,,,,,,,,,,,,,,,,1,
 "NOR-42","Raoul II of Taisson",1,,,,,,,,,,,,,,,,,,,,,,,1,
-"NOR-43","William of Molins",1,81,86,75,83,47,44,38,8,6,8,4,,,,,,,,,,,,1,
+"NOR-43","William of Molins",1,81,86,75,83,47,44,38,8,6,8,4,"2,4",,,,"5,4","2,3,14",21,"L28",,"Line","Norman Leader",1,"Leader"
 "NOR-44","Hugh III of Gournay",1,,,,,,,,,,,,,,,,,,,,,,,1,
 "NOR-45","William I of Moyon",1,,,,,,,,,,,,,,,,,,,,,,,1,
 "NOR-46","Eudo al Chapel",1,,,,,,,,,,,,,,,,,,,,,,,1,
-"NOR-47","Fulk of Aulney",1,53,47,59,54,48,45,40,2,2,4,4,,,,,,,,,,,,1,
-"NOR-48","Robert I FitzErneis",1,55,43,41,43,50,53,46,4,3,4,4,,,,,,,,,,,,1,
-"NOR-49","Richard of Neville",1,,,,,,,,,,,,,,,,,,,,,,,1,
-"NOR-50","Niel II of Saint-Sauveur",1,64,68,70,71,65,70,64,6,3,6,4,,,,,,,,,,,,1,
+"NOR-47","Fulk of Aulney",1,53,47,59,54,48,45,40,2,2,4,4,"2,4",,,,"5,4","2,3,14",21,"L17",,"Line","Norman Leader",1,"Leader"
+"NOR-48","Robert I FitzErneis",1,55,43,41,43,50,53,46,4,3,4,4,"2,4",,,,"5,4","2,3,14",21,"L1",,"Line","Norman Leader",1,"Warrior"
+"NOR-49","Richard of Neville",1,,,,,,,,,,,,"2,4",,,,"5,4","2,3,14",21,,,,,1,
+"NOR-50","Niel II of Saint-Sauveur",1,64,68,70,71,65,70,64,6,3,6,4,"2,4",,,,"5,4","2,3,14",21,"L3",,"Line","Norman Leader",1,"Leader"
 "NOR-51","Urse D’Abitot",1,,,,,,,,,,,,,,,,,,,,,,,1,
 "NOR-52","Walter of Lacy ",1,73,37,42,60,58,65,63,5,4,6,4,,,,,,,,,,,,1,
 "NOR-53","Ilbert of Lacy ",1,64,68,67,65,51,53,54,4,5,6,4,,,,,,,,,,,,1,
@@ -80,21 +80,21 @@
 "NOR-78","Grimoald of Plessis",1,,,,,,,,,,,,,,,,,,,,,,,1,
 "NOR-79","Ralph Tesson",1,,,,,,,,,,,,,,,,,,,,,,,1,
 ,,1,,,,,,,,,,,,,,,,,,,,,,,,
-"BRT-1","Alan the Red",1,70,64,58,68,75,80,77,6,6,6,4,"2,4",,,,"5,4","2,3,14",21,"L21",,"Line","Alan The Red",12,"Leader"
+"BRT-1","Alan the Red",1,70,64,58,68,75,80,77,6,6,6,4,"2,4",,,,"5,4","2,3,14",19,"L21",,"Line","Alan The Red",12,"Leader"
 "BRT-2",,,,,,,,,,,,,,,,,,,,,,,,,12,
 "BRT-3","Alan the Black",1,,,,,,,,,,,,,,,,,,,,,,,12,
 "BRT-4","Brian of Brittany",1,,,,,,,,,,,,,,,,,,,,,,,12,
 "BRT-5","Conan II of Brittany",1,,,,,,,,,,,,,,,,,,,,,,,12,
 "BRT-6","Rivallon I of Dol",1,,,,,,,,,,,,,,,,,,,,,,,12,
-"BRT-7","Ralph of Gael",1,71,70,67,67,64,68,81,7,6,6,4,"2,4",,,,"5,4","2,3,14",21,"L3,L46",,"Line","Breton Leader",12,"Leader"
+"BRT-7","Ralph of Gael",1,71,70,67,67,64,68,81,7,6,6,4,"2,4",,,,"5,4","2,3,14",19,"L3,L46",,"Line","Breton Leader",12,"Leader"
 "FR-1","Henry I of France",1,,,,,,,,,,,,,,,,,,,,,,,13,
 "FR-2",,1,,,,,,,,,,,,,,,,,,,,,,,13,
 "FR-3",,1,,,,,,,,,,,,,,,,,,,,,,,13,
-"FR-4","Hamo of Crevecceur",1,48,49,55,60,54,58,42,5,4,2,4,,,,,,,,,,,,13,
-"FR-5","Drogo of Brevere",1,62,60,68,63,76,85,74,5,5,7,4,,,,,,,,,,,,13,
-"FR-6","Aimery IV of Thouars",1,56,54,58,47,51,48,68,6,4,5,4,"2,4",,,,"5,4","2,3,14",21,"L21",,"Line","Norman Leader",13,"Supporter"
-"FR-7","Gerbod the Fleming",1,44,51,47,64,60,54,48,5,5,4,4,"2,4",,,,"5,4","2,3,14",21,"L26",,"Line","Norman Leader",13,"Leader"
-"FR-8","Odo of Champagne",1,63,70,72,67,63,62,68,5,6,4,4,"2,4",,,,"5,4","2,3,14",21,"L18",,"Line","Norman Leader",1,"Warrior"
+"FR-4","Hamo of Crevecceur",1,48,49,55,60,54,58,42,5,4,2,4,"2,4",,,,"5,4","2,3,14",21,"L19",,"Line","Frank Leader",13,"Warrior"
+"FR-5","Drogo of Brevere",1,62,60,68,63,76,85,74,5,5,7,4,"2,4",,,,"5,4","2,3,14",21,"L9",,"Line","Frank Leader",13,"Leader"
+"FR-6","Aimery IV of Thouars",1,56,54,58,47,51,48,68,6,4,5,4,"2,4",,,,"5,4","2,3,14",21,"L21",,"Line","Frank Leader",13,"Supporter"
+"FR-7","Gerbod the Fleming",1,44,51,47,64,60,54,48,5,5,4,4,"2,4",,,,"5,4","2,3,14",21,"L26",,"Line","Frank Leader",13,"Leader"
+"FR-8","Odo of Champagne",1,63,70,72,67,63,62,68,5,6,4,4,"2,4",,,,"5,4","2,3,14",21,"L18",,"Line","Frank Leader",1,"Warrior"
 ,,,,,,,,,,,,,,,,,,,,,,,,,,
 "SAX-1","Harold Godwinson",1,77,68,70,73,78,80,85,8,2,6,7,"2,5","39,4",,,"5,5",,21,"L26,L49",,"Line,Square","Harold",2,"Leader"
 "SAX-2","Gyrth Godwinson",1,70,60,53,54,70,67,74,6,4,5,5,"2,5","39,4",,,"5,5",,21,"L3",,"Line","Saxon Leader",2,"Leader"

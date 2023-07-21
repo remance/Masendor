@@ -75,6 +75,15 @@ charge_command_action = ({"name": "Charge 0", "movable": True, "run": True,
                          {"name": "Charge 1", "movable": True, "run": True,
                           "use momentum": True, "charge": True, "weapon": 1})
 
+charge_swap_command_action = (({"name": "SwapGear", "no combat ai": True, "swap weapon set": 0,
+                               "next action": charge_command_action[0]},
+                              {"name": "SwapGear", "no combat ai": True, "swap weapon set": 0,
+                               "next action": charge_command_action[1]}),
+                              {"name": "SwapGear", "no combat ai": True, "swap weapon set": 1,
+                               "next action": charge_command_action[0]},
+                              {"name": "SwapGear", "no combat ai": True, "swap weapon set": 1,
+                               "next action": charge_command_action[1]})
+
 heavy_damaged_command_action = {"name": "HeavyDamaged", "uncontrollable": True, "movable": True,
                                 "forced move": True, "less mass": 1.5, "damaged": "heavy", "run": True}
 damaged_command_action = {"name": "SmallDamaged", "uncontrollable": True, "movable": True,
@@ -82,8 +91,8 @@ damaged_command_action = {"name": "SmallDamaged", "uncontrollable": True, "movab
 knockdown_command_action = {"name": "Knockdown", "uncontrollable": True, "movable": True, "forced move": True,
                             "freeze until cancel": True, "less mass": 2, "forced speed": True,
                             "next action": {"name": "Standup", "uncontrollable": True, "damaged": "knock"}}
-swap_weapon_command_action = {0: {"name": "SwapGear", "no combat ai": True, "swap weapon set": 0},
-                              1: {"name": "SwapGear", "no combat ai": True, "swap weapon set": 1}}
+swap_weapon_command_action = ({"name": "SwapGear", "no combat ai": True, "swap weapon set": 0},
+                              {"name": "SwapGear", "no combat ai": True, "swap weapon set": 1})
 
 die_command_action = {"name": "DieDown", "uninterruptible": True, "uncontrollable": True}
 
@@ -123,6 +132,9 @@ class Unit(sprite.Sprite):
 
     from engine.unit.add_weapon_trait import add_weapon_trait
     add_weapon_trait = add_weapon_trait
+
+    from engine.unit.ai_charge_order import ai_charge_order
+    ai_charge_order = ai_charge_order
 
     from engine.unit.ai_combat import ai_combat
     ai_combat = ai_combat
@@ -256,6 +268,7 @@ class Unit(sprite.Sprite):
     range_walk_command_action = range_walk_command_action
     range_run_command_action = range_run_command_action
 
+    charge_swap_command_action = charge_swap_command_action
     charge_command_action = charge_command_action
 
     heavy_damaged_command_action = heavy_damaged_command_action
@@ -315,6 +328,7 @@ class Unit(sprite.Sprite):
         self.retreat_start = False
         self.taking_damage_angle = None
         self.leader_temp_retreat = False
+        self.ai_issued_charge = False
 
         self.hitbox = None
         self.effectbox = None
@@ -889,7 +903,7 @@ class Unit(sprite.Sprite):
         self.melee_def_range = self.original_melee_def_range[self.equipped_weapon]
         self.max_melee_range = self.melee_range[0]
         self.max_shoot_range = self.shoot_range[0]
-        self.charge_melee_range = self.max_melee_range * 10
+        self.charge_melee_range = 100
         self.melee_charge_range = {0: 0, 1: 0}
 
         self.max_health = self.health  # health percentage
@@ -1064,7 +1078,8 @@ class Unit(sprite.Sprite):
                             "uncontrollable" not in self.command_action and self.nearest_enemy:
                         # not run combat AI if in uncontrollable state, currently charging,
                         # action that prevent combat AI or no near enemy
-                        if "charge" not in self.current_action and "no combat ai" not in self.current_action:
+                        if "charge" not in self.current_action and "charge" not in self.command_action and \
+                                "no combat ai" not in self.current_action:
                             self.ai_combat()
                         if not self.interrupt_animation:  # combat AI not cause any interruption, run move ai
                             if self.at_camp and self.health < self.max_health:  # in camp
@@ -1074,7 +1089,6 @@ class Unit(sprite.Sprite):
                                     self.ai_move(dt)
                             else:
                                 self.ai_move(dt)
-
                 else:
                     self.ai_retreat()
                     if self.leader_temp_retreat:
