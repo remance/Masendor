@@ -8,6 +8,7 @@
 
 ## Educational and historical battle simulation made with [Pygame](https://github.com/pygame/pygame).
 
+The development for this game is currently on hold. Minor updates and bugs fixed will still be done but expect no major progress for now. 
 For any suggestions or bugs, feel free to report them in the [**Issues**](https://github.com/remance/Masendor/issues)
 page.
 
