@@ -9,7 +9,7 @@ def loading_screen(self, state):
         self.cursor.change_image("normal")
     else:
         loading = self.loading.copy()
-        font = pygame.Font(self.ui_font["main_button"], int(60 * self.screen_scale[1]))
+        font = pygame.font.Font(self.ui_font["main_button"], int(60 * self.screen_scale[1]))
         text_surface = font.render(state, True, (255, 255, 255))
         text_rect = text_surface.get_rect(bottomleft=(0, self.screen.get_height()))
         loading.blit(text_surface, text_rect)

@@ -239,18 +239,18 @@ class FinalMap(BattleMap):
         self.recolour_map_and_build_move_and_def_arrays(feature_map, base_map, debug=debug)
 
         # Blur map to make it look older
-        self.image = pygame.transform.gaussian_blur(self.image, radius=4)  # pygame.ce only, a bit faster
-        # data = pygame.image.tostring(self.image, "RGB")  # convert image to string data for filtering effect
-        # img = Image.frombytes("RGB", (self.image.get_width(), self.image.get_height()),
-        #                       data)  # use PIL to get image data
-        # img = img.filter(ImageFilter.GaussianBlur(radius=2))  # blur Image (or apply other filter in future)
-        # img = img.tobytes()
-        # img = pygame.image.fromstring(img, (self.image.get_width(), self.image.get_height()),
-        #                               "RGB")  # convert image back to a pygame surface
-        # self.image = pygame.Surface(
-        #     (self.image.get_width(),
-        #      self.image.get_height()))  # using the above surface cause a lot of fps drop so make a new one and blit the above here
-        # self.image.blit(img, (0, 0))
+        # self.image = pygame.transform.b(self.image, radius=4)  # pygame.ce only, a bit faster
+        data = pygame.image.tostring(self.image, "RGB")  # convert image to string data for filtering effect
+        img = Image.frombytes("RGB", (self.image.get_width(), self.image.get_height()),
+                              data)  # use PIL to get image data
+        img = img.filter(ImageFilter.GaussianBlur(radius=2))  # blur Image (or apply other filter in future)
+        img = img.tobytes()
+        img = pygame.image.fromstring(img, (self.image.get_width(), self.image.get_height()),
+                                      "RGB")  # convert image back to a pygame surface
+        self.image = pygame.Surface(
+            (self.image.get_width(),
+             self.image.get_height()))  # using the above surface cause a lot of fps drop so make a new one and blit the above here
+        self.image.blit(img, (0, 0))
 
         for team, pos_list in camp_pos.items():  # draw camp for mini map first
             for pos in pos_list:
