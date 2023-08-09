@@ -306,7 +306,10 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
             cache_file_path = os.path.join(self.main_dir, "cache", self.module, sprite_id + "_sprite")
             if sprite_id not in animation_sprite_pool:  # troop can share sprite preset id but different gear
                 if os.path.isfile(cache_file_path):  # cache exist for sprite ID loaded it
-                    animation_sprite_pool[sprite_id] = load_pickle_with_surfaces(cache_file_path)
+                    try:
+                        animation_sprite_pool[sprite_id] = load_pickle_with_surfaces(cache_file_path)
+                    except EOFError:
+                        animation_sprite_pool[sprite_id] = {}
                 else:
                     animation_sprite_pool[sprite_id] = {}
 
