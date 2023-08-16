@@ -917,7 +917,7 @@ class Game:
 
                     elif "custom_active_troop_number" in self.input_popup[1] and self.input_box.text.isdigit():
                         for this_unit in self.unit_icon:
-                            if this_unit.selected:
+                            if this_unit.selected and this_unit.who.index is not None:
                                 input_text = int(self.input_box.text)
                                 if input_text:
                                     self.play_source_data["unit"][this_unit.who.index]["Troop"][self.input_popup[2]] = \
