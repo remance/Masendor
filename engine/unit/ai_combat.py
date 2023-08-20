@@ -53,6 +53,10 @@ def ai_combat(self):
                         self.release_timer = self.hold_timer
                 return
     else:  # not already holding attack
+        # if self.leader and self.leader:
+        #     for weapon in self.weapon_cooldown:
+        #         if self.weapon_cooldown[weapon] >= self.weapon_speed[weapon]:
+        #             if weapon in self.equipped_block_weapon
         if self.in_melee_combat_timer and self.melee_target:  # enemy in unit's melee zone
             if not self.current_action:  # only rotate to enemy when no current action
                 self.new_angle = self.set_rotate(self.melee_target.base_pos)
