@@ -4,7 +4,7 @@ The purpose of the Web Wiki is to create a web based Encyclopedia of the game. T
 
 ## Only read-only
 
-As of writting this this wiki is read only but we could of course add write functionality like renaming leaders and adding more history. 
+As of this writting, this wiki is read only. But we could of course add write functionality like renaming leaders and adding more history later. 
 
 ## Screenshots
 
