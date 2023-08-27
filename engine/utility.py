@@ -649,8 +649,8 @@ def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tu
             if "." in i:
                 row[n] = [float(item) if re.search("[a-zA-Z]", item) is None else str(item) for item in i.split(",")]
             else:
-                row[n] = [int(item) if item.isdigit() else item for item in i.split(",")]
-        elif i.isdigit():
+                row[n] = [int(item) if item.lstrip("-").isdigit() else item for item in i.split(",")]
+        elif i.lstrip("-").isdigit():
             if "." in i:
                 row[n] = [float(i)]
             else:
@@ -666,8 +666,8 @@ def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tu
                 row[n] = tuple(
                     [float(item) if re.search("[a-zA-Z]", item) is None else str(item) for item in i.split(",")])
             else:
-                row[n] = tuple([int(item) if item.isdigit() else item for item in i.split(",")])
-        elif i.isdigit():
+                row[n] = tuple([int(item) if item.lstrip("-").isdigit() else item for item in i.split(",")])
+        elif i.lstrip("-").isdigit():
             if "." in i:
                 row[n] = tuple([float(i)])
             else:
@@ -709,7 +709,7 @@ def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tu
             row[n] = True
         elif i.lower() == "false":
             row[n] = False
-        elif i.isdigit() or (("-" in i or "." in i) and re.search("[a-zA-Z]", i) is None) or i == "inf":
+        elif (i.lstrip("-").isdigit() or "." in i and re.search("[a-zA-Z]", i) is None) or i == "inf":
             row[n] = float(i)
     return row
 

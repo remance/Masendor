@@ -197,10 +197,10 @@ def property_to_pool_data(which):
             frame["animation_property"] = select_list
         if anim_prop_list_box.rect.collidepoint(mouse_pos):
             for frame in range(len(current_pool[animation_race][animation_name])):
-                current_pool[animation_race][animation_name][frame]["animation_property"] = select_list
+                current_pool[animation_race][animation_name][frame]["animation_property"] = select_list.copy()
     elif which == "frame":
-        model.frame_list[current_frame]["frame_property"] = select_list
-        current_pool[animation_race][animation_name][current_frame]["frame_property"] = select_list
+        model.frame_list[current_frame]["frame_property"] = select_list.copy()
+        current_pool[animation_race][animation_name][current_frame]["frame_property"] = select_list.copy()
 
 
 def change_animation_race(new_race):
@@ -1288,7 +1288,7 @@ class Model:
                 self.animation_part_list[edit_frame][part] = []
             self.part_selected = []
             frame_property_select[edit_frame] = []
-            self.frame_list[edit_frame]["frame_property"] = frame_property_select[edit_frame]
+            self.frame_list[edit_frame]["frame_property"] = frame_property_select[edit_frame].copy()
             setup_list(NameList, current_frame_row, frame_prop_list_box.namelist[edit_frame], frame_prop_namegroup,
                        frame_prop_list_box, ui, screen_scale, layer=9,
                        old_list=frame_property_select[edit_frame])  # change frame property list
@@ -1476,7 +1476,7 @@ class Model:
                     if self.animation_part_list[edit_frame][part_index] is not None and \
                             len(self.animation_part_list[edit_frame][part_index]) > 3:
                         if edit_type == "place":  # mouse place
-                            new_point = mouse_pos
+                            new_point = pygame.Vector2(mouse_pos)
                             offset = (self.animation_part_list[edit_frame][part_index][2][0] - center[0],
                                       self.animation_part_list[edit_frame][part_index][2][1] - center[1])
                             if point_edit == 1:  # use joint
@@ -1508,10 +1508,10 @@ class Model:
                         elif "tilt_" in edit_type:  # keyboard rotate
                             new_angle = self.animation_part_list[edit_frame][part_index][3]
                             if "q" in edit_type:
-                                new_angle = new_angle - 0.5
+                                new_angle = new_angle - 1
                             elif "e" in edit_type:
-                                new_angle = new_angle + 0.5
-                            self.animation_part_list[edit_frame][part_index][3] = new_angle
+                                new_angle = new_angle + 1
+                            self.animation_part_list[edit_frame][part_index][3] = int(new_angle)
 
                         elif edit_type == "rotate":  # mouse rotate
                             base_pos = self.animation_part_list[edit_frame][part_index][2]
@@ -1624,8 +1624,8 @@ class Model:
                             list(self.frame_list[frame].items())[p_face_pos:])}
 
             self.frame_list[frame]["size"] = self.size
-            self.frame_list[frame]["frame_property"] = frame_property_select[frame]
-            self.frame_list[frame]["animation_property"] = anim_property_select
+            self.frame_list[frame]["frame_property"] = frame_property_select[frame].copy()
+            self.frame_list[frame]["animation_property"] = anim_property_select.copy()
         anim_to_pool(animation_name, current_pool[animation_race], self, activate_list)
         reload_animation(anim, self)
 
@@ -2316,7 +2316,9 @@ while True:
                                     input_box.text_start("")
                                     ui.add(input_ui_popup)
                                 elif animation_race != name.name:
-                                    change_animation_race(name.name)
+                                    text_input_popup = ("confirm_input", "save_first", name.name)
+                                    input_ui.change_instruction("Save This Race Data First?")
+                                    ui.add(input_ui_popup)
                             elif popup_list_box.action == "animation_select":
                                 if animation_name != name.name:
                                     change_animation(name.name)
@@ -2510,16 +2512,15 @@ while True:
                     elif add_frame_button.rect.collidepoint(mouse_pos):
                         model.add_history()
                         change_frame = len(model.bodypart_list) - 1
-                        frame_property_select = [[] for _ in range(max_frame)]
                         while change_frame > current_frame:
                             model.frame_list[change_frame] = {key: value.copy() if type(value) is list else value for
                                                               key, value
                                                               in model.frame_list[change_frame - 1].items()}
+                            frame_property_select[change_frame] = frame_property_select[change_frame - 1].copy()
                             model.read_animation(animation_name, old=True)
                             change_frame -= 1
                         model.edit_part(mouse_pos, "clear")
                         model.edit_part(mouse_pos, "change")
-                        reload_animation(anim, model)
 
                         for strip_index, strip in enumerate(filmstrips):  # enable frame that not empty
                             for stuff in model.animation_part_list[strip_index].values():
@@ -2535,6 +2536,7 @@ while True:
                         frame_property_select = [[] for _ in range(max_frame)]
                         while change_frame < len(model.bodypart_list) - 1:
                             model.frame_list[change_frame] = model.frame_list[change_frame + 1]
+                            frame_property_select[change_frame] = frame_property_select[change_frame + 1].copy()
                             model.read_animation(animation_name, old=True)
                             change_frame += 1
                         model.edit_part(mouse_pos, "clear", specific_frame=len(model.bodypart_list) - 1)
@@ -2962,6 +2964,11 @@ while True:
                 anim_save_pool(current_pool[animation_race], animation_race, anim_column_header, module_folder,
                                art_style)
 
+            elif text_input_popup[1] == "save_first":
+                anim_save_pool(current_pool[animation_race], animation_race, anim_column_header, module_folder,
+                               art_style)
+                change_animation_race(text_input_popup[2])
+
             elif text_input_popup[1] == "new_name":
                 old_name = animation_name
                 if input_box.text not in current_pool[animation_race]:  # no existing name already
@@ -3101,6 +3108,8 @@ while True:
 
         elif (input_cancel_button in ui and input_cancel_button.event) or (
                 colour_cancel_button in ui and colour_cancel_button.event) or input_esc:
+            if text_input_popup[1] == "save_first":
+                change_animation_race(text_input_popup[2])
             input_cancel_button.event = False
             colour_cancel_button.event = False
             input_box.text_start("")

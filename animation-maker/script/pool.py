@@ -114,6 +114,8 @@ def anim_save_pool(pool, race_name, anim_column_header, module_folder, art_style
                     if type(min_item) == list:
                         min_item = [this_item if type(this_item) != float else round(this_item, 1) for this_item in
                                     min_item]
+                        min_item = [int(this_item) if type(this_item) == float and int(this_item) == this_item else
+                                    this_item for this_item in min_item]
                         new_item = str(min_item)
                         for character in "'[]":
                             new_item = new_item.replace(character, "")
