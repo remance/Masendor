@@ -38,6 +38,7 @@ from engine.game.menu_main import menu_main
 from engine.game.menu_option import menu_option
 from engine.game.menu_preset_map_select import menu_preset_map_select
 from engine.game.read_selected_map_lore import read_selected_map_lore
+
 # Method in game.setup
 from engine.game.setup.make_editor_ui import make_editor_ui
 from engine.game.setup.make_faction_troop_leader_data import make_faction_troop_leader_data
@@ -723,8 +724,6 @@ class Game:
                                  [this_unit for this_unit in self.leader_data.leader_list]))
         who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key in unit_to_make}
         who_todo |= {key: value for key, value in self.leader_data.leader_list.items() if key in unit_to_make}
-
-        # self.create_troop_sprite_pool(who_todo)
 
         # Background image
         self.background_image = load_images(self.module_dir, screen_scale=self.screen_scale,

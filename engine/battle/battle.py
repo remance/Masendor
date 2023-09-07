@@ -264,7 +264,6 @@ class Battle:
         self.status_animation_pool = None
 
         self.game_speed = 0
-        self.game_speed_list = (0, 0.5, 1, 2, 4, 6)  # available game speed
         self.day_time = "Day"
         self.old_day_time = self.day_time
         self.all_team_unit = {team: pygame.sprite.Group() for team in range(len(self.team_colour))}
@@ -287,7 +286,6 @@ class Battle:
                            self.empty_portrait.get_width() / 2)
 
         self.active_unit_list = []  # list of all unit alive in battle, need to be in list for collision check
-        self.visible_unit_list = {}  # list of unit visible to the team
 
         self.best_depth = pygame.display.mode_ok(self.screen_rect.size, self.game.window_style,
                                                  32)  # Set the display mode
@@ -509,7 +507,6 @@ class Battle:
                            (self.battle_height_map.image.get_height() - 1))  # reset max camera to new map size
 
         self.active_unit_list = []
-        self.visible_unit_list = {}
 
         self.camera_mode = self.start_camera_mode
         if not self.player_unit:
@@ -528,7 +525,6 @@ class Battle:
         self.start_troop_number = [0 for _ in self.team_troop_number]
         self.death_troop_number = [0 for _ in self.team_troop_number]
         self.flee_troop_number = [0 for _ in self.team_troop_number]
-        self.visible_unit_list = {key: {} for key in self.all_team_unit.keys()}
 
         self.battle_scale_ui.change_fight_scale(self.battle_scale)
         yield set_done_load()

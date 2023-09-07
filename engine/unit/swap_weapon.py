@@ -19,7 +19,6 @@ def swap_weapon(self, new_weapon_set):
     self.base_charge = self.original_charge
     self.base_charge_def = self.original_charge_def
 
-    self.base_mana = self.original_mana
     self.base_morale = self.original_morale
     self.base_discipline = self.original_discipline
     self.base_hp_regen = self.original_hp_regen

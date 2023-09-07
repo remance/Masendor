@@ -698,10 +698,6 @@ class Unit(sprite.Sprite):
                            (1 + grade_stat["Stamina Modifier"]) *
                            (self.start_stamina / 100))  # starting stamina with grade
 
-        self.original_mana = 0
-        if "Mana" in stat:
-            self.original_mana = stat["Mana"]  # Resource for magic skill
-
         # Add equipment stat
         self.primary_main_weapon = stat["Primary Main Weapon"]
         if not self.primary_main_weapon:  # replace empty with standard unarmed
@@ -853,7 +849,6 @@ class Unit(sprite.Sprite):
                         self.leader_skill[key] = value2
                         self.leader_skill[key]["Action"] = old_action  # get action from normal leader skill
 
-        self.base_mana = self.original_mana
         self.base_morale = self.original_morale
         self.base_discipline = self.original_discipline
         self.base_hp_regen = self.original_hp_regen
