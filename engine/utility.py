@@ -628,7 +628,7 @@ def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tu
     :param int_column: list of value header that should be in int number type
     :param float_column: list of value header that should be in float number type
     :param dict_column: list of value header that should be in dict type
-    :param dict_column: list of value header that should be in str type
+    :param str_column: list of value header that should be in str type
     :return: converted row
     """
     if n in percent_column:
@@ -690,15 +690,33 @@ def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tu
             row[n] = 0
 
     elif n in dict_column:
+        # dict column value can be in key:value format or just key, if contains only key it will be assigned TRUE value
+        # if it has / and character after the value after / will be the item value
         if i != "":
             new_i = i.split(",")
             result_i = {}
             for item in new_i:
-                new_i2 = item.split(":")
-                result_i[new_i2[0]] = new_i2[1]
+                if ":" in item:
+                    new_i2 = item.split(":")
+                    result_i[new_i2[0]] = new_i2[1]
+                    if new_i2[1] == "true":
+                        result_i[new_i2[0]] = True
+                    elif new_i2[1] == "false":
+                        result_i[new_i2[0]] = False
+                else:
+                    if "/" not in item:
+                        result_i[item] = True
+                    else:
+                        value = item.split("/")[1]
+                        if value.isdigit():
+                            value = int(value)
+                        elif "." in value and re.search("[a-zA-Z]", i) is None:
+                            value = float(value)
+                        result_i[item.split("/")[0]] = value
             row[n] = result_i
         else:
             row[n] = {}
+
     elif n in str_column:
         row[n] = str(i)
 

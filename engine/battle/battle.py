@@ -918,7 +918,7 @@ class Battle:
                                        out_surfaces=self.realtime_ui_updater)
 
                 for key, value in self.sound_effect_queue.items():  # play each sound effect initiate in this loop
-                    self.play_sound_effect(key, value[0], shake=value[1])
+                    self.play_sound_effect(key, value)
                 self.sound_effect_queue = {}
 
                 if self.ui_timer >= 0.1:
