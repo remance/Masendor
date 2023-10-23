@@ -14,7 +14,7 @@ def create_preview_map(self):
             " / " + self.localisation.grab_text(
                 key=("preset_map", self.campaign_selected, "info", self.map_selected, "Name")) + " / " +
             self.localisation.grab_text(key=(
-            "preset_map", self.campaign_selected, self.map_selected, "source", self.map_source_selected, "Source")))
+                "preset_map", self.campaign_selected, self.map_selected, "source", self.map_source_selected, "Source")))
 
     else:
         if map_name in self.preset_map_folder:

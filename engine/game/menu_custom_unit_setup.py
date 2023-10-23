@@ -175,7 +175,7 @@ def menu_custom_unit_setup(self, esc_press):
                         if icon.who.map_id is not None:
                             who_todo = {key: value for key, value in self.leader_data.leader_list.items() if
                                         key == icon.who.troop_id}
-                            preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True)
+                            preview_sprite_pool, _ = self.create_unit_sprite_pool(who_todo, preview=True)
                             self.unit_model_room.add_preview_model(
                                 model=preview_sprite_pool[icon.who.troop_id]["sprite"],
                                 coa=icon.who.coa)
@@ -420,7 +420,7 @@ def custom_unit_list_on_select(self, item_index, item_text):
                             if this_unit.who.map_id is not None:
                                 who_todo = {key: value for key, value in self.game.leader_data.leader_list.items() if
                                             key == this_unit.who.troop_id}
-                                preview_sprite_pool, _ = self.game.create_troop_sprite_pool(who_todo, preview=True)
+                                preview_sprite_pool, _ = self.game.create_unit_sprite_pool(who_todo, preview=True)
                                 self.game.unit_model_room.add_preview_model(
                                     model=preview_sprite_pool[this_unit.who.troop_id]["sprite"],
                                     coa=this_unit.who.coa)
@@ -448,7 +448,7 @@ def custom_unit_list_on_select(self, item_index, item_text):
                             if this_unit.who.map_id is not None:
                                 who_todo = {key: value for key, value in self.game.leader_data.leader_list.items() if
                                             key == this_unit.who.troop_id}
-                                preview_sprite_pool, _ = self.game.create_troop_sprite_pool(who_todo, preview=True)
+                                preview_sprite_pool, _ = self.game.create_unit_sprite_pool(who_todo, preview=True)
                                 self.game.unit_model_room.add_preview_model(
                                     model=preview_sprite_pool[this_unit.who.troop_id]["sprite"],
                                     coa=this_unit.who.coa)

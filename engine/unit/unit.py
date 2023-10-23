@@ -76,9 +76,9 @@ charge_command_action = ({"name": "Charge 0", "movable": True, "run": True,
                           "use momentum": True, "charge": True, "weapon": 1})
 
 charge_swap_command_action = (({"name": "SwapGear", "no combat ai": True, "swap weapon set": 0,
-                               "next action": charge_command_action[0]},
-                              {"name": "SwapGear", "no combat ai": True, "swap weapon set": 0,
-                               "next action": charge_command_action[1]}),
+                                "next action": charge_command_action[0]},
+                               {"name": "SwapGear", "no combat ai": True, "swap weapon set": 0,
+                                "next action": charge_command_action[1]}),
                               {"name": "SwapGear", "no combat ai": True, "swap weapon set": 1,
                                "next action": charge_command_action[0]},
                               {"name": "SwapGear", "no combat ai": True, "swap weapon set": 1,

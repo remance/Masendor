@@ -11,7 +11,7 @@ from engine.utility import md5_dir, crop_sprite
 default_sprite_size = (200, 200)
 
 
-def create_troop_sprite_pool(self, who_todo, preview=False, specific_preview=None, max_preview_size=200):
+def create_unit_sprite_pool(self, who_todo, preview=False, specific_preview=None, max_preview_size=200):
     cache_folder_path = os.path.join(self.main_dir, "cache")
     if not os.path.isdir(cache_folder_path):
         os.mkdir(cache_folder_path)
@@ -23,14 +23,14 @@ def create_troop_sprite_pool(self, who_todo, preview=False, specific_preview=Non
     if not preview:
         sprite_pool_hash = md5_dir(os.path.join(self.module_dir, "animation", self.art_style, "sprite", "unit"))
 
-    pool = inner_create_troop_sprite_pool(self, who_todo, sprite_pool_hash, preview=preview,
-                                          specific_preview=specific_preview, max_preview_size=max_preview_size)
+    pool = inner_create_unit_sprite_pool(self, who_todo, sprite_pool_hash, preview=preview,
+                                         specific_preview=specific_preview, max_preview_size=max_preview_size)
 
     return pool
 
 
-def inner_create_troop_sprite_pool(self, who_todo, sprite_pool_hash, preview=False, specific_preview=None,
-                                   max_preview_size=200):
+def inner_create_unit_sprite_pool(self, who_todo, sprite_pool_hash, preview=False, specific_preview=None,
+                                  max_preview_size=200):
     weapon_list = self.troop_data.weapon_list
     animation_sprite_pool = {}
     status_animation_pool = {}
@@ -249,14 +249,14 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
             if type(frame_data) is list:
                 animation_sprite_pool[unit_id] = {}
                 for index, frame in enumerate(frame_data):
-                    sprite_dict = self.create_troop_sprite(animation, this_unit["Size"], frame,
-                                                           sprite_data, animation_property,
-                                                           (weapon_set, unit_weapon_list[weapon_set],
-                                                            (self.troop_data.weapon_list[primary_main_weapon]["Hand"],
-                                                             self.troop_data.weapon_list[primary_sub_weapon]["Hand"])),
-                                                           armour_name,
-                                                           self.unit_animation_data[race][idle_animation_name][0],
-                                                           False)
+                    sprite_dict = self.create_unit_sprite(animation, this_unit["Size"], frame,
+                                                          sprite_data, animation_property,
+                                                          (weapon_set, unit_weapon_list[weapon_set],
+                                                           (self.troop_data.weapon_list[primary_main_weapon]["Hand"],
+                                                            self.troop_data.weapon_list[primary_sub_weapon]["Hand"])),
+                                                          armour_name,
+                                                          self.unit_animation_data[race][idle_animation_name][0],
+                                                          False)
                     if not specific_preview or "no-crop" not in specific_preview:
                         sprite_pic, center_offset = crop_sprite(sprite_dict["sprite"])
 
@@ -276,13 +276,13 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                                                              "property": sprite_dict["property"],
                                                              "center_offset": center_offset}
             else:
-                sprite_dict = self.create_troop_sprite(animation, this_unit["Size"], frame_data,
-                                                       sprite_data, animation_property,
-                                                       (weapon_set, unit_weapon_list[weapon_set],
-                                                        (self.troop_data.weapon_list[primary_main_weapon]["Hand"],
-                                                         self.troop_data.weapon_list[primary_sub_weapon]["Hand"])),
-                                                       armour_name,
-                                                       self.unit_animation_data[race][idle_animation_name][0], False)
+                sprite_dict = self.create_unit_sprite(animation, this_unit["Size"], frame_data,
+                                                      sprite_data, animation_property,
+                                                      (weapon_set, unit_weapon_list[weapon_set],
+                                                       (self.troop_data.weapon_list[primary_main_weapon]["Hand"],
+                                                        self.troop_data.weapon_list[primary_sub_weapon]["Hand"])),
+                                                      armour_name,
+                                                      self.unit_animation_data[race][idle_animation_name][0], False)
                 sprite_pic, center_offset = crop_sprite(sprite_dict["sprite"])
 
                 if max_preview_size:
@@ -508,17 +508,17 @@ def create_sprite(self, who_todo, preview, max_preview_size, weapon_list, weapon
                                                 frame_data[key] = frame_data[key.replace("main", "sub")].copy()
                                                 frame_data[key.replace("main", "sub")] = old_main_weapon_stat
 
-                                sprite_dict = self.create_troop_sprite(name_input, body_size,
-                                                                       frame_data, sprite_data, animation_property,
-                                                                       (weapon_set_index, weapon_set,
-                                                                        (self.troop_data.weapon_list[
-                                                                             hand_weapon_list[weapon_set_index][
-                                                                                 0]]["Hand"],
-                                                                         self.troop_data.weapon_list[
-                                                                             hand_weapon_list[weapon_set_index][
-                                                                                 1]]["Hand"])),
-                                                                       armour_name, idle_animation[0],
-                                                                       both_main_sub_weapon)
+                                sprite_dict = self.create_unit_sprite(name_input, body_size,
+                                                                      frame_data, sprite_data, animation_property,
+                                                                      (weapon_set_index, weapon_set,
+                                                                       (self.troop_data.weapon_list[
+                                                                            hand_weapon_list[weapon_set_index][
+                                                                                0]]["Hand"],
+                                                                        self.troop_data.weapon_list[
+                                                                            hand_weapon_list[weapon_set_index][
+                                                                                1]]["Hand"])),
+                                                                      armour_name, idle_animation[0],
+                                                                      both_main_sub_weapon)
                                 sprite_pic = sprite_dict["sprite"]
 
                                 if sprite_pic.get_width() != default_sprite_size[1] * body_size or \

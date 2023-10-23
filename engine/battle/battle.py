@@ -1,43 +1,19 @@
+import glob
 import os
 import sys
 import time
-import glob
+from random import randint
 
 import pygame
 from pygame import Vector2, display
 from pygame.locals import *
 
-from random import randint
-
 from engine.ai import ai
-from engine.battle.add_skill_icon import add_skill_icon
-from engine.battle.add_sound_effect_queue import add_sound_effect_queue
-from engine.battle.cal_shake_value import cal_shake_value
-from engine.battle.camera_fix import camera_fix
-from engine.battle.camera_process import camera_process
-from engine.battle.change_battle_state import change_battle_state
-from engine.battle.countdown_skill_icon import countdown_skill_icon
-from engine.battle.escmenu_process import escmenu_process
-from engine.battle.kill_effect_icon import kill_effect_icon
-from engine.battle.play_sound_effect import play_sound_effect
-from engine.battle.player_aim import player_aim
-from engine.battle.player_cancel_input import player_cancel_input
-from engine.battle.player_charge import player_charge
-from engine.battle.player_input_process import player_input_process
-from engine.battle.player_skill_perform import player_skill_perform
 from engine.battle.setup.make_battle_ui import make_battle_ui
 from engine.battle.setup.make_esc_menu import make_esc_menu
-from engine.battle.setup_battle_unit import setup_battle_unit
-from engine.battle.shake_camera import shake_camera
-from engine.battle.spawn_weather_matter import spawn_weather_matter
-from engine.battle.time_update import time_update
-from engine.battle.wheel_ui_process import wheel_ui_process
 from engine.camera.camera import Camera
 from engine.drama.drama import TextDrama
 from engine.effect.effect import Effect
-from engine.game.activate_input_popup import activate_input_popup
-from engine.game.change_pause_update import change_pause_update
-from engine.lorebook.lorebook import lorebook_process
 from engine.uibattle.uibattle import BattleCursor, FPSCount, SkillIcon, AimTarget, BattleDone, ButtonUI, EventLog, \
     UIScroll, MiniMap
 from engine.unit.unit import Unit
@@ -64,28 +40,73 @@ def set_done_load():
 
 
 class Battle:
+    from engine.game.activate_input_popup import activate_input_popup
     activate_input_popup = activate_input_popup
+
+    from engine.battle.add_skill_icon import add_skill_icon
     add_skill_icon = add_skill_icon
+
+    from engine.battle.add_sound_effect_queue import add_sound_effect_queue
     add_sound_effect_queue = add_sound_effect_queue
+
+    from engine.battle.cal_shake_value import cal_shake_value
     cal_shake_value = cal_shake_value
+
+    from engine.battle.camera_fix import camera_fix
     camera_fix = camera_fix
+
+    from engine.battle.camera_process import camera_process
     camera_process = camera_process
+
+    from engine.battle.change_battle_state import change_battle_state
     change_battle_state = change_battle_state
+
+    from engine.game.change_pause_update import change_pause_update
     change_pause_update = change_pause_update
+
+    from engine.battle.countdown_skill_icon import countdown_skill_icon
     countdown_skill_icon = countdown_skill_icon
-    play_sound_effect = play_sound_effect
-    player_aim = player_aim
-    player_cancel_input = player_cancel_input
-    player_charge = player_charge
-    player_input_process = player_input_process
-    player_skill_perform = player_skill_perform
-    setup_battle_unit = setup_battle_unit
-    shake_camera = shake_camera
-    spawn_weather_matter = spawn_weather_matter
-    time_update = time_update
+
+    from engine.battle.escmenu_process import escmenu_process
     escmenu_process = escmenu_process
+
+    from engine.battle.play_sound_effect import play_sound_effect
+    play_sound_effect = play_sound_effect
+
+    from engine.battle.player_aim import player_aim
+    player_aim = player_aim
+
+    from engine.battle.player_cancel_input import player_cancel_input
+    player_cancel_input = player_cancel_input
+
+    from engine.battle.player_charge import player_charge
+    player_charge = player_charge
+
+    from engine.battle.player_input_process import player_input_process
+    player_input_process = player_input_process
+
+    from engine.battle.player_skill_perform import player_skill_perform
+    player_skill_perform = player_skill_perform
+
+    from engine.battle.setup_battle_unit import setup_battle_unit
+    setup_battle_unit = setup_battle_unit
+
+    from engine.battle.shake_camera import shake_camera
+    shake_camera = shake_camera
+
+    from engine.battle.spawn_weather_matter import spawn_weather_matter
+    spawn_weather_matter = spawn_weather_matter
+
+    from engine.battle.time_update import time_update
+    time_update = time_update
+
+    from engine.battle.kill_effect_icon import kill_effect_icon
     kill_effect_icon = kill_effect_icon
+
+    from engine.battle.wheel_ui_process import wheel_ui_process
     wheel_ui_process = wheel_ui_process
+
+    from engine.lorebook.lorebook import lorebook_process
     lorebook_process = lorebook_process
 
     battle = None
@@ -453,8 +474,8 @@ class Battle:
             map_event_text = self.localisation.grab_text(("preset_map", self.game.battle_campaign[self.map_selected],
                                                           self.map_selected, "eventlog", int(self.map_source_selected)))
             map_event = \
-            self.game.preset_map_data[self.campaign_selected][self.map_selected][int(self.map_source_selected)][
-                "eventlog"].copy()
+                self.game.preset_map_data[self.campaign_selected][self.map_selected][int(self.map_source_selected)][
+                    "eventlog"].copy()
             for key in map_event:  # insert localisation text into event data
                 map_event[key] = map_event[key].copy()  # make a copy to prevent replacement
                 if key in map_event_text:
@@ -533,7 +554,7 @@ class Battle:
         unit_to_make = tuple(set([this_unit.troop_id for this_unit in self.unit_updater]))
         who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key in unit_to_make}
         who_todo |= {key: value for key, value in self.leader_data.leader_list.items() if key in unit_to_make}
-        self.unit_animation_pool, self.status_animation_pool = self.game.create_troop_sprite_pool(who_todo)
+        self.unit_animation_pool, self.status_animation_pool = self.game.create_unit_sprite_pool(who_todo)
         yield set_done_load()
 
     def run_game(self, map_data):

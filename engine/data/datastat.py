@@ -374,7 +374,7 @@ class TroopData(GameData):
 
         formation_icons = load_images(self.data_dir, screen_scale=self.screen_scale,
                                       subfolder=("troop", "formation", "icon"))
-        self.default_formation_icons = {key: formation_icons[fcv(key, revert=True)]for key in
+        self.default_formation_icons = {key: formation_icons[fcv(key, revert=True)] for key in
                                         self.default_formation_list}
 
         # Effect that exist as its own sprite in battle

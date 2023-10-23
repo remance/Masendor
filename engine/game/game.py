@@ -9,36 +9,14 @@ import pygame
 from pygame.locals import *
 
 from engine.battle.battle import Battle
-from engine.battle.setup_battle_unit import setup_battle_unit
 from engine.battlemap.battlemap import BaseMap, FeatureMap, HeightMap, FinalMap
 from engine.data.datalocalisation import Localisation
 from engine.data.datamap import BattleMapData
 from engine.data.datasprite import TroopAnimationData
 from engine.effect.effect import Effect
-from engine.game.activate_input_popup import activate_input_popup
-from engine.game.assign_key import assign_key
-from engine.game.back_mainmenu import back_mainmenu
-from engine.game.change_battle_source import change_battle_source
-from engine.game.change_pause_update import change_pause_update
-from engine.game.change_sound_volume import change_sound_volume
-from engine.game.create_config import create_config
-from engine.game.create_preview_map import create_preview_map
-from engine.game.create_sound_effect_pool import create_sound_effect_pool
-from engine.game.create_team_coa import create_team_coa
-from engine.game.create_troop_sprite import create_troop_sprite
-from engine.game.create_troop_sprite_pool import create_troop_sprite_pool
-from engine.game.loading_screen import loading_screen
-from engine.game.menu_custom_leader_setup import menu_custom_leader_setup
 from engine.game.menu_custom_map_select import custom_map_list_on_select, custom_faction_list_on_select, \
-    custom_weather_list_on_select, menu_custom_map_select
-from engine.game.menu_custom_unit_setup import menu_custom_unit_setup, custom_set_list_on_select
-from engine.game.menu_game_editor import menu_game_editor
-from engine.game.menu_keybind import menu_keybind
-from engine.game.menu_main import menu_main
-from engine.game.menu_option import menu_option
-from engine.game.menu_preset_map_select import menu_preset_map_select
-from engine.game.read_selected_map_lore import read_selected_map_lore
-
+    custom_weather_list_on_select
+from engine.game.menu_custom_unit_setup import custom_set_list_on_select
 # Method in game.setup
 from engine.game.setup.make_editor_ui import make_editor_ui
 from engine.game.setup.make_faction_troop_leader_data import make_faction_troop_leader_data
@@ -46,7 +24,6 @@ from engine.game.setup.make_icon_data import make_icon_data
 from engine.game.setup.make_input_box import make_input_box
 from engine.game.setup.make_lorebook import make_lorebook
 from engine.game.setup.make_option_menu import make_option_menu
-from engine.game.start_battle import start_battle
 from engine.lorebook.lorebook import Lorebook, SubsectionName, lorebook_process
 from engine.menubackground.menubackground import MenuActor, MenuRotate, StaticImage
 from engine.uibattle.uibattle import MiniMap, UnitIcon, SkillIcon, SpriteIndicator, AimTarget, BattleCursor, \
@@ -114,31 +91,79 @@ class Game:
                                  "hat-0": "L. Arrow", "hat+0": "R. Arrow",
                                  "hat-1": "U. Arrow", "hat+1": "D. Arrow"}}
 
-    # import from game
+    # import method
+    from engine.game.activate_input_popup import activate_input_popup
     activate_input_popup = activate_input_popup
+
+    from engine.game.assign_key import assign_key
     assign_key = assign_key
+
+    from engine.game.back_mainmenu import back_mainmenu
     back_mainmenu = back_mainmenu
+
+    from engine.game.change_battle_source import change_battle_source
     change_battle_source = change_battle_source
+
+    from engine.game.change_pause_update import change_pause_update
     change_pause_update = change_pause_update
+
+    from engine.game.change_sound_volume import change_sound_volume
     change_sound_volume = change_sound_volume
+
+    from engine.game.create_config import create_config
     create_config = create_config
+
+    from engine.game.create_preview_map import create_preview_map
     create_preview_map = create_preview_map
+
+    from engine.game.create_sound_effect_pool import create_sound_effect_pool
     create_sound_effect_pool = create_sound_effect_pool
+
+    from engine.game.create_team_coa import create_team_coa
     create_team_coa = create_team_coa
-    create_troop_sprite = create_troop_sprite
-    create_troop_sprite_pool = create_troop_sprite_pool
+
+    from engine.game.create_unit_sprite import create_unit_sprite
+    create_unit_sprite = create_unit_sprite
+
+    from engine.game.create_unit_sprite_pool import create_unit_sprite_pool
+    create_unit_sprite_pool = create_unit_sprite_pool
+
+    from engine.game.loading_screen import loading_screen
     loading_screen = loading_screen
+
+    from engine.game.menu_game_editor import menu_game_editor
     menu_game_editor = menu_game_editor
+
+    from engine.game.menu_keybind import menu_keybind
     menu_keybind = menu_keybind
+
+    from engine.game.menu_main import menu_main
     menu_main = menu_main
+
+    from engine.game.menu_custom_map_select import menu_custom_map_select
     menu_custom_map_select = menu_custom_map_select
+
+    from engine.game.menu_option import menu_option
     menu_option = menu_option
+
+    from engine.game.menu_preset_map_select import menu_preset_map_select
     menu_preset_map_select = menu_preset_map_select
+
+    from engine.game.menu_custom_leader_setup import menu_custom_leader_setup
     menu_custom_leader_setup = menu_custom_leader_setup
+
+    from engine.game.menu_custom_unit_setup import menu_custom_unit_setup
     menu_custom_unit_setup = menu_custom_unit_setup
+
+    from engine.game.read_selected_map_lore import read_selected_map_lore
     read_selected_map_lore = read_selected_map_lore
+
+    from engine.game.start_battle import start_battle
     start_battle = start_battle
+
     lorebook_process = lorebook_process
+
+    from engine.battle.setup_battle_unit import setup_battle_unit
     setup_battle_unit = setup_battle_unit
 
     troop_sprite_size = (200, 200)
@@ -741,11 +766,11 @@ class Game:
                     who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key == stuff["ID"]}
                 sprite_direction = rotation_dict[min(rotation_list, key=lambda x: abs(
                     x - stuff["Angle"]))]  # find closest in list of rotation for sprite direction
-                preview_sprite_pool, _ = self.create_troop_sprite_pool(who_todo, preview=True,
-                                                                       specific_preview=(stuff["Animation"],
-                                                                                         None,
-                                                                                         sprite_direction),
-                                                                       max_preview_size=stuff["Size"])
+                preview_sprite_pool, _ = self.create_unit_sprite_pool(who_todo, preview=True,
+                                                                      specific_preview=(stuff["Animation"],
+                                                                                        None,
+                                                                                        sprite_direction),
+                                                                      max_preview_size=stuff["Size"])
 
                 self.menu_actors.append(MenuActor((float(stuff["POS"].split(",")[0]) * self.screen_width,
                                                    float(stuff["POS"].split(",")[1]) * self.screen_height),
@@ -926,8 +951,10 @@ class Game:
                                                               self.input_ui_popup)
                                     done = False
                                 else:
-                                    if self.input_popup[2] in self.play_source_data["unit"][this_unit.who.index]["Troop"]:
-                                        self.play_source_data["unit"][this_unit.who.index]["Troop"].pop(self.input_popup[2])
+                                    if self.input_popup[2] in self.play_source_data["unit"][this_unit.who.index][
+                                        "Troop"]:
+                                        self.play_source_data["unit"][this_unit.who.index]["Troop"].pop(
+                                            self.input_popup[2])
                                 break
 
                     elif "custom_reserve_troop_number" in self.input_popup[1] and self.input_box.text.isdigit():

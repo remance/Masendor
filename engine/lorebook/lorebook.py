@@ -2,7 +2,7 @@ import pygame
 
 from engine.uimenu.uimenu import UIMenu
 from engine.unit.unit import make_no_face_portrait
-from engine.utility import make_long_text, load_image
+from engine.utility import make_long_text
 
 subsection_tag_colour = [(128, 255, 128), (237, 128, 128), (255, 255, 128), (128, 255, 255),
                          (128, 128, 255), (255, 128, 255), (220, 158, 233), (191, 191, 191), (255, 140, 85)]
@@ -253,7 +253,7 @@ class Lorebook(UIMenu):
             try:
                 who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key ==
                             self.stat_data[self.subsection]["True ID"]}
-                preview_sprite_pool, _ = self.game.create_troop_sprite_pool(who_todo, preview=True)
+                preview_sprite_pool, _ = self.game.create_unit_sprite_pool(who_todo, preview=True)
                 self.portrait = preview_sprite_pool[self.stat_data[self.subsection]["True ID"]]["sprite"]
 
             except KeyError:

@@ -1,5 +1,3 @@
-from operator import itemgetter
-
 from engine.utility import rotation_xy
 
 
@@ -28,7 +26,7 @@ def ai_unit(self):
         self.ai_issued_charge = False
         self.group_too_far = False
         self.army_too_far = False
-        if self.move_speed:  # find new follow point based on formation for subordinate
+        if self.move_speed:  # find new follow point based on formation for follower
             for unit in self.alive_troop_follower:
                 if unit in self.troop_distance_list:
                     new_target = rotation_xy(self.base_pos, self.base_pos +

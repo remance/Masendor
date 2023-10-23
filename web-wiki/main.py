@@ -15,7 +15,7 @@ sys.path.append(main_dir)
 # ---
 
 from engine import utility  # nopep8
-from engine.game.create_troop_sprite_pool import create_troop_sprite_pool  # nopep8
+from engine.game.create_unit_sprite_pool import create_unit_sprite_pool  # nopep8
 from engine.game.game import Game  # nopep8
 from engine.game.setup.make_faction_troop_leader_data import make_faction_troop_leader_data  # nopep8
 from engine.data import datasprite, datalocalisation  # nopep8
@@ -109,8 +109,8 @@ def get_unit_icon(unit_id, scale, icon_size=None):
 
         # make idle animation, first frame, right side (change to l_side for left), non-specific so it can make for any troops
         try:
-            preview_sprite_pool, _ = create_troop_sprite_pool(game, who_todo, preview=True, specific_preview=("Idle_0", 0, "r_side", "non-specific"),
-                                                              max_preview_size=scale)
+            preview_sprite_pool, _ = create_unit_sprite_pool(game, who_todo, preview=True, specific_preview=("Idle_0", 0, "r_side", "non-specific"),
+                                                             max_preview_size=scale)
         except KeyError:
             return None
         except TypeError:

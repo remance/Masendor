@@ -1091,7 +1091,7 @@ class CampaignListAdapter(ListAdapterHideExpand):
                 self.map_name_index[map_name] = map_file_name
                 for source_file_name in map_data[campaign_file_name][map_file_name]["source"]:  # add source
                     source_name = localisation.grab_text(key=(
-                    "preset_map", campaign_file_name, map_file_name, "source", int(source_file_name), "Source"))
+                        "preset_map", campaign_file_name, map_file_name, "source", int(source_file_name), "Source"))
                     self.map_source_name_index[source_name] = source_file_name
                     current_index = len(actual_level_list)
                     self.map_source_index[(map_file_name, source_file_name)] = current_index
