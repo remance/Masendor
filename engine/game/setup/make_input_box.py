@@ -1,5 +1,5 @@
 from engine.uimenu.uimenu import InputUI, MenuButton, InputBox
-from engine.utility import load_image
+from engine.utils.data_loading import load_image
 
 
 def make_input_box(main_dir, screen_scale, screen_rect, image_list):

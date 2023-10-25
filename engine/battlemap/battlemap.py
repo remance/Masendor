@@ -1,12 +1,15 @@
 import threading
+import os
 from functools import lru_cache
 from random import randint, random, randrange
+from engine.data.datacacher import load_pickle_with_surfaces, save_pickle_with_surfaces
 
 import numpy as np
 import pygame
 from PIL import Image, ImageFilter, ImageOps
 
-from engine.utility import apply_sprite_colour, load_image, load_images, filename_convert_readable as fcv
+from engine.utils.data_loading import load_image, load_images, filename_convert_readable as fcv
+from engine.utils.sprite_altering import apply_sprite_colour
 
 
 class BattleMap(pygame.sprite.Sprite):
@@ -234,8 +237,21 @@ class FinalMap(BattleMap):
         self.image.blit(self.height_map.get_battle_map_overlay(), (0, 0), special_flags=pygame.BLEND_RGB_ADD)
 
     def draw_image(self, base_map, feature_map, place_name, camp_pos, debug=False):
-        self.image = pygame.Surface((len(base_map.map_array[0]), len(base_map.map_array)))
+        # cache_folder_path = os.path.join(self.main_dir, "cache")
+        # if not os.path.isdir(cache_folder_path):
+        #     os.mkdir(cache_folder_path)
+        # cache_folder_path = os.path.join(self.main_dir, "cache", self.game.module)
+        # if not os.path.isdir(cache_folder_path):
+        #     os.mkdir(cache_folder_path)
+        # cache_folder_path = os.path.join(self.main_dir, "cache", self.game.module, "map")
+        # if not os.path.isdir(cache_folder_path):
+        #     os.mkdir(cache_folder_path)
+        #
+        # cache_file_path = os.path.join(self.main_dir, "cache", self.game.module, "map", map_name)
+        # if os.path.isfile(cache_file_path):  # cache exist for sprite ID loaded it
+        #     cache_data = load_pickle_with_surfaces(cache_file_path)
 
+        self.image = pygame.Surface((len(base_map.map_array[0]), len(base_map.map_array)))
         self.recolour_map_and_build_move_and_def_arrays(feature_map, base_map, debug=debug)
 
         # Blur map to make it look older
@@ -247,9 +263,7 @@ class FinalMap(BattleMap):
         img = img.tobytes()
         img = pygame.image.fromstring(img, (self.image.get_width(), self.image.get_height()),
                                       "RGB")  # convert image back to a pygame surface
-        self.image = pygame.Surface(
-            (self.image.get_width(),
-             self.image.get_height()))  # using the above surface cause a lot of fps drop so make a new one and blit the above here
+        self.image = pygame.Surface(self.image.get_size())  # using the above surface cause a lot of fps drop so make a new one and blit the above here
         self.image.blit(img, (0, 0))
 
         for team, pos_list in camp_pos.items():  # draw camp for mini map first
@@ -261,6 +275,7 @@ class FinalMap(BattleMap):
         mini_map_size = (190 * self.screen_scale[0], 190 * self.screen_scale[1])  # default minimap size
         self.mini_map_image = pygame.transform.smoothscale(self.image, (int(mini_map_size[0]), int(mini_map_size[1])))
 
+        # Draw texture of terrain+feature like tree
         for row_pos in range(0, len(base_map.map_array)):
             for col_pos in range(0, len(base_map.map_array[0])):
                 if row_pos % 20 == 0 and col_pos % 20 == 0:

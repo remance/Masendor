@@ -3,7 +3,7 @@ import os
 import unittest
 
 from test import Test
-from engine.utility import load_images, csv_read
+from engine.utils.utility import load_images
 
 
 def compare_surfaces(surface_a, surface_b, error_margin = 0):

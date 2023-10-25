@@ -1,0 +1,1 @@
+This folder contains file with common functions that can be use by various class objects.

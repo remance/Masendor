@@ -3,7 +3,7 @@ import pygame
 from engine.lorebook.lorebook import Lorebook, SubsectionList
 from engine.uibattle.uibattle import UIScroll
 from engine.uimenu.uimenu import MenuImageButton
-from engine.utility import load_images
+from engine.utils.data_loading import load_images
 
 
 def make_lorebook(self):

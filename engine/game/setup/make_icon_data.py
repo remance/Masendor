@@ -1,7 +1,7 @@
 import pygame
 
 from engine.uibattle.uibattle import SkillIcon
-from engine.utility import load_images
+from engine.utils.data_loading import load_images
 
 
 def make_icon_data(main_dir, screen_scale):

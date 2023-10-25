@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from engine.utility import csv_read, lore_csv_read
+from engine.utils.data_loading import csv_read, lore_csv_read
 
 
 class Localisation:

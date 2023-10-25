@@ -2,7 +2,7 @@ import pygame
 
 from engine.uimenu.uimenu import UIMenu
 from engine.unit.unit import make_no_face_portrait
-from engine.utility import make_long_text
+from engine.utils.text_making import make_long_text
 
 subsection_tag_colour = [(128, 255, 128), (237, 128, 128), (255, 255, 128), (128, 255, 255),
                          (128, 128, 255), (255, 128, 255), (220, 158, 233), (191, 191, 191), (255, 140, 85)]

@@ -1,6 +1,6 @@
 from pygame import Vector2
 
-from engine.utility import convert_degree_to_360
+from engine.utils.rotation import convert_degree_to_360
 
 infinity = float("inf")
 

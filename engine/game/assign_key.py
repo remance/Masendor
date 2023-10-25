@@ -1,4 +1,4 @@
-from engine.utility import edit_config
+from engine.utils.common import edit_config
 
 
 def assign_key(self, key_assign):  # TODO prevent player from input right hat joystick (use only for mouse pos)

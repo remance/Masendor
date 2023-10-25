@@ -10,8 +10,36 @@ from pygame.sprite import Sprite
 from pygame.transform import smoothscale, scale
 
 from engine.battlemap.battlemap import BattleMap
-from engine.utility import keyboard_mouse_press_check, text_render, make_long_text
+from engine.utils.text_making import text_render_with_bg, make_long_text
+from engine.utils.data_loading import load_image
 
+
+def keyboard_mouse_press_check(button_type, button, is_button_just_down, is_button_down, is_button_just_up, ):
+    """
+    Check for button just press, holding, and release for keyboard or mouse
+    :param button_type: pygame.key, pygame.mouse, or pygame.
+    :param button: button index
+    :param is_button_just_down: button is just press last update
+    :param is_button_down: button is pressing after first update
+    :param is_button_just_up: button is just release last update
+    :return: new state of is_button_just_down, is_button_down, is_button_just_up
+    """
+    if button_type.get_pressed()[button]:  # press left click
+        if not is_button_just_down:
+            if not is_button_down:  # fresh press
+                is_button_just_down = True
+        else:  # already press in previous frame, now hold until release
+            is_button_just_down = False
+            is_button_down = True
+    else:  # no longer press
+        is_button_just_down = False
+        if is_button_just_down or is_button_down:
+            is_button_just_up = True
+            is_button_just_down = False
+            is_button_down = False
+        elif is_button_just_up:
+            is_button_just_up = False
+    return is_button_just_down, is_button_down, is_button_just_up
 
 @lru_cache(maxsize=2 ** 8)
 def draw_text(text, font, color, ellipsis_length=None):
@@ -124,6 +152,7 @@ class UIMenu(Sprite):
         self.data_dir = Game.data_dir
         self.font_dir = Game.font_dir
         self.ui_font = Game.ui_font
+        self.font_texture = Game.font_texture
         self.screen_rect = Game.screen_rect
         self.screen_size = Game.screen_size
         self.localisation = Game.localisation
@@ -529,7 +558,6 @@ class BrownMenuButton(UIMenu, Containable):  # NOTE: the button is not brown any
     @lru_cache
     def make_buttons(cls, size, text, font):
         from engine.game.game import Game
-        from engine.utility import load_image
         game = Game.game
 
         frame = load_image(game.module_dir, (1, 1), "new_button.png", ("ui", "mainmenu_ui"))
@@ -600,7 +628,7 @@ class OptionMenuText(UIMenu):
         UIMenu.__init__(self, player_interact=False)
         self.pos = pos
         self.font = Font(self.ui_font["main_button"], text_size)
-        self.image = text_render(text, self.font, Color("black"))
+        self.image = text_render_with_bg(text, self.font, Color("black"))
         self.rect = self.image.get_rect(center=(self.pos[0] - (self.image.get_width() / 2), self.pos[1]))
 
 
@@ -781,7 +809,7 @@ class TeamCoa(UIMenu):
                     self.selected_image.blit(coa_image, coa_rect)
 
         self.name = name
-        text_surface = text_render(str(self.name), self.font, Color("black"))
+        text_surface = text_render_with_bg(str(self.name), self.font, Color("black"))
         text_rect = text_surface.get_rect(
             center=(int(self.selected_image.get_width() / 2), self.selected_image.get_height() - self.font_size))
         self.selected_image.blit(text_surface, text_rect)
@@ -1566,7 +1594,6 @@ class ListUI(UIMenu, Containable):
     @classmethod
     def get_frame(cls):
         from engine.game.game import Game
-        from engine.utility import load_image
         game = Game.game
         if cls._frame is None:
             frame_file = "new_button.png"  # "list_frame.png" # using the button frame to test if it looks good
@@ -1576,7 +1603,6 @@ class ListUI(UIMenu, Containable):
     @classmethod
     def get_scroll_box_frame(cls):
         from engine.game.game import Game
-        from engine.utility import load_image
         game = Game.game
         if cls._scroll_box_frame is None:
             cls._scroll_box_frame = load_image(game.module_dir, (1, 1), "scroll_box_frame.png", ("ui", "mainmenu_ui"))

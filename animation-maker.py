@@ -15,8 +15,9 @@ from engine.uimenu.uimenu import MenuCursor, NameList, MenuButton, TextPopup, In
 from engine.uibattle.uibattle import UIScroll
 from engine.game.game import Game
 from engine.data.datalocalisation import Localisation
-from engine.utility import csv_read, rotation_xy, load_image, load_images, load_base_button, stat_convert, \
+from engine.utils.data_loading import csv_read, load_image, load_images, load_base_button, stat_convert, \
     filename_convert_readable as fcv
+from engine.utils.rotation import rotation_xy
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 main_data_dir = os.path.join(main_dir, "data")
@@ -1817,13 +1818,12 @@ filmstrip_list += [Filmstrip((image.get_width() * this_index, 42 * screen_scale[
 
 filmstrips.add(*filmstrip_list)
 
-images = load_images(current_data_dir, screen_scale=screen_scale, subfolder=("animation_maker_ui", "helper_parts"),
-                     load_order=True)
+images = load_images(current_data_dir, screen_scale=screen_scale, subfolder=("animation_maker_ui", "helper_parts"))
 body_helper_size = (650 * screen_scale[0], 270 * screen_scale[1])
 effect_helper_size = (450 * screen_scale[0], 270 * screen_scale[1])
 effect_helper = BodyHelper(effect_helper_size, (screen_size[0] / 1.25, screen_size[1] - (body_helper_size[1] / 2)),
-                           "p1_effect", [images["smallbox_helper"]])
-del images["smallbox_helper"]
+                           "p1_effect", [images["16_smallbox_helper"]])
+del images["16_smallbox_helper"]
 p_body_helper = BodyHelper(body_helper_size, (body_helper_size[0] / 2,
                                               screen_size[1] - (body_helper_size[1] / 2)), "p1", list(images.values()))
 helper_list = [p_body_helper, effect_helper]

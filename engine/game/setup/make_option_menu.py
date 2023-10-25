@@ -1,6 +1,6 @@
 from engine.uimenu.uimenu import MenuButton, TickBox, OptionMenuText, TextBox, SliderMenu, ValueBox, \
     ControllerIcon, KeybindIcon
-from engine.utility import load_image, load_images, make_bar_list
+from engine.utils.data_loading import load_image, load_images, make_bar_list
 
 
 def make_option_menu(profile_name, image_list, config, keybind, battle_select_image):

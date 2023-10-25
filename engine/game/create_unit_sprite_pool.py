@@ -6,7 +6,8 @@ from random import choice
 import pygame
 
 from engine.data.datacacher import load_pickle_with_surfaces, save_pickle_with_surfaces
-from engine.utility import md5_dir, crop_sprite
+from engine.utils.data_loading import md5_dir
+from engine.utils.sprite_altering import crop_sprite
 
 default_sprite_size = (200, 200)
 

@@ -1,7 +1,7 @@
 import random
 
 from engine.battlemap.battlemap import create_random_map
-from engine.utility import load_images
+from engine.utils.data_loading import load_images
 
 
 def create_preview_map(self):

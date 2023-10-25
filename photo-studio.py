@@ -18,7 +18,7 @@ from engine.data import datasprite, datamap
 from engine.uibattle import uibattle
 
 
-from engine.utility import csv_read, load_images, stat_convert
+from engine.utils.utility import csv_read, load_images, stat_convert
 from engine.battle.spawn_weather_matter import spawn_weather_matter
 from engine.game.setup.make_faction_troop_leader_data import make_faction_troop_leader_data
 from engine.game.create_unit_sprite_pool import create_unit_sprite_pool

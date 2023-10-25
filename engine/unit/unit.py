@@ -7,15 +7,12 @@ from pathfinding.finder.a_star import AStarFinder
 from pygame import sprite, font, draw, Color, Vector2, Surface, SRCALPHA
 
 from engine.uibattle.uibattle import SkillAimTarget
-from engine.utility import set_rotate
 
 rotation_list = (90, -90)
 rotation_name = ("l_side", "r_side")
 rotation_dict = {key: rotation_name[index] for index, key in enumerate(rotation_list)}
 
 infinity = float("inf")
-
-weapon_set = ("Main_", "Sub_")
 
 """Command dict Guide
 Key:
@@ -43,59 +40,6 @@ require input = animation action require input first and will keep holding first
 swap weapon set = finish animation will make unit swap weapon set based on provided value
 """
 
-skill_command_action_0 = {"name": "Skill 0"}
-skill_command_action_1 = {"name": "Skill 1"}
-skill_command_action_2 = {"name": "Skill 2"}
-skill_command_action_3 = {"name": "Skill 3"}
-
-walk_command_action = {"name": "WalkMove", "movable": True, "walk": True}
-walk_wait_command_action = {"name": "WalkMove", "movable": True}
-run_command_action = {"name": "RunMove", "movable": True,
-                      "use momentum": True, "run": True}
-flee_command_action = {"name": "FleeMove", "movable": True, "run": True, "flee": True}
-
-melee_attack_command_action = ({"name": "Action 0", "melee attack": True, "weapon": 0},
-                               {"name": "Action 1", "melee attack": True, "weapon": 1})
-range_attack_command_action = ({"name": "Action 0", "range attack": True, "weapon": 0},
-                               {"name": "Action 1", "range attack": True, "weapon": 1})
-
-melee_hold_command_action = ({"name": "Action 0", "melee attack": True, "hold": True, "weapon": 0},
-                             {"name": "Action 1", "melee attack": True, "hold": True, "weapon": 1})
-range_hold_command_action = ({"name": "Action 0", "range attack": True, "hold": True, "weapon": 0},
-                             {"name": "Action 1", "range attack": True, "hold": True, "weapon": 1})
-
-range_walk_command_action = ({"name": "Action 0", "range attack": True, "walk": True, "movable": True, "weapon": 0},
-                             {"name": "Action 1", "range attack": True, "walk": True, "movable": True, "weapon": 1})
-
-range_run_command_action = ({"name": "Action 0", "range attack": True, "run": True, "movable": True, "weapon": 0},
-                            {"name": "Action 1", "range attack": True, "run": True, "movable": True, "weapon": 1})
-
-charge_command_action = ({"name": "Charge 0", "movable": True, "run": True,
-                          "use momentum": True, "charge": True, "weapon": 0},
-                         {"name": "Charge 1", "movable": True, "run": True,
-                          "use momentum": True, "charge": True, "weapon": 1})
-
-charge_swap_command_action = (({"name": "SwapGear", "no combat ai": True, "swap weapon set": 0,
-                                "next action": charge_command_action[0]},
-                               {"name": "SwapGear", "no combat ai": True, "swap weapon set": 0,
-                                "next action": charge_command_action[1]}),
-                              {"name": "SwapGear", "no combat ai": True, "swap weapon set": 1,
-                               "next action": charge_command_action[0]},
-                              {"name": "SwapGear", "no combat ai": True, "swap weapon set": 1,
-                               "next action": charge_command_action[1]})
-
-heavy_damaged_command_action = {"name": "HeavyDamaged", "uncontrollable": True, "movable": True,
-                                "forced move": True, "less mass": 1.5, "damaged": "heavy", "run": True}
-damaged_command_action = {"name": "SmallDamaged", "uncontrollable": True, "movable": True,
-                          "forced move": True, "less mass": 1.2, "damaged": "small", "run": True}
-knockdown_command_action = {"name": "Knockdown", "uncontrollable": True, "movable": True, "forced move": True,
-                            "freeze until cancel": True, "less mass": 2, "forced speed": True,
-                            "next action": {"name": "Standup", "uncontrollable": True, "damaged": "knock"}}
-swap_weapon_command_action = ({"name": "SwapGear", "no combat ai": True, "swap weapon set": 0},
-                              {"name": "SwapGear", "no combat ai": True, "swap weapon set": 1})
-
-die_command_action = {"name": "DieDown", "uninterruptible": True, "uncontrollable": True}
-
 
 class Unit(sprite.Sprite):
     battle = None
@@ -111,8 +55,6 @@ class Unit(sprite.Sprite):
     animation_sprite_pool = None
     sound_effect_pool = None
     team_colour = None
-
-    set_rotate = set_rotate
 
     DiagonalMovement = DiagonalMovement
     Grid = Grid
@@ -247,36 +189,63 @@ class Unit(sprite.Sprite):
     from engine.unit.use_skill import use_skill
     use_skill = use_skill
 
-    weapon_set = weapon_set
+    from engine.utils.rotation import set_rotate
+    set_rotate = set_rotate
 
-    skill_command_action_0 = skill_command_action_0
-    skill_command_action_1 = skill_command_action_1
-    skill_command_action_2 = skill_command_action_2
-    skill_command_action_3 = skill_command_action_3
+    weapon_set = ("Main_", "Sub_")
 
-    walk_command_action = walk_command_action
-    walk_wait_command_action = walk_wait_command_action
-    run_command_action = run_command_action
-    flee_command_action = flee_command_action
+    skill_command_action_0 = {"name": "Skill 0"}
+    skill_command_action_1 = {"name": "Skill 1"}
+    skill_command_action_2 = {"name": "Skill 2"}
+    skill_command_action_3 = {"name": "Skill 3"}
 
-    melee_attack_command_action = melee_attack_command_action
-    range_attack_command_action = range_attack_command_action
+    walk_command_action = {"name": "WalkMove", "movable": True, "walk": True}
+    walk_wait_command_action = {"name": "WalkMove", "movable": True}
+    run_command_action = {"name": "RunMove", "movable": True,
+                          "use momentum": True, "run": True}
+    flee_command_action = {"name": "FleeMove", "movable": True, "run": True, "flee": True}
 
-    melee_hold_command_action = melee_hold_command_action
-    range_hold_command_action = range_hold_command_action
+    melee_attack_command_action = ({"name": "Action 0", "melee attack": True, "weapon": 0},
+                                   {"name": "Action 1", "melee attack": True, "weapon": 1})
+    range_attack_command_action = ({"name": "Action 0", "range attack": True, "weapon": 0},
+                                   {"name": "Action 1", "range attack": True, "weapon": 1})
 
-    range_walk_command_action = range_walk_command_action
-    range_run_command_action = range_run_command_action
+    melee_hold_command_action = ({"name": "Action 0", "melee attack": True, "hold": True, "weapon": 0},
+                                 {"name": "Action 1", "melee attack": True, "hold": True, "weapon": 1})
+    range_hold_command_action = ({"name": "Action 0", "range attack": True, "hold": True, "weapon": 0},
+                                 {"name": "Action 1", "range attack": True, "hold": True, "weapon": 1})
 
-    charge_swap_command_action = charge_swap_command_action
-    charge_command_action = charge_command_action
+    range_walk_command_action = ({"name": "Action 0", "range attack": True, "walk": True, "movable": True, "weapon": 0},
+                                 {"name": "Action 1", "range attack": True, "walk": True, "movable": True, "weapon": 1})
 
-    heavy_damaged_command_action = heavy_damaged_command_action
-    damaged_command_action = damaged_command_action
-    knockdown_command_action = knockdown_command_action
+    range_run_command_action = ({"name": "Action 0", "range attack": True, "run": True, "movable": True, "weapon": 0},
+                                {"name": "Action 1", "range attack": True, "run": True, "movable": True, "weapon": 1})
 
-    die_command_action = die_command_action
-    swap_weapon_command_action = swap_weapon_command_action
+    charge_command_action = ({"name": "Charge 0", "movable": True, "run": True,
+                              "use momentum": True, "charge": True, "weapon": 0},
+                             {"name": "Charge 1", "movable": True, "run": True,
+                              "use momentum": True, "charge": True, "weapon": 1})
+
+    charge_swap_command_action = (({"name": "SwapGear", "no combat ai": True, "swap weapon set": 0,
+                                    "next action": charge_command_action[0]},
+                                   {"name": "SwapGear", "no combat ai": True, "swap weapon set": 0,
+                                    "next action": charge_command_action[1]}),
+                                  {"name": "SwapGear", "no combat ai": True, "swap weapon set": 1,
+                                   "next action": charge_command_action[0]},
+                                  {"name": "SwapGear", "no combat ai": True, "swap weapon set": 1,
+                                   "next action": charge_command_action[1]})
+
+    heavy_damaged_command_action = {"name": "HeavyDamaged", "uncontrollable": True, "movable": True,
+                                    "forced move": True, "less mass": 1.5, "damaged": "heavy", "run": True}
+    damaged_command_action = {"name": "SmallDamaged", "uncontrollable": True, "movable": True,
+                              "forced move": True, "less mass": 1.2, "damaged": "small", "run": True}
+    knockdown_command_action = {"name": "Knockdown", "uncontrollable": True, "movable": True, "forced move": True,
+                                "freeze until cancel": True, "less mass": 2, "forced speed": True,
+                                "next action": {"name": "Standup", "uncontrollable": True, "damaged": "knock"}}
+    swap_weapon_command_action = ({"name": "SwapGear", "no combat ai": True, "swap weapon set": 0},
+                                  {"name": "SwapGear", "no combat ai": True, "swap weapon set": 1})
+
+    die_command_action = {"name": "DieDown", "uninterruptible": True, "uncontrollable": True}
 
     all_formation_list = {}
     hitbox_image_list = {}

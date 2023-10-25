@@ -1,6 +1,6 @@
 import pygame
 
-from engine.utility import edit_config
+from engine.utils.common import edit_config
 
 
 def menu_keybind(self, esc_press):

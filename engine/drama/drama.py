@@ -1,10 +1,11 @@
 import pygame
 
 from engine.uimenu.uimenu import UIMenu
+from engine.utils.text_making import text_render_with_texture
 
 
 class TextDrama(UIMenu):
-    images = []
+    images = {}
 
     def __init__(self, battle_camera_size):
         self._layer = 17
@@ -14,7 +15,7 @@ class TextDrama(UIMenu):
         self.right_corner = self.images["end"]
         # drama appear at around center top pos of battle camera
         self.pos = (battle_camera_size[0] / 2, battle_camera_size[1] / 5)
-        self.font = pygame.font.Font(self.ui_font["main_button"], int(60 * self.screen_scale[1]))
+        self.font = pygame.font.Font(self.ui_font["manuscript_font2"], int(60 * self.screen_scale[1]))
         self.queue = []  # text list to popup
         self.blit_text = False
         self.current_length = 0
@@ -32,7 +33,7 @@ class TextDrama(UIMenu):
         self.blit_text = False
         self.current_length = self.left_corner.get_width()  # current unfolded length start at 20
         self.text_input = text_input
-        self.text_surface = self.font.render(self.text_input, True, (0, 0, 0))
+        self.text_surface = text_render_with_texture(text_input, self.font, self.font_texture["gold"])
         self.image = pygame.Surface((self.text_surface.get_width() + int(self.left_corner.get_width() * 4),
                                      self.left_corner.get_height()), pygame.SRCALPHA)
         self.image.blit(self.left_corner, self.left_corner_rect)  # start animation with the left corner

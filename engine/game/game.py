@@ -33,8 +33,9 @@ from engine.uimenu.uimenu import MapPreview, OptionMenuText, SliderMenu, TeamCoa
     TickBox, TextPopup, MapTitle, NameTextBox
 from engine.unit.unit import Unit, Troop, Leader, rotation_dict, rotation_list
 from engine.updater.updater import ReversedLayeredUpdates
-from engine.utility import load_image, load_images, csv_read, edit_config, load_base_button, text_objects, \
-    number_to_minus_or_plus
+from engine.utils.common import edit_config
+from engine.utils.data_loading import load_image, load_images, csv_read, load_base_button
+from engine.utils.text_making import number_to_minus_or_plus
 from engine.weather.weather import MatterSprite, SpecialWeatherEffect
 
 version_name = "Victores et Victos"  # Game name that will appear as game name
@@ -49,6 +50,7 @@ class Game:
     module_dir = None
     art_style_dir = None
     ui_font = None
+    font_texture = None
     language = None
     localisation = None
     cursor = None
@@ -258,9 +260,6 @@ class Game:
 
         Game.module_dir = os.path.join(self.data_dir, "module", self.module_folder)
         Game.art_style_dir = os.path.join(self.module_dir, "animation", self.art_style)
-        Game.ui_font = csv_read(self.module_dir, "ui_font.csv", ("ui",), header_key=True)
-        for item in Game.ui_font:  # add ttf file extension for font data reading.
-            Game.ui_font[item] = os.path.join(self.font_dir, Game.ui_font[item]["Font"] + ".ttf")
 
         part_folder = Path(os.path.join(self.module_dir, "animation"))
         Game.art_style_list = {os.path.split(
@@ -313,6 +312,12 @@ class Game:
         self.dt = 0
         self.text_delay = 0
         self.url_delay = 0
+
+        Game.ui_font = csv_read(self.module_dir, "ui_font.csv", ("ui",), header_key=True)
+        for item in Game.ui_font:  # add ttf file extension for font data reading.
+            Game.ui_font[item] = os.path.join(self.font_dir, Game.ui_font[item]["Font"] + ".ttf")
+        Game.font_texture = load_images(self.data_dir, screen_scale=self.screen_scale,
+                                        subfolder=("font", "texture"), as_pillow_image=True)
 
         # Decorate game icon window
         # icon = load_image(self.data_dir, "sword.jpg")
@@ -495,7 +500,6 @@ class Game:
             pygame.mixer.music.play(-1)
 
         # Main menu interface
-
         self.fps_count = FPSCount(self)  # FPS number counter
         if self.show_fps:
             self.add_ui_updater(self.fps_count)
@@ -802,9 +806,9 @@ class Game:
                     pygame.quit()
                     quit()
             large_text = pygame.font.Font("freesansbold.ttf", 115)
-            text_surf, text_rect = text_objects("Test Intro", large_text)
-            text_rect.center = (700, 600)
-            screen.blit(text_surf, text_rect)
+            # text_surf, text_rect = text_objects("Test Intro", large_text)
+            # text_rect.center = (700, 600)
+            # screen.blit(text_surf, text_rect)
             pygame.display.update()
             clock.tick(60)
             timer += 1

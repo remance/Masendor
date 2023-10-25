@@ -8,7 +8,7 @@ from pathlib import Path
 
 import numpy as np
 
-from engine.utility import stat_convert, load_images, filename_convert_readable as fcv
+from engine.utils.data_loading import stat_convert, load_images, filename_convert_readable as fcv
 
 
 class GameData:

@@ -3,7 +3,7 @@ from random import randint
 from pygame import Surface, font, transform, Vector2, SRCALPHA
 
 from engine.uibattle.uibattle import UIBattle
-from engine.utility import set_rotate
+from engine.utils.rotation import set_rotate
 
 
 class Weather(UIBattle):

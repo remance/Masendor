@@ -3,7 +3,8 @@ import math
 import pygame
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps
 
-from engine.utility import rotation_xy, apply_sprite_colour
+from engine.utils.rotation import rotation_xy
+from engine.utils.sprite_altering import apply_sprite_colour
 
 
 def create_unit_sprite(self, animation_name, troop_size, animation_part_list, troop_sprite_list,

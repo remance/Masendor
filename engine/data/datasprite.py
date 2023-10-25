@@ -5,7 +5,8 @@ from pathlib import Path
 from pygame import Vector2
 
 from engine.data.datastat import GameData
-from engine.utility import apply_sprite_colour, load_images, stat_convert, filename_convert_readable as fcv
+from engine.utils.sprite_altering import apply_sprite_colour
+from engine.utils.data_loading import load_images, stat_convert, filename_convert_readable as fcv
 
 direction_list = ("side",)
 

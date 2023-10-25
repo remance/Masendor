@@ -1,4 +1,4 @@
-from engine.utility import edit_config
+from engine.utils.common import edit_config
 
 
 def escmenu_process(self, esc_press: bool):

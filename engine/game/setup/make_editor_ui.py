@@ -1,6 +1,6 @@
 from engine.uibattle.uibattle import UIScroll
 from engine.uimenu.uimenu import ListBox, MenuButton
-from engine.utility import load_image
+from engine.utils.data_loading import load_image
 
 
 def make_editor_ui(main_dir, screen_scale, screen_rect, listbox_image, image_list, updater):

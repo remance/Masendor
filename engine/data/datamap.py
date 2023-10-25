@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 from engine.data.datastat import GameData
-from engine.utility import stat_convert, load_images, csv_read, sort_list_dir_with_str, filename_convert_readable as fcv
+from engine.utils.data_loading import stat_convert, load_images, csv_read, sort_list_dir_with_str, filename_convert_readable as fcv
 from engine.weather.weather import Weather
 
 

@@ -1,6 +1,6 @@
 from engine.uibattle import uibattle
 from engine.uimenu.uimenu import SliderMenu, ValueBox, OptionMenuText
-from engine.utility import load_images, load_image
+from engine.utils.data_loading import load_images, load_image
 
 
 def make_esc_menu(master_volume, music_volume, voice_volume, effect_volume):

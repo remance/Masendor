@@ -1,6 +1,3 @@
-from engine.unit.unit import die_command_action
-
-
 def die(self, how):
     """Unit left battle, either dead or flee"""
     self.skill_cooldown = {}  # remove all cooldown
@@ -98,7 +95,7 @@ def die(self, how):
                 self.battle.event_log.add_log((0, str(self.name) + " is Dead."))  # add log to say this leader is dead
 
         if self in self.battle.battle_camera:
-            self.current_action = die_command_action
+            self.current_action = self.die_command_action
             self.show_frame = 0
             self.frame_timer = 0
             self.pick_animation()

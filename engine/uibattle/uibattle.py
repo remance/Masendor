@@ -8,7 +8,7 @@ from pygame.sprite import Sprite
 from pygame.transform import flip, smoothscale, scale
 
 from engine.uimenu.uimenu import UIMenu
-from engine.utility import text_render, minimise_number_text, number_to_minus_or_plus
+from engine.utils.text_making import text_render_with_bg, minimise_number_text, number_to_minus_or_plus
 
 
 def change_number(number):
@@ -439,7 +439,7 @@ class SkillIcon(UIBattle, Sprite):
         self.base_image = self.image.copy()  # original image before adding key name
 
         key_font = Font(self.ui_font["main_button"], self.key_font_size)
-        text_surface = text_render(key, key_font)
+        text_surface = text_render_with_bg(key, key_font)
         text_rect = text_surface.get_rect(midbottom=(self.image.get_width() / 2, self.image.get_height()))
         self.image.blit(text_surface, text_rect)
         self.base_image2 = self.image.copy()  # keep original image without timer
@@ -450,7 +450,7 @@ class SkillIcon(UIBattle, Sprite):
     def change_key(self, key):
         self.image = self.base_image.copy()
         key_font = Font(self.ui_font["main_button"], self.key_font_size)
-        text_surface = text_render(key, key_font)
+        text_surface = text_render_with_bg(key, key_font)
         text_rect = text_surface.get_rect(midbottom=(self.image.get_width() / 2, self.image.get_height()))
         self.image.blit(text_surface, text_rect)
         self.base_image2 = self.image.copy()  # keep original image without timer
@@ -902,7 +902,7 @@ class TempUnitIcon(UIBattle):
                         int(40 / (len(str(self.map_id)) / 3) * self.screen_scale[1]))
             image_rect = image.get_rect(center=(self.portrait.get_width() / 2, self.portrait.get_height() / 2))
             self.portrait.blit(image, image_rect)
-            image_surface = text_render(str(self.map_id), font)  # add icon map id so it is easier to distinguish unit
+            image_surface = text_render_with_bg(str(self.map_id), font)  # add icon map id so it is easier to distinguish unit
             image_rect = image_surface.get_rect(center=(self.portrait.get_width() / 2,
                                                         self.portrait.get_height() / 2.5))
             self.portrait.blit(image_surface, image_rect)

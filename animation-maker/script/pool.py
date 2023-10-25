@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pygame
 
-from engine.utility import filename_convert_readable
+from engine.utils.data_loading import filename_convert_readable
 from engine.data.datastat import stat_convert
 
 current_dir = os.path.split(os.path.abspath(__file__))[0]

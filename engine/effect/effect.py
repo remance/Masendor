@@ -6,11 +6,14 @@ from pygame import sprite, mixer, Vector2
 
 from engine.effect import adjust_sprite, cal_dmg, cal_charge_hit, cal_effect_hit, cal_melee_hit, cal_range_hit, \
     find_random_direction, hit_register, play_animation
-from engine.utility import clean_object, set_rotate
 
 
 class Effect(sprite.Sprite):
+
+    from engine.utils.common import clean_object
     clean_object = clean_object
+
+    from engine.utils.rotation import set_rotate
     set_rotate = set_rotate
 
     effect_sprite_pool = None

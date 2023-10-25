@@ -1,5 +1,5 @@
 from engine.data.datastat import TroopData, LeaderData, FactionData
-from engine.utility import load_images
+from engine.utils.data_loading import load_images
 
 
 def make_faction_troop_leader_data(module_dir, screen_scale):

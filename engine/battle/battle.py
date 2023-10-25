@@ -17,7 +17,10 @@ from engine.effect.effect import Effect
 from engine.uibattle.uibattle import BattleCursor, FPSCount, SkillIcon, AimTarget, BattleDone, ButtonUI, EventLog, \
     UIScroll, MiniMap
 from engine.unit.unit import Unit
-from engine.utility import load_image, load_images, number_to_minus_or_plus, clean_group_object, convert_str_time
+from engine.utils.common import clean_group_object
+
+from engine.utils.data_loading import load_image, load_images
+from engine.utils.text_making import number_to_minus_or_plus, convert_str_time
 from engine.weather.weather import Weather
 
 script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"

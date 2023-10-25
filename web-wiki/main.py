@@ -14,7 +14,7 @@ main_dir = os.path.normpath(os.path.join(file_path, '..'))
 sys.path.append(main_dir)
 # ---
 
-from engine import utility  # nopep8
+from engine.utils import utility
 from engine.game.create_unit_sprite_pool import create_unit_sprite_pool  # nopep8
 from engine.game.game import Game  # nopep8
 from engine.game.setup.make_faction_troop_leader_data import make_faction_troop_leader_data  # nopep8
