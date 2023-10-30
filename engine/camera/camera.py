@@ -9,6 +9,8 @@ class Camera:
         self.camera_w_center = camera_w / 2
         self.camera_h_center = camera_h / 2
 
+        self.rect = self.image.get_rect(topleft=(screen.get_rect().width * 0.1, screen.get_rect().height * 0.1))
+
     def update(self, pos, surfaces, out_surfaces):
         """Update self camera with sprite blit to camera image"""
         self.image.fill((0, 0, 0))

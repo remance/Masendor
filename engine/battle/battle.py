@@ -957,7 +957,6 @@ class Battle:
                     self.battle_scale_ui.change_fight_scale(
                         self.battle_scale)  # change fight colour scale on time_ui bar
                     self.ui_drawer.draw(self.screen)  # draw the UI
-                    self.ui_timer -= 0.1
 
             elif self.game_state == "end":
                 self.screen.blit(self.background, (0, 0))  # keep reset screen
@@ -1032,7 +1031,12 @@ class Battle:
                     if command == "end_battle":
                         return
 
-            display.update()  # update game display, draw everything
+            if self.ui_timer < 0.1 and self.game_state == "battle":
+                display.update(self.camera.rect)  # draw only battle camera when ui not updated yet
+            else:
+                display.update()  # update game display, draw everything
+                if self.game_state == "battle":
+                    self.ui_timer -= 0.1
 
             self.clock.tick(60)  # clock update even if self pause
 
