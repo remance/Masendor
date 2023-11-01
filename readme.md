@@ -107,6 +107,8 @@ huge size battle)
 
 ![alt text](https://github.com/remance/preview/blob/main/preview.png?raw=true)
 
+[![](https://markdown-videos-api.jorgenkh.no/youtube/iHYlqnlIEOE)](https://youtu.be/iHYlqnlIEOE)
+
 Add new game art style and system that allow player to select available styles.
 
 ---------------
