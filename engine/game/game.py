@@ -757,6 +757,7 @@ class Game:
         # Background image
         self.background_image = load_images(self.module_dir, screen_scale=self.screen_scale,
                                             subfolder=("ui", "mainmenu_ui", "background"))
+        self.background = self.background_image["background"]
         self.atlas = MenuRotate((self.screen_width / 2, self.screen_height / 2), self.background_image["atlas"], 5)
         self.hide_background = StaticImage((self.screen_width / 2, self.screen_height / 2),
                                            self.background_image["hide"])
@@ -920,8 +921,7 @@ class Game:
             self.ui_updater.update()
 
             # Reset screen
-            self.screen.fill((220, 220, 180))
-            # self.screen.blit(self.background, (0, 0))  # blit background over instead of clear() to reset screen
+            self.screen.blit(self.background, (0, 0))  # blit background over instead of clear() to reset screen
 
             if self.input_popup:  # currently, have input text pop up on screen, stop everything else until done
                 if self.input_ok_button.event_press or key_press[pygame.K_RETURN] or key_press[pygame.K_KP_ENTER]:
