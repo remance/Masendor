@@ -23,7 +23,7 @@ def read_anim_data(art_style_dir, anim_column_header):
     for file in files:
         with open(os.path.join(art_style_dir, file + ".csv"), encoding="utf-8",
                   mode="r") as edit_file:
-            rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+            rd = csv.reader(edit_file, quoting=csv.QUOTE_MINIMAL)
             rd = [row for row in rd]
             part_name_header = rd[0]
             list_column = anim_column_header  # value in list only
@@ -57,7 +57,7 @@ def read_anim_data(art_style_dir, anim_column_header):
 def read_joint_data(art_style_dir):
     with open(os.path.join(art_style_dir, "sprite", "unit", "weapon", "joint.csv"), encoding="utf-8",
               mode="r") as edit_file:
-        rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+        rd = csv.reader(edit_file, quoting=csv.QUOTE_MINIMAL)
         rd = [row for row in rd]
         header = rd[0]
         list_column = ["side"]
@@ -104,7 +104,7 @@ def anim_save_pool(pool, race_name, anim_column_header, module_folder, art_style
     with open(os.path.join(main_dir, "data", "module", module_folder, "animation", art_style_folder,
                            filename_convert_readable(race_name, revert=True) + ".csv"), mode="w",
               encoding='utf-8', newline="") as edit_file:
-        filewriter = csv.writer(edit_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_ALL)
+        filewriter = csv.writer(edit_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL)
         save_list = pool
         final_save = [[item for item in anim_column_header]]
         for item in list(save_list.items()):

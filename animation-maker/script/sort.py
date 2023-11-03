@@ -58,7 +58,7 @@ def sort_animation(pool, header, sort_by):
     with open(os.path.join(animation_folder, animation_race), mode="w",
               encoding='utf-8',
               newline="") as edit_file:
-        filewriter = csv.writer(edit_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_ALL)
+        filewriter = csv.writer(edit_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL)
         save_list = new_pool
         final_save = [[item for item in header]]
         for item in list(save_list.items()):

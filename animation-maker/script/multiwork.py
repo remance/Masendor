@@ -14,7 +14,7 @@ read_anim_data = pool.read_anim_data
 pool = []
 with open(os.path.join(main_dir, "data", "animation", "side.csv"), encoding="utf-8",
           mode="r") as edit_file:
-    rd = csv.reader(edit_file, quoting=csv.QUOTE_ALL)
+    rd = csv.reader(edit_file, quoting=csv.QUOTE_MINIMAL)
     rd = [row for row in rd]
     part_name_header = rd[0]
     animation_pool = {}
@@ -69,7 +69,7 @@ def frame_adjust(pool, pool_name, header, filter_list, part_anchor, exclude_filt
     with open(os.path.join(main_dir, "data", "animation", pool_name, "side.csv"), mode="w",
               encoding='utf-8',
               newline="") as edit_file:
-        filewriter = csv.writer(edit_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_ALL)
+        filewriter = csv.writer(edit_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL)
         for row in final_save:
             filewriter.writerow(row)
         edit_file.close()
