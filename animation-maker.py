@@ -129,12 +129,12 @@ effect_colour_: Colourise entire frame based on the input value
 """
 
 
-def reload_animation(animation, char):
+def reload_animation(animation, char, specific_frame=None):
     """Reload animation frames"""
     frames = [pygame.transform.smoothscale(this_image, showroom.size) for this_image in char.animation_list if
               this_image is not None]
     for frame_index in range(max_frame):
-        if activate_list[frame_index]:
+        if (not specific_frame and activate_list[frame_index]) or (specific_frame and frame_index == specific_frame):
             for prop in frame_property_select[frame_index] + anim_property_select:
                 if "effect" in prop:
                     size = frames[frame_index].get_size()
@@ -1002,7 +1002,7 @@ class Model:
         for strip_index, strip in enumerate(filmstrips):
             strip.activate = False
             for stuff in self.animation_part_list[strip_index].values():
-                if stuff is not None:
+                if stuff:
                     strip.activate = True
                     activate_list[strip_index] = True
                     break
@@ -1254,10 +1254,8 @@ class Model:
             else:
                 self.part_selected = [list(self.mask_part_list.keys()).index(part)]
 
-    def edit_part(self, mouse_pos, edit_type, specific_frame=None):
+    def edit_part(self, edit_mouse_pos, edit_type, specific_frame=None):
         edit_frame = current_frame
-        if specific_frame is not None:
-            edit_frame = specific_frame
         key_list = list(self.mask_part_list.keys())
 
         if edit_type not in ("undo", "redo", "change", "new"):
@@ -1477,7 +1475,7 @@ class Model:
                     if self.animation_part_list[edit_frame][part_index] is not None and \
                             len(self.animation_part_list[edit_frame][part_index]) > 3:
                         if edit_type == "place":  # mouse place
-                            new_point = pygame.Vector2(mouse_pos)
+                            new_point = pygame.Vector2(edit_mouse_pos)
                             offset = (self.animation_part_list[edit_frame][part_index][2][0] - center[0],
                                       self.animation_part_list[edit_frame][part_index][2][1] - center[1])
                             if point_edit == 1:  # use joint
@@ -1516,7 +1514,7 @@ class Model:
 
                         elif edit_type == "rotate":  # mouse rotate
                             base_pos = self.animation_part_list[edit_frame][part_index][2]
-                            rotate_radians = atan2(mouse_pos[1] - base_pos[1], mouse_pos[0] - base_pos[0])
+                            rotate_radians = atan2(edit_mouse_pos[1] - base_pos[1], edit_mouse_pos[0] - base_pos[0])
                             new_angle = degrees(rotate_radians)
                             # """upper left -"""
                             if -180 <= new_angle <= -90:
@@ -1594,41 +1592,42 @@ class Model:
 
         # recreate frame image
         for frame_num, _ in enumerate(self.animation_list):
-            pose_layer_list = self.make_layer_list(self.animation_part_list[frame_num])
-            surface = self.create_animation_film(pose_layer_list, frame_num)
-            self.animation_list[frame_num] = surface
-        for frame, _ in enumerate(self.frame_list):
-            self.frame_list[frame] = {}
-            name_list = self.part_name_list[frame]
-            for key in self.mask_part_list:
-                try:
-                    sprite_part = self.animation_part_list[frame]
-                    if sprite_part[key] is not None:
-                        self.frame_list[frame][key] = name_list[key] + [sprite_part[key][2][0], sprite_part[key][2][1],
-                                                                             sprite_part[key][3], sprite_part[key][4],
-                                                                             sprite_part[key][5], sprite_part[key][6]]
-                    else:
-                        self.frame_list[frame][key] = []
-                except (TypeError, IndexError):  # None type error from empty frame
-                    self.frame_list[frame][key] = []
-            for key in self.frame_list[frame]:
-                if "weapon" in key and self.frame_list[frame][key]:
-                    self.frame_list[frame][key] = self.frame_list[frame][key][1:]
-            p_face = {}
-            for p in p_list:
-                p_face = p_face | {p: {p + "_eye": self.bodypart_list[frame][p + "_eye"],
-                                       p + "_mouth": self.bodypart_list[frame][p + "_mouth"]}}
-            for p in p_face:
-                p_face_pos = list(self.frame_list[frame].keys()).index(p + "_head") + 1
-                self.frame_list[frame] = {k: v for k, v in (
-                            list(self.frame_list[frame].items())[:p_face_pos] + list(p_face[p].items()) +
-                            list(self.frame_list[frame].items())[p_face_pos:])}
+            if not specific_frame or (frame_num == specific_frame):
+                pose_layer_list = self.make_layer_list(self.animation_part_list[frame_num])
+                surface = self.create_animation_film(pose_layer_list, frame_num)
+                self.animation_list[frame_num] = surface
 
-            self.frame_list[frame]["size"] = self.size
-            self.frame_list[frame]["frame_property"] = frame_property_select[frame].copy()
-            self.frame_list[frame]["animation_property"] = anim_property_select.copy()
+                self.frame_list[frame_num] = {}
+                name_list = self.part_name_list[frame_num]
+                for key in self.mask_part_list:
+                    try:
+                        sprite_part = self.animation_part_list[frame_num]
+                        if sprite_part[key] is not None:
+                            self.frame_list[frame_num][key] = name_list[key] + [sprite_part[key][2][0], sprite_part[key][2][1],
+                                                                                 sprite_part[key][3], sprite_part[key][4],
+                                                                                 sprite_part[key][5], sprite_part[key][6]]
+                        else:
+                            self.frame_list[frame_num][key] = []
+                    except (TypeError, IndexError):  # None type error from empty frame
+                        self.frame_list[frame_num][key] = []
+                for key in self.frame_list[frame_num]:
+                    if "weapon" in key and self.frame_list[frame_num][key]:
+                        self.frame_list[frame_num][key] = self.frame_list[frame_num][key][1:]
+                p_face = {}
+                for p in p_list:
+                    p_face = p_face | {p: {p + "_eye": self.bodypart_list[frame_num][p + "_eye"],
+                                           p + "_mouth": self.bodypart_list[frame_num][p + "_mouth"]}}
+                for p in p_face:
+                    p_face_pos = list(self.frame_list[frame_num].keys()).index(p + "_head") + 1
+                    self.frame_list[frame_num] = {k: v for k, v in (
+                                list(self.frame_list[frame_num].items())[:p_face_pos] + list(p_face[p].items()) +
+                                list(self.frame_list[frame_num].items())[p_face_pos:])}
+
+                self.frame_list[frame_num]["size"] = self.size
+                self.frame_list[frame_num]["frame_property"] = frame_property_select[frame_num].copy()
+                self.frame_list[frame_num]["animation_property"] = anim_property_select.copy()
         anim_to_pool(animation_name, current_pool[animation_race], self, activate_list)
-        reload_animation(anim, self)
+        reload_animation(anim, self, specific_frame=specific_frame)
 
         if edit_type == "new":
             for index, frame in enumerate(self.frame_list):  # reset all frame to empty frame like the first one
@@ -1880,7 +1879,7 @@ help_button = SwitchButton(["Help:ON", "Help:OFF"], image,
 delete_button = Button("Delete", image, (screen_size[0] - (image.get_width() / 2), image.get_height() / 2),
                        description=("Delete animation", "Delete the current animation."))
 
-play_animation_button = SwitchButton(["Play", "Stop"], image,
+play_animation_button = SwitchButton(("Play", "Stop"), image,
                                      (screen_size[0] / 2,
                                       filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 2)),
                                      description=("Play/Stop animation",
@@ -1925,7 +1924,7 @@ all_frame_part_paste_button = Button("Paste PA", image, (play_animation_button.p
 clear_button = Button("Clear", image, (play_animation_button.pos[0] - play_animation_button.image.get_width() * 4,
                                        filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 2)),
                       description=("Clear frame", "Clear the current frame."))
-activate_button = SwitchButton(["Enable", "Disable"], image,
+activate_button = SwitchButton(("Enable", "Disable"), image,
                                (play_animation_button.pos[0] - play_animation_button.image.get_width() * 5,
                                 filmstrip_list[0].rect.midbottom[1] + (image.get_height() / 2)),
                                description=("Enable or disable the current frame",
@@ -2409,7 +2408,10 @@ while True:
                             if name.selected:  # unselect
                                 name.select()
                                 select_list.remove(name.name)
-                                reload_animation(anim, model)
+                                specific_frame = None
+                                if naming == "frame":
+                                    specific_frame = current_frame
+                                reload_animation(anim, model, specific_frame=specific_frame)
                             else:
                                 if name.name == "Custom":
                                     text_input_popup = ("text_input", "new_anim_prop")
@@ -2429,7 +2431,10 @@ while True:
                                     select_list.append(name.name)
                                     setup_list(NameList, current_frame_row, namelist, namegroup,
                                                list_box, ui, screen_scale, layer=9, old_list=select_list)
-                                    reload_animation(anim, model)
+                                    specific_frame = None
+                                    if naming == "frame":
+                                        specific_frame = current_frame
+                                    reload_animation(anim, model, specific_frame=specific_frame)
                             property_to_pool_data(naming)
 
         if play_animation:
@@ -2524,7 +2529,7 @@ while True:
 
                         for strip_index, strip in enumerate(filmstrips):  # enable frame that not empty
                             for stuff in model.animation_part_list[strip_index].values():
-                                if stuff is not None:
+                                if stuff:
                                     strip.activate = True
                                     activate_list[strip_index] = True
                                     strip.add_strip(change=False)
@@ -2542,10 +2547,11 @@ while True:
                         model.edit_part(mouse_pos, "clear", specific_frame=len(model.bodypart_list) - 1)
                         model.edit_part(mouse_pos, "change")
                         reload_animation(anim, model)
+                        change_frame_process()
 
                         for strip_index, strip in enumerate(filmstrips):  # enable frame that not empty
                             for stuff in model.animation_part_list[strip_index].values():
-                                if stuff is not None:
+                                if stuff:
                                     strip.activate = True
                                     activate_list[strip_index] = True
                                     strip.add_strip(change=False)
@@ -3029,8 +3035,9 @@ while True:
                 property_to_pool_data("frame")
 
             elif "_prop_num" in text_input_popup[1] and (
-                    input_box.text.isdigit() or "." in input_box.text and re.search("[a-zA-Z]",
-                                                                                    input_box.text) is None):  # add property that need value
+                    input_box.text.isdigit() or (input_box.text.count(".") == 1 and
+                                                 input_box.text[0] != "." and input_box.text[-1] != ".") and
+                    re.search("[a-zA-Z]", input_box.text) is None):  # add property that need value
                 namegroup = anim_prop_namegroup  # click on animation property list
                 list_box = anim_prop_list_box
                 namelist = list_box.namelist
@@ -3049,7 +3056,10 @@ while True:
                         select_list.append(name[0:name.rfind("_") + 1] + input_box.text)
                         setup_list(NameList, current_frame_row, namelist, namegroup,
                                    list_box, ui, screen_scale, layer=9, old_list=select_list)
-                        reload_animation(anim, model)
+                        specific_frame = None
+                        if naming == "frame":
+                            specific_frame = current_frame
+                        reload_animation(anim, model, specific_frame=specific_frame)
                         property_to_pool_data(naming)
                         break
 
@@ -3079,7 +3089,10 @@ while True:
                         select_list.append(name[0:name.rfind("_") + 1] + colour)
                         setup_list(NameList, current_frame_row, name_list, namegroup, list_box, ui, screen_scale,
                                    layer=9, old_list=select_list)
-                        reload_animation(anim, model)
+                        specific_frame = None
+                        if naming == "frame":
+                            specific_frame = current_frame
+                        reload_animation(anim, model, specific_frame=specific_frame)
                         property_to_pool_data(naming)
                         break
 

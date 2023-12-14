@@ -918,7 +918,7 @@ class Battle:
                     # Screen shaking
                     self.shown_camera_pos = self.camera_pos  # reset camera pos first
                     if self.screen_shake_value:
-                        self.screen_shake_value -= 1
+                        self.screen_shake_value -= (self.dt * 100)
                         self.shake_camera()
                         if self.screen_shake_value < 0:
                             self.screen_shake_value = 0

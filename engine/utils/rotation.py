@@ -9,7 +9,7 @@ def rotation_xy(origin, point, angle):
     :param origin: origin pos
     :param point: target point pos
     :param angle: angle of rotation in radians
-    :return: Rotated origin pos
+    :return: Rotated point pos
     """
     ox, oy = origin
     px, py = point

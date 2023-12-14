@@ -496,6 +496,7 @@ class Game:
             pygame.mixer.music.set_volume(self.play_music_volume)
             self.SONG_END = pygame.USEREVENT + 1
             self.music_list = glob.glob(self.module_dir + "/sound/music/menu.ogg")
+
             pygame.mixer.music.load(self.music_list[0])
             pygame.mixer.music.play(-1)
 
@@ -850,7 +851,7 @@ class Game:
             if self.config["USER"]["control player 1"] == "joystick" and self.input_popup[0] == "keybind_input":
                 for joystick in self.joysticks.values():  # TODO change this when has multiplayer
                     for i in range(joystick.get_numaxes()):
-                        if joystick.get_axis(i):
+                        if joystick.get_axis(i) > 0.1 or joystick.get_axis(i) < -0.1:
                             if i not in (2, 3):  # prevent right axis from being assigned
                                 axis_name = "axis" + number_to_minus_or_plus(joystick.get_axis(i)) + str(i)
                                 self.assign_key(axis_name)

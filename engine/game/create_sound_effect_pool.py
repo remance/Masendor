@@ -1,5 +1,7 @@
 import os
 
+from pygame.mixer import Sound
+
 from engine.utils.data_loading import filename_convert_readable as fcv
 
 
@@ -20,6 +22,6 @@ def create_sound_effect_pool(self):
                 sound_effect_pool[file_name].append(os.path.join(dir_path, file))
 
     for file_name in sound_effect_pool:  # convert to tuple
-        sound_effect_pool[file_name] = tuple(sound_effect_pool[file_name])
+        sound_effect_pool[file_name] = tuple([Sound(item) for item in sound_effect_pool[file_name]])
 
     return sound_effect_pool
