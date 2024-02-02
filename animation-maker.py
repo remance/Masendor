@@ -1875,6 +1875,9 @@ help_button = SwitchButton(["Help:ON", "Help:OFF"], image,
                                         "Control with selected parts: ", "W,A,S,D = Move", "Mouse Right = Place",
                                         "Hold mouse wheel or Q,E = Rotate", "DEL = Clear part",
                                         "Page Up/Down = Change layer"))
+showroom_colour_button = Button("Box RGB", image, (screen_size[0] / 1.2,
+                                                   p_body_helper.rect.midtop[1] - (image.get_height() * 5)),
+                                description=("Change showroom background colour",))
 
 delete_button = Button("Delete", image, (screen_size[0] - (image.get_width() / 2), image.get_height() / 2),
                        description=("Delete animation", "Delete the current animation."))
@@ -2364,6 +2367,10 @@ while True:
                         help_button.change_option(1)
                     else:
                         help_button.change_option(0)
+
+                elif showroom_colour_button.rect.collidepoint(mouse_pos):
+                    text_input_popup = ("text_input", "showroom_colour_")
+                    ui.add(colour_ui_popup)
 
                 elif joint_button.rect.collidepoint(mouse_pos):
                     if joint_button.current_option == 0:  # remove joint sprite
@@ -3063,6 +3070,13 @@ while True:
                         property_to_pool_data(naming)
                         break
 
+            elif "showroom_colour_" in text_input_popup[1] and re.search("[a-zA-Z]", colour_input_box.text) is None and \
+                    colour_input_box.text.count(",") >= 2:
+                colour = colour_input_box.text.replace(" ", "")
+                colour = colour.split(",")
+                colour = [int(item) for item in colour]
+                showroom.colour = colour
+
             elif "_prop_colour" in text_input_popup[1] and re.search("[a-zA-Z]", colour_input_box.text) is None and \
                     colour_input_box.text.count(",") >= 2:  # add colour related property
                 namegroup = anim_prop_namegroup
@@ -3096,7 +3110,8 @@ while True:
                         property_to_pool_data(naming)
                         break
 
-            elif text_input_popup[1] == "change_size" and input_box.text.isdigit():
+            elif text_input_popup[1] == "change_size" and input_box.text and \
+                    re.search("[a-zA-Z]", input_box.text) is None:
                 if int(input_box.text) != model.frame_list[0]["size"]:
                     model.frame_list[0]["size"] = int(input_box.text)
                     model.change_size()

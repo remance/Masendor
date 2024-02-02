@@ -8,12 +8,13 @@ class Showroom(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.size = (int(size[0]), int(size[1]))
         self.image = pygame.Surface(self.size)
-        self.image.fill((200, 200, 200))
+        self.colour = (200, 200, 200)
+        self.image.fill(self.colour)
         self.rect = self.image.get_rect(center=(screen_size[0] / 2, screen_size[1] / 2.35))
         self.grid = True
 
     def update(self, *args):
-        self.image.fill((200, 200, 200))
+        self.image.fill(self.colour)
         if self.grid:
             grid_width = self.image.get_width() / 10
             grid_height = self.image.get_height() / 10
