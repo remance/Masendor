@@ -52,7 +52,6 @@ def frame_adjust(pool, pool_name, header, filter_list, part_anchor, exclude_filt
                     else:
                         pool[key][key2][3] = str(float(pool[key][key2][3]) + offset[0])
                         pool[key][key2][4] = str(float(pool[key][key2][4]) + offset[1])
-
     for key in pool:
         for key2, value in pool[key].items():
             new_value = str(pool[key][key2])

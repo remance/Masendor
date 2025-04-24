@@ -1,10 +1,10 @@
 iniconfig~=2.0.0
-numpy~=1.25.1
+numpy~=2.2.0
 networkx~=3.1
 natsort~=8.3.1
-pandas~=2.0.2
+pandas~=2.0.3
 Pillow~=11.0.0
 pygame~=2.6.1
-pyperclip~=1.8.2
+pyperclip~=1.9.0
 screeninfo~=0.8.1
 pathfinding~=1.0.1
