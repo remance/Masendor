@@ -8,7 +8,6 @@ import pygame
 from pygame import Vector2, display
 from pygame.locals import *
 
-from engine.ai import ai
 from engine.battle.setup.make_battle_ui import make_battle_ui
 from engine.battle.setup.make_esc_menu import make_esc_menu
 from engine.camera.camera import Camera
@@ -20,7 +19,7 @@ from engine.unit.unit import Unit
 from engine.utils.common import clean_group_object
 
 from engine.utils.data_loading import load_image, load_images
-from engine.utils.text_making import number_to_minus_or_plus, convert_str_time
+from engine.utils.text_making import add_plus_to_number, convert_str_time
 from engine.weather.weather import Weather
 
 script_dir = os.path.split(os.path.abspath(__file__))[0] + "/"
@@ -55,8 +54,8 @@ class Battle:
     from engine.battle.cal_shake_value import cal_shake_value
     cal_shake_value = cal_shake_value
 
-    from engine.battle.camera_fix import camera_fix
-    camera_fix = camera_fix
+    from engine.battle.fix_camera import fix_camera
+    fix_camera = fix_camera
 
     from engine.battle.camera_process import camera_process
     camera_process = camera_process
@@ -211,7 +210,6 @@ class Battle:
         self.max_camera = (1000, 1000)
 
         self.troop_ai_logic_queue = []
-        self.pathfinding_thread = ai.PathfindingAI(self)
 
         self.unit_behaviour_wheel = \
             {"Main": {"Army": "Army", "Group": "Group", "Range Attack": "Range Attack", "Charge": "Charge",
@@ -579,6 +577,7 @@ class Battle:
             self.remove_ui_updater(self.skill_icons)
 
         self.shown_camera_pos = self.camera_pos
+        self.fix_camera()
 
         self.player_unit_input_delay = 0
         self.text_delay = 0
@@ -660,7 +659,7 @@ class Battle:
                 for joystick in self.joysticks.values():
                     for i in range(joystick.get_numaxes()):
                         if joystick.get_axis(i) > 0.1 or joystick.get_axis(i) < -0.1:
-                            axis_name = "axis" + number_to_minus_or_plus(joystick.get_axis(i)) + str(i)
+                            axis_name = "axis" + add_plus_to_number(joystick.get_axis(i)) + str(i)
                             if axis_name in self.player1_key_bind_name:
                                 self.player1_key_hold[self.player1_key_bind_name[axis_name]] = True
 
@@ -670,11 +669,11 @@ class Battle:
 
                     for i in range(joystick.get_numhats()):
                         if joystick.get_hat(i)[0] > 0.1 or joystick.get_hat(i)[0] < 0.1:
-                            hat_name = "hat" + number_to_minus_or_plus(joystick.get_hat(i)[0]) + str(0)
+                            hat_name = "hat" + add_plus_to_number(joystick.get_hat(i)[0]) + str(0)
                             if hat_name in self.player1_key_bind_name:
                                 self.player1_key_press[self.player1_key_bind_name[hat_name]] = True
                         if joystick.get_hat(i)[1] > 0.1 or joystick.get_hat(i)[1] < 0.1:
-                            hat_name = "hat" + number_to_minus_or_plus(joystick.get_hat(i)[1]) + str(1)
+                            hat_name = "hat" + add_plus_to_number(joystick.get_hat(i)[1]) + str(1)
                             if hat_name in self.player1_key_bind_name:
                                 self.player1_key_press[self.player1_key_bind_name[hat_name]] = True
 

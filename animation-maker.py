@@ -5,20 +5,24 @@ import re
 import sys
 import time
 import configparser
+from math import atan2, degrees, radians
+from os import sep
+from os.path import join, split, normpath, abspath
 from pathlib import Path
 
 import pygame
-from os.path import join, split, normpath, abspath
-from math import atan2, degrees, radians
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps
+from pygame.transform import smoothscale, rotate, flip as pyflip
 
-from engine.uimenu.uimenu import MenuCursor, NameList, MenuButton, TextPopup, InputUI, InputBox, ListBox
-from engine.uibattle.uibattle import UIScroll
-from engine.game.game import Game
 from engine.data.datalocalisation import Localisation
+from engine.data.datasound import SoundData
+from engine.game.game import Game
+from engine.uibattle.uibattle import UIScroll
+from engine.uimenu.uimenu import MenuCursor, NameList, MenuButton, TextPopup, InputUI, InputBox, ListBox
 from engine.utils.data_loading import csv_read, load_image, load_images, load_base_button, stat_convert, \
     filename_convert_readable as fcv
 from engine.utils.rotation import rotation_xy
+from engine.utils.sprite_altering import sprite_rotate
 
 main_dir = split(abspath(__file__))[0]
 main_data_dir = join(main_dir, "data")

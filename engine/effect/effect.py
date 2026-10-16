@@ -85,7 +85,7 @@ class Effect(sprite.Sprite):
                     effect_name = sprite_name[:-2]
                 else:
                     effect_name = sprite_name
-                if "(team)" in effect_type:
+                if "@team" in effect_type:
                     self.current_animation = self.effect_animation_pool[effect_type][self.attacker.team][effect_name]
                 else:
                     self.current_animation = self.effect_animation_pool[effect_type][effect_name]

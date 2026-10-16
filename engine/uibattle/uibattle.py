@@ -8,7 +8,7 @@ from pygame.sprite import Sprite
 from pygame.transform import flip, smoothscale, scale
 
 from engine.uimenu.uimenu import UIMenu
-from engine.utils.text_making import text_render_with_bg, minimise_number_text, number_to_minus_or_plus
+from engine.utils.text_making import text_render_with_bg, minimise_number_text, add_plus_to_number
 
 
 def change_number(number):
@@ -61,7 +61,7 @@ class BattleCursor(UIBattle):
             for joystick in self.battle.joysticks.values():
                 for i in range(joystick.get_numaxes()):
                     if joystick.get_axis(i) > 0.1 or joystick.get_axis(i) < -0.1:
-                        axis_name = number_to_minus_or_plus(joystick.get_axis(i))
+                        axis_name = add_plus_to_number(joystick.get_axis(i))
                         if i == 2:
                             if axis_name == "+":
                                 self.pos[0] += 5

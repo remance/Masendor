@@ -42,7 +42,7 @@ def change_battle_state(self):
                 self.background.blit(portrait, self.portrait_rect)  # add portrait to screen
                 if self.camera_mode == "Follow":
                     self.true_camera_pos = self.player_unit.base_pos
-                    self.camera_fix()
+                    self.fix_camera()
     if not self.player_unit:  # no player unit clean UI a bit
         portrait = self.empty_portrait
         self.portrait_rect = portrait.get_rect(center=(portrait.get_width() / 1.6,

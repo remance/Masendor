@@ -9,6 +9,7 @@ from pygame import image
 from pygame.mixer import Sound
 from pygame.transform import smoothscale, flip
 
+from engine.utils.sprite_altering import sprite_rotate
 
 accept_image_types = ("png", "jpg", "jpeg", "svg", "gif", "bmp")
 
@@ -87,12 +88,59 @@ def load_images(directory, screen_scale=(1, 1), subfolder=(), key_file_name_read
         return images
 
 
-def filename_convert_readable(filename, revert=False):
+def recursive_image_load(save_dict, screen_scale, part_folder, key_file_name_readable=True,
+                         part_sprite_adjust=None):
+    next_level = save_dict
+    sub_directories = [os.path.split(os.sep.join(os.path.normpath(x).split(os.sep)[-1:]))[-1] for x
+                       in part_folder.iterdir() if x.is_dir()]
+    if sub_directories:
+        for folder in sub_directories:
+            folder_name = filename_convert_readable(folder)
+            next_level[folder_name] = {}
+            part_subfolder = Path(os.path.join(part_folder, folder))
+            recursive_image_load(next_level[folder_name], screen_scale, part_subfolder,
+                                 key_file_name_readable=key_file_name_readable, part_sprite_adjust=part_sprite_adjust)
+
+    else:
+        imgs = load_images(part_folder, screen_scale=screen_scale,
+                           key_file_name_readable=key_file_name_readable)
+        if part_sprite_adjust:
+            part_type = os.path.normpath(part_folder).split(os.sep)[-4]
+            part_name = os.path.normpath(part_folder).split(os.sep)[-3]
+
+            if part_type != "weapon":
+                part_type = filename_convert_readable(part_type)
+            else:
+                part_name = filename_convert_readable(part_name)
+            for key, value in imgs.items():
+                if part_type in part_sprite_adjust:
+                    if part_name in part_sprite_adjust[part_type]:
+                        if key in part_sprite_adjust[part_type][part_name]:
+                            imgs[key] = {}
+                            for flip_value in part_sprite_adjust[part_type][part_name][key]:
+                                imgs[key][flip_value] = {}
+                                flip_image = value
+                                if flip_value:
+                                    flip_image = flip(flip_image, True, False)
+                                for scale in part_sprite_adjust[part_type][part_name][key][flip_value]:
+                                    imgs[key][flip_value][scale] = {}
+                                    scale_image = flip_image
+                                    if scale != 1:
+                                        scale_image = smoothscale(scale_image, (scale_image.get_width() * scale,
+                                                                                scale_image.get_height() * scale))
+                                    for angle in part_sprite_adjust[part_type][part_name][key][flip_value][scale]:
+                                        imgs[key][flip_value][scale][angle] = scale_image
+                                        if angle:
+                                            imgs[key][flip_value][scale][angle] = sprite_rotate(scale_image, angle)
+        save_dict |= imgs
+
+
+def filename_convert_readable(filename: str, revert=False) -> str:
     if revert:
         new_filename = filename.replace(" ", "-").lower()  # replace space with - and make name lowercase
     else:
-        if "-" in filename:
-            new_filename = filename.split("-")
+        if "-" in filename or " " in filename:
+            new_filename = filename.replace(" ", "-").split("-")
         else:
             new_filename = [filename]
 
@@ -131,7 +179,7 @@ def csv_read(main_dir, file, subfolder=(), output_type="dict", header_key=False,
             header = rd[0]
             for row_index, row in enumerate(rd):
                 for n, i in enumerate(row):
-                    if i.isdigit() or ("-" in i and re.search("[a-zA-Z]", i) is None):
+                    if i.lstrip("-").isdigit():
                         row[n] = int(i)
                     elif re.search("[a-zA-Z]", i) is None and "." in i and "," not in i:
                         row[n] = float(i)
@@ -157,7 +205,7 @@ def lore_csv_read(edit_file, input_dict):
     rd = [row for row in rd]
     for index, row in enumerate(rd[1:]):
         for n, i in enumerate(row):
-            if i.isdigit():
+            if i.lstrip("-").isdigit():
                 row[n] = int(i)
         input_dict[row[0]] = [stuff for index, stuff in enumerate(row[1:])]
         while len(input_dict[row[0]]) > 2 and input_dict[row[0]][-1] == "":  # keep remove last empty text
@@ -172,7 +220,7 @@ def load_sound(main_dir, file):
     :param file: File name
     :return: Pygame Sound
     """
-    file = os.path.join(main_dir, "../data", "sound", file)
+    file = os.path.join(main_dir, "data", "sound", file)
     sound = Sound(file)
     return sound
 
@@ -253,18 +301,13 @@ def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tu
 
     elif n in tuple_column:
         if "," in i:
-            if "." in i:
-                row[n] = tuple(
-                    [float(item) if re.search("[a-zA-Z]", item) is None else str(item) for item in i.split(",")])
-            else:
-                row[n] = tuple([int(item) if item.lstrip("-").isdigit() else item for item in i.split(",")])
-        elif i.lstrip("-").isdigit():
-            if "." in i:
-                row[n] = tuple([float(i)])
-            else:
-                row[n] = tuple([int(i)])
+            if "(" in i:  # tuple item
+                i = i.replace("(", "").replace(")", "")
+                row[n] = tuple([item_conversion(item2) for item2 in i.split(";")])
+
+            row[n] = tuple([item_conversion(item) for item in i.split(",")])
         else:
-            row[n] = tuple([i])
+            row[n] = tuple([item_conversion(i)])
             if i == "":
                 row[n] = ()
 
@@ -290,10 +333,15 @@ def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tu
                 if ":" in item:
                     new_i2 = item.split(":")
                     result_i[new_i2[0]] = new_i2[1]
-                    if new_i2[1] == "true":
-                        result_i[new_i2[0]] = True
-                    elif new_i2[1] == "false":
-                        result_i[new_i2[0]] = False
+                    if "(" in new_i2[1]:  # tuple value
+                        new_i2[1] = new_i2[1].replace("(", "").replace(")", "")  # item with item1;item2 instead of ,
+                        result_i[new_i2[0]] = tuple([item_conversion(item2) for item2 in new_i2[1].split(";")])
+                    elif "{" in new_i2[1]:  # dict value with key=value instead of key:value
+                        new_i2[1] = new_i2[1].replace("{", "").replace("}", "")
+                        item_list = tuple([item_conversion(item2) for item2 in new_i2[1].split(";")])
+                        result_i[new_i2[0]] = {i3.split("=")[0]: item_conversion(i3.split("=")[1]) if "=" in i3 else True for i3 in item_list}
+                    else:
+                        result_i[new_i2[0]] = item_conversion(result_i[new_i2[0]])
                 else:
                     if "/" not in item:
                         result_i[item] = True
@@ -312,15 +360,28 @@ def stat_convert(row, n, i, percent_column=(), mod_column=(), list_column=(), tu
         row[n] = str(i)
 
     else:
-        if i == "":
-            row[n] = 0
-        elif i.lower() == "true":
-            row[n] = True
-        elif i.lower() == "false":
-            row[n] = False
-        elif (i.lstrip("-").isdigit() or "." in i and re.search("[a-zA-Z]", i) is None) or i == "inf":
-            row[n] = float(i)
+        row[n] = item_conversion(i)
+
     return row
+
+
+def item_conversion(i):
+    if i == "":
+        return 0
+    elif i.lower() == "none":
+        return None
+    elif i.lower() == "true":
+        return True
+    elif i.lower() == "false":
+        return False
+    elif i.isdigit() or i.lstrip("-").isdigit():
+        return int(i)
+    elif ("." in i and re.search("[a-zA-Z]", i) is None) or i == "inf":
+        return float(i)
+    elif "," in i:
+        return tuple(i.split(","))
+    else:
+        return i
 
 
 def md5_update_from_dir(directory, hash):

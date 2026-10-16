@@ -11,16 +11,22 @@ class Camera:
 
         self.rect = self.image.get_rect(topleft=(screen.get_rect().width * 0.1, screen.get_rect().height * 0.1))
 
-    def update(self, pos, surfaces, out_surfaces):
+    def update(self, pos, blit_objects, out_surfaces):
         """Update self camera with sprite blit to camera image"""
-        self.image.fill((0, 0, 0))
-        camera_x = pos[0] - self.camera_w_center  # Current camera center x
-        camera_y = pos[1] - self.camera_h_center  # Current camera center y
-        for surface in surfaces:  # Blit sprite to camara image
-            surface_x, surface_y = surface.rect.left, surface.rect.top
-            surface_w, surface_h = surface.rect.size
-            if surface_x + surface_w - camera_x > 0 and surface_y + surface_h - camera_y > 0:  # only blit if image in camera
-                self.image.blit(surface.image, (surface_x - camera_x, surface_y - camera_y))
+        image = self.image
+        image.fill((0, 0, 0))
+        camera_left_bound = pos[0] - self.camera_w_center
+        camera_top_bound = pos[1] - self.camera_h_center
+        rect = self.rect
+        for blit_object in blit_objects:  # Blit sprite to camara image
+            surface_rect = blit_object.rect
+
+            surface_left_x, surface_top_y = surface_rect.topleft
+
+            if surface_rect.colliderect(rect):
+                # only blit if image in camera at all
+                image.blit(blit_object.image, (surface_left_x - camera_left_bound,
+                                               surface_top_y - camera_top_bound))
 
         for surface in out_surfaces:  # surface that get blit with pos on screen instead of in battle
             self.image.blit(surface.image, surface.rect)

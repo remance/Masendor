@@ -27,12 +27,17 @@ def minimise_number_text(text):
         return str(num_text)
 
 
-def number_to_minus_or_plus(number):
-    """Number should not be 0"""
-    if number > 0:
-        return "+"
-    else:  # assuming number is not 0
-        return "-"
+def add_comma_number(number):
+    return "{:,}".format(number)
+
+
+def add_plus_to_number(number):
+    number_text = number
+    if type(number_text) is str and "," in number_text:
+        number_text = number_text.replace(",", "")
+    if float(number_text) >= 0:
+        return "+" + str(number)
+    return str(number)
 
 
 def make_long_text(surface, text, pos, font, color=Color("black")):

@@ -35,7 +35,7 @@ from engine.unit.unit import Unit, Troop, Leader, rotation_dict, rotation_list
 from engine.updater.updater import ReversedLayeredUpdates
 from engine.utils.common import edit_config
 from engine.utils.data_loading import load_image, load_images, csv_read, load_base_button
-from engine.utils.text_making import number_to_minus_or_plus
+from engine.utils.text_making import add_plus_to_number
 from engine.weather.weather import MatterSprite, SpecialWeatherEffect
 
 version_name = "Victores et Victos"  # Game name that will appear as game name
@@ -273,6 +273,8 @@ class Game:
         # Set the display mode
         # game default screen size is 1920 x 1080, other resolution get scaled from there
         Game.screen_scale = (self.screen_width / 1920, self.screen_height / 1080)
+        self.screen_scale_width = self.screen_scale[0]
+        self.screen_scale_height = self.screen_scale[1]
         Game.screen_size = (self.screen_width, self.screen_height)
 
         self.window_style = 0
@@ -550,11 +552,11 @@ class Game:
                                            parent=self.screen, item_size=18)
 
         self.custom_unit_list_select = NameTextBox((self.custom_unit_list_box.image.get_width(),
-                                                    60 * self.screen_scale[1]),
+                                                    60 * self.screen_scale_height),
                                                    (self.custom_unit_list_box.rect.midtop[0],
                                                     self.custom_unit_list_box.rect.midtop[1] -
-                                                    25 * self.screen_scale[1]), "Selected: Leader List",
-                                                   text_size=30 * self.screen_scale[1],
+                                                    25 * self.screen_scale_height), "Selected: Leader List",
+                                                   text_size=30 * self.screen_scale_height,
                                                    box_colour=(240, 230, 175))
 
         self.custom_unit_list_select_box = ListUI(pivot=(-0.9, -0.8), origin=(-1, -1), size=(.2, .2),
@@ -627,13 +629,13 @@ class Game:
                                              battle_select_image["untick"], battle_select_image["tick"],
                                              "night")
         self.weather_custom_select = NameTextBox((self.custom_map_option_box.image.get_width() -
-                                                  (10 * self.screen_scale[0]), 30 * self.screen_scale[1]),
+                                                  (10 * self.screen_scale_width), 30 * self.screen_scale_height),
                                                  (self.custom_map_option_box.rect.center[0],
                                                   self.custom_map_option_box.rect.center[1] +
                                                   self.custom_map_option_box.image.get_height() / 3.5),
                                                  "Weather: Light Random")
         self.wind_custom_select = NameTextBox((self.custom_map_option_box.image.get_width() -
-                                               (10 * self.screen_scale[0]), 30 * self.screen_scale[1]),
+                                               (10 * self.screen_scale_width), 30 * self.screen_scale_height),
                                               (self.custom_map_option_box.rect.center[0],
                                                self.custom_map_option_box.rect.center[1] +
                                                self.custom_map_option_box.image.get_height() / 10),
@@ -853,15 +855,15 @@ class Game:
                     for i in range(joystick.get_numaxes()):
                         if joystick.get_axis(i) > 0.1 or joystick.get_axis(i) < -0.1:
                             if i not in (2, 3):  # prevent right axis from being assigned
-                                axis_name = "axis" + number_to_minus_or_plus(joystick.get_axis(i)) + str(i)
+                                axis_name = "axis" + add_plus_to_number(joystick.get_axis(i)) + str(i)
                                 self.assign_key(axis_name)
 
                     for i in range(joystick.get_numhats()):
                         if joystick.get_hat(i)[0]:
-                            hat_name = "hat" + number_to_minus_or_plus(joystick.get_axis(i)) + str(0)
+                            hat_name = "hat" + add_plus_to_number(joystick.get_axis(i)) + str(0)
                             self.assign_key(hat_name)
                         elif joystick.get_hat(i)[1]:
-                            hat_name = "hat" + number_to_minus_or_plus(joystick.get_axis(i)) + str(1)
+                            hat_name = "hat" + add_plus_to_number(joystick.get_axis(i)) + str(1)
                             self.assign_key(hat_name)
 
             for event in pygame.event.get():

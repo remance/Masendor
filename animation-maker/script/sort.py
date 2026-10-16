@@ -3,9 +3,6 @@ import os
 import re
 import sys
 
-import pandas as pd
-from natsort import natsort_keygen
-
 from pathlib import Path
 
 current_dir = os.path.split(os.path.abspath(__file__))[0]
@@ -21,34 +18,18 @@ animation_folder = Path(os.path.join(module_dir, "animation"))
 sub1_directories = [os.path.normpath(x).split(os.sep)[-1] for x in animation_folder.iterdir() if not x.is_dir()]
 
 
+def natural_sort(l):
+    convert = lambda text: int(text) if text.isdigit() else text.lower()
+    alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
+    return sorted(l, key=alphanum_key)
+
+
 def sort_animation(pool, header, sort_by):
     name_list = list(set(pool.keys()))
-    new_list = {name: name.split("_") for index, name in enumerate(name_list)}
-    type_list = {}
-    for key, value in new_list.items():
-        race = value[0]
-        action = value[-1]
-        if re.search("[a-zA-Z]", action) is None:  # animation with variant
-            action = value[-2] + value[-1]
-        if any(ext in key for ext in ["_Main_", "_Sub_"]):
-            action_type = "C"
-            hand = value[2]
-        elif "Preview" in key:
-            action_type = "P"
-        elif "_Skill_" in key:
-            action_type = "S"
-        elif "Default" in key:
-            action_type = "A"
-            hand = "0hand"
-        else:
-            action_type = "B"
-            hand = value[1]
-        type_list[key] = {"Race": race, "Hand": hand, "Type": action_type, "Action": action}
-    df = pd.DataFrame.from_dict(type_list, orient="index")
-    df = df.reset_index().sort_values(by=sort_by, key=natsort_keygen())
+    name_list = natural_sort(name_list)
 
     animation_pool = {}
-    for new_stuff in df["index"].tolist():
+    for new_stuff in name_list:
         try:
             animation_pool[new_stuff] = pool[new_stuff]
         except KeyError:

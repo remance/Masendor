@@ -13,16 +13,16 @@ import pygame
 
 def recursive_dict_creation(data):
     f = recursive_dict_creation
-    if type(data) == dict:
+    if type(data) is dict:
         for k, v in data.items():
-            if type(v) == dict:
+            if type(v) is dict:
                 data[k] = v.copy()
                 f(v)
 
 
 def save_pickle_with_surfaces(file_path, data):
     new_data = data
-    if type(data) == dict:  # remake dict to not replace input data
+    if type(data) is dict:  # remake dict to not replace input data
         new_data = data.copy()
         recursive_dict_creation(new_data)
 
@@ -63,29 +63,29 @@ class PickleableSurface:
 
 def recursive_cast_surface_to_pickleable_surface(data):
     f = recursive_cast_surface_to_pickleable_surface
-    if type(data) == dict:
+    if type(data) is dict:
         for k, v in data.items():
-            if type(v) == dict:
+            if type(v) is dict:
                 f(v)
-            elif type(v) == pygame.Surface:
+            elif type(v) is pygame.Surface:
                 data[k] = PickleableSurface(v)
-            elif type(v) == tuple:
-                data[k] = tuple([c if type(c) != pygame.Surface else PickleableSurface(c) for c in data[k]])
-    elif type(data) == tuple:
+            elif type(v) is tuple:
+                data[k] = tuple([c if type(c) is not pygame.Surface else PickleableSurface(c) for c in data[k]])
+    elif type(data) is tuple:
         for v in data:
             f(v)
 
 
 def recursive_cast_pickleable_surface_to_surface(data):
     f = recursive_cast_pickleable_surface_to_surface
-    if type(data) == dict:
+    if type(data) is dict:
         for k, v in data.items():
-            if type(v) == dict:
+            if type(v) is dict:
                 f(v)
-            if type(v) == PickleableSurface:
+            if type(v) is PickleableSurface:
                 data[k] = v.surface
-            elif type(v) == tuple:
-                data[k] = tuple([c if type(c) != PickleableSurface else c.surface for c in data[k]])
-    elif type(data) == tuple:
+            elif type(v) is tuple:
+                data[k] = tuple([c if type(c) is not PickleableSurface else c.surface for c in data[k]])
+    elif type(data) is tuple:
         for v in data:
             f(v)

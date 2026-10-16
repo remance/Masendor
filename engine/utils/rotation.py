@@ -18,15 +18,19 @@ def rotation_xy(origin, point, angle):
     return Vector2(x, y)
 
 
-def set_rotate(self, base_target, convert=True):
+def set_rotate(self, base_target, convert=True, use_pos=False):
     """
     find angle using starting pos and base_target
-    :param self: any object with base_pos as position attribute
+    :param self: any object with base_pos or pos as position attribute
     :param base_target: pos for target position to rotate to
     :param convert: convert degree for rotation
+    :param use_pos: use pos instead of base_pos
     :return: new angle
     """
-    my_radians = atan2(base_target[1] - self.base_pos[1], base_target[0] - self.base_pos[0])
+    if not use_pos:
+        my_radians = atan2(base_target[1] - self.base_pos[1], base_target[0] - self.base_pos[0])
+    else:
+        my_radians = atan2(base_target[1] - self.pos[1], base_target[0] - self.pos[0])
     new_angle = int(degrees(my_radians))
     if convert:
         # """upper left and upper right"""

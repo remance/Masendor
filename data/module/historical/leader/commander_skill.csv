@@ -1,7 +1,7 @@
 "ID","Name","Replace","Range","Area Of Effect","Receiver","Duration","Cooldown","Discipline Requirement","Stamina Cost","Melee Attack Bonus","Melee Defence Bonus","Ranged Defence Bonus","Speed Bonus","Accuracy Bonus","Range Bonus","Reload Bonus","Charge Bonus","Charge Defence Bonus","Melee Speed Bonus","Authority Bonus","HP Regeneration Bonus","Stamina Regeneration Bonus","Morale Bonus","Discipline Bonus","Critical Bonus","Damage Modifier","Fire Damage Extra","Poison Damage Extra","Sight Bonus","Hidden Bonus","Stamina Damage Bonus","Morale Damage Bonus","Weapon Impact Modifier","Status","Enemy Status","Effect Sprite","Sound Effect","Sound Distance","Status Sprite","AI Use Condition","AI Use Restriction","Action Type","Tag"
 "C1","Establish Control","L75",0,120,0,60,180,30,,,,,,,,,,,,50,,,-20,70,,,,,,,,,,,,,,,"Buff","unit_melee",,"Skill","Buff"
 "C2","Battle Choir","L2",0,200,0,30,60,10,,20,,,,,,,20,,,,,,10,,,,,,,-20,,4,,,,,,,"Buff","unit_melee",,"Skill","Buff"
-"C3","Rally Signal","L3",0,400,0,60,100,20,,,,,,,,,,,,,,,50,,,,,,,-30,,,,,,"Sound Burst Medium (team),Burst_1","Warhorn Big",350,"Buff","unit_melee",,"Skill","Buff"
+"C3","Rally Signal","L3",0,400,0,60,100,20,,,,,,,,,,,,,,,50,,,,,,,-30,,,,,,"Sound Burst Medium @team,Burst_1","Warhorn Big",350,"Buff","unit_melee",,"Skill","Buff"
 "C4",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
 "C5",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Skill",
 "C6","Mass","L6",0,250,0,140,200,44,,,,,,,,,,,,,,,40,,,,,,,,,,,,,,,,"Buff","enemy_near",,"Skill","Buff"
