@@ -335,7 +335,6 @@ class Unit(sprite.Sprite):
         self.near_enemy = []
         # self.near_visible_enemy = []
         self.nearest_enemy = []
-        self.nearest_ally = []
 
         self.camp_pos = None
         self.camp_radius = None

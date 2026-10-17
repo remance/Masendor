@@ -22,8 +22,7 @@ For game update showcase video: [![github](https://github.com/remance/preview/bl
 
 All helps, suggestions, and issue reports are appreciated.
 
-If you would like to help the project, feel free to join discord for a chat, open issues, commit the codes and do pull requests, or send emails to 
-`masendor@proton.me`.
+If you would like to help the project, feel free to open issues, commit the codes and do pull requests
 
 Some non-specific suggestions and examples of helps, including but not limited to:
 

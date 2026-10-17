@@ -169,7 +169,7 @@ class UIMenu(Sprite):
         self.mouse_over = False
         self.pause = False
 
-    def update(self):
+    def update(self, dt):
         self.event = False
         self.event_press = False
         self.event_hold = False  # some UI differentiates between press release or holding, if not just use event
@@ -207,7 +207,7 @@ class MenuCursor(UIMenu):
         self.scroll_up = False
         self.scroll_down = False
 
-    def update(self):
+    def update(self, dt):
         """Update cursor position based on mouse position and mouse button click"""
         self.pos = mouse.get_pos()
         self.rect.topleft = self.pos
@@ -453,7 +453,7 @@ class MenuButton(UIMenu):
         self.image = self.button_normal_image
         self.rect = self.button_normal_image.get_rect(center=self.pos)
 
-    def update(self):
+    def update(self, dt):
         self.event = False
         self.event_press = False
         self.mouse_over = False
@@ -483,16 +483,6 @@ class MenuButton(UIMenu):
             self.button_click_image.blit(text_surface, text_rect)
         self.rect = self.button_normal_image.get_rect(center=self.pos)
         self.event = False
-
-
-class URLIconLink(UIMenu):
-    def __init__(self, image, pos, url, layer=1):
-        self._layer = layer
-        UIMenu.__init__(self)
-        self.pos = pos
-        self.image = image
-        self.url = url
-        self.rect = self.image.get_rect(topright=self.pos)
 
 
 class Container:
@@ -600,7 +590,7 @@ class BrownMenuButton(UIMenu, Containable):  # NOTE: the button is not brown any
             "pivot": self.pos,
         }
 
-    def update(self):
+    def update(self, dt):
 
         mouse_pos = self.cursor.pos
         sju = self.cursor.is_select_just_up
@@ -1531,7 +1521,7 @@ class BoxUI(UIMenu, Containable, Container):
         self.image = Surface(self.rect[2:], SRCALPHA)
         # self.image.fill("#302d2ce0")
 
-    def update(self):
+    def update(self, dt):
         self.rect = self.get_adjusted_rect_to_be_inside_container(self.parent)
         self.image = Surface(self.rect[2:], SRCALPHA)
         # self.image.fill("#bbbbaabb")
@@ -1773,7 +1763,7 @@ class ListUI(UIMenu, Containable):
 
         return image
 
-    def update(self):
+    def update(self, dt):
         if self.pause:
             return
 

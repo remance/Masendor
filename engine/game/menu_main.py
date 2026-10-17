@@ -44,7 +44,7 @@ def menu_main(self, esc_press):
 
         self.create_preview_map()
 
-        self.create_team_coa([None for _ in range(12)])
+        self.create_team_coa([None for _ in range(4)])
 
         for team in self.team_coa:
             if self.team_selected == team.team:
@@ -79,15 +79,3 @@ def menu_main(self, esc_press):
 
     elif self.quit_button.event or esc_press:  # open quit game confirmation input
         self.activate_input_popup(("confirm_input", "quit"), "Quit Game?", self.confirm_ui_popup)
-
-    elif self.discord_button.event_press and not self.url_delay:
-        browser.open(self.discord_button.url)
-        self.url_delay = 2
-
-    elif self.github_button.event_press and not self.url_delay:
-        browser.open(self.github_button.url)
-        self.url_delay = 2
-
-    elif self.youtube_button.event_press and not self.url_delay:
-        browser.open(self.youtube_button.url)
-        self.url_delay = 2

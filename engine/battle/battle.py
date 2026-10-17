@@ -412,6 +412,8 @@ class Battle:
         self.battle_cursor_pos = [0, 0]  # mouse position list in battle map not screen with zoom
         self.command_cursor_pos = [0, 0]  # with zoom and screen scale for unit command
 
+        self.all_team_enemy_collision_grids = {index: () for index in self.team_colour}
+
     def prepare_new_game(self, player_unit):
 
         for message in self.inner_prepare_new_game(player_unit):
@@ -584,7 +586,7 @@ class Battle:
         self.screen_shake_value = 0
         self.ui_timer = 0  # This is timer for ui update function, use realtime
         self.drama_timer = 0  # This is timer for combat related function, use self time (realtime * game_speed)
-        self.dt = 0  # Realtime used for time calculation
+        dt = 0  # Realtime used for time calculation
         self.ui_dt = 0  # Realtime used for ui timer
         self.weather_spawn_timer = 0
         self.ten_second_reset_timer = 0
@@ -623,7 +625,7 @@ class Battle:
             skill_icon.change_key(skill_key_list[index])
 
         self.time_update()
-        self.effect_updater.update(self.active_unit_list, self.dt)
+        self.effect_updater.update(self.active_unit_list, dt)
         self.screen.blit(self.background, (0, 0))
         self.realtime_ui_updater.add(self.player1_battle_cursor)  # reset cursor when start battle
         self.remove_ui_updater(self.cursor)
@@ -790,11 +792,11 @@ class Battle:
                 esc_press = True
 
             if self.player_unit_input_delay:  # delay for command input
-                self.player_unit_input_delay -= self.dt
+                self.player_unit_input_delay -= dt
                 if self.player_unit_input_delay < 0:
                     self.player_unit_input_delay = 0
 
-            self.ui_updater.update()  # update ui before more specific update
+            self.ui_updater.update(dt)  # update ui before more specific update
 
             if esc_press:  # open/close menu
                 if self.game_state == "battle":  # in battle
@@ -870,14 +872,14 @@ class Battle:
                     self.troop_ai_logic_queue = self.troop_ai_logic_queue[limit:]
 
                 # Update game time
-                self.dt = self.true_dt * self.game_speed  # apply dt with game_speed for calculation
-                if self.dt > 0.1:  # one frame update should not be longer than 0.1 second for calculation
-                    self.dt = 0.1  # make it so stutter and lag does not cause overtime issue
+                dt = self.true_dt * self.game_speed  # apply dt with game_speed for calculation
+                if dt > 0.1:  # one frame update should not be longer than 0.1 second for calculation
+                    dt = 0.1  # make it so stutter and lag does not cause overtime issue
 
-                self.ui_timer += self.dt  # ui update by real time instead of self time to reduce workload
-                self.ui_dt = self.dt  # get ui timer before apply self
+                self.ui_timer += dt  # ui update by real time instead of self time to reduce workload
+                self.ui_dt = dt  # get ui timer before apply self
 
-                if self.dt:  # Part that run when game not pause only
+                if dt:  # Part that run when game not pause only
                     # Event log
                     if self.event_id and self.time_number.time_number >= self.event_schedule:
                         self.event_log.add_log(None, event_id=self.event_id)
@@ -909,7 +911,7 @@ class Battle:
                             self.weather_playing = None
 
                     if self.current_weather.spawn_rate:
-                        self.weather_spawn_timer += self.dt
+                        self.weather_spawn_timer += dt
                         if self.weather_spawn_timer >= self.current_weather.spawn_rate:
                             self.weather_spawn_timer = 0
                             self.spawn_weather_matter()
@@ -917,12 +919,12 @@ class Battle:
                     # Screen shaking
                     self.shown_camera_pos = self.camera_pos  # reset camera pos first
                     if self.screen_shake_value:
-                        self.screen_shake_value -= (self.dt * 100)
+                        self.screen_shake_value -= (dt * 100)
                         self.shake_camera()
                         if self.screen_shake_value < 0:
                             self.screen_shake_value = 0
 
-                    self.ten_second_reset_timer += self.dt
+                    self.ten_second_reset_timer += dt
                     if self.ten_second_reset_timer > 10:
                         for team, value in self.camp_enemy_check.items():
                             for key in value:
@@ -930,11 +932,11 @@ class Battle:
                         self.ten_second_reset_timer -= 10
 
                     # Battle related updater
-                    self.unit_updater.update(self.dt)
-                    self.effect_updater.update(self.active_unit_list, self.dt)
-                    self.realtime_ui_updater.update()
+                    self.unit_updater.update(dt)
+                    self.effect_updater.update(self.active_unit_list, dt)
+                    self.realtime_ui_updater.update(dt)
 
-                    self.time_number.timer_update(self.dt * 100)  # update battle time
+                    self.time_number.timer_update(dt * 100)  # update battle time
                     self.time_update()
 
                     self.camera.update(self.shown_camera_pos, self.battle_camera,
@@ -1047,6 +1049,21 @@ class Battle:
         self.ui_updater.remove(*args)
         self.ui_drawer.remove(*args)
 
+    def clean_character_group(self):
+        for character in self.all_units:
+            character.erase()
+
+        for this_group in self.all_team_unit.values():
+            this_group.empty()
+        for this_group in self.all_team_enemy.values():
+            this_group.empty()
+
+        # setup grid for collide check
+        for team in self.all_team_enemy_collision_grids.values():
+            for grid_y in team:
+                for grid_x in grid_y:
+                    grid_x.empty()
+
     def exit_battle(self):
         self.ui_updater.clear(self.screen, self.background)  # clear all sprite
         self.battle_camera.clear(self.screen, self.background)  # clear all sprite
@@ -1062,6 +1079,7 @@ class Battle:
 
         self.troop_ai_logic_queue = []
 
+        self.clean_character_group()
         clean_group_object((self.shoot_lines, self.all_units, self.effect_updater, self.weather_matters))
 
         self.unit_animation_pool = None

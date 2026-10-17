@@ -17,7 +17,7 @@ from engine.effect.effect import Effect
 from engine.game.menu_custom_map_select import custom_map_list_on_select, custom_faction_list_on_select, \
     custom_weather_list_on_select
 from engine.game.menu_custom_unit_setup import custom_set_list_on_select
-# Method in game.setup
+
 from engine.game.setup.make_editor_ui import make_editor_ui
 from engine.game.setup.make_faction_troop_leader_data import make_faction_troop_leader_data
 from engine.game.setup.make_icon_data import make_icon_data
@@ -29,9 +29,9 @@ from engine.menubackground.menubackground import MenuActor, MenuRotate, StaticIm
 from engine.uibattle.uibattle import MiniMap, UnitIcon, SkillIcon, SpriteIndicator, AimTarget, BattleCursor, \
     WeaponUI, FollowerUI, StatusUI, UnitSelector, UIScroll, Profiler, TempUnitIcon, FPSCount, HealthStaminaBar
 from engine.uimenu.uimenu import MapPreview, OptionMenuText, SliderMenu, TeamCoa, MenuCursor, BoxUI, BrownMenuButton, \
-    ListUI, ListAdapter, URLIconLink, CampaignListAdapter, LeaderModel, MenuButton, BackgroundBox, OrgChart, \
+    ListUI, ListAdapter, CampaignListAdapter, LeaderModel, MenuButton, BackgroundBox, OrgChart, \
     TickBox, TextPopup, MapTitle, NameTextBox
-from engine.unit.unit import Unit, Troop, Leader, rotation_dict, rotation_list
+from engine.unit.unit import Unit, Troop, Leader
 from engine.updater.updater import ReversedLayeredUpdates
 from engine.utils.common import edit_config
 from engine.utils.data_loading import load_image, load_images, csv_read, load_base_button
@@ -170,17 +170,13 @@ class Game:
 
     troop_sprite_size = (200, 200)
 
-    team_colour = {0: (50, 50, 50), 1: (50, 50, 150), 2: (200, 50, 50), 3: (200, 200, 0), 4: (0, 200, 0),
-                   5: (200, 0, 200), 6: (140, 90, 40), 7: (100, 170, 170), 8: (230, 120, 0), 9: (230, 60, 110),
-                   10: (130, 120, 200), 11: (100, 150, 120), 12: (175, 165, 115)}
+    team_colour = {0: (50, 50, 50), 1: (50, 50, 150), 2: (200, 50, 50), 3: (200, 200, 0), 4: (0, 200, 0)}
     selected_team_colour = {0: (200, 200, 200), 1: (180, 180, 255), 2: (255, 150, 150), 3: (255, 255, 150),
-                            4: (150, 255, 150), 5: (255, 150, 255), 6: (200, 140, 70), 7: (160, 200, 200),
-                            8: (255, 150, 45), 9: (230, 140, 160), 10: (200, 190, 230), 11: (170, 200, 180),
-                            12: (210, 200, 170)}
+                            4: (150, 255, 150)}
 
     skill_level_text = ("E", "E+", "D", "D+", "C", "C+", "B", "B+", "A", "A+", "S")
 
-    resolution_list = ("3200 x 1800", "2560 x 1440", "1920 x 1080", "1600 x 900", "1360 x 768",
+    resolution_list = ("3840 x 2160", "3200 x 1800", "2560 x 1440", "1920 x 1080", "1600 x 900", "1360 x 768",
                        "1280 x 720", "1024 x 576", "960 x 540", "854 x 480")
 
     def __init__(self, main_dir, error_log):
@@ -202,7 +198,7 @@ class Game:
             os.sep.join(os.path.normpath(x).split(os.sep)))[-1]: x for x
                             in part_folder.iterdir() if x.is_dir()}  # get module list
         if "tutorial" in self.module_list:
-            self.module_list.pop("tutorial")  # get tutorial module from list
+            self.module_list.pop("tutorial")  # remove tutorial module from list
 
         # Read config file
         config = configparser.ConfigParser()  # initiate config reader
@@ -311,7 +307,6 @@ class Game:
         self.play_source_data = {"unit": [], "event_log": {}, "weather": [[0, "09:00:00", 0, 0]]}
         self.remember_custom_list = {}  # dict to save actual list and its localisation name item
 
-        self.dt = 0
         self.text_delay = 0
         self.url_delay = 0
 
@@ -327,7 +322,6 @@ class Game:
         # pygame.display.set_icon(icon)
 
         # Initialise groups
-
         Game.ui_updater = ReversedLayeredUpdates()  # main drawer for ui in main menu
         Game.ui_drawer = pygame.sprite.LayeredUpdates()
 
@@ -525,16 +519,9 @@ class Game:
         main_menu_button_images = load_images(self.module_dir, screen_scale=self.screen_scale,
                                               subfolder=("ui", "mainmenu_ui"))
 
-        self.discord_button = URLIconLink(main_menu_button_images["discord"], (self.screen_width, 0),
-                                          "https://discord.gg/q7yxz4netf")
-        self.youtube_button = URLIconLink(main_menu_button_images["youtube"], self.discord_button.rect.topleft,
-                                          "https://www.youtube.com/channel/UCgapwWog3mYhkEKIGW8VZtw")
-        self.github_button = URLIconLink(main_menu_button_images["github"], self.youtube_button.rect.topleft,
-                                         "https://github.com/remance/Masendor")
-
         self.mainmenu_button = (self.preset_map_button, self.custom_map_button,
-                                self.lore_button, self.option_button, self.quit_button, main_menu_buttons_box,
-                                self.discord_button, self.youtube_button, self.github_button)  # self.game_edit_button,
+                                self.lore_button, self.option_button, self.quit_button,
+                                main_menu_buttons_box)  # self.game_edit_button,
 
         # Battle map select menu button
 
@@ -766,23 +753,23 @@ class Game:
                                            self.background_image["hide"])
         self.menu_actor_data = csv_read(self.module_dir, "menu_actor.csv", ("ui",), header_key=True)
         self.menu_actors = []
-        for stuff in self.menu_actor_data.values():
-            if stuff["Type"] == "unit":
-                if "-" in stuff["ID"]:
-                    who_todo = {key: value for key, value in self.leader_data.leader_list.items() if key == stuff["ID"]}
-                else:
-                    who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key == stuff["ID"]}
-                sprite_direction = rotation_dict[min(rotation_list, key=lambda x: abs(
-                    x - stuff["Angle"]))]  # find closest in list of rotation for sprite direction
-                preview_sprite_pool, _ = self.create_unit_sprite_pool(who_todo, preview=True,
-                                                                      specific_preview=(stuff["Animation"],
-                                                                                        None,
-                                                                                        sprite_direction),
-                                                                      max_preview_size=stuff["Size"])
-
-                self.menu_actors.append(MenuActor((float(stuff["POS"].split(",")[0]) * self.screen_width,
-                                                   float(stuff["POS"].split(",")[1]) * self.screen_height),
-                                                  preview_sprite_pool[stuff["ID"]]))
+        # for stuff in self.menu_actor_data.values():
+        #     if stuff["Type"] == "unit":
+        #         if "-" in stuff["ID"]:
+        #             who_todo = {key: value for key, value in self.leader_data.leader_list.items() if key == stuff["ID"]}
+        #         else:
+        #             who_todo = {key: value for key, value in self.troop_data.troop_list.items() if key == stuff["ID"]}
+        #         sprite_direction = rotation_dict[min(rotation_list, key=lambda x: abs(
+        #             x - stuff["Angle"]))]  # find closest in list of rotation for sprite direction
+        #         preview_sprite_pool, _ = self.create_unit_sprite_pool(who_todo, preview=True,
+        #                                                               specific_preview=(stuff["Animation"],
+        #                                                                                 None,
+        #                                                                                 sprite_direction),
+        #                                                               max_preview_size=stuff["Size"])
+        #
+        #         self.menu_actors.append(MenuActor((float(stuff["POS"].split(",")[0]) * self.screen_width,
+        #                                            float(stuff["POS"].split(",")[1]) * self.screen_height),
+        #                                           preview_sprite_pool[stuff["ID"]]))
 
         # self.background = self.background_image["main"]
 
@@ -839,14 +826,14 @@ class Game:
     def run(self):
         while True:
             # Get user input
-            self.dt = self.clock.get_time() / 1000  # dt before game_speed
+            dt = self.clock.get_time() / 1000  # dt before game_speed
             self.cursor.scroll_down = False
             self.cursor.scroll_up = False
             esc_press = False
             key_press = pygame.key.get_pressed()
 
             if self.url_delay:
-                self.url_delay -= self.dt
+                self.url_delay -= dt
                 if self.url_delay < 0:
                     self.url_delay = 0
 
@@ -921,7 +908,7 @@ class Game:
                     esc_press = True
 
             self.remove_ui_updater(self.text_popup)
-            self.ui_updater.update()
+            self.ui_updater.update(dt)
 
             # Reset screen
             self.screen.blit(self.background, (0, 0))  # blit background over instead of clear() to reset screen
@@ -1034,7 +1021,7 @@ class Game:
                             self.input_box.player_input(None, key_press)
                             self.text_delay = 0.1
                     else:
-                        self.text_delay += self.dt
+                        self.text_delay += dt
                         if self.text_delay >= 0.3:
                             self.text_delay = 0
 

@@ -6,12 +6,11 @@ from engine.uibattle.uibattle import UIBattle
 from engine.utils.rotation import set_rotate
 
 
-class Weather(UIBattle):
+class Weather:
     weather_icons = {}
     wind_compass_images = {}
 
     def __init__(self, time_ui, weather_type, wind_direction, level, weather_data):
-        UIBattle.__init__(self)
         self.weather_type = weather_type
         if self.weather_type == 0:
             self.weather_type = randint(1, len(weather_data) - 1)
@@ -105,13 +104,13 @@ class MatterSprite(UIBattle):
                            self.image.get_height() + screen_rect_size[1])
         self.rect = self.image.get_rect(center=self.base_pos)
 
-    def update(self):
+    def update(self, dt):
         """Update sprite position movement"""
         move = self.target - self.base_pos
         move_length = move.length()
         if move_length > 0.1:
             move.normalize_ip()
-            move = move * self.speed * self.battle.dt
+            move = move * self.speed * dt
             if move.length() <= move_length:
                 self.base_pos += move
                 self.rect.center = list(int(v) for v in self.base_pos)

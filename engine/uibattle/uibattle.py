@@ -53,7 +53,7 @@ class BattleCursor(UIBattle):
         self.image = self.images[image_name]
         self.rect = self.image.get_rect(topleft=self.pos)
 
-    def update(self):
+    def update(self, dt):
         """Update cursor position based on joystick or mouse input"""
         if self.player_input == "keyboard":  # keyboard and mouse control
             self.pos = Vector2(mouse.get_pos())
@@ -496,7 +496,7 @@ class FPSCount(UIBattle):
         self.text_rect = fps_text.get_rect(center=(10, 10))
         self.rect = self.image.get_rect(topleft=(0, 0))
 
-    def update(self):
+    def update(self, dt):
         """Update current fps"""
         self.image = self.base_image.copy()
         fps = str(int(self.clock.get_fps()))
@@ -545,7 +545,7 @@ class MiniMap(UIBattle):
         self.camera_border = [camera.image.get_width(), camera.image.get_height()]
         self.rect = self.image.get_rect(midbottom=self.pos)
 
-    def update(self):
+    def update(self, dt):
         """update troop and leader dot on map"""
         self.update_count += 1
         if self.update_count > 5:
@@ -934,7 +934,7 @@ class Timer(UIBattle):
         self.image.blit(self.timer_surface, self.timer_rect)
 
     def timer_update(self, dt):
-        """Update in-self timer number"""
+        """Update timer number"""
         if dt:
             self.timer += dt
             if self.timer - self.old_timer > 1:

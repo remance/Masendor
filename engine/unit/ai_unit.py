@@ -13,7 +13,6 @@ def ai_unit(self):
     # if self.near_visible_enemy:
     #     self.nearest_enemy = self.near_visible_enemy[0]
     self.nearest_enemy = self.near_enemy[0]
-    self.nearest_ally = self.near_ally[0]
 
     if not self.is_leader:
         layer = int(self.base_pos[0] + (self.base_pos[1] * 10))

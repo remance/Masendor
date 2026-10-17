@@ -23,8 +23,8 @@ class MenuRotate(UIMenu):
         self.rotate_speed = rotate_speed
         self.angle = 0
 
-    def update(self):
-        self.angle += self.game.dt * self.rotate_speed
+    def update(self, dt):
+        self.angle += dt * self.rotate_speed
         if self.angle > 360:  # reset back
             self.angle -= 360
         self.image = rotate(self.image_base.copy(), self.angle)
@@ -43,9 +43,9 @@ class MenuActor(UIMenu):
         self.image = self.current_animation[self.show_frame]["sprite"]
         self.rect = self.image.get_rect(midbottom=self.pos)
 
-    def update(self):
+    def update(self, dt):
         if self.current_animation:  # play animation if more than 1 frame
-            self.frame_timer += self.game.dt
+            self.frame_timer += dt
             if self.frame_timer >= self.animation_frame_play_time:
                 self.frame_timer = 0
                 if self.show_frame < len(self.current_animation) - 1:
